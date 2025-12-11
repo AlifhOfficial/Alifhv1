@@ -609,6 +609,24 @@ export const createListingSchema = z.object({
 
 **Utils** (Helper functions):
 ```typescript
+// ✅ IMPLEMENTED: Winston Logging System
+export { logger, securityLogger, auditLogger } from './logger';
+
+// Security event logging
+securityLogger.authSuccess(userId, email, ip, userAgent);
+securityLogger.authFailure(email, reason, ip, userAgent);
+securityLogger.suspiciousActivity(userId, activity, details, ip);
+
+// Audit trail logging
+auditLogger.userCreated(userId, email, createdBy);
+auditLogger.userUpdated(userId, updatedFields, updatedBy);
+auditLogger.adminAction(adminId, action, targetUserId, details);
+
+// Application logging
+logger.info('API request', { method, endpoint, userId, duration });
+logger.error('Application error', { error, context, userId });
+
+// Planned utility functions
 export function formatPrice(amount: number): string {
   return new Intl.NumberFormat('en-AE', {
     style: 'currency',

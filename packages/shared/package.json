@@ -20,6 +20,8 @@
     "format": "prettier --write src/**/*.ts"
   },
   "dependencies": {
+    "@types/winston": "^2.4.4",
+    "winston": "^3.19.0",
     "zod": "^3.22.0"
   },
   "devDependencies": {
