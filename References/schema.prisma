@@ -1,0 +1,642 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                      String           @id @default(uuid())
+  email                   String           @unique
+  phone                   String?          @unique
+  password                String?
+  firstName               String
+  lastName                String
+  name                    String
+  avatar                  String?
+  description             String?
+  status                  UserStatus       @default(PENDING_KYC)
+  kycVerified             Boolean          @default(false)
+  kycVerifiedAt           DateTime?
+  emailVerified           DateTime?
+  role                    UserRole         @default(USER)
+  activeRetailerId        String?          @map("dealer_id")
+  permissions             Json             @default("[]")
+  badges                  Json             @default("[]")
+  tags                    Json             @default("[]")
+  locationLat             Float?
+  locationLng             Float?
+  locationCity            String?
+  locationEmirate         String?
+  inventoryCount          Int              @default(0)
+  carsSold                Int              @default(0)
+  avgResponseTime         Int?
+  lastActiveAt            DateTime?
+  notificationPreferences Json             @default("{\"emailKYC\": true, \"emailEscrow\": true, \"emailBooking\": true, \"emailMessages\": true, \"emailFinancial\": true, \"emailMarketing\": false, \"emailReservation\": true}")
+  privacySettings         Json             @default("{\"showEmail\": false, \"showPhone\": true}")
+  preferences             Json             @default("{\"theme\": \"system\", \"language\": \"en\", \"distanceUnit\": \"km\"}")
+  consignmentMode         Boolean          @default(false)
+  refundBankDetails       Json?
+  memberSince             DateTime         @default(now())
+  createdAt               DateTime         @default(now())
+  updatedAt               DateTime         @updatedAt
+  accounts                Account[]
+  bookings                Booking[]
+  listings                CarListing[]
+  retailerMemberships     RetailerMember[]
+  escrows                 Escrow[]         @relation("BuyerEscrows")
+  kycRecords              KYC[]
+  reservations            Reservation[]
+  sessions                Session[]
+  blockedBy               UserBlock[]      @relation("Blocked")
+  blockedUsers            UserBlock[]      @relation("Blocker")
+  favorites               UserFavorite[]
+  conversations           ConversationParticipant[] @relation("UserConversations")
+  sentMessages            Message[]        @relation("SentMessages")
+  activeRetailer          Retailer?        @relation("ActiveRetailerContext", fields: [activeRetailerId], references: [id])
+
+  @@map("users")
+}
+
+model UserFavorite {
+  id          String     @id @default(uuid())
+  userId      String
+  listingId   String
+  isFavorite  Boolean    @default(false)
+  isSuperlike Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  listing     CarListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, listingId])
+  @@index([userId])
+  @@index([listingId])
+  @@map("user_favorites")
+}
+
+model KYC {
+  id              String          @id @default(uuid())
+  userId          String
+  status          KYCStatus       @default(PENDING)
+  documentType    KYCDocumentType @default(EMIRATES_ID)
+  documentUrls    String[]
+  submittedAt     DateTime        @default(now())
+  reviewedAt      DateTime?
+  reviewedBy      String?
+  rejectionReason String?
+  expiryDate      DateTime?
+  uaePassVerified Boolean         @default(false)
+  uaePassData     Json?
+  auditLog        Json[]          @default([])
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([status, submittedAt])
+  @@map("kyc_records")
+}
+
+model UserBlock {
+  id        String   @id @default(uuid())
+  blockerId String
+  blockedId String
+  blockedAt DateTime @default(now())
+  reason    String?
+  blocked   User     @relation("Blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+  blocker   User     @relation("Blocker", fields: [blockerId], references: [id], onDelete: Cascade)
+
+  @@unique([blockerId, blockedId])
+  @@index([blockerId])
+  @@index([blockedId])
+  @@map("user_blocks")
+}
+
+model Retailer {
+  id                   String           @id @default(uuid())
+  name                 String
+  tradeLicense         String           @unique
+  status               RetailerStatus   @default(DRAFT)
+  tier                 RetailerTier     @default(STANDARD)
+  email                String           @unique
+  phone                String
+  website              String?
+  address              String?
+  emirate              String?
+  logo                 String?
+  heroImage            String?
+  description          String?
+  specialties          Json             @default("[]")
+  experienceYears      Int?
+  googleReviewUrl      String?
+  googleRating         Float?
+  customerSatisfaction Float?
+  totalInventory       Int              @default(0)
+  totalSales           Int              @default(0)
+  avgResponseTime      Int?
+  responseRate         Float?
+  isVerified           Boolean          @default(false)
+  badges               Json             @default("[]")
+  tags                 Json             @default("[]")
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  bookings             Booking[]
+  listings             CarListing[]
+  members              RetailerMember[]
+  escrows              Escrow[]         @relation("SellerEscrows")
+  reservations         Reservation[]
+  teamMembers          User[]           @relation("ActiveRetailerContext")
+
+  @@map("dealers")
+}
+
+model RetailerMember {
+  id         String       @id @default(uuid())
+  userId     String
+  retailerId String
+  role       RetailerRole
+  isActive   Boolean      @default(true)
+  joinedAt   DateTime     @default(now())
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  retailer   Retailer     @relation(fields: [retailerId], references: [id], onDelete: Cascade)
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, retailerId])
+  @@index([retailerId, role])
+  @@index([userId])
+  @@map("dealer_members")
+}
+
+model CarListing {
+  id                String            @id @default(uuid())
+  vin               String?           @unique
+  make              String
+  model             String
+  year              Int
+  mileage           Int
+  currency          String            @default("AED")
+  emirate           String
+  city              String?
+  status            ListingStatus     @default(DRAFT)
+  isConsignment     Boolean           @default(false)
+  userId            String?
+  retailerId        String?           @map("dealer_id")
+  viewCount         Int               @default(0)
+  favouriteCount    Int               @default(0)
+  superlikeCount    Int               @default(0)
+  images            String[]
+  description       String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  publishedAt       DateTime?
+  badges            String[]
+  tags              String[]          @default([])
+  cylinders         Int?
+  doors             Int?
+  engineSize        String?
+  engineType        String?
+  estimateMax       Int?
+  estimateMin       Int?
+  exportStatus      ExportStatus      @default(LOCAL_ONLY)
+  exteriorColor     String?
+  extras            Json?
+  fairValue         Int?
+  fuelEconomy       String?
+  interiorColor     String?
+  isBlackMember     Boolean           @default(false)
+  isFeatured        Boolean           @default(false)
+  isNegotiable      Boolean           @default(true)
+  power             String?
+  price             Int
+  priceTrend        String?
+  qiScore           Float?
+  reservedAt        DateTime?
+  seatingCapacity   Int?
+  sellerType        SellerType        @default(DEALER)
+  shareCount        Int               @default(0)
+  soldAt            DateTime?
+  specialNotes      Json?
+  specs             SpecsType         @default(GCC)
+  steeringSide      SteeringSide      @default(LEFT)
+  technicalFeatures Json?
+  thumbnail         String?
+  torque            String?
+  trim              String?
+  videoUrl          String?
+  warranty          String?
+  bodyType          BodyType?
+  fuelType          FuelType?
+  transmission      TransmissionType?
+  bookings          Booking[]
+  retailer          Retailer?         @relation(fields: [retailerId], references: [id], onDelete: Cascade)
+  user              User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reservations      Reservation[]
+  favorites         UserFavorite[]
+
+  @@index([status, publishedAt])
+  @@index([make, model, year])
+  @@index([emirate, status])
+  @@index([isFeatured, status])
+  @@index([qiScore])
+  @@index([price])
+  @@map("car_listings")
+}
+
+model Booking {
+  id              String        @id @default(uuid())
+  listingId       String
+  userId          String
+  retailerId      String        @map("dealer_id")
+  scheduledDate   DateTime
+  scheduledTime   String
+  duration        Int           @default(60)
+  status          BookingStatus @default(REQUESTED)
+  rescheduleCount Int           @default(0)
+  lastRescheduled DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  completedAt     DateTime?
+  cancelledAt     DateTime?
+  retailer        Retailer      @relation(fields: [retailerId], references: [id], onDelete: Cascade)
+  listing         CarListing    @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([retailerId, scheduledDate])
+  @@index([userId, status])
+  @@map("bookings")
+}
+
+model Reservation {
+  id              String            @id @default(uuid())
+  listingId       String
+  userId          String
+  retailerId      String            @map("dealer_id")
+  type            ReservationType   @default(STANDARD)
+  status          ReservationStatus @default(REQUESTED)
+  depositAmount   Int
+  depositPaid     Boolean           @default(false)
+  depositPaidAt   DateTime?
+  finalPrice      Int
+  holdingDays     Int               @default(7)
+  expiresAt       DateTime
+  buyerCounters   Int               @default(0)
+  dealerCounters  Int               @default(0)
+  negotiationData Json?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  completedAt     DateTime?
+  cancelledAt     DateTime?
+  escrow          Escrow?
+  retailer        Retailer          @relation(fields: [retailerId], references: [id], onDelete: Cascade)
+  listing         CarListing        @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status, expiresAt])
+  @@index([userId, status])
+  @@index([retailerId, status])
+  @@map("reservations")
+}
+
+model Escrow {
+  id                String       @id @default(uuid())
+  reservationId     String       @unique
+  buyerId           String
+  retailerId        String       @map("seller_id")
+  totalAmount       Int
+  adminFee          Int
+  serviceFee        Int
+  sellerAmount      Int
+  status            EscrowStatus @default(PENDING)
+  buyerConfirmed    Boolean      @default(false)
+  buyerConfirmedAt  DateTime?
+  sellerConfirmed   Boolean      @default(false)
+  sellerConfirmedAt DateTime?
+  paymentIntentId   String?
+  paymentProvider   String?
+  isDisputed        Boolean      @default(false)
+  disputeReason     String?
+  disputeResolvedAt DateTime?
+  auditLog          Json[]       @default([])
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  releasedAt        DateTime?
+  refundedAt        DateTime?
+  buyer             User         @relation("BuyerEscrows", fields: [buyerId], references: [id], onDelete: Cascade)
+  reservation       Reservation  @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  retailer          Retailer     @relation("SellerEscrows", fields: [retailerId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([buyerId, status])
+  @@index([retailerId, status])
+  @@map("escrows")
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model ModerationLog {
+  id              String         @id @default(uuid())
+  type            ModerationType
+  targetType      String
+  targetId        String
+  performedBy     String
+  performedByName String?
+  reason          String?
+  previousValue   Json?
+  newValue        Json?
+  metadata        Json?
+  createdAt       DateTime       @default(now())
+
+  @@index([targetType, targetId])
+  @@index([performedBy, createdAt])
+  @@index([type, createdAt])
+  @@map("moderation_logs")
+}
+
+model DomainEvent {
+  id              String    @id @default(uuid())
+  eventType       String
+  aggregateType   String
+  aggregateId     String
+  payload         Json
+  metadata        Json?
+  processed       Boolean   @default(false)
+  processedAt     DateTime?
+  processingError String?
+  retryCount      Int       @default(0)
+  version         Int
+  occurredAt      DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+
+  @@index([aggregateType, aggregateId, version])
+  @@index([processed, occurredAt])
+  @@index([eventType, processed])
+  @@map("domain_events")
+}
+
+enum UserStatus {
+  PENDING_KYC
+  VERIFIED
+  SUSPENDED
+  BANNED
+}
+
+enum KYCStatus {
+  PENDING
+  UNDER_REVIEW
+  VERIFIED
+  REJECTED
+  EXPIRED
+}
+
+enum KYCDocumentType {
+  EMIRATES_ID
+  PASSPORT
+  TRADE_LICENSE
+  UAE_PASS
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum RetailerStatus {
+  DRAFT
+  ACTIVE
+  SUSPENDED
+  BANNED
+
+  @@map("DealerStatus")
+}
+
+enum RetailerTier {
+  STANDARD
+  BRONZE
+  DIAMOND
+  BLK
+
+  @@map("DealerTier")
+}
+
+enum RetailerRole {
+  OWNER
+  ADMIN
+  STAFF
+
+  @@map("DealerRole")
+}
+
+enum ListingStatus {
+  DRAFT
+  PENDING_REVIEW
+  PUBLISHED
+  RESERVED
+  SOLD
+  REJECTED
+  ARCHIVED
+}
+
+enum BodyType {
+  SEDAN
+  SUV
+  COUPE
+  HATCHBACK
+  CONVERTIBLE
+  WAGON
+  PICKUP
+  VAN
+  OTHER
+}
+
+enum FuelType {
+  PETROL
+  DIESEL
+  HYBRID
+  ELECTRIC
+  PLUG_IN_HYBRID
+  OTHER
+}
+
+enum TransmissionType {
+  AUTOMATIC
+  MANUAL
+  CVT
+  DCT
+  OTHER
+}
+
+enum SteeringSide {
+  LEFT
+  RIGHT
+}
+
+enum SellerType {
+  DEALER
+  PRIVATE
+  CERTIFIED
+}
+
+enum ExportStatus {
+  EXPORT_ONLY
+  LOCAL_ONLY
+  BOTH
+}
+
+enum SpecsType {
+  GCC
+  AMERICAN
+  EUROPEAN
+  JAPANESE
+  CANADIAN
+  OTHER
+}
+
+enum BookingStatus {
+  REQUESTED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum ReservationType {
+  STANDARD
+  NEGOTIATED
+}
+
+enum ReservationStatus {
+  REQUESTED
+  ACTIVE
+  COMPLETED
+  EXPIRED
+  CANCELLED
+}
+
+enum EscrowStatus {
+  PENDING
+  DEPOSITED
+  BOTH_CONFIRMED
+  RELEASED
+  REFUNDED
+  DISPUTED
+}
+
+enum ModerationType {
+  USER_SUSPENDED
+  USER_BANNED
+  USER_ACTIVATED
+  USER_BADGE_ASSIGNED
+  USER_BADGE_REMOVED
+  DEALER_APPROVED
+  DEALER_SUSPENDED
+  DEALER_BANNED
+  DEALER_ACTIVATED
+  DEALER_TIER_CHANGED
+  DEALER_VERIFIED
+  LISTING_APPROVED
+  LISTING_REJECTED
+  KYC_APPROVED
+  KYC_REJECTED
+}
+
+// ============================================================================
+// MESSAGING SYSTEM MODELS
+// ============================================================================
+
+model Conversation {
+  id                  String                     @id @default(uuid())
+  lastMessageAt       DateTime                   @default(now())
+  lastMessagePreview  String?
+  createdAt           DateTime                   @default(now())
+  updatedAt           DateTime                   @updatedAt
+  participants        ConversationParticipant[]
+  messages            Message[]
+
+  @@index([lastMessageAt])
+  @@map("conversations")
+}
+
+model ConversationParticipant {
+  id             String       @id @default(uuid())
+  userId         String
+  conversationId String
+  unreadCount    Int          @default(0)
+  lastReadAt     DateTime?
+  joinedAt       DateTime     @default(now())
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  user           User         @relation("UserConversations", fields: [userId], references: [id], onDelete: Cascade)
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, conversationId])
+  @@index([userId])
+  @@index([conversationId])
+  @@index([unreadCount])
+  @@map("conversation_participants")
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  senderId       String
+  text           String?      @db.Text
+  mediaUrl       String?
+  mediaType      MessageMediaType?
+  readAt         DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@index([senderId])
+  @@index([readAt])
+  @@map("messages")
+}
+
+enum MessageMediaType {
+  IMAGE
+  AUDIO
+  FILE
+}
+

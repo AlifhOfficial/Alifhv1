@@ -1,5 +1,4 @@
 // Shared package exports
-export * from './types';
-export * from './validators';
-export * from './constants';
-export * from './utils';
+export const API_VERSION = 'v1';
+
+export * from './auth';
