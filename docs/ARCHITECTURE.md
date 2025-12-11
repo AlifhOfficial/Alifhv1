@@ -2,7 +2,7 @@
 
 ## Tech Stack
 
-- **Runtime**: Bun 1.0.0+ (ultra-fast JavaScript runtime & package manager)
+- **Runtime**: Bun 1.3.4+ (ultra-fast JavaScript runtime & package manager)
 - **Web Framework**: Next.js 16.0.0+ with Turbopack
 - **Mobile**: Expo SDK 54.0.27 (React Native 0.81)
 - **UI Library**: React 19.1.0 (exact pinned version)
@@ -111,7 +111,7 @@ Alifhv1/
 │   └── workflows/
 │       └── ci.yml             # GitHub Actions (Bun-based)
 │
-├── package.json               # Root workspace config (packageManager: "bun@1.0.0")
+├── package.json               # Root workspace config (packageManager: "bun@1.3.4")
 ├── bunfig.toml                # Bun configuration (overrides for React types)
 ├── turbo.json                 # Turbo build pipeline
 ├── tsconfig.json              # Shared TypeScript config (path aliases)

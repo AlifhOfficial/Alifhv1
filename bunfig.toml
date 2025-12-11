@@ -1,14 +1,14 @@
-# Bun configuration
-[install]
-# Save exact versions for reproducibility
-saveExactVersions = true
-# Force resolution of @types/react to 19.1.10
-optional = true
+# Bun Configuration for Alifh Platform
 
-[runtime]
-# Use the latest TypeScript
-# Bun has built-in TypeScript support
-typescript = "latest"
+[install]
+# Save exact versions for reproducible builds
+exact = true
+
+# Enable workspace support
+cache = true
+
+# Registry configuration
+registry = "https://registry.npmjs.org/"
 
 [test]
 # Configure test runner
@@ -19,9 +19,20 @@ preload = []
 # Configure build settings
 entrypoints = ["src/index.ts"]
 outdir = "dist"
-minify = { syntax = true, whitespace = true }
+minify = true
 sourcemap = "external"
 
+# Target modern browsers
+target = "esnext"
+
+[runtime]
+# Enable hot reloading in development
+hot = true
+
+# Use latest TypeScript features
+typescript = true
+
 [override]
+# Force resolution of @types/react to 19.1.10
 "@types/react" = "19.1.10"
 "@types/react-dom" = "19.1.10"

@@ -1,53 +1,44 @@
 /**
- * Design System Showcase
- * 
- * Comprehensive demonstration of Alifh Design Philosophy
- * Includes all components, colors, typography, and patterns
+ * Root Page - Public Marketplace Landing
+ * This serves as the main landing page for the public marketplace
  */
 
-"use client";
-
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Avatar } from "@/components/ui/avatar";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { 
-  Mail, 
-  Loader2, 
-  CheckCircle2, 
-  AlertCircle,
-  Search,
-  User,
-  Lock,
-  Eye,
-  EyeOff,
-  Info
-} from "lucide-react";
-import { useState } from "react";
-
-export default function HomePage() {
+export default function RootPage() {
   return (
-    <div className="min-h-screen py-12 px-4">
-      <div className="max-w-6xl mx-auto space-y-12">
-        {/* Header with Theme Toggle */}
+    <div className="min-h-screen">
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <h1 className="text-3xl font-bold text-gray-900">Alifh Marketplace</h1>
+          <p className="text-gray-600 mt-2">Buy and sell vehicles with AI-powered valuations</p>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 py-12">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold mb-4">Find Your Perfect Vehicle</h2>
+          <p className="text-xl text-gray-600">Browse thousands of vehicles from trusted dealers and owners</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="text-center p-6 bg-gray-50 rounded-lg">
+            <h3 className="text-xl font-semibold mb-2">Browse Vehicles</h3>
+            <p className="text-gray-600">Explore our marketplace</p>
+          </div>
+          
+          <div className="text-center p-6 bg-gray-50 rounded-lg">
+            <h3 className="text-xl font-semibold mb-2">AI Valuations</h3>
+            <p className="text-gray-600">Get accurate pricing</p>
+          </div>
+          
+          <div className="text-center p-6 bg-gray-50 rounded-lg">
+            <h3 className="text-xl font-semibold mb-2">Secure Transactions</h3>
+            <p className="text-gray-600">Safe and trusted deals</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
         <div className="flex items-center justify-between">
           <div className="space-y-2">
             <h1 className="text-4xl font-medium">Alifh Design System</h1>

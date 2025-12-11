@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "AI helpers for valuation and moderation",
-  "packageManager": "bun@1.0.0",
+  "packageManager": "bun@1.3.4",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
