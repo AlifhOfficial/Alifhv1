@@ -1,5 +1,20 @@
 import type { Server } from "bun";
-import { logger, securityLogger, auditLogger } from '@alifh/shared';
+
+// Simple logging utilities to replace the removed logger system
+const logger = {
+  info: (message: string, meta?: any) => console.log(`[INFO] ${message}`, meta || ''),
+  warn: (message: string, meta?: any) => console.warn(`[WARN] ${message}`, meta || ''),
+  error: (message: string, meta?: any) => console.error(`[ERROR] ${message}`, meta || ''),
+};
+
+const securityLogger = {
+  warn: (message: string, meta?: any) => console.warn(`[SECURITY] ${message}`, meta || ''),
+  error: (message: string, meta?: any) => console.error(`[SECURITY] ${message}`, meta || ''),
+};
+
+const auditLogger = {
+  info: (message: string, meta?: any) => console.log(`[AUDIT] ${message}`, meta || ''),
+};
 
 interface WebSocketData {
   userId?: string;

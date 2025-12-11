@@ -119,6 +119,43 @@ Alifhv1/
 └── bun.lockb                  # Bun lockfile (binary format)
 ```
 
+               🧁 PRESENTATION LAYER
+    ------------------------------------------------
+    |  apps/web       | apps/mobile   | apps/ws    |
+    |  (Next.js)      | (Expo)        | (WebSocket)|
+    ------------------------------------------------
+                   User Interface Layer
+             - Shows screens, dashboards, pages
+             - Calls API routes, shows errors
+             - Does NOT know database logic
+
+
+             🎂 LOGIC & RULES LAYER (MIDDLE)
+    ------------------------------------------------
+    |  packages/shared    | packages/ai           |
+    |  (types, validators)| (valuation, moderation) |
+    ------------------------------------------------
+             Shared Application Logic
+             - Types: shapes of your data
+             - Validators: check if data is valid
+             - Utils, constants, role logic
+             - Used by web, mobile, ws, database
+
+
+                  🍞 DATA LAYER (BOTTOM)
+    ------------------------------------------------
+    |           packages/database                  |
+    |  (Drizzle schemas, queries, migrations)      |
+    ------------------------------------------------
+                 Data Storage Engine
+             - Tables (schemas)
+             - Queries to fetch/insert/update
+             - The ONE source of truth
+
+
+
+             
+
 ## Application Architecture
 
 ### Web App (`apps/web`)
