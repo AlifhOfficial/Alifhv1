@@ -1,0 +1,27 @@
+# Bun configuration
+[install]
+# Save exact versions for reproducibility
+saveExactVersions = true
+# Force resolution of @types/react to 19.1.10
+optional = true
+
+[runtime]
+# Use the latest TypeScript
+# Bun has built-in TypeScript support
+typescript = "latest"
+
+[test]
+# Configure test runner
+root = "."
+preload = []
+
+[build]
+# Configure build settings
+entrypoints = ["src/index.ts"]
+outdir = "dist"
+minify = { syntax = true, whitespace = true }
+sourcemap = "external"
+
+[override]
+"@types/react" = "19.1.10"
+"@types/react-dom" = "19.1.10"

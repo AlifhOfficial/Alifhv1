@@ -1,0 +1,29 @@
+{
+  "name": "@alifh/ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI helpers for valuation and moderation",
+  "packageManager": "bun@1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./valuation": "./dist/valuation/index.js",
+    "./moderation": "./dist/moderation/index.js"
+  },
+  "scripts": {
+    "dev": "bun build ./src/index.ts ./src/valuation/index.ts ./src/moderation/index.ts --outdir dist --watch",
+    "build": "bun build ./src/index.ts ./src/valuation/index.ts ./src/moderation/index.ts --outdir dist",
+    "lint": "eslint src/**/*.ts",
+    "format": "prettier --write src/**/*.ts"
+  },
+  "dependencies": {
+    "@alifh/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.3.3"
+  }
+}
