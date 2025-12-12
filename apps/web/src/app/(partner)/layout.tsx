@@ -3,11 +3,6 @@
 import { useState } from 'react';
 import { PartnerDashboardNav } from '@/components/ui/navigation/partner-dashboard-nav';
 import { PartnerSecondaryNav } from '@/components/ui/navigation/partner-secondary-nav';
-import { useRequireAuth, useRoleCheck, useUserWithPartnerRole } from '@/hooks/auth/use-auth';
-import { canAccessPartnerPortal } from '@alifh/shared/auth';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-
 export default function PartnerLayout({
   children,
 }: {
@@ -16,40 +11,12 @@ export default function PartnerLayout({
   const [currentSection, setCurrentSection] = useState<string>('');
   const [selectedAction, setSelectedAction] = useState<string>('');
   
-  const { isLoading: authLoading, isAuthenticated } = useRequireAuth();
-  const { user, isLoading: userLoading } = useUserWithPartnerRole();
-  const router = useRouter();
-  
-  const isLoading = authLoading || userLoading;
+  // Middleware handles all access control - no client-side auth checks needed
 
   const handleActionSelect = (action: string) => {
     setSelectedAction(action);
     console.log('Partner action selected:', action);
   };
-
-  // Check partner portal access
-  useEffect(() => {
-    if (!isLoading && isAuthenticated && user) {
-      const hasAccess = canAccessPartnerPortal(user);
-      
-      if (!hasAccess) {
-        // Redirect to appropriate dashboard based on user role
-        if (user.platformRole === 'admin' || user.platformRole === 'super-admin') {
-          router.push('/admin-dashboard');
-        } else {
-          router.push('/user-dashboard');
-        }
-      }
-    }
-  }, [isLoading, isAuthenticated, user, router]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex h-screen bg-gray-50">

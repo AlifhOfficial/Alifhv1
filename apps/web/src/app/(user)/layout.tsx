@@ -1,33 +1,13 @@
 'use client';
 
 import { UserDashboardNav } from '@/components/ui/navigation/user-dashboard-nav';
-import { useRequireAuth, useRoleCheck } from '@/hooks/auth/use-auth';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 
 export default function UserLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { isLoading, isAuthenticated } = useRequireAuth();
-  const { isAdmin, isStaff } = useRoleCheck();
-  const router = useRouter();
-
-  // Redirect admins and staff to admin dashboard
-  useEffect(() => {
-    if (!isLoading && isAuthenticated && (isAdmin || isStaff)) {
-      router.push('/admin-dashboard');
-    }
-  }, [isLoading, isAuthenticated, isAdmin, isStaff, router]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
+  // Middleware handles all access control and redirects
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Left Navigation */}
