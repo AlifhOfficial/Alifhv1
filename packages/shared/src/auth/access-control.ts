@@ -4,7 +4,7 @@
  * Comprehensive role checking for portal access control
  */
 
-import { PlatformRole, UserStatus } from './types';
+import { PlatformRole, UserStatus, PartnerRole } from './types';
 
 export interface UserWithRoles {
   id: string;
@@ -13,6 +13,7 @@ export interface UserWithRoles {
   platformRole: PlatformRole;
   status: UserStatus;
   activePartnerId?: string | null;
+  partnerRole?: PartnerRole | null;
 }
 
 // =============================================================================
@@ -72,7 +73,31 @@ export function isStaff(user: UserWithRoles): boolean {
 }
 
 export function isPartnerOwner(user: UserWithRoles): boolean {
-  return isPartnerUser(user); // For now, all partner users are owners
+  return isPartnerUser(user) && user.partnerRole === 'owner';
+}
+
+export function isPartnerAdmin(user: UserWithRoles): boolean {
+  return isPartnerUser(user) && user.partnerRole === 'admin';
+}
+
+export function isPartnerStaff(user: UserWithRoles): boolean {
+  return isPartnerUser(user) && user.partnerRole === 'staff';
+}
+
+// =============================================================================
+// PORTAL-SPECIFIC ACCESS CONTROL
+// =============================================================================
+
+export function canAccessPartnerOwnerPortal(user: UserWithRoles): boolean {
+  return isPartnerOwner(user);
+}
+
+export function canAccessPartnerAdminPortal(user: UserWithRoles): boolean {
+  return isPartnerAdmin(user) || isPartnerOwner(user);
+}
+
+export function canAccessPartnerStaffPortal(user: UserWithRoles): boolean {
+  return isPartnerStaff(user) || isPartnerAdmin(user) || isPartnerOwner(user);
 }
 
 // =============================================================================
@@ -85,6 +110,9 @@ export function getUserPortalAccess(user: UserWithRoles | null) {
       public: true,
       user: false,
       partner: false,
+      partnerOwner: false,
+      partnerAdmin: false,
+      partnerStaff: false,
       admin: false,
       userType: 'anonymous' as const,
     };
@@ -94,6 +122,9 @@ export function getUserPortalAccess(user: UserWithRoles | null) {
     public: canAccessPublicPortal(),
     user: canAccessUserPortal(user),
     partner: canAccessPartnerPortal(user),
+    partnerOwner: canAccessPartnerOwnerPortal(user),
+    partnerAdmin: canAccessPartnerAdminPortal(user),
+    partnerStaff: canAccessPartnerStaffPortal(user),
     admin: canAccessAdminPortal(user),
     userType: getUserType(user),
   };
@@ -115,6 +146,9 @@ export function getRoleDisplayName(user: UserWithRoles): string {
   if (user.platformRole === 'super-admin') return 'Super Admin';
   if (user.platformRole === 'admin') return 'Admin';
   if (user.platformRole === 'staff') return 'Staff';
+  if (isPartnerOwner(user)) return 'Partner Owner';
+  if (isPartnerAdmin(user)) return 'Partner Admin';
+  if (isPartnerStaff(user)) return 'Partner Staff';
   if (isPartnerUser(user)) return 'Partner';
   return 'User';
 }

@@ -2,37 +2,51 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useRoleCheck, useUser } from '@/hooks/auth/use-auth';
+import { useRoleCheck, useUserWithPartnerRole } from '@/hooks/auth/use-auth';
 
 /**
  * Dashboard Router Hook
  * Automatically redirects users to their appropriate dashboard based on role
  */
 export function useDashboardRouter() {
-  const { user, isLoading } = useUser();
+  const { user, isLoading } = useUserWithPartnerRole();
   const { isAdmin, isStaff, isUser, hasAnyRole } = useRoleCheck();
   const router = useRouter();
 
   const getDashboardRoute = () => {
     if (!user) return null;
 
-    // Admin users get admin dashboard (super-admin, admin)
+    // Priority order for role-based routing:
+    
+    // 1. Alifh Admin users (super-admin, admin) - highest priority
     if (isAdmin) {
       return '/admin-dashboard';
     }
 
-    // Staff users also get admin dashboard with limited access
+    // 2. Alifh Staff users - admin dashboard with limited access
     if (isStaff) {
       return '/admin-dashboard';
     }
 
-    // Check if user has partner role/permissions
-    // TODO: Add partner role detection when implemented
-    // if (isPartner) {
-    //   return '/partner-dashboard';
-    // }
+    // 3. Partner users - redirect to specific partner portal based on role
+    if (user.activePartnerId && user.partnerRole) {
+      if (user.partnerRole === 'owner') {
+        return '/partner/owner-dashboard';
+      }
+      if (user.partnerRole === 'admin') {
+        return '/partner/admin-dashboard';
+      }
+      if (user.partnerRole === 'staff') {
+        return '/partner/staff-dashboard';
+      }
+    }
 
-    // Default to user dashboard for regular users
+    // If partner user but no specific role determined, go to user dashboard
+    if (user.activePartnerId) {
+      return '/user-dashboard';
+    }
+
+    // 4. Regular users - user portal
     if (isUser) {
       return '/user-dashboard';
     }
@@ -60,7 +74,7 @@ export function useDashboardRouter() {
 export function useAutoDashboardRedirect() {
   const { getDashboardRoute, isLoading } = useDashboardRouter();
   const router = useRouter();
-  const { user } = useUser();
+  const { user } = useUserWithPartnerRole();
 
   useEffect(() => {
     if (!isLoading && user) {

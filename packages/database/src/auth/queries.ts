@@ -5,7 +5,7 @@
  * Add more as features are built.
  */
 
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { db } from '../dbclient';
 import { users, partnerRequests, partnerMembers } from './schema';
 
@@ -98,4 +98,44 @@ export const getPartnerMembershipsForUser = async (userId: string) => {
     .where(eq(partnerMembers.userId, userId));
   
   return memberships;
+};
+
+export const getUserPartnerRole = async (userId: string, partnerId: string) => {
+  const [membership] = await db
+    .select({
+      role: partnerMembers.role,
+      isActive: partnerMembers.isActive,
+    })
+    .from(partnerMembers)
+    .where(
+      and(
+        eq(partnerMembers.userId, userId),
+        eq(partnerMembers.partnerId, partnerId),
+        eq(partnerMembers.isActive, true)
+      )
+    )
+    .limit(1);
+  
+  return membership?.role || null;
+};
+
+export const getActivePartnerMembership = async (userId: string) => {
+  const [membership] = await db
+    .select({
+      id: partnerMembers.id,
+      partnerId: partnerMembers.partnerId,
+      role: partnerMembers.role,
+      isActive: partnerMembers.isActive,
+      createdAt: partnerMembers.createdAt,
+    })
+    .from(partnerMembers)
+    .where(
+      and(
+        eq(partnerMembers.userId, userId),
+        eq(partnerMembers.isActive, true)
+      )
+    )
+    .limit(1);
+  
+  return membership || null;
 };

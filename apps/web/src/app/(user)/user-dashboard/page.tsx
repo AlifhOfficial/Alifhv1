@@ -1,10 +1,11 @@
 export default function UserDashboardPage() {
   return (
     <div className="space-y-6">
-      <div>
+      {/* DEV: Grey header for user */}
+      <div className="bg-gray-100 border-l-4 border-gray-500 p-4">
         <h2 className="text-3xl font-bold tracking-tight text-gray-900">Welcome to your dashboard</h2>
-        <p className="mt-2 text-gray-600">
-          Here's what's happening with your account today.
+        <p className="mt-2 text-gray-700">
+          Here's what's happening with your account today. [DEV: USER - GREY]
         </p>
       </div>
 

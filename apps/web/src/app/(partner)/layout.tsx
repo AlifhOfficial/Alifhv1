@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { PartnerDashboardNav } from '@/components/ui/navigation/partner-dashboard-nav';
 import { PartnerSecondaryNav } from '@/components/ui/navigation/partner-secondary-nav';
-import { useRequireAuth, useRoleCheck } from '@/hooks/auth/use-auth';
+import { useRequireAuth, useRoleCheck, useUserWithPartnerRole } from '@/hooks/auth/use-auth';
+import { canAccessPartnerPortal } from '@alifh/shared/auth';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -15,31 +16,32 @@ export default function PartnerLayout({
   const [currentSection, setCurrentSection] = useState<string>('');
   const [selectedAction, setSelectedAction] = useState<string>('');
   
-  const { isLoading, isAuthenticated } = useRequireAuth();
-  const { isAdmin, isStaff } = useRoleCheck();
+  const { isLoading: authLoading, isAuthenticated } = useRequireAuth();
+  const { user, isLoading: userLoading } = useUserWithPartnerRole();
   const router = useRouter();
+  
+  const isLoading = authLoading || userLoading;
 
   const handleActionSelect = (action: string) => {
     setSelectedAction(action);
-    // Here you could emit events or call callbacks to handle actions
     console.log('Partner action selected:', action);
   };
 
-  // TODO: Add partner role checking when implemented
-  // For now, allow admin/staff access and regular users
-  // In production, you'd check for actual partner permissions
+  // Check partner portal access
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      // If admin/staff, allow access
-      if (isAdmin || isStaff) {
-        return;
-      }
+    if (!isLoading && isAuthenticated && user) {
+      const hasAccess = canAccessPartnerPortal(user);
       
-      // TODO: Check if user has partner permissions
-      // For now, redirect non-admin users to user dashboard
-      // router.push('/user-dashboard');
+      if (!hasAccess) {
+        // Redirect to appropriate dashboard based on user role
+        if (user.platformRole === 'admin' || user.platformRole === 'super-admin') {
+          router.push('/admin-dashboard');
+        } else {
+          router.push('/user-dashboard');
+        }
+      }
     }
-  }, [isLoading, isAuthenticated, isAdmin, isStaff, router]);
+  }, [isLoading, isAuthenticated, user, router]);
 
   if (isLoading) {
     return (
