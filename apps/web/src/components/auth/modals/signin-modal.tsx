@@ -70,6 +70,22 @@ export function SignInModal({
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+          
+          {/* Alifh Logo - Top Left */}
+          <div className="absolute top-4 left-4">
+            <img 
+              src="/assets/Alifh_logo_White.svg" 
+              alt="Alifh"
+              className="h-6 w-auto opacity-90"
+            />
+          </div>
+          
+          {/* Automotive Excellence - Bottom Left */}
+          <div className="absolute bottom-4 left-4">
+            <p className="text-white/90 text-xs font-light tracking-wide">
+              Automotive Excellence
+            </p>
+          </div>
         </div>
 
         {/* Right Form Side */}
