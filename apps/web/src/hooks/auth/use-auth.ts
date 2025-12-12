@@ -14,6 +14,7 @@ import React from 'react';
 import { type PlatformRole, type UserStatus, type PartnerRole } from '@alifh/shared/auth';
 
 // Hook for requiring authentication
+// @deprecated - Use middleware-based auth instead. Kept for backward compatibility.
 export function useRequireAuth(redirectTo: string = '/auth/signin') {
   const { data: session, isPending } = useSession();
   const router = useRouter();
@@ -33,6 +34,7 @@ export function useRequireAuth(redirectTo: string = '/auth/signin') {
 }
 
 // Hook for checking platform roles
+// @deprecated - Use middleware-based role checking instead. Kept for backward compatibility.
 export function useRequireRole(
   allowedRoles: PlatformRole[],
   redirectTo: string = '/auth/unauthorized'
@@ -59,6 +61,7 @@ export function useRequireRole(
 }
 
 // Hook for checking user status
+// @deprecated - Use middleware-based status checking instead. Kept for backward compatibility.
 export function useRequireStatus(
   allowedStatuses: UserStatus[],
   redirectMap?: Partial<Record<UserStatus, string>>
@@ -87,6 +90,7 @@ export function useRequireStatus(
 }
 
 // Hook for checking email verification
+// @deprecated - Use middleware-based email verification instead. Kept for backward compatibility.
 export function useRequireEmailVerified(redirectTo: string = '/verify-email') {
   const { session, user, isLoading, isAuthenticated } = useRequireAuth();
   const router = useRouter();
@@ -109,6 +113,7 @@ export function useRequireEmailVerified(redirectTo: string = '/verify-email') {
 }
 
 // Combined hook for most protected routes
+// @deprecated - Use middleware-based route protection instead. Kept for backward compatibility.
 export function useProtectedRoute(options: {
   allowedRoles?: PlatformRole[];
   allowedStatuses?: UserStatus[];
@@ -202,56 +207,7 @@ export function useUser() {
   };
 }
 
-// Enhanced user hook with partner role
-export function useUserWithPartnerRole() {
-  const { user, isLoading: sessionLoading, isSignedIn } = useUser();
-  const [partnerData, setPartnerData] = React.useState<{
-    partnerRole: PartnerRole | null;
-    partnerId: string | null;
-    isActive: boolean;
-  } | null>(null);
-  const [isLoadingPartner, setIsLoadingPartner] = React.useState(false);
-
-  React.useEffect(() => {
-    async function fetchPartnerRole() {
-      if (!user || !isSignedIn || !user.activePartnerId) {
-        setPartnerData({ partnerRole: null, partnerId: null, isActive: false });
-        return;
-      }
-
-      setIsLoadingPartner(true);
-      try {
-        const response = await fetch('/api/auth/user-partner-role');
-        if (response.ok) {
-          const data = await response.json();
-          setPartnerData(data);
-        } else {
-          setPartnerData({ partnerRole: null, partnerId: null, isActive: false });
-        }
-      } catch (error) {
-        console.error('Error fetching partner role:', error);
-        setPartnerData({ partnerRole: null, partnerId: null, isActive: false });
-      } finally {
-        setIsLoadingPartner(false);
-      }
-    }
-
-    if (!sessionLoading) {
-      fetchPartnerRole();
-    }
-  }, [user, isSignedIn, sessionLoading]);
-
-  const enhancedUser = user ? {
-    ...user,
-    partnerRole: partnerData?.partnerRole || null,
-  } : null;
-
-  return {
-    user: enhancedUser,
-    isLoading: sessionLoading || isLoadingPartner,
-    isSignedIn,
-  };
-}
+// Legacy hook removed - use useUser() with server-side role management instead
 
 // Helper function to get default redirect based on status
 function getDefaultRedirectForStatus(status: UserStatus): string {

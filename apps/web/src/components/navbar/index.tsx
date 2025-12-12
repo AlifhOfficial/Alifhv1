@@ -21,7 +21,8 @@ import { MegaDropdown } from "./mega-dropdown";
 import { MobileMenu } from "./mobile-menu";
 import { ProfileMenu } from "./user-dropdown";
 import { AuthManager, AuthModalType } from "@/components/auth";
-import { useAuthSession, signOut } from "@/lib/auth/client";
+import { useUser } from "@/hooks/auth/use-auth";
+import { signOut } from "@/lib/auth/client";
 
 interface NavItem {
   label: string;
@@ -96,7 +97,7 @@ export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { theme, setTheme, resolvedTheme } = useTheme();
-  const { user, isAuthenticated, isLoading } = useAuthSession();
+  const { user, isLoading, isSignedIn: isAuthenticated } = useUser();
 
   // Fix hydration by using mounted state
   useEffect(() => {
