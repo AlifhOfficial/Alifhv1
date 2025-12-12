@@ -34,11 +34,12 @@ export class AuthFlowController {
     const result = await signInWithEmail(email, password);
 
     if (result.success) {
-      // Success state
+      // Show sign in feedback modal immediately
       this.actions.setSignInSuccess(true);
       this.actions.setLoading(false);
+      this.actions.setCurrentModal("signin-feedback");
       
-      // Auto-close and trigger callback
+      // Auto-close and trigger callback after a delay
       setTimeout(() => {
         this.callbacks.onSuccess?.(result.user);
         this.handleCloseAll();
@@ -49,7 +50,7 @@ export class AuthFlowController {
       this.actions.setLoading(false);
       this.actions.setError(result.error || "Sign in failed");
       
-      // Return to sign-in modal
+      // Return to sign-in modal after showing error
       setTimeout(() => {
         this.actions.setCurrentModal("signin");
         this.actions.setError(null);
@@ -101,37 +102,23 @@ export class AuthFlowController {
       return;
     }
 
-    // Show feedback modal immediately
-    this.actions.setSignUpSuccess(false);
-    this.actions.setCurrentModal("signup-feedback");
+    // Start loading
     this.actions.setLoading(true);
     this.actions.setError(null);
 
     const result = await signUpWithEmail(name, email, password);
 
     if (result.success) {
-      // Success state
+      // Show email sent modal immediately for verification
       this.actions.setNewUserName(name);
       this.actions.setIsNewUser(true);
-      this.actions.setSignUpSuccess(true);
       this.actions.setLoading(false);
-      
-      // Show email verification after feedback
-      setTimeout(() => {
-        this.actions.setEmailSentData({ email, type: "verification" });
-        this.actions.setCurrentModal("email-sent");
-      }, 3000);
+      this.actions.setEmailSentData({ email, type: "verification" });
+      this.actions.setCurrentModal("email-sent");
     } else {
-      // Error state
-      this.actions.setSignUpSuccess(false);
+      // Error state - stay on sign up modal
       this.actions.setLoading(false);
       this.actions.setError(result.error || "Sign up failed");
-      
-      // Return to sign-up modal
-      setTimeout(() => {
-        this.actions.setCurrentModal("signup");
-        this.actions.setError(null);
-      }, 2000);
     }
   }
 
@@ -219,6 +206,37 @@ export class AuthFlowController {
       this.actions.setCurrentModal("magic-link");
     }
     this.actions.setEmailSentData(null);
+  }
+
+  // Handle email verification completion (called when user clicks verification link)
+  handleEmailVerificationComplete() {
+    // Show sign up feedback modal with success state
+    this.actions.setSignUpSuccess(true);
+    this.actions.setCurrentModal("signup-feedback");
+    this.actions.setEmailSentData(null);
+    
+    // After 3 seconds, show welcome modal
+    setTimeout(() => {
+      this.actions.setCurrentModal("welcome");
+    }, 3000);
+  }
+
+  // Handle magic link sign in completion (called when user clicks magic link)  
+  handleMagicLinkComplete() {
+    // Show sign in feedback modal with success state (3 second delay)
+    this.actions.setSignInSuccess(true);
+    this.actions.setCurrentModal("signin-feedback");
+    this.actions.setEmailSentData(null);
+    
+    // After 3 seconds, close and trigger success callback
+    setTimeout(() => {
+      this.callbacks.onSuccess?.({ 
+        id: 'magic-link-user', 
+        name: 'User',
+        email: this.state.emailSentData?.email || ''
+      });
+      this.handleCloseAll();
+    }, 3000);
   }
 
   handleWelcomeContinue() {
