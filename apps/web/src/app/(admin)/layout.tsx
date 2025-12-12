@@ -1,10 +1,25 @@
+'use client';
+
 import { AdminDashboardNav } from '@/components/ui/navigation/admin-dashboard-nav';
+import { useProtectedRoute } from '@/hooks/auth/use-auth';
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { isLoading } = useProtectedRoute({
+    allowedRoles: ['admin', 'super-admin', 'staff'],
+    requireEmailVerified: true,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+      </div>
+    );
+  }
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Left Navigation */}
