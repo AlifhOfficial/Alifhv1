@@ -1,34 +1,29 @@
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import { migrate } from 'drizzle-orm/neon-serverless/migrator';
-import { Pool } from '@neondatabase/serverless';
+/**
+ * Simple Migration Script
+ */
+
+import { drizzle } from 'drizzle-orm/neon-http';
+import { migrate } from 'drizzle-orm/neon-http/migrator';
+import { neon } from '@neondatabase/serverless';
 import { config } from 'dotenv';
-import { resolve } from 'path';
 
-// Load environment variables from root .env.local
-config({ path: resolve(process.cwd(), '../../.env.local') });
+// Load environment variables
+config({ path: '../../.env.local' });
 
-const runMigrations = async () => {
-  if (!process.env.DATABASE_URL) {
-    throw new Error('DATABASE_URL is not set');
-  }
-
-  const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-  });
-
-  const db = drizzle(pool);
-
+async function runMigrations() {
   console.log('⏳ Running migrations...');
+  
+  try {
+    const sql = neon(process.env.DATABASE_URL!);
+    const db = drizzle(sql);
+    
+    await migrate(db, { migrationsFolder: './drizzle/migrations' });
+    console.log('✅ Migrations completed!');
+    
+  } catch (error) {
+    console.error('❌ Migration failed:', error);
+    process.exit(1);
+  }
+}
 
-  await migrate(db, { migrationsFolder: './drizzle/migrations' });
-
-  console.log('✅ Migrations completed!');
-
-  await pool.end();
-};
-
-runMigrations().catch((err) => {
-  console.error('❌ Migration failed!');
-  console.error(err);
-  process.exit(1);
-});
+runMigrations();

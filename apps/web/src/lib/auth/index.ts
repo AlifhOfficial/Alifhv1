@@ -1,9 +1,10 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { magicLink } from "better-auth/plugins/magic-link";
+import { admin } from "better-auth/plugins/admin";
 import { db } from "@alifh/database";
 import * as schema from "@alifh/database";
-import { eq, and } from "drizzle-orm";
+
 import { emailService } from "@/lib/email";
 
 export const auth = betterAuth({
@@ -17,29 +18,7 @@ export const auth = betterAuth({
     }
   }),
 
-  // Define custom user fields
-  user: {
-    additionalFields: {
-      platformRole: {
-        type: "string",
-        defaultValue: "user",
-        required: false,
-      },
-      status: {
-        type: "string", 
-        defaultValue: "active",
-        required: false,
-      },
-      activePartnerId: {
-        type: "string",
-        required: false,
-      },
-      partnerRole: {
-        type: "string",
-        required: false,
-      },
-    },
-  },
+
 
   emailAndPassword: {
     enabled: true,
@@ -61,32 +40,16 @@ export const auth = betterAuth({
   plugins: [
     magicLink({
       sendMagicLink: async ({ email, url, token }, ctx) => {
-        // Check if user exists before sending magic link
-        const existingUsers = await db
-          .select()
-          .from(schema.users)
-          .where(eq(schema.users.email, email))
-          .limit(1)
-          .execute();
-        
-        if (!existingUsers || existingUsers.length === 0) {
-          console.log("🚫 Magic link request for non-existent user:", email);
-          throw new Error("No account found with this email address. Magic links are only available for existing users.");
-        }
-
-        const user = existingUsers[0];
-        console.log("� Sending magic link to existing user:", email);
+        console.log("� Sending magic link to:", email);
         console.log("🔗 Magic link URL:", url);
-        console.log("🔗 Token:", token);
         
         await emailService.sendMagicLink({ 
-          user: { email: user.email, name: user.name || email.split('@')[0] }, 
+          user: { email, name: email.split('@')[0] }, 
           url, 
           token 
         });
       },
       expiresIn: 60 * 10, // 10 minutes
-      disableSignUp: true, // Only allow existing users to use magic link
     }),
   ],
 
@@ -102,57 +65,7 @@ export const auth = betterAuth({
     updateAge: 60 * 60 * 24, // 1 day
   },
 
-  callbacks: {
-    async signUp({ user }) {
-      return {
-        user: {
-          ...user,
-          platformRole: "user",
-          status: "active",
-        },
-      };
-    },
 
-    async signIn({ user }) {
-      if (user.status === "suspended" || user.status === "banned") {
-        throw new Error(`Account is ${user.status}. Please contact support.`);
-      }
-
-      // Fetch and include partner role for authenticated user
-      if (user.activePartnerId) {
-        try {
-          const partnerMemberships = await db
-            .select({ role: schema.partnerMembers.role })
-            .from(schema.partnerMembers)
-            .where(
-              and(
-                eq(schema.partnerMembers.userId, user.id),
-                eq(schema.partnerMembers.partnerId, user.activePartnerId),
-                eq(schema.partnerMembers.isActive, true)
-              )
-            )
-            .limit(1)
-            .execute();
-
-          const partnerMembership = partnerMemberships[0];
-
-          if (partnerMembership) {
-            // Return the user with partner role included
-            return { 
-              user: {
-                ...user,
-                partnerRole: partnerMembership.role
-              }
-            };
-          }
-        } catch (error) {
-          console.error('Error fetching partner role during sign in:', error);
-        }
-      }
-
-      return { user };
-    },
-  },
 
   trustedOrigins: [
     process.env.NEXTAUTH_URL || "http://localhost:3000",

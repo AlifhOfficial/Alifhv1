@@ -1,32 +1,17 @@
 /**
- * Auth Constants - Role Maps & Route Patterns
+ * Auth Constants - Simple Role System
  * 
- * Lean constants for roles, redirects, and protected routes.
+ * Basic constants for Better Auth admin plugin
  */
 
-import type {
-  PlatformRole,
-  PartnerRole,
-  UserStatus,
-  PartnerStatus,
-  RequestStatus,
-} from './types';
+import type { UserRole } from './types';
 
-// =============================================================================
-// ROLE CONSTANTS
-// =============================================================================
-
-export const PLATFORM_ROLES = {
-  SUPER_ADMIN: 'super-admin',
-  ADMIN: 'admin',
-  STAFF: 'staff',
-  USER: 'user',
-} as const;
-
-export const PARTNER_ROLES = {
-  OWNER: 'owner',
-  ADMIN: 'admin',
-  STAFF: 'staff',
+// Basic user roles for our 4-portal system
+export const USER_ROLES = {
+  ADMIN: 'admin',     // Platform admin
+  PARTNER: 'partner', // Dealership owner
+  STAFF: 'staff',     // Dealership staff
+  USER: 'user',       // Individual users
 } as const;
 
 // =============================================================================
@@ -42,36 +27,20 @@ export const USER_STATUSES: Record<UserStatus, UserStatus> = {
 
 export const PARTNER_STATUSES: Record<PartnerStatus, PartnerStatus> = {
   draft: 'draft',
-  active: 'active',
-  suspended: 'suspended',
-  banned: 'banned',
+// Default redirects for each role
+export const DEFAULT_REDIRECTS: Record<UserRole, string> = {
+  'admin': '/admin-dashboard',
+  'partner': '/partner-dashboard', 
+  'staff': '/staff-dashboard',
+  'user': '/user-dashboard',
 };
 
-export const REQUEST_STATUSES: Record<RequestStatus, RequestStatus> = {
-  pending: 'pending',
-  approved: 'approved',
-  rejected: 'rejected',
-};
-
-// =============================================================================
-// DEFAULT REDIRECTS
-// =============================================================================
-
-export const DEFAULT_REDIRECTS: Record<PlatformRole, string> = {
-  'user': '/user',
-  'staff': '/admin',
-  'admin': '/admin',
-  'super-admin': '/admin',
-};
-
-// =============================================================================
-// PROTECTED ROUTE PATTERNS
-// =============================================================================
-
+// Protected route patterns for our 4-portal system
 export const PROTECTED_ROUTES = {
-  USER: ['/user/**'],
-  PARTNER: ['/partner/**'],
-  ADMIN: ['/admin/**'],
+  USER: ['/user-dashboard/**'],
+  PARTNER: ['/partner-dashboard/**'],
+  STAFF: ['/staff-dashboard/**'], 
+  ADMIN: ['/admin-dashboard/**'],
 } as const;
 
 // =============================================================================

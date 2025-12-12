@@ -1,11 +1,10 @@
 export default function AdminDashboardPage() {
   return (
     <div className="space-y-6">
-      {/* DEV: Blue header for admin */}
-      <div className="bg-blue-100 border-l-4 border-blue-500 p-4">
-        <h2 className="text-3xl font-bold tracking-tight text-blue-900">Admin Dashboard</h2>
-        <p className="mt-2 text-blue-700">
-          System overview and administrative controls. [DEV: ADMIN - BLUE]
+      <div className="border-l-4 border-primary p-4 bg-card">
+        <h2 className="text-3xl font-bold tracking-tight">Platform Admin</h2>
+        <p className="mt-2 text-muted-foreground">
+          Manage the entire marketplace platform and all partners.
         </p>
       </div>
 
