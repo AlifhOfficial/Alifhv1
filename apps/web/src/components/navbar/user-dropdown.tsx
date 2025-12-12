@@ -63,27 +63,35 @@ export function ProfileMenu({
       color: 'text-blue-600'
     });
 
-    // Partner Portals - Available if user has active partner
+    // Partner Portals - Available based on user's actual partner role
     const activePartnerId = (user as any)?.activePartnerId;
-    if (activePartnerId) {
-      portals.push({
-        id: 'partner-owner',
-        label: 'Owner Portal',
-        description: 'Manage your partner organization',
-        href: '/partner/owner-dashboard',
-        icon: Building2,
-        color: 'text-green-600'
-      });
+    const partnerRole = (user as any)?.partnerRole; // Now available from Better Auth session
+    
+    if (activePartnerId && partnerRole) {
+      // Only show portals based on actual partner role - hierarchical access
+      if (partnerRole === 'owner') {
+        portals.push({
+          id: 'partner-owner',
+          label: 'Owner Portal',
+          description: 'Manage your partner organization',
+          href: '/partner/owner-dashboard',
+          icon: Building2,
+          color: 'text-green-600'
+        });
+      }
       
-      portals.push({
-        id: 'partner-admin',
-        label: 'Partner Admin',
-        description: 'Partner operations and staff',
-        href: '/partner/admin-dashboard',
-        icon: Users,
-        color: 'text-yellow-600'
-      });
+      if (partnerRole === 'admin' || partnerRole === 'owner') {
+        portals.push({
+          id: 'partner-admin',
+          label: 'Partner Admin',
+          description: 'Partner operations and staff',
+          href: '/partner/admin-dashboard',
+          icon: Users,
+          color: 'text-yellow-600'
+        });
+      }
       
+      // All partner members can access staff portal
       portals.push({
         id: 'partner-staff',
         label: 'Staff Portal',

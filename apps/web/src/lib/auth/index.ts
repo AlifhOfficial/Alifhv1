@@ -3,7 +3,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { magicLink } from "better-auth/plugins/magic-link";
 import { db } from "@alifh/database";
 import * as schema from "@alifh/database";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { emailService } from "@/lib/email";
 
 export const auth = betterAuth({
@@ -31,6 +31,10 @@ export const auth = betterAuth({
         required: false,
       },
       activePartnerId: {
+        type: "string",
+        required: false,
+      },
+      partnerRole: {
         type: "string",
         required: false,
       },
@@ -113,6 +117,39 @@ export const auth = betterAuth({
       if (user.status === "suspended" || user.status === "banned") {
         throw new Error(`Account is ${user.status}. Please contact support.`);
       }
+
+      // Fetch and include partner role for authenticated user
+      if (user.activePartnerId) {
+        try {
+          const partnerMemberships = await db
+            .select({ role: schema.partnerMembers.role })
+            .from(schema.partnerMembers)
+            .where(
+              and(
+                eq(schema.partnerMembers.userId, user.id),
+                eq(schema.partnerMembers.partnerId, user.activePartnerId),
+                eq(schema.partnerMembers.isActive, true)
+              )
+            )
+            .limit(1)
+            .execute();
+
+          const partnerMembership = partnerMemberships[0];
+
+          if (partnerMembership) {
+            // Return the user with partner role included
+            return { 
+              user: {
+                ...user,
+                partnerRole: partnerMembership.role
+              }
+            };
+          }
+        } catch (error) {
+          console.error('Error fetching partner role during sign in:', error);
+        }
+      }
+
       return { user };
     },
   },
