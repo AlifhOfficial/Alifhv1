@@ -5,7 +5,7 @@
  * Uses authClient directly and provides callbacks to UI components
  */
 
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth/client";
 
 export interface AuthUser {
   id: string;
@@ -141,40 +141,32 @@ export const signUpWithGoogle = async (callbackURL: string = "/dashboard"): Prom
   }
 };
 
-// Password Reset Handler
+// Password Reset Handler - Uses custom validation endpoint
 export const requestPasswordReset = async (
   email: string,
   redirectTo: string = "/reset-password"
 ): Promise<{ success: boolean; error?: string }> => {
   try {
-    const result = await authClient.requestPasswordReset({
-      email,
-      redirectTo,
+    // Use our custom validation endpoint instead of direct Better Auth call
+    const response = await fetch("/api/auth/password-reset-validated", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, redirectTo }),
     });
 
-    if (result.error) {
-      if (result.error.status === 400 || 
-          result.error.message?.includes("No account found") || 
-          result.error.message?.includes("User not found")) {
-        return { 
-          success: false, 
-          error: "No account found with this email address. Please check your email or sign up for a new account." 
-        };
-      }
-      return { 
-        success: false, 
-        error: result.error.message || "Failed to send reset email" 
+    const result = await response.json();
+
+    if (!response.ok) {
+      return {
+        success: false,
+        error: result.error || "Failed to send reset email"
       };
     }
 
     return { success: true };
   } catch (error: any) {
-    if (error?.message?.includes("No account found")) {
-      return { 
-        success: false, 
-        error: "No account found with this email address. Please check your email or sign up for a new account." 
-      };
-    }
     return { 
       success: false, 
       error: error?.message || "An unexpected error occurred" 
@@ -194,14 +186,24 @@ export const sendMagicLink = async (
     });
 
     if (result.error) {
-      if (result.error.status === 400 || 
-          result.error.message?.includes("User not found") || 
+      // Handle server-side validation errors (500 status from our custom validation)
+      if (result.error.status === 500 && 
           result.error.message?.includes("No account found")) {
         return { 
           success: false, 
           error: "No account found with this email address. Magic links are only available for existing users. Please sign up first or use a different email." 
         };
       }
+      
+      // Handle other Better Auth errors
+      if (result.error.status === 400 || 
+          result.error.message?.includes("User not found")) {
+        return { 
+          success: false, 
+          error: "No account found with this email address. Magic links are only available for existing users. Please sign up first or use a different email." 
+        };
+      }
+      
       return { 
         success: false, 
         error: result.error.message || "Failed to send magic link" 
@@ -210,6 +212,13 @@ export const sendMagicLink = async (
 
     return { success: true };
   } catch (error: any) {
+    // Handle network or other errors
+    if (error?.message?.includes("No account found")) {
+      return { 
+        success: false, 
+        error: "No account found with this email address. Magic links are only available for existing users. Please sign up first or use a different email." 
+      };
+    }
     return { 
       success: false, 
       error: error?.message || "An unexpected error occurred" 

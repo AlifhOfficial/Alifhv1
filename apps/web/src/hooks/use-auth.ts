@@ -7,7 +7,7 @@
 
 'use client';
 
-import { useSession } from '@/lib/auth-client';
+import { useSession } from '@/lib/auth/client';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { type PlatformRole, type UserStatus, type PartnerRole } from '@alifh/shared/auth';

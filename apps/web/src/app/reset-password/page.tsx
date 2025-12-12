@@ -10,7 +10,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Lock, ArrowLeft } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth/client";
 
 function ResetPasswordForm() {
   const router = useRouter();

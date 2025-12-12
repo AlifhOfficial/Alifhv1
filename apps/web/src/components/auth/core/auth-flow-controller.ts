@@ -166,7 +166,13 @@ export class AuthFlowController {
       this.actions.setEmailSentData({ email, type: "reset" });
       this.actions.setCurrentModal("email-sent");
     } else {
-      this.actions.setError(result.error || "Failed to send reset email");
+      // Show generic feedback modal with error
+      this.actions.setFeedbackData({
+        title: "Reset Failed",
+        message: result.error || "Failed to send reset email",
+        type: "error"
+      });
+      this.actions.setCurrentModal("feedback");
     }
 
     this.actions.setLoading(false);
@@ -182,7 +188,13 @@ export class AuthFlowController {
       this.actions.setEmailSentData({ email, type: "magic-link" });
       this.actions.setCurrentModal("email-sent");
     } else {
-      this.actions.setError(result.error || "Failed to send magic link");
+      // Show generic feedback modal with error
+      this.actions.setFeedbackData({
+        title: "Magic Link Failed",
+        message: result.error || "Failed to send magic link",
+        type: "error"
+      });
+      this.actions.setCurrentModal("feedback");
     }
 
     this.actions.setLoading(false);
