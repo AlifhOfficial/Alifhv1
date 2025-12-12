@@ -10,6 +10,7 @@
 import { useSession } from '@/lib/auth/client';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import React from 'react';
 import { type PlatformRole, type UserStatus, type PartnerRole } from '@alifh/shared/auth';
 
 // Hook for requiring authentication
@@ -198,6 +199,57 @@ export function useUser() {
     user: session?.user || null,
     isLoading: isPending,
     isSignedIn: !!session?.user,
+  };
+}
+
+// Enhanced user hook with partner role
+export function useUserWithPartnerRole() {
+  const { user, isLoading: sessionLoading, isSignedIn } = useUser();
+  const [partnerData, setPartnerData] = React.useState<{
+    partnerRole: PartnerRole | null;
+    partnerId: string | null;
+    isActive: boolean;
+  } | null>(null);
+  const [isLoadingPartner, setIsLoadingPartner] = React.useState(false);
+
+  React.useEffect(() => {
+    async function fetchPartnerRole() {
+      if (!user || !isSignedIn || !user.activePartnerId) {
+        setPartnerData({ partnerRole: null, partnerId: null, isActive: false });
+        return;
+      }
+
+      setIsLoadingPartner(true);
+      try {
+        const response = await fetch('/api/auth/user-partner-role');
+        if (response.ok) {
+          const data = await response.json();
+          setPartnerData(data);
+        } else {
+          setPartnerData({ partnerRole: null, partnerId: null, isActive: false });
+        }
+      } catch (error) {
+        console.error('Error fetching partner role:', error);
+        setPartnerData({ partnerRole: null, partnerId: null, isActive: false });
+      } finally {
+        setIsLoadingPartner(false);
+      }
+    }
+
+    if (!sessionLoading) {
+      fetchPartnerRole();
+    }
+  }, [user, isSignedIn, sessionLoading]);
+
+  const enhancedUser = user ? {
+    ...user,
+    partnerRole: partnerData?.partnerRole || null,
+  } : null;
+
+  return {
+    user: enhancedUser,
+    isLoading: sessionLoading || isLoadingPartner,
+    isSignedIn,
   };
 }
 

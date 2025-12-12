@@ -23,15 +23,73 @@ interface RouteProtection {
 
 // Route protection configuration
 const routeConfig: Record<string, RouteProtection> = {
-  // User routes - require active user
-  '/user': {
+  // =============================================================================
+  // USER PORTAL ROUTES
+  // =============================================================================
+  '/user-dashboard': {
+    requireAuth: true,
+    allowedPlatformRoles: ['user', 'staff', 'admin', 'super-admin'],
+    allowedStatuses: ['active'],
+    requireEmailVerified: true,
+  },
+  '/profile': {
     requireAuth: true,
     allowedPlatformRoles: ['user', 'staff', 'admin', 'super-admin'],
     allowedStatuses: ['active'],
     requireEmailVerified: true,
   },
 
-  // Partner routes - require user with partner membership
+  // =============================================================================
+  // ADMIN PORTAL ROUTES
+  // =============================================================================
+  '/admin-dashboard': {
+    requireAuth: true,
+    allowedPlatformRoles: ['admin', 'super-admin', 'staff'],
+    allowedStatuses: ['active'],
+    requireEmailVerified: true,
+  },
+
+  // =============================================================================
+  // PARTNER PORTAL ROUTES
+  // =============================================================================
+  
+  // Partner role-specific routes
+  '/partner/owner-dashboard': {
+    requireAuth: true,
+    allowedPlatformRoles: ['user', 'staff', 'admin', 'super-admin'],
+    allowedStatuses: ['active'],
+    requireEmailVerified: true,
+    requirePartnerMembership: true,
+    allowedPartnerRoles: ['owner'],
+  },
+  
+  '/partner/admin-dashboard': {
+    requireAuth: true,
+    allowedPlatformRoles: ['user', 'staff', 'admin', 'super-admin'],
+    allowedStatuses: ['active'],
+    requireEmailVerified: true,
+    requirePartnerMembership: true,
+    allowedPartnerRoles: ['owner', 'admin'],
+  },
+
+  '/partner/staff-dashboard': {
+    requireAuth: true,
+    allowedPlatformRoles: ['user', 'staff', 'admin', 'super-admin'],
+    allowedStatuses: ['active'],
+    requireEmailVerified: true,
+    requirePartnerMembership: true,
+    allowedPartnerRoles: ['owner', 'admin', 'staff'],
+  },
+
+  // =============================================================================
+  // LEGACY/GENERIC ROUTES
+  // =============================================================================
+  '/user': {
+    requireAuth: true,
+    allowedPlatformRoles: ['user', 'staff', 'admin', 'super-admin'],
+    allowedStatuses: ['active'],
+    requireEmailVerified: true,
+  },
   '/partner': {
     requireAuth: true,
     allowedPlatformRoles: ['user', 'staff', 'admin', 'super-admin'],
@@ -39,22 +97,11 @@ const routeConfig: Record<string, RouteProtection> = {
     requireEmailVerified: true,
     requirePartnerMembership: true,
   },
-
-  // Admin routes - require admin platform role
   '/admin': {
     requireAuth: true,
     allowedPlatformRoles: ['admin', 'super-admin'],
     allowedStatuses: ['active'],
     requireEmailVerified: true,
-  },
-
-  // Partner-specific routes (dynamic partner slug)
-  '/partner/[slug]': {
-    requireAuth: true,
-    allowedPlatformRoles: ['user', 'staff', 'admin', 'super-admin'],
-    allowedStatuses: ['active'],
-    requireEmailVerified: true,
-    requirePartnerMembership: true,
   },
 };
 
