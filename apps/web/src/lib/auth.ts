@@ -1,7 +1,10 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { magicLink } from "better-auth/plugins/magic-link";
 import { db } from "@alifh/database";
 import * as schema from "@alifh/database";
+import { eq } from "drizzle-orm";
+import { emailService } from "@/lib/email";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -37,7 +40,50 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
+    sendResetPassword: async ({ user, url, token }, request) => {
+      await emailService.sendPasswordReset({ user, url, token });
+    },
   },
+
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url, token }, request) => {
+      await emailService.sendVerificationEmail({ user, url, token });
+    },
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+  },
+
+  plugins: [
+    magicLink({
+      sendMagicLink: async ({ email, url, token }, ctx) => {
+        // Check if user exists before sending magic link
+        const existingUsers = await db
+          .select()
+          .from(schema.users)
+          .where(eq(schema.users.email, email))
+          .limit(1)
+          .execute();
+        
+        if (!existingUsers || existingUsers.length === 0) {
+          console.log("🚫 Magic link request for non-existent user:", email);
+          throw new Error("No account found with this email address. Magic links are only available for existing users.");
+        }
+
+        const user = existingUsers[0];
+        console.log("� Sending magic link to existing user:", email);
+        console.log("🔗 Magic link URL:", url);
+        console.log("🔗 Token:", token);
+        
+        await emailService.sendMagicLink({ 
+          user: { email: user.email, name: user.name || email.split('@')[0] }, 
+          url, 
+          token 
+        });
+      },
+      expiresIn: 60 * 10, // 10 minutes
+      disableSignUp: true, // Only allow existing users to use magic link
+    }),
+  ],
 
   socialProviders: {
     google: {
