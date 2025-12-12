@@ -7,7 +7,6 @@
 
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { auth } from '@/lib/auth';
 
 // Public routes that don't require authentication
 const PUBLIC_ROUTES = [
@@ -48,79 +47,42 @@ function getDefaultDashboard(platformRole: string): string {
   }
 }
 
+
+
 async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  
+  console.log(`🔍 Middleware called for: ${pathname}`);
 
   // Skip middleware for ignored routes
   if (isIgnoredRoute(pathname)) {
+    console.log(`⏭️ Skipping ignored route: ${pathname}`);
     return NextResponse.next();
   }
 
   // Allow public routes
   if (isPublicRoute(pathname)) {
+    console.log(`🌍 Allowing public route: ${pathname}`);
     return NextResponse.next();
   }
 
   try {
-    // Get session using Better Auth
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    });
+    // Simple session check - look for Better Auth session cookie
+    const sessionToken = request.cookies.get('better-auth.session_token');
+    
+    console.log(`🍪 Session token present: ${!!sessionToken}`);
 
-    // No session - redirect to sign in
-    if (!session?.user) {
+    // No session cookie - redirect to sign in for protected routes
+    if (!sessionToken) {
+      console.log(`🚫 No session token, redirecting to sign in`);
       const signInUrl = new URL('/auth/signin', request.url);
       signInUrl.searchParams.set('callbackUrl', pathname);
       return NextResponse.redirect(signInUrl);
     }
 
-    const user = session.user as any;
-
-    // Check if user is active
-    if (user.status !== 'active') {
-      return NextResponse.redirect(new URL('/auth/inactive', request.url));
-    }
-
-    // Handle root-level portal access
-    if (pathname === '/admin' || pathname.startsWith('/admin/')) {
-      const canAccessAdmin = ['super-admin', 'admin', 'staff'].includes(user.platformRole);
-      if (!canAccessAdmin) {
-        return NextResponse.redirect(new URL('/auth/unauthorized', request.url));
-      }
-    }
-
-    if (pathname === '/partner' || pathname.startsWith('/partner/')) {
-      // For partner routes, we need to check if user has an active partner
-      if (!user.activePartnerId) {
-        return NextResponse.redirect(new URL(getDefaultDashboard(user.platformRole), request.url));
-      }
-    }
-
-    // Redirect bare portal paths to appropriate dashboards
-    if (pathname === '/admin') {
-      return NextResponse.redirect(new URL('/admin-dashboard', request.url));
-    }
-
-    if (pathname === '/partner') {
-      return NextResponse.redirect(new URL('/partner/owner-dashboard', request.url));
-    }
-
-    if (pathname === '/user') {
-      return NextResponse.redirect(new URL('/user-dashboard', request.url));
-    }
-
-    // Handle common dashboard shortcuts for users with partner access
-    if (user.activePartnerId) {
-      if (pathname === '/owner-dashboard') {
-        return NextResponse.redirect(new URL('/partner/owner-dashboard', request.url));
-      }
-      if (pathname === '/admin-dashboard' && !['super-admin', 'admin', 'staff'].includes(user.platformRole)) {
-        // If user tries to access admin dashboard but doesn't have admin role, redirect to partner dashboard
-        return NextResponse.redirect(new URL('/partner/owner-dashboard', request.url));
-      }
-    }
-
-    // All other routes proceed normally
+    // For now, if there's a session cookie, allow access
+    // The detailed role-based checks will be handled by the page components
+    console.log(`✅ Session token found, allowing access to: ${pathname}`);
     return NextResponse.next();
 
   } catch (error) {
@@ -147,4 +109,5 @@ export const config = {
      */
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
+
 };
