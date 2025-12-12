@@ -7,6 +7,7 @@
 "use client";
 
 import { useState } from "react";
+import { UserPlus } from "lucide-react";
 
 interface SignUpModalProps {
   open: boolean;
@@ -57,20 +58,33 @@ export function SignUpModal({
       onClick={() => onOpenChange(false)}
     >
       <div 
-        className="max-w-md w-full bg-card border border-border/40 rounded-lg"
+        className="max-w-4xl w-full bg-card border border-border/40 rounded-lg flex overflow-hidden max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="border-b border-border/40 p-6 relative">
-          
-          <h2 className="text-xl font-medium text-foreground mb-2">Create Account</h2>
-          <p className="text-sm text-muted-foreground">
-            Join Alifh and start your journey
-          </p>
+        {/* Left Image Side */}
+        <div className="hidden md:flex md:w-1/2 relative bg-gradient-to-br from-emerald-50 to-green-100">
+          <img 
+            src="/Images/sign_up.png" 
+            alt="Sign up illustration"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
         </div>
 
-        {/* Content */}
-        <div className="p-6 space-y-6">
+        {/* Right Form Side */}
+        <div className="w-full md:w-1/2 flex flex-col">
+          {/* Header */}
+          <div className="border-b border-border/40 p-6 relative">
+            
+            <UserPlus className="w-4 h-4 text-muted-foreground mb-4" />
+            <h2 className="text-xl font-medium text-foreground mb-2">Create Account</h2>
+            <p className="text-sm text-muted-foreground">
+              Join Alifh and start your journey
+            </p>
+          </div>
+
+          {/* Content */}
+          <div className="p-6 space-y-6 flex-1 overflow-y-auto">
           {error && (
             <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
               <p className="text-xs text-destructive leading-relaxed">
@@ -213,19 +227,20 @@ export function SignUpModal({
               Continue with Google
             </button>
           )}
-        </div>
+          </div>
 
-        {/* Footer */}
-        <div className="border-t border-border/40 p-6">
-          <p className="text-xs text-muted-foreground text-center">
-            Already have an account?{" "}
-            <button
-              onClick={handleSwitchToSignIn}
-              className="text-primary hover:underline font-medium"
-            >
-              Sign in
-            </button>
-          </p>
+          {/* Footer */}
+          <div className="border-t border-border/40 p-6">
+            <p className="text-xs text-muted-foreground text-center">
+              Already have an account?{" "}
+              <button
+                onClick={handleSwitchToSignIn}
+                className="text-primary hover:underline font-medium"
+              >
+                Sign in
+              </button>
+            </p>
+          </div>
         </div>
       </div>
     </div>
