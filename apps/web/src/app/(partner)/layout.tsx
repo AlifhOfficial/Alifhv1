@@ -3,6 +3,9 @@
 import { useState } from 'react';
 import { PartnerDashboardNav } from '@/components/ui/navigation/partner-dashboard-nav';
 import { PartnerSecondaryNav } from '@/components/ui/navigation/partner-secondary-nav';
+import { useRequireAuth, useRoleCheck } from '@/hooks/auth/use-auth';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function PartnerLayout({
   children,
@@ -11,12 +14,40 @@ export default function PartnerLayout({
 }) {
   const [currentSection, setCurrentSection] = useState<string>('');
   const [selectedAction, setSelectedAction] = useState<string>('');
+  
+  const { isLoading, isAuthenticated } = useRequireAuth();
+  const { isAdmin, isStaff } = useRoleCheck();
+  const router = useRouter();
 
   const handleActionSelect = (action: string) => {
     setSelectedAction(action);
     // Here you could emit events or call callbacks to handle actions
     console.log('Partner action selected:', action);
   };
+
+  // TODO: Add partner role checking when implemented
+  // For now, allow admin/staff access and regular users
+  // In production, you'd check for actual partner permissions
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      // If admin/staff, allow access
+      if (isAdmin || isStaff) {
+        return;
+      }
+      
+      // TODO: Check if user has partner permissions
+      // For now, redirect non-admin users to user dashboard
+      // router.push('/user-dashboard');
+    }
+  }, [isLoading, isAuthenticated, isAdmin, isStaff, router]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-gray-50">
