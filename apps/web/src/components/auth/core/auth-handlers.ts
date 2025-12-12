@@ -153,6 +153,14 @@ export const requestPasswordReset = async (
     });
 
     if (result.error) {
+      if (result.error.status === 400 || 
+          result.error.message?.includes("No account found") || 
+          result.error.message?.includes("User not found")) {
+        return { 
+          success: false, 
+          error: "No account found with this email address. Please check your email or sign up for a new account." 
+        };
+      }
       return { 
         success: false, 
         error: result.error.message || "Failed to send reset email" 
@@ -161,6 +169,12 @@ export const requestPasswordReset = async (
 
     return { success: true };
   } catch (error: any) {
+    if (error?.message?.includes("No account found")) {
+      return { 
+        success: false, 
+        error: "No account found with this email address. Please check your email or sign up for a new account." 
+      };
+    }
     return { 
       success: false, 
       error: error?.message || "An unexpected error occurred" 

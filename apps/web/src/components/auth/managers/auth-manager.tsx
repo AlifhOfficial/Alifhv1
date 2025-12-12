@@ -7,6 +7,7 @@
 
 "use client";
 
+import { useEffect } from "react";
 import { SignInModal } from "../modals/signin-modal";
 import { SignUpModal } from "../modals/signup-modal";
 import { ForgotPasswordModal } from "../modals/forgot-password-modal";
@@ -27,6 +28,9 @@ interface AuthManagerProps {
   onModalChange?: (modal: AuthModalType) => void;
   onSuccess?: (user?: AuthUser) => void;
   onClose?: () => void;
+  // New props for external flow triggers
+  triggerEmailVerification?: boolean;
+  triggerMagicLinkComplete?: boolean;
 }
 
 export function AuthManager({
@@ -35,11 +39,26 @@ export function AuthManager({
   onModalChange,
   onSuccess,
   onClose,
+  triggerEmailVerification,
+  triggerMagicLinkComplete,
 }: AuthManagerProps) {
   const { state, actions } = useAuthState(initialModal, externalCurrentModal, onModalChange);
   
   // Create flow controller instance
   const flowController = new AuthFlowController(state, actions, { onSuccess, onClose });
+
+  // Handle external flow triggers
+  useEffect(() => {
+    if (triggerEmailVerification) {
+      flowController.handleEmailVerificationComplete();
+    }
+  }, [triggerEmailVerification]);
+
+  useEffect(() => {
+    if (triggerMagicLinkComplete) {
+      flowController.handleMagicLinkComplete();
+    }
+  }, [triggerMagicLinkComplete]);
 
   return (
     <>

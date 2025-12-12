@@ -99,7 +99,10 @@ export function useAuthState(
       setInternalState(prev => ({ ...prev, isNewUser }));
     },
     resetState: () => {
+      // Reset internal state
       setInternalState({ ...initialState, currentModal: null });
+      // Also properly close external modal if controlled externally
+      setCurrentModal(null);
     },
   };
 

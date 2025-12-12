@@ -41,6 +41,20 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: true,
     sendResetPassword: async ({ user, url, token }, request) => {
+      // Double-check user exists (should already be validated by Better Auth)
+      const existingUsers = await db
+        .select()
+        .from(schema.users)
+        .where(eq(schema.users.email, user.email))
+        .limit(1)
+        .execute();
+      
+      if (!existingUsers || existingUsers.length === 0) {
+        console.log("🚫 Password reset request for non-existent user:", user.email);
+        throw new Error("No account found with this email address.");
+      }
+
+      console.log("📧 Sending password reset to existing user:", user.email);
       await emailService.sendPasswordReset({ user, url, token });
     },
   },
