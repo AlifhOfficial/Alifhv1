@@ -7,7 +7,6 @@
 "use client";
 
 import { useState } from "react";
-import { X } from "lucide-react";
 
 interface SignUpModalProps {
   open: boolean;
@@ -53,17 +52,16 @@ export function SignUpModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-card border border-border/40 rounded-lg">
+    <div 
+      className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+      onClick={() => onOpenChange(false)}
+    >
+      <div 
+        className="max-w-md w-full bg-card border border-border/40 rounded-lg"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="border-b border-border/40 p-6 relative">
-          <button
-            onClick={() => onOpenChange(false)}
-            className="absolute top-4 right-4 p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20"
-            aria-label="Close"
-          >
-            <X className="w-4 h-4" />
-          </button>
           
           <h2 className="text-xl font-medium text-foreground mb-2">Create Account</h2>
           <p className="text-sm text-muted-foreground">

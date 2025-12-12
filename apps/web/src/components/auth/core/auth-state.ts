@@ -18,6 +18,9 @@ export type AuthModalType =
   | "signup-feedback" 
   | "welcome"
   | "google-redirect"
+  | "magic-link-feedback"
+  | "password-reset-feedback"
+  | "feedback" // Generic feedback modal
   | null;
 
 export interface AuthState {
@@ -29,6 +32,12 @@ export interface AuthState {
   signUpSuccess: boolean;
   newUserName: string;
   isNewUser: boolean;
+  // Generic feedback modal data
+  feedbackData: {
+    title?: string;
+    message?: string;
+    type?: 'success' | 'error' | 'info';
+  } | null;
 }
 
 export interface AuthActions {
@@ -40,6 +49,7 @@ export interface AuthActions {
   setSignUpSuccess: (success: boolean) => void;
   setNewUserName: (name: string) => void;
   setIsNewUser: (isNew: boolean) => void;
+  setFeedbackData: (data: { title?: string; message?: string; type?: 'success' | 'error' | 'info' } | null) => void;
   resetState: () => void;
 }
 
@@ -57,6 +67,7 @@ const initialState: AuthState = {
   signUpSuccess: false,
   newUserName: "",
   isNewUser: false,
+  feedbackData: null,
 };
 
 export function useAuthState(
@@ -98,6 +109,9 @@ export function useAuthState(
     setIsNewUser: (isNewUser: boolean) => {
       setInternalState(prev => ({ ...prev, isNewUser }));
     },
+    setFeedbackData: (feedbackData: { title?: string; message?: string; type?: 'success' | 'error' | 'info' } | null) => {
+      setInternalState(prev => ({ ...prev, feedbackData }));
+    },
     resetState: () => {
       // Reset internal state
       setInternalState({ ...initialState, currentModal: null });
@@ -115,6 +129,7 @@ export function useAuthState(
     signUpSuccess: internalState.signUpSuccess,
     newUserName: internalState.newUserName,
     isNewUser: internalState.isNewUser,
+    feedbackData: internalState.feedbackData,
   };
 
   return { state, actions };

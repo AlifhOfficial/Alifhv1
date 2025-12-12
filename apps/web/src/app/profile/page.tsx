@@ -9,7 +9,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { User, Mail, Calendar, Shield, LogOut } from "lucide-react";
-import { useAuthSession, signOut } from "@/lib/auth-client";
+import { useAuthSession, signOut } from "@/lib/auth/client";
 import { Navbar } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";

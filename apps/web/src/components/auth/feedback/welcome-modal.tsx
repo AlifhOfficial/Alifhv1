@@ -54,7 +54,10 @@ export function WelcomeModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[10000] bg-black/70 backdrop-blur-lg flex items-center justify-center p-4">
+    <div 
+      className="fixed inset-0 z-[10000] bg-black/70 backdrop-blur-lg flex items-center justify-center p-4"
+      onClick={onContinue}
+    >
       {/* Falling Sparkles Effect */}
       {showFallingSparkles && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -100,6 +103,7 @@ export function WelcomeModal({
         className={`max-w-sm w-full bg-card/95 backdrop-blur-sm border border-border/30 rounded-2xl p-8 shadow-2xl transform transition-all duration-500 ${
           showContent ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex flex-col items-center space-y-6">
           {/* Logo */}

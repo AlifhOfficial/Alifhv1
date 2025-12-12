@@ -17,6 +17,7 @@ import { SignInFeedbackModal } from "../feedback/sign-in-feedback-modal";
 import { SignUpFeedbackModal } from "../feedback/sign-up-feedback-modal";
 import { WelcomeModal } from "../feedback/welcome-modal";
 import { GoogleRedirectModal } from "../feedback/google-redirect-modal";
+import { FeedbackModal } from "../feedback/feedback-modal";
 
 import { useAuthState, AuthModalType } from "../core/auth-state";
 import { AuthFlowController } from "../core/auth-flow-controller";
@@ -148,6 +149,18 @@ export function AuthManager({
       <GoogleRedirectModal
         open={state.currentModal === "google-redirect"}
         onClose={() => actions.setCurrentModal("signin")}
+      />
+
+      {/* Generic Feedback Modal */}
+      <FeedbackModal
+        open={state.currentModal === "feedback"}
+        onClose={() => flowController.handleCloseAll()}
+        title={state.feedbackData?.title}
+        message={state.feedbackData?.message}
+        type={state.feedbackData?.type}
+        isLoading={state.isLoading}
+        error={state.feedbackData?.type === 'error' ? state.feedbackData.message : null}
+        success={state.feedbackData?.type === 'success'}
       />
     </>
   );

@@ -8,7 +8,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { X } from "lucide-react";
+
 
 interface GoogleRedirectModalProps {
   open: boolean;
@@ -33,18 +33,14 @@ export function GoogleRedirectModal({ open, onClose }: GoogleRedirectModalProps)
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-card border border-border/40 rounded-lg p-6 relative">
-        {/* Close Button */}
-        {onClose && (
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-1 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20"
-            aria-label="Close"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        )}
+    <div 
+      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div 
+        className="max-w-md w-full bg-card border border-border/40 rounded-lg p-6 relative"
+        onClick={(e) => e.stopPropagation()}
+      >
         
         <div className="space-y-6">
           {/* Google Logo - Top Left (4x4 as per philosophy) */}

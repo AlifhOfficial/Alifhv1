@@ -9,7 +9,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, X, CheckCircle2, Users, Shield, Sparkles } from "lucide-react";
+import { Loader2, CheckCircle2, Users, Shield, Sparkles } from "lucide-react";
 
 interface SignUpFeedbackModalProps {
   open: boolean;
@@ -63,22 +63,16 @@ export function SignUpFeedbackModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
+    <div 
+      className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-md flex items-center justify-center p-4"
+      onClick={onClose}
+    >
       <div 
         className={`max-w-sm w-full bg-card/95 backdrop-blur-sm border border-border/30 rounded-2xl p-8 relative shadow-2xl transform transition-all duration-300 ${
           showContent ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
+        onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button - Only show if not success state */}
-        {onClose && !showSuccess && (
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 text-muted-foreground/60 hover:text-foreground transition-all duration-200 rounded-xl hover:bg-muted/10 group"
-            aria-label="Close"
-          >
-            <X className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
-          </button>
-        )}
         
         <div className="flex flex-col items-center space-y-6">
           {/* Loading/Success Icon */}

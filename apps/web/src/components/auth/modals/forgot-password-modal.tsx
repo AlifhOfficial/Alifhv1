@@ -7,7 +7,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Mail, ArrowLeft } from "lucide-react";
+import { Mail, ArrowLeft, X } from "lucide-react";
 
 interface ForgotPasswordModalProps {
   open: boolean;
@@ -42,17 +42,16 @@ export function ForgotPasswordModal({
   // Success state
   if (success) {
     return (
-      <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-card border border-border/40 rounded-lg">
+      <div 
+        className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+        onClick={() => onOpenChange(false)}
+      >
+        <div 
+          className="max-w-md w-full bg-card border border-border/40 rounded-lg"
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* Header */}
           <div className="border-b border-border/40 p-6 relative">
-            <button
-              onClick={() => onOpenChange(false)}
-              className="absolute top-4 right-4 p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20"
-              aria-label="Close"
-            >
-              <X className="w-4 h-4" />
-            </button>
             
             <div className="w-12 h-12 bg-emerald-500/10 rounded-full flex items-center justify-center mb-4">
               <Mail className="w-5 h-5 text-emerald-500" />
@@ -85,17 +84,16 @@ export function ForgotPasswordModal({
   }
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-card border border-border/40 rounded-lg">
+    <div 
+      className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+      onClick={() => onOpenChange(false)}
+    >
+      <div 
+        className="max-w-md w-full bg-card border border-border/40 rounded-lg"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="border-b border-border/40 p-6 relative">
-          <button
-            onClick={() => onOpenChange(false)}
-            className="absolute top-4 right-4 p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20"
-            aria-label="Close"
-          >
-            <X className="w-4 h-4" />
-          </button>
           
           <button
             onClick={onBackToSignIn}
@@ -115,10 +113,18 @@ export function ForgotPasswordModal({
         {/* Content */}
         <div className="p-6 space-y-6">
           {error && (
-            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
-              <p className="text-xs text-destructive leading-relaxed">
-                {error}
-              </p>
+            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0">
+                  <X className="w-5 h-5 text-destructive mt-0.5" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-destructive">Password Reset Failed</p>
+                  <p className="text-xs text-destructive/80 mt-1 leading-relaxed">
+                    {error}
+                  </p>
+                </div>
+              </div>
             </div>
           )}
 
