@@ -5,7 +5,6 @@
  */
 
 import { auth } from '@/lib/auth';
-import type { PlatformRole, UserStatus } from '@alifh/shared/auth';
 
 // Get user with Better Auth session
 export async function getAuthUser(request: Request) {
@@ -16,18 +15,6 @@ export async function getAuthUser(request: Request) {
     console.error('Error getting auth user:', error);
     return null;
   }
-}
-
-// Update user role (for testing) - moved to API endpoints to avoid client-side DB operations
-export async function updateUserRole(userId: string, role: PlatformRole) {
-  // This would be implemented in an API endpoint
-  throw new Error('Use API endpoint /api/admin/update-user-role instead');
-}
-
-// Update user status (for testing) - moved to API endpoints
-export async function updateUserStatus(userId: string, status: UserStatus) {
-  // This would be implemented in an API endpoint
-  throw new Error('Use API endpoint /api/admin/update-user-status instead');
 }
 
 // Test auth endpoints
