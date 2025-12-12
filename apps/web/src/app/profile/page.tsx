@@ -11,9 +11,7 @@ import { useRouter } from "next/navigation";
 import { User, Mail, Calendar, Shield, LogOut } from "lucide-react";
 import { useAuthSession, signOut } from "@/lib/auth/client";
 import { Navbar } from "@/components/navbar";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { Button, Card, Separator } from "@/components/ui";
 
 export default function ProfilePage() {
   const { user, isAuthenticated, isLoading } = useAuthSession();
