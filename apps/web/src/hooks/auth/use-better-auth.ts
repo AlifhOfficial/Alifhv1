@@ -249,7 +249,7 @@ export function useBetterAuth() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: request.email,
-          redirectTo: request.callbackURL || '/auth/reset-password',
+          redirectTo: request.callbackURL || '/reset-password',
         }),
       });
 
@@ -329,7 +329,7 @@ export function useBetterAuth() {
     try {
       const result = await authClient.signIn.magicLink({
         email: request.email,
-        callbackURL: request.callbackURL || '/auth/magic-link/callback',
+        callbackURL: request.callbackURL || '/magic-link/callback',
       });
 
       if (result.error) {
@@ -372,7 +372,7 @@ export function useBetterAuth() {
     try {
       const result = await authClient.sendVerificationEmail({
         email: request.email,
-        callbackURL: request.callbackURL || '/auth/verify-email/callback',
+        callbackURL: request.callbackURL || '/verify-email/callback',
       });
 
       if (result.error) {

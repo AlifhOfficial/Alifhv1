@@ -86,7 +86,7 @@ export function useRequireStatus(
 }
 
 // Hook for checking email verification
-export function useRequireEmailVerified(redirectTo: string = '/auth/verify-email') {
+export function useRequireEmailVerified(redirectTo: string = '/verify-email') {
   const { session, user, isLoading, isAuthenticated } = useRequireAuth();
   const router = useRouter();
 
@@ -130,7 +130,7 @@ export function useProtectedRoute(options: {
     if (!isLoading && isAuthenticated && !isValid) {
       // Prioritize redirects
       if (requireEmailVerified && !hasVerifiedEmail) {
-        router.push('/auth/verify-email');
+        router.push('/verify-email');
         return;
       }
       
