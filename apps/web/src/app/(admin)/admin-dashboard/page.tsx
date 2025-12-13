@@ -1,15 +1,18 @@
 import { requireRole } from "@/lib/auth/roles";
+import { StandardDashboardLayout } from "@/components/layouts/dashboard-layout";
 
 export default async function AdminDashboardPage() {
   const user = await requireRole('admin');
+  
   return (
-    <div className="space-y-6">
-      <div className="border-l-4 border-primary p-4 bg-card">
-        <h2 className="text-3xl font-bold tracking-tight">Platform Admin</h2>
-        <p className="mt-2 text-muted-foreground">
-          Manage the entire marketplace platform and all partners.
-        </p>
-      </div>
+    <StandardDashboardLayout user={user} activeTab="overview">
+      <div className="space-y-6">
+        <div className="border-l-4 border-primary p-4 bg-card rounded-lg">
+          <h2 className="text-xl font-medium">Platform Admin</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Manage the entire marketplace platform and all partners.
+          </p>
+        </div>
 
       {/* System Stats */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -143,6 +146,7 @@ export default async function AdminDashboardPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </StandardDashboardLayout>
   );
 }

@@ -1,6 +1,14 @@
 "use client";
 
-import { User, LogOut, Settings } from "lucide-react";
+import { 
+  User, 
+  LogOut, 
+  Settings, 
+  LayoutDashboard, 
+  Store, 
+  Users, 
+  Home 
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { UserRole } from "@alifh/shared";
 
@@ -22,6 +30,12 @@ interface ProfileMenuProps {
   onProfile?: () => void;
 }
 
+interface DashboardItem {
+  name: string;
+  path: string;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+}
+
 export function ProfileMenu({
   user,
   showMenu,
@@ -38,33 +52,34 @@ export function ProfileMenu({
     const firstName = user.name?.split(' ')[0] || 'User';
     const userRole = user.role;
 
-    const getDashboardAccess = (role: UserRole | null) => {
-      const dashboards = [];
+    const getDashboardAccess = (role: UserRole | null): DashboardItem[] => {
+      const dashboards: DashboardItem[] = [];
       
       if (role === 'admin') {
         dashboards.push({ 
           name: 'Admin Dashboard', 
-          path: '/admin-dashboard', 
-          icon: '⚙️'
+          path: '/admin-dashboard',
+          icon: LayoutDashboard
         });
       } else if (role === 'partner') {
         dashboards.push({ 
           name: 'Partner Dashboard', 
-          path: '/partner-dashboard', 
-          icon: '🏢'
+          path: '/partner-dashboard',
+          icon: Store
         });
       } else if (role === 'staff') {
         dashboards.push({ 
           name: 'Staff Dashboard', 
-          path: '/staff-dashboard', 
-          icon: '👨‍💼'
+          path: '/staff-dashboard',
+          icon: Users
         });
       }
       
+      // All users get their personal dashboard
       dashboards.push({ 
         name: 'My Dashboard', 
-        path: '/user-dashboard', 
-        icon: '📊'
+        path: '/user-dashboard',
+        icon: Home
       });
       
       return dashboards;
@@ -89,7 +104,7 @@ export function ProfileMenu({
     
     return (
       <div className="relative flex items-center gap-2">
-        <span className="text-sm font-medium text-foreground">
+        <span className="text-sm text-muted-foreground">
           {firstName}
         </span>
         
@@ -105,67 +120,74 @@ export function ProfileMenu({
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-primary text-sm font-medium">
+            <div className="w-full h-full flex items-center justify-center text-primary text-xs font-medium">
               {getInitials()}
             </div>
           )}
         </button>
 
         {showMenu && (
-          <div className="absolute right-0 top-full mt-2 w-64 bg-card border border-border/40 rounded-lg shadow-lg z-50 overflow-hidden">
-            <div className="p-3 border-b border-border/40">
+          <div className="absolute right-0 top-full mt-2 w-56 bg-card border border-border/40 rounded-lg shadow-lg z-50 overflow-hidden">
+            {/* User Info */}
+            <div className="p-4 border-b border-border/20">
               <p className="text-sm font-medium text-foreground">{displayName}</p>
-              <p className="text-xs text-muted-foreground">{user.email}</p>
-              {userRole && (
-                <p className="text-xs text-primary font-medium mt-1 capitalize">
-                  {userRole} Account
-                </p>
-              )}
+              <p className="text-xs text-muted-foreground mt-0.5">{user.email}</p>
             </div>
 
+            {/* Dashboards */}
             <div className="py-2">
-              <div className="px-4 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                Dashboards
-              </div>
-              {availableDashboards.map((dashboard) => (
-                <button
-                  key={dashboard.path}
-                  onClick={() => handleDashboardNavigation(dashboard.path)}
-                  className="w-full text-left px-4 py-2.5 text-sm text-foreground hover:bg-muted/20 transition-colors flex items-center gap-3"
-                >
-                  <span className="text-lg">{dashboard.icon}</span>
-                  <div className="font-medium">{dashboard.name}</div>
-                </button>
-              ))}
+              {availableDashboards.map((dashboard) => {
+                const Icon = dashboard.icon;
+                return (
+                  <button
+                    key={dashboard.path}
+                    onClick={() => handleDashboardNavigation(dashboard.path)}
+                    className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted/20 transition-colors flex items-center gap-2"
+                  >
+                    <Icon className="w-4 h-4 text-muted-foreground" />
+                    <span>{dashboard.name}</span>
+                  </button>
+                );
+              })}
+            </div>
               
-              <div className="border-t border-border/40 my-2" />
-              
+            {/* Divider */}
+            <div className="border-t border-border/20" />
+            
+            {/* Actions */}
+            <div className="py-2">
               {onProfile && (
                 <button
                   onClick={() => {
                     onProfile();
                     onToggleMenu();
                   }}
-                  className="w-full text-left px-4 py-2.5 text-sm text-foreground hover:bg-muted/20 transition-colors flex items-center gap-2"
+                  className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted/20 transition-colors flex items-center gap-2"
                 >
-                  <User className="w-4 h-4" />
-                  Profile
+                  <User className="w-4 h-4 text-muted-foreground" />
+                  <span>Profile</span>
                 </button>
               )}
               <button
                 onClick={onToggleMenu}
-                className="w-full text-left px-4 py-2.5 text-sm text-foreground hover:bg-muted/20 transition-colors flex items-center gap-2"
+                className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted/20 transition-colors flex items-center gap-2"
               >
-                <Settings className="w-4 h-4" />
-                Settings
+                <Settings className="w-4 h-4 text-muted-foreground" />
+                <span>Settings</span>
               </button>
-              <div className="border-t border-border/40 my-2" />
+            </div>
+            
+            {/* Divider */}
+            <div className="border-t border-border/20" />
+            
+            {/* Sign Out */}
+            <div className="py-2">
               <button
                 onClick={onSignOut}
-                className="w-full text-left px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10 transition-colors flex items-center gap-2"
+                className="w-full text-left px-4 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors flex items-center gap-2"
               >
                 <LogOut className="w-4 h-4" />
-                Sign out
+                <span>Sign out</span>
               </button>
             </div>
           </div>
@@ -175,7 +197,7 @@ export function ProfileMenu({
   }
 
   return (
-    <div className="relative flex items-center gap-2">
+    <div className="relative flex items-center">
       <button
         onClick={onToggleMenu}
         className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20"
@@ -185,17 +207,17 @@ export function ProfileMenu({
       </button>
 
       {showMenu && (
-        <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-border/40 rounded-lg shadow-lg z-50 overflow-hidden">
+        <div className="absolute right-0 top-full mt-2 w-40 bg-card border border-border/40 rounded-lg shadow-lg z-50 overflow-hidden">
           <div className="py-2">
             <button
               onClick={onSignIn}
-              className="w-full text-left px-4 py-2.5 text-sm text-foreground hover:bg-muted/20 transition-colors"
+              className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted/20 transition-colors"
             >
               Sign in
             </button>
             <button
               onClick={onSignUp}
-              className="w-full text-left px-4 py-2.5 text-sm text-foreground hover:bg-muted/20 transition-colors"
+              className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted/20 transition-colors"
             >
               Sign up
             </button>

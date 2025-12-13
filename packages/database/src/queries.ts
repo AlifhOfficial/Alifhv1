@@ -6,27 +6,27 @@
 
 import { eq } from 'drizzle-orm';
 import { db } from './dbclient';
-import { users } from './schema';
+import { user } from './schema';
 
 // Essential user queries
 export const getUserById = async (id: string) => {
-  const [user] = await db
+  const [result] = await db
     .select()
-    .from(users)
-    .where(eq(users.id, id))
+    .from(user)
+    .where(eq(user.id, id))
     .limit(1);
     
-  return user || null;
+  return result || null;
 };
 
 export const getUserByEmail = async (email: string) => {
-  const [user] = await db
+  const [result] = await db
     .select()
-    .from(users)
-    .where(eq(users.email, email))
+    .from(user)
+    .where(eq(user.email, email))
     .limit(1);
     
-  return user || null;
+  return result || null;
 };
 
 export interface CreateUserData {
@@ -37,8 +37,8 @@ export interface CreateUserData {
 }
 
 export const createUser = async (data: CreateUserData) => {
-  const [user] = await db
-    .insert(users)
+  const [result] = await db
+    .insert(user)
     .values({
       name: data.name,
       email: data.email,
@@ -49,31 +49,31 @@ export const createUser = async (data: CreateUserData) => {
     })
     .returning();
   
-  return user;
+  return result;
 };
 
 export const updateUser = async (id: string, data: Partial<CreateUserData>) => {
-  const [user] = await db
-    .update(users)
+  const [result] = await db
+    .update(user)
     .set({
       ...data,
       updatedAt: new Date(),
     })
-    .where(eq(users.id, id))
+    .where(eq(user.id, id))
     .returning();
     
-  return user;
+  return result;
 };
 
 export const deleteUser = async (id: string) => {
   await db
-    .delete(users)
-    .where(eq(users.id, id));
+    .delete(user)
+    .where(eq(user.id, id));
 };
 
 export const getAllUsers = async (limit: number = 100) => {
   return await db
     .select()
-    .from(users)
+    .from(user)
     .limit(limit);
 };

@@ -19,8 +19,8 @@ export async function POST(request: NextRequest) {
     // Check if user exists before allowing password reset
     const existingUsers = await db
       .select()
-      .from(schema.users)
-      .where(eq(schema.users.email, email))
+      .from(schema.user)
+      .where(eq(schema.user.email, email))
       .limit(1)
       .execute();
     
