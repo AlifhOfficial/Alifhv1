@@ -9,7 +9,7 @@ export default async function StaffDashboard() {
   // Get authenticated user
   const user = await requireAuth();
 
-  // Check if user has active partner_staff membership (is dealer staff)
+  // Fetch partner membership with full partner details (is dealer staff)
   const membership = await db
     .select({
       partnerId: schema.partnerStaff.partnerId,
@@ -34,7 +34,13 @@ export default async function StaffDashboard() {
   }
 
   const staffData = membership[0];
-  const dealerName = staffData.partner?.businessName || "Dealership";
+  
+  // If user is owner, redirect to partner dashboard
+  if (staffData.role === 'owner') {
+    redirect('/partner-dashboard');
+  }
+
+  const dealerName = staffData.partner?.brandName || "Dealership";
 
   // Right panel content
   const rightPanel = (

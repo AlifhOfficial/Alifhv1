@@ -37,27 +37,9 @@ export const signUpSchema = z.object({
   path: ['confirmPassword'],
 });
 
-export const createPartnerRequestSchema = z.object({
-  businessName: name,
-  businessEmail: email,
-  businessPhone: z.string().optional(),
-  businessWebsite: z.string().url().optional().or(z.literal('')),
-  description: z.string()
-    .min(10, 'Description must be at least 10 characters')
-    .max(1000, 'Description must be less than 1000 characters'),
-});
-
-export const invitePartnerMemberSchema = z.object({
-  email,
-  role: z.enum(['staff', 'admin'] as const),
-  partnerId: z.string().min(1, 'Partner ID is required'),
-});
-
 // =============================================================================
 // TYPE EXPORTS
 // =============================================================================
 
 export type SignInInput = z.infer<typeof signInSchema>;
 export type SignUpInput = z.infer<typeof signUpSchema>;
-export type CreatePartnerRequestInput = z.infer<typeof createPartnerRequestSchema>;
-export type InvitePartnerMemberInput = z.infer<typeof invitePartnerMemberSchema>;

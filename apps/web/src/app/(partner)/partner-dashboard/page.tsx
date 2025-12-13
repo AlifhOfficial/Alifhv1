@@ -9,10 +9,16 @@ export default async function PartnerDashboard() {
   // Get authenticated user
   const user = await requireAuth();
 
-  // Check if user has active partner_staff membership
+  // Fetch partner membership with full partner details
   const membership = await db
-    .select()
+    .select({
+      staffId: schema.partnerStaff.id,
+      role: schema.partnerStaff.role,
+      partnerId: schema.partnerStaff.partnerId,
+      partner: schema.partner,
+    })
     .from(schema.partnerStaff)
+    .leftJoin(schema.partner, eq(schema.partnerStaff.partnerId, schema.partner.id))
     .where(
       and(
         eq(schema.partnerStaff.userId, user.id),
@@ -22,10 +28,22 @@ export default async function PartnerDashboard() {
     .limit(1)
     .execute();
 
-  // If no active membership, deny access
-  if (membership.length === 0 && user.role !== 'admin' && user.role !== 'super_admin') {
-    redirect('/access-denied?reason=not-partner-member');
+  // Check if user has active partner membership (is dealer owner)
+  if (membership.length === 0) {
+    // Allow platform admins to access
+    if (user.role !== 'admin' && user.role !== 'super_admin') {
+      redirect('/access-denied?reason=not-partner-member');
+    }
   }
+
+  // Verify user is owner role
+  const staffData = membership[0];
+  if (staffData && staffData.role !== 'owner') {
+    // Not an owner, redirect to staff dashboard
+    redirect('/staff-dashboard');
+  }
+
+  const partnerName = staffData?.partner?.brandName || 'Your Dealership';
 
   // Right panel content
   const rightPanel = (
