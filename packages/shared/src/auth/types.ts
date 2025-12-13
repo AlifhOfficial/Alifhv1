@@ -1,4 +1,4 @@
-export type UserRole = 'admin' | 'partner' | 'staff';
+export type UserRole = 'admin' | 'partner' | 'staff' | 'user';
 
 export type User = {
   id: string;

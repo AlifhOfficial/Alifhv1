@@ -52,7 +52,7 @@ export async function hasPermission(
       headers: await headers(),
       body: { permissions }
     });
-    return result?.hasPermission ?? false;
+    return (result as any)?.hasPermission ?? false;
   } catch (error) {
     return false;
   }
