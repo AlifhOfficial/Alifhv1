@@ -1,11 +1,56 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { isDealerOwner, isDealerStaff } from "@/lib/auth/routing";
+import {
+  type ExtendedUser,
+  getUserPortalAccess,
+  isDealerOwner,
+  isDealerStaff,
+} from "@/lib/auth/routing";
+
+interface CachedSession {
+  user: ExtendedUser;
+  expiresAt: number;
+}
+
+const SESSION_CACHE_TTL_MS = 30_000; // 30s edge-side cache
+const isDev = process.env.NODE_ENV !== "production";
+
+const globalForSessionCache = globalThis as typeof globalThis & {
+  __alifhSessionCache?: Map<string, CachedSession>;
+};
+
+const sessionCache =
+  globalForSessionCache.__alifhSessionCache ??
+  (globalForSessionCache.__alifhSessionCache = new Map<string, CachedSession>());
+
+function getCachedSession(token: string | undefined): ExtendedUser | null {
+  if (!token) return null;
+  const cached = sessionCache.get(token);
+  if (!cached) return null;
+  if (cached.expiresAt < Date.now()) {
+    sessionCache.delete(token);
+    return null;
+  }
+  return cached.user;
+}
+
+function setCachedSession(token: string, user: ExtendedUser) {
+  sessionCache.set(token, {
+    user,
+    expiresAt: Date.now() + SESSION_CACHE_TTL_MS,
+  });
+}
+
+function debugLog(message: string, payload?: Record<string, unknown>) {
+  if (!isDev) return;
+  // eslint-disable-next-line no-console
+  console.debug(`[Middleware] ${message}`, payload ?? {});
+}
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
-  console.log('[Middleware] Request:', {
+  debugLog('Request received', {
     pathname,
     method: request.method,
   });
@@ -32,7 +77,7 @@ export async function middleware(request: NextRequest) {
   // Skip auth check for public routes and API routes (Better Auth handles API auth)
   if (isHomepage || isPublicRoute || isApiRoute) {
     const routeType = isApiRoute ? 'API route' : isHomepage ? 'Homepage' : 'Public route';
-    console.log(`[Middleware] ${routeType}, skipping auth check`);
+    debugLog(`${routeType}, skipping auth check`);
     return NextResponse.next();
   }
 
@@ -40,7 +85,7 @@ export async function middleware(request: NextRequest) {
   const sessionToken = request.cookies.get('better-auth.session_token')?.value;
   
   if (!sessionToken) {
-    console.log('[Middleware] No session token found, redirecting to sign-in');
+    debugLog('No session token found, redirecting to sign-in');
     return NextResponse.redirect(new URL('/sign-in', request.url));
   }
 
@@ -55,60 +100,67 @@ export async function middleware(request: NextRequest) {
   
   if (needsRoleCheck) {
     try {
-      const url = new URL('/api/auth/get-session', request.url);
-      const sessionResponse = await fetch(url, {
-        headers: {
-          cookie: request.headers.get('cookie') || '',
-        },
-        cache: 'no-store', // Don't cache role checks
-      });
-
-      if (!sessionResponse.ok) {
-        console.log('[Middleware] Invalid session, redirecting to sign-in');
-        return NextResponse.redirect(new URL('/sign-in', request.url));
-      }
-
-      const sessionData = await sessionResponse.json();
-      const user = sessionData?.user;
+      let user = getCachedSession(sessionToken);
 
       if (!user) {
-        console.log('[Middleware] No user in session, redirecting to sign-in');
-        return NextResponse.redirect(new URL('/sign-in', request.url));
+        const url = new URL('/api/auth/get-session', request.url);
+        const sessionResponse = await fetch(url, {
+          headers: {
+            cookie: request.headers.get('cookie') || '',
+          },
+          cache: 'no-store',
+        });
+
+        if (!sessionResponse.ok) {
+          debugLog('Invalid session, redirecting to sign-in');
+          return NextResponse.redirect(new URL('/sign-in', request.url));
+        }
+
+        const sessionData = await sessionResponse.json();
+        user = sessionData?.user;
+
+        if (!user) {
+          debugLog('No user in session payload, redirecting to sign-in');
+          return NextResponse.redirect(new URL('/sign-in', request.url));
+        }
+
+        setCachedSession(sessionToken, user);
       }
 
-      console.log('[Middleware] Role check:', {
+      const access = getUserPortalAccess(user);
+
+      debugLog('Role check', {
         pathname,
         userRole: user.role,
-        hasPartnerAccess: user.hasPartnerAccess,
-        isAlifhAdmin: user.isAlifhAdmin,
+        access,
         partnershipCount: user.partnerMemberships?.length || 0,
       });
 
       // Admin dashboard - ONLY super_admin or admin (platform admins)
       if (pathname.startsWith('/admin-dashboard')) {
-        if (!user.isAlifhAdmin) {
-          console.log('[Middleware] ❌ Access DENIED - Only platform admins can access admin dashboard');
+        if (!access.admin) {
+          debugLog('Access denied: admin dashboard requires platform admin role');
           return NextResponse.redirect(new URL('/access-denied?reason=insufficient-permissions', request.url));
         }
-        console.log('[Middleware] ✅ Admin access GRANTED');
+        debugLog('Admin access granted');
       }
 
       // Partner dashboard - ONLY dealer owners (users with staffRole === 'owner')
       if (pathname.startsWith('/partner-dashboard')) {
         if (!isDealerOwner(user)) {
-          console.log('[Middleware] ❌ Access DENIED - Only dealer owners can access partner dashboard');
+          debugLog('Access denied: partner dashboard requires dealer owner');
           return NextResponse.redirect(new URL('/access-denied?reason=not-dealer-owner', request.url));
         }
-        console.log('[Middleware] ✅ Dealer Owner access GRANTED');
+        debugLog('Dealer owner access granted');
       }
 
       // Staff dashboard - ONLY dealer staff (has partner access but NOT owner)
       if (pathname.startsWith('/staff-dashboard')) {
         if (!isDealerStaff(user)) {
-          console.log('[Middleware] ❌ Access DENIED - Only dealer staff can access staff dashboard');
+          debugLog('Access denied: staff dashboard requires partner staff');
           return NextResponse.redirect(new URL('/access-denied?reason=not-dealer-staff', request.url));
         }
-        console.log('[Middleware] ✅ Staff access GRANTED');
+        debugLog('Staff access granted');
       }
     } catch (error) {
       console.error('[Middleware] Error checking role:', error);
@@ -117,7 +169,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Session token exists, allow access
-  console.log('[Middleware] Session valid, allowing access');
+  debugLog('Session valid, allowing access');
   return NextResponse.next();
 }
 
