@@ -119,10 +119,11 @@ function DashboardSidebar({
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           className="w-full text-left px-3 py-2 rounded-lg text-sm text-foreground hover:bg-muted/20 transition-colors flex items-center gap-2"
         >
+          {/* Suppress hydration warning by not rendering icon on server */}
           {theme === 'dark' ? (
-            <Sun className="w-4 h-4 text-muted-foreground" />
+            <Sun className="w-4 h-4 text-muted-foreground" suppressHydrationWarning />
           ) : (
-            <Moon className="w-4 h-4 text-muted-foreground" />
+            <Moon className="w-4 h-4 text-muted-foreground" suppressHydrationWarning />
           )}
           <span>Theme</span>
         </button>
@@ -226,6 +227,51 @@ export function PartnerDashboardLayout({
       </main>
 
       {/* Right Panel (Partner Only) */}
+      {rightPanel && (
+        <aside className="w-80 h-screen bg-card border-l border-border/40 overflow-auto">
+          <div className="p-6">
+            {rightPanel}
+          </div>
+        </aside>
+      )}
+    </div>
+  );
+}
+
+// Staff Dashboard Layout (for dealer staff)
+export function StaffDashboardLayout({ children, user, activeTab, rightPanel }: DashboardLayoutProps & { rightPanel?: ReactNode }) {
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    const { authClient } = await import("@/lib/auth/client");
+    await authClient.signOut();
+    router.push('/');
+  };
+
+  const navItems: NavItem[] = [
+    { label: 'Overview', icon: LayoutDashboard, href: '#overview', id: 'overview' },
+    { label: 'My Listings', icon: Store, href: '#listings', id: 'listings' },
+    { label: 'My Leads', icon: Users, href: '#leads', id: 'leads' },
+    { label: 'Inventory', icon: Home, href: '#inventory', id: 'inventory' },
+  ];
+
+  return (
+    <div className="flex h-screen bg-background">
+      <DashboardSidebar 
+        navItems={navItems} 
+        activeTab={activeTab} 
+        user={user}
+        onSignOut={handleSignOut}
+      />
+      
+      {/* Main Content */}
+      <main className="flex-1 overflow-auto">
+        <div className="container mx-auto p-6">
+          {children}
+        </div>
+      </main>
+
+      {/* Right Panel */}
       {rightPanel && (
         <aside className="w-80 h-screen bg-card border-l border-border/40 overflow-auto">
           <div className="p-6">

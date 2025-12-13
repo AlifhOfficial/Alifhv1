@@ -14,7 +14,11 @@
     "lint": "turbo run lint",
     "format": "turbo run format",
     "db:seed": "bun scripts/seed.ts",
-    "db:reset": "bun scripts/reset-db.ts"
+    "db:reset": "bun scripts/reset-db.ts",
+    "users:seed": "cd apps/web && bun ../../scripts/create-test-users.ts",
+    "users:clear": "cd apps/web && bun ../../scripts/clear-users.ts",
+    "partners:setup": "cd apps/web && bun ../../scripts/setup-partners-and-staff.ts",
+    "sessions:clear": "cd apps/web && bun ../../scripts/clear-sessions.ts"
   },
   "workspaces": [
     "apps/*",

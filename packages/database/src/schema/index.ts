@@ -4,4 +4,6 @@
  */
 
 export * from './auth';
+export * from './profile';
+export * from './partner';
 export * from './relations';

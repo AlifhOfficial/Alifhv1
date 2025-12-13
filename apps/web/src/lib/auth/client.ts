@@ -13,8 +13,6 @@ export const authClient = createAuthClient({
       ac,
       roles: {
         admin: roles.admin,
-        partner: roles.partner,
-        staff: roles.staff,
         user: roles.user,
       },
     }),

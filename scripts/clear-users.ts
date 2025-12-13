@@ -3,8 +3,8 @@
  * Deletes all users from the database
  */
 
-import { db } from "@alifh/database";
-import { user, session, account, verification } from "@alifh/database";
+import { db } from "../packages/database/src/dbclient";
+import { user, session, account, verification } from "../packages/database/src/schema/auth";
 
 async function clearUsers() {
   console.log("🗑️  Clearing all users from database...\n");

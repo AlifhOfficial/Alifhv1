@@ -24,7 +24,7 @@ const statement = {
 export const ac = createAccessControl(statement);
 
 /**
- * Admin Role
+ * Admin Role (includes super_admin)
  * Full control over all resources including user management
  */
 export const admin = ac.newRole({
@@ -33,28 +33,9 @@ export const admin = ac.newRole({
 });
 
 /**
- * Partner Role
- * Can manage their own resources but limited user management
- */
-export const partner = ac.newRole({
-  user: ["list"], // Can view user lists
-  session: ["list"], // Can view session lists
-  // Add custom partner permissions here
-});
-
-/**
- * Staff Role
- * Limited administrative capabilities
- */
-export const staff = ac.newRole({
-  user: ["list"], // Can view user lists
-  session: ["list"], // Can view session lists
-  // Add custom staff permissions here
-});
-
-/**
  * User Role (Default)
  * Standard user with no administrative privileges
+ * Note: Partner access is controlled by partner_staff table membership, not role
  */
 export const user = ac.newRole({
   // Users have no admin permissions by default
@@ -66,8 +47,6 @@ export const user = ac.newRole({
  */
 export const roles = {
   admin,
-  partner,
-  staff,
   user,
 } as const;
 

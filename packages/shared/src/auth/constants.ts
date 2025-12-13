@@ -6,12 +6,11 @@
 
 import type { UserRole } from './types';
 
-// Basic user roles for our 4-portal system
+// Basic user roles - platform level only
 export const USER_ROLES = {
-  ADMIN: 'admin',     // Platform admin
-  PARTNER: 'partner', // Dealership owner
-  STAFF: 'staff',     // Dealership staff
-  USER: 'user',       // Individual users
+  SUPER_ADMIN: 'super_admin', // Super admin
+  ADMIN: 'admin',              // Platform admin
+  USER: 'user',                // Regular users
 } as const;
 
 // =============================================================================
@@ -20,17 +19,15 @@ export const USER_ROLES = {
 
 // Default redirects for each role
 export const DEFAULT_REDIRECTS: Record<UserRole, string> = {
+  'super_admin': '/admin-dashboard',
   'admin': '/admin-dashboard',
-  'partner': '/partner-dashboard', 
-  'staff': '/staff-dashboard',
   'user': '/user-dashboard',
 };
 
-// Protected route patterns for our 4-portal system
+// Protected route patterns
 export const PROTECTED_ROUTES = {
   USER: ['/user-dashboard/**'],
-  PARTNER: ['/partner-dashboard/**'],
-  STAFF: ['/staff-dashboard/**'], 
+  PARTNER: ['/partner-dashboard/**'], // Protected by partner_staff membership check
   ADMIN: ['/admin-dashboard/**'],
 } as const;
 
