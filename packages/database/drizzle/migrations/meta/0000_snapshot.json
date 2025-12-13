@@ -1,5 +1,5 @@
 {
-  "id": "8668aeb5-39e3-4071-84b1-7d1f9125ce3c",
+  "id": "183913d2-4e68-493b-abcc-df0b30857c28",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -195,6 +195,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "impersonatedBy": {
+          "name": "impersonatedBy",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "createdAt": {
           "name": "createdAt",
           "type": "timestamp",
@@ -246,6 +252,21 @@
           "columns": [
             {
               "expression": "token",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "session_impersonated_by_idx": {
+          "name": "session_impersonated_by_idx",
+          "columns": [
+            {
+              "expression": "impersonatedBy",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -307,6 +328,32 @@
           "primaryKey": false,
           "notNull": false
         },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'user'"
+        },
+        "banned": {
+          "name": "banned",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "banReason": {
+          "name": "banReason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "banExpires": {
+          "name": "banExpires",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
         "createdAt": {
           "name": "createdAt",
           "type": "timestamp",
@@ -328,6 +375,36 @@
           "columns": [
             {
               "expression": "email",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "users_role_idx": {
+          "name": "users_role_idx",
+          "columns": [
+            {
+              "expression": "role",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "users_banned_idx": {
+          "name": "users_banned_idx",
+          "columns": [
+            {
+              "expression": "banned",
               "isExpression": false,
               "asc": true,
               "nulls": "last"

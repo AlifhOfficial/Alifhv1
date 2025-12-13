@@ -1,7 +1,7 @@
 /**
  * Auth Schema Relations
  * 
- * Basic Better Auth relations only.
+ * Better Auth relations with admin plugin support.
  */
 
 import { relations } from 'drizzle-orm';
@@ -12,7 +12,13 @@ import {
   verification
 } from './auth';
 
-// Basic Better Auth relations
+// User relations (one-to-many)
+export const userRelations = relations(users, ({ many }) => ({
+  sessions: many(session),
+  accounts: many(account),
+}));
+
+// Account relations (many-to-one)
 export const accountRelations = relations(account, ({ one }) => ({
   user: one(users, { 
     fields: [account.userId], 
@@ -20,6 +26,7 @@ export const accountRelations = relations(account, ({ one }) => ({
   }),
 }));
 
+// Session relations (many-to-one)
 export const sessionRelations = relations(session, ({ one }) => ({
   user: one(users, { 
     fields: [session.userId], 
