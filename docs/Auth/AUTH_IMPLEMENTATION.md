@@ -48,7 +48,7 @@ The current implementation is driven by Better Auth + Drizzle with a single exte
   - 30s in-memory cache for extended sessions keyed by cookie token
   - Uses `getUserPortalAccess`, `isDealerOwner`, `isDealerStaff` to route users
   - Redirects to `/access-denied` with reasons when checks fail
-- **Routing helpers** (`apps/web/src/lib/auth/routing.ts`):
+- **Routing helpers** (`packages/shared/src/auth/routing.ts`):
   - `getDefaultRedirect`, `getUserPortalAccess`, `getUserPartnerContext`
   - Central source of truth for navbar, dashboards, and guards
 - **Client surface**:
@@ -62,7 +62,7 @@ The current implementation is driven by Better Auth + Drizzle with a single exte
 - Every new role/permission must flow through `get-session` to reach middleware/UI.
 - If partner assignments change, purge the 30s cache by rotating the session cookie.
 - For new portals:
-  1. Extend `ExtendedUser` + helpers in `routing.ts`
+   1. Extend `ExtendedUser` + helpers in `packages/shared/src/auth/routing.ts`
   2. Update middleware guards
   3. Adjust navbar/dashboard nav items
   4. Add tests under `apps/web/src/lib/auth/__tests__`

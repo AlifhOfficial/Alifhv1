@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
-import { auth } from "./index";
 import { headers } from "next/headers";
-import type { ExtendedUser } from "./routing";
+import { auth } from "./index";
+import type { ExtendedUser } from "@alifh/shared/auth";
 import type { UserRole } from "@alifh/shared";
 
 /**

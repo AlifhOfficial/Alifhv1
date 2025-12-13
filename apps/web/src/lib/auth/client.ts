@@ -3,7 +3,7 @@
 import { createAuthClient } from "better-auth/react";
 import { magicLinkClient } from "better-auth/client/plugins";
 import { adminClient } from "better-auth/client/plugins";
-import { ac, roles } from "./permissions";
+import { ac, roles } from "@alifh/shared/auth";
 
 export const authClient = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",

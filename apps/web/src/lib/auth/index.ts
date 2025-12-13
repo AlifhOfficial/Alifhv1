@@ -8,7 +8,7 @@ import { UserRole } from "@alifh/shared";
 import { eq, and } from "drizzle-orm";
 
 import { emailService } from "@/lib/email";
-import { ac, roles } from "./permissions";
+import { ac, roles } from "@alifh/shared/auth";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {

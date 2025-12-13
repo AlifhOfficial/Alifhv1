@@ -23,7 +23,7 @@ Dashboards
     |-- theme toggle (client only)
 
 Helpers
-    |-- `apps/web/src/lib/auth/routing.ts`
+    |-- `packages/shared/src/auth/routing.ts`
           ├─ ExtendedUser type
           ├─ getDefaultRedirect()
           ├─ isDealerOwner()/isDealerStaff()
@@ -52,7 +52,7 @@ All other routes replay the cached session but skip role gating. Public routes a
 ## Extending Routing
 
 If you add a new portal:
-1. Extend `ExtendedUser` and helpers in `routing.ts` with the new role flag.
+1. Extend `ExtendedUser` and helpers in `packages/shared/src/auth/routing.ts` with the new role flag.
 2. Update middleware guard logic (and redirect reason).
 3. Surface link(s) in `ProfileMenu` and relevant dashboard layout.
 4. Add coverage in `apps/web/src/lib/auth/__tests__/routing.test.ts`.

@@ -5,8 +5,9 @@ import {
   getUserPortalAccess,
   isDealerOwner,
   isDealerStaff,
-} from "@/lib/auth/routing";
-import { getCachedSession, setCachedSession } from "@/lib/auth/session-cache";
+  getCachedSession,
+  setCachedSession,
+} from "@alifh/shared/auth";
 
 const isDev = process.env.NODE_ENV !== "production";
 const enableDebugLogs = process.env.ENABLE_AUTH_DEBUG === "true" || isDev;

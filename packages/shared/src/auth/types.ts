@@ -33,12 +33,17 @@ export type User = {
   createdAt: Date;
   updatedAt: Date;
   role: UserRole;
+  banned: boolean;
+  banReason?: string | null;
+  banExpires?: Date | null;
   
   // Partner access data (populated from session)
   partnerMemberships?: PartnerMembership[];
   hasPartnerAccess?: boolean;
   isAlifhAdmin?: boolean;
 };
+
+export type ExtendedUser = User;
 
 export type AuthResponse<T = unknown> = {
   success: boolean;

@@ -12,7 +12,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { UserRole } from "@alifh/shared";
-import { getUserPortalAccess } from "@/lib/auth/routing";
+import { getUserPortalAccess } from "@alifh/shared/auth";
 
 interface UserData {
   id: string;
