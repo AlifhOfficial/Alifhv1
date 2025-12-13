@@ -4,7 +4,7 @@
  */
 
 import { db } from "@alifh/database";
-import { users, session, account, verification } from "@alifh/database";
+import { user, session, account, verification } from "@alifh/database";
 
 async function clearUsers() {
   console.log("🗑️  Clearing all users from database...\n");
@@ -21,7 +21,7 @@ async function clearUsers() {
     await db.delete(verification);
     
     console.log("Deleting users...");
-    await db.delete(users);
+    await db.delete(user);
 
     console.log("\n✅ All users deleted successfully!\n");
   } catch (error: any) {

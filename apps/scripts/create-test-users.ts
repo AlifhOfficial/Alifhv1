@@ -4,7 +4,7 @@
  */
 
 import { auth } from "@/lib/auth";
-import { db, users } from "@alifh/database";
+import { db, user } from "@alifh/database";
 import { eq } from "drizzle-orm";
 
 async function seedUsers() {
@@ -55,12 +55,12 @@ async function seedUsers() {
         
         // Manually verify the email in database
         await db
-          .update(users)
+          .update(user)
           .set({ 
             emailVerified: true,
             role: userData.role,
           })
-          .where(eq(users.email, userData.email));
+          .where(eq(user.email, userData.email));
         
         console.log(`✅ Email verified and role set to: ${userData.role}\n`);
       }

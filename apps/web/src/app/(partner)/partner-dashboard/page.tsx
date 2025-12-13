@@ -1,15 +1,31 @@
 import { requireRole } from "@/lib/auth/roles";
+import { PartnerDashboardLayout } from "@/components/layouts/dashboard-layout";
 
 export default async function PartnerDashboard() {
-  // Require partner role to access this page
   const user = await requireRole('partner');
 
-  return (
-    <div className="space-y-6">
-      <div className="border-l-4 border-primary p-4 bg-card">
-        <h1 className="text-2xl font-bold mb-2">Partner Dashboard</h1>
-        <p className="text-muted-foreground">Manage your dealership business operations.</p>
+  // Right panel content
+  const rightPanel = (
+    <div className="space-y-4">
+      <h3 className="text-sm font-medium text-foreground">Quick Actions</h3>
+      <div className="space-y-2">
+        <button className="w-full text-left px-3 py-2 bg-muted/20 rounded-lg text-sm hover:bg-muted/30 transition-colors">
+          Add New Listing
+        </button>
+        <button className="w-full text-left px-3 py-2 bg-muted/20 rounded-lg text-sm hover:bg-muted/30 transition-colors">
+          View Inquiries
+        </button>
       </div>
+    </div>
+  );
+
+  return (
+    <PartnerDashboardLayout user={user} activeTab="overview" rightPanel={rightPanel}>
+      <div className="space-y-6">
+        <div className="border-l-4 border-primary p-4 bg-card rounded-lg">
+          <h1 className="text-xl font-medium">Partner Dashboard</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Manage your dealership business operations.</p>
+        </div>
 
       {/* Business Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -50,15 +66,14 @@ export default async function PartnerDashboard() {
         </div>
       </div>
 
-      {user && (
-        <div className="bg-card p-4 rounded-lg border">
-          <h2 className="text-lg font-semibold mb-2">Dealership Owner</h2>
-          <div className="space-y-2">
-            <p><strong>Name:</strong> {user.name || 'Not provided'}</p>
-            <p><strong>Email:</strong> {user.email || 'Not provided'}</p>
-          </div>
+      <div className="bg-card p-4 rounded-lg border">
+        <h2 className="text-sm font-medium mb-3">Account Details</h2>
+        <div className="space-y-2 text-sm">
+          <p className="text-muted-foreground"><span className="text-foreground font-medium">Name:</span> {user.name || 'Not provided'}</p>
+          <p className="text-muted-foreground"><span className="text-foreground font-medium">Email:</span> {user.email || 'Not provided'}</p>
         </div>
-      )}
-    </div>
+      </div>
+      </div>
+    </PartnerDashboardLayout>
   );
 }

@@ -1,14 +1,16 @@
 import { requireAuth } from "@/lib/auth/roles";
+import { StandardDashboardLayout } from "@/components/layouts/dashboard-layout";
 
 export default async function UserDashboard() {
   const user = await requireAuth();
 
   return (
-    <div className="space-y-6">
-      <div className="border-l-4 border-primary p-4 bg-card">
-        <h1 className="text-2xl font-bold mb-2">My Dashboard</h1>
-        <p className="text-muted-foreground">Manage your car listings and marketplace activity.</p>
-      </div>
+    <StandardDashboardLayout user={user} activeTab="overview">
+      <div className="space-y-6">
+        <div className="border-l-4 border-primary p-4 bg-card rounded-lg">
+          <h1 className="text-xl font-medium">My Dashboard</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Manage your car listings and marketplace activity.</p>
+        </div>
 
       {/* User Activity Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -51,13 +53,14 @@ export default async function UserDashboard() {
 
       {user && (
         <div className="bg-card p-4 rounded-lg border">
-          <h2 className="text-lg font-semibold mb-2">Your Profile</h2>
-          <div className="space-y-2">
-            <p><strong>Name:</strong> {user.name || 'Not provided'}</p>
-            <p><strong>Email:</strong> {user.email || 'Not provided'}</p>
+          <h2 className="text-sm font-medium mb-3">Your Profile</h2>
+          <div className="space-y-2 text-sm">
+            <p className="text-muted-foreground"><span className="text-foreground font-medium">Name:</span> {user.name || 'Not provided'}</p>
+            <p className="text-muted-foreground"><span className="text-foreground font-medium">Email:</span> {user.email || 'Not provided'}</p>
           </div>
         </div>
       )}
     </div>
+    </StandardDashboardLayout>
   );
 }
