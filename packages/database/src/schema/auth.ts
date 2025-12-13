@@ -11,43 +11,40 @@ import { createId } from '@paralleldrive/cuid2';
 
 export const account = pgTable('account', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
-  accountId: text('accountId').notNull(),
-  providerId: text('providerId').notNull(),
-  userId: text('userId').notNull(),
-  accessToken: text('accessToken'),
-  refreshToken: text('refreshToken'),
-  idToken: text('idToken'),
-  accessTokenExpiresAt: timestamp('accessTokenExpiresAt'),
-  refreshTokenExpiresAt: timestamp('refreshTokenExpiresAt'),
+  accountId: text('account_id').notNull(),
+  providerId: text('provider_id').notNull(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  accessToken: text('access_token'),
+  refreshToken: text('refresh_token'),
+  idToken: text('id_token'),
+  accessTokenExpiresAt: timestamp('access_token_expires_at'),
+  refreshTokenExpiresAt: timestamp('refresh_token_expires_at'),
   scope: text('scope'),
-  expiresAt: timestamp('expiresAt'),
   password: text('password'),
-  createdAt: timestamp('createdAt').defaultNow().notNull(),
-  updatedAt: timestamp('updatedAt').defaultNow().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').$onUpdate(() => new Date()).notNull(),
 }, (table) => {
   return {
     // Better Auth lookups
-    userIdIdx: index('account_user_id_idx').on(table.userId),
-    providerAccountIdx: index('account_provider_account_idx').on(table.providerId, table.accountId),
-    expiresAtIdx: index('account_expires_at_idx').on(table.expiresAt),
+    userIdIdx: index('account_userId_idx').on(table.userId),
   };
 });
 
 export const session = pgTable('session', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
-  expiresAt: timestamp('expiresAt').notNull(),
-  ipAddress: text('ipAddress'),
-  userAgent: text('userAgent'),
-  userId: text('userId').notNull(),
+  expiresAt: timestamp('expires_at').notNull(),
   token: text('token').notNull().unique(),
-  createdAt: timestamp('createdAt').defaultNow().notNull(),
-  updatedAt: timestamp('updatedAt').defaultNow().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').$onUpdate(() => new Date()).notNull(),
+  ipAddress: text('ip_address'),
+  userAgent: text('user_agent'),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  // Better Auth Admin plugin field
+  impersonatedBy: text('impersonated_by'),
 }, (table) => {
   return {
     // Session management
-    userIdIdx: index('session_user_id_idx').on(table.userId),
-    expiresAtIdx: index('session_expires_at_idx').on(table.expiresAt),
-    tokenIdx: index('session_token_idx').on(table.token), // Already unique but for performance
+    userIdIdx: index('session_userId_idx').on(table.userId),
   };
 });
 
@@ -55,31 +52,36 @@ export const verification = pgTable('verification', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   identifier: text('identifier').notNull(),
   value: text('value').notNull(),
-  expiresAt: timestamp('expiresAt').notNull(),
-  createdAt: timestamp('createdAt').defaultNow().notNull(),
-  updatedAt: timestamp('updatedAt').defaultNow().notNull(),
+  expiresAt: timestamp('expires_at').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
 }, (table) => {
   return {
     // Email verification lookups
     identifierIdx: index('verification_identifier_idx').on(table.identifier),
-    valueIdx: index('verification_value_idx').on(table.value),
-    expiresAtIdx: index('verification_expires_at_idx').on(table.expiresAt),
   };
 });
 
-export const users = pgTable('users', {
+export const users = pgTable('user', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   name: text('name').notNull(),
   email: text('email').notNull().unique(),
-  emailVerified: boolean('emailVerified').default(false),
+  emailVerified: boolean('email_verified').default(false).notNull(),
   image: text('image'),
-  createdAt: timestamp('createdAt').defaultNow().notNull(),
-  updatedAt: timestamp('updatedAt').defaultNow().notNull(),
+  // Better Auth Admin plugin fields
+  role: text('role'),
+  banned: boolean('banned').default(false),
+  banReason: text('ban_reason'),
+  banExpires: timestamp('ban_expires'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
 }, (table) => {
   return {
     // Basic indexes for Better Auth
-    emailIdx: index('users_email_idx').on(table.email),
-    createdAtIdx: index('users_created_at_idx').on(table.createdAt),
+    emailIdx: index('user_email_idx').on(table.email),
+    roleIdx: index('user_role_idx').on(table.role),
+    bannedIdx: index('user_banned_idx').on(table.banned),
+    createdAtIdx: index('user_created_at_idx').on(table.createdAt),
   };
 });
 

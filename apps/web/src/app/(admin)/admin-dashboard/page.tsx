@@ -1,4 +1,7 @@
-export default function AdminDashboardPage() {
+import { requireRole } from "@/lib/auth/roles";
+
+export default async function AdminDashboardPage() {
+  const user = await requireRole('admin');
   return (
     <div className="space-y-6">
       <div className="border-l-4 border-primary p-4 bg-card">

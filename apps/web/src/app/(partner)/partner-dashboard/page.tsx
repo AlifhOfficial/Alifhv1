@@ -1,17 +1,8 @@
-'use client';
+import { requireRole } from "@/lib/auth/roles";
 
-import { useUser } from '@/hooks/auth/use-auth';
-
-export default function PartnerDashboard() {
-  const { user, isLoading } = useUser();
-
-  if (isLoading) {
-    return (
-      <div className="p-6 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
+export default async function PartnerDashboard() {
+  // Require partner role to access this page
+  const user = await requireRole('partner');
 
   return (
     <div className="space-y-6">

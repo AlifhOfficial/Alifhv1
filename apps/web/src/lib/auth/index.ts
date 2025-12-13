@@ -4,8 +4,10 @@ import { magicLink } from "better-auth/plugins/magic-link";
 import { admin } from "better-auth/plugins/admin";
 import { db } from "@alifh/database";
 import * as schema from "@alifh/database";
+import { UserRole } from "@alifh/shared";
 
 import { emailService } from "@/lib/email";
+import { ac, roles } from "./permissions";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -15,16 +17,22 @@ export const auth = betterAuth({
       account: schema.account,
       session: schema.session,
       verification: schema.verification,
+      // Include relations for Better Auth joins
+      userRelations: schema.userRelations,
+      accountRelations: schema.accountRelations,
+      sessionRelations: schema.sessionRelations,
     }
   }),
 
-
+  session: {
+    expiresIn: 60 * 60 * 24 * 7,
+    updateAge: 60 * 60 * 24,
+  },
 
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
-    sendResetPassword: async ({ user, url, token }, request) => {
-      console.log("📧 Sending password reset to existing user:", user.email);
+    sendResetPassword: async ({ user, url, token }) => {
       await emailService.sendPasswordReset({ user, url, token });
     },
   },
@@ -39,17 +47,24 @@ export const auth = betterAuth({
 
   plugins: [
     magicLink({
-      sendMagicLink: async ({ email, url, token }, ctx) => {
-        console.log("� Sending magic link to:", email);
-        console.log("🔗 Magic link URL:", url);
-        
+      sendMagicLink: async ({ email, url, token }) => {
         await emailService.sendMagicLink({ 
           user: { email, name: email.split('@')[0] }, 
           url, 
           token 
         });
       },
-      expiresIn: 60 * 10, // 10 minutes
+      expiresIn: 60 * 10,
+    }),
+    admin({
+      defaultRole: "user",
+      ac,
+      roles: {
+        admin: roles.admin,
+        partner: roles.partner,
+        staff: roles.staff,
+        user: roles.user,
+      },
     }),
   ],
 
@@ -60,17 +75,17 @@ export const auth = betterAuth({
     },
   },
 
-  session: {
-    expiresIn: 60 * 60 * 24 * 7, // 7 days
-    updateAge: 60 * 60 * 24, // 1 day
-  },
-
-
-
   trustedOrigins: [
     process.env.NEXTAUTH_URL || "http://localhost:3000",
   ],
 });
 
-export type Session = typeof auth.$Infer.Session;
-export type User = typeof auth.$Infer.Session.user;
+export type Session = typeof auth.$Infer.Session & {
+  user: typeof auth.$Infer.Session.user & {
+    role: UserRole;
+  };
+};
+
+export type AuthUser = typeof auth.$Infer.Session.user & {
+  role: UserRole;
+};
