@@ -18,15 +18,6 @@ export const USER_ROLES = {
 // STATUS MAPS
 // =============================================================================
 
-export const USER_STATUSES: Record<UserStatus, UserStatus> = {
-  active: 'active',
-  pending: 'pending',
-  suspended: 'suspended',
-  inactive: 'inactive',
-};
-
-export const PARTNER_STATUSES: Record<PartnerStatus, PartnerStatus> = {
-  draft: 'draft',
 // Default redirects for each role
 export const DEFAULT_REDIRECTS: Record<UserRole, string> = {
   'admin': '/admin-dashboard',
