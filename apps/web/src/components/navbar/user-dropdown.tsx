@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { UserRole } from "@alifh/shared";
-import { isDealerOwner, isDealerStaff } from "@/lib/auth/routing";
+import { getUserPortalAccess } from "@/lib/auth/routing";
 
 interface UserData {
   id: string;
@@ -59,22 +59,12 @@ export function ProfileMenu({
     const displayName = user.name || 'User';
     const firstName = user.name?.split(' ')[0] || 'User';
 
-    console.log('[ProfileMenu] User data:', {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      hasPartnerAccess: user.hasPartnerAccess,
-      isAlifhAdmin: user.isAlifhAdmin,
-      partnershipCount: user.partnerMemberships?.length || 0,
-      partnerMemberships: user.partnerMemberships,
-    });
-
     const getDashboardAccess = (userData: UserData): DashboardItem[] => {
       const dashboards: DashboardItem[] = [];
+      const access = getUserPortalAccess(userData as any);
       
       // Platform Admin (super_admin or admin) - Admin Dashboard + User Dashboard
-      if (userData.isAlifhAdmin) {
+      if (access.admin) {
         dashboards.push({ 
           name: 'Platform Admin', 
           path: '/admin-dashboard',
@@ -89,7 +79,7 @@ export function ProfileMenu({
       }
       
       // Dealer Owner (partnerRole === 'owner') - Partner Dashboard + User Dashboard
-      if (isDealerOwner(userData as any)) {
+      if (access.partnerOwner) {
         dashboards.push({ 
           name: 'Dealership Manager', 
           path: '/partner-dashboard',
@@ -104,7 +94,7 @@ export function ProfileMenu({
       }
       
       // Dealer Staff (has partner access but NOT owner) - Staff Dashboard + User Dashboard
-      if (isDealerStaff(userData as any)) {
+      if (access.partnerStaff) {
         dashboards.push({ 
           name: 'Staff Dashboard', 
           path: '/staff-dashboard',

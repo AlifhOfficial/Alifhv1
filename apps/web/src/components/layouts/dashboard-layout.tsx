@@ -5,7 +5,7 @@
 
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { 
   Home, 
@@ -49,7 +49,22 @@ function DashboardSidebar({
   onSignOut: () => void;
 }) {
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const currentTheme = useMemo(() => {
+    if (!mounted) return "light";
+    return resolvedTheme ?? "light";
+  }, [mounted, resolvedTheme]);
+
+  const toggleTheme = () => {
+    const nextTheme = currentTheme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+  };
 
   const getInitials = () => {
     return user.name
@@ -116,14 +131,17 @@ function DashboardSidebar({
       <div className="p-3 border-t border-border/20 space-y-1">
         {/* Theme Toggle */}
         <button
-          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          onClick={toggleTheme}
           className="w-full text-left px-3 py-2 rounded-lg text-sm text-foreground hover:bg-muted/20 transition-colors flex items-center gap-2"
         >
-          {/* Suppress hydration warning by not rendering icon on server */}
-          {theme === 'dark' ? (
-            <Sun className="w-4 h-4 text-muted-foreground" suppressHydrationWarning />
+          {mounted ? (
+            currentTheme === 'dark' ? (
+              <Sun className="w-4 h-4 text-muted-foreground" />
+            ) : (
+              <Moon className="w-4 h-4 text-muted-foreground" />
+            )
           ) : (
-            <Moon className="w-4 h-4 text-muted-foreground" suppressHydrationWarning />
+            <span className="w-4 h-4" aria-hidden />
           )}
           <span>Theme</span>
         </button>
