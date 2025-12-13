@@ -8,6 +8,20 @@
       "when": 1765583257794,
       "tag": "0000_workable_jackpot",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1765595298955,
+      "tag": "0001_woozy_the_captain",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1765595828425,
+      "tag": "0003_graceful_robbie_robertson",
+      "breakpoints": true
     }
   ]
 }

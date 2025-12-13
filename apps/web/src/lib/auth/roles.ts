@@ -1,112 +1,39 @@
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
+import { auth } from "./index";
 import { headers } from "next/headers";
-import { UserRole } from "@alifh/shared";
-import { UserWithRole, getDashboardRoute } from "./client-utils";
 
 /**
- * Get the current authenticated user with their role
+ * Simple auth helper - just requires any authenticated user
+ * Use this for pages that need login but no special role
  */
-export async function getCurrentUser(): Promise<UserWithRole | null> {
+export async function requireAuth() {
   const session = await auth.api.getSession({
-    headers: await headers()
+    headers: await headers(),
   });
-  
+
   if (!session?.user) {
-    return null;
+    redirect("/sign-in");
   }
 
-  return {
-    id: session.user.id,
-    name: session.user.name,
-    email: session.user.email,
-    role: session.user.role as UserRole | null
-  };
+  return session.user;
 }
 
 /**
- * Check if a user has a specific role
- * Uses Better Auth's role system
+ * Requires specific platform role (admin or super_admin)
+ * Use this for admin-only pages
  */
-export function hasRole(user: UserWithRole | null, role: UserRole): boolean {
-  if (!user || !user.role) return false;
-  
-  // Check exact role match
-  if (user.role === role) return true;
-  
-  // Admin has access to everything
-  if (user.role === 'admin') return true;
-  
-  return false;
-}
+export async function requireRole(role: "admin" | "super_admin") {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-/**
- * Check if a user has permission for a specific action
- * Uses Better Auth admin plugin's permission system
- */
-export async function hasPermission(
-  permissions: Record<string, string[]>
-): Promise<boolean> {
-  try {
-    const result = await auth.api.userHasPermission({
-      headers: await headers(),
-      body: { permissions }
-    });
-    return (result as any)?.hasPermission ?? false;
-  } catch (error) {
-    return false;
+  if (!session?.user) {
+    redirect("/sign-in");
   }
-}
 
-/**
- * Require a specific role, redirecting if not authorized
- */
-export async function requireRole(role: UserRole): Promise<UserWithRole> {
-  const user = await getCurrentUser();
-  
-  if (!user) {
-    redirect('/signin?error=unauthorized');
+  if (session.user.role !== role && session.user.role !== "super_admin") {
+    redirect("/access-denied?reason=insufficient-permissions");
   }
-  
-  if (!hasRole(user, role)) {
-    // Redirect to access denied page with info about required role
-    redirect(`/access-denied?required=${role}&current=${user.role || 'user'}`);
-  }
-  
-  return user;
-}
 
-/**
- * Require authentication, redirecting to home if not logged in
- */
-export async function requireAuth(): Promise<UserWithRole> {
-  const user = await getCurrentUser();
-  
-  if (!user) {
-    redirect('/');
-  }
-  
-  return user;
+  return session.user;
 }
-
-/**
- * Require admin role
- */
-export async function requireAdmin(): Promise<UserWithRole> {
-  return requireRole('admin');
-}
-
-/**
- * Require partner role
- */
-export async function requirePartner(): Promise<UserWithRole> {
-  return requireRole('partner');
-}
-
-/**
- * Require staff role
- */
-export async function requireStaff(): Promise<UserWithRole> {
-  return requireRole('staff');
-}
-

@@ -8,7 +8,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader2, X, CheckCircle2 } from "lucide-react";
 
 interface SignInFeedbackModalProps {
@@ -28,20 +28,56 @@ export function SignInFeedbackModal({
 }: SignInFeedbackModalProps) {
   const [showContent, setShowContent] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const contentTimeoutRef = useRef<number | null>(null);
+  const successTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (open) {
-      setTimeout(() => setShowContent(true), 150);
-    } else {
+    // Clear any existing timeouts when open changes
+    if (contentTimeoutRef.current) {
+      clearTimeout(contentTimeoutRef.current);
+      contentTimeoutRef.current = null;
+    }
+    if (!open) {
       setShowContent(false);
       setShowSuccess(false);
+      return;
     }
+
+    // Slight delay for entrance animation
+    contentTimeoutRef.current = window.setTimeout(() => setShowContent(true), 150);
+
+    return () => {
+      if (contentTimeoutRef.current) {
+        clearTimeout(contentTimeoutRef.current);
+        contentTimeoutRef.current = null;
+      }
+    };
   }, [open]);
 
   useEffect(() => {
-    if (success && open) {
-      setTimeout(() => setShowSuccess(true), 300);
+    // Show success state reliably when success becomes true while modal is open.
+    // Clear previous success timeout to avoid race conditions.
+    if (successTimeoutRef.current) {
+      clearTimeout(successTimeoutRef.current);
+      successTimeoutRef.current = null;
     }
+
+    if (success && open) {
+      // ensure content is visible before showing success (avoids flash)
+      setShowContent(true);
+      // Immediately show success state - no delay needed since the icon animation handles the visual transition
+      setShowSuccess(true);
+    } else if (!success) {
+      // Reset success state when success becomes false
+      setShowSuccess(false);
+    }
+
+    return () => {
+      if (successTimeoutRef.current) {
+        clearTimeout(successTimeoutRef.current);
+        successTimeoutRef.current = null;
+      }
+    };
   }, [success, open]);
 
   if (!open) return null;

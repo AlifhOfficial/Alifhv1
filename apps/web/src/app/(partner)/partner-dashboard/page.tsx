@@ -1,8 +1,31 @@
-import { requireRole } from "@/lib/auth/roles";
+import { requireAuth } from "@/lib/auth/roles";
 import { PartnerDashboardLayout } from "@/components/layouts/dashboard-layout";
+import { db } from "@alifh/database";
+import * as schema from "@alifh/database";
+import { eq, and } from "drizzle-orm";
+import { redirect } from "next/navigation";
 
 export default async function PartnerDashboard() {
-  const user = await requireRole('partner');
+  // Get authenticated user
+  const user = await requireAuth();
+
+  // Check if user has active partner_staff membership
+  const membership = await db
+    .select()
+    .from(schema.partnerStaff)
+    .where(
+      and(
+        eq(schema.partnerStaff.userId, user.id),
+        eq(schema.partnerStaff.status, "active")
+      )
+    )
+    .limit(1)
+    .execute();
+
+  // If no active membership, deny access
+  if (membership.length === 0 && user.role !== 'admin' && user.role !== 'super_admin') {
+    redirect('/access-denied?reason=not-partner-member');
+  }
 
   // Right panel content
   const rightPanel = (

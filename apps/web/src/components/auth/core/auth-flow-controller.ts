@@ -39,11 +39,12 @@ export class AuthFlowController {
       this.actions.setLoading(false);
       this.actions.setCurrentModal("signin-feedback");
       
-      // Auto-close and trigger callback after a delay
+      // Auto-close and trigger callback after showing success state
+      // Delay set to show welcome state for approximately 1 second
       setTimeout(() => {
         this.callbacks.onSuccess?.(result.user);
         this.handleCloseAll();
-      }, 2000);
+      }, 1000);
     } else {
       // Error state
       this.actions.setSignInSuccess(false);
@@ -72,11 +73,11 @@ export class AuthFlowController {
       this.actions.setCurrentModal("signin-feedback");
       this.actions.setLoading(false);
       
-      // Auto-close and trigger callback
+      // Auto-close and trigger callback after showing success state
       setTimeout(() => {
         this.callbacks.onSuccess?.(result.user);
         this.handleCloseAll();
-      }, 2000);
+      }, 1000);
     } else {
       // Error state
       this.actions.setLoading(false);

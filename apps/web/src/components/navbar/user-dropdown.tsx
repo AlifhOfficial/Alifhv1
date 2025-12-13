@@ -6,11 +6,11 @@ import {
   Settings, 
   LayoutDashboard, 
   Store, 
-  Users, 
   Home 
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { UserRole } from "@alifh/shared";
+import { isDealerOwner, isDealerStaff } from "@/lib/auth/routing";
 
 interface UserData {
   id: string;
@@ -18,6 +18,14 @@ interface UserData {
   email?: string;
   image?: string;
   role?: UserRole | null;
+  hasPartnerAccess?: boolean;
+  isAlifhAdmin?: boolean;
+  partnerMemberships?: Array<{
+    staffId: string;
+    partnerId: string;
+    partnerName: string;
+    staffRole: string;
+  }>;
 }
 
 interface ProfileMenuProps {
@@ -50,32 +58,67 @@ export function ProfileMenu({
   if (user) {
     const displayName = user.name || 'User';
     const firstName = user.name?.split(' ')[0] || 'User';
-    const userRole = user.role;
 
-    const getDashboardAccess = (role: UserRole | null): DashboardItem[] => {
+    console.log('[ProfileMenu] User data:', {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      hasPartnerAccess: user.hasPartnerAccess,
+      isAlifhAdmin: user.isAlifhAdmin,
+      partnershipCount: user.partnerMemberships?.length || 0,
+      partnerMemberships: user.partnerMemberships,
+    });
+
+    const getDashboardAccess = (userData: UserData): DashboardItem[] => {
       const dashboards: DashboardItem[] = [];
       
-      if (role === 'admin') {
+      // Platform Admin (super_admin or admin) - Admin Dashboard + User Dashboard
+      if (userData.isAlifhAdmin) {
         dashboards.push({ 
-          name: 'Admin Dashboard', 
+          name: 'Platform Admin', 
           path: '/admin-dashboard',
           icon: LayoutDashboard
         });
-      } else if (role === 'partner') {
         dashboards.push({ 
-          name: 'Partner Dashboard', 
+          name: 'My Dashboard', 
+          path: '/user-dashboard',
+          icon: Home
+        });
+        return dashboards;
+      }
+      
+      // Dealer Owner (partnerRole === 'owner') - Partner Dashboard + User Dashboard
+      if (isDealerOwner(userData as any)) {
+        dashboards.push({ 
+          name: 'Dealership Manager', 
           path: '/partner-dashboard',
           icon: Store
         });
-      } else if (role === 'staff') {
+        dashboards.push({ 
+          name: 'My Dashboard', 
+          path: '/user-dashboard',
+          icon: Home
+        });
+        return dashboards;
+      }
+      
+      // Dealer Staff (has partner access but NOT owner) - Staff Dashboard + User Dashboard
+      if (isDealerStaff(userData as any)) {
         dashboards.push({ 
           name: 'Staff Dashboard', 
           path: '/staff-dashboard',
-          icon: Users
+          icon: Store
         });
+        dashboards.push({ 
+          name: 'My Dashboard', 
+          path: '/user-dashboard',
+          icon: Home
+        });
+        return dashboards;
       }
       
-      // All users get their personal dashboard
+      // Regular Users/Customers - ONLY User Dashboard
       dashboards.push({ 
         name: 'My Dashboard', 
         path: '/user-dashboard',
@@ -85,7 +128,7 @@ export function ProfileMenu({
       return dashboards;
     };
 
-    const availableDashboards = getDashboardAccess(userRole);
+    const availableDashboards = getDashboardAccess(user);
 
     const handleDashboardNavigation = (path: string) => {
       router.push(path);
