@@ -133,6 +133,7 @@ export const auth = betterAuth({
         });
       },
       expiresIn: 60 * 10,
+      disableSignUp: true,
     }),
     admin({
       defaultRole: "user",

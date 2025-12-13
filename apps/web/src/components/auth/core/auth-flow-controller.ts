@@ -17,77 +17,146 @@ import {
 import { AuthState, AuthActions, AuthCallbacks } from "./auth-state";
 
 export class AuthFlowController {
+  private currentFlowAbortController: AbortController | null = null;
+
   constructor(
     private state: AuthState,
     private actions: AuthActions,
     private callbacks: AuthCallbacks = {}
   ) {}
 
+  private cancelCurrentFlow() {
+    if (this.currentFlowAbortController) {
+      this.currentFlowAbortController.abort();
+      this.currentFlowAbortController = null;
+    }
+    this.actions.setLoading(false);
+  }
+
+  private startFlow(run: (signal: AbortSignal) => Promise<void>) {
+    this.cancelCurrentFlow();
+    const controller = new AbortController();
+    this.currentFlowAbortController = controller;
+
+    run(controller.signal)
+      .catch((error) => {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+        console.error("[AuthFlowController] Flow error", error);
+      })
+      .finally(() => {
+        if (this.currentFlowAbortController === controller) {
+          this.currentFlowAbortController = null;
+        }
+      });
+  }
+
+  private async wait(ms: number, signal: AbortSignal) {
+    if (ms <= 0) {
+      return;
+    }
+
+    await new Promise<void>((resolve, reject) => {
+      const timeoutId = window.setTimeout(() => {
+        signal.removeEventListener("abort", onAbort);
+        resolve();
+      }, ms);
+
+      const onAbort = () => {
+        window.clearTimeout(timeoutId);
+        signal.removeEventListener("abort", onAbort);
+        reject(new DOMException("Flow aborted", "AbortError"));
+      };
+
+      signal.addEventListener("abort", onAbort);
+    });
+  }
+
   // Sign In Flows
   async handleSignIn(email: string, password: string) {
-    // Immediately show feedback modal
-    this.actions.setSignInSuccess(false);
-    this.actions.setCurrentModal("signin-feedback");
-    this.actions.setLoading(true);
-    this.actions.setError(null);
-
-    const result = await signInWithEmail(email, password);
-
-    if (result.success) {
-      // Show sign in feedback modal immediately
-      this.actions.setSignInSuccess(true);
-      this.actions.setLoading(false);
+    this.startFlow(async (signal) => {
+      this.actions.setSignInSuccess(false);
       this.actions.setCurrentModal("signin-feedback");
-      
-      // Auto-close and trigger callback after showing success state
-      // Delay set to show welcome state for approximately 1 second
-      setTimeout(() => {
+      this.actions.setLoading(true);
+      this.actions.setError(null);
+
+      const result = await signInWithEmail(email, password);
+      if (signal.aborted) return;
+
+      if (result.success) {
+        this.actions.setSignInSuccess(true);
+        this.actions.setLoading(false);
+
+        try {
+          await this.wait(1000, signal);
+        } catch {
+          return;
+        }
+
+        if (signal.aborted) return;
+
         this.callbacks.onSuccess?.(result.user);
         this.handleCloseAll();
-      }, 1000);
-    } else {
-      // Error state
-      this.actions.setSignInSuccess(false);
-      this.actions.setLoading(false);
-      this.actions.setError(result.error || "Sign in failed");
-      
-      // Return to sign-in modal after showing error
-      setTimeout(() => {
+      } else {
+        this.actions.setSignInSuccess(false);
+        this.actions.setLoading(false);
+        this.actions.setError(result.error || "Sign in failed");
+
+        try {
+          await this.wait(2000, signal);
+        } catch {
+          return;
+        }
+
+        if (signal.aborted) return;
+
         this.actions.setCurrentModal("signin");
         this.actions.setError(null);
-      }, 2000);
-    }
+      }
+    });
   }
 
   async handleGoogleSignIn() {
-    // Show Google redirect modal
-    this.actions.setCurrentModal("google-redirect");
-    this.actions.setLoading(true);
-    this.actions.setError(null);
+    this.startFlow(async (signal) => {
+      this.actions.setCurrentModal("google-redirect");
+      this.actions.setLoading(true);
+      this.actions.setError(null);
 
-    const result = await signInWithGoogle();
+      const result = await signInWithGoogle();
+      if (signal.aborted) return;
 
-    if (result.success) {
-      // Show success feedback
-      this.actions.setSignInSuccess(true);
-      this.actions.setCurrentModal("signin-feedback");
-      this.actions.setLoading(false);
-      
-      // Auto-close and trigger callback after showing success state
-      setTimeout(() => {
+      if (result.success) {
+        this.actions.setSignInSuccess(true);
+        this.actions.setLoading(false);
+        this.actions.setCurrentModal("signin-feedback");
+
+        try {
+          await this.wait(1000, signal);
+        } catch {
+          return;
+        }
+
+        if (signal.aborted) return;
+
         this.callbacks.onSuccess?.(result.user);
         this.handleCloseAll();
-      }, 1000);
-    } else {
-      // Error state
-      this.actions.setLoading(false);
-      this.actions.setError(result.error || "Google sign in failed");
-      
-      setTimeout(() => {
+      } else {
+        this.actions.setLoading(false);
+        this.actions.setError(result.error || "Google sign in failed");
+
+        try {
+          await this.wait(2000, signal);
+        } catch {
+          return;
+        }
+
+        if (signal.aborted) return;
+
         this.actions.setCurrentModal("signin");
         this.actions.setError(null);
-      }, 2000);
-    }
+      }
+    });
   }
 
   // Sign Up Flows
@@ -103,102 +172,153 @@ export class AuthFlowController {
       return;
     }
 
-    // Start loading
-    this.actions.setLoading(true);
-    this.actions.setError(null);
+    this.startFlow(async (signal) => {
+      const normalizedEmail = email.trim().toLowerCase();
+      const normalizedName = name.trim();
 
-    const result = await signUpWithEmail(name, email, password);
+      this.actions.setLoading(true);
+      this.actions.setError(null);
+      this.actions.setSignUpSource('email');
 
-    if (result.success) {
-      // Show email sent modal immediately for verification
-      this.actions.setNewUserName(name);
-      this.actions.setIsNewUser(true);
-      this.actions.setLoading(false);
-      this.actions.setEmailSentData({ email, type: "verification" });
-      this.actions.setCurrentModal("email-sent");
-    } else {
-      // Error state - stay on sign up modal
-      this.actions.setLoading(false);
-      this.actions.setError(result.error || "Sign up failed");
-    }
+      const result = await signUpWithEmail(normalizedName, normalizedEmail, password);
+      if (signal.aborted) return;
+
+      if (result.success) {
+        this.actions.setNewUserName(normalizedName);
+        this.actions.setIsNewUser(true);
+        this.actions.setLoading(false);
+        const emailForState = result.user?.email || normalizedEmail;
+        this.actions.setEmailSentData({ email: emailForState, type: "verification" });
+        this.actions.setCurrentModal("email-sent");
+      } else {
+        this.actions.setLoading(false);
+        this.actions.setError(result.error || "Sign up failed");
+      }
+    });
   }
 
   async handleGoogleSignUp() {
-    // Show Google redirect modal
-    this.actions.setCurrentModal("google-redirect");
-    this.actions.setLoading(true);
-    this.actions.setError(null);
+    this.startFlow(async (signal) => {
+      this.actions.setCurrentModal("google-redirect");
+      this.actions.setLoading(true);
+      this.actions.setError(null);
+      this.actions.setSignUpSource('google');
 
-    const result = await signUpWithGoogle();
+      const result = await signUpWithGoogle();
+      if (signal.aborted) return;
 
-    if (result.success) {
-      // Show signup feedback first
-      const userName = result.user?.name || "New User";
-      this.actions.setNewUserName(userName);
-      this.actions.setIsNewUser(true);
+      if (result.success) {
+        const userName = result.user?.name || "New User";
+        this.actions.setNewUserName(userName);
+        this.actions.setIsNewUser(true);
+        this.actions.setSignUpSuccess(true);
+        this.actions.setLoading(false);
+        this.actions.setCurrentModal("signup-feedback");
+
+        try {
+          await this.wait(3000, signal);
+        } catch {
+          return;
+        }
+
+        if (signal.aborted) return;
+
+          try {
+            const destination = new URL('/', window.location.origin);
+            destination.searchParams.set('google', 'new');
+            window.location.assign(destination.toString());
+          } catch (error) {
+            console.error('[AuthFlowController] Failed to redirect after Google sign up', error);
+            this.actions.setCurrentModal("welcome");
+          }
+      } else {
+        this.actions.setLoading(false);
+        this.actions.setError(result.error || "Google sign up failed");
+
+        try {
+          await this.wait(2000, signal);
+        } catch {
+          return;
+        }
+
+        if (signal.aborted) return;
+
+        this.actions.setCurrentModal("signup");
+        this.actions.setError(null);
+      }
+    });
+  }
+
+  handleGoogleSignUpComplete() {
+    this.startFlow(async (signal) => {
       this.actions.setSignUpSuccess(true);
       this.actions.setCurrentModal("signup-feedback");
       this.actions.setLoading(false);
-      
-      // Then show welcome modal
-      setTimeout(() => {
-        this.actions.setCurrentModal("welcome");
-      }, 3000);
-    } else {
-      // Error state
-      this.actions.setLoading(false);
-      this.actions.setError(result.error || "Google sign up failed");
-      
-      setTimeout(() => {
-        this.actions.setCurrentModal("signup");
-        this.actions.setError(null);
-      }, 2000);
-    }
+      this.actions.setSignUpSource('google');
+
+      try {
+        await this.wait(2000, signal);
+      } catch {
+        return;
+      }
+
+      if (signal.aborted) return;
+
+      this.actions.setCurrentModal("welcome");
+    });
   }
 
   // Other Auth Flows
   async handleForgotPassword(email: string) {
-    this.actions.setLoading(true);
-    this.actions.setError(null);
+    this.startFlow(async (signal) => {
+      const normalizedEmail = email.trim().toLowerCase();
 
-    const result = await requestPasswordReset(email);
+      this.actions.setLoading(true);
+      this.actions.setError(null);
 
-    if (result.success) {
-      this.actions.setEmailSentData({ email, type: "reset" });
-      this.actions.setCurrentModal("email-sent");
-    } else {
-      // Show generic feedback modal with error
-      this.actions.setFeedbackData({
-        title: "Reset Failed",
-        message: result.error || "Failed to send reset email",
-        type: "error"
-      });
-      this.actions.setCurrentModal("feedback");
-    }
+      const result = await requestPasswordReset(normalizedEmail);
+      if (signal.aborted) return;
 
-    this.actions.setLoading(false);
+      if (result.success) {
+        this.actions.setEmailSentData({ email: normalizedEmail, type: "reset" });
+        this.actions.setCurrentModal("email-sent");
+      } else {
+        this.actions.setFeedbackData({
+          title: "Reset Failed",
+          message: result.error || "Failed to send reset email",
+          type: "error"
+        });
+        this.actions.setCurrentModal("feedback");
+      }
+
+      this.actions.setLoading(false);
+    });
   }
 
   async handleMagicLink(email: string) {
-    this.actions.setLoading(true);
-    this.actions.setError(null);
+    this.startFlow(async (signal) => {
+      const normalizedEmail = email.trim().toLowerCase();
 
-    const result = await sendMagicLink(email);
+      this.actions.setLoading(true);
+      this.actions.setError(null);
 
-    if (result.success) {
-      this.actions.setEmailSentData({ email, type: "magic-link" });
-      this.actions.setCurrentModal("email-sent");
-    } else {
-      // Show generic feedback modal with error
-      this.actions.setFeedbackData({
-        title: "Magic Link Failed",
-        message: result.error || "Failed to send magic link",
-        type: "error"
-      });
-      this.actions.setCurrentModal("feedback");
-    }
+      const result = await sendMagicLink(normalizedEmail);
+      if (signal.aborted) return;
 
-    this.actions.setLoading(false);
+      if (result.success) {
+        this.actions.setEmailSentData({ email: normalizedEmail, type: "magic-link" });
+        this.actions.setCurrentModal("email-sent");
+      } else {
+        this.actions.setFeedbackData({
+          title: "Magic Link Failed",
+          message: result.error || "Failed to send magic link",
+          type: "error"
+        });
+        this.actions.setCurrentModal("feedback");
+      }
+
+      this.actions.setLoading(false);
+    });
   }
 
   // Modal Navigation
@@ -223,36 +343,51 @@ export class AuthFlowController {
 
   // Handle email verification completion (called when user clicks verification link)
   handleEmailVerificationComplete() {
-    // Show sign up feedback modal with success state
-    this.actions.setSignUpSuccess(true);
-    this.actions.setCurrentModal("signup-feedback");
-    this.actions.setEmailSentData(null);
-    
-    // After 3 seconds, show welcome modal
-    setTimeout(() => {
+    this.startFlow(async (signal) => {
+      this.actions.setSignUpSuccess(true);
+      this.actions.setCurrentModal("signup-feedback");
+      this.actions.setEmailSentData(null);
+
+      try {
+        await this.wait(3000, signal);
+      } catch {
+        return;
+      }
+
+      if (signal.aborted) return;
+
       this.actions.setCurrentModal("welcome");
-    }, 3000);
+    });
   }
 
   // Handle magic link sign in completion (called when user clicks magic link)  
   handleMagicLinkComplete() {
-    // Show sign in feedback modal with success state (3 second delay)
-    this.actions.setSignInSuccess(true);
-    this.actions.setCurrentModal("signin-feedback");
-    this.actions.setEmailSentData(null);
-    
-    // After 3 seconds, close and trigger success callback
-    setTimeout(() => {
+    const email = this.state.emailSentData?.email || "";
+
+    this.startFlow(async (signal) => {
+      this.actions.setSignInSuccess(true);
+      this.actions.setCurrentModal("signin-feedback");
+      this.actions.setEmailSentData(null);
+
+      try {
+        await this.wait(3000, signal);
+      } catch {
+        return;
+      }
+
+      if (signal.aborted) return;
+
       this.callbacks.onSuccess?.({ 
         id: 'magic-link-user', 
         name: 'User',
-        email: this.state.emailSentData?.email || ''
+        email,
       });
       this.handleCloseAll();
-    }, 3000);
+    });
   }
 
   handleWelcomeContinue() {
+    this.cancelCurrentFlow();
     this.callbacks.onSuccess?.({ 
       id: 'temp-user-id', // Will be updated when real user data is available
       name: this.state.newUserName,
@@ -262,6 +397,7 @@ export class AuthFlowController {
   }
 
   handleCloseAll() {
+    this.cancelCurrentFlow();
     this.actions.resetState();
     this.callbacks.onClose?.();
   }

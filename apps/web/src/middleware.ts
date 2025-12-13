@@ -6,43 +6,13 @@ import {
   isDealerOwner,
   isDealerStaff,
 } from "@/lib/auth/routing";
+import { getCachedSession, setCachedSession } from "@/lib/auth/session-cache";
 
-interface CachedSession {
-  user: ExtendedUser;
-  expiresAt: number;
-}
-
-const SESSION_CACHE_TTL_MS = 30_000; // 30s edge-side cache
 const isDev = process.env.NODE_ENV !== "production";
-
-const globalForSessionCache = globalThis as typeof globalThis & {
-  __alifhSessionCache?: Map<string, CachedSession>;
-};
-
-const sessionCache =
-  globalForSessionCache.__alifhSessionCache ??
-  (globalForSessionCache.__alifhSessionCache = new Map<string, CachedSession>());
-
-function getCachedSession(token: string | undefined): ExtendedUser | null {
-  if (!token) return null;
-  const cached = sessionCache.get(token);
-  if (!cached) return null;
-  if (cached.expiresAt < Date.now()) {
-    sessionCache.delete(token);
-    return null;
-  }
-  return cached.user;
-}
-
-function setCachedSession(token: string, user: ExtendedUser) {
-  sessionCache.set(token, {
-    user,
-    expiresAt: Date.now() + SESSION_CACHE_TTL_MS,
-  });
-}
+const enableDebugLogs = process.env.ENABLE_AUTH_DEBUG === "true" || isDev;
 
 function debugLog(message: string, payload?: Record<string, unknown>) {
-  if (!isDev) return;
+  if (!enableDebugLogs) return;
   // eslint-disable-next-line no-console
   console.debug(`[Middleware] ${message}`, payload ?? {});
 }

@@ -142,7 +142,7 @@ export function useBetterAuth() {
     try {
       const result = await authClient.signIn.social({
         provider: request.provider,
-        callbackURL: request.callbackURL || '/dashboard',
+           callbackURL: request.callbackURL || '/',
       });
 
       if (result.error) {

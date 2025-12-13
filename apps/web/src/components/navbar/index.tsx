@@ -14,7 +14,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Moon, Sun, Menu, X, User } from "lucide-react";
 import { MegaDropdown } from "./mega-dropdown";
@@ -92,10 +92,13 @@ export function Navbar() {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [currentAuthModal, setCurrentAuthModal] = useState<AuthModalType>(null);
+  const [triggerEmailVerification, setTriggerEmailVerification] = useState(false);
+  const [triggerGoogleOnboarding, setTriggerGoogleOnboarding] = useState(false);
   const [mounted, setMounted] = useState(false);
   
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const { user, isLoading, isSignedIn: isAuthenticated } = useUser();
 
@@ -148,10 +151,61 @@ export function Navbar() {
 
   // If user is authenticated, close any open auth modals
   useEffect(() => {
-    if (isAuthenticated && currentAuthModal) {
+    const closableModals: AuthModalType[] = [
+      "signin",
+      "signup",
+      "forgot-password",
+      "magic-link",
+      "email-sent",
+      "feedback",
+    ];
+
+    if (isAuthenticated && currentAuthModal && closableModals.includes(currentAuthModal)) {
       setCurrentAuthModal(null);
     }
   }, [isAuthenticated, currentAuthModal]);
+
+  // Detect verification redirect (?verified=true) and trigger welcome flow
+  useEffect(() => {
+    if (!searchParams) return;
+    if (searchParams.get("verified") === "true") {
+      setTriggerEmailVerification(true);
+
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("verified");
+      const queryString = params.toString();
+      router.replace(`${pathname}${queryString ? `?${queryString}` : ""}`, { scroll: false });
+      return;
+    }
+
+    if (searchParams.get("google") === "new" && isAuthenticated) {
+      setTriggerGoogleOnboarding(true);
+
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("google");
+      const queryString = params.toString();
+      router.replace(`${pathname}${queryString ? `?${queryString}` : ""}`, { scroll: false });
+    }
+  }, [searchParams, pathname, router, isAuthenticated]);
+
+  // Reset trigger after it fires so subsequent verifications can retrigger flow
+  useEffect(() => {
+    if (triggerEmailVerification) {
+      const timeoutId = window.setTimeout(() => {
+        // Defer reset to the next tick so AuthManager can react to the change
+        // This avoids races where the flag flips back before the effect runs
+        setTriggerEmailVerification(false);
+      }, 200);
+      return () => window.clearTimeout(timeoutId);
+    }
+  }, [triggerEmailVerification]);
+
+  useEffect(() => {
+    if (triggerGoogleOnboarding) {
+      const timeoutId = window.setTimeout(() => setTriggerGoogleOnboarding(false), 0);
+      return () => window.clearTimeout(timeoutId);
+    }
+  }, [triggerGoogleOnboarding]);
 
 
 
@@ -278,6 +332,8 @@ export function Navbar() {
       <AuthManager
         currentModal={currentAuthModal}
         onModalChange={setCurrentAuthModal}
+        triggerEmailVerification={triggerEmailVerification}
+        triggerGoogleOnboarding={triggerGoogleOnboarding}
       />
     </>
   );

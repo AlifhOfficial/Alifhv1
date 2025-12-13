@@ -69,6 +69,21 @@ export const emailService = isDevelopment ? mockEmailService : {
    */
   sendVerificationEmail: async (data: { user: any; url: string; token: string }) => {
     const { user, url } = data;
+
+    const verificationUrl = new URL(url);
+    const token = verificationUrl.searchParams.get("token");
+    const callbackURL = verificationUrl.searchParams.get("callbackURL") || "/";
+    const appBaseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+    const appVerifyUrl = new URL("/verify-email", appBaseUrl);
+    if (token) {
+      appVerifyUrl.searchParams.set("token", token);
+    }
+    if (callbackURL) {
+      appVerifyUrl.searchParams.set("callbackURL", callbackURL);
+    }
+
+    const finalUrl = appVerifyUrl.toString();
     
     await sendEmail({
       to: user.email,
@@ -79,7 +94,7 @@ export const emailService = isDevelopment ? mockEmailService : {
           <p>Hi ${user.name},</p>
           <p>Please verify your email address to complete your account setup.</p>
           <div style="margin: 32px 0;">
-            <a href="${url}" style="
+            <a href="${finalUrl}" style="
               background: #000;
               color: #fff;
               padding: 12px 24px;
@@ -94,7 +109,7 @@ export const emailService = isDevelopment ? mockEmailService : {
           <p>Best regards,<br>The Alifh Team</p>
         </div>
       `,
-      text: `Welcome to Alifh! Please verify your email: ${url}`,
+      text: `Welcome to Alifh! Please verify your email: ${finalUrl}`,
     });
   },
 

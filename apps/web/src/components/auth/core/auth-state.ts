@@ -32,6 +32,7 @@ export interface AuthState {
   signUpSuccess: boolean;
   newUserName: string;
   isNewUser: boolean;
+  signUpSource: 'email' | 'google' | null;
   // Generic feedback modal data
   feedbackData: {
     title?: string;
@@ -49,6 +50,7 @@ export interface AuthActions {
   setSignUpSuccess: (success: boolean) => void;
   setNewUserName: (name: string) => void;
   setIsNewUser: (isNew: boolean) => void;
+  setSignUpSource: (source: 'email' | 'google' | null) => void;
   setFeedbackData: (data: { title?: string; message?: string; type?: 'success' | 'error' | 'info' } | null) => void;
   resetState: () => void;
 }
@@ -67,6 +69,7 @@ const initialState: AuthState = {
   signUpSuccess: false,
   newUserName: "",
   isNewUser: false,
+  signUpSource: null,
   feedbackData: null,
 };
 
@@ -109,6 +112,9 @@ export function useAuthState(
     setIsNewUser: (isNewUser: boolean) => {
       setInternalState(prev => ({ ...prev, isNewUser }));
     },
+    setSignUpSource: (signUpSource: 'email' | 'google' | null) => {
+      setInternalState(prev => ({ ...prev, signUpSource }));
+    },
     setFeedbackData: (feedbackData: { title?: string; message?: string; type?: 'success' | 'error' | 'info' } | null) => {
       setInternalState(prev => ({ ...prev, feedbackData }));
     },
@@ -129,6 +135,7 @@ export function useAuthState(
     signUpSuccess: internalState.signUpSuccess,
     newUserName: internalState.newUserName,
     isNewUser: internalState.isNewUser,
+    signUpSource: internalState.signUpSource,
     feedbackData: internalState.feedbackData,
   };
 

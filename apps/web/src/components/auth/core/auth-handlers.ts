@@ -31,8 +31,16 @@ export const signInWithEmail = async (
   password: string
 ): Promise<AuthResult> => {
   try {
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail) {
+      return {
+        success: false,
+        error: "Please enter a valid email address.",
+      };
+    }
+
     const result = await authClient.signIn.email({
-      email,
+      email: normalizedEmail,
       password,
     });
 
@@ -59,7 +67,7 @@ export const signInWithEmail = async (
   }
 };
 
-export const signInWithGoogle = async (callbackURL: string = "/dashboard"): Promise<AuthResult> => {
+export const signInWithGoogle = async (callbackURL: string = "/"): Promise<AuthResult> => {
   try {
     const result = await authClient.signIn.social({
       provider: "google",
@@ -90,9 +98,26 @@ export const signUpWithEmail = async (
   password: string
 ): Promise<AuthResult> => {
   try {
+    const normalizedName = name.trim();
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!normalizedName) {
+      return {
+        success: false,
+        error: "Please enter your name.",
+      };
+    }
+
+    if (!normalizedEmail) {
+      return {
+        success: false,
+        error: "Please enter a valid email address.",
+      };
+    }
+
     const result = await authClient.signUp.email({
-      name,
-      email,
+      name: normalizedName,
+      email: normalizedEmail,
       password,
     });
 
@@ -105,8 +130,8 @@ export const signUpWithEmail = async (
 
     const user = result.data && 'user' in result.data ? result.data.user : { 
       id: 'temp-user-id', // Will be populated when real user session is established
-      name, 
-      email 
+      name: normalizedName, 
+      email: normalizedEmail 
     };
     return { success: true, user };
   } catch (error: any) {
@@ -117,7 +142,7 @@ export const signUpWithEmail = async (
   }
 };
 
-export const signUpWithGoogle = async (callbackURL: string = "/dashboard"): Promise<AuthResult> => {
+export const signUpWithGoogle = async (callbackURL: string = "/"): Promise<AuthResult> => {
   try {
     const result = await authClient.signIn.social({
       provider: "google",
@@ -147,13 +172,21 @@ export const requestPasswordReset = async (
   redirectTo: string = "/reset-password"
 ): Promise<{ success: boolean; error?: string }> => {
   try {
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail) {
+      return {
+        success: false,
+        error: "Please enter a valid email address.",
+      };
+    }
+
     // Use our custom validation endpoint instead of direct Better Auth call
     const response = await fetch("/api/auth/password-reset-validated", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, redirectTo }),
+      body: JSON.stringify({ email: normalizedEmail, redirectTo }),
     });
 
     const result = await response.json();
@@ -180,45 +213,34 @@ export const sendMagicLink = async (
   callbackURL: string = "/dashboard"
 ): Promise<{ success: boolean; error?: string }> => {
   try {
-    const result = await authClient.signIn.magicLink({
-      email,
-      callbackURL,
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail) {
+      return {
+        success: false,
+        error: "Please enter a valid email address.",
+      };
+    }
+
+    const response = await fetch("/api/auth/magic-link-validated", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: normalizedEmail, callbackURL }),
     });
 
-    if (result.error) {
-      // Handle server-side validation errors (500 status from our custom validation)
-      if (result.error.status === 500 && 
-          result.error.message?.includes("No account found")) {
-        return { 
-          success: false, 
-          error: "No account found with this email address. Magic links are only available for existing users. Please sign up first or use a different email." 
-        };
-      }
-      
-      // Handle other Better Auth errors
-      if (result.error.status === 400 || 
-          result.error.message?.includes("User not found")) {
-        return { 
-          success: false, 
-          error: "No account found with this email address. Magic links are only available for existing users. Please sign up first or use a different email." 
-        };
-      }
-      
-      return { 
-        success: false, 
-        error: result.error.message || "Failed to send magic link" 
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      const message = result?.error || "Failed to send magic link";
+      return {
+        success: false,
+        error: message,
       };
     }
 
     return { success: true };
   } catch (error: any) {
-    // Handle network or other errors
-    if (error?.message?.includes("No account found")) {
-      return { 
-        success: false, 
-        error: "No account found with this email address. Magic links are only available for existing users. Please sign up first or use a different email." 
-      };
-    }
     return { 
       success: false, 
       error: error?.message || "An unexpected error occurred" 

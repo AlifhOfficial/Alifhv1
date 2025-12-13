@@ -32,6 +32,7 @@ interface AuthManagerProps {
   // New props for external flow triggers
   triggerEmailVerification?: boolean;
   triggerMagicLinkComplete?: boolean;
+  triggerGoogleOnboarding?: boolean;
 }
 
 export function AuthManager({
@@ -42,6 +43,7 @@ export function AuthManager({
   onClose,
   triggerEmailVerification,
   triggerMagicLinkComplete,
+  triggerGoogleOnboarding,
 }: AuthManagerProps) {
   const { state, actions } = useAuthState(initialModal, externalCurrentModal, onModalChange);
   
@@ -60,6 +62,12 @@ export function AuthManager({
       flowController.handleMagicLinkComplete();
     }
   }, [triggerMagicLinkComplete]);
+
+  useEffect(() => {
+    if (triggerGoogleOnboarding) {
+      flowController.handleGoogleSignUpComplete();
+    }
+  }, [triggerGoogleOnboarding]);
 
   return (
     <>
@@ -136,6 +144,7 @@ export function AuthManager({
         success={state.signUpSuccess}
         isLoading={state.isLoading}
         error={state.error}
+        variant={state.signUpSource}
       />
 
       {/* Welcome Modal */}

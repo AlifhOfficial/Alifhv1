@@ -8,7 +8,9 @@ import {
   Store, 
   Home 
 } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { UserRole } from "@alifh/shared";
 import { getUserPortalAccess } from "@/lib/auth/routing";
 
@@ -54,6 +56,11 @@ export function ProfileMenu({
   onProfile,
 }: ProfileMenuProps) {
   const router = useRouter();
+  const [hasImageError, setHasImageError] = useState(false);
+
+  useEffect(() => {
+    setHasImageError(false);
+  }, [user?.image]);
 
   if (user) {
     const displayName = user.name || 'User';
@@ -146,11 +153,16 @@ export function ProfileMenu({
           className="relative w-8 h-8 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors overflow-hidden border border-border/40"
           aria-label="Profile menu"
         >
-          {user.image ? (
-            <img
+          {user.image && !hasImageError ? (
+            <Image
               src={user.image}
               alt={displayName}
-              className="w-full h-full object-cover"
+              fill
+              sizes="32px"
+              className="object-cover"
+              onError={() => setHasImageError(true)}
+              referrerPolicy="no-referrer"
+              priority={false}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-primary text-xs font-medium">
