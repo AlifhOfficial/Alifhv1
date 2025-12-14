@@ -41,6 +41,8 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
   const [latitude, setLatitude] = useState<number | undefined>(25.2048); // Dubai default
   const [longitude, setLongitude] = useState<number | undefined>(55.2708); // Dubai default
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [consignmentMode, setConsignmentMode] = useState(false);
+  const [showPhone, setShowPhone] = useState(true);
   
   // Section-wise editing states
   const [editingSection, setEditingSection] = useState<string | null>(null);
@@ -76,6 +78,8 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
       setLatitude(profile.locationLat ?? 25.2048);
       setLongitude(profile.locationLng ?? 55.2708);
       setSelectedTags(profile.tags ?? []);
+      setConsignmentMode(profile.consignmentMode ?? false);
+      setShowPhone(profile.privacySettings?.showPhone ?? true);
     }
   }, [profile]);
 
@@ -182,6 +186,15 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
             locationLng: longitude,
           };
           break;
+        case 'settings':
+          payload = {
+            consignmentMode: consignmentMode,
+            privacySettings: {
+              showEmail: profile?.privacySettings?.showEmail ?? false,
+              showPhone: showPhone,
+            },
+          };
+          break;
       }
 
       const result = await updateProfile(payload);
@@ -224,6 +237,10 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
           setEmirate(profile.locationEmirate ?? '');
           setLatitude(profile.locationLat ?? 25.2048);
           setLongitude(profile.locationLng ?? 55.2708);
+          break;
+        case 'settings':
+          setConsignmentMode(profile.consignmentMode ?? false);
+          setShowPhone(profile.privacySettings?.showPhone ?? true);
           break;
       }
     }
@@ -406,6 +423,12 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
                 <p className="text-xs text-muted-foreground">Status</p>
                 <p className="text-sm font-medium text-foreground">
                   {profile?.status ? profile.status.charAt(0).toUpperCase() + profile.status.slice(1) : 'Active'}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Profile created</p>
+                <p className="text-sm font-medium text-foreground">
+                  {profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString() : '—'}
                 </p>
               </div>
             </div>
@@ -908,6 +931,112 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
               </button>
               <button
                 onClick={() => handleSaveSection('location')}
+                disabled={isSaving}
+                className="h-8 px-3 text-xs font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
+              >
+                {isSaving ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-border/60 my-12" />
+
+        {/* Settings Section */}
+        <div className="space-y-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-medium text-foreground">Settings</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Manage your account preferences
+              </p>
+            </div>
+            {editingSection !== 'settings' && (
+              <button
+                onClick={() => setEditingSection('settings')}
+                className="h-8 px-3 text-xs font-medium text-foreground border border-border/40 rounded-lg hover:bg-muted/50 transition-colors flex items-center gap-2"
+              >
+                <Edit3 className="w-3.5 h-3.5" />
+                Edit
+              </button>
+            )}
+          </div>
+
+          <div className="space-y-6">
+            {/* Consignment Mode */}
+            <div className="flex items-center justify-between py-3 border-b border-border/40">
+              <div>
+                <label className="text-sm font-medium text-foreground">
+                  Consignment Mode
+                </label>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Enable to list vehicles on consignment
+                </p>
+              </div>
+              {editingSection === 'settings' ? (
+                <button
+                  onClick={() => setConsignmentMode(!consignmentMode)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    consignmentMode ? 'bg-primary' : 'bg-muted'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      consignmentMode ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              ) : (
+                <span className="text-sm text-muted-foreground">
+                  {consignmentMode ? 'Enabled' : 'Disabled'}
+                </span>
+              )}
+            </div>
+
+            {/* Privacy Settings */}
+            <div className="flex items-center justify-between py-3">
+              <div>
+                <label className="text-sm font-medium text-foreground">
+                  Show Phone Number
+                </label>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Display your phone number on your public profile
+                </p>
+              </div>
+              {editingSection === 'settings' ? (
+                <button
+                  onClick={() => setShowPhone(!showPhone)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    showPhone ? 'bg-primary' : 'bg-muted'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      showPhone ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              ) : (
+                <span className="text-sm text-muted-foreground">
+                  {showPhone ? 'Visible' : 'Hidden'}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Save/Cancel buttons for Settings */}
+          {editingSection === 'settings' && (
+            <div className="flex items-center justify-end gap-3 pt-4">
+              <button
+                onClick={() => handleCancelSection('settings')}
+                disabled={isSaving}
+                className="h-8 px-3 text-xs font-medium border border-border/40 text-foreground rounded-lg hover:bg-muted/50 transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleSaveSection('settings')}
                 disabled={isSaving}
                 className="h-8 px-3 text-xs font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
               >
