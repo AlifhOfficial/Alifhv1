@@ -1,66 +1,26 @@
-import { requireAuth } from "@/lib/auth/roles";
-import { StandardDashboardLayout } from "@/components/layouts/dashboard-layout";
-
 export default async function UserDashboard() {
-  const user = await requireAuth();
-
   return (
-    <StandardDashboardLayout user={user} activeTab="overview">
+    <div className="p-6">
+      <header className="mb-6">
+        <h1 className="text-2xl font-semibold text-foreground">Dashboard</h1>
+        <p className="text-muted-foreground">Welcome to your dashboard overview</p>
+      </header>
+      
       <div className="space-y-6">
-        <div className="border-l-4 border-primary p-4 bg-card rounded-lg">
-          <h1 className="text-xl font-medium">My Dashboard</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Manage your car listings and marketplace activity.</p>
+        <div className="rounded-lg border border-border bg-card p-6">
+          <h2 className="text-lg font-medium mb-3">Overview</h2>
+          <p className="text-muted-foreground">
+            Your dashboard is ready. Use the navigation on the left to explore different sections.
+          </p>
         </div>
-
-      {/* User Activity Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-card p-6 rounded-lg border">
-          <h3 className="text-sm font-medium text-muted-foreground">My Listings</h3>
-          <p className="text-2xl font-bold">3</p>
-        </div>
-        <div className="bg-card p-6 rounded-lg border">
-          <h3 className="text-sm font-medium text-muted-foreground">Active Chats</h3>
-          <p className="text-2xl font-bold">5</p>
-        </div>
-        <div className="bg-card p-6 rounded-lg border">
-          <h3 className="text-sm font-medium text-muted-foreground">Saved Cars</h3>
-          <p className="text-2xl font-bold">12</p>
-        </div>
-        <div className="bg-card p-6 rounded-lg border">
-          <h3 className="text-sm font-medium text-muted-foreground">Inquiries Sent</h3>
-          <p className="text-2xl font-bold">8</p>
+        
+        <div className="rounded-lg border border-border bg-card p-6">
+          <h2 className="text-lg font-medium mb-3">Quick Actions</h2>
+          <p className="text-muted-foreground">
+            Activity and updates will appear here as they become available.
+          </p>
         </div>
       </div>
-
-      {/* Quick Actions */}
-      <div className="bg-card p-6 rounded-lg border">
-        <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <button className="p-4 text-left bg-muted/50 rounded-lg hover:bg-muted transition-colors">
-            <h3 className="font-medium">Sell Your Car</h3>
-            <p className="text-sm text-muted-foreground">Create a new listing</p>
-          </button>
-          <button className="p-4 text-left bg-muted/50 rounded-lg hover:bg-muted transition-colors">
-            <h3 className="font-medium">Browse Cars</h3>
-            <p className="text-sm text-muted-foreground">Find your next vehicle</p>
-          </button>
-          <button className="p-4 text-left bg-muted/50 rounded-lg hover:bg-muted transition-colors">
-            <h3 className="font-medium">Messages</h3>
-            <p className="text-sm text-muted-foreground">Chat with dealers and sellers</p>
-          </button>
-        </div>
-      </div>
-
-      {user && (
-        <div className="bg-card p-4 rounded-lg border">
-          <h2 className="text-sm font-medium mb-3">Your Profile</h2>
-          <div className="space-y-2 text-sm">
-            <p className="text-muted-foreground"><span className="text-foreground font-medium">Name:</span> {user.name || 'Not provided'}</p>
-            <p className="text-muted-foreground"><span className="text-foreground font-medium">Email:</span> {user.email || 'Not provided'}</p>
-          </div>
-        </div>
-      )}
     </div>
-    </StandardDashboardLayout>
   );
 }

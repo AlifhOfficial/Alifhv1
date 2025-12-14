@@ -4,6 +4,7 @@
  * Clean Better Auth queries only.
  */
 
+import { createId } from '@paralleldrive/cuid2';
 import { eq } from 'drizzle-orm';
 import { db } from './dbclient';
 import { user } from './schema';
@@ -32,20 +33,23 @@ export const getUserByEmail = async (email: string) => {
 export interface CreateUserData {
   name: string;
   email: string;
-  emailVerified?: Date | null;
+  emailVerified?: boolean;
   image?: string | null;
 }
 
 export const createUser = async (data: CreateUserData) => {
+  const now = new Date();
+
   const [result] = await db
     .insert(user)
     .values({
+      id: createId(),
       name: data.name,
       email: data.email,
-      emailVerified: data.emailVerified || null,
-      image: data.image || null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      emailVerified: data.emailVerified ?? false,
+      image: data.image ?? null,
+      createdAt: now,
+      updatedAt: now,
     })
     .returning();
   
@@ -77,3 +81,5 @@ export const getAllUsers = async (limit: number = 100) => {
     .from(user)
     .limit(limit);
 };
+
+export * from './queries/profile';

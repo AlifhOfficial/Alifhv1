@@ -23,6 +23,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'lh7.googleusercontent.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'alifh-uploads.7117386bede3499b286ceb28090ed343.r2.cloudflarestorage.com',
+      },
     ],
   },
 }

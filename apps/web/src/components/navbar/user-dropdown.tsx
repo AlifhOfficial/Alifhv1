@@ -10,9 +10,10 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { UserRole } from "@alifh/shared";
 import { getUserPortalAccess } from "@alifh/shared/auth";
+import { useProfile } from "@/hooks/profile";
 
 interface UserData {
   id: string;
@@ -57,14 +58,33 @@ export function ProfileMenu({
 }: ProfileMenuProps) {
   const router = useRouter();
   const [hasImageError, setHasImageError] = useState(false);
+  const { profile, refresh } = useProfile({ fetchOnMount: !!user, userId: user?.id ?? null });
+
+  const avatarSrc = useMemo(() => {
+    if (profile?.avatarUrl) return profile.avatarUrl;
+    return user?.image ?? undefined;
+  }, [profile?.avatarUrl, user?.image]);
 
   useEffect(() => {
     setHasImageError(false);
-  }, [user?.image]);
+  }, [avatarSrc]);
+
+  useEffect(() => {
+    if (user && !profile) {
+      void refresh();
+    }
+  }, [user, profile, refresh]);
 
   if (user) {
-    const displayName = user.name || 'User';
-    const firstName = user.name?.split(' ')[0] || 'User';
+    const profileFirstName = profile?.firstName?.trim() ?? '';
+    const profileLastName = profile?.lastName?.trim() ?? '';
+
+    const displayName = profileFirstName.length > 0
+      ? [profileFirstName, profileLastName].filter(Boolean).join(' ')
+      : user.name || 'User';
+    const firstName = profileFirstName.length > 0
+      ? profileFirstName
+      : user.name?.split(' ')[0] || 'User';
 
     const getDashboardAccess = (userData: UserData): DashboardItem[] => {
       const dashboards: DashboardItem[] = [];
@@ -133,9 +153,13 @@ export function ProfileMenu({
     };
     
     const getInitials = () => {
-      if (!user.name) return user.email?.charAt(0).toUpperCase() || 'U';
-      return user.name
+      const source = profileFirstName || profileLastName
+        ? [profileFirstName, profileLastName].filter(Boolean).join(' ')
+        : user.name;
+      if (!source) return user.email?.charAt(0).toUpperCase() || 'U';
+      return source
         .split(' ')
+        .filter(Boolean)
         .map(part => part.charAt(0))
         .join('')
         .toUpperCase()
@@ -150,12 +174,12 @@ export function ProfileMenu({
         
         <button
           onClick={onToggleMenu}
-          className="relative w-8 h-8 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors overflow-hidden border border-border/40"
+          className="relative w-8 h-8 rounded-full bg-muted hover:bg-muted/80 transition-colors overflow-hidden border border-border/50"
           aria-label="Profile menu"
         >
-          {user.image && !hasImageError ? (
+          {avatarSrc && !hasImageError ? (
             <Image
-              src={user.image}
+              src={avatarSrc}
               alt={displayName}
               fill
               sizes="32px"
@@ -165,7 +189,7 @@ export function ProfileMenu({
               priority={false}
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-primary text-xs font-medium">
+            <div className="w-full h-full flex items-center justify-center text-foreground text-xs font-medium">
               {getInitials()}
             </div>
           )}

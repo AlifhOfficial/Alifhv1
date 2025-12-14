@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { Navbar } from "@/components/navbar";
 import { useUser } from "@/hooks/auth/use-auth";
 
@@ -10,7 +11,9 @@ export default function HomePage() {
   if (isLoading) {
     return (
       <>
-        <Navbar />
+        <Suspense fallback={<div className="h-16" />}>
+          <Navbar />
+        </Suspense>
         <div className="flex flex-col items-center justify-center min-h-screen pt-16 gap-4">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           <p className="text-sm text-muted-foreground">Loading...</p>
@@ -21,7 +24,9 @@ export default function HomePage() {
 
   return (
     <>
-      <Navbar />
+      <Suspense fallback={<div className="h-16" />}>
+        <Navbar />
+      </Suspense>
       <div className="flex flex-col items-center justify-center min-h-screen pt-16 gap-4">
         <h1 className="text-4xl font-bold">Hello Alifh</h1>
         {user ? (

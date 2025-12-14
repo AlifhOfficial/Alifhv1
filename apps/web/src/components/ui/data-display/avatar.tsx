@@ -1,11 +1,11 @@
+"use client";
+
 /**
- * Avatar Component
- * Follows Alifh Design Philosophy: minimal, clean, premium
- * 
- * User avatar with fallback initials
+ * Avatar component with Safari-safe image handling and graceful fallback for missing photos.
  */
 
 import * as React from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -15,7 +15,7 @@ interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: "xs" | "sm" | "md" | "lg" | "xl";
 }
 
-const sizeClasses = {
+const sizeClasses: Record<NonNullable<AvatarProps["size"]>, string> = {
   xs: "h-6 w-6 text-xs",
   sm: "h-8 w-8 text-xs",
   md: "h-10 w-10 text-sm",
@@ -24,27 +24,44 @@ const sizeClasses = {
 };
 
 const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
-  ({ className, src, alt = "Avatar", initials = "U", size = "md", ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn(
-        "inline-flex items-center justify-center rounded-full bg-primary/10 border border-border/40 font-medium text-primary overflow-hidden",
-        sizeClasses[size],
-        className
-      )}
-      {...props}
-    >
-      {src ? (
-        <img
-          src={src}
-          alt={alt}
-          className="h-full w-full object-cover"
-        />
-      ) : (
-        initials
-      )}
-    </div>
-  )
+  ({ className, src, alt = "Avatar", initials = "U", size = "md", ...props }, ref) => {
+    const [hasError, setHasError] = React.useState(false);
+
+    React.useEffect(() => {
+      setHasError(false);
+    }, [src]);
+
+    const showImage = Boolean(src) && !hasError;
+
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "relative inline-flex items-center justify-center overflow-hidden rounded-full border border-border bg-card font-medium text-foreground",
+          sizeClasses[size!],
+          className
+        )}
+        {...props}
+      >
+        {showImage ? (
+          <Image
+            src={src as string}
+            alt={alt}
+            fill
+            sizes="(max-width: 768px) 32px, 40px"
+            className="object-cover"
+            onError={() => setHasError(true)}
+            referrerPolicy="no-referrer"
+            priority={false}
+          />
+        ) : (
+          <span className="uppercase">{initials}</span>
+        )}
+      </div>
+    );
+  }
 );
-Avatar.displayName = "Avatar";export { Avatar };
+Avatar.displayName = "Avatar";
+
+export { Avatar };
 export type { AvatarProps };

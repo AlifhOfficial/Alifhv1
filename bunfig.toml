@@ -13,7 +13,6 @@ registry = "https://registry.npmjs.org/"
 [test]
 # Configure test runner
 root = "."
-preload = []
 
 [build]
 # Configure build settings
