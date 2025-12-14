@@ -41,7 +41,7 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
   const [latitude, setLatitude] = useState<number | undefined>(25.2048); // Dubai default
   const [longitude, setLongitude] = useState<number | undefined>(55.2708); // Dubai default
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [consignmentMode, setConsignmentMode] = useState(false);
+  const [consignmentMode, setConsignmentMode] = useState(true); // Enabled by default
   const [showPhone, setShowPhone] = useState(true);
   
   // Section-wise editing states
@@ -78,7 +78,7 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
       setLatitude(profile.locationLat ?? 25.2048);
       setLongitude(profile.locationLng ?? 55.2708);
       setSelectedTags(profile.tags ?? []);
-      setConsignmentMode(profile.consignmentMode ?? false);
+      setConsignmentMode(profile.consignmentMode ?? true); // Default to true
       setShowPhone(profile.privacySettings?.showPhone ?? true);
     }
   }, [profile]);

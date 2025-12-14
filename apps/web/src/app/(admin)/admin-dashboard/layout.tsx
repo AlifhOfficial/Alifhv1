@@ -4,10 +4,12 @@ import { requireRole } from "@/lib/auth/roles";
 
 const navItems = [
   { label: "Overview", href: "/admin-dashboard", icon: "layout-dashboard" },
-  { label: "KYC Management", href: "/admin-dashboard/kyc", icon: "shield-check" },
-  { label: "Users", href: "/admin-dashboard/users", icon: "users" },
   { label: "Partners", href: "/admin-dashboard/partners", icon: "building" },
-  { label: "Settings", href: "/admin-dashboard/settings", icon: "settings" },
+  { label: "Partner Requests", href: "/admin-dashboard/partner-requests", icon: "inbox" },
+  { label: "KYC Management", href: "/admin-dashboard/kyc", icon: "shield-check" },
+  { label: "Reviews", href: "/admin-dashboard/reviews", icon: "star" },
+  { label: "Users", href: "/admin-dashboard/users", icon: "users" },
+  { label: "Audit Logs", href: "/admin-dashboard/audit-logs", icon: "file-text" },
 ];
 
 export default async function AdminDashboardLayout({ children }: { children: React.ReactNode }) {

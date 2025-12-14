@@ -9,6 +9,10 @@ import { eq } from 'drizzle-orm';
 import { db } from './dbclient';
 import { user } from './schema';
 
+// Re-export specialized queries
+export * from './queries/profile';
+export * from './queries/partner';
+
 // Essential user queries
 export const getUserById = async (id: string) => {
   const [result] = await db
