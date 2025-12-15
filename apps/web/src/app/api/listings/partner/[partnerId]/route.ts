@@ -81,7 +81,7 @@ export async function GET(
       data: listings,
       meta: {
         partnerId,
-        partnerName: partner.businessName,
+        partnerName: partner.brandName,
         status,
         sortBy,
         limit,

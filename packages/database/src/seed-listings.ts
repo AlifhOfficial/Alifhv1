@@ -1,6 +1,6 @@
 /**
  * Seed script for car listings
- * Creates sample listing data for showcase
+ * Creates 100 sample listing data for showcase with varied data
  */
 
 import 'dotenv/config';
@@ -9,166 +9,130 @@ import { carListing } from '../src/schema/listing';
 import { partner } from '../src/schema/partner';
 import { user } from '../src/schema';
 import { createId } from '@paralleldrive/cuid2';
-import { eq } from 'drizzle-orm';
 
 const makeListingId = () => `listing_${createId()}`;
 
-// Sample car data
-const sampleCars = [
-  {
-    make: 'Mercedes-Benz',
-    model: 'S-Class',
-    year: 2023,
-    trim: 'S 580 4MATIC',
-    price: 450000, // AED 450,000
-    mileage: 12500,
-    condition: 'used' as const,
-    bodyType: 'sedan',
-    fuelType: 'petrol',
-    transmission: 'automatic',
-    engineSize: '3.0L',
-    cylinders: 6,
-    horsepower: 496,
-    doors: 4,
-    seats: 5,
-    color: 'Obsidian Black',
-    interiorColor: 'Nappa Leather Black',
-    vin: 'WDD2221831A123456',
-    title: '2023 Mercedes-Benz S-Class S 580 4MATIC - Luxury Redefined',
-    description: 'Experience ultimate luxury with this pristine 2023 Mercedes-Benz S-Class. Featuring cutting-edge technology, supreme comfort, and elegant design. Perfect condition with full service history.',
-    features: ['Panoramic Sunroof', 'Adaptive Cruise Control', 'Burmester Sound System', '360 Camera', 'Massage Seats', 'Night Vision', 'Air Suspension'],
-    images: ['/Marketing_Assets/A1.png', '/Marketing_Assets/A2.png', '/Marketing_Assets/A3.png'],
-    emirate: 'Dubai',
-  },
-  {
-    make: 'BMW',
-    model: 'M4',
-    year: 2024,
-    trim: 'Competition xDrive',
-    price: 385000,
-    mileage: 3200,
-    condition: 'used' as const,
-    bodyType: 'coupe',
-    fuelType: 'petrol',
-    transmission: 'automatic',
-    engineSize: '3.0L',
-    cylinders: 6,
-    horsepower: 510,
-    doors: 2,
-    seats: 4,
-    color: 'Isle of Man Green',
-    interiorColor: 'Merino Black',
-    vin: 'WBS83CH05PCJ12345',
-    title: '2024 BMW M4 Competition xDrive - Track-Ready Performance',
-    description: 'Barely driven 2024 BMW M4 Competition with all the performance upgrades. M Carbon seats, M Driver Package, and more. A true driver car.',
-    features: ['M Carbon Seats', 'M Driver Package', 'Carbon Fiber Roof', 'Harman Kardon', 'Heads-Up Display', 'M Sport Exhaust'],
-    images: ['/Marketing_Assets/A4.png', '/Marketing_Assets/A5.png', '/Marketing_Assets/A6.png'],
-    emirate: 'Dubai',
-  },
-  {
-    make: 'Porsche',
-    model: '911',
-    year: 2023,
-    trim: 'Carrera S',
-    price: 625000,
-    mileage: 8500,
-    condition: 'used' as const,
-    bodyType: 'coupe',
-    fuelType: 'petrol',
-    transmission: 'automatic',
-    engineSize: '3.0L',
-    cylinders: 6,
-    horsepower: 450,
-    doors: 2,
-    seats: 4,
-    color: 'GT Silver Metallic',
-    interiorColor: 'Black Leather',
-    vin: 'WP0AB2A99PS123456',
-    title: '2023 Porsche 911 Carrera S - Icon of Sports Cars',
-    description: 'Iconic 911 Carrera S with Sport Chrono Package. Meticulously maintained, garage kept. The perfect balance of daily usability and weekend thrills.',
-    features: ['Sport Chrono Package', 'PASM', 'Porsche Communication Management', 'Sport Exhaust', 'LED Headlights', 'Rear Axle Steering'],
-    images: ['/Marketing_Assets/A7.png', '/Marketing_Assets/A8.png', '/Marketing_Assets/A9.png'],
-    emirate: 'Abu Dhabi',
-  },
-  {
-    make: 'Range Rover',
-    model: 'Sport',
-    year: 2023,
-    trim: 'HSE Dynamic P400',
-    price: 485000,
-    mileage: 15000,
-    condition: 'used' as const,
-    bodyType: 'suv',
-    fuelType: 'petrol',
-    transmission: 'automatic',
-    engineSize: '3.0L',
-    cylinders: 6,
-    horsepower: 400,
-    doors: 5,
-    seats: 7,
-    color: 'Santorini Black',
-    interiorColor: 'Ebony Windsor Leather',
-    vin: 'SALWA2FE5PA123456',
-    title: '2023 Range Rover Sport HSE Dynamic - Luxury SUV Excellence',
-    description: 'Versatile luxury SUV with commanding presence. 7-seater configuration, air suspension, and premium Meridian sound system. Perfect family vehicle.',
-    features: ['Meridian Sound', 'Air Suspension', 'Panoramic Roof', 'Heated/Cooled Seats', 'Adaptive Cruise', 'Wade Sensing'],
-    images: ['/Marketing_Assets/A1.png', '/Marketing_Assets/A4.png', '/Marketing_Assets/A7.png'],
-    emirate: 'Dubai',
-  },
-  {
-    make: 'Audi',
-    model: 'RS e-tron GT',
-    year: 2024,
-    trim: 'Performance',
-    price: 685000,
-    mileage: 1200,
-    condition: 'used' as const,
-    bodyType: 'sedan',
-    fuelType: 'electric',
-    transmission: 'automatic',
-    engineSize: 'Electric',
-    cylinders: 0,
-    horsepower: 637,
-    doors: 4,
-    seats: 4,
-    color: 'Kemora Gray',
-    interiorColor: 'Black with Red Contrast',
-    vin: 'WAUZZZGE3PBN12345',
-    title: '2024 Audi RS e-tron GT - Electric Performance Pioneer',
-    description: 'Nearly new electric performance sedan. Lightning-fast acceleration, stunning design, and zero emissions. The future of performance.',
-    features: ['800V Fast Charging', 'Matrix LED Lights', 'Bang & Olufsen 3D', 'Virtual Cockpit', 'Carbon Interior', 'Air Suspension'],
-    images: ['/Marketing_Assets/A2.png', '/Marketing_Assets/A5.png', '/Marketing_Assets/A8.png'],
-    emirate: 'Dubai',
-  },
-  {
-    make: 'Lamborghini',
-    model: 'Urus',
-    year: 2023,
-    trim: 'Performante',
-    price: 1250000,
-    mileage: 6500,
-    condition: 'used' as const,
-    bodyType: 'suv',
-    fuelType: 'petrol',
-    transmission: 'automatic',
-    engineSize: '4.0L',
-    cylinders: 8,
-    horsepower: 666,
-    doors: 5,
-    seats: 5,
-    color: 'Arancio Borealis',
-    interiorColor: 'Black Alcantara',
-    vin: 'ZPBUA1ZL6PLA12345',
-    title: '2023 Lamborghini Urus Performante - Super SUV',
-    description: 'The most powerful SUV ever made by Lamborghini. Carbon ceramic brakes, titanium exhaust, and aggressive styling. A true statement piece.',
-    features: ['Carbon Ceramic Brakes', 'Titanium Exhaust', 'Carbon Fiber Package', 'Alcantara Interior', 'Bang & Olufsen', 'Track Mode'],
-    images: ['/Marketing_Assets/A3.png', '/Marketing_Assets/A6.png', '/Marketing_Assets/A9.png'],
-    emirate: 'Dubai',
-  },
+// Data Arrays for Random Generation
+const makesAndModels = {
+  'Mercedes-Benz': ['S-Class', 'G-Class', 'E-Class', 'GLE', 'GLS', 'AMG GT'],
+  'BMW': ['7 Series', 'X7', 'X5', 'M5', 'M4', 'M3', 'XM'],
+  'Porsche': ['911', 'Cayenne', 'Panamera', 'Taycan', 'Macan'],
+  'Audi': ['RS Q8', 'RS7', 'RS6', 'e-tron GT', 'Q8'],
+  'Land Rover': ['Range Rover', 'Range Rover Sport', 'Defender 110', 'Defender 90'],
+  'Lamborghini': ['Urus', 'Huracan'],
+  'Ferrari': ['F8 Tributo', 'Roma', '296 GTB'],
+  'Rolls-Royce': ['Cullinan', 'Ghost', 'Phantom'],
+  'Bentley': ['Bentayga', 'Continental GT', 'Flying Spur']
+};
+
+const trims = ['S', 'SE', 'HSE', 'Autobiography', 'AMG', 'M Sport', 'Competition', 'Turbo', 'Turbo S', 'GTS', 'Prestige', 'Platinum'];
+const bodyTypes = ['sedan', 'suv', 'coupe', 'convertible', 'wagon'];
+const fuelTypes = ['petrol', 'hybrid', 'electric', 'diesel'];
+const transmissions = ['automatic'];
+const colors = ['Obsidian Black', 'Jet Black', 'Metallic Black', 'Midnight Black', 'Onyx Black', 'Santorini Black', 'Beluga Black'];
+const interiorColors = ['Black', 'Red', 'Tan', 'White', 'Brown', 'Beige'];
+const emirates = ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman'];
+const specsList = ['gcc', 'american', 'european', 'japanese'];
+
+const featuresList = [
+  'Panoramic Sunroof', 'Adaptive Cruise Control', 'Burmester Sound System', '360 Camera', 'Massage Seats', 
+  'Night Vision', 'Air Suspension', 'Heads-Up Display', 'Soft Close Doors', 'Ventilated Seats', 
+  'Apple CarPlay', 'Android Auto', 'Lane Keep Assist', 'Blind Spot Monitor', 'Ceramic Brakes', 
+  'Carbon Fiber Interior', 'Rear Entertainment', 'Wireless Charging', 'Ambient Lighting', 'Keyless Entry'
 ];
 
+// Image handling
+const totalImages = 60; // We saw up to car60.webp roughly
+const getImage = (index: number) => `/Black_cars/car${(index % totalImages) + 1}.webp`;
+
+function getRandomItem<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function getRandomSubarray<T>(arr: T[], n: number): T[] {
+  const shuffled = arr.sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, n);
+}
+
+function generateRandomListing(index: number, partnerId: string) {
+  const make = getRandomItem(Object.keys(makesAndModels));
+  const model = getRandomItem(makesAndModels[make as keyof typeof makesAndModels]);
+  const year = Math.floor(Math.random() * (2025 - 2019) + 2019); // 2019-2024
+  const trim = getRandomItem(trims);
+  
+  const title = `${year} ${make} ${model} ${trim}`;
+  const slug = `${year}-${make}-${model}-${trim}`.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
+  // Generate 3-5 random images for this car
+  const carImages = [];
+  const numImages = Math.floor(Math.random() * 3) + 3;
+  for (let i = 0; i < numImages; i++) {
+    // Pick a random image index, try to keep them somewhat consistent or just random as requested
+    const imgIndex = Math.floor(Math.random() * totalImages) + 1;
+    carImages.push(`/Black_cars/car${imgIndex}.webp`);
+  }
+
+  return {
+    id: makeListingId(),
+    partnerId,
+    title,
+    slug: `${slug}-${createId().slice(0, 8)}`,
+    description: `Experience luxury with this ${year} ${make} ${model}. Finished in stunning ${getRandomItem(colors)} with ${getRandomItem(interiorColors)} interior. Maintained to the highest standards.`,
+    
+    make,
+    model,
+    year,
+    trim,
+    vin: createId().toUpperCase().slice(0, 17),
+    
+    price: Math.floor(Math.random() * (1500000 - 150000) + 150000),
+    originalPrice: Math.floor(Math.random() * (1600000 - 160000) + 160000),
+    
+    mileage: Math.floor(Math.random() * 80000),
+    condition: 'used' as const,
+    bodyType: getRandomItem(bodyTypes),
+    fuelType: getRandomItem(fuelTypes),
+    transmission: getRandomItem(transmissions),
+    engineSize: `${(Math.random() * 4 + 2).toFixed(1)}L`,
+    cylinders: getRandomItem([4, 6, 8, 12]),
+    horsepower: Math.floor(Math.random() * (800 - 300) + 300),
+    doors: getRandomItem([2, 4]),
+    seats: getRandomItem([2, 4, 5, 7]),
+    
+    color: getRandomItem(colors),
+    interiorColor: getRandomItem(interiorColors),
+    specs: getRandomItem(specsList),
+    
+    features: getRandomSubarray(featuresList, Math.floor(Math.random() * 8) + 4),
+    images: carImages,
+    thumbnail: carImages[0],
+    
+    emirate: getRandomItem(emirates),
+    
+    status: 'published',
+    sellerType: 'dealer',
+    
+    viewCount: Math.floor(Math.random() * 1000),
+    favouriteCount: Math.floor(Math.random() * 100),
+    shareCount: Math.floor(Math.random() * 50),
+    inquiryCount: Math.floor(Math.random() * 20),
+    callCount: Math.floor(Math.random() * 15),
+    whatsappCount: Math.floor(Math.random() * 25),
+    
+    qiScore: Math.floor(Math.random() * 15) + 85,
+    performanceScore: Math.floor(Math.random() * 20) + 80,
+    daysOnMarket: Math.floor(Math.random() * 60),
+    
+    isFeatured: false, // Explicitly requested to be false
+    
+    publishedAt: new Date(Date.now() - Math.floor(Math.random() * 90) * 24 * 60 * 60 * 1000),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+}
+
 async function seedListings() {
-  console.log('🌱 Starting to seed listings...\n');
+  console.log('🌱 Starting to seed 100 listings...\n');
 
   try {
     // Get first partner (create one if doesn't exist)
@@ -177,7 +141,6 @@ async function seedListings() {
     if (partners.length === 0) {
       console.log('⚠️  No partners found. Creating a demo partner first...');
       
-      // Create a demo user first
       const [demoUser] = await db.insert(user).values({
         id: `user_${createId()}`,
         email: 'demo.dealer@alifh.ae',
@@ -187,7 +150,6 @@ async function seedListings() {
         updatedAt: new Date(),
       }).returning();
 
-      // Create demo partner
       const [demoPartner] = await db.insert(partner).values({
         id: `partner_${createId()}`,
         userId: demoUser.id,
@@ -226,16 +188,8 @@ async function seedListings() {
         isActive: true,
         isPartnerDashboardEnabled: true,
         settings: {
-          notifications: {
-            email: true,
-            sms: true,
-            push: true,
-          },
-          privacy: {
-            showPhone: true,
-            showEmail: true,
-            showAddress: false,
-          },
+          notifications: { email: true, sms: true, push: true },
+          privacy: { showPhone: true, showEmail: true, showAddress: false },
         },
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -248,90 +202,21 @@ async function seedListings() {
     const partnerId = partners[0].id;
     console.log(`📍 Using partner: ${partners[0].businessName} (${partnerId})\n`);
 
-    // Create listings
-    let created = 0;
-    for (const car of sampleCars) {
-      const slug = `${car.year}-${car.make}-${car.model}`
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '');
-
-      await db.insert(carListing).values({
-        id: makeListingId(),
-        partnerId,
-        title: car.title,
-        slug: `${slug}-${createId().slice(0, 8)}`,
-        description: car.description,
-        
-        // Vehicle details
-        make: car.make,
-        model: car.model,
-        year: car.year,
-        trim: car.trim,
-        vin: car.vin,
-        
-        // Pricing
-        price: car.price,
-        originalPrice: car.price,
-        
-        // Specs
-        mileage: car.mileage,
-        condition: car.condition,
-        bodyType: car.bodyType,
-        fuelType: car.fuelType,
-        transmission: car.transmission,
-        engineSize: car.engineSize,
-        cylinders: car.cylinders,
-        horsepower: car.horsepower,
-        doors: car.doors,
-        seats: car.seats,
-        
-        // Colors
-        color: car.color,
-        interiorColor: car.interiorColor,
-        
-        // Features & Media
-        features: car.features,
-        images: car.images,
-        
-        // Location
-        emirate: car.emirate,
-        
-        // Status
-        status: 'published',
-        sellerType: 'dealer',
-        
-        // Counters (initialized to 0)
-        viewCount: Math.floor(Math.random() * 500) + 50,
-        favouriteCount: Math.floor(Math.random() * 50) + 5,
-        shareCount: Math.floor(Math.random() * 20) + 2,
-        inquiryCount: Math.floor(Math.random() * 15) + 1,
-        callCount: Math.floor(Math.random() * 10) + 1,
-        whatsappCount: Math.floor(Math.random() * 12) + 1,
-        
-        // Analytics
-        qiScore: Math.floor(Math.random() * 15) + 85, // 85-100
-        performanceScore: Math.floor(Math.random() * 20) + 80, // 80-100
-        daysOnMarket: Math.floor(Math.random() * 30) + 1,
-        
-        // Premium features
-        isFeatured: Math.random() > 0.5,
-        
-        // Timestamps
-        publishedAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000), // Random within last 30 days
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-
-      created++;
-      console.log(`✅ Created: ${car.year} ${car.make} ${car.model}`);
+    // Generate and insert 100 listings
+    const listingsToCreate = [];
+    for (let i = 0; i < 100; i++) {
+      listingsToCreate.push(generateRandomListing(i, partnerId));
     }
 
-    console.log(`\n🎉 Successfully seeded ${created} car listings!`);
-    console.log(`\n📊 Summary:`);
-    console.log(`   - Partner: ${partners[0].businessName}`);
-    console.log(`   - Listings: ${created}`);
-    console.log(`   - All listings are published and visible`);
+    // Insert in batches to avoid query size limits
+    const batchSize = 10;
+    for (let i = 0; i < listingsToCreate.length; i += batchSize) {
+      const batch = listingsToCreate.slice(i, i + batchSize);
+      await db.insert(carListing).values(batch);
+      console.log(`✅ Inserted batch ${i/batchSize + 1}/${Math.ceil(listingsToCreate.length/batchSize)}`);
+    }
+
+    console.log(`\n🎉 Successfully seeded ${listingsToCreate.length} car listings!`);
     console.log(`\n🚀 Ready to showcase!`);
     
   } catch (error) {
@@ -340,7 +225,6 @@ async function seedListings() {
   }
 }
 
-// Run the seed
 seedListings()
   .then(() => process.exit(0))
   .catch((error) => {

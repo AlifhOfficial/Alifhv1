@@ -1,0 +1,261 @@
+/**
+ * Car Card Component - Alifh Design System
+ * Following "Less is More" principle with minimalist aesthetic
+ */
+
+'use client';
+
+import Image from 'next/image';
+import Link from 'next/link';
+import { Share2, Heart, CheckCircle2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+interface CarCardProps {
+  id: string;
+  make: string;
+  model: string;
+  year: number;
+  trim?: string | null;
+  price: number;
+  mileage: number;
+  emirate: string;
+  specs?: string | null;
+  thumbnail?: string | null;
+  images?: string[];
+  viewCount?: number;
+  qiScore?: number | null;
+  // Partner/Dealer info
+  partnerName?: string;
+  partnerVerified?: boolean;
+  isBlackMember?: boolean; // Black tier partner listing
+  className?: string;
+}
+
+export function CarCard({
+  id,
+  make,
+  model,
+  year,
+  trim,
+  price,
+  mileage,
+  emirate,
+  specs = 'GCC',
+  thumbnail,
+  images,
+  qiScore,
+  partnerName,
+  partnerVerified,
+  isBlackMember = false,
+  className
+}: CarCardProps) {
+  // Format functions
+  const formatPrice = (cents: number) => {
+    return new Intl.NumberFormat('en-AE', {
+      style: 'currency',
+      currency: 'AED',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(cents / 100);
+  };
+
+  const formatMileage = (km: number) => {
+    if (km >= 1000) {
+      return `${(km / 1000).toFixed(0)}k`;
+    }
+    return km.toString();
+  };
+
+  const displayImage = thumbnail || images?.[0] || '/assets/cars/car1.avif';
+  const displaySpecs = specs || 'GCC';
+
+  return (
+    <div className={cn(
+      "group relative flex flex-col overflow-hidden rounded-xl transition-all duration-300",
+      isBlackMember 
+        ? "bg-black border border-zinc-800 hover:border-zinc-700 hover:shadow-2xl" 
+        : "bg-card border border-border/40 hover:border-border/60 hover:shadow-lg",
+      className
+    )}>
+      {/* Subtle top accent line for Black Members */}
+      {isBlackMember && (
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-zinc-700 to-transparent" />
+      )}
+      
+      {/* Image Section */}
+      <div className="p-2">
+        <Link href={`/listings/${id}`} className={cn(
+          "relative aspect-[16/10] w-full overflow-hidden rounded-lg block",
+          isBlackMember ? "bg-zinc-900" : "bg-muted/20"
+        )}>
+          <Image
+            src={displayImage}
+            alt={`${year} ${make} ${model}`}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+        
+        {/* Overlay Gradient - Subtle for Black Members */}
+        <div className={cn(
+          "absolute inset-0 transition-opacity duration-300",
+          isBlackMember 
+            ? "bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-40 group-hover:opacity-60" 
+            : "bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100"
+        )} />
+        
+        {/* Badge - Top Right */}
+        {isBlackMember ? (
+          <div className="absolute top-3 right-3 flex items-center px-3 py-1.5 bg-black border border-black">
+            <span className="text-xs font-bold text-white tracking-widest">BLK</span>
+          </div>
+        ) : qiScore ? (
+          <div className="absolute top-3 right-3 flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs backdrop-blur-md bg-background/90 border border-border/20">
+            <span className="text-primary">QI</span>
+            <span className="font-medium text-foreground">{Math.round(qiScore)}</span>
+          </div>
+        ) : null}
+        </Link>
+      </div>
+
+      {/* Content Section */}
+      <div className="flex flex-1 flex-col px-4 pb-4 pt-3">
+        {/* Title and Price */}
+        <div className="mb-4">
+          <div className="flex items-start justify-between gap-3">
+            <Link href={`/listings/${id}`} className="group/title min-w-0 flex-1">
+              <h3 className={cn(
+                "text-sm font-semibold transition-colors line-clamp-1 tracking-tight",
+                isBlackMember
+                  ? "text-white group-hover/title:text-zinc-200"
+                  : "text-foreground group-hover/title:text-primary"
+              )}>
+                <span className={cn(
+                  "font-normal mr-1.5",
+                  isBlackMember ? "text-zinc-400" : "text-muted-foreground/80"
+                )}>{year}</span>
+                {make} {model}
+              </h3>
+              {trim && (
+                <p className={cn(
+                  "text-xs line-clamp-1 mt-0.5",
+                  isBlackMember ? "text-zinc-500" : "text-muted-foreground/70"
+                )}>
+                  {trim}
+                </p>
+              )}
+            </Link>
+            <p className={cn(
+              "text-sm font-semibold whitespace-nowrap tracking-tight",
+              isBlackMember ? "text-white" : "text-foreground"
+            )}>
+              {formatPrice(price)}
+            </p>
+          </div>
+        </div>
+
+        {/* Key Details Grid */}
+        <div className={cn(
+          "grid grid-cols-3 gap-4 py-4 border-t",
+          isBlackMember ? "border-zinc-800" : "border-border/40"
+        )}>
+          <div className="space-y-1.5">
+            <p className={cn(
+              "text-[10px] uppercase tracking-wide",
+              isBlackMember ? "text-zinc-600" : "text-muted-foreground/60"
+            )}>Mileage</p>
+            <p className={cn(
+              "text-sm font-semibold tabular-nums",
+              isBlackMember ? "text-zinc-200" : "text-foreground"
+            )}>{formatMileage(mileage)} km</p>
+          </div>
+          
+          <div className="space-y-1.5">
+            <p className={cn(
+              "text-[10px] uppercase tracking-wide",
+              isBlackMember ? "text-zinc-600" : "text-muted-foreground/60"
+            )}>Specs</p>
+            <p className={cn(
+              "text-sm font-semibold capitalize",
+              isBlackMember ? "text-zinc-200" : "text-foreground"
+            )}>{displaySpecs}</p>
+          </div>
+          
+          <div className="space-y-1.5">
+            <p className={cn(
+              "text-[10px] uppercase tracking-wide",
+              isBlackMember ? "text-zinc-600" : "text-muted-foreground/60"
+            )}>Location</p>
+            <p className={cn(
+              "text-sm font-semibold truncate",
+              isBlackMember ? "text-zinc-200" : "text-foreground"
+            )}>{emirate}</p>
+          </div>
+        </div>
+
+        {/* Footer Actions */}
+        <div className={cn(
+          "mt-auto flex items-center justify-between pt-4 border-t",
+          isBlackMember ? "border-zinc-800" : "border-border/40"
+        )}>
+          {/* Dealer Info */}
+          <div className="flex items-center gap-2 min-w-0">
+            <div className={cn(
+              "relative w-7 h-7 rounded-full overflow-hidden flex-shrink-0",
+              isBlackMember ? "bg-zinc-800 ring-1 ring-zinc-700" : "bg-muted ring-1 ring-border/20"
+            )}>
+              <div className={cn(
+                "w-full h-full flex items-center justify-center text-[10px] font-semibold",
+                isBlackMember ? "text-zinc-400" : "text-muted-foreground"
+              )}>
+                {(partnerName || 'PS').substring(0, 2).toUpperCase()}
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className={cn(
+                "text-xs font-medium truncate",
+                isBlackMember ? "text-zinc-300" : "text-foreground"
+              )}>
+                {partnerName || 'Private Seller'}
+              </span>
+              {(isBlackMember || partnerVerified) && (
+                <div className="relative inline-flex items-center justify-center w-4 h-4 flex-shrink-0" title="Verified">
+                  <svg viewBox="0 0 24 24" className="w-full h-full" fill="none">
+                    <circle cx="12" cy="12" r="10" className="fill-emerald-500" />
+                    <path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-0.5">
+            <button 
+              className={cn(
+                "rounded-full p-1.5 transition-colors",
+                isBlackMember
+                  ? "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300"
+                  : "text-muted-foreground/60 hover:bg-muted hover:text-foreground"
+              )}
+              aria-label="Share"
+            >
+              <Share2 className="h-3.5 w-3.5" />
+            </button>
+            <button 
+              className={cn(
+                "rounded-full p-1.5 transition-colors",
+                isBlackMember
+                  ? "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300"
+                  : "text-muted-foreground/60 hover:bg-muted hover:text-foreground"
+              )}
+              aria-label="Add to favorites"
+            >
+              <Heart className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

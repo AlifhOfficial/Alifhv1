@@ -68,7 +68,6 @@ export default async function PartnerTeamPage() {
         id: schema.user.id,
         name: schema.user.name,
         email: schema.user.email,
-        image: schema.user.image,
       },
     })
     .from(schema.partnerStaff)

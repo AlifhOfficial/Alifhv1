@@ -36,22 +36,22 @@ interface NavItem {
 const navItems: NavItem[] = [
   {
     label: "Inventory",
-    href: "/inventory",
+    href: "/listings",
     submenu: [
       {
         title: "Browse",
         items: [
-          { label: "All Vehicles", href: "/inventory", description: "View all listings" },
-          { label: "New Arrivals", href: "/inventory/new", description: "Latest additions" },
-          { label: "Featured", href: "/inventory/featured", description: "Handpicked vehicles" },
+          { label: "All Vehicles", href: "/listings", description: "View all listings" },
+          { label: "New Arrivals", href: "/listings?sortBy=createdAt", description: "Latest additions" },
+          { label: "Featured", href: "/listings?isFeatured=true", description: "Handpicked vehicles" },
         ],
       },
       {
         title: "Categories",
         items: [
-          { label: "Luxury", href: "/inventory/luxury" },
-          { label: "Sports", href: "/inventory/sports" },
-          { label: "SUVs", href: "/inventory/suvs" },
+          { label: "Luxury", href: "/listings?bodyType=luxury" },
+          { label: "Sports", href: "/listings?bodyType=sports" },
+          { label: "SUVs", href: "/listings?bodyType=suv" },
         ],
       },
     ],

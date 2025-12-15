@@ -107,8 +107,8 @@ export function SimpleSidebar({ user, items }: SimpleSidebarProps) {
   }, [profile?.firstName, profile?.lastName, user.name]);
 
   const avatarSrc = useMemo(() => {
-    return profile?.avatarUrl ?? user.image;
-  }, [profile?.avatarUrl, user.image]);
+    return profile?.avatarUrl ?? null;
+  }, [profile?.avatarUrl]);
 
   const toggleTheme = () => {
     setTheme(currentTheme === "dark" ? "light" : "dark");

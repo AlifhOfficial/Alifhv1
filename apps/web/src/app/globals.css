@@ -60,6 +60,20 @@
     @apply bg-background text-foreground;
     font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
+  
+  /* Prevent theme transition flash */
+  html {
+    color-scheme: light;
+  }
+  
+  html.dark {
+    color-scheme: dark;
+  }
+  
+  /* Disable transitions on theme change */
+  html.disable-transitions * {
+    transition: none !important;
+  }
 }
 /* stylelint-enable at-rule-no-unknown */
 

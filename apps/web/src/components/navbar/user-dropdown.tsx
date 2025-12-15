@@ -61,9 +61,8 @@ export function ProfileMenu({
   const { profile, refresh } = useProfile({ fetchOnMount: !!user, userId: user?.id ?? null });
 
   const avatarSrc = useMemo(() => {
-    if (profile?.avatarUrl) return profile.avatarUrl;
-    return user?.image ?? undefined;
-  }, [profile?.avatarUrl, user?.image]);
+    return profile?.avatarUrl ?? undefined;
+  }, [profile?.avatarUrl]);
 
   useEffect(() => {
     setHasImageError(false);

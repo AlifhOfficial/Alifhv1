@@ -18,10 +18,12 @@ import {
   Moon
 } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useProfile } from "@/hooks/profile";
 
 interface DashboardLayoutProps {
   children: ReactNode;
   user: {
+    id?: string;
     name: string;
     email: string;
     image?: string;
@@ -51,6 +53,7 @@ function DashboardSidebar({
   const router = useRouter();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const { profile } = useProfile({ fetchOnMount: true, userId: user.id ?? null });
 
   useEffect(() => {
     setMounted(true);
@@ -80,9 +83,9 @@ function DashboardSidebar({
       {/* Header - User Info */}
       <div className="p-4 border-b border-border/20">
         <div className="flex items-center gap-3">
-          {user.image ? (
+          {profile?.avatarUrl ? (
             <img
-              src={user.image}
+              src={profile.avatarUrl}
               alt={user.name}
               className="w-10 h-10 rounded-full border border-border/40"
             />
@@ -270,7 +273,7 @@ export function StaffDashboardLayout({ children, user, activeTab, rightPanel }: 
     { label: 'Overview', icon: LayoutDashboard, href: '#overview', id: 'overview' },
     { label: 'My Listings', icon: Store, href: '#listings', id: 'listings' },
     { label: 'My Leads', icon: Users, href: '#leads', id: 'leads' },
-    { label: 'Inventory', icon: Home, href: '#inventory', id: 'inventory' },
+    { label: 'Inventory', icon: Home, href: '/partner-dashboard/inventory', id: 'inventory' },
   ];
 
   return (

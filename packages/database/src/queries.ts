@@ -39,7 +39,6 @@ export interface CreateUserData {
   name: string;
   email: string;
   emailVerified?: boolean;
-  image?: string | null;
 }
 
 export const createUser = async (data: CreateUserData) => {
@@ -52,7 +51,6 @@ export const createUser = async (data: CreateUserData) => {
       name: data.name,
       email: data.email,
       emailVerified: data.emailVerified ?? false,
-      image: data.image ?? null,
       createdAt: now,
       updatedAt: now,
     })

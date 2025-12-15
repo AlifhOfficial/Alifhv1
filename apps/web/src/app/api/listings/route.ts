@@ -6,6 +6,9 @@ import {
   getPartnerById,
   type ListingInsert,
 } from "@alifh/database";
+import { db } from "@alifh/database";
+import * as schema from "@alifh/database";
+import { eq, and, desc } from "drizzle-orm";
 
 export const runtime = "nodejs";
 
@@ -122,12 +125,124 @@ export async function GET(req: NextRequest) {
       filters.sortOrder = searchParams.get('sortOrder');
     }
 
-    const listings = await getAllListings(filters);
-
+    // Fetch listings with partner info using join
+    const listingsWithPartner = await db
+      .select({
+        // Primary identification
+        id: schema.carListing.id,
+        vin: schema.carListing.vin,
+        
+        // Ownership & Seller
+        partnerId: schema.carListing.partnerId,
+        userId: schema.carListing.userId,
+        sellerType: schema.carListing.sellerType,
+        isConsignment: schema.carListing.isConsignment,
+        
+        // Basic Vehicle Information
+        make: schema.carListing.make,
+        model: schema.carListing.model,
+        year: schema.carListing.year,
+        trim: schema.carListing.trim,
+        
+        // Vehicle Specifications
+        bodyType: schema.carListing.bodyType,
+        fuelType: schema.carListing.fuelType,
+        transmission: schema.carListing.transmission,
+        specs: schema.carListing.specs,
+        steeringSide: schema.carListing.steeringSide,
+        
+        // Engine & Performance
+        engineSize: schema.carListing.engineSize,
+        engineType: schema.carListing.engineType,
+        cylinders: schema.carListing.cylinders,
+        power: schema.carListing.power,
+        torque: schema.carListing.torque,
+        fuelEconomy: schema.carListing.fuelEconomy,
+        
+        // Physical Details
+        doors: schema.carListing.doors,
+        seatingCapacity: schema.carListing.seatingCapacity,
+        exteriorColor: schema.carListing.exteriorColor,
+        interiorColor: schema.carListing.interiorColor,
+        
+        // Condition & Mileage
+        mileage: schema.carListing.mileage,
+        
+        // Pricing
+        price: schema.carListing.price,
+        currency: schema.carListing.currency,
+        isNegotiable: schema.carListing.isNegotiable,
+        
+        // AI Valuation & Market Intelligence
+        fairValue: schema.carListing.fairValue,
+        estimateMin: schema.carListing.estimateMin,
+        estimateMax: schema.carListing.estimateMax,
+        priceTrend: schema.carListing.priceTrend,
+        qiScore: schema.carListing.qiScore,
+        
+        // Location
+        emirate: schema.carListing.emirate,
+        city: schema.carListing.city,
+        
+        // Media & Content
+        thumbnail: schema.carListing.thumbnail,
+        images: schema.carListing.images,
+        videoUrl: schema.carListing.videoUrl,
+        description: schema.carListing.description,
+        
+        // Features & Extras
+        technicalFeatures: schema.carListing.technicalFeatures,
+        extras: schema.carListing.extras,
+        specialNotes: schema.carListing.specialNotes,
+        warranty: schema.carListing.warranty,
+        
+        // Status & Publication
+        status: schema.carListing.status,
+        exportStatus: schema.carListing.exportStatus,
+        
+        // Badges & Tags
+        badges: schema.carListing.badges,
+        tags: schema.carListing.tags,
+        isFeatured: schema.carListing.isFeatured,
+        isBlackMember: schema.carListing.isBlackMember,
+        
+        // Engagement Metrics
+        viewCount: schema.carListing.viewCount,
+        favouriteCount: schema.carListing.favouriteCount,
+        superlikeCount: schema.carListing.superlikeCount,
+        shareCount: schema.carListing.shareCount,
+        
+        // Lead Generation Metrics
+        inquiryCount: schema.carListing.inquiryCount,
+        bookingCount: schema.carListing.bookingCount,
+        callCount: schema.carListing.callCount,
+        whatsappCount: schema.carListing.whatsappCount,
+        
+        // SEO & Discovery
+        slug: schema.carListing.slug,
+        
+        // Timestamps
+        createdAt: schema.carListing.createdAt,
+        updatedAt: schema.carListing.updatedAt,
+        publishedAt: schema.carListing.publishedAt,
+        
+        // Partner data
+        partnerName: schema.partner.brandName,
+        partnerVerified: schema.partner.isVerified,
+        partnerLogo: schema.partner.logo,
+        partnerTier: schema.partner.tier,
+      })
+      .from(schema.carListing)
+      .leftJoin(schema.partner, eq(schema.carListing.partnerId, schema.partner.id))
+      .where(eq(schema.carListing.status, 'published'))
+      .orderBy(desc(schema.carListing.createdAt))
+      .limit(filters.limit || 50)
+      .offset(filters.offset || 0);
+    
     return NextResponse.json({
-      data: listings,
+      data: listingsWithPartner,
       meta: {
-        total: listings.length,
+        total: listingsWithPartner.length,
         limit: filters.limit,
         offset: filters.offset,
       },
@@ -135,7 +250,10 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error('[listings] GET failed', error);
     return NextResponse.json(
-      { error: 'Failed to fetch listings' },
+      { 
+        error: 'Failed to fetch listings',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
