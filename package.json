@@ -32,8 +32,8 @@
     "typescript": "^5.3.3"
   },
   "overrides": {
-    "@types/react": "19.1.10",
-    "@types/react-dom": "19.1.10"
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3"
   },
   "dependencies": {
     "@neondatabase/serverless": "1.0.2",
