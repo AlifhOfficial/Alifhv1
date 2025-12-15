@@ -1,49 +1,31 @@
-"use client";
+/**
+ * Home Page - Alifh Landing
+ * Public-facing homepage with hero and key sections
+ */
 
-import { Suspense } from "react";
-import { Navbar } from "@/components/navbar";
-import { useUser } from "@/hooks/auth/use-auth";
+import { HeroSection } from '@/components/home/hero-section';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Alifh - The UAE\'s Most Transparent Car Marketplace',
+  description: 'Buy and sell cars in the UAE with confidence. No confusion, no games—just trust, clarity, and passion for automotive excellence.',
+  openGraph: {
+    title: 'Alifh - The UAE\'s Most Transparent Car Marketplace',
+    description: 'Buy and sell cars in the UAE with confidence. No confusion, no games—just trust, clarity, and passion for automotive excellence.',
+    type: 'website',
+  },
+};
 
 export default function HomePage() {
-  const { user, isLoading } = useUser();
-
-  // Show loading state while checking auth
-  if (isLoading) {
-    return (
-      <>
-        <Suspense fallback={<div className="h-16" />}>
-          <Navbar />
-        </Suspense>
-        <div className="flex flex-col items-center justify-center min-h-screen pt-16 gap-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          <p className="text-sm text-muted-foreground">Loading...</p>
-        </div>
-      </>
-    );
-  }
-
   return (
-    <>
-      <Suspense fallback={<div className="h-16" />}>
-        <Navbar />
-      </Suspense>
-      <div className="flex flex-col items-center justify-center min-h-screen pt-16 gap-4">
-        <h1 className="text-4xl font-bold">Hello Alifh</h1>
-        {user ? (
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground mb-2">
-              Welcome back, <span className="font-medium">{user.name}</span>!
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Click your profile icon in the navbar to access your dashboards
-            </p>
-          </div>
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            Try clicking the user icon in the navbar above to sign in
-          </p>
-        )}
-      </div>
-    </>
+    <div className="min-h-screen bg-background">
+      <HeroSection />
+      
+      {/* Future sections can be added here */}
+      {/* <FeaturedListings /> */}
+      {/* <HowItWorks /> */}
+      {/* <PartnerShowcase /> */}
+      {/* <Testimonials /> */}
+    </div>
   );
 }

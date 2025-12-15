@@ -19,7 +19,7 @@ export default function InventoryPage() {
         <Navbar />
       </Suspense>
       <div className="min-h-screen bg-background pt-16">
-        <div className="max-w-7xl mx-auto px-8 py-12 space-y-8">
+        <div className="max-w-[1600px] mx-auto px-6 py-12 space-y-8">
           {/* Header */}
           <div className="space-y-2">
             <h1 className="text-xl font-medium text-foreground">Inventory</h1>
@@ -66,7 +66,7 @@ export default function InventoryPage() {
 
           {!isLoading && !error && listings.length > 0 && (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {listings.map((listing) => (
                   <CarCard
                     key={listing.id}

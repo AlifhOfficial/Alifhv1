@@ -74,7 +74,7 @@ export function CarCard({
       "group relative flex flex-col overflow-hidden rounded-xl transition-all duration-300",
       isBlackMember 
         ? "bg-black border border-zinc-800 hover:border-zinc-700 hover:shadow-2xl" 
-        : "bg-card border border-border/40 hover:border-border/60 hover:shadow-lg",
+        : "bg-card dark:bg-zinc-950 border border-border/40 hover:border-border/60 hover:shadow-lg",
       className
     )}>
       {/* Subtle top accent line for Black Members */}

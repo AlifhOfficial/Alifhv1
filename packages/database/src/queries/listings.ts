@@ -705,3 +705,317 @@ export const updateDaysOnMarket = async (listingId: string): Promise<void> => {
     })
     .where(eq(carListing.id, listingId));
 };
+
+// ==================== RESERVATION & SALES WORKFLOW ====================
+
+/**
+ * Reserve a listing for a user
+ */
+export const reserveListing = async (
+  listingId: string,
+  userId: string
+): Promise<ListingRecord | null> => {
+  const now = new Date();
+  
+  const [result] = await db
+    .update(carListing)
+    .set({
+      status: 'reserved',
+      reservedAt: now,
+      reservedBy: userId,
+      updatedAt: now,
+    })
+    .where(and(
+      eq(carListing.id, listingId),
+      eq(carListing.status, 'published') // Only published listings can be reserved
+    ))
+    .returning();
+
+  return result ?? null;
+};
+
+/**
+ * Unreserve a listing (cancel reservation)
+ */
+export const unreserveListing = async (
+  listingId: string,
+  userId?: string
+): Promise<ListingRecord | null> => {
+  const conditions = [eq(carListing.id, listingId)];
+  
+  if (userId) {
+    // Only allow the user who reserved it to unreserve
+    conditions.push(eq(carListing.reservedBy, userId));
+  }
+  
+  const [result] = await db
+    .update(carListing)
+    .set({
+      status: 'published',
+      reservedAt: null,
+      reservedBy: null,
+      updatedAt: new Date(),
+    })
+    .where(and(...conditions))
+    .returning();
+
+  return result ?? null;
+};
+
+/**
+ * Mark listing as sold
+ */
+export const markListingAsSold = async (
+  listingId: string,
+  soldToUserId: string,
+  soldPrice?: number
+): Promise<ListingRecord | null> => {
+  const now = new Date();
+  
+  const [result] = await db
+    .update(carListing)
+    .set({
+      status: 'sold',
+      soldAt: now,
+      soldTo: soldToUserId,
+      soldPrice: soldPrice,
+      updatedAt: now,
+    })
+    .where(eq(carListing.id, listingId))
+    .returning();
+
+  return result ?? null;
+};
+
+/**
+ * Get listings by reservation status
+ */
+export const getReservedListings = async (
+  userId?: string,
+  filters?: {
+    limit?: number;
+    offset?: number;
+  }
+): Promise<ListingRecord[]> => {
+  const conditions = [eq(carListing.status, 'reserved')];
+  
+  if (userId) {
+    conditions.push(eq(carListing.reservedBy, userId));
+  }
+  
+  let query = db
+    .select()
+    .from(carListing)
+    .where(and(...conditions))
+    .orderBy(desc(carListing.reservedAt)) as any;
+
+  if (filters?.limit) {
+    query = query.limit(filters.limit) as any;
+  }
+  if (filters?.offset) {
+    query = query.offset(filters.offset) as any;
+  }
+
+  return await query;
+};
+
+/**
+ * Get sold listings
+ */
+export const getSoldListings = async (filters?: {
+  partnerId?: string;
+  userId?: string; // Sold to user
+  limit?: number;
+  offset?: number;
+}): Promise<ListingRecord[]> => {
+  const conditions = [eq(carListing.status, 'sold')];
+  
+  if (filters?.partnerId) {
+    conditions.push(eq(carListing.partnerId, filters.partnerId));
+  }
+  if (filters?.userId) {
+    conditions.push(eq(carListing.soldTo, filters.userId));
+  }
+  
+  let query = db
+    .select()
+    .from(carListing)
+    .where(and(...conditions))
+    .orderBy(desc(carListing.soldAt)) as any;
+
+  if (filters?.limit) {
+    query = query.limit(filters.limit) as any;
+  }
+  if (filters?.offset) {
+    query = query.offset(filters.offset) as any;
+  }
+
+  return await query;
+};
+
+// ==================== MODERATION WORKFLOW ====================
+
+/**
+ * Submit listing for review
+ */
+export const submitForReview = async (listingId: string): Promise<ListingRecord | null> => {
+  const [result] = await db
+    .update(carListing)
+    .set({
+      status: 'pending',
+      updatedAt: new Date(),
+    })
+    .where(and(
+      eq(carListing.id, listingId),
+      eq(carListing.status, 'draft')
+    ))
+    .returning();
+
+  return result ?? null;
+};
+
+/**
+ * Approve listing (move from pending to published)
+ */
+export const approveListing = async (
+  listingId: string,
+  reviewedBy: string
+): Promise<ListingRecord | null> => {
+  const now = new Date();
+  
+  const [result] = await db
+    .update(carListing)
+    .set({
+      status: 'published',
+      publishedAt: now,
+      reviewedBy: reviewedBy,
+      reviewedAt: now,
+      updatedAt: now,
+    })
+    .where(and(
+      eq(carListing.id, listingId),
+      eq(carListing.status, 'pending')
+    ))
+    .returning();
+
+  return result ?? null;
+};
+
+/**
+ * Reject listing with reason
+ */
+export const rejectListing = async (
+  listingId: string,
+  reviewedBy: string,
+  rejectionReason: string
+): Promise<ListingRecord | null> => {
+  const now = new Date();
+  
+  const [result] = await db
+    .update(carListing)
+    .set({
+      status: 'rejected',
+      reviewedBy: reviewedBy,
+      reviewedAt: now,
+      rejectionReason: rejectionReason,
+      updatedAt: now,
+    })
+    .where(and(
+      eq(carListing.id, listingId),
+      eq(carListing.status, 'pending')
+    ))
+    .returning();
+
+  return result ?? null;
+};
+
+/**
+ * Get listings pending review
+ */
+export const getPendingListings = async (filters?: {
+  limit?: number;
+  offset?: number;
+}): Promise<ListingRecord[]> => {
+  let query = db
+    .select()
+    .from(carListing)
+    .where(eq(carListing.status, 'pending'))
+    .orderBy(asc(carListing.createdAt)) as any; // Oldest first for fair review queue
+
+  if (filters?.limit) {
+    query = query.limit(filters.limit) as any;
+  }
+  if (filters?.offset) {
+    query = query.offset(filters.offset) as any;
+  }
+
+  return await query;
+};
+
+// ==================== ADVANCED ANALYTICS ====================
+
+/**
+ * Update conversion metrics
+ */
+export const updateConversionMetrics = async (
+  listingId: string,
+  metrics: {
+    leadQuality?: number;
+    conversionRate?: number;
+    avgTimeToSale?: number;
+  }
+): Promise<ListingRecord | null> => {
+  const pruned = pruneUndefined(metrics);
+  
+  const [result] = await db
+    .update(carListing)
+    .set({
+      ...pruned,
+      updatedAt: new Date(),
+    })
+    .where(eq(carListing.id, listingId))
+    .returning();
+
+  return result ?? null;
+};
+
+/**
+ * Publish listing (from draft directly)
+ */
+export const publishListing = async (listingId: string): Promise<ListingRecord | null> => {
+  const now = new Date();
+  
+  const [result] = await db
+    .update(carListing)
+    .set({
+      status: 'published',
+      publishedAt: now,
+      updatedAt: now,
+    })
+    .where(and(
+      eq(carListing.id, listingId),
+      eq(carListing.status, 'draft')
+    ))
+    .returning();
+
+  return result ?? null;
+};
+
+/**
+ * Archive listing
+ */
+export const archiveListing = async (listingId: string): Promise<ListingRecord | null> => {
+  const now = new Date();
+  
+  const [result] = await db
+    .update(carListing)
+    .set({
+      status: 'archived',
+      archivedAt: now,
+      updatedAt: now,
+    })
+    .where(eq(carListing.id, listingId))
+    .returning();
+
+  return result ?? null;
+};
