@@ -2,6 +2,7 @@
 
 import { useRightSidebar } from "@/components/dashboard-components/three-column-layout";
 import { AddStaffForm, EditStaffForm } from "./team-forms";
+import { Plus, Settings2 } from "lucide-react";
 
 interface TeamActionsProps {
   canManage: boolean;
@@ -15,9 +16,10 @@ export function TeamActions({ canManage }: TeamActionsProps) {
   return (
     <button
       onClick={() => open("Add Team Member", <AddStaffForm />)}
-      className="px-4 py-2 bg-foreground text-background rounded-lg hover:opacity-90 text-sm font-medium"
+      className="inline-flex items-center gap-2 px-4 py-2 bg-foreground text-background rounded-lg hover:bg-foreground/90 text-sm font-medium transition-colors"
     >
-      + Add Member
+      <Plus className="w-4 h-4" />
+      Add Member
     </button>
   );
 }
@@ -35,9 +37,10 @@ export function StaffCardActions({ staff, canManage }: StaffCardActionsProps) {
   return (
     <button
       onClick={() => open("Edit Team Member", <EditStaffForm staff={staff} />)}
-      className="px-3 py-1.5 text-sm border border-border rounded-lg hover:bg-muted"
+      className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted/80 rounded-md transition-all"
+      aria-label="Edit team member"
     >
-      Edit
+      <Settings2 className="w-4 h-4" />
     </button>
   );
 }

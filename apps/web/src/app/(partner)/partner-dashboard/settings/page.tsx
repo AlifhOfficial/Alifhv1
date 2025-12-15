@@ -5,6 +5,31 @@ import * as schema from "@alifh/database";
 import { eq, and } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { SettingsActions } from "./settings-actions";
+import { 
+  CheckCircle2, 
+  AlertCircle, 
+  XCircle, 
+  BadgeCheck, 
+  Calendar, 
+  Building2, 
+  CreditCard, 
+  ShieldCheck, 
+  FileText, 
+  Mail, 
+  Phone, 
+  Globe, 
+  MessageCircle,
+  Clock,
+  Truck,
+  Car,
+  RefreshCw,
+  Shield,
+  FileCheck,
+  AlertTriangle,
+  Wallet,
+  Percent,
+  Award
+} from "lucide-react";
 
 export default async function PartnerSettingsPage() {
   const user = await requireAuth();
@@ -55,299 +80,303 @@ export default async function PartnerSettingsPage() {
     return `${value.toFixed(1)}%`;
   };
 
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'active': return <CheckCircle2 className="w-4 h-4 text-emerald-600" />;
+      case 'pending': return <AlertCircle className="w-4 h-4 text-amber-600" />;
+      case 'suspended': return <XCircle className="w-4 h-4 text-red-600" />;
+      default: return <AlertCircle className="w-4 h-4 text-muted-foreground" />;
+    }
+  };
+
   return (
     <DashboardDisplayArea
       title="Settings"
       description="Manage your dealership settings and preferences"
     >
-      <div className="p-6 md:p-10 space-y-12">
-        {/* Account Status */}
-        <div className="space-y-6">
-          <h2 className="text-lg font-medium text-foreground">Account Status</h2>
-          
-          <div className="bg-card border border-border rounded-lg p-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <div className="text-sm text-muted-foreground mb-2">Status</div>
-                <span className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-full ${
-                  partner.status === 'active' ? 'bg-green-100 text-green-800' :
-                  partner.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                  partner.status === 'suspended' ? 'bg-red-100 text-red-800' :
-                  'bg-gray-100 text-gray-800'
-                }`}>
-                  {partner.status}
-                </span>
+      <div className="max-w-5xl mx-auto px-8 py-12 space-y-12">
+        {/* Account Status Header */}
+        <div className="flex items-start justify-between">
+          <div className="space-y-1">
+            <h2 className="text-2xl font-medium text-foreground">{partner.name || 'Dealership Account'}</h2>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-1.5">
+                {getStatusIcon(partner.status)}
+                <span className="capitalize">{partner.status}</span>
               </div>
-
-              <div>
-                <div className="text-sm text-muted-foreground mb-2">Membership Tier</div>
-                <span className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-full ${
-                  partner.tier === 'black' ? 'bg-gray-900 text-white' :
-                  partner.tier === 'platinum' ? 'bg-gray-400 text-white' :
-                  partner.tier === 'gold' ? 'bg-yellow-500 text-white' :
-                  'bg-gray-200 text-gray-800'
-                }`}>
-                  {partner.tier}
-                </span>
+              <div className="w-1 h-1 rounded-full bg-border" />
+              <div className="flex items-center gap-1.5">
+                <Award className="w-4 h-4" />
+                <span className="capitalize">{partner.tier} Tier</span>
               </div>
-
-              <div>
-                <div className="text-sm text-muted-foreground mb-2">Verified</div>
-                <span className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-full ${
-                  partner.verifiedAt ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
-                }`}>
-                  {partner.verifiedAt ? '✓ Verified' : 'Not Verified'}
-                </span>
-              </div>
-
-              <div>
-                <div className="text-sm text-muted-foreground mb-2">Member Since</div>
-                <div className="text-sm font-medium text-foreground">
-                  {formatDate(partner.createdAt)}
-                </div>
-              </div>
+              {partner.verifiedAt && (
+                <>
+                  <div className="w-1 h-1 rounded-full bg-border" />
+                  <div className="flex items-center gap-1.5 text-blue-600">
+                    <BadgeCheck className="w-4 h-4" />
+                    <span>Verified</span>
+                  </div>
+                </>
+              )}
             </div>
+          </div>
+          <div className="text-right">
+            <div className="text-xs text-muted-foreground mb-1">Member Since</div>
+            <div className="text-sm font-medium">{formatDate(partner.createdAt)}</div>
           </div>
         </div>
 
+        <div className="border-t border-border/60 my-12" />
+
         {/* Services & Features */}
-        <div className="space-y-6">
+        <div className="space-y-8">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-medium text-foreground">Services & Features</h2>
+            <div>
+              <h2 className="text-lg font-medium text-foreground">Services & Features</h2>
+              <p className="text-sm text-muted-foreground mt-1">Manage your dealership services</p>
+            </div>
             <SettingsActions type="services" data={partner.features} />
           </div>
           
-          <div className="bg-card border border-border rounded-lg p-6">
-            <div className="grid md:grid-cols-2 gap-4">
-              {[
-                { key: 'homeDelivery', label: '🚚 Home Delivery', enabled: partner.features?.homeDelivery },
-                { key: 'testDriveAvailable', label: '🚗 Test Drive Available', enabled: partner.features?.testDriveAvailable },
-                { key: 'financing', label: '💰 Financing Options', enabled: partner.features?.financing },
-                { key: 'tradeIn', label: '🔄 Trade-In Service', enabled: partner.features?.tradeIn },
-                { key: 'warranty', label: '✅ Warranty Available', enabled: partner.features?.warranty },
-                { key: 'insurance', label: '🛡️ Insurance Assistance', enabled: partner.features?.insurance },
-                { key: 'registration', label: '📋 Registration Service', enabled: partner.features?.registration },
-                { key: 'exportAssistance', label: '🌍 Export Assistance', enabled: partner.features?.exportAssistance },
-              ].map((service) => (
-                <div
-                  key={service.key}
-                  className={`flex items-center justify-between p-4 rounded-lg border ${
-                    service.enabled 
-                      ? 'border-green-200 bg-green-50' 
-                      : 'border-gray-200 bg-gray-50'
-                  }`}
-                >
-                  <span className="text-sm font-medium text-foreground">{service.label}</span>
-                  <span className={`text-xs font-medium px-2 py-1 rounded ${
-                    service.enabled 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    {service.enabled ? 'Active' : 'Inactive'}
-                  </span>
-                </div>
-              ))}
-            </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {[
+              { key: 'homeDelivery', label: 'Home Delivery', icon: Truck, enabled: partner.features?.homeDelivery },
+              { key: 'testDriveAvailable', label: 'Test Drive', icon: Car, enabled: partner.features?.testDriveAvailable },
+              { key: 'financing', label: 'Financing', icon: CreditCard, enabled: partner.features?.financing },
+              { key: 'tradeIn', label: 'Trade-In', icon: RefreshCw, enabled: partner.features?.tradeIn },
+              { key: 'warranty', label: 'Warranty', icon: ShieldCheck, enabled: partner.features?.warranty },
+              { key: 'insurance', label: 'Insurance', icon: Shield, enabled: partner.features?.insurance },
+              { key: 'registration', label: 'Registration', icon: FileText, enabled: partner.features?.registration },
+              { key: 'exportAssistance', label: 'Export', icon: Globe, enabled: partner.features?.exportAssistance },
+            ].map((service) => (
+              <div
+                key={service.key}
+                className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
+                  service.enabled 
+                    ? 'border-border bg-background' 
+                    : 'border-transparent opacity-50'
+                }`}
+              >
+                <service.icon className={`w-4 h-4 ${service.enabled ? 'text-foreground' : 'text-muted-foreground'}`} />
+                <span className="text-sm font-medium">{service.label}</span>
+              </div>
+            ))}
           </div>
         </div>
 
+        <div className="border-t border-border/60 my-12" />
+
         {/* Business Hours */}
-        <div className="space-y-6">
+        <div className="space-y-8">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-medium text-foreground">Business Hours</h2>
+            <div>
+              <h2 className="text-lg font-medium text-foreground">Business Hours</h2>
+              <p className="text-sm text-muted-foreground mt-1">Set your operating hours</p>
+            </div>
             <SettingsActions type="businessHours" data={partner.businessHours} />
           </div>
           
-          <div className="bg-card border border-border rounded-lg p-6">
-            <div className="space-y-3">
-              {['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'].map((day) => {
-                const daySchedule = partner.businessHours?.[day as keyof typeof partner.businessHours];
-                const isClosed = !daySchedule || daySchedule.isClosed;
-                
-                return (
-                  <div key={day} className="flex items-center justify-between py-3 border-b border-border/60 last:border-0">
-                    <div className="text-sm font-medium text-foreground capitalize min-w-[100px]">
-                      {day}
-                    </div>
-                    {isClosed ? (
-                      <span className="text-sm text-muted-foreground">Closed</span>
-                    ) : (
-                      <span className="text-sm text-foreground">
-                        {daySchedule.open} - {daySchedule.close}
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day) => {
+              const daySchedule = partner.businessHours?.[day as keyof typeof partner.businessHours];
+              const isClosed = !daySchedule || daySchedule.isClosed;
+              
+              return (
+                <div key={day} className="flex items-center justify-between p-3 rounded-lg border border-border/40">
+                  <span className="text-sm font-medium capitalize text-muted-foreground">{day}</span>
+                  {isClosed ? (
+                    <span className="text-sm text-muted-foreground">Closed</span>
+                  ) : (
+                    <span className="text-sm font-medium">
+                      {daySchedule.open} - {daySchedule.close}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
+
+        <div className="border-t border-border/60 my-12" />
 
         {/* Financial Settings */}
-        <div className="space-y-6">
-          <h2 className="text-lg font-medium text-foreground">Financial Settings</h2>
+        <div className="space-y-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-medium text-foreground">Financial Settings</h2>
+              <p className="text-sm text-muted-foreground mt-1">Billing and commission details</p>
+            </div>
+          </div>
           
-          <div className="bg-card border border-border rounded-lg p-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <div className="text-sm text-muted-foreground mb-2">Commission Rate</div>
-                <div className="text-lg font-medium text-foreground">
-                  {formatPercentage(partner.commissionRate)}
-                </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Percent className="w-3.5 h-3.5" />
+                Commission Rate
               </div>
+              <div className="text-lg font-medium">{formatPercentage(partner.commissionRate)}</div>
+            </div>
 
-              <div>
-                <div className="text-sm text-muted-foreground mb-2">Subscription Plan</div>
-                <div className="text-lg font-medium text-foreground">
-                  {partner.subscriptionPlan ?? 'N/A'}
-                </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Award className="w-3.5 h-3.5" />
+                Subscription Plan
               </div>
+              <div className="text-lg font-medium capitalize">{partner.subscriptionPlan ?? 'N/A'}</div>
+            </div>
 
-              <div>
-                <div className="text-sm text-muted-foreground mb-2">Payment Terms</div>
-                <div className="text-lg font-medium text-foreground">
-                  {partner.paymentTerms ?? 'Standard'}
-                </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <FileText className="w-3.5 h-3.5" />
+                Payment Terms
               </div>
+              <div className="text-lg font-medium">{partner.paymentTerms ?? 'Standard'}</div>
+            </div>
 
-              <div>
-                <div className="text-sm text-muted-foreground mb-2">Credit Limit</div>
-                <div className="text-lg font-medium text-foreground">
-                  {partner.creditLimit ? `AED ${(partner.creditLimit / 100).toLocaleString()}` : 'N/A'}
-                </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Wallet className="w-3.5 h-3.5" />
+                Credit Limit
+              </div>
+              <div className="text-lg font-medium">
+                {partner.creditLimit ? `AED ${(partner.creditLimit / 100).toLocaleString()}` : 'N/A'}
               </div>
             </div>
           </div>
         </div>
 
+        <div className="border-t border-border/60 my-12" />
+
         {/* Notification Preferences */}
-        <div className="space-y-6">
+        <div className="space-y-8">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-medium text-foreground">Notification Preferences</h2>
+            <div>
+              <h2 className="text-lg font-medium text-foreground">Notifications</h2>
+              <p className="text-sm text-muted-foreground mt-1">Manage your alerts</p>
+            </div>
             <SettingsActions type="notifications" data={partner.notificationPreferences} />
           </div>
           
-          <div className="bg-card border border-border rounded-lg p-6">
-            <div className="space-y-4">
-              {partner.notificationPreferences && Object.entries(partner.notificationPreferences).map(([key, value]) => (
-                <div
-                  key={key}
-                  className="flex items-center justify-between py-3 border-b border-border/60 last:border-0"
-                >
-                  <div className="text-sm font-medium text-foreground capitalize">
-                    {key.replace(/([A-Z])/g, ' $1').trim()}
-                  </div>
-                  <span className={`text-xs font-medium px-2 py-1 rounded ${
-                    value 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    {value ? 'Enabled' : 'Disabled'}
-                  </span>
-                </div>
-              ))}
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
+            {partner.notificationPreferences && Object.entries(partner.notificationPreferences).map(([key, value]) => (
+              <div key={key} className="flex items-center justify-between py-2">
+                <span className="text-sm text-foreground capitalize">
+                  {key.replace(/([A-Z])/g, ' $1').trim()}
+                </span>
+                {value ? (
+                  <CheckCircle2 className="w-4 h-4 text-foreground" />
+                ) : (
+                  <div className="w-4 h-4 rounded-full border border-border" />
+                )}
+              </div>
+            ))}
           </div>
         </div>
+
+        <div className="border-t border-border/60 my-12" />
 
         {/* License & Compliance */}
-        <div className="space-y-6">
-          <h2 className="text-lg font-medium text-foreground">License & Compliance</h2>
+        <div className="space-y-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-medium text-foreground">License & Compliance</h2>
+              <p className="text-sm text-muted-foreground mt-1">Legal documents and status</p>
+            </div>
+          </div>
           
-          <div className="bg-card border border-border rounded-lg p-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <div className="text-sm text-muted-foreground mb-2">Trade License</div>
-                <div className="text-sm font-medium text-foreground">
-                  {partner.tradeLicense}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-6">
+              <div className="flex items-start gap-3">
+                <FileCheck className="w-5 h-5 text-muted-foreground mt-0.5" />
+                <div>
+                  <div className="text-sm font-medium">Trade License</div>
+                  <div className="text-sm text-muted-foreground mt-1">{partner.tradeLicense}</div>
+                  <div className="text-xs text-muted-foreground mt-1">Expires: {formatDate(partner.licenseExpiry)}</div>
                 </div>
               </div>
 
-              <div>
-                <div className="text-sm text-muted-foreground mb-2">License Expiry</div>
-                <div className="text-sm font-medium text-foreground">
-                  {formatDate(partner.licenseExpiry)}
+              <div className="flex items-start gap-3">
+                <Building2 className="w-5 h-5 text-muted-foreground mt-0.5" />
+                <div>
+                  <div className="text-sm font-medium">Tax Registration</div>
+                  <div className="text-sm text-muted-foreground mt-1">{partner.taxRegistrationNumber ?? 'N/A'}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div className="flex items-start gap-3">
+                <ShieldCheck className="w-5 h-5 text-muted-foreground mt-0.5" />
+                <div>
+                  <div className="text-sm font-medium">Insurance</div>
+                  <div className="text-sm text-muted-foreground mt-1">Valid until {formatDate(partner.insuranceExpiry)}</div>
                 </div>
               </div>
 
-              <div>
-                <div className="text-sm text-muted-foreground mb-2">Tax Registration</div>
-                <div className="text-sm font-medium text-foreground">
-                  {partner.taxRegistrationNumber ?? 'N/A'}
-                </div>
-              </div>
-
-              <div>
-                <div className="text-sm text-muted-foreground mb-2">Insurance Valid Until</div>
-                <div className="text-sm font-medium text-foreground">
-                  {formatDate(partner.insuranceExpiry)}
-                </div>
-              </div>
-
-              <div>
-                <div className="text-sm text-muted-foreground mb-2">Compliance Score</div>
-                <div className="text-sm font-medium text-foreground">
-                  {partner.complianceScore ?? 0}/100
-                </div>
-              </div>
-
-              <div>
-                <div className="text-sm text-muted-foreground mb-2">Last Audit</div>
-                <div className="text-sm font-medium text-foreground">
-                  {formatDate(partner.lastAuditDate)}
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-muted-foreground mt-0.5" />
+                <div>
+                  <div className="text-sm font-medium">Compliance Score</div>
+                  <div className="flex items-center gap-2 mt-1">
+                    <div className="h-2 w-24 bg-secondary rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-foreground" 
+                        style={{ width: `${partner.complianceScore ?? 0}%` }}
+                      />
+                    </div>
+                    <span className="text-xs text-muted-foreground">{partner.complianceScore ?? 0}/100</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">Last Audit: {formatDate(partner.lastAuditDate)}</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
+        <div className="border-t border-border/60 my-12" />
+
         {/* Contact Information */}
-        <div className="space-y-6">
-          <h2 className="text-lg font-medium text-foreground">Contact Information</h2>
-          
-          <div className="bg-card border border-border rounded-lg p-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <div className="text-sm text-muted-foreground mb-2">Primary Email</div>
-                <div className="text-sm font-medium text-foreground">
-                  {partner.email}
-                </div>
-              </div>
-
-              <div>
-                <div className="text-sm text-muted-foreground mb-2">Primary Phone</div>
-                <div className="text-sm font-medium text-foreground">
-                  {partner.phone}
-                </div>
-              </div>
-
-              {partner.alternatePhone && (
-                <div>
-                  <div className="text-sm text-muted-foreground mb-2">Alternate Phone</div>
-                  <div className="text-sm font-medium text-foreground">
-                    {partner.alternatePhone}
-                  </div>
-                </div>
-              )}
-
-              {partner.whatsapp && (
-                <div>
-                  <div className="text-sm text-muted-foreground mb-2">WhatsApp</div>
-                  <div className="text-sm font-medium text-foreground">
-                    {partner.whatsapp}
-                  </div>
-                </div>
-              )}
-
-              {partner.website && (
-                <div>
-                  <div className="text-sm text-muted-foreground mb-2">Website</div>
-                  <div className="text-sm font-medium text-foreground">
-                    {partner.website}
-                  </div>
-                </div>
-              )}
+        <div className="space-y-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-medium text-foreground">Contact Information</h2>
+              <p className="text-sm text-muted-foreground mt-1">Public contact details</p>
             </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex items-center gap-3 p-3 rounded-lg border border-border/40">
+              <Mail className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm">{partner.email}</span>
+            </div>
+
+            <div className="flex items-center gap-3 p-3 rounded-lg border border-border/40">
+              <Phone className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm">{partner.phone}</span>
+            </div>
+
+            {partner.alternatePhone && (
+              <div className="flex items-center gap-3 p-3 rounded-lg border border-border/40">
+                <Phone className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm">{partner.alternatePhone}</span>
+              </div>
+            )}
+
+            {partner.whatsapp && (
+              <div className="flex items-center gap-3 p-3 rounded-lg border border-border/40">
+                <MessageCircle className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm">{partner.whatsapp}</span>
+              </div>
+            )}
+
+            {partner.website && (
+              <div className="flex items-center gap-3 p-3 rounded-lg border border-border/40">
+                <Globe className="w-4 h-4 text-muted-foreground" />
+                <a href={partner.website} target="_blank" rel="noopener noreferrer" className="text-sm hover:underline">
+                  {partner.website}
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </div>

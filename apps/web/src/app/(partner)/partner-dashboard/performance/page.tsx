@@ -4,6 +4,24 @@ import { db } from "@alifh/database";
 import * as schema from "@alifh/database";
 import { eq, and } from "drizzle-orm";
 import { redirect } from "next/navigation";
+import { 
+  TrendingUp, 
+  Star, 
+  Users, 
+  Eye, 
+  MessageSquare, 
+  Clock, 
+  CheckCircle2, 
+  XCircle, 
+  AlertCircle,
+  DollarSign,
+  ShoppingBag,
+  Activity,
+  BarChart3,
+  ThumbsUp,
+  Target,
+  Timer
+} from "lucide-react";
 
 export default async function PartnerPerformancePage() {
   const user = await requireAuth();
@@ -54,271 +72,283 @@ export default async function PartnerPerformancePage() {
     return `${value.toFixed(1)}%`;
   };
 
+  const formatNumber = (num: number | null) => {
+    if (!num) return '0';
+    return new Intl.NumberFormat('en-US', { notation: "compact", compactDisplay: "short" }).format(num);
+  };
+
   return (
-    <DashboardDisplayArea
-      title="Performance Analytics"
-      description="Track your dealership's key performance indicators"
-    >
-      <div className="p-6 md:p-10 space-y-12">
-        {/* Overview Metrics */}
-        <div>
-          <h2 className="text-lg font-medium text-foreground mb-6">Overview</h2>
-          <div className="grid gap-6 md:grid-cols-4">
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-sm text-muted-foreground mb-2">Platform Rating</div>
-              <div className="text-2xl font-semibold text-foreground">
-                ⭐ {partner.platformRating?.toFixed(1) ?? 'N/A'}
+    <DashboardDisplayArea>
+      <div className="max-w-5xl mx-auto px-8 py-12 space-y-12">
+        
+        {/* Top Level KPI Cards - Minimalist */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="w-2 h-2 rounded-full bg-emerald-500" />
+              Total Revenue
+            </div>
+            <div className="text-2xl font-semibold tracking-tight">{formatCurrency(partner.totalRevenue)}</div>
+            <div className="text-xs text-muted-foreground">All time earnings</div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="w-2 h-2 rounded-full bg-amber-500" />
+              Platform Rating
+            </div>
+            <div className="text-2xl font-semibold tracking-tight flex items-center gap-2">
+              {partner.platformRating?.toFixed(1) ?? 'N/A'}
+              <Star className="w-4 h-4 fill-foreground text-foreground" />
+            </div>
+            <div className="text-xs text-muted-foreground">{partner.totalReviews ?? 0} reviews</div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="w-2 h-2 rounded-full bg-blue-500" />
+              Active Listings
+            </div>
+            <div className="text-2xl font-semibold tracking-tight">{partner.activeListings ?? 0}</div>
+            <div className="text-xs text-muted-foreground">{partner.soldListings ?? 0} sold</div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="w-2 h-2 rounded-full bg-purple-500" />
+              Response Rate
+            </div>
+            <div className="text-2xl font-semibold tracking-tight">{formatPercentage(partner.responseRate)}</div>
+            <div className="text-xs text-muted-foreground">Avg {partner.avgResponseTime ?? 0} min</div>
+          </div>
+        </div>
+
+        <div className="border-t border-border/60 my-12" />
+
+        {/* Sales & Revenue Section */}
+        <div className="space-y-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-medium text-foreground">Sales & Revenue</h2>
+              <p className="text-sm text-muted-foreground mt-1">Financial performance metrics</p>
+            </div>
+            <BarChart3 className="w-5 h-5 text-muted-foreground" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-4 rounded-lg border border-border/40 bg-card/30 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-muted-foreground">Monthly Sales</span>
+                <div className="p-2 rounded-md bg-orange-500/10">
+                  <ShoppingBag className="w-4 h-4 text-orange-600" />
+                </div>
               </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                {partner.totalReviews ?? 0} reviews
+              <div>
+                <div className="text-2xl font-semibold">{partner.monthlySales ?? 0}</div>
+                <div className="text-sm text-muted-foreground mt-1">{formatCurrency(partner.monthlyRevenue)} revenue</div>
               </div>
             </div>
 
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-sm text-muted-foreground mb-2">Total Revenue</div>
-              <div className="text-2xl font-semibold text-foreground">
-                {formatCurrency(partner.totalRevenue)}
+            <div className="p-4 rounded-lg border border-border/40 bg-card/30 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-muted-foreground">Avg Transaction</span>
+                <div className="p-2 rounded-md bg-emerald-500/10">
+                  <DollarSign className="w-4 h-4 text-emerald-600" />
+                </div>
               </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                All time earnings
-              </div>
-            </div>
-
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-sm text-muted-foreground mb-2">Active Listings</div>
-              <div className="text-2xl font-semibold text-foreground">
-                {partner.activeListings ?? 0}
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                {partner.soldListings ?? 0} sold
+              <div>
+                <div className="text-2xl font-semibold">{formatCurrency(partner.avgTransactionValue)}</div>
+                <div className="text-sm text-muted-foreground mt-1">Per sale average</div>
               </div>
             </div>
 
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-sm text-muted-foreground mb-2">Response Rate</div>
-              <div className="text-2xl font-semibold text-foreground">
-                {formatPercentage(partner.responseRate)}
+            <div className="p-4 rounded-lg border border-border/40 bg-card/30 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-muted-foreground">Commission Rate</span>
+                <div className="p-2 rounded-md bg-indigo-500/10">
+                  <Activity className="w-4 h-4 text-indigo-600" />
+                </div>
               </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                Avg: {partner.avgResponseTime ?? 0} min
+              <div>
+                <div className="text-2xl font-semibold">{formatPercentage(partner.commissionRate)}</div>
+                <div className="text-sm text-muted-foreground mt-1">Platform fee</div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Sales & Revenue */}
-        <div>
-          <h2 className="text-lg font-medium text-foreground mb-6">Sales & Revenue</h2>
-          <div className="grid gap-6 md:grid-cols-3">
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-sm text-muted-foreground mb-2">This Month</div>
-              <div className="text-xl font-semibold text-foreground mb-1">
-                {partner.monthlySales ?? 0} sales
+        <div className="border-t border-border/60 my-12" />
+
+        {/* Engagement & Traffic */}
+        <div className="space-y-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-medium text-foreground">Engagement</h2>
+              <p className="text-sm text-muted-foreground mt-1">Traffic and customer interest</p>
+            </div>
+            <TrendingUp className="w-5 h-5 text-muted-foreground" />
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="space-y-1">
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <div className="p-1.5 rounded-md bg-sky-500/10">
+                  <Eye className="w-3.5 h-3.5 text-sky-600" />
+                </div>
+                Monthly Views
               </div>
-              <div className="text-sm text-foreground">
-                {formatCurrency(partner.monthlyRevenue)}
+              <div className="text-xl font-medium">{formatNumber(partner.monthlyViews)}</div>
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <div className="p-1.5 rounded-md bg-violet-500/10">
+                  <Users className="w-3.5 h-3.5 text-violet-600" />
+                </div>
+                Profile Views
+              </div>
+              <div className="text-xl font-medium">{formatNumber(partner.profileViews)}</div>
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <div className="p-1.5 rounded-md bg-pink-500/10">
+                  <MessageSquare className="w-3.5 h-3.5 text-pink-600" />
+                </div>
+                Inquiries
+              </div>
+              <div className="text-xl font-medium">{formatNumber(partner.inquiryCount)}</div>
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <div className="p-1.5 rounded-md bg-cyan-500/10">
+                  <Target className="w-3.5 h-3.5 text-cyan-600" />
+                </div>
+                Listing Views
+              </div>
+              <div className="text-xl font-medium">{formatNumber(partner.listingViews)}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t border-border/60 my-12" />
+
+        {/* Quality & Satisfaction */}
+        <div className="space-y-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-medium text-foreground">Quality Metrics</h2>
+              <p className="text-sm text-muted-foreground mt-1">Customer satisfaction ratings</p>
+            </div>
+            <ThumbsUp className="w-5 h-5 text-muted-foreground" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { label: 'Communication', value: partner.communicationRating, color: 'bg-blue-500' },
+              { label: 'Service Quality', value: partner.serviceRating, color: 'bg-emerald-500' },
+              { label: 'Value for Money', value: partner.valueRating, color: 'bg-purple-500' },
+            ].map((metric) => (
+              <div key={metric.label} className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">{metric.label}</span>
+                  <span className="text-sm font-semibold">{metric.value?.toFixed(1) ?? '0.0'}</span>
+                </div>
+                <div className="h-1.5 w-full bg-muted/50 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full ${metric.color} transition-all duration-500`}
+                    style={{ width: `${((metric.value ?? 0) / 5) * 100}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+            <div className="flex items-center gap-4 p-4 rounded-lg border border-border/40">
+              <div className="p-2 rounded-full bg-emerald-500/10 text-emerald-600">
+                <CheckCircle2 className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-sm font-medium">Satisfaction Score</div>
+                <div className="text-2xl font-semibold">{partner.customerSatisfaction ?? 0}<span className="text-sm text-muted-foreground font-normal">/100</span></div>
               </div>
             </div>
 
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-sm text-muted-foreground mb-2">Avg Transaction</div>
-              <div className="text-xl font-semibold text-foreground">
-                {formatCurrency(partner.avgTransactionValue)}
+            <div className="flex items-center gap-4 p-4 rounded-lg border border-border/40">
+              <div className="p-2 rounded-full bg-blue-500/10 text-blue-600">
+                <Target className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-sm font-medium">Lead Conversion</div>
+                <div className="text-2xl font-semibold">{formatPercentage(partner.leadConversionRate)}</div>
               </div>
             </div>
 
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-sm text-muted-foreground mb-2">Commission Rate</div>
-              <div className="text-xl font-semibold text-foreground">
-                {formatPercentage(partner.commissionRate)}
+            <div className="flex items-center gap-4 p-4 rounded-lg border border-border/40">
+              <div className="p-2 rounded-full bg-purple-500/10 text-purple-600">
+                <Users className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-sm font-medium">Repeat Customers</div>
+                <div className="text-2xl font-semibold">{formatPercentage(partner.repeatCustomerRate)}</div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Customer Metrics */}
-        <div>
-          <h2 className="text-lg font-medium text-foreground mb-6">Customer Metrics</h2>
-          <div className="grid gap-6 md:grid-cols-3">
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-sm text-muted-foreground mb-2">Satisfaction Score</div>
-              <div className="text-xl font-semibold text-foreground">
-                {partner.customerSatisfaction ?? 0}/100
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                Based on customer feedback
-              </div>
-            </div>
+        <div className="border-t border-border/60 my-12" />
 
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-sm text-muted-foreground mb-2">Lead Conversion</div>
-              <div className="text-xl font-semibold text-foreground">
-                {formatPercentage(partner.leadConversionRate)}
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                Leads to sales
-              </div>
+        {/* Operational Metrics */}
+        <div className="space-y-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-medium text-foreground">Operational</h2>
+              <p className="text-sm text-muted-foreground mt-1">Efficiency and compliance</p>
             </div>
-
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-sm text-muted-foreground mb-2">Repeat Customers</div>
-              <div className="text-xl font-semibold text-foreground">
-                {formatPercentage(partner.repeatCustomerRate)}
-              </div>
-            </div>
+            <Timer className="w-5 h-5 text-muted-foreground" />
           </div>
-        </div>
 
-        {/* Engagement */}
-        <div>
-          <h2 className="text-lg font-medium text-foreground mb-6">Engagement</h2>
-          <div className="grid gap-6 md:grid-cols-4">
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-sm text-muted-foreground mb-2">Monthly Views</div>
-              <div className="text-xl font-semibold text-foreground">
-                {partner.monthlyViews?.toLocaleString() ?? 0}
-              </div>
-            </div>
-
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-sm text-muted-foreground mb-2">Profile Views</div>
-              <div className="text-xl font-semibold text-foreground">
-                {partner.profileViews?.toLocaleString() ?? 0}
-              </div>
-            </div>
-
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-sm text-muted-foreground mb-2">Inquiries</div>
-              <div className="text-xl font-semibold text-foreground">
-                {partner.inquiryCount ?? 0}
-              </div>
-            </div>
-
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-sm text-muted-foreground mb-2">Listing Views</div>
-              <div className="text-xl font-semibold text-foreground">
-                {partner.listingViews?.toLocaleString() ?? 0}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Quality Metrics */}
-        <div>
-          <h2 className="text-lg font-medium text-foreground mb-6">Quality Metrics</h2>
-          <div className="space-y-4">
-            {/* Communication Quality */}
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <div className="text-sm font-medium text-foreground mb-1">Communication Quality</div>
-                  <div className="text-xs text-muted-foreground">
-                    {partner.communicationRating?.toFixed(1) ?? 0}/5.0
-                  </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="space-y-1">
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <div className="p-1.5 rounded-md bg-teal-500/10">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-teal-600" />
                 </div>
-                <div className="text-2xl font-semibold text-foreground">
-                  {partner.communicationRating ? `⭐ ${partner.communicationRating.toFixed(1)}` : 'N/A'}
+                Completion Rate
+              </div>
+              <div className="text-lg font-medium">{formatPercentage(partner.completionRate)}</div>
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <div className="p-1.5 rounded-md bg-blue-500/10">
+                  <Clock className="w-3.5 h-3.5 text-blue-600" />
                 </div>
+                On-Time Delivery
               </div>
-              <div className="h-2 bg-muted rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-blue-500 transition-all"
-                  style={{ width: `${((partner.communicationRating ?? 0) / 5) * 100}%` }}
-                />
-              </div>
+              <div className="text-lg font-medium">{formatPercentage(partner.onTimeDeliveryRate)}</div>
             </div>
 
-            {/* Service Quality */}
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <div className="text-sm font-medium text-foreground mb-1">Service Quality</div>
-                  <div className="text-xs text-muted-foreground">
-                    {partner.serviceRating?.toFixed(1) ?? 0}/5.0
-                  </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <div className="p-1.5 rounded-md bg-rose-500/10">
+                  <XCircle className="w-3.5 h-3.5 text-rose-600" />
                 </div>
-                <div className="text-2xl font-semibold text-foreground">
-                  {partner.serviceRating ? `⭐ ${partner.serviceRating.toFixed(1)}` : 'N/A'}
+                Cancellation Rate
+              </div>
+              <div className="text-lg font-medium">{formatPercentage(partner.cancellationRate)}</div>
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <div className="p-1.5 rounded-md bg-amber-500/10">
+                  <Timer className="w-3.5 h-3.5 text-amber-600" />
                 </div>
+                Avg Deal Time
               </div>
-              <div className="h-2 bg-muted rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-green-500 transition-all"
-                  style={{ width: `${((partner.serviceRating ?? 0) / 5) * 100}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Value Rating */}
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <div className="text-sm font-medium text-foreground mb-1">Value for Money</div>
-                  <div className="text-xs text-muted-foreground">
-                    {partner.valueRating?.toFixed(1) ?? 0}/5.0
-                  </div>
-                </div>
-                <div className="text-2xl font-semibold text-foreground">
-                  {partner.valueRating ? `⭐ ${partner.valueRating.toFixed(1)}` : 'N/A'}
-                </div>
-              </div>
-              <div className="h-2 bg-muted rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-purple-500 transition-all"
-                  style={{ width: `${((partner.valueRating ?? 0) / 5) * 100}%` }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Additional Metrics */}
-        <div>
-          <h2 className="text-lg font-medium text-foreground mb-6">Additional Metrics</h2>
-          <div className="grid gap-6 md:grid-cols-3">
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-sm text-muted-foreground mb-2">Completion Rate</div>
-              <div className="text-xl font-semibold text-foreground">
-                {formatPercentage(partner.completionRate)}
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                Successfully completed deals
-              </div>
-            </div>
-
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-sm text-muted-foreground mb-2">On-Time Delivery</div>
-              <div className="text-xl font-semibold text-foreground">
-                {formatPercentage(partner.onTimeDeliveryRate)}
-              </div>
-            </div>
-
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-sm text-muted-foreground mb-2">Cancellation Rate</div>
-              <div className="text-xl font-semibold text-foreground">
-                {formatPercentage(partner.cancellationRate)}
-              </div>
-            </div>
-
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-sm text-muted-foreground mb-2">Avg Deal Time</div>
-              <div className="text-xl font-semibold text-foreground">
-                {partner.avgDealCompletionTime ?? 0} days
-              </div>
-            </div>
-
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-sm text-muted-foreground mb-2">Compliance Score</div>
-              <div className="text-xl font-semibold text-foreground">
-                {partner.complianceScore ?? 0}/100
-              </div>
-            </div>
-
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-sm text-muted-foreground mb-2">Quality Score</div>
-              <div className="text-xl font-semibold text-foreground">
-                {partner.qualityScore ?? 0}/100
-              </div>
+              <div className="text-lg font-medium">{partner.avgDealCompletionTime ?? 0} days</div>
             </div>
           </div>
         </div>

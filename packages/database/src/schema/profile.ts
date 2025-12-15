@@ -13,9 +13,13 @@ import {
   integer,
   doublePrecision,
   jsonb,
-  index 
+  index,
+  pgEnum,
 } from 'drizzle-orm/pg-core';
 import { user } from './auth';
+
+// Enums
+export const favoriteTypeEnum = pgEnum('favorite_type', ['favorite', 'superlike']);
 
 /**
  * User Profile Table
@@ -154,12 +158,20 @@ export const kycRecord = pgTable('kyc_record', {
 
 /**
  * User Favorites Table
- * Stores user's favorite car listings
+ * Tracks both regular favorites and superlikes
+ * - Favorites: Unlimited
+ * - Superlikes: Limited to 5 per month
  */
 export const userFavorite = pgTable('user_favorite', {
   id: text('id').primaryKey(),
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   listingId: text('listing_id').notNull(), // will reference car_listing table
+  
+  // Type of interaction
+  type: favoriteTypeEnum('type').default('favorite').notNull(),
+  
+  // For analytics
+  addedFrom: text('added_from'), // 'search', 'listing_page', 'feed', etc.
   
   // Timestamps
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -167,4 +179,40 @@ export const userFavorite = pgTable('user_favorite', {
   index('user_favorite_userId_idx').on(table.userId),
   index('user_favorite_listingId_idx').on(table.listingId),
   index('user_favorite_userId_listingId_idx').on(table.userId, table.listingId),
+  index('user_favorite_type_idx').on(table.type),
+  index('user_favorite_userId_type_idx').on(table.userId, table.type),
+  index('user_favorite_createdAt_idx').on(table.createdAt),
+]);
+
+/**
+ * User Superlike Quota Table
+ * Tracks monthly superlike usage and limits
+ * Each user gets 5 superlikes per month
+ */
+export const userSuperlikeQuota = pgTable('user_superlike_quota', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }).unique(),
+  
+  // Monthly Tracking (rolling 30 days)
+  currentMonthSuperlikesUsed: integer('current_month_superlikes_used').default(0).notNull(),
+  maxSuperlikesPerMonth: integer('max_superlikes_per_month').default(5).notNull(),
+  
+  // Current Period
+  periodStartDate: timestamp('period_start_date').defaultNow().notNull(),
+  periodEndDate: timestamp('period_end_date').notNull(),
+  lastResetAt: timestamp('last_reset_at').defaultNow().notNull(),
+  
+  // Lifetime Stats
+  totalSuperlikesUsed: integer('total_superlikes_used').default(0).notNull(),
+  
+  // Premium Features (future)
+  isPremium: boolean('is_premium').default(false).notNull(), // Premium users might get more
+  premiumSuperlikesBonus: integer('premium_superlikes_bonus').default(0), // Extra superlikes for premium
+  
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
+}, (table) => [
+  index('user_superlike_quota_userId_idx').on(table.userId),
+  index('user_superlike_quota_periodEndDate_idx').on(table.periodEndDate),
 ]);

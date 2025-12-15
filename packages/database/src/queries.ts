@@ -12,6 +12,7 @@ import { user } from './schema';
 // Re-export specialized queries
 export * from './queries/profile';
 export * from './queries/partner';
+export * from './queries/listings';
 
 // Essential user queries
 export const getUserById = async (id: string) => {

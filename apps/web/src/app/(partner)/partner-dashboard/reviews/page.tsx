@@ -5,6 +5,16 @@ import * as schema from "@alifh/database";
 import { eq, and, desc } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { ReviewActions } from "./review-actions";
+import { 
+  MessageSquare, 
+  Star, 
+  ShieldCheck, 
+  ThumbsUp, 
+  Reply, 
+  CheckCircle2,
+  AlertCircle,
+  MoreHorizontal
+} from "lucide-react";
 
 export default async function PartnerReviewsPage() {
   const user = await requireAuth();
@@ -83,183 +93,167 @@ export default async function PartnerReviewsPage() {
       title="Customer Reviews"
       description="Manage and respond to customer feedback"
     >
-      <div className="p-6 md:p-10 space-y-12">
-        {/* Stats */}
-        <div className="grid gap-6 md:grid-cols-4">
-          <div className="bg-card border border-border rounded-lg p-6">
-            <div className="text-sm text-muted-foreground mb-2">Total Reviews</div>
-            <div className="text-2xl font-semibold text-foreground">{reviews.length}</div>
-          </div>
-
-          <div className="bg-card border border-border rounded-lg p-6">
-            <div className="text-sm text-muted-foreground mb-2">Average Rating</div>
-            <div className="text-2xl font-semibold text-foreground">
-              ⭐ {avgRating.toFixed(1)}
+      <div className="max-w-5xl mx-auto px-8 py-12 space-y-10">
+        
+        {/* Unified Summary Section */}
+        <div className="flex flex-col md:flex-row gap-8 pb-10 border-b border-border/40">
+          {/* Big Rating */}
+          <div className="flex flex-col justify-center min-w-[140px]">
+            <div className="text-5xl font-semibold tracking-tight text-foreground mb-2">
+              {avgRating.toFixed(1)}
+            </div>
+            <div className="flex items-center gap-1 mb-2">
+              {[...Array(5)].map((_, i) => (
+                <Star 
+                  key={i} 
+                  className={`w-4 h-4 ${i < Math.round(avgRating) ? 'fill-amber-500 text-amber-500' : 'fill-muted/20 text-muted/20'}`} 
+                />
+              ))}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Based on {reviews.length} reviews
             </div>
           </div>
 
-          <div className="bg-card border border-border rounded-lg p-6">
-            <div className="text-sm text-muted-foreground mb-2">Response Rate</div>
-            <div className="text-2xl font-semibold text-foreground">{responseRate.toFixed(0)}%</div>
-          </div>
-
-          <div className="bg-card border border-border rounded-lg p-6">
-            <div className="text-sm text-muted-foreground mb-2">Verified Purchases</div>
-            <div className="text-2xl font-semibold text-foreground">
-              {reviews.filter(r => r.isVerifiedPurchase).length}
+          {/* Distribution Bars */}
+          <div className="flex-1 max-w-sm pt-2">
+            <div className="space-y-2">
+              {ratingDistribution.map((item) => (
+                <div key={item.rating} className="flex items-center gap-3 text-xs">
+                  <span className="w-3 font-medium text-muted-foreground">{item.rating}</span>
+                  <div className="flex-1 h-1.5 bg-muted/30 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-amber-500 rounded-full"
+                      style={{ width: `${item.percentage}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
 
-        {/* Rating Distribution */}
-        <div className="bg-card border border-border rounded-lg p-6">
-          <h2 className="text-base font-medium text-foreground mb-6">Rating Distribution</h2>
-          <div className="space-y-3">
-            {ratingDistribution.map((item) => (
-              <div key={item.rating} className="flex items-center gap-4">
-                <div className="flex items-center gap-1 w-16">
-                  <span className="text-sm font-medium text-foreground">{item.rating}</span>
-                  <span className="text-sm text-muted-foreground">⭐</span>
-                </div>
-                <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-yellow-500 transition-all"
-                    style={{ width: `${item.percentage}%` }}
-                  />
-                </div>
-                <div className="text-sm text-muted-foreground w-16 text-right">
-                  {item.count} ({item.percentage.toFixed(0)}%)
-                </div>
+          {/* Key Metrics - Minimalist */}
+          <div className="flex-1 flex items-center justify-end gap-12">
+            <div className="text-right">
+              <div className="text-2xl font-medium text-foreground">{responseRate.toFixed(0)}%</div>
+              <div className="text-xs text-muted-foreground mt-1">Response Rate</div>
+            </div>
+            <div className="text-right">
+              <div className="text-2xl font-medium text-foreground">
+                {reviews.filter(r => r.isVerifiedPurchase).length}
               </div>
-            ))}
+              <div className="text-xs text-muted-foreground mt-1">Verified Buyers</div>
+            </div>
           </div>
         </div>
 
-        {/* Reviews List */}
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-medium text-foreground">All Reviews</h2>
-          </div>
-
+        {/* Reviews List - Clean & Linear */}
+        <div className="space-y-8">
           {reviews.length === 0 ? (
-            <div className="bg-card border border-border rounded-lg p-12 text-center">
+            <div className="py-20 text-center">
+              <div className="w-12 h-12 bg-muted/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <MessageSquare className="w-5 h-5 text-muted-foreground" />
+              </div>
               <p className="text-sm text-muted-foreground">No reviews yet</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="divide-y divide-border/40">
               {reviews.map((review) => (
-                <div
-                  key={review.id}
-                  className="bg-card border border-border rounded-lg p-6"
-                >
-                  {/* Header */}
-                  <div className="flex items-start justify-between mb-4">
+                <div key={review.id} className="py-8 first:pt-0">
+                  <div className="flex items-start gap-4">
+                    {/* Avatar Placeholder */}
+                    <div className="w-10 h-10 rounded-full bg-muted/30 flex items-center justify-center shrink-0 text-sm font-medium text-muted-foreground">
+                      {review.reviewer?.name?.charAt(0) || 'A'}
+                    </div>
+
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <span key={i} className={i < review.rating ? 'text-yellow-500' : 'text-gray-300'}>
-                              ⭐
-                            </span>
-                          ))}
+                      {/* Header Row */}
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-foreground text-sm">
+                            {review.reviewer?.name || 'Anonymous'}
+                          </span>
+                          {review.isVerifiedPurchase && (
+                            <div className="group relative" title="Verified Purchase">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 dark:text-blue-500" />
+                            </div>
+                          )}
+                          <span className="text-xs text-muted-foreground">
+                            • {formatDate(review.createdAt)}
+                          </span>
                         </div>
                         
-                        {review.isVerifiedPurchase && (
-                          <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-                            ✓ Verified Purchase
-                          </span>
-                        )}
-
-                        <span className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full ${
-                          review.status === 'published' ? 'bg-green-100 text-green-800' :
-                          review.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
-                          {review.status}
-                        </span>
+                        {/* Status Indicator - Minimal Dot */}
+                        <div className="flex items-center gap-3">
+                          {review.status === 'pending' && (
+                            <span className="w-2 h-2 rounded-full bg-amber-500 ring-4 ring-amber-500/10" title="Pending Approval" />
+                          )}
+                          <ReviewActions reviewId={review.id} existingResponse={review.partnerResponse} />
+                        </div>
                       </div>
 
+                      {/* Rating Stars */}
+                      <div className="flex items-center gap-0.5 mb-3">
+                        {[...Array(5)].map((_, i) => (
+                          <Star 
+                            key={i} 
+                            className={`w-3.5 h-3.5 ${i < review.rating ? 'fill-amber-500 text-amber-500' : 'fill-muted/20 text-muted/20'}`} 
+                          />
+                        ))}
+                      </div>
+
+                      {/* Title & Body */}
                       {review.title && (
-                        <h3 className="text-base font-medium text-foreground mb-2">
+                        <h3 className="text-sm font-medium text-foreground mb-1">
                           {review.title}
                         </h3>
                       )}
-
-                      <div className="text-sm text-muted-foreground mb-2">
-                        By {review.reviewer?.name || 'Anonymous'} • {formatDate(review.createdAt)}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Review Text */}
-                  {review.review && (
-                    <p className="text-sm text-foreground mb-4 leading-relaxed">
-                      {review.review}
-                    </p>
-                  )}
-
-                  {/* Category Ratings */}
-                  {(review.communicationRating || review.vehicleConditionRating || review.processRating) && (
-                    <div className="mb-4 pb-4 border-b border-border/60">
-                      <div className="text-xs font-medium text-muted-foreground mb-3">Category Ratings</div>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {review.communicationRating && (
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs text-foreground">Communication</span>
-                            <span className="text-xs font-medium text-foreground">
-                              {review.communicationRating}/5
-                            </span>
-                          </div>
-                        )}
-                        {review.vehicleConditionRating && (
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs text-foreground">Vehicle Condition</span>
-                            <span className="text-xs font-medium text-foreground">
-                              {review.vehicleConditionRating}/5
-                            </span>
-                          </div>
-                        )}
-                        {review.processRating && (
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs text-foreground">Process</span>
-                            <span className="text-xs font-medium text-foreground">
-                              {review.processRating}/5
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Helpful Counts */}
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
-                    <span>👍 {review.helpfulCount ?? 0} helpful</span>
-                  </div>
-
-                  {/* Partner Response */}
-                  {review.partnerResponse ? (
-                    <div className="space-y-3">
-                      <div className="bg-muted/50 rounded-lg p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xs font-medium text-foreground">Your Response</span>
-                          <span className="text-xs text-muted-foreground">
-                            • {formatDate(review.respondedAt)}
-                          </span>
-                        </div>
-                        <p className="text-sm text-foreground leading-relaxed">
-                          {review.partnerResponse}
+                      {review.review && (
+                        <p className="text-sm text-foreground/90 leading-relaxed mb-4 max-w-3xl">
+                          {review.review}
                         </p>
-                      </div>
-                      <ReviewActions reviewId={review.id} existingResponse={review.partnerResponse} />
+                      )}
+
+                      {/* Category Ratings - Inline Text */}
+                      {(review.communicationRating || review.vehicleConditionRating || review.processRating) && (
+                        <div className="flex items-center gap-6 mb-4 text-xs text-muted-foreground">
+                          {review.communicationRating && (
+                            <div className="flex items-center gap-1.5">
+                              <span>Communication</span>
+                              <span className="font-medium text-foreground">{review.communicationRating}/5</span>
+                            </div>
+                          )}
+                          {review.vehicleConditionRating && (
+                            <div className="flex items-center gap-1.5">
+                              <span>Vehicle</span>
+                              <span className="font-medium text-foreground">{review.vehicleConditionRating}/5</span>
+                            </div>
+                          )}
+                          {review.processRating && (
+                            <div className="flex items-center gap-1.5">
+                              <span>Process</span>
+                              <span className="font-medium text-foreground">{review.processRating}/5</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Partner Response - Threaded Style */}
+                      {review.partnerResponse && (
+                        <div className="mt-4 pl-4 border-l-2 border-border/60">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-xs font-medium text-foreground">Response</span>
+                            <span className="text-xs text-muted-foreground">
+                              • {formatDate(review.respondedAt)}
+                            </span>
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {review.partnerResponse}
+                          </p>
+                        </div>
+                      )}
                     </div>
-                  ) : (
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <span>💬 No response yet</span>
-                      </div>
-                      <ReviewActions reviewId={review.id} />
-                    </div>
-                  )}
+                  </div>
                 </div>
               ))}
             </div>
