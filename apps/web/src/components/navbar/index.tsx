@@ -57,6 +57,10 @@ const navItems: NavItem[] = [
     ],
   },
   {
+    label: "Showcase",
+    href: "/showcase",
+  },
+  {
     label: "Retailers",
     href: "/retailers",
     submenu: [
