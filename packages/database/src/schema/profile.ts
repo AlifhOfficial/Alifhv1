@@ -43,9 +43,6 @@ export const userProfile = pgTable('user_profile', {
   avatar: text('avatar'),
   description: text('description'),
   
-  // Account Status
-  status: text('status').default('active').notNull(), // active, inactive, suspended
-  
   // KYC Verification
   kycVerified: boolean('kyc_verified').default(false).notNull(),
   kycVerifiedAt: timestamp('kyc_verified_at'),
@@ -54,7 +51,7 @@ export const userProfile = pgTable('user_profile', {
   badges: jsonb('badges').$type<string[]>().default([]),
   tags: jsonb('tags').$type<string[]>().default([]),
   
-  // Location Information
+  // Location Information (used for user's P2P listings)
   locationLat: doublePrecision('location_lat'),
   locationLng: doublePrecision('location_lng'),
   locationCity: text('location_city'),
@@ -117,7 +114,6 @@ export const userProfile = pgTable('user_profile', {
   index('user_profile_phone_idx').on(table.phone),
   index('user_profile_location_idx').on(table.locationCity, table.locationEmirate),
   index('user_profile_kyc_verified_idx').on(table.kycVerified),
-  index('user_profile_status_idx').on(table.status),
 ]);
 
 /**

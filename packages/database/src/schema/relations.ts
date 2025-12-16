@@ -234,7 +234,11 @@ export const sessionRelations = relations(session, ({ one }) => ({
 
 // Car Listing relations
 export const carListingRelations = relations(carListing, ({ one, many }) => ({
-  // Ownership
+  // Ownership & Location Strategy:
+  // - listing.emirate and listing.city are denormalized (copied from owner)
+  // - For full address/coordinates: join with owner (partner or userProfile)
+  // Partner listings → join partner for partner.address, partner.locationLat/Lng
+  // User listings → join user → userProfile for userProfile.locationCity/Emirate/Lat/Lng
   partner: one(partner, {
     fields: [carListing.partnerId],
     references: [partner.id],

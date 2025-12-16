@@ -78,9 +78,10 @@ export const partner = pgTable('partner', {
   phone: text('phone').notNull(), // Company phone
   website: text('website'),
   
-  // Location Information
+  // Location Information (used for partner's dealer listings)
   address: text('address'),
   emirate: text('emirate'), // Dubai, Abu Dhabi, Sharjah, etc.
+  city: text('city'), // Specific city/area within emirate
   locationLat: doublePrecision('location_lat'),
   locationLng: doublePrecision('location_lng'),
   showroomCount: integer('showroom_count').default(1).notNull(),
@@ -242,6 +243,7 @@ export const partner = pgTable('partner', {
   
   // Location
   index('partner_emirate_idx').on(table.emirate),
+  index('partner_city_idx').on(table.city),
   index('partner_location_idx').on(table.locationLat, table.locationLng),
   
   // Foreign Keys (Critical for performance)

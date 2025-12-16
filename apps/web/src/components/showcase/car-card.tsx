@@ -101,7 +101,7 @@ export function CarCard({ listing }: CarCardProps) {
         {/* Additional Details */}
         <div className="flex items-center gap-4 mb-4 text-sm text-gray-600">
           <span className="flex items-center gap-1">
-            <span>📍</span> {listing.emirate || listing.city || 'Dubai'}
+            <span>📍</span> {listing.city || listing.emirate || 'Dubai'}
           </span>
           {listing.engineSize && (
             <span className="flex items-center gap-1">

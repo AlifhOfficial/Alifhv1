@@ -6,6 +6,22 @@
  * 1. Partners (dealers/showrooms) - Primary use case for v1
  * 2. Individual users (P2P) - Future feature
  * 
+ * ===== LOCATION STRATEGY =====
+ * Listings store emirate + city (denormalized from owner) for search performance.
+ * 
+ * When creating/updating listing:
+ * - Partner listing → Copy partner.emirate and partner.city to listing
+ * - User listing → Copy userProfile.locationEmirate and userProfile.locationCity to listing
+ * 
+ * For detailed location (address, lat/lng coordinates):
+ * - Partner listing → Join with partner table
+ * - User listing → Join with userProfile table
+ * 
+ * This approach balances:
+ * ✅ Fast search/filter queries (no joins needed for emirate/city filtering)
+ * ✅ Accurate detailed location (join owner for full address/coordinates)
+ * ✅ Consistency (location updates in owner automatically reflect in queries)
+ * 
  * ===== KEY FEATURES =====
  * - Comprehensive vehicle data (VIN, specs, features, etc.)
  * - Rich media (images, videos, 360 views)
@@ -13,7 +29,6 @@
  * - Status workflow (draft → published → reserved → sold)
  * - Performance tracking (views, favorites, shares)
  * - Quality scoring (QI Score for ranking)
- * - Emirate-based location
  * - Advanced search/filter support
  * 
  * ===== LISTING FLOW =====
@@ -162,7 +177,10 @@ export const carListing = pgTable('car_listing', {
   priceTrend: text('price_trend'), // "below_market", "at_market", "above_market"
   qiScore: doublePrecision('qi_score'), // Quality Intelligence Score (0-100) for ranking
   
-  // Location
+  // Location (denormalized from owner for query performance)
+  // These fields are copied from owner (partner or user) when listing is created/updated
+  // This avoids expensive joins for search/filter queries
+  // For full address/coordinates: join with partner or userProfile
   emirate: text('emirate').notNull(), // "Dubai", "Abu Dhabi", "Sharjah", etc.
   city: text('city'), // "Dubai Marina", "Downtown", etc.
   
@@ -310,6 +328,7 @@ export const carListing = pgTable('car_listing', {
   
   // Location
   index('car_listing_emirate_idx').on(table.emirate),
+  index('car_listing_city_idx').on(table.city),
   index('car_listing_emirate_status_idx').on(table.emirate, table.status),
   
   // Pricing & Valuation
