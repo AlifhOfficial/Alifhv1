@@ -77,15 +77,10 @@ export const auth = betterAuth({
   },
 
   account: {
-    // Allow OAuth state validation to work across local network IPs
-    // Only enable in development - remove for production
     accountLinking: {
       enabled: true,
       trustedProviders: ["google"],
     },
-    // TEMPORARY FIX: Skip state check for local development
-    // REMOVE THIS IN PRODUCTION - it's a security risk
-    skipStateCookieCheck: process.env.NODE_ENV !== "production",
   },
 
   // Redirect auth errors to our custom error page (not Better Auth's default)

@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ['@alifh/shared', '@alifh/database'],
+  serverExternalPackages: ['better-auth', '@node-rs/argon2', '@node-rs/bcrypt'],
   images: {
     remotePatterns: [
       {

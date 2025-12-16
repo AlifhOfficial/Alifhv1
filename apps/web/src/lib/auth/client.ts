@@ -5,16 +5,8 @@ import { magicLinkClient } from "better-auth/client/plugins";
 import { adminClient } from "better-auth/client/plugins";
 import { ac, roles } from "@/lib/auth/permissions";
 
-// Use window.location.origin in browser to support both localhost and network access
-const getBaseURL = () => {
-  if (typeof window !== 'undefined') {
-    return window.location.origin;
-  }
-  return process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-};
-
 export const authClient = createAuthClient({
-  baseURL: getBaseURL(),
+  baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   plugins: [
     magicLinkClient(),
     adminClient({
