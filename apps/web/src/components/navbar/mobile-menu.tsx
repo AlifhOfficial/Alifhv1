@@ -25,9 +25,12 @@ interface MobileMenuProps {
   onNavigate: () => void;
   onSignIn: () => void;
   onSignUp: () => void;
+  user?: { id: string; name?: string; email?: string } | null;
+  onProfile?: () => void;
+  onSignOut?: () => void;
 }
 
-export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp }: MobileMenuProps) {
+export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp, user, onProfile, onSignOut }: MobileMenuProps) {
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
   const toggleExpanded = (label: string) => {
@@ -39,7 +42,10 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp 
   };
 
   return (
-    <div className="lg:hidden bg-background/95 backdrop-blur-sm border-b border-border/40">
+    <div 
+      className="lg:hidden fixed top-14 sm:top-16 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border/40 shadow-lg max-h-[calc(100vh-3.5rem)] sm:max-h-[calc(100vh-4rem)] overflow-y-auto"
+      onClick={(e) => e.stopPropagation()}
+    >
       <div className="px-4 py-6 space-y-4">
         {/* Main Navigation */}
         <div className="space-y-2">
@@ -106,24 +112,56 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp 
 
         {/* Mobile Auth Actions */}
         <div className="pt-4 border-t border-border/40 space-y-2">
-          <button
-            onClick={() => {
-              onSignIn();
-              onNavigate();
-            }}
-            className="block w-full px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20 text-center"
-          >
-            Sign In
-          </button>
-          <button
-            onClick={() => {
-              onSignUp();
-              onNavigate();
-            }}
-            className="block w-full px-3 py-2 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-lg text-center"
-          >
-            Sign Up
-          </button>
+          {user ? (
+            <>
+              <button
+                onClick={() => {
+                  onProfile?.();
+                  onNavigate();
+                }}
+                className="block w-full px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20 text-left"
+              >
+                Profile
+              </button>
+              <Link
+                href="/user-dashboard"
+                onClick={onNavigate}
+                className="block w-full px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20 text-left"
+              >
+                Dashboard
+              </Link>
+              <button
+                onClick={() => {
+                  onSignOut?.();
+                  onNavigate();
+                }}
+                className="block w-full px-3 py-2 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors rounded-lg text-left"
+              >
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => {
+                  onSignIn();
+                  onNavigate();
+                }}
+                className="block w-full px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20 text-center"
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => {
+                  onSignUp();
+                  onNavigate();
+                }}
+                className="block w-full px-3 py-2 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-lg text-center"
+              >
+                Sign Up
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

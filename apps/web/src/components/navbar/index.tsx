@@ -113,9 +113,13 @@ export function Navbar() {
 
   const isDark = mounted && resolvedTheme === "dark";
 
-  // Memoize scroll handler
+  // Memoize scroll handler - close all menus on scroll
   const handleScroll = useCallback(() => {
     setIsScrolled(window.scrollY > 10);
+    // Close all menus on scroll
+    setActiveDropdown(null);
+    setShowProfileMenu(false);
+    setShowMobileMenu(false);
   }, []);
 
   useEffect(() => {
@@ -125,16 +129,50 @@ export function Navbar() {
 
   // Close dropdowns when clicking outside
   useEffect(() => {
-    const handleClickOutside = () => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      // Don't close if clicking inside the menu or its trigger
+      if (
+        target.closest('[data-menu-container]') || 
+        target.closest('[data-menu-trigger]')
+      ) {
+        return;
+      }
       setActiveDropdown(null);
       setShowProfileMenu(false);
     };
 
     if (activeDropdown || showProfileMenu) {
-      document.addEventListener("click", handleClickOutside);
-      return () => document.removeEventListener("click", handleClickOutside);
+      document.addEventListener("click", handleClickOutside, true);
+      return () => document.removeEventListener("click", handleClickOutside, true);
     }
   }, [activeDropdown, showProfileMenu]);
+
+  // Close mobile menu on escape key
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setShowMobileMenu(false);
+        setActiveDropdown(null);
+        setShowProfileMenu(false);
+      }
+    };
+
+    if (showMobileMenu || activeDropdown || showProfileMenu) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [showMobileMenu, activeDropdown, showProfileMenu]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (showMobileMenu) {
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = '';
+      };
+    }
+  }, [showMobileMenu]);
 
   // Auth handlers
   const handleSignOut = useCallback(async () => {
@@ -223,7 +261,7 @@ export function Navbar() {
         }`}
       >
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center z-50 mr-8">
               <Image
@@ -241,11 +279,15 @@ export function Navbar() {
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-1 flex-1">
               {navItems.map((item) => (
-                <div key={item.label} className="relative">
+                <div key={item.label} className="relative" data-menu-container>
                   {item.submenu ? (
                     <Link
                       href={item.href}
                       onMouseEnter={() => setActiveDropdown(item.label)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveDropdown(item.label);
+                      }}
                       className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg block ${
                         pathname === item.href
                           ? "text-foreground bg-muted/20"
@@ -275,40 +317,48 @@ export function Navbar() {
               {/* Theme Toggle */}
               <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20"
+                className="p-2.5 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20 active:scale-95"
                 aria-label="Toggle theme"
                 suppressHydrationWarning
               >
-                {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
 
               {/* Profile/Auth Actions */}
-              <ProfileMenu
-                user={user}
-                showMenu={showProfileMenu}
-                onToggleMenu={() => setShowProfileMenu(!showProfileMenu)}
-                onSignIn={() => {
-                  setShowProfileMenu(false);
-                  setCurrentAuthModal("signin");
-                }}
-                onSignUp={() => {
-                  setShowProfileMenu(false);
-                  setCurrentAuthModal("signup");
-                }}
-                onSignOut={handleSignOut}
-                onProfile={() => {
-                  setShowProfileMenu(false);
-                  router.push("/profile");
-                }}
-              />
+              <div data-menu-trigger>
+                <ProfileMenu
+                  user={user}
+                  showMenu={showProfileMenu}
+                  onToggleMenu={(e) => {
+                    e?.stopPropagation();
+                    setShowProfileMenu(!showProfileMenu);
+                  }}
+                  onSignIn={() => {
+                    setShowProfileMenu(false);
+                    setCurrentAuthModal("signin");
+                  }}
+                  onSignUp={() => {
+                    setShowProfileMenu(false);
+                    setCurrentAuthModal("signup");
+                  }}
+                  onSignOut={handleSignOut}
+                  onProfile={() => {
+                    setShowProfileMenu(false);
+                    router.push("/profile");
+                  }}
+                />
+              </div>
 
               {/* Mobile Menu Toggle */}
               <button
-                onClick={() => setShowMobileMenu(!showMobileMenu)}
-                className="lg:hidden p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowMobileMenu(!showMobileMenu);
+                }}
+                className="lg:hidden p-2.5 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20 active:scale-95"
                 aria-label="Menu"
               >
-                {showMobileMenu ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+                {showMobileMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
             </div>
           </div>
@@ -333,12 +383,27 @@ export function Navbar() {
       {/* Mobile Menu */}
       {showMobileMenu && (
         <MobileMenu
-          navItems={navItems}
-          pathname={pathname}
-          onNavigate={() => setShowMobileMenu(false)}
-          onSignIn={() => setCurrentAuthModal("signin")}
-          onSignUp={() => setCurrentAuthModal("signup")}
-        />
+            navItems={navItems}
+            pathname={pathname}
+            onNavigate={() => setShowMobileMenu(false)}
+            onSignIn={() => {
+              setShowMobileMenu(false);
+              setCurrentAuthModal("signin");
+            }}
+            onSignUp={() => {
+              setShowMobileMenu(false);
+              setCurrentAuthModal("signup");
+            }}
+            user={user}
+            onProfile={() => {
+              setShowMobileMenu(false);
+              router.push("/profile");
+            }}
+            onSignOut={() => {
+              setShowMobileMenu(false);
+              handleSignOut();
+            }}
+          />
       )}
 
       {/* Auth Modals */}

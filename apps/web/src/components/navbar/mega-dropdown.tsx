@@ -33,6 +33,8 @@ export function MegaDropdown({ activeDropdown, navItems, onClose }: MegaDropdown
     <div 
       className="absolute top-16 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border/40 shadow-lg"
       onMouseLeave={onClose}
+      onClick={(e) => e.stopPropagation()}
+      data-menu-container
     >
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

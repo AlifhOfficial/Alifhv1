@@ -98,22 +98,23 @@ export async function getFavoriteStatusForListings(
 ) {
   if (!userId) return {} as Record<string, { isFavorite: boolean; isSuperliked: boolean }>;
 
-  // Query both tables in parallel
+  // Optimized: Build where clauses once, use indexed columns
+  const favoriteWhere = listingIds?.length
+    ? and(eq(userFavorite.userId, userId), inArray(userFavorite.listingId, listingIds))
+    : eq(userFavorite.userId, userId);
+  
+  const superlikeWhere = listingIds?.length
+    ? and(eq(userSuperlike.userId, userId), inArray(userSuperlike.listingId, listingIds))
+    : eq(userSuperlike.userId, userId);
+
+  // Query both tables in parallel with minimal data transfer
   const [favorites, superlikes] = await Promise.all([
-    listingIds?.length
-      ? db.select({ listingId: userFavorite.listingId })
-          .from(userFavorite)
-          .where(and(eq(userFavorite.userId, userId), inArray(userFavorite.listingId, listingIds)))
-      : db.select({ listingId: userFavorite.listingId })
-          .from(userFavorite)
-          .where(eq(userFavorite.userId, userId)),
-    listingIds?.length
-      ? db.select({ listingId: userSuperlike.listingId })
-          .from(userSuperlike)
-          .where(and(eq(userSuperlike.userId, userId), inArray(userSuperlike.listingId, listingIds)))
-      : db.select({ listingId: userSuperlike.listingId })
-          .from(userSuperlike)
-          .where(eq(userSuperlike.userId, userId)),
+    db.select({ listingId: userFavorite.listingId })
+      .from(userFavorite)
+      .where(favoriteWhere),
+    db.select({ listingId: userSuperlike.listingId })
+      .from(userSuperlike)
+      .where(superlikeWhere),
   ]);
 
   // Create sets for O(1) lookup
@@ -137,9 +138,22 @@ export async function getFavoriteStatusForListings(
 export async function getAllFavoritesForUser(userId: string) {
   if (!userId) return { favorites: [] as FavoriteRecord[], superlikes: [] as SuperlikeRecord[] };
 
+  // Optimized: Use indexed queries and only select needed fields
   const [favorites, superlikes] = await Promise.all([
-    db.select().from(userFavorite).where(eq(userFavorite.userId, userId)),
-    db.select().from(userSuperlike).where(eq(userSuperlike.userId, userId)),
+    db.select({
+      id: userFavorite.id,
+      userId: userFavorite.userId,
+      listingId: userFavorite.listingId,
+      addedFrom: userFavorite.addedFrom,
+      createdAt: userFavorite.createdAt,
+    }).from(userFavorite).where(eq(userFavorite.userId, userId)),
+    db.select({
+      id: userSuperlike.id,
+      userId: userSuperlike.userId,
+      listingId: userSuperlike.listingId,
+      addedFrom: userSuperlike.addedFrom,
+      createdAt: userSuperlike.createdAt,
+    }).from(userSuperlike).where(eq(userSuperlike.userId, userId)),
   ]);
 
   return { favorites, superlikes };

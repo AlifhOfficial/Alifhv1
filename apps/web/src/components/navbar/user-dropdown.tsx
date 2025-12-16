@@ -35,7 +35,7 @@ interface UserData {
 interface ProfileMenuProps {
   user: UserData | null;
   showMenu: boolean;
-  onToggleMenu: () => void;
+  onToggleMenu: (e?: React.MouseEvent) => void;
   onSignIn: () => void;
   onSignUp: () => void;
   onSignOut: () => void;
@@ -167,15 +167,19 @@ export function ProfileMenu({
     };
     
     return (
-      <div className="relative flex items-center gap-2">
-        <span className="text-sm text-muted-foreground">
+      <div className="relative flex items-center gap-2" data-menu-container>
+        <span className="text-sm text-muted-foreground hidden sm:inline">
           {firstName}
         </span>
         
         <button
-          onClick={onToggleMenu}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleMenu(e);
+          }}
           className="relative w-8 h-8 rounded-full bg-muted hover:bg-muted/80 transition-colors overflow-hidden border border-border/50"
           aria-label="Profile menu"
+          data-menu-trigger
         >
           {avatarSrc && !hasImageError ? (
             <Image
@@ -196,7 +200,11 @@ export function ProfileMenu({
         </button>
 
         {showMenu && (
-          <div className="absolute right-0 top-full mt-2 w-56 bg-card border border-border/40 rounded-lg shadow-lg z-50 overflow-hidden">
+          <div 
+            className="absolute right-0 top-full mt-2 w-56 bg-card border border-border/40 rounded-lg shadow-lg z-50 overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+            data-menu-container
+          >
             {/* User Info */}
             <div className="p-4 border-b border-border/20">
               <p className="text-sm font-medium text-foreground">{displayName}</p>
@@ -264,17 +272,25 @@ export function ProfileMenu({
   }
 
   return (
-    <div className="relative flex items-center">
+    <div className="relative flex items-center" data-menu-container>
       <button
-        onClick={onToggleMenu}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleMenu(e);
+        }}
         className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20"
         aria-label="Profile menu"
+        data-menu-trigger
       >
         <User className="w-4 h-4" />
       </button>
 
       {showMenu && (
-        <div className="absolute right-0 top-full mt-2 w-40 bg-card border border-border/40 rounded-lg shadow-lg z-50 overflow-hidden">
+        <div 
+          className="absolute right-0 top-full mt-2 w-40 bg-card border border-border/40 rounded-lg shadow-lg z-50 overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
+          data-menu-container
+        >
           <div className="py-2">
             <button
               onClick={onSignIn}

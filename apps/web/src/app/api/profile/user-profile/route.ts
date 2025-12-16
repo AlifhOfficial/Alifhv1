@@ -9,6 +9,8 @@ import { getUserProfileByUserId, updateUserProfileByUserId, ensureUserProfile } 
 import { getSignedUrl } from "@/lib/storage";
 
 export const runtime = "nodejs";
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 async function requireSessionUser(req: NextRequest) {
   const session = await auth.api.getSession({ headers: req.headers });

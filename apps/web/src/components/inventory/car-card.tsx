@@ -93,8 +93,11 @@ export function CarCard({
       return;
     }
 
-    // Wait for quota to load before checking
-    if (!quota) return;
+    // If quota isn't loaded yet, try anyway (API will validate)
+    if (!quota) {
+      setShowSuperlikeConfirm(true);
+      return;
+    }
 
     // Check if user has superlikes remaining
     if (quota.remaining <= 0) {
@@ -286,7 +289,7 @@ export function CarCard({
               {(isBlackMember || partnerVerified) && (
                 <div className="relative inline-flex items-center justify-center w-4 h-4 flex-shrink-0" title="Verified">
                   <svg viewBox="0 0 24 24" className="w-full h-full" fill="none">
-                    <circle cx="12" cy="12" r="10" className="fill-emerald-500" />
+                    <circle cx="12" cy="12" r="10" className="fill-blue-500" />
                     <path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
@@ -300,20 +303,22 @@ export function CarCard({
               className={cn(
                 "rounded-full p-1.5 transition-colors",
                 isBlackMember
-                  ? "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300"
-                  : "text-muted-foreground/60 hover:bg-muted hover:text-foreground"
+                  ? "text-zinc-500 hover:text-zinc-300"
+                  : "text-muted-foreground/60 hover:text-foreground"
               )}
               aria-label="Share"
             >
               <Share2 className="h-3.5 w-3.5" />
             </button>
+            
+            {/* Favorite Button */}
             <button 
               className={cn(
                 "relative rounded-full p-1.5 transition-all active:scale-95",
                 isUpdating && "opacity-50 cursor-not-allowed",
                 isFavorite
                   ? isBlackMember
-                    ? "text-rose-300"
+                    ? "text-rose-400"
                     : "text-rose-500"
                   : isBlackMember
                     ? "text-zinc-500 hover:text-zinc-300"
@@ -338,6 +343,8 @@ export function CarCard({
                 fill={isFavorite ? "currentColor" : "none"}
               />
             </button>
+            
+            {/* Superlike Button */}
             <button
               className={cn(
                 "relative rounded-full p-1.5 transition-all active:scale-95",
@@ -359,9 +366,7 @@ export function CarCard({
               style={{ transition: 'color 150ms ease, transform 150ms ease, opacity 150ms ease' }}
             >
               <Sparkles
-                className={cn(
-                  "h-3.5 w-3.5",
-                )}
+                className="h-3.5 w-3.5"
                 strokeWidth={isSuperliked ? 2.5 : 1.8}
                 fill={isSuperliked ? "currentColor" : "none"}
               />

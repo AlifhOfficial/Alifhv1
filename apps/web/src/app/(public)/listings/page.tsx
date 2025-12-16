@@ -5,25 +5,62 @@
 
 'use client';
 
-import { Suspense, useEffect, useMemo } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Navbar } from '@/components/navbar';
 import { CarCard } from '@/components/inventory/car-card';
+import { CarListItem } from '@/components/inventory/car-list-item';
 import { useListings } from '@/hooks/listings';
-import { useBatchFavorites } from '@/contexts/batch-favorites-context';
+import { useFavoritesContext } from '@/contexts/favorites-context';
+import { LayoutGrid, List } from 'lucide-react';
 
 export default function InventoryPage() {
   const { listings, isLoading, isLoadingMore, error, hasMore, totalCount, loadMore } = useListings();
-  const { fetchBatch } = useBatchFavorites();
+  const { setStatuses, setQuota } = useFavoritesContext();
+  const hasFetchedRef = useRef(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
-  // Memoize listing IDs to prevent unnecessary refetches
-  const listingIds = useMemo(() => listings.map(l => l.id), [listings]);
-
-  // Batch fetch favorites when listings change
+  // Fetch favorites AND quota once when listings load (only if authenticated)
   useEffect(() => {
-    if (listingIds.length > 0) {
-      fetchBatch(listingIds);
-    }
-  }, [listingIds, fetchBatch]);
+    if (listings.length === 0 || hasFetchedRef.current) return;
+    
+    hasFetchedRef.current = true;
+
+    const fetchFavoritesAndQuota = async () => {
+      const listingIds = listings.map(l => l.id).join(',');
+      
+      try {
+        // Fetch both favorites and superlike quota in parallel
+        const [favRes, quotaRes] = await Promise.all([
+          fetch(`/api/favorites?listingIds=${listingIds}`, { credentials: 'include' }),
+          fetch(`/api/superlikes`, { credentials: 'include' })
+        ]);
+        
+        // Handle favorites
+        if (favRes.ok) {
+          const favData = await favRes.json();
+          if (favData.statuses) {
+            setStatuses(favData.statuses);
+          }
+        }
+        
+        // Handle quota
+        if (quotaRes.ok) {
+          const quotaData = await quotaRes.json();
+          if (quotaData.quota) {
+            const quota = {
+              ...quotaData.quota,
+              remaining: (quotaData.quota.maxSuperlikesPerMonth + quotaData.quota.premiumSuperlikesBonus) - quotaData.quota.currentMonthSuperlikesUsed
+            };
+            setQuota(quota);
+          }
+        }
+      } catch (err) {
+        // Silently ignore - user may not be authenticated
+      }
+    };
+
+    fetchFavoritesAndQuota();
+  }, [listings.length, setStatuses, setQuota]);
 
   return (
     <>
@@ -41,7 +78,7 @@ export default function InventoryPage() {
           </div>
 
           {/* Stats Bar */}
-          <div className="flex items-center gap-4 py-4 border-t border-b border-border/40">
+          <div className="flex items-center justify-between py-4 border-t border-b border-border/40">
             <div className="text-sm text-muted-foreground">
               {isLoading ? (
                 'Loading...'
@@ -51,6 +88,32 @@ export default function InventoryPage() {
                   {totalCount > listings.length && ` of ${totalCount}`}
                 </>
               )}
+            </div>
+            
+            {/* View Toggle */}
+            <div className="flex items-center gap-1 bg-muted/20 rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded-md transition-colors ${
+                  viewMode === 'grid'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                aria-label="Grid view"
+              >
+                <LayoutGrid className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded-md transition-colors ${
+                  viewMode === 'list'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                aria-label="List view"
+              >
+                <List className="h-4 w-4" />
+              </button>
             </div>
           </div>
 
@@ -78,28 +141,57 @@ export default function InventoryPage() {
 
           {!isLoading && !error && listings.length > 0 && (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {listings.map((listing) => (
-                  <CarCard
-                    key={listing.id}
-                    id={listing.id}
-                    make={listing.make}
-                    model={listing.model}
-                    year={listing.year}
-                    trim={listing.trim}
-                    price={listing.price}
-                    mileage={listing.mileage}
-                    emirate={listing.emirate}
-                    specs={listing.specs}
-                    thumbnail={listing.thumbnail}
-                    images={listing.images}
-                    qiScore={listing.qiScore}
-                    partnerName={listing.partnerName || undefined}
-                    partnerVerified={listing.partnerVerified || undefined}
-                    isBlackMember={listing.isBlackMember || false}
-                  />
-                ))}
-              </div>
+              {/* Grid View */}
+              {viewMode === 'grid' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {listings.map((listing) => (
+                    <CarCard
+                      key={listing.id}
+                      id={listing.id}
+                      make={listing.make}
+                      model={listing.model}
+                      year={listing.year}
+                      trim={listing.trim}
+                      price={listing.price}
+                      mileage={listing.mileage}
+                      emirate={listing.emirate}
+                      specs={listing.specs}
+                      thumbnail={listing.thumbnail}
+                      images={listing.images}
+                      qiScore={listing.qiScore}
+                      partnerName={listing.partnerName || undefined}
+                      partnerVerified={listing.partnerVerified || undefined}
+                      isBlackMember={listing.isBlackMember || false}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* List View */}
+              {viewMode === 'list' && (
+                <div className="space-y-4">
+                  {listings.map((listing) => (
+                    <CarListItem
+                      key={listing.id}
+                      id={listing.id}
+                      make={listing.make}
+                      model={listing.model}
+                      year={listing.year}
+                      trim={listing.trim}
+                      price={listing.price}
+                      mileage={listing.mileage}
+                      emirate={listing.emirate}
+                      specs={listing.specs}
+                      thumbnail={listing.thumbnail}
+                      images={listing.images}
+                      qiScore={listing.qiScore}
+                      partnerName={listing.partnerName || undefined}
+                      partnerVerified={listing.partnerVerified || undefined}
+                      isBlackMember={listing.isBlackMember || false}
+                    />
+                  ))}
+                </div>
+              )}
 
               {/* Load More Button */}
               {hasMore && (

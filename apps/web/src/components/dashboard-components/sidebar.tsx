@@ -34,10 +34,12 @@ import {
   Heart,
   ChevronLeft,
   ChevronRight,
+  X,
 } from "lucide-react";
 import { useEffect, useMemo, useState, type ComponentType } from "react";
 import { Avatar } from "@/components/ui/data-display/avatar";
 import { useUserProfile } from "@/hooks/profile/user-profile-hook";
+import { useDrawer } from "./dashboard-layout-wrapper";
 
 interface SidebarProps {
   user: {
@@ -74,10 +76,15 @@ export function Sidebar({ user, items }: SidebarProps) {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { isOpen, setIsOpen } = useDrawer();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+  
+  const handleLinkClick = () => {
+    setIsOpen(false);
+  };
 
   const currentTheme = useMemo(() => {
     if (!mounted) return "light";
@@ -134,7 +141,21 @@ export function Sidebar({ user, items }: SidebarProps) {
   };
 
   return (
-    <aside className={`h-screen bg-muted/20 border-r border-border/40 flex flex-col shrink-0 overflow-hidden transition-all duration-300 ease-in-out ${isCollapsed ? 'w-16' : 'w-64'}`}>
+    <aside className={`h-screen bg-muted/20 border-r border-border/40 flex-col shrink-0 overflow-hidden transition-all duration-300 ease-in-out
+      md:flex
+      fixed md:relative z-50 md:z-auto left-0 top-0
+      ${isCollapsed ? 'w-16' : 'w-64'}
+      ${isOpen ? 'flex' : 'hidden md:flex'}
+    `}>
+      {/* Mobile Close Button */}
+      <button
+        onClick={() => setIsOpen(false)}
+        className="md:hidden absolute top-4 right-4 p-2 rounded-lg hover:bg-muted transition-colors"
+        aria-label="Close menu"
+      >
+        <X className="h-5 w-5" />
+      </button>
+      
       {/* User Profile Section */}
       <div className="flex items-center gap-3 px-4 py-6 border-b border-border/40">
         <Avatar
@@ -160,6 +181,7 @@ export function Sidebar({ user, items }: SidebarProps) {
             <Link
               key={item.label}
               href={item.href}
+              onClick={handleLinkClick}
               data-active={isActive ? "true" : undefined}
               className="group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium mb-1 transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-background/90 data-[active=true]:bg-background/90 data-[active=true]:text-foreground data-[active=true]:shadow-sm"
               title={isCollapsed ? item.label : undefined}

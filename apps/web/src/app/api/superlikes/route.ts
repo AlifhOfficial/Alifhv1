@@ -7,6 +7,8 @@ import {
 } from '@alifh/database';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 async function requireUser(req: NextRequest) {
   const session = await auth.api.getSession({ headers: req.headers });
