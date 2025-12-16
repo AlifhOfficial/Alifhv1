@@ -4,9 +4,11 @@ import {
   getUserPortalAccess,
   isDealerOwner,
   isDealerStaff,
+} from "@/lib/auth/shared/routing";
+import {
   getCachedSession,
   setCachedSession,
-} from "@alifh/shared/auth";
+} from "@/lib/auth/shared/session-cache";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

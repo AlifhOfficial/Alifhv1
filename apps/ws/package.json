@@ -12,7 +12,7 @@
     "format": "prettier --write src/**/*.ts"
   },
   "dependencies": {
-    "@alifh/shared": "workspace:*",
+
     "@alifh/database": "workspace:*",
     "ws": "^8.18.0"
   },

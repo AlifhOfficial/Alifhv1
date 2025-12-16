@@ -3,7 +3,7 @@
 import { createAuthClient } from "better-auth/react";
 import { magicLinkClient } from "better-auth/client/plugins";
 import { adminClient } from "better-auth/client/plugins";
-import { ac, roles } from "@alifh/shared/auth";
+import { ac, roles } from "@/lib/auth/shared/permissions";
 
 // Use window.location.origin in browser to support both localhost and network access
 const getBaseURL = () => {

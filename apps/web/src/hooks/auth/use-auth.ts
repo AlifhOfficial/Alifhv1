@@ -1,7 +1,7 @@
 'use client';
 
 import { useSession } from '@/lib/auth/client';
-import { UserRole } from '@alifh/shared';
+import { UserRole } from '@/lib/auth/shared/types';
 
 export function useUser() {
   const { data: session, isPending, error } = useSession();

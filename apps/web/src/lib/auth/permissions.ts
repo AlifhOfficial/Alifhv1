@@ -4,4 +4,4 @@ export {
 	user,
 	roles,
 	type RoleName,
-} from "@alifh/shared/auth";
+} from "@/lib/auth/shared/permissions";

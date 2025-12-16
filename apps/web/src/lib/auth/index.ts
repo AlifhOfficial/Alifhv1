@@ -4,11 +4,11 @@ import { magicLink } from "better-auth/plugins/magic-link";
 import { admin } from "better-auth/plugins/admin";
 import { db } from "@alifh/database";
 import * as schema from "@alifh/database";
-import { UserRole } from "@alifh/shared";
+import { UserRole } from "@/lib/auth/shared/types";
 import { eq, and } from "drizzle-orm";
 
 import { emailService } from "@/lib/email";
-import { ac, roles } from "@alifh/shared/auth";
+import { ac, roles } from "@/lib/auth/shared/permissions";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {

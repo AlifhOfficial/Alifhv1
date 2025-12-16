@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { auth } from "./index";
-import type { ExtendedUser } from "@alifh/shared/auth";
-import type { UserRole } from "@alifh/shared";
+import type { ExtendedUser } from "@/lib/auth/shared/types";
+import type { UserRole } from "@/lib/auth/shared/types";
 
 /**
  * Simple auth helper - just requires any authenticated user
