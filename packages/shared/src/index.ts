@@ -6,5 +6,4 @@ export { z } from 'zod';
 
 export * from './auth';
 export * from './features/listings';
-export * from './features/profile';
 export * from './types/partner';

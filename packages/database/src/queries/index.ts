@@ -3,6 +3,9 @@
  * Re-exports all query functions for easy importing
  */
 
+// Auth queries
+export * from './auth';
+
 // Partner queries
 export * from './partner';
 

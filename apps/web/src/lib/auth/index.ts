@@ -33,9 +33,16 @@ export const auth = betterAuth({
     async fetchUser(userId) {
       console.log('[Session] Fetching user:', userId);
       
-      // Fetch user with partner membership check
+      // Fetch user with profile data for avatar
       const user = await db.query.user.findFirst({
         where: eq(schema.user.id, userId),
+        with: {
+          profile: {
+            columns: {
+              avatar: true,
+            },
+          },
+        },
       });
 
       if (!user) {
@@ -97,9 +104,17 @@ export const auth = betterAuth({
         })),
       });
 
+      // Generate avatar URL if avatar exists
+      const profile = user.profile as { avatar: string | null } | null;
+      const avatarUrl = profile?.avatar 
+        ? `/api/storage/file/${profile.avatar}`
+        : null;
+
       // Return user with extended fields
       return {
         ...user,
+        avatar: profile?.avatar || null,
+        avatarUrl,
         hasPartnerAccess,
         isAlifhAdmin,
         partnerMemberships,
