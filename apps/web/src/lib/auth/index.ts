@@ -94,6 +94,8 @@ export const auth = betterAuth({
     process.env.NEXTAUTH_URL || "http://localhost:3000",
     process.env.NEXT_PUBLIC_NETWORK_URL || "",
     "http://192.168.1.14:3000", // Local network access
+    "http://192.168.1.14:8081", // Expo mobile dev
+    "exp://192.168.1.14:8081", // Expo protocol
   ].filter(Boolean),
 });
 
