@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { UserRole } from "@alifh/shared";
 import { getUserPortalAccess } from "@alifh/shared/auth";
-import { useProfile } from "@/hooks/profile";
+import { useUserProfile } from "@/hooks/profile/user-profile-hook";
 
 interface UserData {
   id: string;
@@ -58,7 +58,7 @@ export function ProfileMenu({
 }: ProfileMenuProps) {
   const router = useRouter();
   const [hasImageError, setHasImageError] = useState(false);
-  const { profile, refresh } = useProfile({ fetchOnMount: !!user, userId: user?.id ?? null });
+  const { profile, refresh } = useUserProfile({ fetchOnMount: !!user });
 
   const avatarSrc = useMemo(() => {
     return profile?.avatarUrl ?? undefined;

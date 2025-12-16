@@ -158,17 +158,13 @@ export const kycRecord = pgTable('kyc_record', {
 
 /**
  * User Favorites Table
- * Tracks both regular favorites and superlikes
- * - Favorites: Unlimited
- * - Superlikes: Limited to 5 per month
+ * Tracks user favorites (unlimited)
+ * Users can favorite as many listings as they want
  */
 export const userFavorite = pgTable('user_favorite', {
   id: text('id').primaryKey(),
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   listingId: text('listing_id').notNull(), // will reference car_listing table
-  
-  // Type of interaction
-  type: favoriteTypeEnum('type').default('favorite').notNull(),
   
   // For analytics
   addedFrom: text('added_from'), // 'search', 'listing_page', 'feed', etc.
@@ -179,9 +175,29 @@ export const userFavorite = pgTable('user_favorite', {
   index('user_favorite_userId_idx').on(table.userId),
   index('user_favorite_listingId_idx').on(table.listingId),
   index('user_favorite_userId_listingId_idx').on(table.userId, table.listingId),
-  index('user_favorite_type_idx').on(table.type),
-  index('user_favorite_userId_type_idx').on(table.userId, table.type),
   index('user_favorite_createdAt_idx').on(table.createdAt),
+]);
+
+/**
+ * User Superlikes Table
+ * Tracks user superlikes (limited to 5 per month)
+ * Users can have both a favorite AND a superlike on the same listing
+ */
+export const userSuperlike = pgTable('user_superlike', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  listingId: text('listing_id').notNull(), // will reference car_listing table
+  
+  // For analytics
+  addedFrom: text('added_from'), // 'search', 'listing_page', 'feed', etc.
+  
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => [
+  index('user_superlike_userId_idx').on(table.userId),
+  index('user_superlike_listingId_idx').on(table.listingId),
+  index('user_superlike_userId_listingId_idx').on(table.userId, table.listingId),
+  index('user_superlike_createdAt_idx').on(table.createdAt),
 ]);
 
 /**
@@ -195,7 +211,7 @@ export const userSuperlikeQuota = pgTable('user_superlike_quota', {
   
   // Monthly Tracking (rolling 30 days)
   currentMonthSuperlikesUsed: integer('current_month_superlikes_used').default(0).notNull(),
-  maxSuperlikesPerMonth: integer('max_superlikes_per_month').default(5).notNull(),
+  maxSuperlikesPerMonth: integer('max_superlikes_per_month').default(50).notNull(),
   
   // Current Period
   periodStartDate: timestamp('period_start_date').defaultNow().notNull(),

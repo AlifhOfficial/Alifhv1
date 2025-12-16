@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { Toaster } from '@/components/ui'
+import { FavoritesProvider } from '@/contexts/quota-context'
+import { BatchFavoritesProvider } from '@/contexts/batch-favorites-context'
 
 export const metadata: Metadata = {
   title: 'Alifh - Vehicle Marketplace',
@@ -37,8 +39,12 @@ export default function RootLayout({
       </head>
       <body>
         <ThemeProvider>
-          {children}
-          <Toaster />
+          <FavoritesProvider>
+            <BatchFavoritesProvider>
+              {children}
+              <Toaster />
+            </BatchFavoritesProvider>
+          </FavoritesProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -35,7 +35,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    label: "Inventory",
+    label: "Listings",
     href: "/listings",
     submenu: [
       {
@@ -243,16 +243,17 @@ export function Navbar() {
               {navItems.map((item) => (
                 <div key={item.label} className="relative">
                   {item.submenu ? (
-                    <button
+                    <Link
+                      href={item.href}
                       onMouseEnter={() => setActiveDropdown(item.label)}
-                      className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg ${
+                      className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg block ${
                         pathname === item.href
                           ? "text-foreground bg-muted/20"
                           : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
                       }`}
                     >
                       {item.label}
-                    </button>
+                    </Link>
                   ) : (
                     <Link
                       href={item.href}
@@ -313,6 +314,14 @@ export function Navbar() {
           </div>
         </div>
       </nav>
+
+      {/* Blur Overlay */}
+      {activeDropdown && (
+        <div 
+          className="fixed inset-0 bg-background/40 backdrop-blur-sm z-30"
+          onClick={() => setActiveDropdown(null)}
+        />
+      )}
 
       {/* Mega Dropdown */}
       <MegaDropdown

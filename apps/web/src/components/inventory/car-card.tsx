@@ -7,8 +7,12 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Share2, Heart, CheckCircle2 } from 'lucide-react';
+import { Share2, Heart, CheckCircle2, Sparkles } from 'lucide-react';
+import { useFavorites } from '@/hooks/favorites';
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
+import { SuperlikeConfirmationDialog } from './superlike-confirmation-dialog';
+import { SuperlikeLimitDialog } from './superlike-limit-dialog';
 
 interface CarCardProps {
   id: string;
@@ -68,6 +72,67 @@ export function CarCard({
 
   const displayImage = thumbnail || images?.[0] || '/assets/cars/car1.avif';
   const displaySpecs = specs || 'GCC';
+  const {
+    isFavorite,
+    isSuperliked,
+    isUpdating,
+    toggleFavorite,
+    toggleSuperlike,
+    quota,
+  } = useFavorites(id);
+
+  const [showSuperlikeConfirm, setShowSuperlikeConfirm] = useState(false);
+  const [showSuperlikeLimit, setShowSuperlikeLimit] = useState(false);
+  const [showSparkles, setShowSparkles] = useState(false);
+  const [heartScale, setHeartScale] = useState(false);
+
+  const handleSuperlikeClick = () => {
+    // If already superliked, remove it without confirmation
+    if (isSuperliked) {
+      toggleSuperlike();
+      return;
+    }
+
+    // Wait for quota to load before checking
+    if (!quota) return;
+
+    // Check if user has superlikes remaining
+    if (quota.remaining <= 0) {
+      setShowSuperlikeLimit(true);
+      return;
+    }
+
+    // Show confirmation dialog
+    setShowSuperlikeConfirm(true);
+  };
+
+  const confirmSuperlike = async () => {
+    // Show sparkles effect
+    setShowSparkles(true);
+    
+    // Trigger the toggle after a brief delay
+    setTimeout(() => {
+      toggleSuperlike();
+    }, 100);
+    
+    // Hide sparkles after animation
+    setTimeout(() => {
+      setShowSparkles(false);
+    }, 2000);
+  };
+
+  const handleFavoriteClick = () => {
+    // Trigger heart scale animation
+    setHeartScale(true);
+    toggleFavorite();
+    
+    // Reset animation after it completes
+    setTimeout(() => {
+      setHeartScale(false);
+    }, 400);
+  };
+
+  const carTitle = `${year} ${make} ${model}${trim ? ` ${trim}` : ''}`;
 
   return (
     <div className={cn(
@@ -244,18 +309,123 @@ export function CarCard({
             </button>
             <button 
               className={cn(
-                "rounded-full p-1.5 transition-colors",
-                isBlackMember
-                  ? "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300"
-                  : "text-muted-foreground/60 hover:bg-muted hover:text-foreground"
+                "relative rounded-full p-1.5 transition-all active:scale-95",
+                isUpdating && "opacity-50 cursor-not-allowed",
+                isFavorite
+                  ? isBlackMember
+                    ? "text-rose-300"
+                    : "text-rose-500"
+                  : isBlackMember
+                    ? "text-zinc-500 hover:text-zinc-300"
+                    : "text-muted-foreground/70 hover:text-foreground"
               )}
-              aria-label="Add to favorites"
+              aria-label={isFavorite ? "Remove favorite" : "Add to favorites"}
+              aria-pressed={isFavorite}
+              disabled={isUpdating}
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                handleFavoriteClick();
+              }}
+              style={{ transition: 'color 150ms ease, transform 150ms ease, opacity 150ms ease' }}
             >
-              <Heart className="h-3.5 w-3.5" />
+              <Heart
+                className={cn(
+                  "h-3.5 w-3.5 transition-transform duration-300",
+                  heartScale && "scale-150"
+                )}
+                strokeWidth={isFavorite ? 2.5 : 1.8}
+                fill={isFavorite ? "currentColor" : "none"}
+              />
+            </button>
+            <button
+              className={cn(
+                "relative rounded-full p-1.5 transition-all active:scale-95",
+                isUpdating && "opacity-50 cursor-not-allowed",
+                isSuperliked
+                  ? "text-yellow-500"
+                  : isBlackMember
+                    ? "text-zinc-500 hover:text-zinc-300"
+                    : "text-muted-foreground/70 hover:text-foreground"
+              )}
+              aria-label={isSuperliked ? "Remove superlike" : "Superlike"}
+              aria-pressed={isSuperliked}
+              disabled={isUpdating}
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                handleSuperlikeClick();
+              }}
+              style={{ transition: 'color 150ms ease, transform 150ms ease, opacity 150ms ease' }}
+            >
+              <Sparkles
+                className={cn(
+                  "h-3.5 w-3.5",
+                )}
+                strokeWidth={isSuperliked ? 2.5 : 1.8}
+                fill={isSuperliked ? "currentColor" : "none"}
+              />
             </button>
           </div>
         </div>
       </div>
+
+      {/* Superlike Confirmation Dialog */}
+      <SuperlikeConfirmationDialog
+        isOpen={showSuperlikeConfirm}
+        onClose={() => setShowSuperlikeConfirm(false)}
+        onConfirm={confirmSuperlike}
+        quota={quota}
+        listingTitle={carTitle}
+      />
+
+      {/* Superlike Limit Dialog */}
+      <SuperlikeLimitDialog
+        isOpen={showSuperlikeLimit}
+        onClose={() => setShowSuperlikeLimit(false)}
+        resetDate={quota?.periodEndDate}
+      />
+
+      {/* Falling Sparkles Effect */}
+      {showSparkles && (
+        <div className="fixed inset-0 pointer-events-none overflow-hidden z-[9999]">
+          <style jsx>{`
+            @keyframes fall {
+              0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 0;
+              }
+              10% {
+                opacity: 1;
+              }
+              90% {
+                opacity: 1;
+              }
+              100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+              }
+            }
+            .sparkle-fall {
+              position: absolute;
+              animation: fall 2s ease-in forwards;
+              font-size: 24px;
+            }
+          `}</style>
+          {[...Array(40)].map((_, i) => (
+            <div
+              key={i}
+              className="sparkle-fall"
+              style={{
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 0.6}s`,
+              }}
+            >
+              ✨
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

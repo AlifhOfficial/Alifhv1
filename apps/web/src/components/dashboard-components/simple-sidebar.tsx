@@ -19,12 +19,13 @@ import {
   Package,
   ShoppingCart,
   MessageSquare,
+  Heart,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
 import { useEffect, useMemo, useState, type ComponentType } from "react";
 import { Avatar } from "@/components/ui/data-display/avatar";
-import { useProfile } from "@/hooks/profile";
+import { useUserProfile } from "@/hooks/profile/user-profile-hook";
 
 interface SimpleSidebarProps {
   user: {
@@ -52,6 +53,7 @@ const iconMap: Record<string, ComponentType<{ className?: string }>> = {
   "package": Package,
   "shopping-cart": ShoppingCart,
   "message-square": MessageSquare,
+  "heart": Heart,
 };
 
 export function SimpleSidebar({ user, items }: SimpleSidebarProps) {
@@ -70,7 +72,7 @@ export function SimpleSidebar({ user, items }: SimpleSidebarProps) {
     return resolvedTheme ?? "light";
   }, [mounted, resolvedTheme]);
 
-  const { profile } = useProfile({ fetchOnMount: true, userId: user.id ?? null });
+  const { profile } = useUserProfile({ fetchOnMount: true });
 
   const displayName = useMemo(() => {
     if (profile?.firstName || profile?.lastName) {

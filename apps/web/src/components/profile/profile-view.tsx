@@ -8,9 +8,8 @@
 
 import { useEffect, useState, useRef, Suspense, lazy } from 'react';
 import { useRouter } from 'next/navigation';
-import { useProfile } from '@/hooks/profile';
+import { useUserProfile, type UserProfileUpdate } from '@/hooks/profile/user-profile-hook';
 import { useToast } from '@/hooks/use-toast';
-import type { ProfileUpdateInput } from '@/lib/profile';
 import { User, Edit3, AlertCircle, CheckCircle2, ShieldCheck, Camera, X } from 'lucide-react';
 import { Avatar } from '@/components/ui/data-display/avatar';
 import { KycVerificationModal } from './kyc-verification-modal';
@@ -26,7 +25,7 @@ interface ProfileViewProps {
 
 export function ProfileView({ userName, userEmail }: ProfileViewProps) {
   const router = useRouter();
-  const { profile, isUpdating, error, updateProfile } = useProfile();
+  const { profile, isUpdating, error, updateProfile } = useUserProfile({ fetchOnMount: true });
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -158,7 +157,7 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
   const handleSaveSection = async (section: string) => {
     setIsSaving(true);
     try {
-      let payload: ProfileUpdateInput = {};
+      let payload: UserProfileUpdate = {};
 
       switch (section) {
         case 'personal':
@@ -190,7 +189,6 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
           payload = {
             consignmentMode: consignmentMode,
             privacySettings: {
-              showEmail: profile?.privacySettings?.showEmail ?? false,
               showPhone: showPhone,
             },
           };

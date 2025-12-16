@@ -5,13 +5,25 @@
 
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useEffect, useMemo } from 'react';
 import { Navbar } from '@/components/navbar';
 import { CarCard } from '@/components/inventory/car-card';
 import { useListings } from '@/hooks/listings';
+import { useBatchFavorites } from '@/contexts/batch-favorites-context';
 
 export default function InventoryPage() {
   const { listings, isLoading, isLoadingMore, error, hasMore, totalCount, loadMore } = useListings();
+  const { fetchBatch } = useBatchFavorites();
+
+  // Memoize listing IDs to prevent unnecessary refetches
+  const listingIds = useMemo(() => listings.map(l => l.id), [listings]);
+
+  // Batch fetch favorites when listings change
+  useEffect(() => {
+    if (listingIds.length > 0) {
+      fetchBatch(listingIds);
+    }
+  }, [listingIds, fetchBatch]);
 
   return (
     <>

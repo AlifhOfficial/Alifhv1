@@ -10,10 +10,16 @@ const logger = {
 const securityLogger = {
   warn: (message: string, meta?: any) => console.warn(`[SECURITY] ${message}`, meta || ''),
   error: (message: string, meta?: any) => console.error(`[SECURITY] ${message}`, meta || ''),
+  suspiciousActivity: (userId: string, activity: string, details: any, ip?: string) =>
+    console.warn(`[SECURITY] Suspicious activity by ${userId}: ${activity}`, { details, ip }),
+  authSuccess: (userId: string, method: string, ip?: string) =>
+    console.log(`[SECURITY] Auth success: ${userId} via ${method}`, ip || ''),
 };
 
 const auditLogger = {
   info: (message: string, meta?: any) => console.log(`[AUDIT] ${message}`, meta || ''),
+  dataAccess: (userId: string, resource: string, action: string, details?: string) => 
+    console.log(`[AUDIT] User ${userId} performed ${action} on ${resource}`, details || ''),
 };
 
 interface WebSocketData {
@@ -29,10 +35,11 @@ const PORT = parseInt(process.env.WS_PORT || "3001");
 // Enhanced Bun.serve with security logging and performance optimizations
 const server = Bun.serve<WebSocketData>({
   port: PORT,
+  hostname: '0.0.0.0', // Listen on all interfaces
   // Enable development mode for better debugging
   development: process.env.NODE_ENV !== 'production',
   
-  fetch(req, server) {
+  async fetch(req, server) {
     const startTime = Date.now();
     const url = new URL(req.url);
     const ip = req.headers.get("x-forwarded-for") || 
@@ -101,6 +108,44 @@ const server = Bun.serve<WebSocketData>({
       });
     }
 
+    // Broadcast endpoint for server-side triggers
+    if (url.pathname === "/broadcast" && req.method === "POST") {
+      try {
+        const body = await req.json();
+        const { channel, message } = body;
+        
+        if (!channel || !message) {
+          return new Response(JSON.stringify({ error: 'channel and message required' }), { 
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+
+        // Publish message to the specified channel
+        const publishCount = server.publish(channel, JSON.stringify(message));
+        
+        logger.info('Broadcast sent', { 
+          channel, 
+          messageType: message.type,
+          recipientsCount: publishCount,
+          messageData: message,
+        });
+        
+        return new Response(JSON.stringify({ 
+          success: true, 
+          recipientsCount: publishCount 
+        }), {
+          headers: { "Content-Type": "application/json" },
+        });
+      } catch (error) {
+        logger.error('Broadcast failed', { error });
+        return new Response(JSON.stringify({ error: 'Broadcast failed' }), { 
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+    }
+
     // Return 404 for other paths
     logger.warn('WebSocket 404', { path: url.pathname, ip });
     return new Response("Not Found", { status: 404 });
@@ -112,8 +157,10 @@ const server = Bun.serve<WebSocketData>({
       const { userId, roomId, connectedAt, ip } = ws.data;
       
       // Subscribe to user-specific and room-specific channels
-      ws.subscribe(`user:${userId}`);
-      ws.subscribe(`room:${roomId}`);
+      const userChannel = `user:${userId}`;
+      const roomChannel = `room:${roomId}`;
+      ws.subscribe(userChannel);
+      ws.subscribe(roomChannel);
       
       // Security audit log
       securityLogger.authSuccess(userId!, 'websocket', ip);
@@ -122,6 +169,7 @@ const server = Bun.serve<WebSocketData>({
         roomId,
         ip,
         connectionTime: Date.now() - connectedAt,
+        subscribedTo: [userChannel, roomChannel],
       });
       
       // Send enhanced welcome message
@@ -135,6 +183,18 @@ const server = Bun.serve<WebSocketData>({
           features: ["ping", "broadcast", "notification"],
         })
       );
+
+      // Set up keep-alive ping interval
+      const pingInterval = setInterval(() => {
+        if (ws.readyState === 1) { // 1 = OPEN
+          ws.send(JSON.stringify({ type: "ping", timestamp: Date.now() }));
+        } else {
+          clearInterval(pingInterval);
+        }
+      }, 30000); // Ping every 30 seconds
+
+      // Store interval for cleanup
+      (ws as any).pingInterval = pingInterval;
     },
 
     // Enhanced message handler with better error handling and logging
@@ -292,6 +352,11 @@ const server = Bun.serve<WebSocketData>({
     close(ws, code, reason) {
       const { userId, roomId, connectedAt, ip } = ws.data;
       const sessionDuration = Date.now() - connectedAt;
+      
+      // Clear ping interval
+      if ((ws as any).pingInterval) {
+        clearInterval((ws as any).pingInterval);
+      }
       
       // Cleanup subscriptions
       ws.unsubscribe(`user:${userId}`);

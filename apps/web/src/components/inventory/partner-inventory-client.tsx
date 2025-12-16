@@ -8,8 +8,7 @@
 import { CarCard } from "@/components/inventory/car-card";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { usePartnerListings } from "@/hooks/listings";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 
 interface PartnerInventoryClientProps {
   partnerId: string;
@@ -22,7 +21,41 @@ export function PartnerInventoryClient({
   partnerName, 
   partnerVerified 
 }: PartnerInventoryClientProps) {
-  const { listings, isLoading, error } = usePartnerListings(partnerId);
+  const [listings, setListings] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchListings = useCallback(async () => {
+    if (!partnerId) return;
+
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await fetch(`/api/listings/car-card?partnerId=${partnerId}`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to fetch partner listings: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setListings(data.data || []);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch listings';
+      setError(errorMessage);
+      console.error('[PartnerInventoryClient] Error:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [partnerId]);
+
+  useEffect(() => {
+    fetchListings();
+  }, [fetchListings]);
 
   // Group by status
   const { publishedListings, draftListings, soldListings } = useMemo(() => {

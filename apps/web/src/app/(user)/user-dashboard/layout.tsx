@@ -5,6 +5,7 @@ import { requireAuth } from "@/lib/auth/roles";
 const navItems = [
   { label: "Overview", href: "/user-dashboard", icon: "layout-dashboard" },
   { label: "Profile", href: "/user-dashboard/profile", icon: "user" },
+  { label: "Favorites", href: "/user-dashboard/favs", icon: "heart" },
   { label: "Dev: KYC Requests", href: "/user-dashboard/dev/kyc-requests", icon: "shield-check" },
 ];
 

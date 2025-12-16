@@ -10,9 +10,10 @@ import { db } from './dbclient';
 import { user } from './schema';
 
 // Re-export specialized queries
-export * from './queries/profile';
+export * from './queries/profile/user-profile-query';
 export * from './queries/partner';
-export * from './queries/listings';
+export * from './queries/listings/car-card-query';
+export * from './queries/favorites';
 
 // Essential user queries
 export const getUserById = async (id: string) => {
@@ -84,5 +85,3 @@ export const getAllUsers = async (limit: number = 100) => {
     .from(user)
     .limit(limit);
 };
-
-export * from './queries/profile';

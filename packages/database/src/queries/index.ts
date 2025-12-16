@@ -11,3 +11,6 @@ export * from './profile';
 
 // Listing queries
 export * from './listings';
+
+// Favorites & Superlikes queries
+export * from './favorites';

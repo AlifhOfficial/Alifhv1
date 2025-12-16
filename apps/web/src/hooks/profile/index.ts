@@ -1,1 +1,1 @@
-export * from './use-profile';
+export * from './user-profile-hook';

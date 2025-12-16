@@ -11,5 +11,4 @@ export * from './schema';
 // Queries  
 export * from './queries';
 
-// Services
-export * from './services';
+
