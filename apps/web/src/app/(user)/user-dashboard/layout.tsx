@@ -1,5 +1,5 @@
 import { DashboardLayoutProvider, DashboardMainContent } from "@/components/dashboard-components/dashboard-layout-wrapper";
-import { SimpleSidebar } from "@/components/dashboard-components/simple-sidebar";
+import { Sidebar } from "@/components/dashboard-components/sidebar";
 import { requireAuth } from "@/lib/auth/roles";
 
 const navItems = [
@@ -14,7 +14,7 @@ export default async function UserDashboardLayout({ children }: { children: Reac
 
   return (
     <DashboardLayoutProvider>
-      <SimpleSidebar user={user} items={navItems} />
+      <Sidebar user={user} items={navItems} />
       <DashboardMainContent>
         {children}
       </DashboardMainContent>

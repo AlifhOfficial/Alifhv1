@@ -1,5 +1,5 @@
 import { DashboardLayoutProvider, DashboardMainContent } from "@/components/dashboard-components/dashboard-layout-wrapper";
-import { SimpleSidebar } from "@/components/dashboard-components/simple-sidebar";
+import { Sidebar } from "@/components/dashboard-components/sidebar";
 import { requireRole } from "@/lib/auth/roles";
 
 const navItems = [
@@ -17,7 +17,7 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
 
   return (
     <DashboardLayoutProvider>
-      <SimpleSidebar user={user} items={navItems} />
+      <Sidebar user={user} items={navItems} />
       <DashboardMainContent>
         {children}
       </DashboardMainContent>

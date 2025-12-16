@@ -31,6 +31,8 @@ export interface UserProfile {
   createdAt?: Date | string;
   avatar?: string | null;
   avatarUrl?: string | null;
+  emailVerified?: boolean;
+  phoneVerified?: boolean;
 }
 
 export interface UserProfileUpdate {

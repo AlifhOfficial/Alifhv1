@@ -1,5 +1,5 @@
 import { DashboardLayoutProvider, DashboardMainContent } from "@/components/dashboard-components/dashboard-layout-wrapper";
-import { SimpleSidebar } from "@/components/dashboard-components/simple-sidebar";
+import { Sidebar } from "@/components/dashboard-components/sidebar";
 import { ThreeColumnLayout } from "@/components/dashboard-components/three-column-layout";
 import { requireAuth } from "@/lib/auth/roles";
 import { db } from "@alifh/database";
@@ -37,7 +37,7 @@ export default async function PartnerDashboardLayout({ children }: { children: R
 
   return (
     <DashboardLayoutProvider>
-      <SimpleSidebar user={user} items={navItems} />
+      <Sidebar user={user} items={navItems} />
       <DashboardMainContent>
         <ThreeColumnLayout>
           {children}

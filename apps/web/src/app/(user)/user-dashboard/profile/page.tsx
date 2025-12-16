@@ -3,7 +3,7 @@
  * Ultra-minimal, Apple/Tesla-inspired premium experience
  */
 
-import { ProfileView } from "@/components/profile/profile-view";
+import { ProfileView } from "@/components/profile";
 import { requireAuth } from "@/lib/auth/roles";
 
 export default async function ProfilePage() {

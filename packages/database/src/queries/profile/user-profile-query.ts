@@ -7,6 +7,7 @@ import { createId } from '@paralleldrive/cuid2';
 import { eq } from 'drizzle-orm';
 import { db } from '../../dbclient';
 import { userProfile } from '../../schema/profile';
+import { user } from '../../schema/auth';
 
 const PROFILE_ID_PREFIX = 'prof_';
 const makeProfileId = () => `${PROFILE_ID_PREFIX}${createId()}`;
@@ -26,19 +27,36 @@ export type UserProfileUpdate = Partial<{
   consignmentMode: boolean;
   privacySettings: { showPhone?: boolean };
   avatar: string | null;
+  status: string;
 }>;
 
 /**
- * Get profile by user ID
+ * Get profile by user ID with email verification status
  */
-export const getUserProfileByUserId = async (userId: string): Promise<UserProfileRecord | null> => {
-  const [result] = await db
+export const getUserProfileByUserId = async (userId: string): Promise<(UserProfileRecord & { emailVerified: boolean; phoneVerified: boolean }) | null> => {
+  const [profileResult] = await db
     .select()
     .from(userProfile)
     .where(eq(userProfile.userId, userId))
     .limit(1);
 
-  return result ?? null;
+  if (!profileResult) return null;
+
+  // Get email and phone verification status from user table
+  const [userResult] = await db
+    .select({ 
+      emailVerified: user.emailVerified,
+      phoneVerified: user.phoneVerified,
+    })
+    .from(user)
+    .where(eq(user.id, userId))
+    .limit(1);
+
+  return {
+    ...profileResult,
+    emailVerified: userResult?.emailVerified ?? false,
+    phoneVerified: userResult?.phoneVerified ?? false,
+  };
 };
 
 /**
@@ -47,7 +65,7 @@ export const getUserProfileByUserId = async (userId: string): Promise<UserProfil
 export const updateUserProfileByUserId = async (
   userId: string,
   updates: UserProfileUpdate
-): Promise<UserProfileRecord | null> => {
+): Promise<(UserProfileRecord & { emailVerified: boolean; phoneVerified: boolean }) | null> => {
   // Remove undefined values
   const cleanUpdates = Object.fromEntries(
     Object.entries(updates).filter(([, value]) => value !== undefined)
@@ -55,6 +73,18 @@ export const updateUserProfileByUserId = async (
 
   if (Object.keys(cleanUpdates).length === 0) {
     return getUserProfileByUserId(userId);
+  }
+
+  // If phone number is being updated, check if it changed and clear verification
+  if (cleanUpdates.phone !== undefined) {
+    const currentProfile = await getUserProfileByUserId(userId);
+    if (currentProfile && currentProfile.phone !== cleanUpdates.phone) {
+      // Phone number changed - clear verification in user table
+      await db
+        .update(user)
+        .set({ phoneVerified: false })
+        .where(eq(user.id, userId));
+    }
   }
 
   const [result] = await db
@@ -66,13 +96,16 @@ export const updateUserProfileByUserId = async (
     .where(eq(userProfile.userId, userId))
     .returning();
 
-  return result ?? null;
+  if (!result) return null;
+
+  // Fetch complete profile with verification status
+  return getUserProfileByUserId(userId);
 };
 
 /**
  * Ensure profile exists (create if doesn't exist)
  */
-export const ensureUserProfile = async (userId: string): Promise<UserProfileRecord> => {
+export const ensureUserProfile = async (userId: string): Promise<UserProfileRecord & { emailVerified: boolean; phoneVerified: boolean }> => {
   const existing = await getUserProfileByUserId(userId);
   if (existing) return existing;
 
@@ -84,5 +117,19 @@ export const ensureUserProfile = async (userId: string): Promise<UserProfileReco
     })
     .returning();
 
-  return result;
+  // Get email and phone verification status for newly created profile
+  const [userResult] = await db
+    .select({ 
+      emailVerified: user.emailVerified,
+      phoneVerified: user.phoneVerified,
+    })
+    .from(user)
+    .where(eq(user.id, userId))
+    .limit(1);
+
+  return {
+    ...result,
+    emailVerified: userResult?.emailVerified ?? false,
+    phoneVerified: userResult?.phoneVerified ?? false,
+  };
 };

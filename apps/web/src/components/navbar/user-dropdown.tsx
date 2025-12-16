@@ -3,10 +3,11 @@
 import { 
   User, 
   LogOut, 
-  Settings, 
-  LayoutDashboard, 
-  Store, 
-  Home 
+  Settings,
+  Shield,
+  Briefcase,
+  Users,
+  LayoutGrid
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -44,7 +45,7 @@ interface ProfileMenuProps {
 interface DashboardItem {
   name: string;
   path: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: React.ComponentType<{ className?: string }>;
 }
 
 export function ProfileMenu({
@@ -94,12 +95,12 @@ export function ProfileMenu({
         dashboards.push({ 
           name: 'Platform Admin', 
           path: '/admin-dashboard',
-          icon: LayoutDashboard
+          icon: Shield
         });
         dashboards.push({ 
           name: 'My Dashboard', 
           path: '/user-dashboard',
-          icon: Home
+          icon: LayoutGrid
         });
         return dashboards;
       }
@@ -109,12 +110,12 @@ export function ProfileMenu({
         dashboards.push({ 
           name: 'Dealership Manager', 
           path: '/partner-dashboard',
-          icon: Store
+          icon: Briefcase
         });
         dashboards.push({ 
           name: 'My Dashboard', 
           path: '/user-dashboard',
-          icon: Home
+          icon: LayoutGrid
         });
         return dashboards;
       }
@@ -124,12 +125,12 @@ export function ProfileMenu({
         dashboards.push({ 
           name: 'Staff Dashboard', 
           path: '/staff-dashboard',
-          icon: Store
+          icon: Users
         });
         dashboards.push({ 
           name: 'My Dashboard', 
           path: '/user-dashboard',
-          icon: Home
+          icon: LayoutGrid
         });
         return dashboards;
       }
@@ -138,7 +139,7 @@ export function ProfileMenu({
       dashboards.push({ 
         name: 'My Dashboard', 
         path: '/user-dashboard',
-        icon: Home
+        icon: LayoutGrid
       });
       
       return dashboards;
@@ -210,7 +211,7 @@ export function ProfileMenu({
                   <button
                     key={dashboard.path}
                     onClick={() => handleDashboardNavigation(dashboard.path)}
-                    className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted/20 transition-colors flex items-center gap-2"
+                    className="w-full text-left px-4 py-2.5 text-sm text-foreground hover:bg-muted/20 transition-colors flex items-center gap-3"
                   >
                     <Icon className="w-4 h-4 text-muted-foreground" />
                     <span>{dashboard.name}</span>
@@ -224,21 +225,19 @@ export function ProfileMenu({
             
             {/* Actions */}
             <div className="py-2">
-              {onProfile && (
-                <button
-                  onClick={() => {
-                    onProfile();
-                    onToggleMenu();
-                  }}
-                  className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted/20 transition-colors flex items-center gap-2"
-                >
-                  <User className="w-4 h-4 text-muted-foreground" />
-                  <span>Profile</span>
-                </button>
-              )}
+              <button
+                onClick={() => {
+                  router.push('/user-dashboard/profile');
+                  onToggleMenu();
+                }}
+                className="w-full text-left px-4 py-2.5 text-sm text-foreground hover:bg-muted/20 transition-colors flex items-center gap-3"
+              >
+                <User className="w-4 h-4 text-muted-foreground" />
+                <span>Profile</span>
+              </button>
               <button
                 onClick={onToggleMenu}
-                className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted/20 transition-colors flex items-center gap-2"
+                className="w-full text-left px-4 py-2.5 text-sm text-foreground hover:bg-muted/20 transition-colors flex items-center gap-3"
               >
                 <Settings className="w-4 h-4 text-muted-foreground" />
                 <span>Settings</span>
@@ -252,7 +251,7 @@ export function ProfileMenu({
             <div className="py-2">
               <button
                 onClick={onSignOut}
-                className="w-full text-left px-4 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors flex items-center gap-2"
+                className="w-full text-left px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10 transition-colors flex items-center gap-3"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Sign out</span>
