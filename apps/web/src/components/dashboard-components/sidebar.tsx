@@ -15,7 +15,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { signOut } from "@/lib/auth/client";
+import { handleSignOut } from '@/lib/auth/sign-out';
 import { 
   ArrowLeft, 
   LogOut, 
@@ -135,9 +135,8 @@ export function Sidebar({ user, items }: SidebarProps) {
     setTheme(currentTheme === "dark" ? "light" : "dark");
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-    router.push("/");
+  const onSignOut = async () => {
+    await handleSignOut();
   };
 
   return (
@@ -249,7 +248,7 @@ export function Sidebar({ user, items }: SidebarProps) {
         </button>
         
         <button
-          onClick={handleSignOut}
+          onClick={onSignOut}
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-destructive transition-all hover:bg-destructive/10"
           title={isCollapsed ? "Sign out" : undefined}
         >

@@ -61,6 +61,7 @@ export const getUserProfileByUserId = async (userId: string): Promise<(UserProfi
 
 /**
  * Update profile by user ID
+ * Auto-syncs firstName/lastName to user.name
  */
 export const updateUserProfileByUserId = async (
   userId: string,
@@ -83,6 +84,24 @@ export const updateUserProfileByUserId = async (
       await db
         .update(user)
         .set({ phoneVerified: false })
+        .where(eq(user.id, userId));
+    }
+  }
+
+  // Auto-sync: If firstName or lastName are being updated, sync to user.name
+  if ('firstName' in cleanUpdates || 'lastName' in cleanUpdates) {
+    const currentProfile = await getUserProfileByUserId(userId);
+    const newFirstName = 'firstName' in cleanUpdates ? cleanUpdates.firstName : currentProfile?.firstName;
+    const newLastName = 'lastName' in cleanUpdates ? cleanUpdates.lastName : currentProfile?.lastName;
+    
+    // Compute the new name from firstName + lastName
+    const computedName = [newFirstName, newLastName].filter(Boolean).join(' ').trim();
+    
+    if (computedName) {
+      // Update user.name to match firstName + lastName
+      await db
+        .update(user)
+        .set({ name: computedName, updatedAt: new Date() })
         .where(eq(user.id, userId));
     }
   }

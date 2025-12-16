@@ -37,7 +37,7 @@ export const userProfile = pgTable('user_profile', {
   // Contact Information
   phone: text('phone'),
   
-  // Personal Information
+  // Personal Information (syncs to user.name)
   firstName: text('first_name'),
   lastName: text('last_name'),
   avatar: text('avatar'),

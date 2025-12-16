@@ -10,5 +10,3 @@ export * from './schema';
 
 // Queries  
 export * from './queries';
-
-

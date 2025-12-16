@@ -22,7 +22,7 @@ import { MobileMenu } from "./mobile-menu";
 import { ProfileMenu } from "./user-dropdown";
 import { AuthManager, AuthModalType } from "@/components/auth";
 import { useUser } from "@/hooks/auth/use-auth";
-import { signOut } from "@/lib/auth/client";
+import { handleSignOut } from "@/lib/auth/sign-out";
 
 interface NavItem {
   label: string;
@@ -175,16 +175,10 @@ export function Navbar() {
   }, [showMobileMenu]);
 
   // Auth handlers
-  const handleSignOut = useCallback(async () => {
-    try {
-      await signOut();
-      setShowProfileMenu(false);
-      // Optionally redirect to home page
-      router.push("/");
-    } catch (error) {
-      console.error("Sign out failed:", error);
-    }
-  }, [router]);
+  const onSignOut = useCallback(async () => {
+    setShowProfileMenu(false);
+    await handleSignOut();
+  }, []);
 
   // Auth handlers
   const handleAuthClose = useCallback(() => {
@@ -341,7 +335,7 @@ export function Navbar() {
                     setShowProfileMenu(false);
                     setCurrentAuthModal("signup");
                   }}
-                  onSignOut={handleSignOut}
+                  onSignOut={onSignOut}
                   onProfile={() => {
                     setShowProfileMenu(false);
                     router.push("/profile");
@@ -401,7 +395,7 @@ export function Navbar() {
             }}
             onSignOut={() => {
               setShowMobileMenu(false);
-              handleSignOut();
+              onSignOut();
             }}
           />
       )}

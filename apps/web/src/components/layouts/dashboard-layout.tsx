@@ -179,11 +179,9 @@ export function StandardDashboardLayout({
 }: DashboardLayoutProps) {
   const router = useRouter();
 
-  const handleSignOut = async () => {
-    // Import authClient dynamically to avoid client/server issues
-    const { authClient } = await import("@/lib/auth/client");
-    await authClient.signOut();
-    router.push('/');
+  const onSignOut = async () => {
+    const { handleSignOut } = await import("@/lib/auth/sign-out");
+    await handleSignOut();
   };
 
   const navItems: NavItem[] = [
@@ -197,7 +195,7 @@ export function StandardDashboardLayout({
         navItems={navItems} 
         activeTab={activeTab} 
         user={user}
-        onSignOut={handleSignOut}
+        onSignOut={onSignOut}
       />
       
       {/* Main Content */}
@@ -219,10 +217,9 @@ export function PartnerDashboardLayout({
 }: DashboardLayoutProps & { rightPanel?: ReactNode }) {
   const router = useRouter();
 
-  const handleSignOut = async () => {
-    const { authClient } = await import("@/lib/auth/client");
-    await authClient.signOut();
-    router.push('/');
+  const onSignOut = async () => {
+    const { handleSignOut } = await import("@/lib/auth/sign-out");
+    await handleSignOut();
   };
 
   const navItems: NavItem[] = [
@@ -237,7 +234,7 @@ export function PartnerDashboardLayout({
         navItems={navItems} 
         activeTab={activeTab} 
         user={user}
-        onSignOut={handleSignOut}
+        onSignOut={onSignOut}
       />
       
       {/* Main Content */}
@@ -263,10 +260,9 @@ export function PartnerDashboardLayout({
 export function StaffDashboardLayout({ children, user, activeTab, rightPanel }: DashboardLayoutProps & { rightPanel?: ReactNode }) {
   const router = useRouter();
 
-  const handleSignOut = async () => {
-    const { authClient } = await import("@/lib/auth/client");
-    await authClient.signOut();
-    router.push('/');
+  const onSignOut = async () => {
+    const { handleSignOut } = await import("@/lib/auth/sign-out");
+    await handleSignOut();
   };
 
   const navItems: NavItem[] = [
@@ -282,7 +278,7 @@ export function StaffDashboardLayout({ children, user, activeTab, rightPanel }: 
         navItems={navItems} 
         activeTab={activeTab} 
         user={user}
-        onSignOut={handleSignOut}
+        onSignOut={onSignOut}
       />
       
       {/* Main Content */}

@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useState, useRef } from 'react';
 
 // Minimal profile type matching UI needs
+// Note: firstName/lastName sync to user.name automatically
 export interface UserProfile {
   id: string;
   userId: string;

@@ -33,13 +33,15 @@ export const auth = betterAuth({
     async fetchUser(userId) {
       console.log('[Session] Fetching user:', userId);
       
-      // Fetch user with profile data for avatar
+      // Fetch user with profile data (includes firstName, lastName for name sync)
       const user = await db.query.user.findFirst({
         where: eq(schema.user.id, userId),
         with: {
           profile: {
             columns: {
               avatar: true,
+              firstName: true,
+              lastName: true,
             },
           },
         },
@@ -48,6 +50,21 @@ export const auth = betterAuth({
       if (!user) {
         console.log('[Session] User not found:', userId);
         return null;
+      }
+
+      // Sync user.name from profile if profile exists and has name fields
+      const profile = user.profile as { avatar: string | null; firstName: string | null; lastName: string | null } | null;
+      if (profile && (profile.firstName || profile.lastName)) {
+        const computedName = [profile.firstName, profile.lastName].filter(Boolean).join(' ');
+        // Update user.name if it differs (avoid unnecessary DB writes)
+        if (computedName && computedName !== user.name) {
+          await db
+            .update(schema.user)
+            .set({ name: computedName, updatedAt: new Date() })
+            .where(eq(schema.user.id, userId));
+          user.name = computedName; // Update in-memory for this session
+          console.log(`[Session] Synced user.name to: "${computedName}"`);
+        }
       }
 
       console.log('[Session] User found:', {
@@ -105,7 +122,6 @@ export const auth = betterAuth({
       });
 
       // Generate avatar URL if avatar exists
-      const profile = user.profile as { avatar: string | null } | null;
       const avatarUrl = profile?.avatar 
         ? `/api/storage/file/${profile.avatar}`
         : null;
