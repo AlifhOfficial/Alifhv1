@@ -1,11 +1,43 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { AUTH_CONFIG } from "@/lib/auth/config";
 import { db } from "@alifh/database";
 import * as schema from "@alifh/database";
 import { eq, and } from "drizzle-orm";
 
-const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX_REQUESTS = 60;
+// TODO: Replace in-memory rate limiting with edge-based solution
+//
+// ISSUES WITH CURRENT IN-MEMORY RATE LIMITING:
+// - Does not work across multiple server instances
+// - Memory not shared between edge functions
+// - Can be bypassed by distributing requests across instances
+// - Manual bucket management and cleanup required
+//
+// RECOMMENDED SOLUTIONS:
+// 1. Vercel Edge Config + Rate Limiting
+//    - Built-in rate limiting at edge level
+//    - Works before request hits your API
+//    - No code changes needed, just config
+//
+// 2. Upstash Rate Limiting (@upstash/ratelimit)
+//    - Serverless Redis-based rate limiting
+//    - import { Ratelimit } from '@upstash/ratelimit'
+//    - const ratelimit = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(60, '1m') })
+//    - const { success } = await ratelimit.limit(identifier)
+//
+// 3. Vercel Firewall / WAF
+//    - Platform-level DDoS protection
+//    - Rate limiting at CDN edge
+//    - No application code needed
+//
+// 4. Cloudflare Rate Limiting
+//    - If using Cloudflare as CDN
+//    - Configure rate limits in dashboard
+//    - Applied before reaching origin server
+
+// Use centralized config values
+const RATE_LIMIT_WINDOW_MS = AUTH_CONFIG.RATE_LIMIT.WINDOW_MS;
+const RATE_LIMIT_MAX_REQUESTS = AUTH_CONFIG.RATE_LIMIT.MAX_REQUESTS;
 
 type RateLimitBucket = {
   count: number;
@@ -52,32 +84,6 @@ function checkRateLimit(identifier: string) {
   return true;
 }
 
-function sanitizePermissions(permissions: unknown) {
-  const fallback = {
-    manageListings: false,
-    manageTeam: false,
-    viewAnalytics: false,
-    manageBookings: false,
-    respondToLeads: false,
-    manageFinancials: false,
-    manageSettings: false,
-    exportData: false,
-  };
-
-  type PermissionKeys = keyof typeof fallback;
-  const keys = Object.keys(fallback) as PermissionKeys[];
-
-  if (!permissions || typeof permissions !== "object") {
-    return { ...fallback };
-  }
-
-  const record = permissions as Record<string, unknown>;
-  return keys.reduce((acc, key) => {
-    acc[key] = Boolean(record[key]);
-    return acc;
-  }, { ...fallback });
-}
-
 function logStructured(event: string, payload: Record<string, unknown>) {
   const message = JSON.stringify({ event, ...payload });
   if (isDev) {
@@ -121,9 +127,29 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Better Auth's api.getSession() does NOT call fetchUser automatically
+    // We need to manually load the extended user data (partner memberships)
     const userId = session.user.id;
+    
+    // Load user with role from database
+    const userRecord = await db.query.user.findFirst({
+      where: eq(schema.user.id, userId),
+      columns: {
+        id: true,
+        role: true,
+        banned: true,
+      },
+    });
 
-    // Manually load partner memberships (since Better Auth doesn't persist custom fields)
+    if (!userRecord) {
+      logStructured("auth.session.user_not_found", { clientIdentifier, userId });
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 401 }
+      );
+    }
+
+    // Load active partner memberships with partner details
     const memberships = await db.query.partnerStaff.findMany({
       where: and(
         eq(schema.partnerStaff.userId, userId),
@@ -147,7 +173,7 @@ export async function GET(request: NextRequest) {
     );
 
     const hasPartnerAccess = activePartnerships.length > 0;
-    const isAlifhAdmin = ['admin', 'super_admin'].includes(session.user.role as string);
+    const isAlifhAdmin = ['admin', 'super_admin'].includes(userRecord.role || 'user');
     
     // Map to PartnerMembership type
     const partnerMemberships = activePartnerships.map(m => ({
@@ -156,12 +182,13 @@ export async function GET(request: NextRequest) {
       partnerName: m.partner.brandName,
       partnerTier: m.partner.tier,
       staffRole: m.role,
-      permissions: sanitizePermissions(m.permissions),
+      permissions: m.permissions,
     }));
 
-    // Extend user with computed fields
     const extendedUser = {
       ...session.user,
+      role: userRecord.role,
+      banned: userRecord.banned,
       hasPartnerAccess,
       isAlifhAdmin,
       partnerMemberships,
@@ -171,15 +198,36 @@ export async function GET(request: NextRequest) {
       clientIdentifier,
       userId: extendedUser.id,
       role: extendedUser.role,
-      hasPartnerAccess: extendedUser.hasPartnerAccess ?? false,
-      isAlifhAdmin: extendedUser.isAlifhAdmin ?? false,
+      hasPartnerAccess: extendedUser.hasPartnerAccess,
+      isAlifhAdmin: extendedUser.isAlifhAdmin,
       partnershipCount: extendedUser.partnerMemberships?.length ?? 0,
       durationMs: Date.now() - startTime,
     });
 
-    // Return the extended session data
+    // Return the FULL extended session data - manually loaded partner memberships
+    // The middleware depends on these fields for routing decisions
+    const sessionUser = session.user as any;
+    
     return NextResponse.json({
-      user: extendedUser,
+      user: {
+        id: extendedUser.id,
+        email: extendedUser.email,
+        name: extendedUser.name,
+        avatar: sessionUser.avatar,
+        avatarUrl: sessionUser.avatarUrl,
+        emailVerified: extendedUser.emailVerified,
+        createdAt: extendedUser.createdAt,
+        updatedAt: extendedUser.updatedAt,
+        // Explicitly pass the role from database
+        role: extendedUser.role || 'user',
+        banned: sessionUser.banned ?? false,
+        banReason: sessionUser.banReason,
+        banExpires: sessionUser.banExpires,
+        // Extended fields - manually loaded from partner_staff table
+        hasPartnerAccess: extendedUser.hasPartnerAccess,
+        isAlifhAdmin: extendedUser.isAlifhAdmin,
+        partnerMemberships: extendedUser.partnerMemberships,
+      },
       session: session.session,
     });
   } catch (error) {

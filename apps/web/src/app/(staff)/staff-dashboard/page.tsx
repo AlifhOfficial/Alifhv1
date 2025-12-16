@@ -5,8 +5,9 @@ import * as schema from "@alifh/database";
 import { eq, and } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export default async function StaffDashboard() {
-  // Get authenticated user
   const user = await requireAuth();
 
   // Fetch partner membership with full partner details (is dealer staff)

@@ -1,11 +1,12 @@
 import { DashboardDisplayArea } from "@/components/dashboard-components/display-area";
-import { requireRole } from "@/lib/auth/roles";
 import { db } from "@alifh/database";
 import * as schema from "@alifh/database";
 import { eq, count } from "drizzle-orm";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminDashboardPage() {
-  const user = await requireRole("admin");
+  // Auth handled by layout
 
   // Fetch real statistics
   const [

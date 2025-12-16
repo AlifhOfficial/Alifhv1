@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { db } from "@alifh/database";
-import * as schema from "@alifh/database";
-import { eq } from "drizzle-orm";
+import { validateUserExists } from "../validation-utils";
 
+/**
+ * Password Reset with User Validation
+ * 
+ * Validates user exists before sending password reset email
+ * Uses shared validation logic from validation-utils.ts
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -16,20 +20,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user exists before allowing password reset
-    const existingUsers = await db
-      .select()
-      .from(schema.user)
-      .where(eq(schema.user.email, email))
-      .limit(1)
-      .execute();
+    // Validate user exists using shared utility
+    const validation = await validateUserExists(email);
     
-    if (!existingUsers || existingUsers.length === 0) {
+    if (!validation.exists) {
       console.log("🚫 Password reset request for non-existent user:", email);
       return NextResponse.json(
-        { 
-          error: "No account found with this email address. Please check your email or sign up for a new account." 
-        },
+        { error: validation.error },
         { status: 400 }
       );
     }

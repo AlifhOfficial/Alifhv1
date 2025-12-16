@@ -2,6 +2,8 @@ import { DashboardLayoutProvider, DashboardMainContent } from "@/components/dash
 import { Sidebar } from "@/components/dashboard-components/sidebar";
 import { requireRole } from "@/lib/auth/roles";
 
+export const dynamic = "force-dynamic";
+
 const navItems = [
   { label: "Overview", href: "/admin-dashboard", icon: "layout-dashboard" },
   { label: "Partners", href: "/admin-dashboard/partners", icon: "building" },

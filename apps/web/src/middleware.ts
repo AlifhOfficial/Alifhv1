@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { AUTH_CONFIG } from "@/lib/auth/config";
 import {
   getUserPortalAccess,
   isDealerOwner,
   isDealerStaff,
-} from "@/lib/auth/shared/routing";
+} from "@/lib/auth/routing";
 import {
   getCachedSession,
   setCachedSession,
-} from "@/lib/auth/shared/session-cache";
+} from "@/lib/auth/session-cache";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -33,7 +34,7 @@ export async function middleware(request: NextRequest) {
       let user = getCachedSession(sessionToken);
 
       if (!user) {
-        const url = new URL('/api/auth/get-session', request.url);
+        const url = new URL(AUTH_CONFIG.ENDPOINTS.GET_SESSION, request.url);
         const sessionResponse = await fetch(url, {
           headers: {
             cookie: request.headers.get('cookie') || '',

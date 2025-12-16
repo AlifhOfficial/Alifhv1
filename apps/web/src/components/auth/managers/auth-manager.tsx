@@ -18,10 +18,12 @@ import { SignUpFeedbackModal } from "../feedback/sign-up-feedback-modal";
 import { WelcomeModal } from "../feedback/welcome-modal";
 import { GoogleRedirectModal } from "../feedback/google-redirect-modal";
 import { FeedbackModal } from "../feedback/feedback-modal";
+import { AuthErrorModal } from "../feedback/auth-error-modal";
 
 import { useAuthState, AuthModalType } from "../core/auth-state";
 import { AuthFlowController } from "../core/auth-flow-controller";
 import { AuthUser } from "../core/auth-handlers";
+import { AUTH_ERROR_MAP } from "@/lib/auth/errors";
 
 interface AuthManagerProps {
   initialModal?: AuthModalType;
@@ -170,6 +172,14 @@ export function AuthManager({
         isLoading={state.isLoading}
         error={state.feedbackData?.type === 'error' ? state.feedbackData.message : null}
         success={state.feedbackData?.type === 'success'}
+      />
+
+      {/* Auth Error Modal - Better Auth Errors */}
+      <AuthErrorModal
+        open={state.currentModal === "auth-error"}
+        onClose={() => flowController.handleCloseAll()}
+        errorInfo={state.authErrorInfo || AUTH_ERROR_MAP.unknown_error}
+        onAction={(action) => flowController.handleErrorAction(action)}
       />
     </>
   );

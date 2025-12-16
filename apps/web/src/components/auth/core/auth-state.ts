@@ -7,6 +7,7 @@
 
 import { useState } from "react";
 import { AuthUser, AuthResult, EmailData } from "./auth-handlers";
+import { AuthErrorInfo } from "@/lib/auth/errors";
 
 export type AuthModalType = 
   | "signin" 
@@ -20,6 +21,7 @@ export type AuthModalType =
   | "google-redirect"
   | "magic-link-feedback"
   | "password-reset-feedback"
+  | "auth-error" // New: Better Auth error modal
   | "feedback" // Generic feedback modal
   | null;
 
@@ -33,6 +35,8 @@ export interface AuthState {
   newUserName: string;
   isNewUser: boolean;
   signUpSource: 'email' | 'google' | null;
+  // Auth error modal data
+  authErrorInfo: AuthErrorInfo | null;
   // Generic feedback modal data
   feedbackData: {
     title?: string;
@@ -51,6 +55,7 @@ export interface AuthActions {
   setNewUserName: (name: string) => void;
   setIsNewUser: (isNew: boolean) => void;
   setSignUpSource: (source: 'email' | 'google' | null) => void;
+  setAuthErrorInfo: (info: AuthErrorInfo | null) => void;
   setFeedbackData: (data: { title?: string; message?: string; type?: 'success' | 'error' | 'info' } | null) => void;
   resetState: () => void;
 }
@@ -70,6 +75,7 @@ const initialState: AuthState = {
   newUserName: "",
   isNewUser: false,
   signUpSource: null,
+  authErrorInfo: null,
   feedbackData: null,
 };
 
@@ -115,6 +121,9 @@ export function useAuthState(
     setSignUpSource: (signUpSource: 'email' | 'google' | null) => {
       setInternalState(prev => ({ ...prev, signUpSource }));
     },
+    setAuthErrorInfo: (authErrorInfo: AuthErrorInfo | null) => {
+      setInternalState(prev => ({ ...prev, authErrorInfo }));
+    },
     setFeedbackData: (feedbackData: { title?: string; message?: string; type?: 'success' | 'error' | 'info' } | null) => {
       setInternalState(prev => ({ ...prev, feedbackData }));
     },
@@ -136,6 +145,7 @@ export function useAuthState(
     newUserName: internalState.newUserName,
     isNewUser: internalState.isNewUser,
     signUpSource: internalState.signUpSource,
+    authErrorInfo: internalState.authErrorInfo,
     feedbackData: internalState.feedbackData,
   };
 

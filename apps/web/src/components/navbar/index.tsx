@@ -204,6 +204,8 @@ export function Navbar() {
   // Detect verification redirect (?verified=true) and trigger welcome flow
   useEffect(() => {
     if (!searchParams) return;
+    
+    // Handle email verification redirect
     if (searchParams.get("verified") === "true") {
       setTriggerEmailVerification(true);
 
@@ -214,11 +216,24 @@ export function Navbar() {
       return;
     }
 
+    // Handle Google OAuth redirect
     if (searchParams.get("google") === "new" && isAuthenticated) {
       setTriggerGoogleOnboarding(true);
 
       const params = new URLSearchParams(searchParams.toString());
       params.delete("google");
+      const queryString = params.toString();
+      router.replace(`${pathname}${queryString ? `?${queryString}` : ""}`, { scroll: false });
+      return;
+    }
+
+    // Handle auth modal triggers from error page (?auth=signin or ?auth=signup)
+    const authParam = searchParams.get("auth");
+    if (authParam === "signin" || authParam === "signup") {
+      setCurrentAuthModal(authParam);
+
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("auth");
       const queryString = params.toString();
       router.replace(`${pathname}${queryString ? `?${queryString}` : ""}`, { scroll: false });
     }

@@ -4,11 +4,12 @@ import { magicLink } from "better-auth/plugins/magic-link";
 import { admin } from "better-auth/plugins/admin";
 import { db } from "@alifh/database";
 import * as schema from "@alifh/database";
-import { UserRole } from "@/lib/auth/shared/types";
+import { UserRole } from "@/lib/auth/types";
 import { eq, and } from "drizzle-orm";
 
 import { emailService } from "@/lib/email";
-import { ac, roles } from "@/lib/auth/shared/permissions";
+import { ac, roles } from "@/lib/auth/permissions";
+import { AUTH_CONFIG } from "./config";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -26,116 +27,8 @@ export const auth = betterAuth({
   }),
 
   session: {
-    expiresIn: 60 * 60 * 24 * 7,
-    updateAge: 60 * 60 * 24,
-    
-    // Extend the user object in the session
-    async fetchUser(userId) {
-      console.log('[Session] Fetching user:', userId);
-      
-      // Fetch user with profile data (includes firstName, lastName for name sync)
-      const user = await db.query.user.findFirst({
-        where: eq(schema.user.id, userId),
-        with: {
-          profile: {
-            columns: {
-              avatar: true,
-              firstName: true,
-              lastName: true,
-            },
-          },
-        },
-      });
-
-      if (!user) {
-        console.log('[Session] User not found:', userId);
-        return null;
-      }
-
-      // Sync user.name from profile if profile exists and has name fields
-      const profile = user.profile as { avatar: string | null; firstName: string | null; lastName: string | null } | null;
-      if (profile && (profile.firstName || profile.lastName)) {
-        const computedName = [profile.firstName, profile.lastName].filter(Boolean).join(' ');
-        // Update user.name if it differs (avoid unnecessary DB writes)
-        if (computedName && computedName !== user.name) {
-          await db
-            .update(schema.user)
-            .set({ name: computedName, updatedAt: new Date() })
-            .where(eq(schema.user.id, userId));
-          user.name = computedName; // Update in-memory for this session
-          console.log(`[Session] Synced user.name to: "${computedName}"`);
-        }
-      }
-
-      console.log('[Session] User found:', {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-      });
-
-      // Load active partner memberships with partner details
-      const memberships = await db.query.partnerStaff.findMany({
-        where: and(
-          eq(schema.partnerStaff.userId, userId),
-          eq(schema.partnerStaff.status, "active")
-        ),
-        with: {
-          partner: {
-            columns: {
-              id: true,
-              brandName: true,
-              status: true,
-              tier: true,
-            },
-          },
-        },
-      });
-
-      // Filter only memberships to active partners
-      const activePartnerships = memberships.filter(
-        m => m.partner.status === 'active'
-      );
-
-      const hasPartnerAccess = activePartnerships.length > 0;
-      const isAlifhAdmin = ['admin', 'super_admin'].includes(user.role);
-      
-      // Map to PartnerMembership type
-      const partnerMemberships = activePartnerships.map(m => ({
-        staffId: m.id,
-        partnerId: m.partner.id,
-        partnerName: m.partner.brandName,
-        partnerTier: m.partner.tier,
-        staffRole: m.role,
-        permissions: m.permissions,
-      }));
-      
-      console.log('[Session] Partner membership check:', {
-        userId,
-        hasPartnerAccess,
-        isAlifhAdmin,
-        partnerCount: activePartnerships.length,
-        memberships: partnerMemberships.map(m => ({
-          partner: m.partnerName,
-          role: m.staffRole,
-        })),
-      });
-
-      // Generate avatar URL if avatar exists
-      const avatarUrl = profile?.avatar 
-        ? `/api/storage/file/${profile.avatar}`
-        : null;
-
-      // Return user with extended fields
-      return {
-        ...user,
-        avatar: profile?.avatar || null,
-        avatarUrl,
-        hasPartnerAccess,
-        isAlifhAdmin,
-        partnerMemberships,
-      } as any; // Cast to any to bypass Better Auth type restrictions
-    },
+    expiresIn: AUTH_CONFIG.SESSION.EXPIRES_IN,
+    updateAge: AUTH_CONFIG.SESSION.UPDATE_AGE,
   },
 
   emailAndPassword: {
@@ -150,8 +43,8 @@ export const auth = betterAuth({
     sendVerificationEmail: async ({ user, url, token }, request) => {
       await emailService.sendVerificationEmail({ user, url, token });
     },
-    sendOnSignUp: true,
-    autoSignInAfterVerification: true,
+    sendOnSignUp: AUTH_CONFIG.EMAIL_VERIFICATION.SEND_ON_SIGN_UP,
+    autoSignInAfterVerification: AUTH_CONFIG.EMAIL_VERIFICATION.AUTO_SIGN_IN_AFTER_VERIFICATION,
   },
 
   plugins: [
@@ -163,8 +56,8 @@ export const auth = betterAuth({
           token 
         });
       },
-      expiresIn: 60 * 10,
-      disableSignUp: true,
+      expiresIn: AUTH_CONFIG.MAGIC_LINK.EXPIRES_IN,
+      disableSignUp: AUTH_CONFIG.MAGIC_LINK.DISABLE_SIGN_UP,
     }),
     admin({
       defaultRole: "user",
@@ -181,6 +74,25 @@ export const auth = betterAuth({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     },
+  },
+
+  account: {
+    // Allow OAuth state validation to work across local network IPs
+    // Only enable in development - remove for production
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ["google"],
+    },
+    // TEMPORARY FIX: Skip state check for local development
+    // REMOVE THIS IN PRODUCTION - it's a security risk
+    skipStateCookieCheck: process.env.NODE_ENV !== "production",
+  },
+
+  // Redirect auth errors to our custom error page (not Better Auth's default)
+  pages: {
+    signIn: "/",
+    signUp: "/",
+    error: "/auth/error", // Custom error page that shows our modal
   },
 
   trustedOrigins: [

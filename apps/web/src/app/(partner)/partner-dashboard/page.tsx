@@ -1,8 +1,9 @@
-import { requireAuth } from "@/lib/auth/roles";
 import { DashboardDisplayArea } from "@/components/dashboard-components/display-area";
 
+export const dynamic = "force-dynamic";
+
 export default async function PartnerDashboard() {
-  const user = await requireAuth();
+  // Auth handled by layout
 
   return (
     <DashboardDisplayArea

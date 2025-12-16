@@ -7,6 +7,8 @@ import * as schema from "@alifh/database";
 import { eq, and } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 const navItems = [
   { label: "Overview", href: "/partner-dashboard", icon: "layout-dashboard" },
   { label: "Profile", href: "/partner-dashboard/profile", icon: "building" },

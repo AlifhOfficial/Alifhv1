@@ -11,6 +11,7 @@ export { SignUpFeedbackModal } from './feedback/sign-up-feedback-modal';
 export { WelcomeModal } from './feedback/welcome-modal';
 export { GoogleRedirectModal } from './feedback/google-redirect-modal';
 export { FeedbackModal } from './feedback/feedback-modal';
+export { AuthErrorModal } from './feedback/auth-error-modal';
 
 // Auth Manager (Primary)
 export { AuthManager } from './managers/auth-manager';

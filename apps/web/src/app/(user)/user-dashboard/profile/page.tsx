@@ -6,6 +6,8 @@
 import { ProfileView } from "@/components/profile";
 import { requireAuth } from "@/lib/auth/roles";
 
+export const dynamic = "force-dynamic";
+
 export default async function ProfilePage() {
   const user = await requireAuth();
 

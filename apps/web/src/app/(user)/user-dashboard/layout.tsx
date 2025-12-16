@@ -2,6 +2,8 @@ import { DashboardLayoutProvider, DashboardMainContent } from "@/components/dash
 import { Sidebar } from "@/components/dashboard-components/sidebar";
 import { requireAuth } from "@/lib/auth/roles";
 
+export const dynamic = "force-dynamic";
+
 const navItems = [
   { label: "Overview", href: "/user-dashboard", icon: "layout-dashboard" },
   { label: "Profile", href: "/user-dashboard/profile", icon: "user" },

@@ -1,41 +1,64 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { auth } from "./index";
-import type { ExtendedUser } from "@/lib/auth/shared/types";
-import type { UserRole } from "@/lib/auth/shared/types";
+import type { ExtendedUser } from "@/lib/auth/types";
+import type { UserRole } from "@/lib/auth/types";
+
+/**
+ * Get extended session data with partner memberships from API endpoint
+ * The middleware already handles access control, this just retrieves user data
+ */
+async function getExtendedSession(): Promise<ExtendedUser | null> {
+  try {
+    // Call our API endpoint that loads extended session data
+    const headersList = await headers();
+    const cookie = headersList.get('cookie') || '';
+    
+    const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/auth/get-session`, {
+      headers: { cookie },
+      cache: 'no-store',
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    return data.user as ExtendedUser;
+  } catch (error) {
+    console.error('[requireAuth] Error fetching session:', error);
+    return null;
+  }
+}
 
 /**
  * Simple auth helper - just requires any authenticated user
  * Use this for pages that need login but no special role
  * Returns user with extended session data (partnerMemberships, hasPartnerAccess, etc.)
+ * 
+ * NOTE: Middleware already handles access control. This is just for retrieving user data in Server Components.
  */
 export async function requireAuth(): Promise<ExtendedUser> {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const user = await getExtendedSession();
 
-  if (!session?.user) {
+  if (!user) {
     redirect("/sign-in");
   }
 
-  // Cast to ExtendedUser since fetchUser() in auth config adds these fields
-  return session.user as ExtendedUser;
+  return user;
 }
 
 /**
  * Requires specific platform role (admin or super_admin)
  * Use this for admin-only pages
+ * 
+ * NOTE: Middleware already handles access control. This is just for retrieving user data in Server Components.
  */
 export async function requireRole(role: "admin" | "super_admin"): Promise<ExtendedUser> {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const user = await getExtendedSession();
 
-  if (!session?.user) {
+  if (!user) {
     redirect("/sign-in");
   }
-
-  const user = session.user as ExtendedUser;
 
   if (user.role !== role && user.role !== "super_admin") {
     redirect("/access-denied?reason=insufficient-permissions");

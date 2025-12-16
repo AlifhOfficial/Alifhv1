@@ -1,12 +1,36 @@
 import type { ExtendedUser } from "./types";
+import { AUTH_CONFIG } from "./config";
 
 export interface CachedSession {
   user: ExtendedUser;
   expiresAt: number;
 }
 
-export const DEFAULT_SESSION_CACHE_TTL_MS = 30_000;
+// Use centralized config value (5 minutes for better performance)
+export const DEFAULT_SESSION_CACHE_TTL_MS = AUTH_CONFIG.SESSION_CACHE_TTL_MS;
 export const SESSION_CACHE_TTL_MS = DEFAULT_SESSION_CACHE_TTL_MS;
+
+// TODO: Replace in-memory cache with production-ready solution
+// 
+// ISSUES WITH CURRENT IN-MEMORY CACHE:
+// - Does not work across multiple server instances (horizontal scaling)
+// - Memory leaks possible with no automatic cleanup
+// - Lost on server restart
+// - Hot module replacement issues in development
+//
+// RECOMMENDED SOLUTIONS:
+// 1. Vercel KV (Redis) - Serverless-friendly
+//    - import { kv } from '@vercel/kv'
+//    - await kv.set(`session:${token}`, user, { ex: TTL_SECONDS })
+//    - await kv.get(`session:${token}`)
+//
+// 2. Upstash Redis - Alternative serverless Redis
+//    - Similar API to Vercel KV
+//    - Works on any platform
+//
+// 3. Better Auth's built-in session management
+//    - Consider removing custom cache entirely
+//    - Let Better Auth handle session persistence
 
 const globalForCache = globalThis as typeof globalThis & {
   __alifhSessionCache?: Map<string, CachedSession>;

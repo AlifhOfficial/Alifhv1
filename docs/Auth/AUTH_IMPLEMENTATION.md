@@ -2,6 +2,8 @@
 
 The current implementation is driven by Better Auth + Drizzle with a single extension point that enriches partner context. Use the diagram below to trace a request from browser to database.
 
+**📌 New Feature:** All Better Auth errors now show in your custom modal UI/UX instead of Better Auth's default error page. See [AUTH_ERROR_HANDLING.md](./AUTH_ERROR_HANDLING.md) for details.
+
 ```
 [User Action]
     |
@@ -32,6 +34,16 @@ The current implementation is driven by Better Auth + Drizzle with a single exte
     |-- useSession() in useUser (apps/web/src/hooks/auth/use-auth.ts)
     |-- useBetterAuth() for actions (apps/web/src/hooks/auth/use-better-auth.ts)
     |-- navbar/dashboard use getUserPortalAccess & context helpers
+
+[Auth Errors]
+    |-- OAuth/Redirect errors -> /auth/error?error=code
+    |-- Form errors -> AuthErrorModal in auth-flow-controller
+    |-- All errors -> Your branded modal UI
+    v
+[AuthErrorModal]
+    |-- Maps error code to user-friendly content
+    |-- Shows actionable next steps
+    |-- Maintains Alifh design system
 ```
 
 ## Key Pieces
@@ -40,6 +52,7 @@ The current implementation is driven by Better Auth + Drizzle with a single exte
   - Email/password and magic link flows
   - Google OAuth via `authClient.signIn.social`
   - Default `user` role with platform overrides (`admin`, `super_admin`)
+  - **Custom error URL** (`/auth/error`) for branded error handling
 - **Session enrichment** happens only inside `get-session`:
   - Drizzle query grabs `partner_staff` rows with status `active`
   - Permissions JSON is normalised before returning
@@ -48,6 +61,11 @@ The current implementation is driven by Better Auth + Drizzle with a single exte
   - 30s in-memory cache for extended sessions keyed by cookie token
   - Uses `getUserPortalAccess`, `isDealerOwner`, `isDealerStaff` to route users
   - Redirects to `/access-denied` with reasons when checks fail
+- **Error Handling** (`/lib/auth/errors.ts`, `/components/auth/feedback/auth-error-modal.tsx`):
+  - Centralized error code mapping (40+ error scenarios)
+  - Branded modal UI for all auth errors
+  - Actionable next steps for users
+  - See [AUTH_ERROR_HANDLING.md](./AUTH_ERROR_HANDLING.md) for complete guide
 - **Routing helpers** (`packages/shared/src/auth/routing.ts`):
   - `getDefaultRedirect`, `getUserPortalAccess`, `getUserPartnerContext`
   - Central source of truth for navbar, dashboards, and guards

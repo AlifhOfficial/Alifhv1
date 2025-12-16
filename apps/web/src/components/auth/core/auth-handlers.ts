@@ -3,9 +3,18 @@
  * 
  * Centralized authentication handlers without UI concerns
  * Uses authClient directly and provides callbacks to UI components
+ * Refactored to use shared error handling utilities (DRY)
  */
 
 import { authClient } from "@/lib/auth/client";
+import { 
+  handleAuthResult, 
+  safeAuthOperation, 
+  validateEmail,
+  normalizeEmail,
+  normalizeName 
+} from "@/lib/auth/utils";
+import { AUTH_CONFIG } from "@/lib/auth/config";
 
 export interface AuthUser {
   id: string;
@@ -30,65 +39,50 @@ export const signInWithEmail = async (
   email: string, 
   password: string
 ): Promise<AuthResult> => {
-  try {
-    const normalizedEmail = email.trim().toLowerCase();
-    if (!normalizedEmail) {
-      return {
-        success: false,
-        error: "Please enter a valid email address.",
-      };
+  return safeAuthOperation(async () => {
+    const validation = validateEmail(email);
+    if (!validation.valid) {
+      return { success: false, error: validation.error };
     }
 
     const result = await authClient.signIn.email({
-      email: normalizedEmail,
+      email: normalizeEmail(email),
       password,
     });
 
-    if (result.error) {
-      if (result.error.status === 403) {
-        return { 
-          success: false, 
-          error: "Please verify your email before signing in. Check your inbox." 
-        };
-      }
+    // Special handling for unverified email
+    if (result.error?.status === 403) {
       return { 
         success: false, 
-        error: result.error.message || "Sign in failed" 
+        error: "Please verify your email before signing in. Check your inbox." 
       };
     }
 
-    const user = result.data && 'user' in result.data ? result.data.user : undefined;
-    return { success: true, user };
-  } catch (error: any) {
-    return { 
-      success: false, 
-      error: error?.message || "An unexpected error occurred" 
-    };
-  }
+    const authResult = handleAuthResult(result, "Sign in failed");
+    if (authResult.success && result.data) {
+      const user = 'user' in result.data ? result.data.user : undefined;
+      return { success: true, user };
+    }
+
+    return authResult;
+  }, "Sign in failed");
 };
 
 export const signInWithGoogle = async (callbackURL: string = "/"): Promise<AuthResult> => {
-  try {
+  return safeAuthOperation(async () => {
     const result = await authClient.signIn.social({
       provider: "google",
       callbackURL,
     });
 
-    if (result.error) {
-      return { 
-        success: false, 
-        error: result.error.message || "Google sign in failed" 
-      };
+    const authResult = handleAuthResult(result, "Google sign in failed");
+    if (authResult.success && result.data) {
+      const user = 'user' in result.data ? result.data.user : undefined;
+      return { success: true, user };
     }
 
-    const user = result.data && 'user' in result.data ? result.data.user : undefined;
-    return { success: true, user };
-  } catch (error: any) {
-    return { 
-      success: false, 
-      error: error?.message || "An unexpected error occurred" 
-    };
-  }
+    return authResult;
+  }, "Google sign in failed");
 };
 
 // Sign Up Handlers
@@ -97,73 +91,53 @@ export const signUpWithEmail = async (
   email: string, 
   password: string
 ): Promise<AuthResult> => {
-  try {
-    const normalizedName = name.trim();
-    const normalizedEmail = email.trim().toLowerCase();
-
+  return safeAuthOperation(async () => {
+    const normalizedName = normalizeName(name);
+    
     if (!normalizedName) {
-      return {
-        success: false,
-        error: "Please enter your name.",
-      };
+      return { success: false, error: "Please enter your name." };
     }
 
-    if (!normalizedEmail) {
-      return {
-        success: false,
-        error: "Please enter a valid email address.",
-      };
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.valid) {
+      return { success: false, error: emailValidation.error };
     }
 
     const result = await authClient.signUp.email({
       name: normalizedName,
-      email: normalizedEmail,
+      email: normalizeEmail(email),
       password,
     });
 
-    if (result.error) {
-      return { 
-        success: false, 
-        error: result.error.message || "Sign up failed" 
+    const authResult = handleAuthResult(result, "Sign up failed");
+    if (authResult.success) {
+      const user = result.data && 'user' in result.data ? result.data.user : { 
+        id: 'temp-user-id',
+        name: normalizedName, 
+        email: normalizeEmail(email)
       };
+      return { success: true, user };
     }
 
-    const user = result.data && 'user' in result.data ? result.data.user : { 
-      id: 'temp-user-id', // Will be populated when real user session is established
-      name: normalizedName, 
-      email: normalizedEmail 
-    };
-    return { success: true, user };
-  } catch (error: any) {
-    return { 
-      success: false, 
-      error: error?.message || "An unexpected error occurred" 
-    };
-  }
+    return authResult;
+  }, "Sign up failed");
 };
 
 export const signUpWithGoogle = async (callbackURL: string = "/"): Promise<AuthResult> => {
-  try {
+  return safeAuthOperation(async () => {
     const result = await authClient.signIn.social({
       provider: "google",
       callbackURL,
     });
 
-    if (result.error) {
-      return { 
-        success: false, 
-        error: result.error.message || "Google sign up failed" 
-      };
+    const authResult = handleAuthResult(result, "Google sign up failed");
+    if (authResult.success && result.data) {
+      const user = 'user' in result.data ? result.data.user : undefined;
+      return { success: true, user };
     }
 
-    const user = result.data && 'user' in result.data ? result.data.user : undefined;
-    return { success: true, user };
-  } catch (error: any) {
-    return { 
-      success: false, 
-      error: error?.message || "An unexpected error occurred" 
-    };
-  }
+    return authResult;
+  }, "Google sign up failed");
 };
 
 // Password Reset Handler - Uses custom validation endpoint
@@ -171,22 +145,20 @@ export const requestPasswordReset = async (
   email: string,
   redirectTo: string = "/reset-password"
 ): Promise<{ success: boolean; error?: string }> => {
-  try {
-    const normalizedEmail = email.trim().toLowerCase();
-    if (!normalizedEmail) {
-      return {
-        success: false,
-        error: "Please enter a valid email address.",
-      };
+  return safeAuthOperation(async () => {
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.valid) {
+      return { success: false, error: emailValidation.error };
     }
 
-    // Use our custom validation endpoint instead of direct Better Auth call
-    const response = await fetch("/api/auth/password-reset-validated", {
+    // Use our custom validation endpoint
+    const response = await fetch(AUTH_CONFIG.ENDPOINTS.PASSWORD_RESET, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email: normalizedEmail, redirectTo }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        email: normalizeEmail(email), 
+        redirectTo 
+      }),
     });
 
     const result = await response.json();
@@ -199,12 +171,7 @@ export const requestPasswordReset = async (
     }
 
     return { success: true };
-  } catch (error: any) {
-    return { 
-      success: false, 
-      error: error?.message || "An unexpected error occurred" 
-    };
-  }
+  }, "Failed to send reset email");
 };
 
 // Magic Link Handler
@@ -212,38 +179,30 @@ export const sendMagicLink = async (
   email: string,
   callbackURL: string = "/dashboard"
 ): Promise<{ success: boolean; error?: string }> => {
-  try {
-    const normalizedEmail = email.trim().toLowerCase();
-    if (!normalizedEmail) {
-      return {
-        success: false,
-        error: "Please enter a valid email address.",
-      };
+  return safeAuthOperation(async () => {
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.valid) {
+      return { success: false, error: emailValidation.error };
     }
 
-    const response = await fetch("/api/auth/magic-link-validated", {
+    const response = await fetch(AUTH_CONFIG.ENDPOINTS.MAGIC_LINK, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email: normalizedEmail, callbackURL }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        email: normalizeEmail(email), 
+        callbackURL 
+      }),
     });
 
     const result = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      const message = result?.error || "Failed to send magic link";
       return {
         success: false,
-        error: message,
+        error: result?.error || "Failed to send magic link"
       };
     }
 
     return { success: true };
-  } catch (error: any) {
-    return { 
-      success: false, 
-      error: error?.message || "An unexpected error occurred" 
-    };
-  }
+  }, "Failed to send magic link");
 };
