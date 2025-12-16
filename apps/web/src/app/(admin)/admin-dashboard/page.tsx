@@ -47,24 +47,6 @@ export default async function AdminDashboardPage() {
             <p className="text-muted-foreground">System overview and management tools</p>
           </div>
         </div>
-
-            <a
-              href="/admin-dashboard/reviews"
-              className="bg-card border border-border rounded-lg p-6 hover:bg-muted/50 transition-colors"
-            >
-              <div className="text-sm font-medium text-foreground mb-2">Review Moderation</div>
-              <div className="text-xs text-muted-foreground">Moderate partner reviews</div>
-            </a>
-
-            <a
-              href="/admin-dashboard/audit-logs"
-              className="bg-card border border-border rounded-lg p-6 hover:bg-muted/50 transition-colors"
-            >
-              <div className="text-sm font-medium text-foreground mb-2">Audit Logs</div>
-              <div className="text-xs text-muted-foreground">View system activity</div>
-            </a>
-          </div>
-        </div>
       </div>
     </DashboardDisplayArea>
   );
