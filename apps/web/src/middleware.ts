@@ -43,10 +43,6 @@ export async function middleware(request: NextRequest) {
           headers: {
             cookie: request.headers.get('cookie') || '',
           },
-          // Use force-cache for middleware to reduce duplicate fetches
-          // The get-session endpoint handles cache-control headers
-          cache: 'force-cache',
-          next: { revalidate: 60 }, // Cache for 60s in middleware
         });
 
         if (!sessionResponse.ok) {

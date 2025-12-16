@@ -6,8 +6,9 @@ export interface CachedSession {
   expiresAt: number;
 }
 
-// Use centralized config value (5 minutes for better performance)
-export const DEFAULT_SESSION_CACHE_TTL_MS = AUTH_CONFIG.SESSION_CACHE_TTL_MS;
+// Use centralized config value (2 minutes for better performance)
+// Reduced from 5min to balance freshness vs performance
+export const DEFAULT_SESSION_CACHE_TTL_MS = 120_000; // 2 minutes
 export const SESSION_CACHE_TTL_MS = DEFAULT_SESSION_CACHE_TTL_MS;
 
 // TODO: Replace in-memory cache with production-ready solution

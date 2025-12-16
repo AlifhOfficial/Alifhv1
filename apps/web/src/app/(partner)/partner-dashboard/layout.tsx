@@ -2,10 +2,6 @@ import { DashboardLayoutProvider, DashboardMainContent } from "@/components/dash
 import { Sidebar } from "@/components/dashboard-components/sidebar";
 import { ThreeColumnLayout } from "@/components/dashboard-components/three-column-layout";
 import { requireAuth } from "@/lib/auth/roles";
-import { db } from "@alifh/database";
-import * as schema from "@alifh/database";
-import { eq, and } from "drizzle-orm";
-import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -20,22 +16,9 @@ const navItems = [
 
 export default async function PartnerDashboardLayout({ children }: { children: React.ReactNode }) {
   const user = await requireAuth();
-
-  // Check partner membership
-  const membership = await db
-    .select()
-    .from(schema.partnerStaff)
-    .where(
-      and(
-        eq(schema.partnerStaff.userId, user.id),
-        eq(schema.partnerStaff.status, "active")
-      )
-    )
-    .limit(1);
-
-  if (membership.length === 0 && user.role !== 'admin' && user.role !== 'super_admin') {
-    redirect('/access-denied?reason=not-partner-member');
-  }
+  
+  // Auth check already done in middleware - no need to re-query DB
+  // Middleware validates partner access via hasPartnerAccess field
 
   return (
     <DashboardLayoutProvider>

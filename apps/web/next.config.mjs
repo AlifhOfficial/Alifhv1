@@ -28,6 +28,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'alifh-uploads.7117386bede3499b286ceb28090ed343.r2.cloudflarestorage.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'pub-98e5497543c348a49ca803322a46382e.r2.dev',
+      },
     ],
   },
 }
