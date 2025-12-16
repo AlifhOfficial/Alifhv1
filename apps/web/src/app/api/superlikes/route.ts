@@ -18,8 +18,13 @@ async function requireUser(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const user = await requireUser(req);
+    
+    // Return empty data for unauthenticated users (listings page can be viewed without login)
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ 
+        statuses: {}, 
+        quota: { remaining: 0, limit: 0, resetsAt: null } 
+      });
     }
 
     const { searchParams } = new URL(req.url);
@@ -44,7 +49,10 @@ export async function POST(req: NextRequest) {
   try {
     const user = await requireUser(req);
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ 
+        error: 'Please sign in to add superlikes',
+        requiresAuth: true 
+      }, { status: 401 });
     }
 
     const payload = await req.json().catch(() => null);

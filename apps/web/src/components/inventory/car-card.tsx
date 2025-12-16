@@ -9,10 +9,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Share2, Heart, CheckCircle2, Sparkles } from 'lucide-react';
 import { useFavorites } from '@/hooks/favorites';
+import { useUser } from '@/hooks/auth/use-auth';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SuperlikeConfirmationDialog } from './superlike-confirmation-dialog';
 import { SuperlikeLimitDialog } from './superlike-limit-dialog';
+import { AuthRequiredDialog } from '@/components/auth/auth-required-dialog';
 
 interface CarCardProps {
   id: string;
@@ -72,6 +74,7 @@ export function CarCard({
 
   const displayImage = thumbnail || images?.[0] || '/assets/cars/car1.avif';
   const displaySpecs = specs || 'GCC';
+  const { user, isSignedIn } = useUser();
   const {
     isFavorite,
     isSuperliked,
@@ -79,6 +82,10 @@ export function CarCard({
     toggleFavorite,
     toggleSuperlike,
     quota,
+    authRequired,
+    authMessage,
+    authFeature,
+    closeAuthDialog,
   } = useFavorites(id);
 
   const [showSuperlikeConfirm, setShowSuperlikeConfirm] = useState(false);
@@ -86,7 +93,23 @@ export function CarCard({
   const [showSparkles, setShowSparkles] = useState(false);
   const [heartScale, setHeartScale] = useState(false);
 
+  // Close superlike dialogs when auth dialog appears
+  useEffect(() => {
+    if (authRequired) {
+      setShowSuperlikeConfirm(false);
+      setShowSuperlikeLimit(false);
+    }
+  }, [authRequired]);
+
   const handleSuperlikeClick = () => {
+    // Check if user is authenticated first
+    if (!isSignedIn) {
+      // Directly trigger the auth flow by calling toggleSuperlike
+      // which will set authRequired state
+      toggleSuperlike();
+      return;
+    }
+
     // If already superliked, remove it without confirmation
     if (isSuperliked) {
       toggleSuperlike();
@@ -125,6 +148,13 @@ export function CarCard({
   };
 
   const handleFavoriteClick = () => {
+    // Check if user is authenticated first
+    if (!isSignedIn) {
+      // Directly trigger the auth flow
+      toggleFavorite();
+      return;
+    }
+
     // Trigger heart scale animation
     setHeartScale(true);
     toggleFavorite();
@@ -389,6 +419,14 @@ export function CarCard({
         isOpen={showSuperlikeLimit}
         onClose={() => setShowSuperlikeLimit(false)}
         resetDate={quota?.periodEndDate}
+      />
+
+      {/* Auth Required Dialog */}
+      <AuthRequiredDialog
+        isOpen={authRequired}
+        onClose={closeAuthDialog}
+        message={authMessage}
+        feature={authFeature}
       />
 
       {/* Falling Sparkles Effect */}

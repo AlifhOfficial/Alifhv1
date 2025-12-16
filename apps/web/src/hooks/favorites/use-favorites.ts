@@ -26,14 +26,21 @@ interface UseFavoritesResult {
   quota: SuperlikeQuota | null;
   toggleFavorite: () => Promise<void>;
   toggleSuperlike: () => Promise<void>;
+  authRequired: boolean;
+  authMessage: string;
+  authFeature: 'favorites' | 'superlikes';
+  closeAuthDialog: () => void;
 }
 
 export function useFavorites(listingId: string): UseFavoritesResult {
   const { statuses, updateStatus, quota, setQuota } = useFavoritesContext();
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [authRequired, setAuthRequired] = useState<{ show: boolean; message: string; feature: 'favorites' | 'superlikes' }>({ show: false, message: '', feature: 'favorites' });
 
   const status = statuses[listingId] || { isFavorite: false, isSuperliked: false };
+
+
 
   const toggleFavorite = useCallback(async () => {
     if (!listingId || isUpdating) return;
@@ -55,9 +62,10 @@ export function useFavorites(listingId: string): UseFavoritesResult {
       });
 
       if (res.status === 401) {
-        // User not authenticated - redirect to sign in
+        // User not authenticated - show auth modal
         updateStatus(listingId, previousStatus);
-        window.location.href = '/sign-in?redirect=' + encodeURIComponent(window.location.pathname);
+        const data = await res.json();
+        setAuthRequired({ show: true, message: data.error || 'Please sign in to add favorites', feature: 'favorites' });
         return;
       }
 
@@ -74,7 +82,7 @@ export function useFavorites(listingId: string): UseFavoritesResult {
     } finally {
       setIsUpdating(false);
     }
-  }, [listingId, statuses, updateStatus]);
+  }, [listingId, statuses, updateStatus, setQuota]);
 
   const toggleSuperlike = useCallback(async () => {
     if (!listingId || isUpdating) return;
@@ -96,9 +104,10 @@ export function useFavorites(listingId: string): UseFavoritesResult {
       });
 
       if (res.status === 401) {
-        // User not authenticated - redirect to sign in
+        // User not authenticated - show auth modal
         updateStatus(listingId, previousStatus);
-        window.location.href = '/sign-in?redirect=' + encodeURIComponent(window.location.pathname);
+        const data = await res.json();
+        setAuthRequired({ show: true, message: data.error || 'Please sign in to add superlikes', feature: 'superlikes' });
         return;
       }
 
@@ -134,5 +143,9 @@ export function useFavorites(listingId: string): UseFavoritesResult {
     quota,
     toggleFavorite,
     toggleSuperlike,
+    authRequired: authRequired.show,
+    authMessage: authRequired.message,
+    authFeature: authRequired.feature,
+    closeAuthDialog: () => setAuthRequired({ show: false, message: '', feature: 'favorites' }),
   };
 }
