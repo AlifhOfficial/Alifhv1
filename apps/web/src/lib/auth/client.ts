@@ -14,8 +14,13 @@ function getAuthClient() {
   }
   
   if (!_authClient) {
+    // Use window.location.origin to support both localhost and network IPs
+    const baseURL = typeof window !== 'undefined' 
+      ? window.location.origin 
+      : (process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000");
+    
     _authClient = createAuthClient({
-      baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+      baseURL,
       plugins: [
         magicLinkClient(),
         adminClient({
