@@ -9,8 +9,8 @@ import { getUserProfileByUserId, updateUserProfileByUserId, ensureUserProfile } 
 import { getSignedUrl } from "@/lib/storage";
 
 export const runtime = "nodejs";
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// Allow Next.js to cache this for 30s, revalidate in background
+export const revalidate = 30;
 
 async function requireSessionUser(req: NextRequest) {
   const session = await auth.api.getSession({ headers: req.headers });
@@ -48,9 +48,18 @@ export async function GET(req: NextRequest) {
       profile = await ensureUserProfile(user.id);
     }
 
-    const profileWithUrl = await attachAvatarUrl(profile);
+    const profileWithAvatar = await attachAvatarUrl(profile);
 
-    return NextResponse.json({ profile: profileWithUrl });
+    return NextResponse.json(
+      { profile: profileWithAvatar },
+      { 
+        status: 200,
+        headers: {
+          // Allow browser to cache for 30s, revalidate after
+          'Cache-Control': 'private, max-age=30, stale-while-revalidate=60',
+        },
+      }
+    );
   } catch (error) {
     console.error("[user-profile] GET failed", error);
     return NextResponse.json({ error: "Failed to load profile" }, { status: 500 });

@@ -140,28 +140,7 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp,
                 Sign Out
               </button>
             </>
-          ) : (
-            <>
-              <button
-                onClick={() => {
-                  onSignIn();
-                  onNavigate();
-                }}
-                className="block w-full px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20 text-center"
-              >
-                Sign In
-              </button>
-              <button
-                onClick={() => {
-                  onSignUp();
-                  onNavigate();
-                }}
-                className="block w-full px-3 py-2 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-lg text-center"
-              >
-                Sign Up
-              </button>
-            </>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

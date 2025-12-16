@@ -91,7 +91,7 @@ export function Sidebar({ user, items }: SidebarProps) {
     return resolvedTheme ?? "light";
   }, [mounted, resolvedTheme]);
 
-  const { profile } = useUserProfile({ fetchOnMount: true });
+  const { profile } = useUserProfile({ fetchOnMount: false });
 
   const displayName = useMemo(() => {
     if (profile?.firstName || profile?.lastName) {
@@ -140,12 +140,23 @@ export function Sidebar({ user, items }: SidebarProps) {
   };
 
   return (
-    <aside className={`h-screen bg-muted/20 border-r border-border/40 flex-col shrink-0 overflow-hidden transition-all duration-300 ease-in-out
-      md:flex
-      fixed md:relative z-50 md:z-auto left-0 top-0
-      ${isCollapsed ? 'w-16' : 'w-64'}
-      ${isOpen ? 'flex' : 'hidden md:flex'}
-    `}>
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
+          onClick={() => setIsOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+      
+      <aside className={`h-screen bg-card border-r border-border flex-col shrink-0 overflow-hidden transition-all duration-300 ease-in-out
+        md:flex
+        fixed md:relative z-50 md:z-auto left-0 top-0
+        ${isCollapsed ? 'w-16' : 'w-64'}
+        ${isOpen ? 'flex' : 'hidden md:flex'}
+        shadow-lg md:shadow-none
+      `}>
       {/* Mobile Close Button */}
       <button
         onClick={() => setIsOpen(false)}
@@ -156,12 +167,12 @@ export function Sidebar({ user, items }: SidebarProps) {
       </button>
       
       {/* User Profile Section */}
-      <div className="flex items-center gap-3 px-4 py-6 border-b border-border/40">
+      <div className="flex items-center gap-3 px-4 py-6 border-b border-border bg-background/50">
         <Avatar
           src={avatarSrc}
           initials={initials}
           size="sm"
-          className="border border-border/40 bg-background text-foreground shrink-0"
+          className="border border-border bg-background text-foreground shrink-0"
         />
         {!isCollapsed && (
           <div className="min-w-0 text-left">
@@ -182,7 +193,7 @@ export function Sidebar({ user, items }: SidebarProps) {
               href={item.href}
               onClick={handleLinkClick}
               data-active={isActive ? "true" : undefined}
-              className="group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium mb-1 transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-background/90 data-[active=true]:bg-background/90 data-[active=true]:text-foreground data-[active=true]:shadow-sm"
+              className="group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium mb-1 transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-muted/50 data-[active=true]:bg-muted data-[active=true]:text-foreground data-[active=true]:shadow-sm"
               title={isCollapsed ? item.label : undefined}
             >
               {Icon ? (
@@ -199,11 +210,11 @@ export function Sidebar({ user, items }: SidebarProps) {
       </nav>
 
       {/* Bottom Actions */}
-      <div className="border-t border-border/40 p-3 space-y-1">
-        {/* Collapse Toggle */}
+      <div className="border-t border-border bg-background/50 p-3 space-y-1">
+        {/* Collapse Toggle - Desktop Only */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:text-foreground hover:bg-background/90"
+          className="hidden md:flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:text-foreground hover:bg-muted/50"
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {isCollapsed ? (
@@ -218,7 +229,7 @@ export function Sidebar({ user, items }: SidebarProps) {
 
         <button
           onClick={toggleTheme}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:text-foreground hover:bg-background/90"
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:text-foreground hover:bg-muted/50"
           title={isCollapsed ? "Switch theme" : undefined}
         >
           {mounted ? (
@@ -240,7 +251,7 @@ export function Sidebar({ user, items }: SidebarProps) {
         
         <button
           onClick={() => router.push("/")}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:text-foreground hover:bg-background/90"
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:text-foreground hover:bg-muted/50"
           title={isCollapsed ? "Back to Alifh" : undefined}
         >
           <ArrowLeft className="h-4 w-4 shrink-0" />
@@ -257,5 +268,6 @@ export function Sidebar({ user, items }: SidebarProps) {
         </button>
       </div>
     </aside>
+    </>
   );
 }

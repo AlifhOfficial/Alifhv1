@@ -53,7 +53,7 @@ function DashboardSidebar({
   const router = useRouter();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const { profile } = useUserProfile({ fetchOnMount: true });
+  const { profile } = useUserProfile({ fetchOnMount: false });
 
   useEffect(() => {
     setMounted(true);

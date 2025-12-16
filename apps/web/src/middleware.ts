@@ -17,13 +17,15 @@ export async function middleware(request: NextRequest) {
   // Get session token from cookies - Better Auth stores session data in cookies
   const sessionToken = request.cookies.get('better-auth.session_token')?.value;
   
+  // Only redirect to sign-in if no session token AND it's a protected route
   if (!sessionToken) {
     const signInUrl = new URL('/sign-in', request.url);
     signInUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(signInUrl);
   }
 
-  // For role-specific routes, we need to check the session data
+  // For role-specific admin/partner routes, we need to verify access
+  // But for user-dashboard, just check token exists (handled above)
   const needsRoleCheck = 
     pathname.startsWith('/admin-dashboard') || 
     pathname.startsWith('/partner-dashboard') ||
@@ -31,15 +33,20 @@ export async function middleware(request: NextRequest) {
   
   if (needsRoleCheck) {
     try {
+      // Check cache first (5 min TTL)
       let user = getCachedSession(sessionToken);
 
+      // Only fetch if not cached - this drastically reduces DB load
       if (!user) {
         const url = new URL(AUTH_CONFIG.ENDPOINTS.GET_SESSION, request.url);
         const sessionResponse = await fetch(url, {
           headers: {
             cookie: request.headers.get('cookie') || '',
           },
-          cache: 'no-store',
+          // Use force-cache for middleware to reduce duplicate fetches
+          // The get-session endpoint handles cache-control headers
+          cache: 'force-cache',
+          next: { revalidate: 60 }, // Cache for 60s in middleware
         });
 
         if (!sessionResponse.ok) {
@@ -53,6 +60,7 @@ export async function middleware(request: NextRequest) {
           return NextResponse.redirect(new URL('/sign-in', request.url));
         }
 
+        // Cache for 5 minutes to avoid repeated DB queries
         setCachedSession(sessionToken, user);
       }
 

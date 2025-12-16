@@ -66,11 +66,13 @@ let store: {
   isLoading: boolean;
   isUpdating: boolean;
   error: string | null;
+  lastFetchTime: number | null;
 } = {
   profile: null,
   isLoading: false,
   isUpdating: false,
   error: null,
+  lastFetchTime: null,
 };
 
 let pendingRequest: Promise<UserProfile | null> | null = null;
@@ -86,15 +88,20 @@ const updateStore = (partial: Partial<typeof store>) => {
 };
 
 const resetStore = () => {
-  store = { profile: null, isLoading: false, isUpdating: false, error: null };
+  store = { profile: null, isLoading: false, isUpdating: false, error: null, lastFetchTime: null };
   pendingRequest = null;
   notify();
 };
 
 async function refreshProfileFromServer(): Promise<UserProfile | null> {
-  // Deduplicate requests
+  // Deduplicate requests - if already loading, return existing promise
   if (pendingRequest) {
     return pendingRequest;
+  }
+
+  // If we have fresh data (< 30s old), don't refetch
+  if (store.profile && store.lastFetchTime && (Date.now() - store.lastFetchTime < 30000)) {
+    return store.profile;
   }
 
   updateStore({ isLoading: true });
@@ -104,7 +111,8 @@ async function refreshProfileFromServer(): Promise<UserProfile | null> {
       const res = await fetch('/api/profile/user-profile', {
         method: 'GET',
         credentials: 'include',
-        cache: 'no-store',
+        // Allow browser to cache for 30s to reduce duplicate requests
+        cache: 'default',
       });
 
       if (!res.ok) {
@@ -118,7 +126,7 @@ async function refreshProfileFromServer(): Promise<UserProfile | null> {
       const data = await res.json();
       const profile = data.profile ?? null;
       
-      updateStore({ profile, error: null });
+      updateStore({ profile, error: null, lastFetchTime: Date.now() });
       return profile;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load profile';
@@ -194,7 +202,10 @@ export function useUserProfile(options: { fetchOnMount?: boolean; userId?: strin
 
   useEffect(() => {
     if (!fetchOnMount) return;
+    // Don't fetch if we already have data or are currently loading
     if (store.profile || store.isLoading) return;
+    // Don't fetch if we fetched recently (< 30s ago)
+    if (store.lastFetchTime && (Date.now() - store.lastFetchTime < 30000)) return;
     void refreshProfileFromServer();
   }, [fetchOnMount]);
 

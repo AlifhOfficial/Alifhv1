@@ -131,13 +131,29 @@ export async function GET(request: NextRequest) {
     // We need to manually load the extended user data (partner memberships)
     const userId = session.user.id;
     
-    // Load user with role from database
+    // OPTIMIZED: Load user with role AND partner memberships in a single query
     const userRecord = await db.query.user.findFirst({
       where: eq(schema.user.id, userId),
       columns: {
         id: true,
         role: true,
         banned: true,
+      },
+      // Join partner memberships in the same query to avoid N+1
+      with: {
+        partnerMemberships: {
+          where: eq(schema.partnerStaff.status, "active"),
+          with: {
+            partner: {
+              columns: {
+                id: true,
+                brandName: true,
+                status: true,
+                tier: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -149,26 +165,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Load active partner memberships with partner details
-    const memberships = await db.query.partnerStaff.findMany({
-      where: and(
-        eq(schema.partnerStaff.userId, userId),
-        eq(schema.partnerStaff.status, "active")
-      ),
-      with: {
-        partner: {
-          columns: {
-            id: true,
-            brandName: true,
-            status: true,
-            tier: true,
-          },
-        },
-      },
-    });
-
-    // Filter only memberships to active partners
-    const activePartnerships = memberships.filter(
+    // Filter only memberships to active partners (done in memory, already loaded)
+    const activePartnerships = (userRecord.partnerMemberships || []).filter(
       m => m.partner.status === 'active'
     );
 
@@ -208,28 +206,38 @@ export async function GET(request: NextRequest) {
     // The middleware depends on these fields for routing decisions
     const sessionUser = session.user as any;
     
-    return NextResponse.json({
-      user: {
-        id: extendedUser.id,
-        email: extendedUser.email,
-        name: extendedUser.name,
-        avatar: sessionUser.avatar,
-        avatarUrl: sessionUser.avatarUrl,
-        emailVerified: extendedUser.emailVerified,
-        createdAt: extendedUser.createdAt,
-        updatedAt: extendedUser.updatedAt,
-        // Explicitly pass the role from database
-        role: extendedUser.role || 'user',
-        banned: sessionUser.banned ?? false,
-        banReason: sessionUser.banReason,
-        banExpires: sessionUser.banExpires,
-        // Extended fields - manually loaded from partner_staff table
-        hasPartnerAccess: extendedUser.hasPartnerAccess,
-        isAlifhAdmin: extendedUser.isAlifhAdmin,
-        partnerMemberships: extendedUser.partnerMemberships,
+    return NextResponse.json(
+      {
+        user: {
+          id: extendedUser.id,
+          email: extendedUser.email,
+          name: extendedUser.name,
+          avatar: sessionUser.avatar,
+          avatarUrl: sessionUser.avatarUrl,
+          emailVerified: extendedUser.emailVerified,
+          createdAt: extendedUser.createdAt,
+          updatedAt: extendedUser.updatedAt,
+          // Explicitly pass the role from database
+          role: extendedUser.role || 'user',
+          banned: sessionUser.banned ?? false,
+          banReason: sessionUser.banReason,
+          banExpires: sessionUser.banExpires,
+          // Extended fields - manually loaded from partner_staff table
+          hasPartnerAccess: extendedUser.hasPartnerAccess,
+          isAlifhAdmin: extendedUser.isAlifhAdmin,
+          partnerMemberships: extendedUser.partnerMemberships,
+        },
+        session: session.session,
       },
-      session: session.session,
-    });
+      {
+        status: 200,
+        headers: {
+          // Cache for 60s to reduce duplicate session fetches
+          // Use private cache (browser only, not CDN)
+          'Cache-Control': 'private, max-age=60, stale-while-revalidate=120',
+        },
+      }
+    );
   } catch (error) {
     console.error("[get-session] Error:", error);
     return NextResponse.json(
