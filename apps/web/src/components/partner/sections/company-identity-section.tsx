@@ -35,7 +35,7 @@ export function CompanyIdentitySection({
     <div className="space-y-6">
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="space-y-2">
-          <label className="text-xs text-muted-foreground">
+          <label className="text-xs font-medium text-muted-foreground">
             Legal Company Name
           </label>
           <p className="h-10 px-3 flex items-center text-sm text-foreground">
@@ -44,7 +44,7 @@ export function CompanyIdentitySection({
         </div>
 
         <div className="space-y-2">
-          <label className="text-xs text-muted-foreground">
+          <label className="text-xs font-medium text-muted-foreground">
             Brand Name
           </label>
           {isEditing ? (
@@ -53,7 +53,7 @@ export function CompanyIdentitySection({
               value={brandName}
               onChange={(e) => onBrandNameChange(e.target.value)}
               placeholder="Luxury Motors"
-              className="w-full h-10 px-3 bg-background border border-border/40 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
+              className="w-full h-10 px-3 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           ) : (
             <p className="h-10 px-3 flex items-center text-sm text-foreground">
@@ -64,7 +64,7 @@ export function CompanyIdentitySection({
       </div>
 
       <div className="space-y-2">
-        <label className="text-xs text-muted-foreground">
+        <label className="text-xs font-medium text-muted-foreground">
           Website
         </label>
         {isEditing ? (
@@ -73,7 +73,7 @@ export function CompanyIdentitySection({
             value={website}
             onChange={(e) => onWebsiteChange(e.target.value)}
             placeholder="https://luxurymotors.ae"
-            className="w-full h-10 px-3 bg-background border border-border/40 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
+            className="w-full h-10 px-3 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
           />
         ) : (
           <p className="h-10 px-3 flex items-center text-sm text-foreground">
@@ -83,7 +83,7 @@ export function CompanyIdentitySection({
       </div>
 
       <div className="space-y-2">
-        <label className="text-xs text-muted-foreground">
+        <label className="text-xs font-medium text-muted-foreground">
           Description
         </label>
         {isEditing ? (
@@ -91,11 +91,11 @@ export function CompanyIdentitySection({
             value={description}
             onChange={(e) => onDescriptionChange(e.target.value)}
             placeholder="Tell us about your business..."
-            rows={4}
-            className="w-full px-3 py-2 bg-background border border-border/40 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors resize-none"
+            rows={3}
+            className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
           />
         ) : (
-          <p className="px-3 py-2 text-sm text-foreground">
+          <p className="px-3 py-2 text-sm text-foreground leading-relaxed">
             {description || '—'}
           </p>
         )}
@@ -103,7 +103,7 @@ export function CompanyIdentitySection({
 
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="space-y-2">
-          <label className="text-xs text-muted-foreground">
+          <label className="text-xs font-medium text-muted-foreground">
             Founded Year
           </label>
           <p className="h-10 px-3 flex items-center text-sm text-foreground">
@@ -112,7 +112,7 @@ export function CompanyIdentitySection({
         </div>
 
         <div className="space-y-2">
-          <label className="text-xs text-muted-foreground">
+          <label className="text-xs font-medium text-muted-foreground">
             Years of Experience
           </label>
           {isEditing ? (
@@ -123,7 +123,7 @@ export function CompanyIdentitySection({
               placeholder="10"
               min="0"
               max="100"
-              className="w-full h-10 px-3 bg-background border border-border/40 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
+              className="w-full h-10 px-3 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           ) : (
             <p className="h-10 px-3 flex items-center text-sm text-foreground">

@@ -31,7 +31,22 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
       setHasError(false);
     }, [src]);
 
-    const showImage = Boolean(src) && !hasError;
+    // Validate URL before attempting to use it
+    const isValidUrl = React.useMemo(() => {
+      if (!src || typeof src !== 'string' || src.trim() === '') return false;
+      try {
+        // Check if it's a valid URL or a valid path
+        if (src.startsWith('/') || src.startsWith('http://') || src.startsWith('https://')) {
+          new URL(src, src.startsWith('/') ? 'http://localhost' : undefined);
+          return true;
+        }
+        return false;
+      } catch {
+        return false;
+      }
+    }, [src]);
+
+    const showImage = isValidUrl && !hasError;
 
     return (
       <div

@@ -10,7 +10,7 @@ import { usePartnerMiniProfile, useUpdatePartnerMiniProfile } from '@/hooks/part
 import { useToast } from '@/hooks/use-toast';
 
 // UI Components
-import { PartnerProfileHeader } from './ui/partner-profile-header';
+import { PartnerProfileHeader, PartnerProfileStats } from './ui/partner-profile-header';
 import { LogoUpload } from './ui/logo-upload';
 import { SectionWrapper } from '@/components/profile/ui/section-wrapper';
 
@@ -198,9 +198,9 @@ export function PartnerProfileView({ partnerId }: PartnerProfileViewProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-6xl mx-auto px-8 py-12 space-y-12">
-        {/* Header with Logo */}
-        <div className="flex items-start gap-8">
+      <div className="max-w-7xl mx-auto px-8 py-12">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6 pb-6 border-b border-border">
           <PartnerProfileHeader
             brandName={profile.brandName}
             companyNameLegal={profile.companyNameLegal}
@@ -224,8 +224,19 @@ export function PartnerProfileView({ partnerId }: PartnerProfileViewProps) {
           />
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-border/60" />
+        {/* Stats Grid */}
+        <div className="mb-12 pb-6 border-b border-border">
+          <PartnerProfileStats
+            googleRating={profile.googleRating}
+            googleReviewCount={profile.googleReviewCount}
+            platformRating={profile.platformRating}
+            platformReviewCount={profile.platformReviewCount}
+            totalInventory={profile.totalInventory}
+            avgResponseTime={profile.avgResponseTime}
+            responseRate={profile.responseRate}
+            tier={profile.tier}
+          />
+        </div>
 
         {/* Company Identity */}
         <SectionWrapper
@@ -252,10 +263,8 @@ export function PartnerProfileView({ partnerId }: PartnerProfileViewProps) {
           />
         </SectionWrapper>
 
-        {/* Divider */}
-        <div className="border-t border-border/60" />
-
         {/* Hero Image */}
+        <div className="mt-8 pt-8 pb-8 border-t border-b border-border">
         <SectionWrapper
           title="Hero Image"
           description="Update your hero banner image"
@@ -271,11 +280,10 @@ export function PartnerProfileView({ partnerId }: PartnerProfileViewProps) {
             onHeroImageChange={(v) => updateField('heroImage', v)}
           />
         </SectionWrapper>
+        </div>
 
-        {/* Divider */}
-        <div className="border-t border-border/60" />
-
-        {/* Location */}
+        {/* Location and Specialties */}
+        <div className="grid lg:grid-cols-2 gap-8 mt-8 pb-8 border-b border-border">
         <SectionWrapper
           title="Location"
           description="Update your location details"
@@ -302,10 +310,7 @@ export function PartnerProfileView({ partnerId }: PartnerProfileViewProps) {
           />
         </SectionWrapper>
 
-        {/* Divider */}
-        <div className="border-t border-border/60" />
-
-        {/* Specialties */}
+        <div className="pt-8">
         <SectionWrapper
           title="Specialties"
           description="Select your areas of expertise"
@@ -322,11 +327,11 @@ export function PartnerProfileView({ partnerId }: PartnerProfileViewProps) {
             onSpecialtyToggle={(s) => toggleArrayItem('specialties', s)}
           />
         </SectionWrapper>
-
-        {/* Divider */}
-        <div className="border-t border-border/60" />
+        </div>
+        </div>
 
         {/* Tags */}
+        <div className="mt-8 pb-8 border-b border-border">
         <SectionWrapper
           title="Tags"
           description="Add tags to help customers find you"
@@ -343,6 +348,7 @@ export function PartnerProfileView({ partnerId }: PartnerProfileViewProps) {
             onTagsChange={(tags) => updateField('tags', tags)}
           />
         </SectionWrapper>
+        </div>
       </div>
     </div>
   );

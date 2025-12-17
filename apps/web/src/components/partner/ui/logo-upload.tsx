@@ -148,11 +148,11 @@ export function LogoUpload({ logoUrl, brandName, onUpdate, isUpdating }: LogoUpl
             <img
               src={getPublicUrl(logoUrl) || logoUrl}
               alt={brandName}
-              className="w-16 h-16 object-cover border-2 border-border bg-background"
+              className="w-20 h-20 object-cover border-2 border-border bg-background rounded-lg"
             />
           ) : (
-            <div className="w-16 h-16 border-2 border-border bg-background flex items-center justify-center">
-              <span className="text-lg font-semibold text-foreground tracking-tight">
+            <div className="w-20 h-20 border-2 border-border bg-background rounded-lg flex items-center justify-center">
+              <span className="text-xl font-semibold text-foreground tracking-tight">
                 {getInitials(brandName)}
               </span>
             </div>

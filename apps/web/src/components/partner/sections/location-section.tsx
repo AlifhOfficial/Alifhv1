@@ -184,7 +184,7 @@ export function LocationSection({
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 pb-8 border-b border-border">
         <div className="flex items-center justify-between">
           <label className="text-xs text-muted-foreground">
             {isEditing ? 'Pin your location on map' : 'Your location'}

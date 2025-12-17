@@ -7,6 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import { CheckCircle, XCircle, Clock, Eye, FileText } from 'lucide-react';
+import { DashboardPageLayout } from '@/components/layout';
 import { useToast } from '@/hooks/use-toast';
 import { getSignedUrl } from '@/lib/storage';
 
@@ -219,19 +220,15 @@ export default function KycRequestsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header */}
-        <div>
-          <h1 className="text-2xl font-semibold text-foreground">KYC Verification Requests</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Development page to manage user verification requests
-          </p>
-        </div>
+    <DashboardPageLayout
+      title="KYC Verification Requests"
+    >
+      <p className="text-sm text-muted-foreground mb-6">
+        Development page to manage user verification requests
+      </p>
 
-        {/* Requests List */}
-        <div className="space-y-4">
-          {requests.length === 0 ? (
+      {/* Requests List */}
+      <div className="space-y-4">{requests.length === 0 ? (
             <div className="text-center py-12 bg-muted/20 border border-border rounded-lg">
               <p className="text-sm text-muted-foreground">No KYC requests found</p>
             </div>
@@ -335,7 +332,6 @@ export default function KycRequestsPage() {
             ))
           )}
         </div>
-      </div>
 
       {/* Rejection Modal */}
       {selectedRequest && (
@@ -374,6 +370,6 @@ export default function KycRequestsPage() {
           </div>
         </div>
       )}
-    </div>
+    </DashboardPageLayout>
   );
 }

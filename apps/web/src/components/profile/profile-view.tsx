@@ -367,45 +367,78 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
               <Field label="Email" value={formData.email} onChange={(v: string) => setFormData(p => ({ ...p, email: v }))} type="email" editing={editing === 'profile'} verified={profile?.emailVerified} onVerify={() => setModal('email')} />
               <Field label="Phone" value={formData.phone} onChange={(v: string) => setFormData(p => ({ ...p, phone: v }))} type="tel" editing={editing === 'profile'} verified={profile?.phoneVerified} onVerify={() => setModal('phone')} />
             </div>
-
-            {/* Bio and Tags in 2 columns */}
-            <div className="grid lg:grid-cols-2 gap-8 py-6 border-b border-border">
-              {/* Bio */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-semibold text-foreground">Bio</h3>
-                <TextArea label="About you" value={formData.bio} onChange={(v: string) => setFormData(p => ({ ...p, bio: v }))} editing={editing === 'profile'} />
-              </div>
-
-              {/* Tags */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-semibold text-foreground">Profile Tags</h3>
-                <div className="flex flex-wrap gap-2 min-h-[32px]">
-                  {editing === 'profile' ? (
-                    AVAILABLE_TAGS.map(tag => (
-                      <button key={tag} onClick={() => {
-                        const tags = formData.tags.includes(tag) ? formData.tags.filter(t => t !== tag) : formData.tags.length < 3 ? [...formData.tags, tag] : formData.tags;
-                        if (formData.tags.length >= 3 && !formData.tags.includes(tag)) toast({ title: 'Max 3 tags', variant: 'destructive' });
-                        setFormData(p => ({ ...p, tags }));
-                      }} className={`px-3 py-1.5 text-xs font-medium border transition-colors ${formData.tags.includes(tag) ? 'bg-foreground text-background border-foreground' : 'bg-transparent text-foreground border-border hover:bg-muted'}`}>
-                        {tag}
-                      </button>
-                    ))
-                  ) : (
-                    formData.tags.length > 0 ? formData.tags.map(tag => (
-                      <div key={tag} className="px-3 py-1.5 border border-border bg-transparent text-xs font-medium">{tag}</div>
-                    )) : (
-                      <div className="flex items-center gap-2">
-                        <div className="px-3 py-1.5 border border-dashed border-border bg-transparent text-xs font-medium text-muted-foreground">No tags</div>
-                        <div className="px-3 py-1.5 border border-dashed border-border bg-transparent text-xs font-medium text-muted-foreground">Empty</div>
-                        <div className="px-3 py-1.5 border border-dashed border-border bg-transparent text-xs font-medium text-muted-foreground">Add tags</div>
-                      </div>
-                    )
-                  )}
-                </div>
-              </div>
-            </div>
           </>
         ))}
+
+        {/* Bio - Separate Section */}
+        <div className="space-y-6 mt-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-semibold tracking-tight">Bio</h2>
+              <p className="text-sm text-muted-foreground mt-1">Tell others about yourself</p>
+            </div>
+            {editing !== 'bio' && (
+              <button onClick={() => setEditing('bio')} className="h-8 px-3 text-xs font-medium text-foreground border border-border rounded-lg hover:bg-muted/50 flex items-center gap-2">
+                <Edit3 className="w-3.5 h-3.5" />Edit
+              </button>
+            )}
+          </div>
+          
+          <div className="space-y-6">
+            <TextArea label="About you" value={formData.bio} onChange={(v: string) => setFormData(p => ({ ...p, bio: v }))} editing={editing === 'bio'} />
+          </div>
+          
+          {editing === 'bio' && (
+            <div className="flex justify-end gap-3 pt-4">
+              <button onClick={cancel} disabled={saving} className="h-8 px-3 text-xs font-medium border border-border rounded-lg hover:bg-muted/50 disabled:opacity-50">Cancel</button>
+              <button onClick={() => save('profile')} disabled={saving} className="h-8 px-3 text-xs font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50">{saving ? 'Saving...' : 'Save'}</button>
+            </div>
+          )}
+        </div>
+
+        {/* Profile Tags - Separate Section */}
+        <div className="space-y-6 mt-8 pb-8 border-b border-border">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-semibold tracking-tight">Profile Tags</h2>
+              <p className="text-sm text-muted-foreground mt-1">Select up to 3 tags that describe you</p>
+            </div>
+            {editing !== 'tags' && (
+              <button onClick={() => setEditing('tags')} className="h-8 px-3 text-xs font-medium text-foreground border border-border rounded-lg hover:bg-muted/50 flex items-center gap-2">
+                <Edit3 className="w-3.5 h-3.5" />Edit
+              </button>
+            )}
+          </div>
+          
+          <div className="space-y-6">
+            <div className="flex flex-wrap gap-2 min-h-[40px] items-center">
+              {editing === 'tags' ? (
+                AVAILABLE_TAGS.map(tag => (
+                  <button key={tag} onClick={() => {
+                    const tags = formData.tags.includes(tag) ? formData.tags.filter(t => t !== tag) : formData.tags.length < 3 ? [...formData.tags, tag] : formData.tags;
+                    if (formData.tags.length >= 3 && !formData.tags.includes(tag)) toast({ title: 'Max 3 tags', variant: 'destructive' });
+                    setFormData(p => ({ ...p, tags }));
+                  }} className={`px-3 py-1.5 text-xs font-medium border transition-colors ${formData.tags.includes(tag) ? 'bg-foreground text-background border-foreground' : 'bg-transparent text-foreground border-border hover:bg-muted'}`}>
+                    {tag}
+                  </button>
+                ))
+              ) : (
+                formData.tags.length > 0 ? formData.tags.map(tag => (
+                  <div key={tag} className="px-3 py-1.5 border border-border bg-transparent text-xs font-medium">{tag}</div>
+                )) : (
+                  <p className="text-sm text-muted-foreground py-2">No tags selected</p>
+                )
+              )}
+            </div>
+          </div>
+          
+          {editing === 'tags' && (
+            <div className="flex justify-end gap-3 pt-4">
+              <button onClick={cancel} disabled={saving} className="h-8 px-3 text-xs font-medium border border-border rounded-lg hover:bg-muted/50 disabled:opacity-50">Cancel</button>
+              <button onClick={() => save('profile')} disabled={saving} className="h-8 px-3 text-xs font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50">{saving ? 'Saving...' : 'Save'}</button>
+            </div>
+          )}
+        </div>
 
         {/* Location and Settings - Separated Row */}
         <div className="grid lg:grid-cols-2 gap-8 mt-8">
