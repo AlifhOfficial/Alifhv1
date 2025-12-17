@@ -1,29 +1,28 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 import type { ExtendedUser } from "@/lib/auth/types";
 import type { UserRole } from "@/lib/auth/types";
 
 /**
- * Get extended session data with partner memberships from API endpoint
+ * Get extended session data with partner memberships using Better Auth
  * The middleware already handles access control, this just retrieves user data
+ * With cookie cache enabled, this is fast and doesn't hit the DB on every call
  */
 async function getExtendedSession(): Promise<ExtendedUser | null> {
   try {
-    // Call our API endpoint that loads extended session data
     const headersList = await headers();
-    const cookie = headersList.get('cookie') || '';
     
-    const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/auth/get-session`, {
-      headers: { cookie },
-      cache: 'no-store',
+    // Use Better Auth directly - customSession plugin adds role/partner data
+    const session = await auth.api.getSession({
+      headers: headersList,
     });
 
-    if (!response.ok) {
+    if (!session?.user) {
       return null;
     }
 
-    const data = await response.json();
-    return data.user as ExtendedUser;
+    return session.user as ExtendedUser;
   } catch (error) {
     console.error('[requireAuth] Error fetching session:', error);
     return null;

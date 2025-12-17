@@ -3,7 +3,9 @@
 import { createAuthClient } from "better-auth/react";
 import { magicLinkClient } from "better-auth/client/plugins";
 import { adminClient } from "better-auth/client/plugins";
+import { customSessionClient } from "better-auth/client/plugins";
 import { ac, roles } from "@/lib/auth/permissions";
+import type { auth } from "@/lib/auth";
 
 // Lazy initialization to ensure client-side only creation
 let _authClient: ReturnType<typeof createAuthClient> | null = null;
@@ -30,6 +32,8 @@ function getAuthClient() {
             user: roles.user,
           },
         }),
+        // Add custom session client to infer role/partner data
+        customSessionClient<typeof auth>(),
       ]
     });
   }

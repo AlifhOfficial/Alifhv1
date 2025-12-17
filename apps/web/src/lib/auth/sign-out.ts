@@ -1,7 +1,7 @@
 /**
  * Centralized Sign Out Handler
  * 
- * Handles user logout with proper session cleanup and cache clearing.
+ * Handles user logout using Better Auth's native sign-out functionality.
  * Use this function throughout the app for consistent logout behavior.
  */
 
@@ -9,19 +9,7 @@ import { signOut as betterAuthSignOut } from './client';
 
 export async function handleSignOut() {
   try {
-    // IMPORTANT: Clear session cache BEFORE calling Better Auth signOut
-    // This prevents middleware from serving stale cached session data
-    try {
-      await fetch('/api/auth/sign-out-clear-cache', {
-        method: 'POST',
-        credentials: 'include',
-      });
-    } catch (cacheError) {
-      // Continue even if cache clear fails
-      console.warn("Failed to clear session cache:", cacheError);
-    }
-    
-    // Now sign out via Better Auth
+    // Sign out via Better Auth - it handles all session cleanup
     await betterAuthSignOut({
       fetchOptions: {
         onSuccess: () => {

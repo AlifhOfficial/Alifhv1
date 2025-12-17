@@ -5,9 +5,6 @@
  */
 
 export const AUTH_CONFIG = {
-  // Session Cache Configuration
-  SESSION_CACHE_TTL_MS: 5 * 60 * 1000, // 5 minutes - balances performance with data freshness
-  
   // Rate Limiting Configuration (in-memory, should be replaced with edge rate limiting)
   RATE_LIMIT: {
     WINDOW_MS: 60_000, // 1 minute
@@ -46,7 +43,6 @@ export const AUTH_CONFIG = {
   
   // API Endpoints
   ENDPOINTS: {
-    GET_SESSION: '/api/auth/get-session',
     PASSWORD_RESET: '/api/auth/password-reset-validated',
     MAGIC_LINK: '/api/auth/magic-link-validated',
   },

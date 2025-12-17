@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { magicLink } from "better-auth/plugins/magic-link";
 import { admin } from "better-auth/plugins/admin";
+import { customSession } from "better-auth/plugins";
 import { db } from "@alifh/database";
 import * as schema from "@alifh/database";
 import { UserRole } from "@/lib/auth/types";
@@ -29,6 +30,12 @@ export const auth = betterAuth({
   session: {
     expiresIn: AUTH_CONFIG.SESSION.EXPIRES_IN,
     updateAge: AUTH_CONFIG.SESSION.UPDATE_AGE,
+    // Enable cookie caching to avoid DB queries on every session check
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60, // 5 minutes - balances performance with data freshness
+      strategy: "compact", // Most compact format, best performance
+    },
   },
 
   emailAndPassword: {
@@ -66,6 +73,67 @@ export const auth = betterAuth({
         admin: roles.admin,
         user: roles.user,
       },
+    }),
+    // Custom session to include role and partner membership data
+    customSession(async ({ user, session }) => {
+      // Load user with role and partner memberships
+      const userRecord = await db.query.user.findFirst({
+        where: eq(schema.user.id, user.id),
+        columns: {
+          id: true,
+          role: true,
+          banned: true,
+        },
+        with: {
+          partnerMemberships: {
+            where: eq(schema.partnerStaff.status, "active"),
+            with: {
+              partner: {
+                columns: {
+                  id: true,
+                  brandName: true,
+                  status: true,
+                  tier: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!userRecord) {
+        return { user, session };
+      }
+
+      // Filter only active partners
+      const activePartnerships = (userRecord.partnerMemberships || []).filter(
+        m => m.partner.status === 'active'
+      );
+
+      const hasPartnerAccess = activePartnerships.length > 0;
+      const isAlifhAdmin = ['admin', 'super_admin'].includes(userRecord.role || 'user');
+      
+      // Map to PartnerMembership type
+      const partnerMemberships = activePartnerships.map(m => ({
+        staffId: m.id,
+        partnerId: m.partner.id,
+        partnerName: m.partner.brandName,
+        partnerTier: m.partner.tier,
+        staffRole: m.role,
+        permissions: m.permissions,
+      }));
+
+      return {
+        user: {
+          ...user,
+          role: userRecord.role,
+          banned: userRecord.banned,
+          hasPartnerAccess,
+          isAlifhAdmin,
+          partnerMemberships,
+        },
+        session,
+      };
     }),
   ],
 

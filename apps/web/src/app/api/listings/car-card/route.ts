@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@alifh/database";
 import * as schema from "@alifh/database";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, inArray } from "drizzle-orm";
 
 export const runtime = "nodejs";
 
@@ -19,6 +19,7 @@ export const runtime = "nodejs";
  * - partnerName, partnerVerified, isBlackMember
  * 
  * Query params:
+ * - ids: comma-separated listing IDs (when provided, returns only those listings)
  * - status: 'published' | 'draft' | 'pending' etc. (default: published)
  * - partnerId: filter by partner ID
  * - limit: number (default: 20)
@@ -27,16 +28,30 @@ export const runtime = "nodejs";
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    
-    const status = searchParams.get('status') || 'published';
+
+    const statusParam = searchParams.get('status');
+    const statusExplicit = searchParams.has('status');
+    const status = statusParam || 'published';
     const partnerId = searchParams.get('partnerId');
+    const idsParam = searchParams.get('ids');
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
 
+    const ids = idsParam
+      ? idsParam
+          .split(',')
+          .map((id) => id.trim())
+          .filter(Boolean)
+          .slice(0, 100)
+      : null;
+
     // Build WHERE clause
-    const whereConditions = partnerId 
-      ? [eq(schema.carListing.partnerId, partnerId)]
-      : [eq(schema.carListing.status, status as any)];
+    // Preserve existing behavior: if `partnerId` is provided and `status` is not explicitly set,
+    // we do NOT filter by status (used by partner inventory views).
+    const whereConditions = [] as any[];
+    if (ids?.length) whereConditions.push(inArray(schema.carListing.id, ids));
+    if (partnerId) whereConditions.push(eq(schema.carListing.partnerId, partnerId));
+    if (!partnerId || statusExplicit) whereConditions.push(eq(schema.carListing.status, status as any));
 
     // Fetch only UI-needed fields
     const listings = await db
