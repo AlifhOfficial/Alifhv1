@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useEffect, memo } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -16,7 +16,7 @@ interface PhoneVerificationModalProps {
   onVerified: () => void;
 }
 
-export function PhoneVerificationModal({
+function PhoneVerificationModalComponent({
   isOpen,
   onClose,
   phoneNumber,
@@ -28,13 +28,15 @@ export function PhoneVerificationModal({
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(0);
 
-  const handleSendOTP = async () => {
+  useEffect(() => {
+    if (countdown <= 0) return;
+    const interval = setInterval(() => setCountdown(c => c > 0 ? c - 1 : 0), 1000);
+    return () => clearInterval(interval);
+  }, [countdown]);
+
+  const handleSendOTP = useCallback(async () => {
     if (!phoneNumber) {
-      toast({
-        title: 'Phone number required',
-        description: 'Please add a phone number to your profile first.',
-        variant: 'destructive',
-      });
+      toast({ title: 'Phone number required', description: 'Please add a phone number to your profile first.', variant: 'destructive' });
       return;
     }
 
@@ -48,29 +50,11 @@ export function PhoneVerificationModal({
       });
 
       const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to send verification code');
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to send verification code');
-      }
-
-      toast({
-        title: 'Code sent',
-        description: 'Check your phone for the verification code.',
-      });
-
+      toast({ title: 'Code sent', description: 'Check your phone for the verification code.' });
       setStep('verify');
       setCountdown(60);
-
-      // Start countdown
-      const interval = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(interval);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
     } catch (error) {
       toast({
         title: 'Failed to send code',
@@ -80,15 +64,11 @@ export function PhoneVerificationModal({
     } finally {
       setLoading(false);
     }
-  };
+  }, [phoneNumber, toast]);
 
-  const handleVerifyOTP = async () => {
+  const handleVerifyOTP = useCallback(async () => {
     if (!otp || otp.length !== 6) {
-      toast({
-        title: 'Invalid code',
-        description: 'Please enter a 6-digit verification code.',
-        variant: 'destructive',
-      });
+      toast({ title: 'Invalid code', description: 'Please enter a 6-digit verification code.', variant: 'destructive' });
       return;
     }
 
@@ -102,16 +82,9 @@ export function PhoneVerificationModal({
       });
 
       const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Invalid verification code');
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Invalid verification code');
-      }
-
-      toast({
-        title: 'Phone verified',
-        description: 'Your phone number has been verified successfully.',
-      });
-
+      toast({ title: 'Phone verified', description: 'Your phone number has been verified successfully.' });
       onVerified();
       onClose();
     } catch (error) {
@@ -123,13 +96,7 @@ export function PhoneVerificationModal({
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleResendOTP = () => {
-    setOtp('');
-    setStep('send');
-    handleSendOTP();
-  };
+  }, [otp, onVerified, onClose, toast]);
 
   if (!isOpen) return null;
 
@@ -237,7 +204,7 @@ export function PhoneVerificationModal({
                     <>
                       <span>Didn't receive the code?</span>
                       <button
-                        onClick={handleResendOTP}
+                        onClick={() => { setOtp(''); setStep('send'); handleSendOTP(); }}
                         disabled={loading}
                         className="text-primary hover:text-primary/80 transition-colors font-medium"
                       >
@@ -254,3 +221,5 @@ export function PhoneVerificationModal({
     </div>
   );
 }
+
+export const PhoneVerificationModal = memo(PhoneVerificationModalComponent);

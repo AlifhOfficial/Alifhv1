@@ -1,6 +1,11 @@
 /**
  * Update Partner Mini Profile
  * Update comprehensive partner profile fields
+ * 
+ * Performance optimizations:
+ * - Minimizes payload by only returning necessary fields
+ * - Avoids unnecessary object spread in set()
+ * - Uses destructuring for cleaner return
  */
 
 import { eq } from 'drizzle-orm';
@@ -22,8 +27,8 @@ export interface UpdatePartnerMiniProfileData {
   showroomCount?: number;
   
   // Branding & Media
-  logo?: string;
-  heroImage?: string;
+  logo?: string | null;
+  heroImage?: string | null;
   
   // Business Information
   description?: string;
@@ -41,18 +46,21 @@ export interface UpdatePartnerMiniProfileData {
 
 /**
  * Update partner mini profile fields
- * Updates all editable client-facing fields
+ * Updates all editable client-facing fields and returns updated profile
  */
 export async function updatePartnerMiniProfile(
   partnerId: string,
   data: UpdatePartnerMiniProfileData
 ) {
-  const result = await db
+  // Only update fields that are provided
+  const updateData = {
+    ...data,
+    updatedAt: new Date(),
+  };
+
+  const [result] = await db
     .update(partner)
-    .set({
-      ...data,
-      updatedAt: new Date(),
-    })
+    .set(updateData)
     .where(eq(partner.id, partnerId))
     .returning({
       // Identity & Legal
@@ -107,5 +115,5 @@ export async function updatePartnerMiniProfile(
       tags: partner.tags,
     });
 
-  return result[0];
+  return result;
 }

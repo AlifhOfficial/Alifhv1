@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -15,7 +15,7 @@ interface EmailVerificationModalProps {
   onVerified: () => void;
 }
 
-export function EmailVerificationModal({
+function EmailVerificationModalComponent({
   isOpen,
   onClose,
   emailAddress,
@@ -24,9 +24,7 @@ export function EmailVerificationModal({
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
-  if (!isOpen) return null;
-
-  const handleSendVerification = async () => {
+  const handleSendVerification = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await fetch('/api/profile/email/send-verification', {
@@ -39,10 +37,7 @@ export function EmailVerificationModal({
       const data = await response.json();
 
       if (response.ok) {
-        toast({
-          title: 'Verification email sent',
-          description: 'Please check your inbox and click the verification link.',
-        });
+        toast({ title: 'Verification email sent', description: 'Please check your inbox and click the verification link.' });
         onClose();
       } else {
         throw new Error(data.error || 'Failed to send verification email');
@@ -56,7 +51,9 @@ export function EmailVerificationModal({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [emailAddress, onClose, toast]);
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -112,3 +109,5 @@ export function EmailVerificationModal({
     </div>
   );
 }
+
+export const EmailVerificationModal = memo(EmailVerificationModalComponent);
