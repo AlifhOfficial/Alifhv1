@@ -132,6 +132,7 @@ export const carListing = pgTable('car_listing', {
   // Ownership & Seller
   partnerId: text('partner_id').references(() => partner.id, { onDelete: 'cascade' }),
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }), // For P2P listings
+  postedByStaffId: text('posted_by_staff_id'), // PartnerStaff ID who posted this listing (will add FK in relations)
   sellerType: sellerTypeEnum('seller_type').default('dealer').notNull(),
   isConsignment: boolean('is_consignment').default(false).notNull(), // Dealer listing but private owner
   
@@ -310,6 +311,7 @@ export const carListing = pgTable('car_listing', {
   // Ownership
   index('car_listing_partnerId_idx').on(table.partnerId),
   index('car_listing_userId_idx').on(table.userId),
+  index('car_listing_postedByStaffId_idx').on(table.postedByStaffId),
   index('car_listing_sellerType_idx').on(table.sellerType),
   
   // Status & Discovery

@@ -1,0 +1,349 @@
+/**
+ * Partner Profile View - Alifh Design System
+ * Following exact user profile pattern with section-based editing
+ */
+
+'use client';
+
+import { useEffect, useState } from 'react';
+import { usePartnerMiniProfile, useUpdatePartnerMiniProfile } from '@/hooks/partner';
+import { useToast } from '@/hooks/use-toast';
+
+// UI Components
+import { PartnerProfileHeader } from './ui/partner-profile-header';
+import { LogoUpload } from './ui/logo-upload';
+import { SectionWrapper } from '@/components/profile/ui/section-wrapper';
+
+// Sections
+import { CompanyIdentitySection } from './sections/company-identity-section';
+import { BrandingMediaSection } from './sections/branding-media-section';
+import { LocationSection } from './sections/location-section';
+import { SpecialtiesSection } from './sections/specialties-section';
+import { TagsSection } from './sections/tags-section';
+
+const AVAILABLE_SPECIALTIES = [
+  "Luxury Vehicles",
+  "Sports Cars",
+  "SUVs",
+  "Electric Vehicles",
+  "Classic Cars",
+  "Motorcycles",
+];
+
+const AVAILABLE_TAGS = [
+  "Featured",
+  "Verified",
+  "Top Rated",
+  "Premium Service",
+  "Fast Delivery",
+  "Extended Warranty",
+];
+
+interface PartnerProfileViewProps {
+  partnerId: string;
+}
+
+export function PartnerProfileView({ partnerId }: PartnerProfileViewProps) {
+  const { data: profile, isLoading, error } = usePartnerMiniProfile(partnerId);
+  const updateMutation = useUpdatePartnerMiniProfile(partnerId);
+  const { toast } = useToast();
+
+  // Consolidated form state
+  const [formData, setFormData] = useState({
+    brandName: '',
+    website: '',
+    experienceYears: 0,
+    heroImage: '',
+    description: '',
+    address: '',
+    city: '',
+    locationLat: null as number | null,
+    locationLng: null as number | null,
+    showroomCount: 0,
+    specialties: [] as string[],
+    tags: [] as string[],
+  });
+
+  // UI state
+  const [editingSection, setEditingSection] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Helper to update form data
+  const updateField = <K extends keyof typeof formData>(key: K, value: typeof formData[K]) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+  };
+
+  // Sync profile data to form
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        brandName: profile.brandName,
+        website: profile.website || '',
+        experienceYears: profile.experienceYears || 0,
+        heroImage: profile.heroImage || '',
+        description: profile.description || '',
+        address: profile.address || '',
+        city: profile.city || '',
+        locationLat: profile.locationLat,
+        locationLng: profile.locationLng,
+        showroomCount: profile.showroomCount,
+        specialties: profile.specialties,
+        tags: profile.tags,
+      });
+    }
+  }, [profile]);
+
+  const handleSaveSection = async (section: string) => {
+    setIsSaving(true);
+    try {
+      const payloadMap: Record<string, any> = {
+        identity: {
+          brandName: formData.brandName.trim(),
+          website: formData.website.trim() || undefined,
+          experienceYears: formData.experienceYears,
+          description: formData.description.trim() || undefined,
+        },
+        branding: {
+          heroImage: formData.heroImage.trim() || null,
+        },
+        location: {
+          address: formData.address.trim() || undefined,
+          city: formData.city.trim() || undefined,
+          locationLat: formData.locationLat ?? undefined,
+          locationLng: formData.locationLng ?? undefined,
+          showroomCount: formData.showroomCount,
+        },
+        specialties: {
+          specialties: formData.specialties,
+        },
+        tags: {
+          tags: formData.tags,
+        },
+      };
+
+      await updateMutation.mutateAsync(payloadMap[section]);
+      setEditingSection(null);
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to save changes.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCancelSection = () => {
+    if (profile) {
+      setFormData({
+        brandName: profile.brandName,
+        website: profile.website || '',
+        experienceYears: profile.experienceYears || 0,
+        heroImage: profile.heroImage || '',
+        description: profile.description || '',
+        address: profile.address || '',
+        city: profile.city || '',
+        locationLat: profile.locationLat,
+        locationLng: profile.locationLng,
+        showroomCount: profile.showroomCount,
+        specialties: profile.specialties,
+        tags: profile.tags,
+      });
+    }
+    setEditingSection(null);
+  };
+
+  const toggleArrayItem = (key: 'specialties' | 'tags', item: string) => {
+    const current = formData[key];
+    updateField(key, current.includes(item) 
+      ? current.filter(i => i !== item)
+      : [...current, item]
+    );
+  };
+
+  const handleLogoUpdate = async (logoKey: string | null) => {
+    return await updateMutation.mutateAsync({ logo: logoKey });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="space-y-2 text-center">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-sm text-muted-foreground">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center space-y-2">
+          <p className="text-destructive font-medium">Failed to load profile</p>
+          <p className="text-sm text-muted-foreground">Please try refreshing the page</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-muted-foreground">Profile not found</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="max-w-6xl mx-auto px-8 py-12 space-y-12">
+        {/* Header with Logo */}
+        <div className="flex items-start gap-8">
+          <PartnerProfileHeader
+            brandName={profile.brandName}
+            companyNameLegal={profile.companyNameLegal}
+            isVerified={profile.isVerified}
+            tier={profile.tier}
+            badges={profile.badges}
+            googleRating={profile.googleRating}
+            googleReviewCount={profile.googleReviewCount}
+            platformRating={profile.platformRating}
+            platformReviewCount={profile.platformReviewCount}
+            totalInventory={profile.totalInventory}
+            avgResponseTime={profile.avgResponseTime}
+            responseRate={profile.responseRate}
+          />
+
+          <LogoUpload
+            logoUrl={profile.logo}
+            brandName={profile.brandName}
+            onUpdate={handleLogoUpdate}
+            isUpdating={updateMutation.isPending}
+          />
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-border/60" />
+
+        {/* Company Identity */}
+        <SectionWrapper
+          title="Company Identity"
+          description="Update your company information"
+          isEditing={editingSection === 'identity'}
+          onEdit={() => setEditingSection('identity')}
+          onSave={() => handleSaveSection('identity')}
+          onCancel={handleCancelSection}
+          isSaving={isSaving}
+        >
+          <CompanyIdentitySection
+            companyNameLegal={profile.companyNameLegal}
+            brandName={formData.brandName}
+            website={formData.website}
+            foundedYear={profile.foundedYear || new Date().getFullYear()}
+            experienceYears={formData.experienceYears}
+            description={formData.description}
+            isEditing={editingSection === 'identity'}
+            onBrandNameChange={(v) => updateField('brandName', v)}
+            onWebsiteChange={(v) => updateField('website', v)}
+            onExperienceYearsChange={(v) => updateField('experienceYears', v)}
+            onDescriptionChange={(v) => updateField('description', v)}
+          />
+        </SectionWrapper>
+
+        {/* Divider */}
+        <div className="border-t border-border/60" />
+
+        {/* Hero Image */}
+        <SectionWrapper
+          title="Hero Image"
+          description="Update your hero banner image"
+          isEditing={editingSection === 'branding'}
+          onEdit={() => setEditingSection('branding')}
+          onSave={() => handleSaveSection('branding')}
+          onCancel={handleCancelSection}
+          isSaving={isSaving}
+        >
+          <BrandingMediaSection
+            heroImage={formData.heroImage}
+            isEditing={editingSection === 'branding'}
+            onHeroImageChange={(v) => updateField('heroImage', v)}
+          />
+        </SectionWrapper>
+
+        {/* Divider */}
+        <div className="border-t border-border/60" />
+
+        {/* Location */}
+        <SectionWrapper
+          title="Location"
+          description="Update your location details"
+          isEditing={editingSection === 'location'}
+          onEdit={() => setEditingSection('location')}
+          onSave={() => handleSaveSection('location')}
+          onCancel={handleCancelSection}
+          isSaving={isSaving}
+        >
+          <LocationSection
+            address={formData.address}
+            emirate={profile.emirate || ''}
+            city={formData.city}
+            locationLat={formData.locationLat}
+            locationLng={formData.locationLng}
+            showroomCount={formData.showroomCount}
+            isEditing={editingSection === 'location'}
+            onAddressChange={(v) => updateField('address', v)}
+            onEmirateChange={() => {}}
+            onCityChange={(v) => updateField('city', v)}
+            onLocationLatChange={(v) => updateField('locationLat', v)}
+            onLocationLngChange={(v) => updateField('locationLng', v)}
+            onShowroomCountChange={(v) => updateField('showroomCount', v)}
+          />
+        </SectionWrapper>
+
+        {/* Divider */}
+        <div className="border-t border-border/60" />
+
+        {/* Specialties */}
+        <SectionWrapper
+          title="Specialties"
+          description="Select your areas of expertise"
+          isEditing={editingSection === 'specialties'}
+          onEdit={() => setEditingSection('specialties')}
+          onSave={() => handleSaveSection('specialties')}
+          onCancel={handleCancelSection}
+          isSaving={isSaving}
+        >
+          <SpecialtiesSection
+            specialties={formData.specialties}
+            availableSpecialties={AVAILABLE_SPECIALTIES}
+            isEditing={editingSection === 'specialties'}
+            onSpecialtyToggle={(s) => toggleArrayItem('specialties', s)}
+          />
+        </SectionWrapper>
+
+        {/* Divider */}
+        <div className="border-t border-border/60" />
+
+        {/* Tags */}
+        <SectionWrapper
+          title="Tags"
+          description="Add tags to help customers find you"
+          isEditing={editingSection === 'tags'}
+          onEdit={() => setEditingSection('tags')}
+          onSave={() => handleSaveSection('tags')}
+          onCancel={handleCancelSection}
+          isSaving={isSaving}
+        >
+          <TagsSection
+            tags={formData.tags}
+            availableTags={AVAILABLE_TAGS}
+            isEditing={editingSection === 'tags'}
+            onTagsChange={(tags) => updateField('tags', tags)}
+          />
+        </SectionWrapper>
+      </div>
+    </div>
+  );
+}

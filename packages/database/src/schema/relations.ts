@@ -167,7 +167,7 @@ export const partnerRelations = relations(partner, ({ many, one }) => ({
 }));
 
 // Partner Staff relations (the seat/membership)
-export const partnerStaffRelations = relations(partnerStaff, ({ one }) => ({
+export const partnerStaffRelations = relations(partnerStaff, ({ one, many }) => ({
   partner: one(partner, {
     fields: [partnerStaff.partnerId],
     references: [partner.id],
@@ -176,6 +176,7 @@ export const partnerStaffRelations = relations(partnerStaff, ({ one }) => ({
     fields: [partnerStaff.userId],
     references: [user.id],
   }),
+  postedListings: many(carListing), // Listings posted by this staff member
 }));
 
 // Partner Review relations
@@ -246,6 +247,10 @@ export const carListingRelations = relations(carListing, ({ one, many }) => ({
   user: one(user, {
     fields: [carListing.userId],
     references: [user.id],
+  }),
+  postedByStaff: one(partnerStaff, {
+    fields: [carListing.postedByStaffId],
+    references: [partnerStaff.id],
   }),
   
   // Reservation & Sale

@@ -4,7 +4,7 @@
 
 'use client';
 
-import { Suspense, lazy } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 const LocationMap = lazy(() => 
@@ -34,6 +34,28 @@ export function LocationSection({
 }: LocationSectionProps) {
   const { toast } = useToast();
 
+  // Auto-fetch location on mount if editing and no location set
+  React.useEffect(() => {
+    if (isEditing && !latitude && !longitude && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          onLocationSelect(position.coords.latitude, position.coords.longitude);
+          // Reverse geocode to get city/emirate
+          fetch(`https://nominatim.openstreetmap.org/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}&format=json`)
+            .then(res => res.json())
+            .then(data => {
+              if (data.address) {
+                if (data.address.city) onCityChange(data.address.city);
+                if (data.address.state) onEmirateChange(data.address.state);
+              }
+            })
+            .catch(() => {});
+        },
+        () => {}
+      );
+    }
+  }, []);
+
   const handleUseCurrentLocation = () => {
     if (navigator.geolocation) {
       toast({
@@ -46,10 +68,26 @@ export function LocationSection({
             position.coords.latitude,
             position.coords.longitude
           );
-          toast({
-            title: 'Location fetched',
-            description: 'Your current location has been set',
-          });
+          
+          // Reverse geocode to get city and emirate
+          fetch(`https://nominatim.openstreetmap.org/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}&format=json`)
+            .then(res => res.json())
+            .then(data => {
+              if (data.address) {
+                if (data.address.city) onCityChange(data.address.city);
+                if (data.address.state) onEmirateChange(data.address.state);
+              }
+              toast({
+                title: 'Location fetched',
+                description: 'Your location and address have been set',
+              });
+            })
+            .catch(() => {
+              toast({
+                title: 'Location fetched',
+                description: 'Your current location has been set',
+              });
+            });
         },
         (error) => {
           toast({

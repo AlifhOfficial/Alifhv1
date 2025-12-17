@@ -1,51 +1,73 @@
 /**
- * Avatar Upload Component
+ * Logo Upload Component - Partner Profile
+ * Follows the exact pattern of user avatar upload
  */
 
 'use client';
 
 import { useRef, useState } from 'react';
 import { Camera, X } from 'lucide-react';
-import { Avatar } from '@/components/ui/data-display/avatar';
 import { useToast } from '@/hooks/use-toast';
 
-interface AvatarUploadProps {
-  avatarUrl?: string | null;
-  initials: string;
-  onUpdate: (avatarKey: string | null) => Promise<any>;
+// Public R2 URL - embedded at build time
+const R2_PUBLIC_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+
+// Convert storage key to public URL
+function getPublicUrl(key: string | null | undefined): string | null {
+  if (!key) return null;
+  if (!R2_PUBLIC_URL) {
+    console.warn('NEXT_PUBLIC_R2_PUBLIC_URL is not configured');
+    return null;
+  }
+  return `${R2_PUBLIC_URL.replace(/\/$/, '')}/${key}`;
+}
+
+interface LogoUploadProps {
+  logoUrl?: string | null;
+  brandName: string;
+  onUpdate: (logoKey: string | null) => Promise<any>;
   isUpdating: boolean;
 }
 
-export function AvatarUpload({ avatarUrl, initials, onUpdate, isUpdating }: AvatarUploadProps) {
+export function LogoUpload({ logoUrl, brandName, onUpdate, isUpdating }: LogoUploadProps) {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [logoUploading, setLogoUploading] = useState(false);
 
-  const handleAvatarClick = () => {
-    if (!avatarUploading && !isUpdating) {
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const handleLogoClick = () => {
+    if (!logoUploading && !isUpdating) {
       fileInputRef.current?.click();
     }
   };
 
-  const handleRemoveAvatar = async (e: React.MouseEvent) => {
+  const handleRemoveLogo = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
-    setAvatarUploading(true);
+    setLogoUploading(true);
     try {
       await onUpdate(null);
       toast({
-        title: 'Photo removed',
-        description: 'Your profile photo has been removed.',
+        title: 'Logo removed',
+        description: 'Your company logo has been removed.',
       });
     } catch (error) {
       toast({
-        title: 'Failed to remove photo',
+        title: 'Failed to remove logo',
         description: error instanceof Error ? error.message : 'An error occurred',
         variant: 'destructive',
       });
     } finally {
-      setAvatarUploading(false);
+      setLogoUploading(false);
     }
   };
 
@@ -73,11 +95,11 @@ export function AvatarUpload({ avatarUrl, initials, onUpdate, isUpdating }: Avat
       return;
     }
 
-    setAvatarUploading(true);
+    setLogoUploading(true);
     try {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('directory', 'avatars');
+      formData.append('directory', 'partner-logos');
       formData.append('fileName', file.name);
       formData.append('contentType', file.type);
 
@@ -95,8 +117,8 @@ export function AvatarUpload({ avatarUrl, initials, onUpdate, isUpdating }: Avat
       const result = await onUpdate(payload.key);
       if (result) {
         toast({
-          title: 'Photo updated',
-          description: 'Your profile photo has been changed.',
+          title: 'Logo updated',
+          description: 'Your company logo has been changed.',
         });
       }
     } catch (uploadError) {
@@ -106,7 +128,7 @@ export function AvatarUpload({ avatarUrl, initials, onUpdate, isUpdating }: Avat
         variant: 'destructive',
       });
     } finally {
-      setAvatarUploading(false);
+      setLogoUploading(false);
     }
   };
 
@@ -122,41 +144,48 @@ export function AvatarUpload({ avatarUrl, initials, onUpdate, isUpdating }: Avat
 
       <div className="group relative flex-shrink-0">
         <div className="relative">
-          <Avatar
-            src={avatarUrl}
-            initials={initials}
-            size="xl"
-            className="border-2 border-border"
-          />
-          {avatarUploading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
+          {logoUrl ? (
+            <img
+              src={getPublicUrl(logoUrl) || logoUrl}
+              alt={brandName}
+              className="w-16 h-16 object-cover border-2 border-border bg-background"
+            />
+          ) : (
+            <div className="w-16 h-16 border-2 border-border bg-background flex items-center justify-center">
+              <span className="text-lg font-semibold text-foreground tracking-tight">
+                {getInitials(brandName)}
+              </span>
+            </div>
+          )}
+          {logoUploading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
               <div className="w-4 h-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
             </div>
           )}
         </div>
         
-        {!avatarUploading && !isUpdating && (
+        {!logoUploading && !isUpdating && (
           <div className="absolute bottom-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1 z-20">
             <button
               type="button"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                handleAvatarClick();
+                handleLogoClick();
               }}
               className="h-7 w-7 bg-background border border-border rounded-full flex items-center justify-center hover:bg-muted transition-colors shadow-sm"
-              title="Change photo"
+              title="Change logo"
             >
               <Camera className="w-3.5 h-3.5 text-foreground" />
             </button>
-            {avatarUrl && (
+            {logoUrl && (
               <button
                 type="button"
-                onClick={handleRemoveAvatar}
-                className="h-7 w-7 bg-background border border-border rounded-full flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground transition-colors shadow-sm"
-                title="Remove photo"
+                onClick={handleRemoveLogo}
+                className="h-7 w-7 bg-background border border-border rounded-full flex items-center justify-center hover:bg-destructive/10 transition-colors shadow-sm"
+                title="Remove logo"
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="w-3.5 h-3.5 text-destructive" />
               </button>
             )}
           </div>
