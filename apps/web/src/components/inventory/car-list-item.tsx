@@ -121,7 +121,7 @@ export function CarListItem({
       "group relative overflow-hidden rounded-xl transition-all duration-300 hidden md:flex",
       isBlackMember 
         ? "bg-black border border-zinc-800 hover:border-zinc-700 hover:shadow-2xl" 
-        : "bg-muted/20 border border-border/40 hover:border-border/60 hover:shadow-lg",
+        : "bg-card dark:bg-muted/20 border border-border/40 hover:border-border/60 hover:shadow-lg",
       className
     )}>
       {/* Subtle top accent line for Black Members */}
@@ -157,19 +157,18 @@ export function CarListItem({
               <span className="text-xs font-bold text-white tracking-widest">BLK</span>
             </div>
           ) : qiScore ? (
-            <div className="absolute top-3 right-3 flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs backdrop-blur-md bg-background/90 border border-border/20">
-              <span className="text-primary">QI</span>
-              <span className="font-medium text-foreground">{Math.round(qiScore)}</span>
+            <div className="absolute top-3 right-3 flex items-center justify-center px-2 py-1 rounded bg-black/60 backdrop-blur-sm">
+              <span className="text-[10px] font-medium text-white/90">QI {Math.round(qiScore)}</span>
             </div>
           ) : null}
         </Link>
       </div>
 
       {/* Content Section */}
-      <div className="flex flex-1 flex-col px-6 py-5">
-        <div className="flex items-start justify-between gap-6 flex-1">
+      <div className="flex flex-1 flex-col px-6 py-5 min-w-0">
+        <div className="flex flex-wrap items-start justify-between gap-4 flex-1">
           {/* Main Info */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-[300px]">
             <Link href={`/listings/${id}`} className="group/title block mb-4">
               <h3 className={cn(
                 "text-lg font-semibold transition-colors line-clamp-1 tracking-tight",
@@ -194,37 +193,37 @@ export function CarListItem({
             </Link>
 
             {/* Specs Grid */}
-            <div className="flex items-center gap-8 mb-5">
+            <div className="flex flex-wrap items-center gap-x-8 gap-y-3 mb-5">
               <div className="flex items-center gap-2.5">
                 <p className={cn(
-                  "text-xs uppercase tracking-wide",
-                  isBlackMember ? "text-zinc-600" : "text-muted-foreground/60"
+                  "text-xs uppercase tracking-wider font-medium",
+                  isBlackMember ? "text-zinc-500" : "text-muted-foreground/70"
                 )}>Mileage</p>
                 <p className={cn(
-                  "text-base font-semibold tabular-nums",
-                  isBlackMember ? "text-zinc-200" : "text-foreground"
+                  "text-base font-bold tabular-nums",
+                  isBlackMember ? "text-zinc-100" : "text-foreground"
                 )}>{formatMileage(mileage)} km</p>
               </div>
               
               <div className="flex items-center gap-2.5">
                 <p className={cn(
-                  "text-xs uppercase tracking-wide",
-                  isBlackMember ? "text-zinc-600" : "text-muted-foreground/60"
+                  "text-xs uppercase tracking-wider font-medium",
+                  isBlackMember ? "text-zinc-500" : "text-muted-foreground/70"
                 )}>Specs</p>
                 <p className={cn(
-                  "text-base font-semibold capitalize",
-                  isBlackMember ? "text-zinc-200" : "text-foreground"
+                  "text-base font-bold capitalize",
+                  isBlackMember ? "text-zinc-100" : "text-foreground"
                 )}>{displaySpecs}</p>
               </div>
               
               <div className="flex items-center gap-2.5">
                 <p className={cn(
-                  "text-xs uppercase tracking-wide",
-                  isBlackMember ? "text-zinc-600" : "text-muted-foreground/60"
+                  "text-xs uppercase tracking-wider font-medium",
+                  isBlackMember ? "text-zinc-500" : "text-muted-foreground/70"
                 )}>Location</p>
                 <p className={cn(
-                  "text-base font-semibold",
-                  isBlackMember ? "text-zinc-200" : "text-foreground"
+                  "text-base font-bold",
+                  isBlackMember ? "text-zinc-100" : "text-foreground"
                 )}>{emirate}</p>
               </div>
             </div>
@@ -232,7 +231,7 @@ export function CarListItem({
           </div>
 
           {/* Price & Actions */}
-          <div className="flex flex-col items-end justify-between gap-6">
+          <div className="flex flex-col items-end justify-between gap-6 min-w-fit">
             <p className={cn(
               "text-xl font-semibold whitespace-nowrap tracking-tight",
               isBlackMember ? "text-white" : "text-foreground"
@@ -241,30 +240,30 @@ export function CarListItem({
             </p>
 
             {/* Actions */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
               <button 
                 className={cn(
-                  "rounded-full p-2 transition-colors",
+                  "rounded-full p-2.5 transition-colors",
                   isBlackMember
-                    ? "text-zinc-500 hover:text-zinc-300"
-                    : "text-muted-foreground/60 hover:text-foreground"
+                    ? "text-zinc-400 hover:text-zinc-200"
+                    : "text-muted-foreground/70 hover:text-foreground"
                 )}
                 aria-label="Share"
               >
-                <Share2 className="h-4 w-4" />
+                <Share2 className="h-4.5 w-4.5" />
               </button>
               
               {/* Favorite Button */}
               <button 
                 className={cn(
-                  "relative rounded-full p-2 transition-all active:scale-95",
+                  "relative rounded-full p-2.5 transition-all active:scale-95",
                   isUpdating && "opacity-50 cursor-not-allowed",
                   isFavorite
                     ? isBlackMember
                       ? "text-rose-400"
                       : "text-rose-500"
                     : isBlackMember
-                      ? "text-zinc-500 hover:text-zinc-300"
+                      ? "text-zinc-400 hover:text-zinc-200"
                       : "text-muted-foreground/70 hover:text-foreground"
                 )}
                 aria-label={isFavorite ? "Remove favorite" : "Add to favorites"}
@@ -278,10 +277,10 @@ export function CarListItem({
               >
                 <Heart
                   className={cn(
-                    "h-4 w-4 transition-transform duration-300",
+                    "h-4.5 w-4.5 transition-transform duration-300",
                     heartScale && "scale-150"
                   )}
-                  strokeWidth={isFavorite ? 2.5 : 1.8}
+                  strokeWidth={isFavorite ? 2.5 : 2}
                   fill={isFavorite ? "currentColor" : "none"}
                 />
               </button>
@@ -289,12 +288,12 @@ export function CarListItem({
               {/* Superlike Button */}
               <button
                 className={cn(
-                  "relative rounded-full p-2 transition-all active:scale-95",
+                  "relative rounded-full p-2.5 transition-all active:scale-95",
                   isUpdating && "opacity-50 cursor-not-allowed",
                   isSuperliked
                     ? "text-yellow-500"
                     : isBlackMember
-                      ? "text-zinc-500 hover:text-zinc-300"
+                      ? "text-zinc-400 hover:text-zinc-200"
                       : "text-muted-foreground/70 hover:text-foreground"
                 )}
                 aria-label={isSuperliked ? "Remove superlike" : "Superlike"}
@@ -307,8 +306,8 @@ export function CarListItem({
                 }}
               >
                 <Sparkles
-                  className="h-4 w-4"
-                  strokeWidth={isSuperliked ? 2.5 : 1.8}
+                  className="h-4.5 w-4.5"
+                  strokeWidth={isSuperliked ? 2.5 : 2}
                   fill={isSuperliked ? "currentColor" : "none"}
                 />
               </button>

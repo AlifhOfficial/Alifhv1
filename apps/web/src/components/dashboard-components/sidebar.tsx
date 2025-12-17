@@ -148,18 +148,18 @@ export function Sidebar({ user, items }: SidebarProps) {
       {/* Mobile Overlay */}
       {isOpen && (
         <div
-          className="md:hidden fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
+          className="md:hidden fixed inset-0 bg-black/50 z-40"
           onClick={() => setIsOpen(false)}
           aria-hidden="true"
         />
       )}
       
-      <aside className={`h-screen bg-muted/20 border-r border-border flex-col shrink-0 overflow-hidden transition-all duration-300 ease-in-out
-        md:flex
+      <aside className={`h-[100dvh] bg-background border-r border-border flex-col shrink-0 overflow-y-auto transition-all duration-300 ease-in-out
+        md:h-screen md:bg-muted/20
         fixed md:relative z-50 md:z-auto left-0 top-0
         ${isCollapsed ? 'w-16' : 'w-64'}
         ${isOpen ? 'flex' : 'hidden md:flex'}
-        shadow-lg md:shadow-none
+        shadow-2xl md:shadow-none
       `}>
       {/* Mobile Close Button */}
       <button
@@ -214,7 +214,7 @@ export function Sidebar({ user, items }: SidebarProps) {
       </nav>
 
       {/* Bottom Actions */}
-      <div className="border-t border-border p-3 space-y-1">
+      <div className="border-t border-border p-3 pb-8 md:pb-3 space-y-1">
         {/* Collapse Toggle - Desktop Only */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}

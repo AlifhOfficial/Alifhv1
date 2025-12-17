@@ -172,7 +172,7 @@ export function CarCard({
       "group relative flex flex-col overflow-hidden rounded-xl transition-all duration-300 min-w-[280px]",
       isBlackMember 
         ? "bg-black border border-zinc-800 hover:border-zinc-700 hover:shadow-2xl" 
-        : "bg-muted/20 border border-border/40 hover:border-border/60 hover:shadow-lg",
+        : "bg-card dark:bg-muted/20 border border-border/40 hover:border-border/60 hover:shadow-lg",
       className
     )}>
       {/* Subtle top accent line for Black Members */}
@@ -208,9 +208,8 @@ export function CarCard({
             <span className="text-xs font-bold text-white tracking-widest">BLK</span>
           </div>
         ) : qiScore ? (
-          <div className="absolute top-3 right-3 flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs backdrop-blur-md bg-background/90 border border-border/20">
-            <span className="text-primary">QI</span>
-            <span className="font-medium text-foreground">{Math.round(qiScore)}</span>
+          <div className="absolute top-3 right-3 flex items-center justify-center px-2 py-1 rounded bg-black/60 backdrop-blur-sm">
+            <span className="text-[10px] font-medium text-white/90">QI {Math.round(qiScore)}</span>
           </div>
         ) : null}
         </Link>
@@ -259,34 +258,34 @@ export function CarCard({
         )}>
           <div className="space-y-1.5">
             <p className={cn(
-              "text-[10px] uppercase tracking-wide",
-              isBlackMember ? "text-zinc-600" : "text-muted-foreground/60"
+              "text-[10px] uppercase tracking-wider font-medium",
+              isBlackMember ? "text-zinc-500" : "text-muted-foreground/70"
             )}>Mileage</p>
             <p className={cn(
-              "text-sm font-semibold tabular-nums",
-              isBlackMember ? "text-zinc-200" : "text-foreground"
+              "text-sm font-bold tabular-nums",
+              isBlackMember ? "text-zinc-100" : "text-foreground"
             )}>{formatMileage(mileage)} km</p>
           </div>
           
           <div className="space-y-1.5">
             <p className={cn(
-              "text-[10px] uppercase tracking-wide",
-              isBlackMember ? "text-zinc-600" : "text-muted-foreground/60"
+              "text-[10px] uppercase tracking-wider font-medium",
+              isBlackMember ? "text-zinc-500" : "text-muted-foreground/70"
             )}>Specs</p>
             <p className={cn(
-              "text-sm font-semibold capitalize",
-              isBlackMember ? "text-zinc-200" : "text-foreground"
+              "text-sm font-bold capitalize",
+              isBlackMember ? "text-zinc-100" : "text-foreground"
             )}>{displaySpecs}</p>
           </div>
           
           <div className="space-y-1.5">
             <p className={cn(
-              "text-[10px] uppercase tracking-wide",
-              isBlackMember ? "text-zinc-600" : "text-muted-foreground/60"
+              "text-[10px] uppercase tracking-wider font-medium",
+              isBlackMember ? "text-zinc-500" : "text-muted-foreground/70"
             )}>Location</p>
             <p className={cn(
-              "text-sm font-semibold truncate",
-              isBlackMember ? "text-zinc-200" : "text-foreground"
+              "text-sm font-bold truncate",
+              isBlackMember ? "text-zinc-100" : "text-foreground"
             )}>{emirate}</p>
           </div>
         </div>
@@ -328,30 +327,30 @@ export function CarCard({
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-0.5">
+          <div className="flex items-center gap-1">
             <button 
               className={cn(
-                "rounded-full p-1.5 transition-colors",
+                "rounded-full p-2 transition-colors",
                 isBlackMember
-                  ? "text-zinc-500 hover:text-zinc-300"
-                  : "text-muted-foreground/60 hover:text-foreground"
+                  ? "text-zinc-400 hover:text-zinc-200"
+                  : "text-muted-foreground/70 hover:text-foreground"
               )}
               aria-label="Share"
             >
-              <Share2 className="h-3.5 w-3.5" />
+              <Share2 className="h-4 w-4" />
             </button>
             
             {/* Favorite Button */}
             <button 
               className={cn(
-                "relative rounded-full p-1.5 transition-all active:scale-95",
+                "relative rounded-full p-2 transition-all active:scale-95",
                 isUpdating && "opacity-50 cursor-not-allowed",
                 isFavorite
                   ? isBlackMember
                     ? "text-rose-400"
                     : "text-rose-500"
                   : isBlackMember
-                    ? "text-zinc-500 hover:text-zinc-300"
+                    ? "text-zinc-400 hover:text-zinc-200"
                     : "text-muted-foreground/70 hover:text-foreground"
               )}
               aria-label={isFavorite ? "Remove favorite" : "Add to favorites"}
@@ -366,10 +365,10 @@ export function CarCard({
             >
               <Heart
                 className={cn(
-                  "h-3.5 w-3.5 transition-transform duration-300",
+                  "h-4 w-4 transition-transform duration-300",
                   heartScale && "scale-150"
                 )}
-                strokeWidth={isFavorite ? 2.5 : 1.8}
+                strokeWidth={isFavorite ? 2.5 : 2}
                 fill={isFavorite ? "currentColor" : "none"}
               />
             </button>
@@ -377,12 +376,12 @@ export function CarCard({
             {/* Superlike Button */}
             <button
               className={cn(
-                "relative rounded-full p-1.5 transition-all active:scale-95",
+                "relative rounded-full p-2 transition-all active:scale-95",
                 isUpdating && "opacity-50 cursor-not-allowed",
                 isSuperliked
                   ? "text-yellow-500"
                   : isBlackMember
-                    ? "text-zinc-500 hover:text-zinc-300"
+                    ? "text-zinc-400 hover:text-zinc-200"
                     : "text-muted-foreground/70 hover:text-foreground"
               )}
               aria-label={isSuperliked ? "Remove superlike" : "Superlike"}
@@ -396,8 +395,8 @@ export function CarCard({
               style={{ transition: 'color 150ms ease, transform 150ms ease, opacity 150ms ease' }}
             >
               <Sparkles
-                className="h-3.5 w-3.5"
-                strokeWidth={isSuperliked ? 2.5 : 1.8}
+                className="h-4 w-4"
+                strokeWidth={isSuperliked ? 2.5 : 2}
                 fill={isSuperliked ? "currentColor" : "none"}
               />
             </button>
