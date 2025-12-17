@@ -35,6 +35,8 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  Sparkles,
+  ShieldCheck,
 } from "lucide-react";
 import { useEffect, useMemo, useState, type ComponentType } from "react";
 import { Avatar } from "@/components/ui/data-display/avatar";
@@ -68,6 +70,8 @@ const iconMap: Record<string, ComponentType<{ className?: string }>> = {
   "shopping-cart": ShoppingCart,
   "message-square": MessageSquare,
   "heart": Heart,
+  "sparkles": Sparkles,
+  "shield-check": ShieldCheck,
 };
 
 export function Sidebar({ user, items }: SidebarProps) {

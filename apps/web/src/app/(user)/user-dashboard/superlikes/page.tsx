@@ -64,7 +64,7 @@ export default function SuperlikesPage() {
     setError(null);
 
     try {
-      const res = await fetch('/api/superlikes', {
+      const res = await fetch('/api/superlikes?includeStatuses=true', {
         credentials: 'include',
         cache: 'no-store',
       });

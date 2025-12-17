@@ -9,18 +9,24 @@
 import { useEffect, useState } from 'react';
 import { useUserProfile, type UserProfileUpdate } from '@/hooks/profile/user-profile-hook';
 import { useToast } from '@/hooks/use-toast';
-import { KycVerificationModal } from './kyc-verification-modal';
-import { EmailVerificationModal } from './email-verification-modal';
-import { PhoneVerificationModal } from './phone-verification-modal';
-import { ProfileHeader } from './profile-header';
-import { AvatarUpload } from './avatar-upload';
-import { SectionWrapper } from './section-wrapper';
-import { PersonalInformationSection } from './personal-information-section';
-import { BioSection } from './bio-section';
-import { TagsSection } from './tags-section';
-import { LocationSection } from './location-section';
-import { SettingsSection } from './settings-section';
-import { DangerZoneSection } from './danger-zone-section';
+
+// Modals
+import { KycVerificationModal } from './modals/kyc-verification-modal';
+import { EmailVerificationModal } from './modals/email-verification-modal';
+import { PhoneVerificationModal } from './modals/phone-verification-modal';
+
+// UI Components
+import { ProfileHeader } from './ui/profile-header';
+import { AvatarUpload } from './ui/avatar-upload';
+import { SectionWrapper } from './ui/section-wrapper';
+
+// Sections
+import { PersonalInformationSection } from './sections/personal-information-section';
+import { BioSection } from './sections/bio-section';
+import { TagsSection } from './sections/tags-section';
+import { LocationSection } from './sections/location-section';
+import { SettingsSection } from './sections/settings-section';
+import { DangerZoneSection } from './sections/danger-zone-section';
 
 interface ProfileViewProps {
   userName?: string | null;

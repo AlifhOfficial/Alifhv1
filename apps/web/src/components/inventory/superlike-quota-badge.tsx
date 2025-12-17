@@ -18,25 +18,25 @@ export function SuperlikeQuotaBadge({ quota, className }: SuperlikeQuotaBadgePro
 
   // Color based on remaining
   const getColor = () => {
-    if (remaining === 0) return 'text-red-500 bg-red-500/10 border-red-500/20';
-    if (remaining <= 2) return 'text-amber-500 bg-amber-500/10 border-amber-500/20';
-    return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
+    if (remaining === 0) return 'text-destructive bg-destructive/10 border-destructive/20';
+    if (remaining <= 2) return 'text-muted-foreground bg-muted/20 border-border/40';
+    return 'text-muted-foreground bg-muted/20 border-border/40';
   };
 
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-all',
+        'inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium transition-colors',
         getColor(),
         className
       )}
     >
-      <Sparkles className="h-3.5 w-3.5" strokeWidth={2} />
-      <span>
-        {remaining} / {total}
+      <Sparkles className="h-3 w-3" strokeWidth={2.5} />
+      <span className="font-semibold">
+        {remaining}<span className="opacity-60">/{total}</span>
       </span>
       {remaining === 0 && (
-        <span className="text-[10px] opacity-70">
+        <span className="text-[10px] opacity-70 ml-1">
           (Resets{' '}
           {quota.periodEndDate
             ? new Date(quota.periodEndDate).toLocaleDateString('en-US', {

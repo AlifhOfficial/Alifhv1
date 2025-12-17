@@ -29,16 +29,20 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const listingIdsParam = searchParams.get('listingIds');
+    const includeStatuses = searchParams.get('includeStatuses') === 'true';
+    
     const listingIds = listingIdsParam
       ? listingIdsParam.split(',').map((id) => id.trim()).filter(Boolean)
       : undefined;
 
+    // Optimized: Only fetch statuses if requested
+    // listings/page.tsx calls this for quota only, so we skip the expensive status fetch
     const [statuses, quota] = await Promise.all([
-      getFavoriteStatusForListings(user.id, listingIds),
+      includeStatuses ? getFavoriteStatusForListings(user.id, listingIds) : Promise.resolve({}),
       getSuperlikeQuotaForUser(user.id),
     ]);
 
-    return NextResponse.json({ statuses, quota });
+    return NextResponse.json({ statuses: includeStatuses ? statuses : undefined, quota });
   } catch (error) {
     console.error('[superlikes] GET failed', error);
     return NextResponse.json({ error: 'Failed to load superlikes' }, { status: 500 });

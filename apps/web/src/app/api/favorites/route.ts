@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import {
   getFavoriteStatusForListings,
-  getSuperlikeQuotaForUser,
   toggleFavoriteForUser,
 } from '@alifh/database';
 
@@ -23,7 +22,6 @@ export async function GET(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ 
         statuses: {},
-        quota: { remaining: 0, limit: 0, resetsAt: null }
       });
     }
 
@@ -35,12 +33,9 @@ export async function GET(req: NextRequest) {
 
     // Optimized: Just get status data - client already has listing details from /api/listings/car-card
     // This eliminates expensive JOINs and reduces 2.1s render time to ~100ms
-    const [statuses, quota] = await Promise.all([
-      getFavoriteStatusForListings(user.id, listingIds),
-      getSuperlikeQuotaForUser(user.id),
-    ]);
+    const statuses = await getFavoriteStatusForListings(user.id, listingIds);
 
-    return NextResponse.json({ statuses, quota });
+    return NextResponse.json({ statuses });
   } catch (error) {
     console.error('[favorites] GET failed', error);
     return NextResponse.json({ error: 'Failed to load favorites' }, { status: 500 });
@@ -66,9 +61,8 @@ export async function POST(req: NextRequest) {
     }
 
     const status = await toggleFavoriteForUser(user.id, listingId, addedFrom);
-    const quota = await getSuperlikeQuotaForUser(user.id);
 
-    return NextResponse.json({ status, quota });
+    return NextResponse.json({ status });
   } catch (error) {
     console.error('[favorites] POST failed', error);
     return NextResponse.json({ error: 'Failed to update favorite' }, { status: 500 });

@@ -98,14 +98,10 @@ export async function getFavoriteStatusForListings(
 ) {
   if (!userId) return {} as Record<string, { isFavorite: boolean; isSuperliked: boolean }>;
 
-  // Optimized: Build where clauses once, use indexed columns
-  const favoriteWhere = listingIds?.length
-    ? and(eq(userFavorite.userId, userId), inArray(userFavorite.listingId, listingIds))
-    : eq(userFavorite.userId, userId);
-  
-  const superlikeWhere = listingIds?.length
-    ? and(eq(userSuperlike.userId, userId), inArray(userSuperlike.listingId, listingIds))
-    : eq(userSuperlike.userId, userId);
+  // Optimized: Always fetch all favorites for the user to avoid large IN clauses
+  // and consistent performance. Filtering is done in memory.
+  const favoriteWhere = eq(userFavorite.userId, userId);
+  const superlikeWhere = eq(userSuperlike.userId, userId);
 
   // Query both tables in parallel with minimal data transfer
   const [favorites, superlikes] = await Promise.all([
@@ -121,16 +117,24 @@ export async function getFavoriteStatusForListings(
   const favoriteSet = new Set(favorites.map(f => f.listingId));
   const superlikeSet = new Set(superlikes.map(s => s.listingId));
 
-  // Build result map combining both
-  const allListingIds = new Set([...favoriteSet, ...superlikeSet]);
   const result: Record<string, { isFavorite: boolean; isSuperliked: boolean }> = {};
-  
-  allListingIds.forEach(listingId => {
-    result[listingId] = {
-      isFavorite: favoriteSet.has(listingId),
-      isSuperliked: superlikeSet.has(listingId),
-    };
-  });
+
+  if (listingIds?.length) {
+    listingIds.forEach(listingId => {
+      result[listingId] = {
+        isFavorite: favoriteSet.has(listingId),
+        isSuperliked: superlikeSet.has(listingId),
+      };
+    });
+  } else {
+    const allListingIds = new Set([...favoriteSet, ...superlikeSet]);
+    allListingIds.forEach(listingId => {
+      result[listingId] = {
+        isFavorite: favoriteSet.has(listingId),
+        isSuperliked: superlikeSet.has(listingId),
+      };
+    });
+  }
 
   return result;
 }

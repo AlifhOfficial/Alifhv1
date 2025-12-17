@@ -1,26 +1,29 @@
 /**
- * Profile Components - Modular exports
+ * Profile Components - Organized Structure
+ * Compact, efficient, categorized exports
  */
 
-// Main profile view
+// === Main View ===
 export { ProfileView } from './profile-view';
 
-// Modular components
-export { ProfileHeader } from './profile-header';
-export { AvatarUpload } from './avatar-upload';
-export { SectionWrapper } from './section-wrapper';
-export { PersonalInformationSection } from './personal-information-section';
-export { BioSection } from './bio-section';
-export { TagsSection } from './tags-section';
-export { LocationSection } from './location-section';
-export { SettingsSection } from './settings-section';
-export { DangerZoneSection } from './danger-zone-section';
+// === UI Primitives ===
+export { ProfileHeader } from './ui/profile-header';
+export { AvatarUpload } from './ui/avatar-upload';
+export { SectionWrapper } from './ui/section-wrapper';
 
-// Modals
-export { KycVerificationModal } from './kyc-verification-modal';
-export { EmailVerificationModal } from './email-verification-modal';
-export { PhoneVerificationModal } from './phone-verification-modal';
+// === Content Sections ===
+export { PersonalInformationSection } from './sections/personal-information-section';
+export { BioSection } from './sections/bio-section';
+export { TagsSection } from './sections/tags-section';
+export { LocationSection } from './sections/location-section';
+export { SettingsSection } from './sections/settings-section';
+export { DangerZoneSection } from './sections/danger-zone-section';
 
-// Map components
-export { LocationMap } from './location-map';
-export { MapClickHandler } from './map-click-handler';
+// === Location Components ===
+export { LocationMap } from './sections/location-map';
+export { MapClickHandler } from './sections/map-click-handler';
+
+// === Modals ===
+export { KycVerificationModal } from './modals/kyc-verification-modal';
+export { EmailVerificationModal } from './modals/email-verification-modal';
+export { PhoneVerificationModal } from './modals/phone-verification-modal';
