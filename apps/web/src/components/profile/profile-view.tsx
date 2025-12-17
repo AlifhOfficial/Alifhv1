@@ -283,7 +283,8 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
             kycVerified={profile?.kycVerified}
             badges={profile?.badges}
             inventoryCount={profile?.inventoryCount}
-            carsSold={profile?.carsSold}
+            rating={profile?.rating}
+            responseTime={profile?.avgResponseTime}
             memberSince={profile?.memberSince}
             status={profile?.status}
             createdAt={profile?.createdAt}

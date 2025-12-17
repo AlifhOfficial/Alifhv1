@@ -26,7 +26,8 @@ export interface UserProfile {
   kycVerified?: boolean;
   badges?: string[];
   inventoryCount?: number;
-  carsSold?: number;
+  rating?: number;
+  avgResponseTime?: number;
   memberSince?: Date | string;
   status?: string;
   createdAt?: Date | string;

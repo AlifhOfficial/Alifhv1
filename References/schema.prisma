@@ -31,7 +31,7 @@ model User {
   locationCity            String?
   locationEmirate         String?
   inventoryCount          Int              @default(0)
-  carsSold                Int              @default(0)
+  rating                  Float            @default(0.0)
   avgResponseTime         Int?
   lastActiveAt            DateTime?
   notificationPreferences Json             @default("{\"emailKYC\": true, \"emailEscrow\": true, \"emailBooking\": true, \"emailMessages\": true, \"emailFinancial\": true, \"emailMarketing\": false, \"emailReservation\": true}")

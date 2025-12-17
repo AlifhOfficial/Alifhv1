@@ -50,6 +50,13 @@
       "when": 1765914232395,
       "tag": "0006_rare_maggott",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1765989690105,
+      "tag": "0007_loose_marvel_boy",
+      "breakpoints": true
     }
   ]
 }

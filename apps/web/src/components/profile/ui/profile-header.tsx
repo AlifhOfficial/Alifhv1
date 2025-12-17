@@ -9,7 +9,8 @@ interface ProfileHeaderProps {
   kycVerified?: boolean;
   badges?: string[];
   inventoryCount?: number;
-  carsSold?: number;
+  rating?: number;
+  responseTime?: number;
   memberSince?: string | Date;
   status?: string;
   createdAt?: string | Date;
@@ -21,7 +22,8 @@ export function ProfileHeader({
   kycVerified,
   badges,
   inventoryCount = 0,
-  carsSold = 0,
+  rating,
+  responseTime,
   memberSince,
   status,
   createdAt,
@@ -85,9 +87,22 @@ export function ProfileHeader({
           </p>
         </div>
         <div>
-          <p className="text-xs text-muted-foreground">Sold</p>
+          <p className="text-xs text-muted-foreground">Rating</p>
+          <div className="flex items-center gap-1">
+            <p className="text-sm font-medium text-foreground">
+              {rating ? rating.toFixed(1) : '—'}
+            </p>
+            {rating && (
+              <svg viewBox="0 0 24 24" className="w-3 h-3 text-yellow-500 fill-current">
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+              </svg>
+            )}
+          </div>
+        </div>
+        <div>
+          <p className="text-xs text-muted-foreground">Response Time</p>
           <p className="text-sm font-medium text-foreground">
-            {carsSold}
+            {responseTime ? `${responseTime} min` : '—'}
           </p>
         </div>
         <div>

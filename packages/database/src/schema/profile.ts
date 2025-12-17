@@ -59,7 +59,7 @@ export const userProfile = pgTable('user_profile', {
   
   // Business Metrics
   inventoryCount: integer('inventory_count').default(0).notNull(),
-  carsSold: integer('cars_sold').default(0).notNull(),
+  rating: doublePrecision('rating').default(0.0),
   
   // Activity Tracking
   avgResponseTime: integer('avg_response_time'), // in minutes
