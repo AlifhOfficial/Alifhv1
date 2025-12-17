@@ -150,7 +150,7 @@ export function Sidebar({ user, items }: SidebarProps) {
         />
       )}
       
-      <aside className={`h-screen bg-card border-r border-border flex-col shrink-0 overflow-hidden transition-all duration-300 ease-in-out
+      <aside className={`h-screen bg-muted/20 border-r border-border flex-col shrink-0 overflow-hidden transition-all duration-300 ease-in-out
         md:flex
         fixed md:relative z-50 md:z-auto left-0 top-0
         ${isCollapsed ? 'w-16' : 'w-64'}
@@ -167,7 +167,7 @@ export function Sidebar({ user, items }: SidebarProps) {
       </button>
       
       {/* User Profile Section */}
-      <div className="flex items-center gap-3 px-4 py-6 border-b border-border bg-background/50">
+      <div className="flex items-center gap-3 px-4 py-6 border-b border-border">
         <Avatar
           src={avatarSrc}
           initials={initials}
@@ -210,7 +210,7 @@ export function Sidebar({ user, items }: SidebarProps) {
       </nav>
 
       {/* Bottom Actions */}
-      <div className="border-t border-border bg-background/50 p-3 space-y-1">
+      <div className="border-t border-border p-3 space-y-1">
         {/* Collapse Toggle - Desktop Only */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
