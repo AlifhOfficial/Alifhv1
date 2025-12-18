@@ -9,19 +9,19 @@
  * - Call after account status changes (banned/unbanned)
  * 
  * PLACEMENT RATIONALE:
- * Located in queries/ instead of utils/ because it directly manipulates
- * database-related cache (memoryCache) and is tightly coupled with
- * session query patterns. Not a general utility - specific to auth workflows.
+ * Lives in caches/ alongside memory-cache.ts because it directly manipulates
+ * the cache layer. Provides domain-specific invalidation functions for auth
+ * workflows while keeping cache concerns isolated from query logic.
  * 
  * CACHE STRATEGY:
  * - Session cache TTL: 30 seconds
  * - Invalidate eagerly on mutations to prevent stale role/permission data
  * - Partner staff changes reflect within 30s without invalidation
  * 
- * @module queries/auth-cache
+ * @module caches/auth-cache
  */
 
-import { memoryCache, CacheKeys } from "../caches";
+import { memoryCache, CacheKeys } from "./memory-cache";
 
 /**
  * Invalidate user session cache after auth changes

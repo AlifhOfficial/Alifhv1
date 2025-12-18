@@ -7,3 +7,4 @@
  */
 
 export * from './memory-cache';
+export * from './auth-cache';
