@@ -1,8 +1,36 @@
 /**
  * Favorites & Superlikes Queries - Production
  * 
- * User favorite and superlike management with quota tracking.
- * Optimized queries with memory caching for performance.
+ * User favorite and superlike management with quota tracking and memory caching.
+ * 
+ * USAGE:
+ * - getFavoriteStatusForListings() - Fetch user's favorites/superlikes (cached 30s)
+ * - toggleFavoriteForUser() - Add/remove favorite (optimistic delete-first)
+ * - toggleSuperlikeForUser() - Add/remove superlike (quota-enforced)
+ * - getSuperlikeQuotaForUser() - Get/create user quota with auto-reset
+ * 
+ * PLACEMENT RATIONALE:
+ * Lives at queries/ root (not in profile/) because favorites span multiple
+ * domains: listings (what's favorited), users (who favorited), and partners
+ * (for future analytics). Cross-cutting concern that doesn't belong in any
+ * single subdomain folder.
+ * 
+ * PERFORMANCE OPTIMIZATIONS:
+ * - Memory cache with 30s TTL to avoid N+1 queries on listing pages
+ * - Raw SQL UNION ALL query (faster than 2 separate ORM queries)
+ * - Optimistic delete-first strategy reduces round trips
+ * - Parallel insert + quota update for superlike toggle
+ * 
+ * QUOTA SYSTEM:
+ * - 30-day rolling periods with auto-reset on expiry
+ * - Base quota: 5 superlikes/month (configurable)
+ * - Premium bonus: 0 (extendable for paid tiers)
+ * - Quota consumed permanently per period (no refunds on removal)
+ * 
+ * CACHE INVALIDATION:
+ * - Eagerly invalidate on toggleFavorite/toggleSuperlike
+ * - Cache key: `user:favorites:{userId}`
+ * - Ensures immediate UI consistency after mutations
  * 
  * @module queries/favorites
  */
