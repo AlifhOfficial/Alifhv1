@@ -14,6 +14,7 @@ import {
   doublePrecision,
   jsonb,
   index,
+  uniqueIndex,
   pgEnum,
 } from 'drizzle-orm/pg-core';
 import { user } from './auth';
@@ -172,6 +173,8 @@ export const userFavorite = pgTable('user_favorite', {
   index('user_favorite_listingId_idx').on(table.listingId),
   index('user_favorite_userId_listingId_idx').on(table.userId, table.listingId),
   index('user_favorite_createdAt_idx').on(table.createdAt),
+  // Unique constraint to prevent duplicate favorites and enable efficient UPSERT
+  uniqueIndex('user_favorite_userId_listingId_unique').on(table.userId, table.listingId),
 ]);
 
 /**
@@ -194,6 +197,8 @@ export const userSuperlike = pgTable('user_superlike', {
   index('user_superlike_listingId_idx').on(table.listingId),
   index('user_superlike_userId_listingId_idx').on(table.userId, table.listingId),
   index('user_superlike_createdAt_idx').on(table.createdAt),
+  // Unique constraint to prevent duplicate superlikes and enable efficient UPSERT
+  uniqueIndex('user_superlike_userId_listingId_unique').on(table.userId, table.listingId),
 ]);
 
 /**

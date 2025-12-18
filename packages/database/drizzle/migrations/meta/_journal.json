@@ -57,6 +57,20 @@
       "when": 1765989690105,
       "tag": "0007_loose_marvel_boy",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1766061775115,
+      "tag": "0008_ambiguous_thunderbolt_ross",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1766062494803,
+      "tag": "0009_huge_mephisto",
+      "breakpoints": true
     }
   ]
 }

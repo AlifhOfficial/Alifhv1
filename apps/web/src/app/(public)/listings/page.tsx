@@ -26,20 +26,31 @@ export default function InventoryPage() {
     hasFetchedRef.current = true;
 
     const fetchFavoritesAndQuota = async () => {
-      const listingIds = listings.map(l => l.id).join(',');
-      
       try {
-        // Fetch both favorites and superlike quota in parallel
+        // Simplified: Fetch ALL user favorites (typically <50 items)
+        // Much cleaner than passing 30+ listing IDs in URL
         const [favRes, quotaRes] = await Promise.all([
-          fetch(`/api/favorites?listingIds=${listingIds}`, { credentials: 'include' }),
+          fetch(`/api/favorites`, { credentials: 'include' }),
           fetch(`/api/superlikes`, { credentials: 'include' })
         ]);
         
         // Handle favorites
         if (favRes.ok) {
           const favData = await favRes.json();
-          if (favData.statuses) {
-            setStatuses(favData.statuses);
+          if (favData.favorites && favData.superlikes) {
+            // Build hash map client-side (instant operation)
+            const favSet = new Set(favData.favorites);
+            const superlikeSet = new Set(favData.superlikes);
+            
+            const statusMap: Record<string, { isFavorite: boolean; isSuperliked: boolean }> = {};
+            listings.forEach(listing => {
+              statusMap[listing.id] = {
+                isFavorite: favSet.has(listing.id),
+                isSuperliked: superlikeSet.has(listing.id),
+              };
+            });
+            
+            setStatuses(statusMap);
           }
         }
         

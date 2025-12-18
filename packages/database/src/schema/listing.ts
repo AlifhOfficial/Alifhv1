@@ -185,6 +185,10 @@ export const carListing = pgTable('car_listing', {
   emirate: text('emirate').notNull(), // "Dubai", "Abu Dhabi", "Sharjah", etc.
   city: text('city'), // "Dubai Marina", "Downtown", etc.
   
+  // Partner info (denormalized for card display performance - avoids JOIN on every listing fetch)
+  partnerBrandName: text('partner_brand_name'), // Copied from partner.brandName
+  partnerVerified: boolean('partner_verified').default(false), // Copied from partner.isVerified
+  
   // Media & Content
   thumbnail: text('thumbnail'), // Main thumbnail URL
   images: jsonb('images').$type<string[]>().default([]).notNull(), // All image URLs

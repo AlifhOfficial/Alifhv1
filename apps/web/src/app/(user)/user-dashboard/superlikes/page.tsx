@@ -37,7 +37,8 @@ type ListingPayload = {
 };
 
 type SuperlikesResponse = {
-  statuses?: Record<string, { isFavorite: boolean; isSuperliked: boolean }>;
+  favorites?: string[];
+  superlikes?: string[];
   quota?: Omit<SuperlikeQuota, 'remaining'>;
   error?: string;
 };
@@ -76,14 +77,24 @@ export default function SuperlikesPage() {
       }
 
       const data: SuperlikesResponse = await res.json();
-      const statuses = data.statuses || {};
-      setStatuses(statuses);
-
-      const ids = Object.entries(statuses)
-        .filter(([, s]) => Boolean(s?.isSuperliked))
-        .map(([listingId]) => listingId);
-
-      setSuperlikeIds(ids);
+      
+      // Convert arrays to status map for context
+      const favSet = new Set(data.favorites || []);
+      const superlikeSet = new Set(data.superlikes || []);
+      
+      const allIds = new Set([...favSet, ...superlikeSet]);
+      const statusMap: Record<string, { isFavorite: boolean; isSuperliked: boolean }> = {};
+      allIds.forEach(id => {
+        statusMap[id] = {
+          isFavorite: favSet.has(id),
+          isSuperliked: superlikeSet.has(id),
+        };
+      });
+      
+      setStatuses(statusMap);
+      
+      const superlikeIdsList = data.superlikes || [];
+      setSuperlikeIds(superlikeIdsList);
 
       if (data.quota) {
         const baseMax = data.quota.maxSuperlikesPerMonth || 0;
@@ -97,10 +108,10 @@ export default function SuperlikesPage() {
         setQuota(null);
       }
 
-      if (ids.length === 0) {
+      if (superlikeIdsList.length === 0) {
         setListings([]);
       } else {
-        const cardsRes = await fetch(`/api/listings/car-card?ids=${encodeURIComponent(ids.join(','))}`, {
+        const cardsRes = await fetch(`/api/listings/car-card?ids=${encodeURIComponent(superlikeIdsList.join(','))}`, {
           credentials: 'include',
           cache: 'no-store',
         });

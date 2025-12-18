@@ -26,6 +26,7 @@ export const runtime = "nodejs";
  * - offset: number (default: 0)
  */
 export async function GET(req: NextRequest) {
+  const startTime = performance.now();
   try {
     const { searchParams } = new URL(req.url);
 
@@ -53,7 +54,8 @@ export async function GET(req: NextRequest) {
     if (partnerId) whereConditions.push(eq(schema.carListing.partnerId, partnerId));
     if (!partnerId || statusExplicit) whereConditions.push(eq(schema.carListing.status, status as any));
 
-    // Fetch only UI-needed fields
+    const queryStart = performance.now();
+    // Fetch only UI-needed fields (using denormalized partner data - no JOIN needed!)
     const listings = await db
       .select({
         // Core fields used in CarCard
@@ -72,16 +74,19 @@ export async function GET(req: NextRequest) {
         isBlackMember: schema.carListing.isBlackMember,
         status: schema.carListing.status,
         
-        // Partner info
-        partnerName: schema.partner.brandName,
-        partnerVerified: schema.partner.isVerified,
+        // Partner info (denormalized - avoids LEFT JOIN with partner table)
+        partnerName: schema.carListing.partnerBrandName,
+        partnerVerified: schema.carListing.partnerVerified,
       })
       .from(schema.carListing)
-      .leftJoin(schema.partner, eq(schema.carListing.partnerId, schema.partner.id))
       .where(and(...whereConditions))
       .orderBy(desc(schema.carListing.createdAt))
       .limit(limit)
       .offset(offset);
+    const queryTime = performance.now() - queryStart;
+
+    const totalTime = performance.now() - startTime;
+    console.log(`[car-card] GET completed in ${totalTime.toFixed(0)}ms (query: ${queryTime.toFixed(0)}ms, count: ${listings.length}, ids: ${ids?.length || 'none'})`);
     
     return NextResponse.json({
       data: listings,

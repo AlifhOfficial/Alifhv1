@@ -15,27 +15,28 @@ async function requireUser(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  const startTime = performance.now();
   try {
     const user = await requireUser(req);
     
     // Return empty data for unauthenticated users (listings page can be viewed without login)
     if (!user) {
       return NextResponse.json({ 
-        statuses: {},
+        favorites: [],
+        superlikes: [],
       });
     }
 
-    const { searchParams } = new URL(req.url);
-    const listingIdsParam = searchParams.get('listingIds');
-    const listingIds = listingIdsParam
-      ? listingIdsParam.split(',').map((id) => id.trim()).filter(Boolean)
-      : undefined;
+    const queryStart = performance.now();
+    // Optimized: Fetch ALL user favorites (typically <50 items)
+    // Returns simple arrays - client builds hash map instantly
+    const { favorites, superlikes } = await getFavoriteStatusForListings(user.id);
+    const queryTime = performance.now() - queryStart;
 
-    // Optimized: Just get status data - client already has listing details from /api/listings/car-card
-    // This eliminates expensive JOINs and reduces 2.1s render time to ~100ms
-    const statuses = await getFavoriteStatusForListings(user.id, listingIds);
+    const totalTime = performance.now() - startTime;
+    console.log(`[favorites] GET completed in ${totalTime.toFixed(0)}ms (query: ${queryTime.toFixed(0)}ms, favs: ${favorites.length}, superlikes: ${superlikes.length})`);
 
-    return NextResponse.json({ statuses });
+    return NextResponse.json({ favorites, superlikes });
   } catch (error) {
     console.error('[favorites] GET failed', error);
     return NextResponse.json({ error: 'Failed to load favorites' }, { status: 500 });
@@ -43,6 +44,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const startTime = performance.now();
   try {
     const user = await requireUser(req);
     if (!user) {
@@ -60,7 +62,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'listingId is required' }, { status: 400 });
     }
 
+    const toggleStart = performance.now();
     const status = await toggleFavoriteForUser(user.id, listingId, addedFrom);
+    const toggleTime = performance.now() - toggleStart;
+
+    const totalTime = performance.now() - startTime;
+    console.log(`[favorites] POST completed in ${totalTime.toFixed(0)}ms (toggle: ${toggleTime.toFixed(0)}ms)`);
 
     return NextResponse.json({ status });
   } catch (error) {

@@ -42,11 +42,31 @@ export const createListing = async (data: Omit<ListingInsert, 'id'>): Promise<Li
     .replace(/^-|-$/g, '');
   const slug = `${slugBase}-${createId().slice(0, 8)}`;
 
+  // Fetch partner data if partnerId provided (for denormalized fields)
+  let partnerBrandName = null;
+  let partnerVerified = false;
+  
+  if (data.partnerId) {
+    const { partner } = await import('../../schema/partner');
+    const partnerData = await db
+      .select({ brandName: partner.brandName, isVerified: partner.isVerified })
+      .from(partner)
+      .where(eq(partner.id, data.partnerId))
+      .limit(1);
+    
+    if (partnerData[0]) {
+      partnerBrandName = partnerData[0].brandName;
+      partnerVerified = partnerData[0].isVerified || false;
+    }
+  }
+
   const [result] = await db
     .insert(carListing)
     .values({
       id: makeListingId(),
       ...data,
+      partnerBrandName,
+      partnerVerified,
       slug: data.slug || slug,
       status: data.status || 'draft',
       createdAt: now,

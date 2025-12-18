@@ -26,7 +26,8 @@ type ListingPayload = {
 };
 
 type FavoritesResponse = {
-  statuses?: Record<string, { isFavorite: boolean; isSuperliked: boolean }>;
+  favorites?: string[];
+  superlikes?: string[];
   error?: string;
 };
 
@@ -63,19 +64,29 @@ export default function FavoritesPage() {
       }
 
       const data: FavoritesResponse = await res.json();
-      const statuses = data.statuses || {};
-      setStatuses(statuses);
+      
+      // Convert arrays to status map for context
+      const favSet = new Set(data.favorites || []);
+      const superlikeSet = new Set(data.superlikes || []);
+      
+      const allIds = new Set([...favSet, ...superlikeSet]);
+      const statusMap: Record<string, { isFavorite: boolean; isSuperliked: boolean }> = {};
+      allIds.forEach(id => {
+        statusMap[id] = {
+          isFavorite: favSet.has(id),
+          isSuperliked: superlikeSet.has(id),
+        };
+      });
+      
+      setStatuses(statusMap);
+      
+      const favoriteIdsList = data.favorites || [];
+      setFavoriteIds(favoriteIdsList);
 
-      const ids = Object.entries(statuses)
-        .filter(([, s]) => Boolean(s?.isFavorite))
-        .map(([listingId]) => listingId);
-
-      setFavoriteIds(ids);
-
-      if (ids.length === 0) {
+      if (favoriteIdsList.length === 0) {
         setListings([]);
       } else {
-        const cardsRes = await fetch(`/api/listings/car-card?ids=${encodeURIComponent(ids.join(','))}`, {
+        const cardsRes = await fetch(`/api/listings/car-card?ids=${encodeURIComponent(favoriteIdsList.join(','))}`, {
           credentials: 'include',
           cache: 'no-store',
         });

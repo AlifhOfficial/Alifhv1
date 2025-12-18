@@ -36,19 +36,30 @@ async function attachAvatarUrl(profile: any) {
  * Returns minimal profile with only UI-needed fields
  */
 export async function GET(req: NextRequest) {
+  const startTime = performance.now();
   try {
+    const sessionStart = performance.now();
     const user = await requireSessionUser(req);
+    const sessionTime = performance.now() - sessionStart;
+    
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const profileStart = performance.now();
     let profile = await getUserProfileByUserId(user.id);
     
     if (!profile) {
       profile = await ensureUserProfile(user.id);
     }
+    const profileTime = performance.now() - profileStart;
 
+    const avatarStart = performance.now();
     const profileWithAvatar = await attachAvatarUrl(profile);
+    const avatarTime = performance.now() - avatarStart;
+
+    const totalTime = performance.now() - startTime;
+    console.log(`[user-profile] GET completed in ${totalTime.toFixed(0)}ms (session: ${sessionTime.toFixed(0)}ms, profile: ${profileTime.toFixed(0)}ms, avatar: ${avatarTime.toFixed(0)}ms)`);
 
     return NextResponse.json(
       { profile: profileWithAvatar },

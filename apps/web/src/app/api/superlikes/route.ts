@@ -16,6 +16,7 @@ async function requireUser(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  const startTime = performance.now();
   try {
     const user = await requireUser(req);
     
@@ -28,21 +29,33 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
-    const listingIdsParam = searchParams.get('listingIds');
     const includeStatuses = searchParams.get('includeStatuses') === 'true';
-    
-    const listingIds = listingIdsParam
-      ? listingIdsParam.split(',').map((id) => id.trim()).filter(Boolean)
-      : undefined;
 
-    // Optimized: Only fetch statuses if requested
-    // listings/page.tsx calls this for quota only, so we skip the expensive status fetch
-    const [statuses, quota] = await Promise.all([
-      includeStatuses ? getFavoriteStatusForListings(user.id, listingIds) : Promise.resolve({}),
-      getSuperlikeQuotaForUser(user.id),
-    ]);
+    const quotaStart = performance.now();
+    const quota = await getSuperlikeQuotaForUser(user.id);
+    const quotaTime = performance.now() - quotaStart;
 
-    return NextResponse.json({ statuses: includeStatuses ? statuses : undefined, quota });
+    // Optimized: Only fetch ALL user favorites/superlikes if requested
+    // listings/page.tsx calls this for quota only, so we skip the fetch
+    let favorites: string[] = [];
+    let superlikes: string[] = [];
+    let statusTime = 0;
+    if (includeStatuses) {
+      const statusStart = performance.now();
+      const result = await getFavoriteStatusForListings(user.id);
+      favorites = result.favorites;
+      superlikes = result.superlikes;
+      statusTime = performance.now() - statusStart;
+    }
+
+    const totalTime = performance.now() - startTime;
+    console.log(`[superlikes] GET completed in ${totalTime.toFixed(0)}ms (quota: ${quotaTime.toFixed(0)}ms, statuses: ${statusTime.toFixed(0)}ms, includeStatuses: ${includeStatuses})`);
+
+    return NextResponse.json({ 
+      favorites: includeStatuses ? favorites : undefined, 
+      superlikes: includeStatuses ? superlikes : undefined, 
+      quota 
+    });
   } catch (error) {
     console.error('[superlikes] GET failed', error);
     return NextResponse.json({ error: 'Failed to load superlikes' }, { status: 500 });
@@ -50,6 +63,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const startTime = performance.now();
   try {
     const user = await requireUser(req);
     if (!user) {
@@ -67,7 +81,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'listingId is required' }, { status: 400 });
     }
 
+    const toggleStart = performance.now();
     const result = await toggleSuperlikeForUser(user.id, listingId, addedFrom);
+    const toggleTime = performance.now() - toggleStart;
+
+    const totalTime = performance.now() - startTime;
+    console.log(`[superlikes] POST completed in ${totalTime.toFixed(0)}ms (toggle: ${toggleTime.toFixed(0)}ms)`);
 
     return NextResponse.json({ 
       status: {

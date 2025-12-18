@@ -48,18 +48,31 @@ export function BatchFavoritesProvider({ children }: { children: ReactNode }) {
 
     const requestPromise = (async () => {
       try {
-        const idsParam = newIds.join(',');
-        const res = await fetch(`/api/favorites?listingIds=${idsParam}`, {
+        // Simplified: Just fetch ALL user favorites (typically <50 items)
+        // No need to pass listing IDs - let client filter
+        const res = await fetch(`/api/favorites`, {
           credentials: 'include',
         });
 
         if (!res.ok) throw new Error('Failed to fetch favorites');
         const data = await res.json();
         
+        // Convert arrays to hash map (instant client-side operation)
+        const favSet = new Set(data.favorites || []);
+        const superlikeSet = new Set(data.superlikes || []);
+        
+        const statusMap = newIds.reduce((acc, id) => {
+          acc[id] = {
+            isFavorite: favSet.has(id),
+            isSuperliked: superlikeSet.has(id),
+          };
+          return acc;
+        }, {} as Record<string, FavoriteStatus>);
+        
         // Update statuses immediately
         setStatuses(prev => ({
           ...prev,
-          ...data.statuses,
+          ...statusMap,
         }));
       } catch (err) {
         console.error('[BatchFavorites] Failed:', err);
