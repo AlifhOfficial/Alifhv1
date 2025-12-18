@@ -3,7 +3,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { magicLink } from "better-auth/plugins/magic-link";
 import { admin } from "better-auth/plugins/admin";
 import { customSession } from "better-auth/plugins";
-import { db } from "@alifh/database";
+import { db, memoryCache, CacheKeys, CacheTTL } from "@alifh/database";
 import * as schema from "@alifh/database";
 import { UserRole } from "@/lib/auth/types";
 import { eq, and } from "drizzle-orm";
@@ -76,7 +76,28 @@ export const auth = betterAuth({
     }),
     // Custom session to include role and partner membership data
     customSession(async ({ user, session }) => {
-      // Load user with role and partner memberships
+      const cacheKey = CacheKeys.userSession(user.id);
+      
+      // Try to get from cache first (30s TTL)
+      const cached = memoryCache.get<{
+        role: string;
+        banned: boolean;
+        hasPartnerAccess: boolean;
+        isAlifhAdmin: boolean;
+        partnerMemberships: any[];
+      }>(cacheKey);
+
+      if (cached) {
+        return {
+          user: {
+            ...user,
+            ...cached,
+          },
+          session,
+        };
+      }
+
+      // Cache miss - load from database
       const userRecord = await db.query.user.findFirst({
         where: eq(schema.user.id, user.id),
         columns: {
@@ -123,14 +144,25 @@ export const auth = betterAuth({
         permissions: m.permissions,
       }));
 
+      // Cache the result for 30 seconds
+      const sessionData = {
+        role: userRecord.role,
+        banned: userRecord.banned,
+        hasPartnerAccess,
+        isAlifhAdmin,
+        partnerMemberships,
+      };
+      
+      memoryCache.set(cacheKey, sessionData, CacheTTL.userSession);
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[customSession] Cache MISS for user ${user.id.slice(0, 8)}... - loaded from DB (${activePartnerships.length} memberships)`);
+      }
+
       return {
         user: {
           ...user,
-          role: userRecord.role,
-          banned: userRecord.banned,
-          hasPartnerAccess,
-          isAlifhAdmin,
-          partnerMemberships,
+          ...sessionData,
         },
         session,
       };

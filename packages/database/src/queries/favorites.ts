@@ -90,27 +90,45 @@ export async function getSuperlikeQuotaForUser(userId: string) {
 export async function getFavoriteStatusForListings(userId: string) {
   if (!userId) return { favorites: [], superlikes: [] };
 
-  // Simplified: Always fetch ALL user favorites/superlikes (typically <50 items)
-  // With unique indexes on (userId, listingId), queries are fast
+  // ⚡ MEMORY CACHE: Check cache first (30s TTL)
+  const { memoryCache, CacheKeys, CacheTTL } = await import('../memory-cache');
+  const cacheKey = CacheKeys.userFavorites(userId);
+  const cached = memoryCache.get<{ favorites: string[]; superlikes: string[] }>(cacheKey);
+  
+  if (cached) {
+    return cached;
+  }
+
+  // ⚡ OPTIMIZED: Use raw SQL for maximum performance (bypasses ORM overhead)
   const queryStart = performance.now();
-  const [favorites, superlikes] = await Promise.all([
-    db.select({ listingId: userFavorite.listingId })
-      .from(userFavorite)
-      .where(eq(userFavorite.userId, userId)),
-    
-    db.select({ listingId: userSuperlike.listingId })
-      .from(userSuperlike)
-      .where(eq(userSuperlike.userId, userId)),
-  ]);
+  
+  // Single query using UNION ALL - faster than 2 parallel queries
+  const results = await db.execute(sql`
+    SELECT listing_id, 'fav' as type FROM user_favorite WHERE user_id = ${userId}
+    UNION ALL
+    SELECT listing_id, 'super' as type FROM user_superlike WHERE user_id = ${userId}
+  `);
+  
   const queryTime = performance.now() - queryStart;
   
-  console.log(`[getFavoriteStatusForListings] Query: ${queryTime.toFixed(0)}ms, favs: ${favorites.length}, superlikes: ${superlikes.length}`);
+  // Split results by type
+  const favorites: string[] = [];
+  const superlikes: string[] = [];
+  
+  for (const row of results.rows as Array<{ listing_id: string; type: string }>) {
+    if (row.type === 'fav') {
+      favorites.push(row.listing_id);
+    } else {
+      superlikes.push(row.listing_id);
+    }
+  }
+  
+  const result = { favorites, superlikes };
+  
+  // Store in cache
+  memoryCache.set(cacheKey, result, CacheTTL.userFavorites);
 
-  // Return simple arrays - client builds hash map instantly
-  return {
-    favorites: favorites.map(f => f.listingId),
-    superlikes: superlikes.map(s => s.listingId),
-  };
+  return result;
 }
 
 // Removed: getAllFavoritesForUser - use getFavoriteStatusForListings instead
@@ -122,6 +140,10 @@ export async function toggleFavoriteForUser(
 ) {
   // Optimized: Try to delete first, if nothing deleted then insert
   // This reduces from 3 round trips to 2 round trips (or 1 if we guess right)
+  
+  // Invalidate cache
+  const { memoryCache, CacheKeys } = await import('../memory-cache');
+  memoryCache.delete(CacheKeys.userFavorites(userId));
   
   // Try to delete existing favorite
   const deleted = await db
@@ -166,6 +188,10 @@ export async function toggleSuperlikeForUser(
   // Get quota first (required for validation)
   const quota = await ensureSuperlikeQuota(userId);
   const allowed = (quota.maxSuperlikesPerMonth || 0) + (quota.premiumSuperlikesBonus || 0);
+  
+  // Invalidate cache
+  const { memoryCache, CacheKeys } = await import('../memory-cache');
+  memoryCache.delete(CacheKeys.userFavorites(userId));
   
   // Try to delete existing superlike
   const deleted = await db

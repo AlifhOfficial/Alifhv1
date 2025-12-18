@@ -50,8 +50,10 @@ export function BatchFavoritesProvider({ children }: { children: ReactNode }) {
       try {
         // Simplified: Just fetch ALL user favorites (typically <50 items)
         // No need to pass listing IDs - let client filter
-        const res = await fetch(`/api/favorites`, {
+        // SECURITY: Add timestamp to prevent cache reuse between users
+        const res = await fetch(`/api/favorites?_t=${Date.now()}`, {
           credentials: 'include',
+          cache: 'no-store',
         });
 
         if (!res.ok) throw new Error('Failed to fetch favorites');

@@ -71,6 +71,13 @@
       "when": 1766062494803,
       "tag": "0009_huge_mephisto",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1766071996727,
+      "tag": "0010_slippery_killer_shrike",
+      "breakpoints": true
     }
   ]
 }

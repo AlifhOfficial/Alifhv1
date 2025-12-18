@@ -32,8 +32,6 @@ export async function GET(
   try {
     const { id } = await params;
 
-    console.log('[listing detail] Fetching ID:', id);
-
     if (!id) {
       return NextResponse.json(
         { error: 'Listing ID is required' },

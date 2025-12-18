@@ -1,5 +1,5 @@
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import { Pool } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
+import { neon, neonConfig } from '@neondatabase/serverless';
 import * as schema from './schema';
 
 // Get database URL from environment
@@ -9,8 +9,27 @@ if (!connectionString) {
   throw new Error('DATABASE_URL is not set');
 }
 
-// Create Neon connection pool
-const pool = new Pool({ connectionString });
+// ⚡ BUN OPTIMIZATION: Enable fetch cache for faster HTTP requests
+// Neon uses fetch() internally - Bun's fetch is already optimized but we can tune it
+if (typeof globalThis.Bun !== 'undefined') {
+  // Enable connection reuse and keep-alive
+  neonConfig.fetchConnectionCache = true;
+  // Use Bun's native fetch (already the fastest)
+  neonConfig.webSocketConstructor = undefined; // We're using HTTP, not WebSocket
+}
+
+// Create Neon HTTP client with optimized settings
+const sql = neon(connectionString, {
+  // Reuse connections aggressively
+  fetchOptions: {
+    // @ts-ignore - Bun-specific optimization
+    keepalive: true,
+  },
+});
 
 // Initialize Drizzle client with schema
-export const db = drizzle(pool, { schema });
+// Logger disabled in production for performance
+export const db = drizzle(sql, { 
+  schema,
+  logger: process.env.NODE_ENV === 'development' ? true : false,
+});

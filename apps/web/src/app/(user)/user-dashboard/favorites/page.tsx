@@ -53,7 +53,8 @@ export default function FavoritesPage() {
     setError(null);
 
     try {
-      const res = await fetch('/api/favorites', {
+      // SECURITY: Add timestamp to prevent cached data from previous user
+      const res = await fetch(`/api/favorites?_t=${Date.now()}`, {
         credentials: 'include',
         cache: 'no-store',
       });

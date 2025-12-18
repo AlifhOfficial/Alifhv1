@@ -322,6 +322,8 @@ export const carListing = pgTable('car_listing', {
   index('car_listing_status_idx').on(table.status),
   index('car_listing_status_publishedAt_idx').on(table.status, table.publishedAt),
   index('car_listing_isFeatured_status_idx').on(table.isFeatured, table.status),
+  // Critical: Composite index for main query pattern (status + ORDER BY createdAt DESC)
+  index('car_listing_status_createdAt_idx').on(table.status, table.createdAt.desc()),
   
   // Vehicle Search
   index('car_listing_make_idx').on(table.make),

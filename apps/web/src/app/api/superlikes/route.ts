@@ -49,13 +49,16 @@ export async function GET(req: NextRequest) {
     }
 
     const totalTime = performance.now() - startTime;
-    console.log(`[superlikes] GET completed in ${totalTime.toFixed(0)}ms (quota: ${quotaTime.toFixed(0)}ms, statuses: ${statusTime.toFixed(0)}ms, includeStatuses: ${includeStatuses})`);
 
-    return NextResponse.json({ 
+    const response = NextResponse.json({ 
       favorites: includeStatuses ? favorites : undefined, 
       superlikes: includeStatuses ? superlikes : undefined, 
       quota 
     });
+    // SECURITY: Prevent browser caching of user-specific data
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    response.headers.set('Pragma', 'no-cache');
+    return response;
   } catch (error) {
     console.error('[superlikes] GET failed', error);
     return NextResponse.json({ error: 'Failed to load superlikes' }, { status: 500 });
@@ -86,7 +89,6 @@ export async function POST(req: NextRequest) {
     const toggleTime = performance.now() - toggleStart;
 
     const totalTime = performance.now() - startTime;
-    console.log(`[superlikes] POST completed in ${totalTime.toFixed(0)}ms (toggle: ${toggleTime.toFixed(0)}ms)`);
 
     return NextResponse.json({ 
       status: {

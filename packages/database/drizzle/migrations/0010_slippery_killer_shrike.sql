@@ -1,0 +1,1 @@
+CREATE INDEX "car_listing_status_createdAt_idx" ON "car_listing" USING btree ("status","created_at" DESC NULLS LAST);

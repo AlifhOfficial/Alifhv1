@@ -9,8 +9,9 @@ import { getUserProfileByUserId, updateUserProfileByUserId, ensureUserProfile } 
 import { getSignedUrl } from "@/lib/storage";
 
 export const runtime = "nodejs";
-// Allow Next.js to cache this for 30s, revalidate in background
-export const revalidate = 30;
+// REMOVED: export const revalidate = 30 - caused profile data leaking between users
+// Use server-side session caching instead (already implemented)
+export const dynamic = 'force-dynamic'; // Ensure no static caching
 
 async function requireSessionUser(req: NextRequest) {
   const session = await auth.api.getSession({ headers: req.headers });
@@ -59,15 +60,17 @@ export async function GET(req: NextRequest) {
     const avatarTime = performance.now() - avatarStart;
 
     const totalTime = performance.now() - startTime;
-    console.log(`[user-profile] GET completed in ${totalTime.toFixed(0)}ms (session: ${sessionTime.toFixed(0)}ms, profile: ${profileTime.toFixed(0)}ms, avatar: ${avatarTime.toFixed(0)}ms)`);
 
     return NextResponse.json(
       { profile: profileWithAvatar },
       { 
         status: 200,
         headers: {
-          // Allow browser to cache for 30s, revalidate after
-          'Cache-Control': 'private, max-age=30, stale-while-revalidate=60',
+          // SECURITY: Prevent browser caching to avoid profile leaks between users
+          // Use server-side caching (session cache) instead for performance
+          'Cache-Control': 'private, no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
         },
       }
     );

@@ -21,10 +21,14 @@ export async function GET(req: NextRequest) {
     
     // Return empty data for unauthenticated users (listings page can be viewed without login)
     if (!user) {
-      return NextResponse.json({ 
+      const response = NextResponse.json({ 
         favorites: [],
         superlikes: [],
       });
+      // SECURITY: Prevent caching of empty response
+      response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+      response.headers.set('Pragma', 'no-cache');
+      return response;
     }
 
     const queryStart = performance.now();
@@ -34,9 +38,12 @@ export async function GET(req: NextRequest) {
     const queryTime = performance.now() - queryStart;
 
     const totalTime = performance.now() - startTime;
-    console.log(`[favorites] GET completed in ${totalTime.toFixed(0)}ms (query: ${queryTime.toFixed(0)}ms, favs: ${favorites.length}, superlikes: ${superlikes.length})`);
 
-    return NextResponse.json({ favorites, superlikes });
+    const response = NextResponse.json({ favorites, superlikes });
+    // SECURITY: Prevent browser caching of user-specific data
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    response.headers.set('Pragma', 'no-cache');
+    return response;
   } catch (error) {
     console.error('[favorites] GET failed', error);
     return NextResponse.json({ error: 'Failed to load favorites' }, { status: 500 });
@@ -67,7 +74,6 @@ export async function POST(req: NextRequest) {
     const toggleTime = performance.now() - toggleStart;
 
     const totalTime = performance.now() - startTime;
-    console.log(`[favorites] POST completed in ${totalTime.toFixed(0)}ms (toggle: ${toggleTime.toFixed(0)}ms)`);
 
     return NextResponse.json({ status });
   } catch (error) {

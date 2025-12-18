@@ -10,3 +10,6 @@ export * from './schema';
 
 // Queries  
 export * from './queries';
+
+// Memory cache
+export * from './memory-cache';

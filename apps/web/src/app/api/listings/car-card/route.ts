@@ -9,6 +9,8 @@ import * as schema from "@alifh/database";
 import { eq, and, desc, inArray } from "drizzle-orm";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic"; // Route uses request.url for query params
+export const revalidate = 60; // Cache for 60 seconds (ISR)
 
 /**
  * GET /api/listings/car-card
@@ -86,9 +88,8 @@ export async function GET(req: NextRequest) {
     const queryTime = performance.now() - queryStart;
 
     const totalTime = performance.now() - startTime;
-    console.log(`[car-card] GET completed in ${totalTime.toFixed(0)}ms (query: ${queryTime.toFixed(0)}ms, count: ${listings.length}, ids: ${ids?.length || 'none'})`);
     
-    return NextResponse.json({
+    const response = NextResponse.json({
       data: listings,
       meta: {
         total: listings.length,
@@ -96,6 +97,11 @@ export async function GET(req: NextRequest) {
         offset,
       },
     });
+    
+    // Add cache headers for CDN and browser caching
+    response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
+    
+    return response;
   } catch (error) {
     console.error('[car-card listings] GET failed', error);
     return NextResponse.json(

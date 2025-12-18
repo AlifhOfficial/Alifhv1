@@ -66,7 +66,8 @@ export default function SuperlikesPage() {
     setError(null);
 
     try {
-      const res = await fetch('/api/superlikes?includeStatuses=true', {
+      // SECURITY: Add timestamp to prevent cached data from previous user
+      const res = await fetch(`/api/superlikes?includeStatuses=true&_t=${Date.now()}`, {
         credentials: 'include',
         cache: 'no-store',
       });

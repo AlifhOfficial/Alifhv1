@@ -54,9 +54,11 @@ export function useFavorites(listingId: string): UseFavoritesResult {
     updateStatus(listingId, { ...currentStatus, isFavorite: !currentStatus.isFavorite });
     
     try {
-      const res = await fetch('/api/favorites', {
+      // SECURITY: Add timestamp to prevent cached responses
+      const res = await fetch(`/api/favorites?_t=${Date.now()}`, {
         method: 'POST',
         credentials: 'include',
+        cache: 'no-store',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ listingId, addedFrom: 'car-card' }),
       });
@@ -96,9 +98,11 @@ export function useFavorites(listingId: string): UseFavoritesResult {
     updateStatus(listingId, { ...currentStatus, isSuperliked: !currentStatus.isSuperliked });
     
     try {
-      const res = await fetch('/api/superlikes', {
+      // SECURITY: Add timestamp to prevent cached responses
+      const res = await fetch(`/api/superlikes?_t=${Date.now()}`, {
         method: 'POST',
         credentials: 'include',
+        cache: 'no-store',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ listingId, addedFrom: 'car-card' }),
       });
