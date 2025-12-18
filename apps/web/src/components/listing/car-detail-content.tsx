@@ -8,7 +8,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import { formatPrice, formatMileage } from '@/hooks/use-listing-detail';
 
 interface CarDetailContentProps {

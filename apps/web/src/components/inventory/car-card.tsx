@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { Share2, Heart, CheckCircle2, Sparkles } from 'lucide-react';
 import { useFavorites } from '@/hooks/favorites';
 import { useUser } from '@/hooks/auth/use-auth';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import { useState, useEffect } from 'react';
 import { SuperlikeConfirmationDialog } from './superlike-confirmation-dialog';
 import { SuperlikeLimitDialog } from './superlike-limit-dialog';

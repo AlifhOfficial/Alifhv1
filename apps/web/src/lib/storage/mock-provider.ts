@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type { StorageProvider, UploadResult, SignedUrlOptions } from "./types";
-import { normalizeKey } from "./utils";
+import { normalizeKey } from "@/utils/storage";
 
 const mockStore = new Map<string, Buffer>();
 

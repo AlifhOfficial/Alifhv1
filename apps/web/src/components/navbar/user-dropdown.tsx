@@ -12,7 +12,7 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { UserRole } from "@/lib/auth/types";
+import { UserRole } from "@/types/auth";
 import { getUserPortalAccess } from "@/lib/auth/routing";
 import { useUserProfile } from "@/hooks/profile/user-profile-hook";
 

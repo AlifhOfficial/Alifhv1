@@ -1,7 +1,10 @@
 /**
- * Auth Utilities - DRY Error Handling & Helpers
+ * Authentication Utilities - Production
  * 
- * Centralized error handling to eliminate 15+ identical try-catch blocks
+ * Shared helpers for error handling, validation, and normalization.
+ * Eliminates code duplication across auth handlers.
+ * 
+ * @module utils/auth
  */
 
 export interface AuthResult<T = void> {
@@ -20,8 +23,11 @@ export interface BetterAuthResponse<T = any> {
 }
 
 /**
- * Handle Better Auth API responses with consistent error handling
- * Eliminates duplicate error handling across all auth handlers
+ * Transforms Better Auth API response to standardized result format
+ * 
+ * @param result - Better Auth API response
+ * @param defaultError - Fallback error message
+ * @returns Standardized auth result with success flag
  */
 export function handleAuthResult<T>(
   result: BetterAuthResponse<T>,
@@ -41,8 +47,11 @@ export function handleAuthResult<T>(
 }
 
 /**
- * Wrap async operations with try-catch and consistent error handling
- * Eliminates duplicate try-catch blocks throughout auth code
+ * Wraps async auth operations with error handling
+ * 
+ * @param operation - Async function returning AuthResult
+ * @param defaultError - Fallback error message
+ * @returns Auth result with caught errors normalized
  */
 export async function safeAuthOperation<T>(
   operation: () => Promise<AuthResult<T>>,
@@ -59,7 +68,9 @@ export async function safeAuthOperation<T>(
 }
 
 /**
- * Validate email format
+ * Validates email format
+ * @param email - Email address to validate
+ * @returns Validation result with error message if invalid
  */
 export function validateEmail(email: string): { valid: boolean; error?: string } {
   const normalizedEmail = email.trim().toLowerCase();
@@ -68,7 +79,6 @@ export function validateEmail(email: string): { valid: boolean; error?: string }
     return { valid: false, error: "Please enter a valid email address." };
   }
   
-  // Basic email validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(normalizedEmail)) {
     return { valid: false, error: "Please enter a valid email address." };
@@ -78,7 +88,10 @@ export function validateEmail(email: string): { valid: boolean; error?: string }
 }
 
 /**
- * Validate password requirements
+ * Validates password meets minimum length requirement
+ * @param password - Password to validate
+ * @param minLength - Minimum required length (default: 8)
+ * @returns Validation result with error message if invalid
  */
 export function validatePassword(password: string, minLength: number = 8): { valid: boolean; error?: string } {
   if (password.length < minLength) {
@@ -89,14 +102,18 @@ export function validatePassword(password: string, minLength: number = 8): { val
 }
 
 /**
- * Normalize email address
+ * Normalizes email to lowercase trimmed format
+ * @param email - Email to normalize
+ * @returns Lowercase trimmed email
  */
 export function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
 
 /**
- * Normalize name
+ * Normalizes name by trimming whitespace
+ * @param name - Name to normalize
+ * @returns Trimmed name
  */
 export function normalizeName(name: string): string {
   return name.trim();

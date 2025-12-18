@@ -7,7 +7,7 @@
 
 import { useState } from 'react';
 import { Eye } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import { PartnerProfilePreviewModal } from './partner-profile-preview-modal';
 
 interface PartnerProfilePreviewButtonProps {

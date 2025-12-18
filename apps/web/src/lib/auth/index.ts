@@ -1,3 +1,21 @@
+/**
+ * Better Auth Configuration - Production
+ * 
+ * Main authentication system configuration with Drizzle adapter.
+ * Implements session caching, role-based access control, and partner membership context.
+ * 
+ * Features:
+ * - Email/password authentication with verification
+ * - Magic link authentication
+ * - Google OAuth integration
+ * - Role-based permissions (admin plugin)
+ * - Session caching (30s TTL) for partner memberships
+ * - Account linking for trusted providers
+ * 
+ * @module lib/auth
+ * @see {@link docs/Auth/AUTH_IMPLEMENTATION.md} for architecture details
+ */
+
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { magicLink } from "better-auth/plugins/magic-link";
@@ -5,9 +23,8 @@ import { admin } from "better-auth/plugins/admin";
 import { customSession } from "better-auth/plugins";
 import { db, memoryCache, CacheKeys, CacheTTL } from "@alifh/database";
 import * as schema from "@alifh/database";
-import { UserRole } from "@/lib/auth/types";
-import { eq, and } from "drizzle-orm";
-
+import { UserRole } from "@/types/auth";
+import { eq } from "drizzle-orm";
 import { emailService } from "@/lib/email";
 import { ac, roles } from "@/lib/auth/permissions";
 import { AUTH_CONFIG } from "./config";
@@ -20,7 +37,6 @@ export const auth = betterAuth({
       account: schema.account,
       session: schema.session,
       verification: schema.verification,
-      // Include relations for Better Auth joins
       userRelations: schema.userRelations,
       accountRelations: schema.accountRelations,
       sessionRelations: schema.sessionRelations,
@@ -30,11 +46,10 @@ export const auth = betterAuth({
   session: {
     expiresIn: AUTH_CONFIG.SESSION.EXPIRES_IN,
     updateAge: AUTH_CONFIG.SESSION.UPDATE_AGE,
-    // Enable cookie caching to avoid DB queries on every session check
     cookieCache: {
       enabled: true,
-      maxAge: 5 * 60, // 5 minutes - balances performance with data freshness
-      strategy: "compact", // Most compact format, best performance
+      maxAge: 300,
+      strategy: "compact",
     },
   },
 
@@ -74,11 +89,9 @@ export const auth = betterAuth({
         user: roles.user,
       },
     }),
-    // Custom session to include role and partner membership data
     customSession(async ({ user, session }) => {
       const cacheKey = CacheKeys.userSession(user.id);
       
-      // Try to get from cache first (30s TTL)
       const cached = memoryCache.get<{
         role: string;
         banned: boolean;
@@ -88,7 +101,6 @@ export const auth = betterAuth({
       }>(cacheKey);
 
       if (cached) {
-        // Only log if SESSION_DEBUG is enabled to reduce noise
         if (process.env.SESSION_DEBUG === 'true') {
           console.log(`[customSession] Cache HIT for user ${user.id.slice(0, 8)}... (saved DB query)`);
         }
@@ -101,7 +113,6 @@ export const auth = betterAuth({
         };
       }
 
-      // Cache miss - load from database
       const userRecord = await db.query.user.findFirst({
         where: eq(schema.user.id, user.id),
         columns: {
@@ -130,7 +141,6 @@ export const auth = betterAuth({
         return { user, session };
       }
 
-      // Filter only active partners
       const activePartnerships = (userRecord.partnerMemberships || []).filter(
         m => m.partner.status === 'active'
       );
@@ -138,7 +148,6 @@ export const auth = betterAuth({
       const hasPartnerAccess = activePartnerships.length > 0;
       const isAlifhAdmin = ['admin', 'super_admin'].includes(userRecord.role || 'user');
       
-      // Map to PartnerMembership type
       const partnerMemberships = activePartnerships.map(m => ({
         staffId: m.id,
         partnerId: m.partner.id,
@@ -148,7 +157,6 @@ export const auth = betterAuth({
         permissions: m.permissions,
       }));
 
-      // Cache the result for 30 seconds
       const sessionData = {
         role: userRecord.role,
         banned: userRecord.banned,
@@ -159,7 +167,6 @@ export const auth = betterAuth({
       
       memoryCache.set(cacheKey, sessionData, CacheTTL.userSession);
       
-      // Only log if SESSION_DEBUG is enabled to reduce noise
       if (process.env.SESSION_DEBUG === 'true') {
         console.log(`[customSession] Cache MISS for user ${user.id.slice(0, 8)}... - loaded from DB (${activePartnerships.length} memberships)`);
       }
@@ -188,27 +195,20 @@ export const auth = betterAuth({
     },
   },
 
-  // Redirect auth errors to our custom error page (not Better Auth's default)
   pages: {
     signIn: "/",
     signUp: "/",
-    error: "/auth/error", // Custom error page that shows our modal
+    error: "/auth/error",
   },
 
   trustedOrigins: [
     process.env.NEXTAUTH_URL || "http://localhost:3000",
     process.env.NEXT_PUBLIC_NETWORK_URL || "",
-    "http://192.168.1.14:3000", // Local network access
-    "http://192.168.1.14:8081", // Expo mobile dev
-    "exp://192.168.1.14:8081", // Expo protocol
+    "http://192.168.1.14:3000",
+    "http://192.168.1.14:8081",
+    "exp://192.168.1.14:8081",
   ].filter(Boolean),
 });
-
-export type PartnerMembership = {
-  partnerId: string;
-  role: "owner" | "admin" | "sales" | "viewer";
-  status: "active" | "invited" | "suspended" | "left";
-};
 
 export type Session = typeof auth.$Infer.Session & {
   user: typeof auth.$Infer.Session.user & {

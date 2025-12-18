@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 import { useListingDetail, formatPrice, formatMileage } from '@/hooks/use-listing-detail';
 import { useFavorites } from '@/hooks/favorites';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 
 export default function CarDetailPage() {
   const params = useParams();

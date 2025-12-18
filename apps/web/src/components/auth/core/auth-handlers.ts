@@ -13,7 +13,7 @@ import {
   validateEmail,
   normalizeEmail,
   normalizeName 
-} from "@/lib/auth/utils";
+} from "@/utils/auth";
 import { AUTH_CONFIG } from "@/lib/auth/config";
 
 export interface AuthUser {

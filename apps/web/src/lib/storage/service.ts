@@ -1,5 +1,5 @@
 import type { UploadFileParams, UploadResult, SignedUrlOptions, StorageStatus } from "./types";
-import { buildKey } from "./utils";
+import { buildKey } from "@/utils/storage";
 import { MockStorageProvider } from "./mock-provider";
 import { R2StorageProvider, getR2Status } from "./r2-provider";
 import type { StorageProvider } from "./types";

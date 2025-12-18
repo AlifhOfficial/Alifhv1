@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { useListingDetail } from '@/hooks/use-listing-detail';
 import { useFavorites } from '@/hooks/favorites';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import { CarDetailContent } from '@/components/listing/car-detail-content';
 
 export default function CarDetailPage() {

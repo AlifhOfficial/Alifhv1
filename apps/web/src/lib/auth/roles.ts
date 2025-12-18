@@ -1,14 +1,23 @@
+/**
+ * Server-Side Authentication Guards - Production
+ * 
+ * Route protection helpers for Next.js server components and server actions.
+ * All functions leverage React cache() for request-level memoization.
+ * 
+ * @module lib/auth/roles
+ * @see {@link getSessionUser} for the underlying cached session retrieval
+ */
+
 import { redirect } from "next/navigation";
-import type { ExtendedUser } from "@/lib/auth/types";
-import type { UserRole } from "@/lib/auth/types";
+import type { ExtendedUser } from "@/types/auth";
 import { getSessionUser } from "./session-context";
 
 /**
- * Simple auth helper - just requires any authenticated user
- * Use this for pages that need login but no special role
- * Returns user with extended session data (partnerMemberships, hasPartnerAccess, etc.)
+ * Requires authenticated user (any role)
+ * Redirects to sign-in if unauthenticated
  * 
- * NOTE: Uses React cache() so multiple calls in same request return cached result
+ * @returns Extended user with partner memberships and role data
+ * @throws {redirect} Redirects to /sign-in if no session
  */
 export async function requireAuth(): Promise<ExtendedUser> {
   const user = await getSessionUser();
@@ -21,10 +30,12 @@ export async function requireAuth(): Promise<ExtendedUser> {
 }
 
 /**
- * Requires specific platform role (admin or super_admin)
- * Use this for admin-only pages
+ * Requires specific platform role
+ * Redirects to sign-in if unauthenticated, access-denied if insufficient role
  * 
- * NOTE: Uses React cache() so multiple calls in same request return cached result
+ * @param role - Required role ("admin" or "super_admin")
+ * @returns Extended user with confirmed role
+ * @throws {redirect} Redirects to /sign-in or /access-denied
  */
 export async function requireRole(role: "admin" | "super_admin"): Promise<ExtendedUser> {
   const user = await getSessionUser();

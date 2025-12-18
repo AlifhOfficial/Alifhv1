@@ -1,12 +1,21 @@
 /**
- * Server-side session context
- * Provides request-scoped session and profile caching
+ * Server-Side Session Context - Production
+ * 
+ * Request-scoped session and profile retrieval with React cache() deduplication.
+ * Integrates with middleware for header-based caching to minimize database queries.
+ * 
+ * Critical: Always use these helpers instead of calling auth.api.getSession() directly.
+ * They ensure consistent caching behavior and middleware integration.
+ * 
+ * @module lib/auth/session-context
+ * @see {@link middleware} for session header injection
+ * @see {@link docs/System_Docs/SESSION_OPTIMIZATION_GUIDE.md} for architecture
  */
 
 import { cache } from "react";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
-import type { ExtendedUser } from "@/lib/auth/types";
+import type { ExtendedUser } from "@/types/auth";
 import { getUserProfileByUserId } from "@alifh/database";
 import { getSignedUrl } from "@/lib/storage";
 
@@ -14,14 +23,18 @@ const SESSION_HEADER_KEY = "x-auth-user";
 const PROFILE_HEADER_KEY = "x-user-profile";
 
 /**
- * Get session from middleware cache or fetch
- * Uses React cache() to deduplicate within a single request
+ * Retrieves current session user with request-level caching
+ * Checks middleware-injected headers first, falls back to Better Auth API
+ * 
+ * @returns Extended user with role and partner membership data, or null if unauthenticated
+ * @example
+ * const user = await getSessionUser();
+ * if (!user) redirect('/sign-in');
  */
 export const getSessionUser = cache(async (): Promise<ExtendedUser | null> => {
   try {
     const headersList = await headers();
     
-    // Check middleware cache first
     const cachedUser = headersList.get(SESSION_HEADER_KEY);
     if (cachedUser) {
       try {
@@ -31,7 +44,6 @@ export const getSessionUser = cache(async (): Promise<ExtendedUser | null> => {
       }
     }
     
-    // Fallback: fetch from Better Auth
     const session = await auth.api.getSession({
       headers: headersList,
     });
@@ -44,14 +56,18 @@ export const getSessionUser = cache(async (): Promise<ExtendedUser | null> => {
 });
 
 /**
- * Get user profile with caching
- * Uses React cache() to deduplicate within a single request
+ * Retrieves user profile with avatar URL signing and request-level caching
+ * Generates temporary signed URLs for R2-stored avatars (10min expiry)
+ * 
+ * @returns User profile with avatarUrl, or null if not found
+ * @example
+ * const profile = await getUserProfile();
+ * if (profile?.avatarUrl) displayAvatar(profile.avatarUrl);
  */
 export const getUserProfile = cache(async () => {
   try {
     const headersList = await headers();
     
-    // Check if profile was cached by an earlier call
     const cachedProfile = headersList.get(PROFILE_HEADER_KEY);
     if (cachedProfile) {
       try {
@@ -67,7 +83,6 @@ export const getUserProfile = cache(async () => {
     const profile = await getUserProfileByUserId(user.id);
     if (!profile) return null;
 
-    // Attach signed avatar URL if needed
     if (profile.avatar && !profile.avatar.startsWith('http')) {
       try {
         const signedUrl = await getSignedUrl(profile.avatar, { expiresIn: 600 });

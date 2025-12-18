@@ -1,10 +1,34 @@
-import { createId } from "@paralleldrive/cuid2";
-import type { StorageData, UploadFileParams } from "./types";
+/**
+ * Storage Utilities - Production
+ * 
+ * Helper functions for storage key generation and data normalization.
+ * Used by storage providers (R2, Mock) for consistent behavior.
+ * 
+ * @module utils/storage
+ */
 
+import { createId } from "@paralleldrive/cuid2";
+import type { StorageData, UploadFileParams } from "@/lib/storage/types";
+
+/**
+ * Normalizes storage key by converting backslashes and removing leading/trailing slashes
+ * @param key - Raw storage key
+ * @returns Normalized key with forward slashes
+ */
 export function normalizeKey(key: string): string {
   return key.replace(/\\+/g, "/").replace(/^\/+|\/+$/g, "");
 }
 
+/**
+ * Builds storage key from upload parameters
+ * Generates unique key with CUID if not provided
+ * 
+ * @param params - Upload parameters with optional key, directory, fileName
+ * @returns Generated or normalized storage key
+ * @example
+ * buildKey({ directory: "avatars", fileName: "profile.jpg" })
+ * // "avatars/profile-cjld2cjxh0000qzrmn831i7rn.jpg"
+ */
 export function buildKey(params: Pick<UploadFileParams, "directory" | "fileName" | "key">): string {
   if (params.key) return normalizeKey(params.key);
   const id = createId();
@@ -13,6 +37,14 @@ export function buildKey(params: Pick<UploadFileParams, "directory" | "fileName"
   return normalizeKey(segments.join("/"));
 }
 
+/**
+ * Converts various data types to Uint8Array for storage
+ * Handles Buffer, Uint8Array, ArrayBuffer, string, and Node streams
+ * 
+ * @param data - Storage data in various formats
+ * @returns Uint8Array ready for upload
+ * @throws {TypeError} If data type is unsupported
+ */
 export async function toUint8Array(data: StorageData): Promise<Uint8Array> {
   if (Buffer.isBuffer(data)) return data;
   if (data instanceof Uint8Array) return data;

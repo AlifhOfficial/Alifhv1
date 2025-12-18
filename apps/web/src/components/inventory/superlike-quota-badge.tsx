@@ -2,7 +2,7 @@
 
 import { Sparkles } from 'lucide-react';
 import { SuperlikeQuota } from '@/hooks/favorites/use-favorites';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 
 interface SuperlikeQuotaBadgeProps {
   quota: SuperlikeQuota | null;

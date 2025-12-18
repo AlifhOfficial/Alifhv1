@@ -1,7 +1,7 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl as awsGetSignedUrl } from "@aws-sdk/s3-request-presigner";
 import type { StorageProvider, UploadResult, SignedUrlOptions } from "./types";
-import { normalizeKey, toUint8Array } from "./utils";
+import { normalizeKey, toUint8Array } from "@/utils/storage";
 
 const bucketName = process.env.R2_BUCKET_NAME;
 const accessKeyId = process.env.R2_ACCESS_KEY_ID;

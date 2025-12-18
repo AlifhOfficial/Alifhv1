@@ -6,7 +6,7 @@ import {
   isDealerOwner,
   isDealerStaff,
 } from "@/lib/auth/routing";
-import type { ExtendedUser } from "@/lib/auth/types";
+import type { ExtendedUser } from "@/types/auth";
 
 // Request-scoped session cache key
 const SESSION_HEADER_KEY = "x-auth-user";

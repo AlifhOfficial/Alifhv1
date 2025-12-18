@@ -1,8 +1,11 @@
 /**
- * Auth Error Constants and Mapping
+ * Authentication Error Handling - Production
  * 
- * Centralized error code mapping for Better Auth errors
- * Provides user-friendly messages and action buttons
+ * Centralized error mapping system for Better Auth integration.
+ * Maps error codes to user-friendly messages with appropriate actions.
+ * 
+ * @module lib/auth/errors
+ * @see {@link docs/Auth/AUTH_ERROR_HANDLING.md} for complete error flow documentation
  */
 
 export type AuthErrorAction = "SIGN_IN" | "SIGN_UP" | "CONTACT_SUPPORT" | "RETRY" | "CLOSE";
@@ -14,11 +17,8 @@ export interface AuthErrorInfo {
   actionLabel?: string;
 }
 
-/**
- * Maps Better Auth error codes to user-friendly modal content
- */
+/** Better Auth error code to user-friendly content mapping */
 export const AUTH_ERROR_MAP: Record<string, AuthErrorInfo> = {
-  // Account linking errors
   account_not_linked: {
     title: "Email Already in Use",
     message: "This email is already linked to a different sign-in method. Please try signing in with the provider you used before (Google/Apple), or use the same email method you originally used.",
@@ -40,7 +40,6 @@ export const AUTH_ERROR_MAP: Record<string, AuthErrorInfo> = {
     actionLabel: "Go to Sign In",
   },
 
-  // OAuth callback errors
   invalid_callback: {
     title: "Sign-In Failed",
     message: "The sign-in callback was invalid or expired. Please try again.",
@@ -62,7 +61,6 @@ export const AUTH_ERROR_MAP: Record<string, AuthErrorInfo> = {
     actionLabel: "Try Again",
   },
 
-  // Session errors
   session_expired: {
     title: "Session Expired",
     message: "Your session has expired. Please sign in again to continue.",
@@ -77,7 +75,6 @@ export const AUTH_ERROR_MAP: Record<string, AuthErrorInfo> = {
     actionLabel: "Sign In Again",
   },
 
-  // Email verification errors
   invalid_verification_token: {
     title: "Invalid Verification Link",
     message: "This verification link is invalid or has expired. Please request a new verification email.",
@@ -99,7 +96,6 @@ export const AUTH_ERROR_MAP: Record<string, AuthErrorInfo> = {
     actionLabel: "I'll Check My Email",
   },
 
-  // Password reset errors
   invalid_reset_token: {
     title: "Invalid Reset Link",
     message: "This password reset link is invalid or has expired. Please request a new one.",
@@ -113,8 +109,6 @@ export const AUTH_ERROR_MAP: Record<string, AuthErrorInfo> = {
     action: "SIGN_IN",
     actionLabel: "Go to Sign In",
   },
-
-  // Credential errors
   invalid_credentials: {
     title: "Invalid Credentials",
     message: "The email or password you entered is incorrect. Please try again.",
@@ -151,7 +145,6 @@ export const AUTH_ERROR_MAP: Record<string, AuthErrorInfo> = {
     actionLabel: "Contact Support",
   },
 
-  // Rate limiting
   too_many_requests: {
     title: "Too Many Attempts",
     message: "You've made too many attempts. Please wait a few minutes and try again.",
@@ -166,7 +159,6 @@ export const AUTH_ERROR_MAP: Record<string, AuthErrorInfo> = {
     actionLabel: "Okay",
   },
 
-  // Generic errors
   unknown_error: {
     title: "Something Went Wrong",
     message: "An unexpected error occurred. Please try again or contact support if the problem persists.",
@@ -188,7 +180,6 @@ export const AUTH_ERROR_MAP: Record<string, AuthErrorInfo> = {
     actionLabel: "Try Again",
   },
 
-  // Magic link errors
   invalid_magic_link: {
     title: "Invalid Magic Link",
     message: "This magic link is invalid or has expired. Please request a new one.",
@@ -203,7 +194,6 @@ export const AUTH_ERROR_MAP: Record<string, AuthErrorInfo> = {
     actionLabel: "Request New Link",
   },
 
-  // Provider errors
   provider_error: {
     title: "Provider Error",
     message: "There was an error with the authentication provider. Please try again or use a different sign-in method.",
@@ -218,7 +208,6 @@ export const AUTH_ERROR_MAP: Record<string, AuthErrorInfo> = {
     actionLabel: "Try Again",
   },
 
-  // Timeout errors
   request_timeout: {
     title: "Request Timeout",
     message: "The request took too long to complete. Please try again.",
@@ -228,7 +217,11 @@ export const AUTH_ERROR_MAP: Record<string, AuthErrorInfo> = {
 };
 
 /**
- * Get error info from Better Auth error code or message
+ * Maps error codes/messages to user-friendly error information
+ * Handles exact matches, partial matches, and pattern detection
+ * 
+ * @param errorCodeOrMessage - Error code or message from Better Auth
+ * @returns User-friendly error information with title, message, and action
  */
 export function getAuthErrorInfo(errorCodeOrMessage: string | null | undefined): AuthErrorInfo {
   if (!errorCodeOrMessage) {
@@ -237,44 +230,24 @@ export function getAuthErrorInfo(errorCodeOrMessage: string | null | undefined):
 
   const errorCode = errorCodeOrMessage.toLowerCase().replace(/\s+/g, "_");
   
-  // Try exact match first
   if (AUTH_ERROR_MAP[errorCode]) {
     return AUTH_ERROR_MAP[errorCode];
   }
 
-  // Try to find partial matches for common error patterns
   for (const [key, value] of Object.entries(AUTH_ERROR_MAP)) {
     if (errorCode.includes(key) || key.includes(errorCode)) {
       return value;
     }
   }
 
-  // Check for common error message patterns
-  if (errorCodeOrMessage.includes("already") && errorCodeOrMessage.includes("linked")) {
-    return AUTH_ERROR_MAP.account_already_linked;
-  }
-  
-  if (errorCodeOrMessage.includes("already") && errorCodeOrMessage.includes("use")) {
-    return AUTH_ERROR_MAP.email_already_in_use;
-  }
-  
-  if (errorCodeOrMessage.includes("expired")) {
-    return AUTH_ERROR_MAP.session_expired;
-  }
-  
-  if (errorCodeOrMessage.includes("invalid") && errorCodeOrMessage.includes("credential")) {
-    return AUTH_ERROR_MAP.invalid_credentials;
-  }
+  const msg = errorCodeOrMessage.toLowerCase();
+  if (msg.includes("already") && msg.includes("linked")) return AUTH_ERROR_MAP.account_already_linked;
+  if (msg.includes("already") && msg.includes("use")) return AUTH_ERROR_MAP.email_already_in_use;
+  if (msg.includes("expired")) return AUTH_ERROR_MAP.session_expired;
+  if (msg.includes("invalid") && msg.includes("credential")) return AUTH_ERROR_MAP.invalid_credentials;
+  if (msg.includes("not found")) return AUTH_ERROR_MAP.user_not_found;
+  if (msg.includes("rate limit")) return AUTH_ERROR_MAP.rate_limit_exceeded;
 
-  if (errorCodeOrMessage.includes("not found")) {
-    return AUTH_ERROR_MAP.user_not_found;
-  }
-
-  if (errorCodeOrMessage.includes("rate limit")) {
-    return AUTH_ERROR_MAP.rate_limit_exceeded;
-  }
-
-  // Default to generic error
   return {
     title: "Authentication Error",
     message: errorCodeOrMessage,
@@ -284,15 +257,15 @@ export function getAuthErrorInfo(errorCodeOrMessage: string | null | undefined):
 }
 
 /**
- * Parse error from Better Auth response
+ * Extracts error message from Better Auth response object
+ * 
+ * @param error - Error object from Better Auth
+ * @returns Extracted error message or null
  */
 export function parseAuthError(error: any): string | null {
   if (!error) return null;
-  
-  // Handle Better Auth error response format
   if (typeof error === 'object') {
     return error.message || error.error || error.code || 'Unknown error';
   }
-  
   return String(error);
 }

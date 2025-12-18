@@ -1,28 +1,40 @@
+/**
+ * Authentication Client - Production
+ * 
+ * Centralized authentication client for Better Auth integration.
+ * Provides magic link authentication, role-based access control, and session management.
+ * 
+ * @module lib/auth/client
+ * @requires better-auth/react
+ * @client-only This module must only be used in client components
+ */
+
 "use client";
 
 import { createAuthClient } from "better-auth/react";
-import { magicLinkClient } from "better-auth/client/plugins";
-import { adminClient } from "better-auth/client/plugins";
-import { customSessionClient } from "better-auth/client/plugins";
+import { magicLinkClient, adminClient, customSessionClient } from "better-auth/client/plugins";
 import { ac, roles } from "@/lib/auth/permissions";
 import type { auth } from "@/lib/auth";
 
-// Lazy initialization to ensure client-side only creation
+/**
+ * Singleton auth client instance
+ * Lazy-initialized on first access to ensure client-side only execution
+ */
 let _authClient: ReturnType<typeof createAuthClient> | null = null;
 
+/**
+ * Initializes and returns the auth client instance
+ * @throws {Error} If called on server side
+ * @returns {AuthClient} Configured Better Auth client
+ */
 function getAuthClient() {
   if (typeof window === 'undefined') {
     throw new Error('Auth client can only be used on the client side');
   }
   
   if (!_authClient) {
-    // Use window.location.origin to support both localhost and network IPs
-    const baseURL = typeof window !== 'undefined' 
-      ? window.location.origin 
-      : (process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000");
-    
     _authClient = createAuthClient({
-      baseURL,
+      baseURL: window.location.origin,
       plugins: [
         magicLinkClient(),
         adminClient({
@@ -32,7 +44,6 @@ function getAuthClient() {
             user: roles.user,
           },
         }),
-        // Add custom session client to infer role/partner data
         customSessionClient<typeof auth>(),
       ]
     });
@@ -41,15 +52,22 @@ function getAuthClient() {
   return _authClient;
 }
 
-// Create auth client lazily
+/**
+ * Main auth client instance
+ * Auto-initializes on client side, returns empty object on server
+ */
 export const authClient = typeof window !== 'undefined' ? getAuthClient() : {} as any;
 
-// Export methods - simple direct access
-export const signIn = authClient.signIn;
-export const signUp = authClient.signUp;
-export const signOut = authClient.signOut;
-export const useSession = typeof window !== 'undefined' ? authClient.useSession : () => ({ data: null, isPending: true, error: null });
+/**
+ * Authentication method exports
+ * Direct access to Better Auth core functionality
+ */
+export const { signIn, signUp, signOut, useSession } = authClient;
 
+/**
+ * Enhanced session hook with convenience properties
+ * @returns {Object} Session data with user info, loading state, and authentication status
+ */
 export function useAuthSession() {
   const { data: session, isPending, error } = useSession();
   
