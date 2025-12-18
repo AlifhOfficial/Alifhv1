@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPartnerMiniProfile, updatePartnerMiniProfile } from '@alifh/database';
-import { auth } from '@/lib/auth';
+import { getSessionUser } from '@/lib/auth/session-context';
 
 export async function GET(
   request: NextRequest,
@@ -37,9 +37,9 @@ export async function PATCH(
   { params }: { params: Promise<{ partnerId: string }> }
 ) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    const user = await getSessionUser();
     
-    if (!session) {
+    if (!user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

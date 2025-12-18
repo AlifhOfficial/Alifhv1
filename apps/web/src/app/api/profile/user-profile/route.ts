@@ -4,19 +4,12 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { getUserProfileByUserId, updateUserProfileByUserId, ensureUserProfile } from "@alifh/database";
 import { getSignedUrl } from "@/lib/storage";
+import { getSessionUser } from "@/lib/auth/session-context";
 
 export const runtime = "nodejs";
-// REMOVED: export const revalidate = 30 - caused profile data leaking between users
-// Use server-side session caching instead (already implemented)
-export const dynamic = 'force-dynamic'; // Ensure no static caching
-
-async function requireSessionUser(req: NextRequest) {
-  const session = await auth.api.getSession({ headers: req.headers });
-  return session?.user ?? null;
-}
+export const dynamic = 'force-dynamic';
 
 async function attachAvatarUrl(profile: any) {
   if (!profile.avatar || profile.avatar.startsWith('http')) {
@@ -40,7 +33,7 @@ export async function GET(req: NextRequest) {
   const startTime = performance.now();
   try {
     const sessionStart = performance.now();
-    const user = await requireSessionUser(req);
+    const user = await getSessionUser();
     const sessionTime = performance.now() - sessionStart;
     
     if (!user) {
@@ -86,7 +79,7 @@ export async function GET(req: NextRequest) {
  */
 export async function PATCH(req: NextRequest) {
   try {
-    const user = await requireSessionUser(req);
+    const user = await getSessionUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

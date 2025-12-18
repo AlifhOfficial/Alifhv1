@@ -8,6 +8,9 @@ import {
 } from "@/lib/auth/routing";
 import type { ExtendedUser } from "@/lib/auth/types";
 
+// Request-scoped session cache key
+const SESSION_HEADER_KEY = "x-auth-user";
+
 function isExtendedUser(user: unknown): user is ExtendedUser {
   if (!user || typeof user !== "object") return false;
   const u = user as Record<string, unknown>;
@@ -56,6 +59,11 @@ export async function proxy(request: NextRequest) {
       const user = session.user;
       const access = getUserPortalAccess(user);
 
+      // Store session in request headers for Server Components to reuse
+      // This eliminates redundant session fetches during the request lifecycle
+      const response = NextResponse.next();
+      response.headers.set(SESSION_HEADER_KEY, JSON.stringify(user));
+
       // Admin dashboard - ONLY super_admin or admin (platform admins)
       if (pathname.startsWith("/admin-dashboard")) {
         if (!access.admin) {
@@ -85,6 +93,8 @@ export async function proxy(request: NextRequest) {
           );
         }
       }
+
+      return response;
     } catch (error) {
       console.error("[Middleware] Error checking role:", error);
       return NextResponse.redirect(new URL("/sign-in", request.url));

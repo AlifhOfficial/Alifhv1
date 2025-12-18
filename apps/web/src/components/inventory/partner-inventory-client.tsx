@@ -8,7 +8,7 @@
 import { CarCard } from "@/components/inventory/car-card";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState, useEffect, useCallback } from "react";
+import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 
 interface PartnerInventoryClientProps {
   partnerId: string;
@@ -24,6 +24,7 @@ export function PartnerInventoryClient({
   const [listings, setListings] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const hasFetchedRef = useRef(false);
 
   const fetchListings = useCallback(async () => {
     if (!partnerId) return;
@@ -54,7 +55,10 @@ export function PartnerInventoryClient({
   }, [partnerId]);
 
   useEffect(() => {
-    fetchListings();
+    if (!hasFetchedRef.current) {
+      hasFetchedRef.current = true;
+      fetchListings();
+    }
   }, [fetchListings]);
 
   // Group by status

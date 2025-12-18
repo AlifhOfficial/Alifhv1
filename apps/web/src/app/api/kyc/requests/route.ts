@@ -1,19 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { NextRequest, NextResponse } from 'next/server';
+import { getSessionUser } from '@/lib/auth/session-context';
 import { db, kycRecord, userProfile, user } from "@alifh/database";
 import { eq } from "drizzle-orm";
 
 export const runtime = "nodejs";
 
-async function requireSessionUser(req: NextRequest) {
-  const session = await auth.api.getSession({ headers: req.headers });
-  return session?.user ?? null;
-}
-
 // Get all KYC requests
 export async function GET(req: NextRequest) {
   try {
-    const currentUser = await requireSessionUser(req);
+    const currentUser = await getSessionUser();
     if (!currentUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -58,7 +53,7 @@ export async function GET(req: NextRequest) {
 // Approve or reject KYC request
 export async function PATCH(req: NextRequest) {
   try {
-    const currentUser = await requireSessionUser(req);
+    const currentUser = await getSessionUser();
     if (!currentUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

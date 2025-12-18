@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { getSessionUser } from '@/lib/auth/session-context';
 import {
   getFavoriteStatusForListings,
   getSuperlikeQuotaForUser,
@@ -10,15 +10,10 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-async function requireUser(req: NextRequest) {
-  const session = await auth.api.getSession({ headers: req.headers });
-  return session?.user ?? null;
-}
-
 export async function GET(req: NextRequest) {
   const startTime = performance.now();
   try {
-    const user = await requireUser(req);
+    const user = await getSessionUser();
     
     // Return empty data for unauthenticated users (listings page can be viewed without login)
     // IMPORTANT: Empty response is NOT cached to ensure auth modal shows every time
@@ -73,7 +68,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const startTime = performance.now();
   try {
-    const user = await requireUser(req);
+    const user = await getSessionUser();
     if (!user) {
       return NextResponse.json({ 
         error: 'Please sign in to add superlikes',

@@ -4,15 +4,10 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { getSessionUser } from '@/lib/auth/session-context';
 import { updateUserProfileByUserId } from "@alifh/database";
 
 export const runtime = "nodejs";
-
-async function requireSessionUser(req: NextRequest) {
-  const session = await auth.api.getSession({ headers: req.headers });
-  return session?.user ?? null;
-}
 
 /**
  * POST /api/profile/delete-account
@@ -20,7 +15,7 @@ async function requireSessionUser(req: NextRequest) {
  */
 export async function POST(req: NextRequest) {
   try {
-    const user = await requireSessionUser(req);
+    const user = await getSessionUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

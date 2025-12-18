@@ -1,18 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { NextRequest, NextResponse } from 'next/server';
+import { getSessionUser } from '@/lib/auth/session-context';
 import { db, kycRecord } from "@alifh/database";
 import { createId } from "@paralleldrive/cuid2";
 
 export const runtime = "nodejs";
 
-async function requireSessionUser(req: NextRequest) {
-  const session = await auth.api.getSession({ headers: req.headers });
-  return session?.user ?? null;
-}
-
 export async function POST(req: NextRequest) {
   try {
-    const user = await requireSessionUser(req);
+    const user = await getSessionUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
