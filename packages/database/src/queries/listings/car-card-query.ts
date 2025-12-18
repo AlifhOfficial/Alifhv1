@@ -1,6 +1,10 @@
 /**
- * Car Card Listings Queries
- * Queries for fetching and managing listings displayed in car cards
+ * Car Listing Queries - Production
+ * 
+ * CRUD operations for car listings with partner denormalization.
+ * Manages listing creation, updates, and soft deletes.
+ * 
+ * @module queries/listings/car-card-query
  */
 
 import { createId } from '@paralleldrive/cuid2';

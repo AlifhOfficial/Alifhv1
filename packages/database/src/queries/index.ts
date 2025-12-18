@@ -1,19 +1,15 @@
 /**
- * Database Queries Index
- * Re-exports all query functions for easy importing
+ * Database Queries - Production
+ * 
+ * Centralized query functions for all database operations.
+ * All queries use Drizzle ORM with proper caching and optimization.
+ * 
+ * @module queries
  */
 
-// Auth queries
 export * from './auth';
-
-// Partner queries
+export * from './auth-cache';
 export * from './partner';
-
-// Profile queries  
 export * from './profile';
-
-// Listing queries
 export * from './listings';
-
-// Favorites & Superlikes queries
 export * from './favorites';

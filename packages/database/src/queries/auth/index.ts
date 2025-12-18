@@ -1,6 +1,9 @@
 /**
- * Auth Queries Index
- * Re-exports all auth-related query functions
+ * Auth Queries - Production
+ * 
+ * User authentication and management query functions.
+ * 
+ * @module queries/auth
  */
 
 export * from './user-auth-queries';

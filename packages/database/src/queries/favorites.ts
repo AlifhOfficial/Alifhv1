@@ -1,3 +1,12 @@
+/**
+ * Favorites & Superlikes Queries - Production
+ * 
+ * User favorite and superlike management with quota tracking.
+ * Optimized queries with memory caching for performance.
+ * 
+ * @module queries/favorites
+ */
+
 import { createId } from '@paralleldrive/cuid2';
 import { and, eq, sql } from 'drizzle-orm';
 import { db } from '../dbclient';

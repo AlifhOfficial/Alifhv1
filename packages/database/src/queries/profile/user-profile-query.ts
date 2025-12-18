@@ -1,6 +1,10 @@
 /**
- * User Profile Queries - Simplified for Profile View
- * Only includes fields actually used in the UI
+ * User Profile Queries - Production
+ * 
+ * User profile management with automatic name syncing and verification tracking.
+ * Handles profile CRUD operations with denormalized user data.
+ * 
+ * @module queries/profile/user-profile-query
  */
 
 import { createId } from '@paralleldrive/cuid2';

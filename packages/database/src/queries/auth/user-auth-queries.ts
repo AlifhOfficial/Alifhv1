@@ -1,7 +1,10 @@
 /**
- * Essential Auth Queries
+ * User Auth Queries - Production
  * 
- * Clean Better Auth queries only.
+ * Essential user authentication and management queries.
+ * Used by Better Auth for user operations.
+ * 
+ * @module queries/auth/user-auth-queries
  */
 
 import { createId } from '@paralleldrive/cuid2';
