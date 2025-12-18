@@ -1,17 +1,16 @@
 /**
- * useListingDetail Hook
- * Fetches complete listing details for a single car
+ * Listing Detail Hook
  * 
- * Usage:
- * const { listing, isLoading, error, refetch } = useListingDetail(listingId);
+ * Fetches complete listing details for a single car with caching.
+ * Includes vehicle specs, pricing, features, and partner information.
+ * 
+ * @param id - The listing ID to fetch
+ * @returns Query result with listing data, loading state, and error
  */
 
 import { useQuery } from '@tanstack/react-query';
 
-/**
- * Listing Detail Type
- * Complete car listing data returned from API
- */
+// Complete car listing with all details from API
 export interface ListingDetail {
   // Primary identification
   id: string;
@@ -191,26 +190,17 @@ interface ListingDetailResponse {
   data: ListingDetail;
 }
 
-/**
- * Fetch listing detail from API
- */
 async function fetchListingDetail(id: string): Promise<ListingDetail> {
   const response = await fetch(`/api/listings/${id}`);
   
   if (!response.ok) {
-    if (response.status === 404) {
-      throw new Error('Listing not found');
-    }
-    throw new Error('Failed to fetch listing details');
+    throw new Error(response.status === 404 ? 'Listing not found' : 'Failed to fetch listing details');
   }
   
   const json: ListingDetailResponse = await response.json();
   return json.data;
 }
 
-/**
- * Hook to fetch listing detail
- */
 export function useListingDetail(id: string | null | undefined) {
   return useQuery({
     queryKey: ['listing', id],
@@ -218,15 +208,13 @@ export function useListingDetail(id: string | null | undefined) {
       if (!id) throw new Error('Listing ID is required');
       return fetchListingDetail(id);
     },
-    enabled: !!id, // Only run query if ID is provided
-    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-    retry: 1, // Only retry once on failure
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
   });
 }
 
-/**
- * Helper function to format price from cents to AED
- */
+// Format price from cents to AED
 export function formatPrice(cents: number): string {
   return new Intl.NumberFormat('en-AE', {
     style: 'currency',
@@ -236,9 +224,7 @@ export function formatPrice(cents: number): string {
   }).format(cents / 100);
 }
 
-/**
- * Helper function to format mileage
- */
+// Format mileage with thousands separator
 export function formatMileage(km: number): string {
   return new Intl.NumberFormat('en-AE').format(km);
 }

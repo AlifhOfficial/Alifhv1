@@ -1,14 +1,20 @@
 /**
- * User Profile Hook - Simplified
- * Only handles fields used in ProfileView
+ * User Profile Hook
+ * 
+ * Manages user profile data with shared state and deduplication.
+ * Implements caching to prevent redundant API calls.
+ * 
+ * @param options - Configuration for fetching behavior
+ * @returns Profile data, loading states, and update functions
  */
 
 'use client';
 
-import { useCallback, useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-// Minimal profile type matching UI needs
-// Note: firstName/lastName sync to user.name automatically
+const CACHE_DURATION = 30000; // 30 seconds
+
+// User profile with fields used in ProfileView
 export interface UserProfile {
   id: string;
   userId: string;
@@ -61,14 +67,15 @@ interface UseUserProfileResult {
   updateProfile: (input: UserProfileUpdate) => Promise<UserProfile | null>;
 }
 
-// Shared store for deduplication
-let store: {
+interface StoreState {
   profile: UserProfile | null;
   isLoading: boolean;
   isUpdating: boolean;
   error: string | null;
   lastFetchTime: number | null;
-} = {
+}
+
+let store: StoreState = {
   profile: null,
   isLoading: false,
   isUpdating: false,
@@ -77,13 +84,11 @@ let store: {
 };
 
 let pendingRequest: Promise<UserProfile | null> | null = null;
-const listeners = new Set<(state: typeof store) => void>();
+const listeners = new Set<(state: StoreState) => void>();
 
-const notify = () => {
-  listeners.forEach(listener => listener(store));
-};
+const notify = () => listeners.forEach(listener => listener(store));
 
-const updateStore = (partial: Partial<typeof store>) => {
+const updateStore = (partial: Partial<StoreState>) => {
   store = { ...store, ...partial };
   notify();
 };
@@ -94,25 +99,20 @@ const resetStore = () => {
   notify();
 };
 
-async function refreshProfileFromServer(): Promise<UserProfile | null> {
-  // Deduplicate requests - if already loading, return existing promise
-  if (pendingRequest) {
-    return pendingRequest;
-  }
+const isCacheFresh = () => {
+  return store.profile && store.lastFetchTime && (Date.now() - store.lastFetchTime < CACHE_DURATION);
+};
 
-  // If we have fresh data (< 30s old), don't refetch
-  if (store.profile && store.lastFetchTime && (Date.now() - store.lastFetchTime < 30000)) {
-    return store.profile;
-  }
+async function refreshProfileFromServer(): Promise<UserProfile | null> {
+  if (pendingRequest) return pendingRequest;
+  if (isCacheFresh()) return store.profile;
 
   updateStore({ isLoading: true });
 
   pendingRequest = (async () => {
     try {
       const res = await fetch('/api/profile/user-profile', {
-        method: 'GET',
         credentials: 'include',
-        // Allow browser to cache for 30s to reduce duplicate requests
         cache: 'default',
       });
 
@@ -130,8 +130,7 @@ async function refreshProfileFromServer(): Promise<UserProfile | null> {
       updateStore({ profile, error: null, lastFetchTime: Date.now() });
       return profile;
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to load profile';
-      updateStore({ error: message });
+      updateStore({ error: err instanceof Error ? err.message : 'Failed to load profile' });
       return null;
     } finally {
       updateStore({ isLoading: false });
@@ -167,8 +166,7 @@ async function patchProfileOnServer(input: UserProfileUpdate): Promise<UserProfi
     updateStore({ profile, error: null });
     return profile;
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Failed to update profile';
-    updateStore({ error: message });
+    updateStore({ error: err instanceof Error ? err.message : 'Failed to update profile' });
     return null;
   } finally {
     updateStore({ isUpdating: false });
@@ -180,7 +178,7 @@ export function useUserProfile(options: { fetchOnMount?: boolean; userId?: strin
   const [state, setState] = useState(store);
 
   useEffect(() => {
-    const listener = (nextState: typeof store) => setState(nextState);
+    const listener = (nextState: StoreState) => setState(nextState);
     listeners.add(listener);
     return () => {
       listeners.delete(listener);
@@ -202,11 +200,7 @@ export function useUserProfile(options: { fetchOnMount?: boolean; userId?: strin
   const updateProfile = useCallback((input: UserProfileUpdate) => patchProfileOnServer(input), []);
 
   useEffect(() => {
-    if (!fetchOnMount) return;
-    // Don't fetch if we already have data or are currently loading
-    if (store.profile || store.isLoading) return;
-    // Don't fetch if we fetched recently (< 30s ago)
-    if (store.lastFetchTime && (Date.now() - store.lastFetchTime < 30000)) return;
+    if (!fetchOnMount || store.profile || store.isLoading || isCacheFresh()) return;
     void refreshProfileFromServer();
   }, [fetchOnMount]);
 

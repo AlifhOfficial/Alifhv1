@@ -1,10 +1,19 @@
+/**
+ * Listings Hook
+ * 
+ * Manages listing data fetching with pagination support.
+ * Implements infinite scroll pattern with load more functionality.
+ * 
+ * @returns Listing data, loading states, and pagination controls
+ */
+
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-/**
- * Minimal Listing type - only fields actually used in car card UI
- */
+const LIMIT = 30;
+
+// Minimal listing type - only fields used in car card UI
 export interface Listing {
   id: string;
   make: string;
@@ -44,7 +53,6 @@ export function useListings(): UseListingsResult {
   const [totalCount, setTotalCount] = useState(0);
   const [offset, setOffset] = useState(0);
   const hasFetchedRef = useRef(false);
-  const LIMIT = 30;
 
   const fetchListings = useCallback(async (currentOffset = 0, append = false) => {
     try {
@@ -55,10 +63,10 @@ export function useListings(): UseListingsResult {
       }
       setError(null);
 
-      const response = await fetch(`/api/listings/car-card?status=published&limit=${LIMIT}&offset=${currentOffset}`, {
-        method: 'GET',
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `/api/listings/car-card?status=published&limit=${LIMIT}&offset=${currentOffset}`,
+        { credentials: 'include' }
+      );
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -66,21 +74,14 @@ export function useListings(): UseListingsResult {
       }
 
       const data = await response.json();
-      const newListings = data.data || [];
+      const newListings = data.data ?? [];
       
-      if (append) {
-        setListings(prev => [...prev, ...newListings]);
-      } else {
-        setListings(newListings);
-      }
-      
-      setTotalCount(data.meta?.total || newListings.length);
+      setListings(prev => append ? [...prev, ...newListings] : newListings);
+      setTotalCount(data.meta?.total ?? newListings.length);
       setHasMore(newListings.length === LIMIT);
       setOffset(currentOffset + newListings.length);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch listings';
-      setError(errorMessage);
-      console.error('[useListings] Error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch listings');
     } finally {
       setIsLoading(false);
       setIsLoadingMore(false);
@@ -98,7 +99,8 @@ export function useListings(): UseListingsResult {
       hasFetchedRef.current = true;
       fetchListings();
     }
-  }, [fetchListings]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
     listings,

@@ -1,3 +1,13 @@
+/**
+ * Favorites Hook
+ * 
+ * Manages favorite and superlike interactions for listings with optimistic updates.
+ * Handles authentication state and quota management.
+ * 
+ * @param listingId - The ID of the listing to manage
+ * @returns Favorite/superlike state and toggle functions
+ */
+
 'use client';
 
 import { useCallback, useState } from 'react';
@@ -32,20 +42,29 @@ interface UseFavoritesResult {
   closeAuthDialog: () => void;
 }
 
+interface AuthState {
+  show: boolean;
+  message: string;
+  feature: 'favorites' | 'superlikes';
+}
+
+const DEFAULT_AUTH_STATE: AuthState = { show: false, message: '', feature: 'favorites' };
+const DEFAULT_STATUS: FavoriteStatus = { isFavorite: false, isSuperliked: false };
+
 export function useFavorites(listingId: string): UseFavoritesResult {
   const { statuses, updateStatus, clearStatuses, quota, setQuota } = useFavoritesContext();
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [authRequired, setAuthRequired] = useState<{ show: boolean; message: string; feature: 'favorites' | 'superlikes' }>({ show: false, message: '', feature: 'favorites' });
+  const [authRequired, setAuthRequired] = useState<AuthState>(DEFAULT_AUTH_STATE);
 
-  const status = statuses[listingId] || { isFavorite: false, isSuperliked: false };
+  const status = statuses[listingId] ?? DEFAULT_STATUS;
 
 
 
   const toggleFavorite = useCallback(async () => {
     if (!listingId || isUpdating) return;
     
-    const currentStatus = statuses[listingId] || { isFavorite: false, isSuperliked: false };
+    const currentStatus = statuses[listingId] ?? DEFAULT_STATUS;
     const previousStatus = { ...currentStatus };
     setIsUpdating(true);
     setError(null);
@@ -54,7 +73,6 @@ export function useFavorites(listingId: string): UseFavoritesResult {
     updateStatus(listingId, { ...currentStatus, isFavorite: !currentStatus.isFavorite });
     
     try {
-      // SECURITY: Add timestamp to prevent cached responses
       const res = await fetch(`/api/favorites?_t=${Date.now()}`, {
         method: 'POST',
         credentials: 'include',
@@ -64,11 +82,13 @@ export function useFavorites(listingId: string): UseFavoritesResult {
       });
 
       if (res.status === 401) {
-        // User not authenticated - clear cached state and show auth modal
-        // This ensures the modal shows every time (no stale cached state)
         clearStatuses();
         const data = await res.json();
-        setAuthRequired({ show: true, message: data.error || 'Please sign in to add favorites', feature: 'favorites' });
+        setAuthRequired({
+          show: true,
+          message: data.error || 'Please sign in to add favorites',
+          feature: 'favorites'
+        });
         return;
       }
 
@@ -85,12 +105,12 @@ export function useFavorites(listingId: string): UseFavoritesResult {
     } finally {
       setIsUpdating(false);
     }
-  }, [listingId, statuses, updateStatus, clearStatuses, setQuota]);
+  }, [listingId, statuses, updateStatus, clearStatuses, isUpdating]);
 
   const toggleSuperlike = useCallback(async () => {
     if (!listingId || isUpdating) return;
     
-    const currentStatus = statuses[listingId] || { isFavorite: false, isSuperliked: false };
+    const currentStatus = statuses[listingId] ?? DEFAULT_STATUS;
     const previousStatus = { ...currentStatus };
     setIsUpdating(true);
     setError(null);
@@ -99,7 +119,6 @@ export function useFavorites(listingId: string): UseFavoritesResult {
     updateStatus(listingId, { ...currentStatus, isSuperliked: !currentStatus.isSuperliked });
     
     try {
-      // SECURITY: Add timestamp to prevent cached responses
       const res = await fetch(`/api/superlikes?_t=${Date.now()}`, {
         method: 'POST',
         credentials: 'include',
@@ -109,11 +128,13 @@ export function useFavorites(listingId: string): UseFavoritesResult {
       });
 
       if (res.status === 401) {
-        // User not authenticated - clear cached state and show auth modal
-        // This ensures the modal shows every time (no stale cached state)
         clearStatuses();
         const data = await res.json();
-        setAuthRequired({ show: true, message: data.error || 'Please sign in to add superlikes', feature: 'superlikes' });
+        setAuthRequired({
+          show: true,
+          message: data.error || 'Please sign in to add superlikes',
+          feature: 'superlikes'
+        });
         return;
       }
 
@@ -125,13 +146,11 @@ export function useFavorites(listingId: string): UseFavoritesResult {
         isSuperliked: data.status?.isSuperliked ?? false,
       });
       
-      // Update quota if returned
       if (data.quota) {
-        const updatedQuota = {
+        setQuota({
           ...data.quota,
           remaining: (data.quota.maxSuperlikesPerMonth + data.quota.premiumSuperlikesBonus) - data.quota.currentMonthSuperlikesUsed
-        };
-        setQuota(updatedQuota);
+        });
       }
     } catch (err) {
       updateStatus(listingId, previousStatus);
@@ -139,7 +158,7 @@ export function useFavorites(listingId: string): UseFavoritesResult {
     } finally {
       setIsUpdating(false);
     }
-  }, [listingId, statuses, updateStatus, clearStatuses, setQuota]);
+  }, [listingId, statuses, updateStatus, clearStatuses, setQuota, isUpdating]);
 
   return {
     isFavorite: status.isFavorite,
@@ -152,6 +171,6 @@ export function useFavorites(listingId: string): UseFavoritesResult {
     authRequired: authRequired.show,
     authMessage: authRequired.message,
     authFeature: authRequired.feature,
-    closeAuthDialog: () => setAuthRequired({ show: false, message: '', feature: 'favorites' }),
+    closeAuthDialog: () => setAuthRequired(DEFAULT_AUTH_STATE),
   };
 }

@@ -1,16 +1,22 @@
+/**
+ * Partner Mini Profile Hook
+ * 
+ * Manages partner profile data fetching and updates with React Query.
+ * Implements optimistic updates for better UX.
+ * 
+ * @returns Partner profile data and update mutation
+ */
+
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useToast } from "@/hooks/use-toast";
 
-interface PartnerMiniProfile {
+export interface PartnerMiniProfile {
   // Identity & Legal
   id: string;
   companyNameLegal: string;
   brandName: string;
   tradeLicense: string;
-  
-  // Status & Tier
   status: string;
   tier: string;
   
@@ -21,7 +27,7 @@ interface PartnerMiniProfile {
   city: string | null;
   locationLat: number | null;
   locationLng: number | null;
-  showroomCount: number; // default: 1
+  showroomCount: number;
   
   // Branding & Media
   logo: string | null;
@@ -29,7 +35,7 @@ interface PartnerMiniProfile {
   
   // Business Information
   description: string | null;
-  specialties: string[]; // default: []
+  specialties: string[];
   experienceYears: number | null;
   foundedYear: number | null;
   
@@ -50,47 +56,33 @@ interface PartnerMiniProfile {
   avgResponseTime: number | null;
   responseRate: number | null;
   
-  // Trust & Tags
+  // Trust & Verification
   isVerified: boolean;
-  badges: string[]; // default: []
-  tags: string[]; // default: []
+  badges: string[];
+  tags: string[];
 }
 
-interface UpdatePartnerMiniProfileData {
-  // Basic Information
+export interface UpdatePartnerMiniProfileData {
   companyNameLegal?: string;
   brandName?: string;
   website?: string;
-  
-  // Location
   address?: string;
   emirate?: string;
   city?: string;
   locationLat?: number;
   locationLng?: number;
   showroomCount?: number;
-  
-  // Branding & Media
   logo?: string;
   heroImage?: string;
-  
-  // Business Information
   description?: string;
   specialties?: string[];
   experienceYears?: number;
   foundedYear?: number;
-  
-  // External Ratings
   googleReviewUrl?: string;
-  
-  // Trust & Tags
   badges?: string[];
   tags?: string[];
 }
 
-/**
- * Fetch partner mini profile
- */
 async function fetchPartnerMiniProfile(partnerId: string): Promise<PartnerMiniProfile> {
   const response = await fetch(`/api/partners/${partnerId}/mini-profile`);
   
@@ -98,24 +90,16 @@ async function fetchPartnerMiniProfile(partnerId: string): Promise<PartnerMiniPr
     throw new Error('Failed to fetch partner mini profile');
   }
   
-  const data = await response.json();
-  
-  // Data is already normalized from the backend
-  return data;
+  return response.json();
 }
 
-/**
- * Update partner mini profile
- */
-async function updatePartnerMiniProfileApi(
+async function updatePartnerMiniProfile(
   partnerId: string,
   data: UpdatePartnerMiniProfileData
 ): Promise<PartnerMiniProfile> {
   const response = await fetch(`/api/partners/${partnerId}/mini-profile`, {
     method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
   
@@ -126,63 +110,48 @@ async function updatePartnerMiniProfileApi(
   return response.json();
 }
 
-/**
- * Hook to fetch partner mini profile
- */
 export function usePartnerMiniProfile(partnerId: string | null | undefined) {
   return useQuery({
     queryKey: ['partner', 'mini-profile', partnerId],
     queryFn: () => fetchPartnerMiniProfile(partnerId!),
     enabled: !!partnerId,
-    staleTime: 2 * 60 * 1000, // 2 minutes (reduced for fresher data)
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 2 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    retry: 2, // Retry failed requests twice
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 }
 
-/**
- * Hook to update partner mini profile with optimistic updates
- */
 export function useUpdatePartnerMiniProfile(partnerId: string) {
   const queryClient = useQueryClient();
+  const queryKey = ['partner', 'mini-profile', partnerId];
 
   return useMutation({
     mutationFn: (data: UpdatePartnerMiniProfileData) =>
-      updatePartnerMiniProfileApi(partnerId, data),
+      updatePartnerMiniProfile(partnerId, data),
     onMutate: async (newData) => {
-      // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['partner', 'mini-profile', partnerId] });
+      await queryClient.cancelQueries({ queryKey });
 
-      // Snapshot previous value
-      const previousProfile = queryClient.getQueryData<PartnerMiniProfile>(
-        ['partner', 'mini-profile', partnerId]
-      );
+      const previousProfile = queryClient.getQueryData<PartnerMiniProfile>(queryKey);
 
-      // Optimistically update
       if (previousProfile) {
-        queryClient.setQueryData<PartnerMiniProfile>(
-          ['partner', 'mini-profile', partnerId],
-          { ...previousProfile, ...newData }
-        );
+        queryClient.setQueryData<PartnerMiniProfile>(queryKey, {
+          ...previousProfile,
+          ...newData,
+        });
       }
 
       return { previousProfile };
     },
     onError: (_error, _newData, context) => {
-      // Rollback on error
       if (context?.previousProfile) {
-        queryClient.setQueryData(
-          ['partner', 'mini-profile', partnerId],
-          context.previousProfile
-        );
+        queryClient.setQueryData(queryKey, context.previousProfile);
       }
     },
     onSettled: () => {
-      // Refetch to ensure data consistency
-      queryClient.invalidateQueries({ queryKey: ['partner', 'mini-profile', partnerId] });
+      queryClient.invalidateQueries({ queryKey });
     },
   });
 }
