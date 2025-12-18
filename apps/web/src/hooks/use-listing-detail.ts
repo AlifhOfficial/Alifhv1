@@ -139,11 +139,38 @@ export interface ListingDetail {
   viewCount: number;
   favouriteCount: number;
   superlikeCount: number;
+  shareCount: number;
+  
+  // Lead Generation Metrics
+  inquiryCount: number;
+  bookingCount: number;
+  callCount: number;
+  whatsappCount: number;
+  
+  // Conversion Tracking
+  leadQuality: number | null;
+  conversionRate: number | null;
+  avgTimeToSale: number | null;
+  
+  // SEO & Discovery
+  slug: string | null;
+  metaTitle: string | null;
+  metaDescription: string | null;
+  
+  // Reservation & Sale
+  reservedAt: string | null;
+  soldAt: string | null;
+  soldPrice: number | null;
   
   // Timestamps
   createdAt: string;
   updatedAt: string;
   publishedAt: string | null;
+  archivedAt: string | null;
+  
+  // Moderation & Quality Control
+  reviewedAt: string | null;
+  rejectionReason: string | null;
   
   // Partner info
   partnerId: string | null;

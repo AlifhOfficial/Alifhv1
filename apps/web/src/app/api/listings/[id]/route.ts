@@ -124,11 +124,38 @@ export async function GET(
         viewCount: schema.carListing.viewCount,
         favouriteCount: schema.carListing.favouriteCount,
         superlikeCount: schema.carListing.superlikeCount,
+        shareCount: schema.carListing.shareCount,
+        
+        // Lead Generation Metrics
+        inquiryCount: schema.carListing.inquiryCount,
+        bookingCount: schema.carListing.bookingCount,
+        callCount: schema.carListing.callCount,
+        whatsappCount: schema.carListing.whatsappCount,
+        
+        // Conversion Tracking
+        leadQuality: schema.carListing.leadQuality,
+        conversionRate: schema.carListing.conversionRate,
+        avgTimeToSale: schema.carListing.avgTimeToSale,
+        
+        // SEO & Discovery
+        slug: schema.carListing.slug,
+        metaTitle: schema.carListing.metaTitle,
+        metaDescription: schema.carListing.metaDescription,
+        
+        // Reservation & Sale
+        reservedAt: schema.carListing.reservedAt,
+        soldAt: schema.carListing.soldAt,
+        soldPrice: schema.carListing.soldPrice,
         
         // Timestamps
         createdAt: schema.carListing.createdAt,
         updatedAt: schema.carListing.updatedAt,
         publishedAt: schema.carListing.publishedAt,
+        archivedAt: schema.carListing.archivedAt,
+        
+        // Moderation & Quality Control
+        reviewedAt: schema.carListing.reviewedAt,
+        rejectionReason: schema.carListing.rejectionReason,
         
         // Partner info
         partnerId: schema.carListing.partnerId,
