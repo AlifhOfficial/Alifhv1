@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "turbo run dev --parallel",
     "dev:ws": "cd apps/ws && bun run src/index.ts",
+    "dev:warmup": "bun scripts/warmup-dev.ts",
     "build": "turbo run build --filter='!@alifh/mobile'",
     "build:all": "turbo run build",
     "build:web": "turbo run build --filter=@alifh/web",
