@@ -31,11 +31,11 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@alifh/database";
+import { db, memoryCache, CacheKeys, CacheTTL } from "@alifh/database";
 import * as schema from "@alifh/database";
 import { eq, and, desc, inArray } from "drizzle-orm";
 
-export const runtime = "nodejs";
+export const runtime = "edge";
 export const dynamic = "force-dynamic";
 export const revalidate = 60;
 
@@ -62,6 +62,40 @@ export async function GET(req: NextRequest) {
           .filter(Boolean)
           .slice(0, 100)
       : null;
+
+    // ⚡ MEMORY CACHE: Generate cache key based on request params
+    let cacheKey: string;
+    let cacheTTL: number;
+    
+    if (ids?.length) {
+      // Batch request (favorites/superlikes) - 1min cache
+      cacheKey = CacheKeys.listingCardsBatch(ids);
+      cacheTTL = CacheTTL.listingCardsBatch;
+    } else if (partnerId) {
+      // Partner inventory - 3min cache
+      cacheKey = CacheKeys.partnerInventory(partnerId, statusExplicit ? status : undefined);
+      cacheTTL = CacheTTL.partnerInventory;
+    } else {
+      // Main browse/search - 2min cache
+      const filterKey = `${status}:${limit}:${offset}`;
+      cacheKey = CacheKeys.listingCards(filterKey);
+      cacheTTL = CacheTTL.listingCards;
+    }
+
+    // ⚡ CACHE HIT: Return cached data
+    const cached = memoryCache.get<any>(cacheKey);
+    if (cached) {
+      console.log(`[car-card] Cache HIT for ${cacheKey.substring(0, 50)}...`);
+      const response = NextResponse.json(cached);
+      Object.entries(CACHE_HEADERS).forEach(([key, value]) => 
+        response.headers.set(key, value)
+      );
+      return response;
+    }
+
+    // ⚡ CACHE MISS: Query database
+    console.log(`[car-card] Cache MISS for ${cacheKey.substring(0, 50)}... - querying DB`);
+    const queryStart = performance.now();
 
     const whereConditions = [] as any[];
     if (ids?.length) whereConditions.push(inArray(schema.carListing.id, ids));
@@ -93,14 +127,22 @@ export async function GET(req: NextRequest) {
       .limit(limit)
       .offset(offset);
     
-    const response = NextResponse.json({
+    const queryTime = performance.now() - queryStart;
+    console.log(`[car-card] DB query completed in ${queryTime.toFixed(2)}ms - ${listings.length} results`);
+
+    // ⚡ CACHE: Store results
+    const responseData = {
       data: listings,
       meta: {
         total: listings.length,
         limit,
         offset,
       },
-    });
+    };
+    
+    memoryCache.set(cacheKey, responseData, cacheTTL);
+    
+    const response = NextResponse.json(responseData);
     
     Object.entries(CACHE_HEADERS).forEach(([key, value]) => 
       response.headers.set(key, value)

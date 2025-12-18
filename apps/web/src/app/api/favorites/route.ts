@@ -25,7 +25,7 @@ import {
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 

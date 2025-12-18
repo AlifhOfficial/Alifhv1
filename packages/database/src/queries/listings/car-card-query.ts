@@ -94,6 +94,12 @@ export const updateListing = async (id: string, data: ListingUpdate): Promise<Li
     .where(eq(carListing.id, id))
     .returning();
 
+  // ⚡ CACHE INVALIDATION: Clear listing cache after update
+  if (result) {
+    const { invalidateListingCaches } = await import('./cache-invalidation');
+    invalidateListingCaches(id, result.partnerId || undefined);
+  }
+
   return result ?? null;
 };
 
@@ -110,6 +116,12 @@ export const deleteListing = async (id: string): Promise<boolean> => {
     })
     .where(eq(carListing.id, id))
     .returning();
+
+  // ⚡ CACHE INVALIDATION: Clear all listing caches after archive
+  if (result) {
+    const { invalidateListingCaches } = await import('./cache-invalidation');
+    invalidateListingCaches(id, result.partnerId || undefined);
+  }
 
   return !!result;
 };

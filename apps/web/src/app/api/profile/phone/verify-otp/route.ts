@@ -29,7 +29,7 @@ import { db } from "@alifh/database";
 import { user } from "@alifh/database";
 import { eq } from "drizzle-orm";
 
-export const runtime = "nodejs";
+export const runtime = "edge";
 
 const VerifyOTPSchema = z.object({
   otp: z.string().regex(/^\d{6}$/, 'OTP must be a 6-digit code'),

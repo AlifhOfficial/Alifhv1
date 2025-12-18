@@ -23,7 +23,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from 'zod';
 import { uploadFile } from "@/lib/storage";
 
-export const runtime = "nodejs";
+export const runtime = "edge";
 
 const FileUploadSchema = z.object({
   directory: z.string().optional(),

@@ -21,7 +21,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSessionUser } from '@/lib/auth/session-context';
 import { updateUserProfileByUserId } from "@alifh/database";
 
-export const runtime = "nodejs";
+export const runtime = "edge";
 
 export async function POST(req: NextRequest) {
   try {

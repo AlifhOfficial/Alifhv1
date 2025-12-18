@@ -1,6 +1,10 @@
-import { randomUUID } from "node:crypto";
 import type { StorageProvider, UploadResult, SignedUrlOptions } from "./types";
 import { normalizeKey } from "@/utils/storage";
+
+// Edge-compatible UUID generator (Web Crypto API)
+function generateUUID(): string {
+  return crypto.randomUUID();
+}
 
 const mockStore = new Map<string, Buffer>();
 
@@ -13,7 +17,7 @@ export class MockStorageProvider implements StorageProvider {
     return {
       key,
       url: `https://mock-storage.alifh.local/${encodeURIComponent(key)}`,
-      etag: randomUUID(),
+      etag: generateUUID(),
     };
   }
 
@@ -23,7 +27,7 @@ export class MockStorageProvider implements StorageProvider {
 
   async getSignedUrl(key: string, _options?: SignedUrlOptions): Promise<string> {
     const normalized = normalizeKey(key);
-    const token = randomUUID();
+    const token = generateUUID();
     return `https://mock-storage.alifh.local/${encodeURIComponent(normalized)}?token=${token}`;
   }
 }

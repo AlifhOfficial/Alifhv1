@@ -4,7 +4,7 @@ import { getSessionUser } from '@/lib/auth/session-context';
 import { db, kycRecord } from "@alifh/database";
 import { createId } from "@paralleldrive/cuid2";
 
-export const runtime = "nodejs";
+export const runtime = "edge";
 
 const KYCSubmitSchema = z.object({
   documentType: z.enum(['passport', 'national_id', 'driving_license']),

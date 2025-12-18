@@ -24,11 +24,11 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@alifh/database";
+import { db, memoryCache, CacheKeys, CacheTTL } from "@alifh/database";
 import * as schema from "@alifh/database";
 import { eq } from "drizzle-orm";
 
-export const runtime = "nodejs";
+export const runtime = "edge";
 
 export async function GET(
   req: NextRequest,
@@ -43,6 +43,19 @@ export async function GET(
         { status: 400 }
       );
     }
+
+    // ⚡ MEMORY CACHE: Check cache first (5min TTL)
+    const cacheKey = CacheKeys.listingDetail(id);
+    const cached = memoryCache.get<any>(cacheKey);
+    
+    if (cached) {
+      console.log(`[listing detail] Cache HIT for ${id} (saved DB query)`);
+      return NextResponse.json({ data: cached });
+    }
+
+    // ⚡ CACHE MISS: Load from database
+    console.log(`[listing detail] Cache MISS for ${id} - querying DB with JOIN`);
+    const queryStart = performance.now();
 
     // Fetch complete listing with partner info
     const listing = await db
@@ -136,6 +149,8 @@ export async function GET(
       .where(eq(schema.carListing.id, id))
       .limit(1);
 
+    const queryTime = performance.now() - queryStart;
+
     if (!listing || listing.length === 0) {
       return NextResponse.json(
         { error: 'Listing not found' },
@@ -144,6 +159,10 @@ export async function GET(
     }
 
     const listingData = listing[0];
+    console.log(`[listing detail] DB query completed in ${queryTime.toFixed(2)}ms`);
+    
+    // ⚡ CACHE: Store for 5 minutes
+    memoryCache.set(cacheKey, listingData, CacheTTL.listingDetail);
     
     return NextResponse.json({
       data: listingData,

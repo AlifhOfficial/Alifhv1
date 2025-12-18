@@ -27,7 +27,7 @@ import { getUserProfileByUserId, updateUserProfileByUserId, ensureUserProfile } 
 import { getSignedUrl } from "@/lib/storage";
 import { getSessionUser } from "@/lib/auth/session-context";
 
-export const runtime = "nodejs";
+export const runtime = "edge";
 export const dynamic = 'force-dynamic';
 
 const CACHE_HEADERS_PRIVATE = {

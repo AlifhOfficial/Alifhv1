@@ -1,6 +1,7 @@
-import type { Readable } from "node:stream";
+// Edge-compatible stream type (using Web Streams API instead of Node streams)
+export type EdgeReadable = ReadableStream<Uint8Array>;
 
-export type StorageData = Buffer | Uint8Array | ArrayBuffer | string | Readable;
+export type StorageData = Buffer | Uint8Array | ArrayBuffer | string | EdgeReadable;
 
 export interface UploadFileParams {
   /** Optional directory prefix, e.g. "avatars" */

@@ -21,7 +21,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from 'zod';
 import { getSignedUrl } from "@/lib/storage";
 
-export const runtime = "nodejs";
+export const runtime = "edge";
 
 const SignedUrlSchema = z.object({
   key: z.string().min(1, 'Storage key is required'),

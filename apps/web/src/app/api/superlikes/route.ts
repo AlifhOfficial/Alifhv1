@@ -33,7 +33,7 @@ import {
   toggleSuperlikeForUser,
 } from '@alifh/database';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 

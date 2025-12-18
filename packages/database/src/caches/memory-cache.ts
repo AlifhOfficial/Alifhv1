@@ -153,6 +153,9 @@ export const CacheKeys = {
   userSuperlikes: (userId: string) => `user:${userId}:superlikes`,
   userSession: (userId: string) => `user:${userId}:session`,
   listingDetail: (listingId: string) => `listing:${listingId}:detail`,
+  listingCards: (filters: string) => `listings:cards:${filters}`,
+  listingCardsBatch: (ids: string[]) => `listings:cards:batch:${ids.sort().join(',')}`,
+  partnerInventory: (partnerId: string, status?: string) => `listings:partner:${partnerId}:${status || 'all'}`,
 } as const;
 
 /**
@@ -161,5 +164,8 @@ export const CacheKeys = {
 export const CacheTTL = {
   userFavorites: 30, // 30 seconds - frequently updated
   userSession: 30, // 30 seconds - session data (role, partner memberships)
-  listingDetail: 300, // 5 minutes
+  listingDetail: 300, // 5 minutes - full listing details
+  listingCards: 120, // 2 minutes - listing cards (main browse page)
+  listingCardsBatch: 60, // 1 minute - batch requests (favorites/superlikes)
+  partnerInventory: 180, // 3 minutes - partner inventory pages
 } as const;

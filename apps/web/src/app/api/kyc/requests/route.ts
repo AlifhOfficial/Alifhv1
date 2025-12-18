@@ -4,7 +4,7 @@ import { getSessionUser } from '@/lib/auth/session-context';
 import { db, kycRecord, userProfile, user } from "@alifh/database";
 import { eq } from "drizzle-orm";
 
-export const runtime = "nodejs";
+export const runtime = "edge";
 
 const KYCActionSchema = z.object({
   kycId: z.string().min(1, 'KYC ID is required'),
