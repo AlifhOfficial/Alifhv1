@@ -1,6 +1,20 @@
 /**
- * Delete Account API
- * Marks account for deletion (soft delete) - keeps data for 6 months per security policy
+ * API: Delete Account Endpoint
+ * POST /api/profile/delete-account
+ * 
+ * Purpose: Soft-delete user account (6-month retention per security policy)
+ * Authentication: Required
+ * Session Source: getSessionUser() from middleware cache
+ * 
+ * Flow:
+ * 1. Marks profile status as 'pending_deletion'
+ * 2. Calculates deletion date (6 months from now)
+ * 3. Returns confirmation with deletion date
+ * 
+ * Standards:
+ * - Returns 401 for unauthenticated requests
+ * - Returns 500 for server errors
+ * - Soft delete only (data retained 6 months)
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -9,10 +23,6 @@ import { updateUserProfileByUserId } from "@alifh/database";
 
 export const runtime = "nodejs";
 
-/**
- * POST /api/profile/delete-account
- * Marks user account for deletion
- */
 export async function POST(req: NextRequest) {
   try {
     const user = await getSessionUser();
@@ -20,11 +30,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Calculate deletion date (6 months from now)
     const deletionDate = new Date();
     deletionDate.setMonth(deletionDate.getMonth() + 6);
 
-    // Mark profile as pending deletion
     const updated = await updateUserProfileByUserId(user.id, {
       status: 'pending_deletion',
     });
@@ -39,7 +47,7 @@ export async function POST(req: NextRequest) {
       deletionDate: deletionDate.toISOString(),
     });
   } catch (error) {
-    console.error("Delete account error:", error);
+    console.error("[delete-account] POST failed", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

@@ -1,17 +1,26 @@
 /**
- * Car Listing Detail API
- * Returns full listing details for a single car
- * 
+ * API: Listing Detail Endpoint
  * GET /api/listings/[id]
  * 
+ * Purpose: Fetch complete listing details for a single vehicle
+ * Authentication: None required (public endpoint)
+ * 
  * Returns:
- * - All base fields from car card
- * - Complete vehicle specifications
- * - All images and media
- * - Technical features (JSON)
- * - Special notes (JSON)
- * - AI valuation data
- * - Partner information
+ * - Full vehicle specifications and condition
+ * - All images, videos, and media
+ * - AI valuation and market data (fairValue, qiScore, priceTrend)
+ * - Partner/dealer information
+ * - Engagement metrics (views, favorites, superlikes)
+ * - Lead generation stats (inquiries, bookings, calls)
+ * 
+ * Cache Strategy:
+ * - No explicit caching (frequently updated data)
+ * - Client-side caching via React Query (5min staleTime)
+ * 
+ * Standards:
+ * - Returns 400 for missing/invalid ID
+ * - Returns 404 for non-existent listing
+ * - Returns 500 for server errors
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -21,10 +30,6 @@ import { eq } from "drizzle-orm";
 
 export const runtime = "nodejs";
 
-/**
- * GET /api/listings/[id]
- * Fetch complete listing details by ID
- */
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -42,120 +47,77 @@ export async function GET(
     // Fetch complete listing with partner info
     const listing = await db
       .select({
-        // Primary identification
         id: schema.carListing.id,
         vin: schema.carListing.vin,
-        
-        // Basic Vehicle Information
         make: schema.carListing.make,
         model: schema.carListing.model,
         year: schema.carListing.year,
         trim: schema.carListing.trim,
-        
-        // Vehicle Specifications
         bodyType: schema.carListing.bodyType,
         fuelType: schema.carListing.fuelType,
         transmission: schema.carListing.transmission,
         specs: schema.carListing.specs,
         steeringSide: schema.carListing.steeringSide,
-        
-        // Engine & Performance
         engineSize: schema.carListing.engineSize,
         engineType: schema.carListing.engineType,
         cylinders: schema.carListing.cylinders,
         power: schema.carListing.power,
         torque: schema.carListing.torque,
         fuelEconomy: schema.carListing.fuelEconomy,
-        
-        // Physical Details
         doors: schema.carListing.doors,
         seatingCapacity: schema.carListing.seatingCapacity,
         exteriorColor: schema.carListing.exteriorColor,
         interiorColor: schema.carListing.interiorColor,
-        
-        // Condition & Mileage
         mileage: schema.carListing.mileage,
-        
-        // Pricing
         price: schema.carListing.price,
         currency: schema.carListing.currency,
         isNegotiable: schema.carListing.isNegotiable,
-        
-        // AI Valuation & Market Intelligence
         fairValue: schema.carListing.fairValue,
         estimateMin: schema.carListing.estimateMin,
         estimateMax: schema.carListing.estimateMax,
         priceTrend: schema.carListing.priceTrend,
         qiScore: schema.carListing.qiScore,
-        
-        // Location
         emirate: schema.carListing.emirate,
         city: schema.carListing.city,
-        
-        // Media & Content
         thumbnail: schema.carListing.thumbnail,
         images: schema.carListing.images,
         videoUrl: schema.carListing.videoUrl,
         description: schema.carListing.description,
-        
-        // Features & Extras
         technicalFeatures: schema.carListing.technicalFeatures,
         extras: schema.carListing.extras,
         specialNotes: schema.carListing.specialNotes,
-        
-        // Warranty & Documentation
         warranty: schema.carListing.warranty,
-        
-        // Status & Publication
         status: schema.carListing.status,
         exportStatus: schema.carListing.exportStatus,
         sellerType: schema.carListing.sellerType,
         isConsignment: schema.carListing.isConsignment,
-        
-        // Badges & Tags
         badges: schema.carListing.badges,
         tags: schema.carListing.tags,
         isFeatured: schema.carListing.isFeatured,
         isBlackMember: schema.carListing.isBlackMember,
-        
-        // Engagement Metrics (public-facing)
         viewCount: schema.carListing.viewCount,
         favouriteCount: schema.carListing.favouriteCount,
         superlikeCount: schema.carListing.superlikeCount,
         shareCount: schema.carListing.shareCount,
-        
-        // Lead Generation Metrics
         inquiryCount: schema.carListing.inquiryCount,
         bookingCount: schema.carListing.bookingCount,
         callCount: schema.carListing.callCount,
         whatsappCount: schema.carListing.whatsappCount,
-        
-        // Conversion Tracking
         leadQuality: schema.carListing.leadQuality,
         conversionRate: schema.carListing.conversionRate,
         avgTimeToSale: schema.carListing.avgTimeToSale,
-        
-        // SEO & Discovery
         slug: schema.carListing.slug,
         metaTitle: schema.carListing.metaTitle,
         metaDescription: schema.carListing.metaDescription,
-        
-        // Reservation & Sale
         reservedAt: schema.carListing.reservedAt,
         soldAt: schema.carListing.soldAt,
         soldPrice: schema.carListing.soldPrice,
-        
-        // Timestamps
         createdAt: schema.carListing.createdAt,
         updatedAt: schema.carListing.updatedAt,
         publishedAt: schema.carListing.publishedAt,
         archivedAt: schema.carListing.archivedAt,
-        
-        // Moderation & Quality Control
         reviewedAt: schema.carListing.reviewedAt,
         rejectionReason: schema.carListing.rejectionReason,
-        
-        // Partner info
         partnerId: schema.carListing.partnerId,
         partnerName: schema.partner.brandName,
         partnerCompanyName: schema.partner.companyNameLegal,
@@ -182,9 +144,6 @@ export async function GET(
     }
 
     const listingData = listing[0];
-
-    // Only show published listings to public (unless accessing via partner dashboard)
-    // For now, we'll return any status and let the frontend handle access control
     
     return NextResponse.json({
       data: listingData,

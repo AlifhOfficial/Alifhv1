@@ -1,6 +1,22 @@
 /**
- * Phone Verification API - Send OTP
+ * API: Phone Verification - Send OTP
  * POST /api/profile/phone/send-otp
+ * 
+ * Purpose: Send OTP code for phone verification
+ * Authentication: Required
+ * Session Source: getSessionUser() from middleware cache
+ * 
+ * Features:
+ * - E.164 phone format validation
+ * - Rate limiting (3 OTPs per 10 minutes)
+ * - 10-minute OTP expiry
+ * - SMS delivery via OTP service
+ * 
+ * Standards:
+ * - Returns 400 for invalid input
+ * - Returns 401 for unauthenticated requests
+ * - Returns 429 for rate limit exceeded
+ * - Returns 500 for server/SMS errors
  */
 
 import { NextRequest, NextResponse } from 'next/server';

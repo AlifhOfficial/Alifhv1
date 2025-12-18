@@ -1,3 +1,29 @@
+/**
+ * API: Superlikes Management
+ * GET /api/superlikes - Fetch user's superlikes and quota
+ * POST /api/superlikes - Toggle superlike for listing
+ * 
+ * Purpose: Manage premium listing favorites with daily quota
+ * Authentication: Optional for GET (returns empty for guests), Required for POST
+ * Session Source: getSessionUser() from middleware cache
+ * 
+ * Features:
+ * - Daily superlike quota tracking
+ * - Optional status fetching (includeStatuses param)
+ * - Optimized for quota-only queries
+ * - Auth modal support for guests
+ * 
+ * Cache Strategy:
+ * - No browser caching (user-specific data)
+ * - Empty response not cached (allows auth modal)
+ * 
+ * Standards:
+ * - Returns 400 for invalid input
+ * - Returns 401 for unauthenticated POST
+ * - Returns 429 for quota exceeded
+ * - Returns 500 for server errors
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import {
@@ -10,54 +36,47 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
+const CACHE_HEADERS_NO_CACHE = {
+  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
+  'Pragma': 'no-cache',
+} as const;
+
 export async function GET(req: NextRequest) {
-  const startTime = performance.now();
   try {
     const user = await getSessionUser();
     
-    // Return empty data for unauthenticated users (listings page can be viewed without login)
-    // IMPORTANT: Empty response is NOT cached to ensure auth modal shows every time
     if (!user) {
       const response = NextResponse.json({ 
         statuses: {}, 
         quota: { remaining: 0, limit: 0, resetsAt: null } 
       });
-      // SECURITY: Prevent caching of empty response - allows auth modal to show repeatedly
-      response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-      response.headers.set('Pragma', 'no-cache');
+      Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
+        response.headers.set(key, value)
+      );
       return response;
     }
 
     const { searchParams } = new URL(req.url);
     const includeStatuses = searchParams.get('includeStatuses') === 'true';
 
-    const quotaStart = performance.now();
     const quota = await getSuperlikeQuotaForUser(user.id);
-    const quotaTime = performance.now() - quotaStart;
 
-    // Optimized: Only fetch ALL user favorites/superlikes if requested
-    // listings/page.tsx calls this for quota only, so we skip the fetch
     let favorites: string[] = [];
     let superlikes: string[] = [];
-    let statusTime = 0;
     if (includeStatuses) {
-      const statusStart = performance.now();
       const result = await getFavoriteStatusForListings(user.id);
       favorites = result.favorites;
       superlikes = result.superlikes;
-      statusTime = performance.now() - statusStart;
     }
-
-    const totalTime = performance.now() - startTime;
 
     const response = NextResponse.json({ 
       favorites: includeStatuses ? favorites : undefined, 
       superlikes: includeStatuses ? superlikes : undefined, 
       quota 
     });
-    // SECURITY: Prevent browser caching of user-specific data
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-    response.headers.set('Pragma', 'no-cache');
+    Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
+      response.headers.set(key, value)
+    );
     return response;
   } catch (error) {
     console.error('[superlikes] GET failed', error);
@@ -66,7 +85,6 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const startTime = performance.now();
   try {
     const user = await getSessionUser();
     if (!user) {
@@ -84,11 +102,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'listingId is required' }, { status: 400 });
     }
 
-    const toggleStart = performance.now();
     const result = await toggleSuperlikeForUser(user.id, listingId, addedFrom);
-    const toggleTime = performance.now() - toggleStart;
-
-    const totalTime = performance.now() - startTime;
 
     return NextResponse.json({ 
       status: {

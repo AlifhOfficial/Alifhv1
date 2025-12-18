@@ -1,3 +1,22 @@
+/**
+ * API: Favorites Management
+ * GET /api/favorites - Fetch user's favorited listing IDs
+ * POST /api/favorites - Toggle favorite status for a listing
+ * 
+ * Authentication: Optional (GET), Required (POST)
+ * Session Source: getSessionUser() from middleware cache
+ * 
+ * Cache Strategy:
+ * - No caching (user-specific, frequently changing data)
+ * - Headers: no-store, no-cache, must-revalidate, private
+ * 
+ * Standards:
+ * - Returns empty arrays for unauthenticated GET (public listings page support)
+ * - Returns 401 for unauthenticated POST
+ * - Returns 400 for invalid input
+ * - Returns 500 for server errors
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
 import {
   getFavoriteStatusForListings,
@@ -9,36 +28,32 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
+const CACHE_HEADERS = {
+  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
+  'Pragma': 'no-cache',
+} as const;
+
 export async function GET(req: NextRequest) {
-  const startTime = performance.now();
   try {
     const user = await getSessionUser();
     
-    // Return empty data for unauthenticated users (listings page can be viewed without login)
-    // IMPORTANT: Empty response is NOT cached to ensure auth modal shows every time
     if (!user) {
       const response = NextResponse.json({ 
         favorites: [],
         superlikes: [],
       });
-      // SECURITY: Prevent caching of empty response - allows auth modal to show repeatedly
-      response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-      response.headers.set('Pragma', 'no-cache');
+      Object.entries(CACHE_HEADERS).forEach(([key, value]) => 
+        response.headers.set(key, value)
+      );
       return response;
     }
 
-    const queryStart = performance.now();
-    // Optimized: Fetch ALL user favorites (typically <50 items)
-    // Returns simple arrays - client builds hash map instantly
     const { favorites, superlikes } = await getFavoriteStatusForListings(user.id);
-    const queryTime = performance.now() - queryStart;
-
-    const totalTime = performance.now() - startTime;
 
     const response = NextResponse.json({ favorites, superlikes });
-    // SECURITY: Prevent browser caching of user-specific data
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-    response.headers.set('Pragma', 'no-cache');
+    Object.entries(CACHE_HEADERS).forEach(([key, value]) => 
+      response.headers.set(key, value)
+    );
     return response;
   } catch (error) {
     console.error('[favorites] GET failed', error);
@@ -47,7 +62,6 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const startTime = performance.now();
   try {
     const user = await getSessionUser();
     if (!user) {
@@ -65,11 +79,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'listingId is required' }, { status: 400 });
     }
 
-    const toggleStart = performance.now();
     const status = await toggleFavoriteForUser(user.id, listingId, addedFrom);
-    const toggleTime = performance.now() - toggleStart;
-
-    const totalTime = performance.now() - startTime;
 
     return NextResponse.json({ status });
   } catch (error) {

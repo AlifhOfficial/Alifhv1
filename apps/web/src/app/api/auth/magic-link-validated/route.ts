@@ -1,13 +1,24 @@
+/**
+ * API: Magic Link Validation Endpoint
+ * POST /api/auth/magic-link-validated
+ * 
+ * Purpose: Pre-validates user existence before magic link flow
+ * Authentication: None required (pre-auth validation)
+ * 
+ * Flow:
+ * 1. Validates email exists in database
+ * 2. Returns success/error to client
+ * 3. Client proceeds to Better Auth's /api/auth/[...auth]/magic-link
+ * 
+ * Standards:
+ * - Returns 400 for validation errors
+ * - Returns 500 for server errors
+ * - Logs validation attempts for security monitoring
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { validateUserExists } from "../validation-utils";
 
-/**
- * Magic Link with User Validation
- * 
- * Validates user exists before allowing magic link flow
- * Better Auth handles the actual magic link sending through /api/auth/[...auth]
- * This endpoint just validates and returns success/error for the client
- */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -20,7 +31,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate user exists using shared utility
     const validation = await validateUserExists(email);
 
     if (!validation.exists) {
@@ -33,8 +43,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // User exists, client should proceed to call Better Auth's magic link endpoint
-    // The actual magic link is sent by Better Auth through /api/auth/[...auth]/magic-link
     return NextResponse.json({ 
       success: true,
       message: "User validated. Proceed with magic link request."

@@ -1,6 +1,24 @@
 /**
- * User Profile API - Simplified
- * Only returns fields used in ProfileView component
+ * API: User Profile Endpoint
+ * GET /api/profile/user-profile - Fetch user profile
+ * PATCH /api/profile/user-profile - Update user profile
+ * 
+ * Purpose: Manage user profile data for ProfileView component
+ * Authentication: Required
+ * Session Source: getSessionUser() from middleware cache
+ * 
+ * Features:
+ * - Signed avatar URLs (10min expiry)
+ * - Auto-creates profile if missing
+ * - Only returns UI-needed fields
+ * 
+ * Cache Strategy:
+ * - No browser caching (user-specific data)
+ * - Server-side session cache used instead
+ * 
+ * Standards:
+ * - Returns 401 for unauthenticated requests
+ * - Returns 500 for server errors
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -10,6 +28,12 @@ import { getSessionUser } from "@/lib/auth/session-context";
 
 export const runtime = "nodejs";
 export const dynamic = 'force-dynamic';
+
+const CACHE_HEADERS_PRIVATE = {
+  'Cache-Control': 'private, no-cache, no-store, must-revalidate',
+  'Pragma': 'no-cache',
+  'Expires': '0',
+} as const;
 
 async function attachAvatarUrl(profile: any) {
   if (!profile.avatar || profile.avatar.startsWith('http')) {
@@ -25,63 +49,46 @@ async function attachAvatarUrl(profile: any) {
   }
 }
 
-/**
- * GET /api/profile/user-profile
- * Returns minimal profile with only UI-needed fields
- */
 export async function GET(req: NextRequest) {
-  const startTime = performance.now();
   try {
-    const sessionStart = performance.now();
     const user = await getSessionUser();
-    const sessionTime = performance.now() - sessionStart;
     
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      const response = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      Object.entries(CACHE_HEADERS_PRIVATE).forEach(([key, value]) => 
+        response.headers.set(key, value)
+      );
+      return response;
     }
 
-    const profileStart = performance.now();
     let profile = await getUserProfileByUserId(user.id);
     
     if (!profile) {
       profile = await ensureUserProfile(user.id);
     }
-    const profileTime = performance.now() - profileStart;
 
-    const avatarStart = performance.now();
     const profileWithAvatar = await attachAvatarUrl(profile);
-    const avatarTime = performance.now() - avatarStart;
 
-    const totalTime = performance.now() - startTime;
-
-    return NextResponse.json(
-      { profile: profileWithAvatar },
-      { 
-        status: 200,
-        headers: {
-          // SECURITY: Prevent browser caching to avoid profile leaks between users
-          // Use server-side caching (session cache) instead for performance
-          'Cache-Control': 'private, no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0',
-        },
-      }
+    const response = NextResponse.json({ profile: profileWithAvatar });
+    Object.entries(CACHE_HEADERS_PRIVATE).forEach(([key, value]) => 
+      response.headers.set(key, value)
     );
+    return response;
   } catch (error) {
     console.error("[user-profile] GET failed", error);
     return NextResponse.json({ error: "Failed to load profile" }, { status: 500 });
   }
 }
 
-/**
- * PATCH /api/profile/user-profile
- * Updates profile fields
- */
 export async function PATCH(req: NextRequest) {
   try {
     const user = await getSessionUser();
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      const response = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      Object.entries(CACHE_HEADERS_PRIVATE).forEach(([key, value]) => 
+        response.headers.set(key, value)
+      );
+      return response;
     }
 
     const payload = await req.json();
@@ -94,7 +101,11 @@ export async function PATCH(req: NextRequest) {
 
     const profileWithUrl = await attachAvatarUrl(updated);
 
-    return NextResponse.json({ profile: profileWithUrl });
+    const response = NextResponse.json({ profile: profileWithUrl });
+    Object.entries(CACHE_HEADERS_PRIVATE).forEach(([key, value]) => 
+      response.headers.set(key, value)
+    );
+    return response;
   } catch (error) {
     console.error("[user-profile] PATCH failed", error);
     return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });

@@ -1,6 +1,23 @@
 /**
- * Phone Verification API - Verify OTP
+ * API: Phone Verification - Verify OTP
  * POST /api/profile/phone/verify-otp
+ * 
+ * Purpose: Verify OTP code and mark phone as verified
+ * Authentication: Required
+ * Session Source: getSessionUser() from middleware cache
+ * 
+ * Features:
+ * - 6-digit OTP validation
+ * - Max 5 verification attempts
+ * - Updates user.phoneVerified and phoneVerifiedAt
+ * - Auto-cleanup on success/failure
+ * 
+ * Standards:
+ * - Returns 400 for invalid/expired OTP
+ * - Returns 401 for unauthenticated requests
+ * - Returns 404 for missing OTP (not sent yet)
+ * - Returns 429 for too many attempts
+ * - Returns 500 for server errors
  */
 
 import { NextRequest, NextResponse } from 'next/server';

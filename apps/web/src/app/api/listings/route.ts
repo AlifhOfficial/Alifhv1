@@ -1,16 +1,23 @@
 /**
- * Base Listings API Route
- * Redirects to car-card endpoint
+ * API: Listings Base Route
+ * GET /api/listings
+ * 
+ * Purpose: Redirect handler to car-card endpoint
+ * Authentication: None required (public endpoint)
+ * 
+ * Flow:
+ * - Forwards all query params to /api/listings/car-card
+ * - Maintains backward compatibility with old API structure
+ * 
+ * Standards:
+ * - 302 redirect to car-card endpoint
+ * - Preserves all query parameters
  */
 
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
-/**
- * GET /api/listings
- * Redirects to /api/listings/car-card with query params
- */
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   

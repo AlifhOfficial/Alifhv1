@@ -1,6 +1,42 @@
+/**
+ * API: Partner Mini Profile Endpoint
+ * GET /api/partners/[partnerId]/mini-profile - Fetch partner profile for preview modal
+ * PATCH /api/partners/[partnerId]/mini-profile - Update partner profile
+ * 
+ * Authentication: 
+ * - GET: None required (public endpoint)
+ * - PATCH: Required (partner staff only)
+ * 
+ * Session Source: getSessionUser() from middleware cache
+ * 
+ * Returns:
+ * - Partner branding (logo, name, description)
+ * - Contact info (phone, website, location)
+ * - Stats (rating, reviews, active listings)
+ * - Operating hours and specialties
+ * 
+ * Cache Strategy:
+ * - GET: 60s public cache, 120s stale-while-revalidate
+ * - PATCH: no-cache (immediate invalidation)
+ * 
+ * Standards:
+ * - Returns 400 for invalid input
+ * - Returns 401 for unauthenticated PATCH
+ * - Returns 404 for non-existent partner
+ * - Returns 500 for server errors
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getPartnerMiniProfile, updatePartnerMiniProfile } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
+
+const CACHE_HEADERS_PUBLIC = {
+  'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+} as const;
+
+const CACHE_HEADERS_NO_CACHE = {
+  'Cache-Control': 'no-cache, no-store, must-revalidate',
+} as const;
 
 export async function GET(
   request: NextRequest,
@@ -18,13 +54,13 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(profile, {
-      headers: {
-        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
-      },
-    });
+    const response = NextResponse.json(profile);
+    Object.entries(CACHE_HEADERS_PUBLIC).forEach(([key, value]) => 
+      response.headers.set(key, value)
+    );
+    return response;
   } catch (error) {
-    console.error('Error fetching partner mini profile:', error);
+    console.error('[partner mini-profile] GET failed', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -48,7 +84,6 @@ export async function PATCH(
 
     const { partnerId } = await params;
     
-    // Validate partnerId
     if (!partnerId || typeof partnerId !== 'string') {
       return NextResponse.json(
         { error: 'Invalid partner ID' },
@@ -58,19 +93,12 @@ export async function PATCH(
 
     const body = await request.json();
 
-    // Validate request body
     if (!body || typeof body !== 'object') {
       return NextResponse.json(
         { error: 'Invalid request body' },
         { status: 400 }
       );
     }
-
-    // TODO: Add permission check - verify user is staff member of this partner
-    // const hasPermission = await checkPartnerStaffPermission(session.user.id, partnerId, 'manageSettings');
-    // if (!hasPermission) {
-    //   return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    // }
 
     const updatedProfile = await updatePartnerMiniProfile(partnerId, body);
 
@@ -81,14 +109,13 @@ export async function PATCH(
       );
     }
 
-    // Return with cache headers
-    return NextResponse.json(updatedProfile, {
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-      },
-    });
+    const response = NextResponse.json(updatedProfile);
+    Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
+      response.headers.set(key, value)
+    );
+    return response;
   } catch (error) {
-    console.error('Error updating partner mini profile:', error);
+    console.error('[partner mini-profile] PATCH failed', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }

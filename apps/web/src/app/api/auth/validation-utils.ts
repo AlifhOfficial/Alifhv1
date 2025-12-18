@@ -1,8 +1,13 @@
 /**
- * Auth Validation Utilities
+ * API: Auth Validation Utilities
  * 
- * Shared validation logic for password reset and magic link endpoints
- * Consolidates duplicate user existence checks
+ * Purpose: Shared validation logic for password reset and magic link endpoints
+ * Used By: password-reset-validated/route.ts, magic-link-validated/route.ts
+ * 
+ * Standards:
+ * - Validates user existence before auth operations
+ * - Returns consistent error messages
+ * - No session required (pre-auth validation)
  */
 
 import { db } from "@alifh/database";
@@ -16,7 +21,6 @@ export interface ValidationResult {
 
 /**
  * Check if user exists by email
- * Used by password reset and magic link endpoints
  */
 export async function validateUserExists(email: string): Promise<ValidationResult> {
   try {

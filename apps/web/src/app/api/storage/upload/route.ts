@@ -1,3 +1,24 @@
+/**
+ * API: Storage File Upload
+ * POST /api/storage/upload
+ * 
+ * Purpose: Upload files to storage provider
+ * Authentication: Public (no auth required)
+ * 
+ * Request Body (multipart/form-data):
+ * - file: File blob (required)
+ * - directory: Target directory (optional)
+ * - fileName: Custom filename (optional)
+ * - contentType: MIME type (optional)
+ * - cacheControl: Cache header value (optional)
+ * 
+ * Returns: { key, url, etag }
+ * 
+ * Standards:
+ * - Returns 400 for invalid file payload
+ * - Returns 500 for server errors
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { uploadFile } from "@/lib/storage";
 
@@ -32,7 +53,7 @@ export async function POST(req: NextRequest) {
       etag: result.etag,
     });
   } catch (error) {
-    console.error("Storage upload failed", error);
+    console.error("[storage/upload] POST failed", error);
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }

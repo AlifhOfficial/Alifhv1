@@ -1,13 +1,25 @@
+/**
+ * API: Password Reset Validation Endpoint
+ * POST /api/auth/password-reset-validated
+ * 
+ * Purpose: Pre-validates user existence before password reset email
+ * Authentication: None required (pre-auth validation)
+ * 
+ * Flow:
+ * 1. Validates email exists in database
+ * 2. If valid, triggers Better Auth password reset email
+ * 3. Returns result to client
+ * 
+ * Standards:
+ * - Returns 400 for validation errors
+ * - Returns 500 for server errors
+ * - Logs all password reset attempts for security
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { validateUserExists } from "../validation-utils";
 
-/**
- * Password Reset with User Validation
- * 
- * Validates user exists before sending password reset email
- * Uses shared validation logic from validation-utils.ts
- */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -20,7 +32,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate user exists using shared utility
     const validation = await validateUserExists(email);
     
     if (!validation.exists) {
@@ -31,7 +42,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // User exists, proceed with Better Auth's password reset
     console.log("📧 Proceeding with password reset for existing user:", email);
     
     const result = await auth.api.requestPasswordReset({
