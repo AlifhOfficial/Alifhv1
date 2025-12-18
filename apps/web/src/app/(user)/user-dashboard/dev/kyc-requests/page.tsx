@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { CheckCircle, XCircle, Clock, Eye, FileText } from 'lucide-react';
 import { DashboardPageLayout } from '@/components/layout';
 import { useToast } from '@/hooks/use-toast';
@@ -40,9 +40,13 @@ export default function KycRequestsPage() {
   const [rejectionReason, setRejectionReason] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [documentUrls, setDocumentUrls] = useState<Record<string, string>>({});
+  const hasFetchedRef = useRef(false);
 
   useEffect(() => {
-    fetchRequests();
+    if (!hasFetchedRef.current) {
+      hasFetchedRef.current = true;
+      fetchRequests();
+    }
   }, []);
 
   const fetchRequests = async () => {

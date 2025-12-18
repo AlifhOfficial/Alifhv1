@@ -36,7 +36,7 @@ export function PartnerProfilePreviewModal({
   isOpen,
   onClose,
 }: PartnerProfilePreviewModalProps) {
-  const { data: partner, isLoading } = usePartnerMiniProfile(partnerId);
+  const { data: partner, isLoading } = usePartnerMiniProfile(isOpen ? partnerId : null);
 
   // Lock body scroll when modal is open
   useEffect(() => {

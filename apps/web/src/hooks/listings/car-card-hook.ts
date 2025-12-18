@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 /**
  * Minimal Listing type - only fields actually used in car card UI
@@ -43,6 +43,7 @@ export function useListings(): UseListingsResult {
   const [hasMore, setHasMore] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
   const [offset, setOffset] = useState(0);
+  const hasFetchedRef = useRef(false);
   const LIMIT = 30;
 
   const fetchListings = useCallback(async (currentOffset = 0, append = false) => {
@@ -93,7 +94,10 @@ export function useListings(): UseListingsResult {
   }, [offset, isLoadingMore, hasMore, fetchListings]);
 
   useEffect(() => {
-    fetchListings();
+    if (!hasFetchedRef.current) {
+      hasFetchedRef.current = true;
+      fetchListings();
+    }
   }, [fetchListings]);
 
   return {

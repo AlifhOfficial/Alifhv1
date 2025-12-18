@@ -20,12 +20,13 @@ export async function GET(req: NextRequest) {
     const user = await requireUser(req);
     
     // Return empty data for unauthenticated users (listings page can be viewed without login)
+    // IMPORTANT: Empty response is NOT cached to ensure auth modal shows every time
     if (!user) {
       const response = NextResponse.json({ 
         favorites: [],
         superlikes: [],
       });
-      // SECURITY: Prevent caching of empty response
+      // SECURITY: Prevent caching of empty response - allows auth modal to show repeatedly
       response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
       response.headers.set('Pragma', 'no-cache');
       return response;

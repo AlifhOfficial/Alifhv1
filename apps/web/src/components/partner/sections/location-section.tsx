@@ -44,8 +44,11 @@ export function LocationSection({
 }: LocationSectionProps) {
   const { toast } = useToast();
   const [isLoadingLocation, setIsLoadingLocation] = React.useState(false);
+  const isGeocodingRef = React.useRef(false);
 
   const handleUseCurrentLocation = () => {
+    if (isGeocodingRef.current) return; // Prevent duplicate calls
+    
     if (!navigator.geolocation) {
       toast({
         title: 'Not supported',
@@ -56,6 +59,8 @@ export function LocationSection({
     }
 
     setIsLoadingLocation(true);
+    isGeocodingRef.current = true;
+    
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         onLocationLatChange(position.coords.latitude);
@@ -85,10 +90,12 @@ export function LocationSection({
           });
         } finally {
           setIsLoadingLocation(false);
+          isGeocodingRef.current = false;
         }
       },
       () => {
         setIsLoadingLocation(false);
+        isGeocodingRef.current = false;
         toast({
           title: 'Permission denied',
           description: 'Please allow location access or enter manually',

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Loader2, RefreshCw } from 'lucide-react';
 import { CarCard } from '@/components/inventory/car-card';
@@ -56,6 +56,7 @@ export default function SuperlikesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const hasFetchedRef = useRef(false);
 
   const loadSuperlikes = useCallback(async (showRefreshIndicator = false) => {
     if (showRefreshIndicator) {
@@ -134,7 +135,10 @@ export default function SuperlikesPage() {
   }, [setStatuses]);
 
   useEffect(() => {
-    loadSuperlikes();
+    if (!hasFetchedRef.current) {
+      hasFetchedRef.current = true;
+      loadSuperlikes();
+    }
   }, [loadSuperlikes]);
 
   const listingsById = useMemo(() => {

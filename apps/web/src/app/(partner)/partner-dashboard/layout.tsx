@@ -7,6 +7,7 @@ export const dynamic = "force-dynamic";
 
 const navItems = [
   { label: "Overview", href: "/partner-dashboard", icon: "layout-dashboard" },
+  { label: "Inventory", href: "/partner-dashboard/inventory", icon: "car" },
   { label: "Profile", href: "/partner-dashboard/profile", icon: "building" },
   { label: "Team", href: "/partner-dashboard/team", icon: "users" },
   { label: "Reviews", href: "/partner-dashboard/reviews", icon: "star" },

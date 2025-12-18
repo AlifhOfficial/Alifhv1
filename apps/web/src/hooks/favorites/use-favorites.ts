@@ -33,7 +33,7 @@ interface UseFavoritesResult {
 }
 
 export function useFavorites(listingId: string): UseFavoritesResult {
-  const { statuses, updateStatus, quota, setQuota } = useFavoritesContext();
+  const { statuses, updateStatus, clearStatuses, quota, setQuota } = useFavoritesContext();
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [authRequired, setAuthRequired] = useState<{ show: boolean; message: string; feature: 'favorites' | 'superlikes' }>({ show: false, message: '', feature: 'favorites' });
@@ -64,8 +64,9 @@ export function useFavorites(listingId: string): UseFavoritesResult {
       });
 
       if (res.status === 401) {
-        // User not authenticated - show auth modal
-        updateStatus(listingId, previousStatus);
+        // User not authenticated - clear cached state and show auth modal
+        // This ensures the modal shows every time (no stale cached state)
+        clearStatuses();
         const data = await res.json();
         setAuthRequired({ show: true, message: data.error || 'Please sign in to add favorites', feature: 'favorites' });
         return;
@@ -84,7 +85,7 @@ export function useFavorites(listingId: string): UseFavoritesResult {
     } finally {
       setIsUpdating(false);
     }
-  }, [listingId, statuses, updateStatus, setQuota]);
+  }, [listingId, statuses, updateStatus, clearStatuses, setQuota]);
 
   const toggleSuperlike = useCallback(async () => {
     if (!listingId || isUpdating) return;
@@ -108,8 +109,9 @@ export function useFavorites(listingId: string): UseFavoritesResult {
       });
 
       if (res.status === 401) {
-        // User not authenticated - show auth modal
-        updateStatus(listingId, previousStatus);
+        // User not authenticated - clear cached state and show auth modal
+        // This ensures the modal shows every time (no stale cached state)
+        clearStatuses();
         const data = await res.json();
         setAuthRequired({ show: true, message: data.error || 'Please sign in to add superlikes', feature: 'superlikes' });
         return;
@@ -137,7 +139,7 @@ export function useFavorites(listingId: string): UseFavoritesResult {
     } finally {
       setIsUpdating(false);
     }
-  }, [listingId, statuses, updateStatus, setQuota]);
+  }, [listingId, statuses, updateStatus, clearStatuses, setQuota]);
 
   return {
     isFavorite: status.isFavorite,

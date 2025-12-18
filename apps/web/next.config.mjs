@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Reduce logging verbosity in development
+  logging: {
+    fetches: {
+      fullUrl: false,
+    },
+  },
   transpilePackages: ['@alifh/shared', '@alifh/database'],
   serverExternalPackages: ['better-auth', '@node-rs/argon2', '@node-rs/bcrypt'],
   images: {

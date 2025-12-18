@@ -88,6 +88,10 @@ export const auth = betterAuth({
       }>(cacheKey);
 
       if (cached) {
+        // Only log if SESSION_DEBUG is enabled to reduce noise
+        if (process.env.SESSION_DEBUG === 'true') {
+          console.log(`[customSession] Cache HIT for user ${user.id.slice(0, 8)}... (saved DB query)`);
+        }
         return {
           user: {
             ...user,
@@ -155,7 +159,8 @@ export const auth = betterAuth({
       
       memoryCache.set(cacheKey, sessionData, CacheTTL.userSession);
       
-      if (process.env.NODE_ENV === 'development') {
+      // Only log if SESSION_DEBUG is enabled to reduce noise
+      if (process.env.SESSION_DEBUG === 'true') {
         console.log(`[customSession] Cache MISS for user ${user.id.slice(0, 8)}... - loaded from DB (${activePartnerships.length} memberships)`);
       }
 

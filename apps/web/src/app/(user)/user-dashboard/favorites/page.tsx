@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Loader2, RefreshCw } from 'lucide-react';
 import { CarCard } from '@/components/inventory/car-card';
@@ -43,6 +43,7 @@ export default function FavoritesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const hasFetchedRef = useRef(false);
 
   const loadFavorites = useCallback(async (showRefreshIndicator = false) => {
     if (showRefreshIndicator) {
@@ -109,7 +110,10 @@ export default function FavoritesPage() {
   }, [setStatuses]);
 
   useEffect(() => {
-    loadFavorites();
+    if (!hasFetchedRef.current) {
+      hasFetchedRef.current = true;
+      loadFavorites();
+    }
   }, [loadFavorites]);
 
   const listingsById = useMemo(() => {

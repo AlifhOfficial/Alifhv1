@@ -91,6 +91,7 @@ export async function getFavoriteStatusForListings(userId: string) {
   if (!userId) return { favorites: [], superlikes: [] };
 
   // ⚡ MEMORY CACHE: Check cache first (30s TTL)
+  // IMPORTANT: Only cache for authenticated users with valid session
   const { memoryCache, CacheKeys, CacheTTL } = await import('../memory-cache');
   const cacheKey = CacheKeys.userFavorites(userId);
   const cached = memoryCache.get<{ favorites: string[]; superlikes: string[] }>(cacheKey);

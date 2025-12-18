@@ -29,7 +29,8 @@ const sql = neon(connectionString, {
 
 // Initialize Drizzle client with schema
 // Logger disabled in production for performance
+// Set DB_DEBUG=true to enable query logging in development
 export const db = drizzle(sql, { 
   schema,
-  logger: process.env.NODE_ENV === 'development' ? true : false,
+  logger: process.env.DB_DEBUG === 'true' ? true : false,
 });

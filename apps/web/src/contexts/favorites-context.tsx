@@ -26,6 +26,7 @@ interface FavoritesContextValue {
   statuses: Record<string, FavoriteStatus>;
   setStatuses: (statuses: Record<string, FavoriteStatus>) => void;
   updateStatus: (listingId: string, status: FavoriteStatus) => void;
+  clearStatuses: () => void; // Clear all cached statuses (useful for auth state changes)
   quota: SuperlikeQuota | null;
   setQuota: (quota: SuperlikeQuota | null) => void;
 }
@@ -40,8 +41,13 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     setStatuses(prev => ({ ...prev, [listingId]: status }));
   };
 
+  const clearStatuses = () => {
+    setStatuses({});
+    setQuota(null);
+  };
+
   return (
-    <FavoritesContext.Provider value={{ statuses, setStatuses, updateStatus, quota, setQuota }}>
+    <FavoritesContext.Provider value={{ statuses, setStatuses, updateStatus, clearStatuses, quota, setQuota }}>
       {children}
     </FavoritesContext.Provider>
   );
