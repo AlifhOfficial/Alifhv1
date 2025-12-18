@@ -61,8 +61,12 @@ export const authClient = typeof window !== 'undefined' ? getAuthClient() : {} a
 /**
  * Authentication method exports
  * Direct access to Better Auth core functionality
+ * Server-side safe: returns undefined on server, actual functions on client
  */
-export const { signIn, signUp, signOut, useSession } = authClient;
+export const signIn = authClient.signIn;
+export const signUp = authClient.signUp;
+export const signOut = authClient.signOut;
+export const useSession = authClient.useSession || (() => ({ data: null, isPending: false, error: null }));
 
 /**
  * Enhanced session hook with convenience properties
