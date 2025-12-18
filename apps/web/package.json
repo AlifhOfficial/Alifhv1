@@ -49,7 +49,8 @@
     "resend": "6.6.0",
     "shadcn": "3.6.1",
     "tailwind-merge": "2.6.0",
-    "twilio": "5.10.7"
+    "twilio": "5.10.7",
+    "zod": "4.2.1"
   },
   "devDependencies": {
     "@types/leaflet": "1.9.21",

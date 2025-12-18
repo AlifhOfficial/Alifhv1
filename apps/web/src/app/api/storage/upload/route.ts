@@ -20,22 +20,48 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { z } from 'zod';
 import { uploadFile } from "@/lib/storage";
 
 export const runtime = "nodejs";
+
+const FileUploadSchema = z.object({
+  directory: z.string().optional(),
+  fileName: z.string().optional(),
+  contentType: z.string().optional(),
+  cacheControl: z.string().optional(),
+});
 
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     const file = formData.get("file");
-    const directory = formData.get("directory");
-    const fileName = formData.get("fileName") ?? (typeof file === "object" && "name" in file ? (file as File).name : undefined);
-    const contentType = (typeof file === "object" && "type" in file && file.type) || formData.get("contentType") || "application/octet-stream";
-    const cacheControl = formData.get("cacheControl") ?? undefined;
-
+    
     if (!(file instanceof File)) {
       return NextResponse.json({ error: "Invalid file payload" }, { status: 400 });
     }
+
+    // Validate metadata fields
+    const metadataValidation = FileUploadSchema.safeParse({
+      directory: formData.get("directory"),
+      fileName: formData.get("fileName"),
+      contentType: formData.get("contentType"),
+      cacheControl: formData.get("cacheControl"),
+    });
+
+    if (!metadataValidation.success) {
+      return NextResponse.json(
+        { 
+          error: 'Invalid upload metadata',
+          details: metadataValidation.error.format()
+        },
+        { status: 400 }
+      );
+    }
+
+    const { directory, fileName: validatedFileName, contentType: validatedContentType, cacheControl } = metadataValidation.data;
+    const fileName = validatedFileName ?? file.name;
+    const contentType = validatedContentType || file.type || "application/octet-stream";
 
     const arrayBuffer = await file.arrayBuffer();
 

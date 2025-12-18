@@ -88,7 +88,46 @@ return response;
 
 ---
 
-## 5. Error Handling
+## 5. Input Validation with Zod
+
+```typescript
+import { z } from 'zod';
+
+// Define schema at top
+const CreateSchema = z.object({
+  listingId: z.string().min(1, 'Listing ID is required'),
+  addedFrom: z.string().optional(),
+});
+
+export async function POST(req: NextRequest) {
+  const user = await getSessionUser();
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  
+  const payload = await req.json().catch(() => null);
+  const result = CreateSchema.safeParse(payload);
+  
+  if (!result.success) {
+    return NextResponse.json({ 
+      error: 'Invalid input',
+      details: result.error.format() 
+    }, { status: 400 });
+  }
+  
+  const { listingId, addedFrom } = result.data;
+  // ... rest of logic
+}
+```
+
+**Simple validation:**
+```typescript
+// Single param (ID, etc)
+const IdSchema = z.string().uuid('Invalid ID format');
+const result = IdSchema.safeParse(id);
+```
+
+---
+
+## 6. Error Handling
 
 ```typescript
 try {
@@ -107,7 +146,7 @@ try {
 
 ---
 
-## 6. Clean Code Rules
+## 7. Clean Code Rules
 
 **Remove:**
 - `performance.now()` timing variables
@@ -120,7 +159,7 @@ try {
 
 ---
 
-## 7. After Building
+## 8. After Building
 
 Update `API_REGISTRAR.md` with your new route
 

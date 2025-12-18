@@ -17,19 +17,29 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { validateUserExists } from "../validation-utils";
+
+const MagicLinkSchema = z.object({
+  email: z.string().email('Invalid email address'),
+});
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { email } = body ?? {};
+    const body = await request.json().catch(() => null);
+    const result = MagicLinkSchema.safeParse(body);
 
-    if (!email || typeof email !== "string") {
+    if (!result.success) {
       return NextResponse.json(
-        { error: "Email is required" },
+        { 
+          error: 'Invalid input',
+          details: result.error.format()
+        },
         { status: 400 }
       );
     }
+
+    const { email } = result.data;
 
     const validation = await validateUserExists(email);
 

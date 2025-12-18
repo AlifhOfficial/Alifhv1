@@ -21,6 +21,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { isValidOTP } from "@/lib/otp-service";
 import { otpStore } from "@/lib/otp-store";
@@ -30,6 +31,10 @@ import { eq } from "drizzle-orm";
 
 export const runtime = "nodejs";
 
+const VerifyOTPSchema = z.object({
+  otp: z.string().regex(/^\d{6}$/, 'OTP must be a 6-digit code'),
+});
+
 export async function POST(req: NextRequest) {
   try {
     const sessionUser = await getSessionUser();
@@ -37,17 +42,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await req.json();
-    const { otp } = body;
+    const body = await req.json().catch(() => null);
+    const validationResult = VerifyOTPSchema.safeParse(body);
 
-    if (!otp || typeof otp !== 'string') {
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: "OTP code is required" },
+        { 
+          error: 'Invalid input',
+          details: validationResult.error.format()
+        },
         { status: 400 }
       );
     }
 
-    // Validate OTP format
+    const { otp } = validationResult.data;
+
+    // Additional validation via service
     if (!(await isValidOTP(otp))) {
       return NextResponse.json(
         { error: "Invalid OTP format. Please enter a 6-digit code." },

@@ -18,21 +18,37 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { z } from 'zod';
 import { getSignedUrl } from "@/lib/storage";
 
 export const runtime = "nodejs";
 
+const SignedUrlSchema = z.object({
+  key: z.string().min(1, 'Storage key is required'),
+  expiresIn: z.number().positive().optional(),
+  downloadName: z.string().optional(),
+});
+
 export async function POST(req: NextRequest) {
   try {
-    const { key, expiresIn, downloadName } = await req.json();
+    const payload = await req.json().catch(() => null);
+    const validationResult = SignedUrlSchema.safeParse(payload);
 
-    if (!key || typeof key !== "string") {
-      return NextResponse.json({ error: "Missing key" }, { status: 400 });
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { 
+          error: 'Invalid input',
+          details: validationResult.error.format()
+        },
+        { status: 400 }
+      );
     }
 
+    const { key, expiresIn, downloadName } = validationResult.data;
+
     const url = await getSignedUrl(key, {
-      expiresIn: typeof expiresIn === "number" ? expiresIn : undefined,
-      downloadName: typeof downloadName === "string" ? downloadName : undefined,
+      expiresIn,
+      downloadName,
     });
 
     return NextResponse.json({ url });

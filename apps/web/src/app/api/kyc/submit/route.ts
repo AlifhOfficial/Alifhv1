@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { db, kycRecord } from "@alifh/database";
 import { createId } from "@paralleldrive/cuid2";
 
 export const runtime = "nodejs";
+
+const KYCSubmitSchema = z.object({
+  documentType: z.enum(['passport', 'national_id', 'driving_license']),
+  documentNumber: z.string().min(1, 'Document number is required'),
+  documentFrontUrl: z.string().url('Document front URL must be a valid URL'),
+  documentBackUrl: z.string().url('Document back URL must be a valid URL').optional(),
+  selfieUrl: z.string().url('Selfie URL must be a valid URL'),
+});
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,16 +21,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await req.json();
-    const { documentType, documentNumber, documentFrontUrl, documentBackUrl, selfieUrl } = body;
+    const body = await req.json().catch(() => null);
+    const validationResult = KYCSubmitSchema.safeParse(body);
 
-    // Validation
-    if (!documentType || !documentNumber || !documentFrontUrl || !selfieUrl) {
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { 
+          error: 'Invalid input',
+          details: validationResult.error.format()
+        },
         { status: 400 }
       );
     }
+
+    const { documentType, documentNumber, documentFrontUrl, documentBackUrl, selfieUrl } = validationResult.data;
 
     // Create KYC record
     const [record] = await db

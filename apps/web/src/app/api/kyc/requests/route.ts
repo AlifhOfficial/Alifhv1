@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { db, kycRecord, userProfile, user } from "@alifh/database";
 import { eq } from "drizzle-orm";
 
 export const runtime = "nodejs";
+
+const KYCActionSchema = z.object({
+  kycId: z.string().min(1, 'KYC ID is required'),
+  action: z.enum(['approve', 'reject']),
+  rejectionReason: z.string().optional(),
+});
 
 // Get all KYC requests
 export async function GET(req: NextRequest) {
@@ -58,22 +65,20 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await req.json();
-    const { kycId, action, rejectionReason } = body;
+    const body = await req.json().catch(() => null);
+    const validationResult = KYCActionSchema.safeParse(body);
 
-    if (!kycId || !action) {
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { 
+          error: 'Invalid input',
+          details: validationResult.error.format()
+        },
         { status: 400 }
       );
     }
 
-    if (action !== 'approve' && action !== 'reject') {
-      return NextResponse.json(
-        { error: "Invalid action" },
-        { status: 400 }
-      );
-    }
+    const { kycId, action, rejectionReason } = validationResult.data;
 
     // Get the KYC record
     const [record] = await db

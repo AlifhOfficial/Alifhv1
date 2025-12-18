@@ -22,6 +22,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { z } from 'zod';
 import { getUserProfileByUserId, updateUserProfileByUserId, ensureUserProfile } from "@alifh/database";
 import { getSignedUrl } from "@/lib/storage";
 import { getSessionUser } from "@/lib/auth/session-context";
@@ -34,6 +35,15 @@ const CACHE_HEADERS_PRIVATE = {
   'Pragma': 'no-cache',
   'Expires': '0',
 } as const;
+
+const UpdateProfileSchema = z.object({
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  bio: z.string().optional(),
+  avatar: z.string().optional(),
+  location: z.string().optional(),
+  occupation: z.string().optional(),
+}).strict();
 
 async function attachAvatarUrl(profile: any) {
   if (!profile.avatar || profile.avatar.startsWith('http')) {
@@ -91,9 +101,20 @@ export async function PATCH(req: NextRequest) {
       return response;
     }
 
-    const payload = await req.json();
+    const payload = await req.json().catch(() => null);
+    const result = UpdateProfileSchema.safeParse(payload);
+
+    if (!result.success) {
+      return NextResponse.json(
+        { 
+          error: 'Invalid input',
+          details: result.error.format()
+        },
+        { status: 400 }
+      );
+    }
     
-    const updated = await updateUserProfileByUserId(user.id, payload);
+    const updated = await updateUserProfileByUserId(user.id, result.data);
     
     if (!updated) {
       return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });

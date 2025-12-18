@@ -20,11 +20,16 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { sendOTP, generateOTP, isValidPhoneNumber } from "@/lib/otp-service";
 import { otpStore } from "@/lib/otp-store";
 
 export const runtime = "nodejs";
+
+const SendOTPSchema = z.object({
+  phoneNumber: z.string().regex(/^\+[1-9]\d{1,14}$/, 'Phone number must be in E.164 format (e.g., +971501234567)'),
+});
 
 export async function POST(req: NextRequest) {
   try {
@@ -33,17 +38,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await req.json();
-    const { phoneNumber } = body;
+    const body = await req.json().catch(() => null);
+    const validationResult = SendOTPSchema.safeParse(body);
 
-    if (!phoneNumber || typeof phoneNumber !== 'string') {
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: "Phone number is required" },
+        { 
+          error: 'Invalid input',
+          details: validationResult.error.format()
+        },
         { status: 400 }
       );
     }
 
-    // Validate phone number format
+    const { phoneNumber } = validationResult.data;
+
+    // Additional validation via service
     if (!(await isValidPhoneNumber(phoneNumber))) {
       return NextResponse.json(
         { error: "Invalid phone number format. Please use E.164 format (e.g., +971501234567)" },

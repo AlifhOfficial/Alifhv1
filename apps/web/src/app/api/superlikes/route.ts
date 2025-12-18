@@ -25,6 +25,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { getSessionUser } from '@/lib/auth/session-context';
 import {
   getFavoriteStatusForListings,
@@ -40,6 +41,11 @@ const CACHE_HEADERS_NO_CACHE = {
   'Cache-Control': 'no-store, no-cache, must-revalidate, private',
   'Pragma': 'no-cache',
 } as const;
+
+const ToggleSuperlikeSchema = z.object({
+  listingId: z.string().min(1, 'Listing ID is required'),
+  addedFrom: z.string().optional(),
+});
 
 export async function GET(req: NextRequest) {
   try {
@@ -95,13 +101,19 @@ export async function POST(req: NextRequest) {
     }
 
     const payload = await req.json().catch(() => null);
-    const listingId = payload?.listingId as string | undefined;
-    const addedFrom = payload?.addedFrom as string | undefined;
+    const validationResult = ToggleSuperlikeSchema.safeParse(payload);
 
-    if (!listingId) {
-      return NextResponse.json({ error: 'listingId is required' }, { status: 400 });
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { 
+          error: 'Invalid input',
+          details: validationResult.error.format()
+        },
+        { status: 400 }
+      );
     }
 
+    const { listingId, addedFrom } = validationResult.data;
     const result = await toggleSuperlikeForUser(user.id, listingId, addedFrom);
 
     return NextResponse.json({ 

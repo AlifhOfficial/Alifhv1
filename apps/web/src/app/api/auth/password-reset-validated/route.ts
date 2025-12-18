@@ -17,20 +17,31 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { validateUserExists } from "../validation-utils";
 
+const PasswordResetSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  redirectTo: z.string().url('Invalid redirect URL').optional(),
+});
+
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { email, redirectTo } = body;
+    const body = await request.json().catch(() => null);
+    const result = PasswordResetSchema.safeParse(body);
 
-    if (!email) {
+    if (!result.success) {
       return NextResponse.json(
-        { error: "Email is required" },
+        { 
+          error: 'Invalid input',
+          details: result.error.format()
+        },
         { status: 400 }
       );
     }
+
+    const { email, redirectTo } = result.data;
 
     const validation = await validateUserExists(email);
     
@@ -44,11 +55,11 @@ export async function POST(request: NextRequest) {
 
     console.log("📧 Proceeding with password reset for existing user:", email);
     
-    const result = await auth.api.requestPasswordReset({
+    const authResult = await auth.api.requestPasswordReset({
       body: { email, redirectTo },
     });
 
-    return NextResponse.json(result);
+    return NextResponse.json(authResult);
   } catch (error: any) {
     console.error("Password reset error:", error);
     return NextResponse.json(

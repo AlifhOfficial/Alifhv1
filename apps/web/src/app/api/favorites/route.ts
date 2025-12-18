@@ -18,6 +18,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import {
   getFavoriteStatusForListings,
   toggleFavoriteForUser,
@@ -32,6 +33,11 @@ const CACHE_HEADERS = {
   'Cache-Control': 'no-store, no-cache, must-revalidate, private',
   'Pragma': 'no-cache',
 } as const;
+
+const ToggleFavoriteSchema = z.object({
+  listingId: z.string().min(1, 'Listing ID is required'),
+  addedFrom: z.string().optional(),
+});
 
 export async function GET(req: NextRequest) {
   try {
@@ -72,13 +78,19 @@ export async function POST(req: NextRequest) {
     }
 
     const payload = await req.json().catch(() => null);
-    const listingId = payload?.listingId as string | undefined;
-    const addedFrom = payload?.addedFrom as string | undefined;
+    const result = ToggleFavoriteSchema.safeParse(payload);
 
-    if (!listingId) {
-      return NextResponse.json({ error: 'listingId is required' }, { status: 400 });
+    if (!result.success) {
+      return NextResponse.json(
+        { 
+          error: 'Invalid input',
+          details: result.error.format()
+        },
+        { status: 400 }
+      );
     }
 
+    const { listingId, addedFrom } = result.data;
     const status = await toggleFavoriteForUser(user.id, listingId, addedFrom);
 
     return NextResponse.json({ status });

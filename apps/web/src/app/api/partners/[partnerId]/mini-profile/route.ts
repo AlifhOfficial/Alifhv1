@@ -27,6 +27,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { getPartnerMiniProfile, updatePartnerMiniProfile } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 
@@ -37,6 +38,17 @@ const CACHE_HEADERS_PUBLIC = {
 const CACHE_HEADERS_NO_CACHE = {
   'Cache-Control': 'no-cache, no-store, must-revalidate',
 } as const;
+
+const UpdatePartnerProfileSchema = z.object({
+  name: z.string().optional(),
+  description: z.string().optional(),
+  logo: z.string().url().optional(),
+  phone: z.string().optional(),
+  website: z.string().url().optional(),
+  location: z.string().optional(),
+  operatingHours: z.string().optional(),
+  specialties: z.array(z.string()).optional(),
+}).strict();
 
 export async function GET(
   request: NextRequest,
@@ -91,16 +103,20 @@ export async function PATCH(
       );
     }
 
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
+    const validationResult = UpdatePartnerProfileSchema.safeParse(body);
 
-    if (!body || typeof body !== 'object') {
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Invalid request body' },
+        { 
+          error: 'Invalid input',
+          details: validationResult.error.format()
+        },
         { status: 400 }
       );
     }
 
-    const updatedProfile = await updatePartnerMiniProfile(partnerId, body);
+    const updatedProfile = await updatePartnerMiniProfile(partnerId, validationResult.data);
 
     if (!updatedProfile) {
       return NextResponse.json(
