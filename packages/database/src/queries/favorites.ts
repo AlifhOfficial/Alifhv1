@@ -129,7 +129,7 @@ export async function getFavoriteStatusForListings(userId: string) {
 
   // ⚡ MEMORY CACHE: Check cache first (30s TTL)
   // IMPORTANT: Only cache for authenticated users with valid session
-  const { memoryCache, CacheKeys, CacheTTL } = await import('../memory-cache');
+  const { memoryCache, CacheKeys, CacheTTL } = await import('../caches');
   const cacheKey = CacheKeys.userFavorites(userId);
   const cached = memoryCache.get<{ favorites: string[]; superlikes: string[] }>(cacheKey);
   
@@ -180,7 +180,7 @@ export async function toggleFavoriteForUser(
   // This reduces from 3 round trips to 2 round trips (or 1 if we guess right)
   
   // Invalidate cache
-  const { memoryCache, CacheKeys } = await import('../memory-cache');
+  const { memoryCache, CacheKeys } = await import('../caches');
   memoryCache.delete(CacheKeys.userFavorites(userId));
   
   // Try to delete existing favorite
@@ -228,7 +228,7 @@ export async function toggleSuperlikeForUser(
   const allowed = (quota.maxSuperlikesPerMonth || 0) + (quota.premiumSuperlikesBonus || 0);
   
   // Invalidate cache
-  const { memoryCache, CacheKeys } = await import('../memory-cache');
+  const { memoryCache, CacheKeys } = await import('../caches');
   memoryCache.delete(CacheKeys.userFavorites(userId));
   
   // Try to delete existing superlike

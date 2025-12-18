@@ -1,8 +1,34 @@
 /**
- * Simple In-Memory Cache for Bun
- * Lightweight alternative to Redis for MVP
+ * Memory Cache - Production
  * 
- * Uses Map for O(1) lookups - Bun's JS engine is blazing fast
+ * In-memory caching layer for frequently accessed database queries.
+ * Lightweight Redis alternative for MVP with automatic cleanup.
+ * 
+ * USAGE:
+ * - Session data (30s TTL) - prevents N+1 auth queries
+ * - User favorites (30s TTL) - reduces listing page load
+ * - Listing details (5min TTL) - caches rarely-changing data
+ * 
+ * ARCHITECTURE:
+ * - Uses native Map for O(1) lookups (Bun's JS engine is optimized)
+ * - TTL-based expiration with lazy deletion on access
+ * - Background cleanup every 60s to prevent memory leaks
+ * - Single instance per Node/Bun process (singleton pattern)
+ * 
+ * DEPLOYMENT:
+ * - Works in serverless (each instance has isolated cache)
+ * - No shared state across instances (stateless design)
+ * - Memory usage: ~100KB per 1000 entries
+ * - Auto-destroys on process exit
+ * 
+ * MIGRATION PATH:
+ * When scaling beyond single-server:
+ * 1. Replace with Redis/Valkey for distributed caching
+ * 2. Update CacheKeys to use Redis key patterns
+ * 3. Implement pub/sub for cache invalidation
+ * 4. Keep same interface - minimal code changes needed
+ * 
+ * @module caches/memory-cache
  */
 
 interface CacheEntry<T> {
@@ -15,7 +41,7 @@ class MemoryCache {
   private cleanupInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor() {
-    // Auto-cleanup expired entries every 60 seconds
+    // Background cleanup every 60s to prevent memory bloat
     if (typeof globalThis.Bun !== 'undefined') {
       this.cleanupInterval = setInterval(() => this.cleanup(), 60000);
     }

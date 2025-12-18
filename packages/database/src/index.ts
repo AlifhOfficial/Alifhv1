@@ -1,15 +1,12 @@
 /**
- * Database Package - V1 Simple
+ * Database Package - Production
+ * 
+ * Centralized database access with Drizzle ORM, schemas, queries, and caching.
+ * 
+ * @module @alifh/database
  */
 
-// Database client
 export * from './dbclient';
-
-// Schemas
 export * from './schema';
-
-// Queries  
 export * from './queries';
-
-// Memory cache
-export * from './memory-cache';
+export * from './caches';

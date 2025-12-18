@@ -21,7 +21,7 @@
  * @module queries/auth-cache
  */
 
-import { memoryCache, CacheKeys } from "../memory-cache";
+import { memoryCache, CacheKeys } from "../caches";
 
 /**
  * Invalidate user session cache after auth changes
