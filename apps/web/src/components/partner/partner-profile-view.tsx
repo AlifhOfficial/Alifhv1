@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { PartnerProfileHeader, PartnerProfileStats } from './ui/partner-profile-header';
 import { LogoUpload } from './ui/logo-upload';
 import { SectionWrapper } from '@/components/profile/ui/section-wrapper';
+import { PartnerProfilePreviewButton } from './partner-profile-preview-button';
 
 // Sections
 import { CompanyIdentitySection } from './sections/company-identity-section';
@@ -200,28 +201,32 @@ export function PartnerProfileView({ partnerId }: PartnerProfileViewProps) {
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-8 py-12">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6 pb-6 border-b border-border">
-          <PartnerProfileHeader
-            brandName={profile.brandName}
-            companyNameLegal={profile.companyNameLegal}
-            isVerified={profile.isVerified}
-            tier={profile.tier}
-            badges={profile.badges}
-            googleRating={profile.googleRating}
-            googleReviewCount={profile.googleReviewCount}
-            platformRating={profile.platformRating}
-            platformReviewCount={profile.platformReviewCount}
-            totalInventory={profile.totalInventory}
-            avgResponseTime={profile.avgResponseTime}
-            responseRate={profile.responseRate}
-          />
+        <div className="mb-6 pb-6 border-b border-border">
+          <div className="flex items-center justify-between mb-4">
+            <PartnerProfileHeader
+              brandName={profile.brandName}
+              companyNameLegal={profile.companyNameLegal}
+              isVerified={profile.isVerified}
+              tier={profile.tier}
+              badges={profile.badges}
+              googleRating={profile.googleRating}
+              googleReviewCount={profile.googleReviewCount}
+              platformRating={profile.platformRating}
+              platformReviewCount={profile.platformReviewCount}
+              totalInventory={profile.totalInventory}
+              avgResponseTime={profile.avgResponseTime}
+              responseRate={profile.responseRate}
+            />
 
-          <LogoUpload
-            logoUrl={profile.logo}
-            brandName={profile.brandName}
-            onUpdate={handleLogoUpdate}
-            isUpdating={updateMutation.isPending}
-          />
+            <div className="flex items-center gap-3">
+              <LogoUpload
+                logoUrl={profile.logo}
+                brandName={profile.brandName}
+                onUpdate={handleLogoUpdate}
+                isUpdating={updateMutation.isPending}
+              />
+            </div>
+          </div>
         </div>
 
         {/* Stats Grid */}
@@ -232,6 +237,7 @@ export function PartnerProfileView({ partnerId }: PartnerProfileViewProps) {
             platformRating={profile.platformRating}
             platformReviewCount={profile.platformReviewCount}
             totalInventory={profile.totalInventory}
+            experienceYears={profile.experienceYears}
             avgResponseTime={profile.avgResponseTime}
             responseRate={profile.responseRate}
             tier={profile.tier}
@@ -247,6 +253,13 @@ export function PartnerProfileView({ partnerId }: PartnerProfileViewProps) {
           onSave={() => handleSaveSection('identity')}
           onCancel={handleCancelSection}
           isSaving={isSaving}
+          customActions={
+            <PartnerProfilePreviewButton
+              partnerId={partnerId}
+              variant="outline"
+              size="sm"
+            />
+          }
         >
           <CompanyIdentitySection
             companyNameLegal={profile.companyNameLegal}

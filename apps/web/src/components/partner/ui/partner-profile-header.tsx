@@ -17,6 +17,7 @@ interface PartnerProfileHeaderProps {
   totalInventory: number;
   avgResponseTime?: number | null;
   responseRate?: number | null;
+  experienceYears?: number | null;
 }
 
 export function PartnerProfileHeader({
@@ -75,10 +76,11 @@ export function PartnerProfileStats({
   totalInventory,
   avgResponseTime,
   responseRate,
+  experienceYears,
   tier,
-}: Pick<PartnerProfileHeaderProps, 'googleRating' | 'googleReviewCount' | 'platformRating' | 'platformReviewCount' | 'totalInventory' | 'avgResponseTime' | 'responseRate' | 'tier'>) {
+}: Pick<PartnerProfileHeaderProps, 'googleRating' | 'googleReviewCount' | 'platformRating' | 'platformReviewCount' | 'totalInventory' | 'avgResponseTime' | 'responseRate' | 'experienceYears' | 'tier'>) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
       <div>
         <p className="text-xs font-medium text-muted-foreground mb-1">Google Rating</p>
         <div className="flex items-center gap-1.5">
@@ -112,6 +114,11 @@ export function PartnerProfileStats({
       <div>
         <p className="text-xs font-medium text-muted-foreground mb-1">Total Inventory</p>
         <p className="text-xl font-semibold tracking-tight">{totalInventory}</p>
+      </div>
+
+      <div>
+        <p className="text-xs font-medium text-muted-foreground mb-1">Experience</p>
+        <p className="text-xl font-semibold tracking-tight">{experienceYears ? `${experienceYears}+ yrs` : '—'}</p>
       </div>
 
       <div>

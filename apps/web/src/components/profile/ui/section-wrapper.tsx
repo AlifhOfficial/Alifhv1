@@ -16,6 +16,7 @@ interface SectionWrapperProps {
   isSaving: boolean;
   children: ReactNode;
   showEdit?: boolean;
+  customActions?: ReactNode;
 }
 
 export function SectionWrapper({
@@ -28,6 +29,7 @@ export function SectionWrapper({
   isSaving,
   children,
   showEdit = true,
+  customActions,
 }: SectionWrapperProps) {
   return (
     <div className="space-y-6">
@@ -36,14 +38,19 @@ export function SectionWrapper({
           <h2 className="text-base font-semibold tracking-tight">{title}</h2>
           <p className="text-sm text-muted-foreground mt-1">{description}</p>
         </div>
-        {showEdit && !isEditing && (
-          <button
-            onClick={onEdit}
-            className="h-8 px-3 text-xs font-medium text-foreground border border-border rounded-lg hover:bg-muted/50 flex items-center gap-2"
-          >
-            <Edit3 className="w-3.5 h-3.5" />
-            Edit
-          </button>
+        {!isEditing && (
+          <div className="flex items-center gap-2">
+            {customActions}
+            {showEdit && (
+              <button
+                onClick={onEdit}
+                className="h-8 px-3 text-xs font-medium text-foreground border border-border rounded-lg hover:bg-muted/50 flex items-center gap-2"
+              >
+                <Edit3 className="w-3.5 h-3.5" />
+                Edit
+              </button>
+            )}
+          </div>
         )}
       </div>
       <div className="space-y-6">{children}</div>
