@@ -1,11 +1,16 @@
 /**
- * Simple Favorites Context
- * Just holds the favorite/superlike status for all listings
+ * Favorites Context - Production
+ * 
+ * Manages favorite and superlike status for listings with quota tracking.
+ * Provides centralized state management for user-specific listing interactions.
+ * 
+ * @module contexts/favorites-context
+ * @client-only
  */
 
 'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 
 interface FavoriteStatus {
   isFavorite: boolean;
@@ -26,7 +31,7 @@ interface FavoritesContextValue {
   statuses: Record<string, FavoriteStatus>;
   setStatuses: (statuses: Record<string, FavoriteStatus>) => void;
   updateStatus: (listingId: string, status: FavoriteStatus) => void;
-  clearStatuses: () => void; // Clear all cached statuses (useful for auth state changes)
+  clearStatuses: () => void;
   quota: SuperlikeQuota | null;
   setQuota: (quota: SuperlikeQuota | null) => void;
 }
@@ -37,14 +42,14 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   const [statuses, setStatuses] = useState<Record<string, FavoriteStatus>>({});
   const [quota, setQuota] = useState<SuperlikeQuota | null>(null);
 
-  const updateStatus = (listingId: string, status: FavoriteStatus) => {
+  const updateStatus = useCallback((listingId: string, status: FavoriteStatus) => {
     setStatuses(prev => ({ ...prev, [listingId]: status }));
-  };
+  }, []);
 
-  const clearStatuses = () => {
+  const clearStatuses = useCallback(() => {
     setStatuses({});
     setQuota(null);
-  };
+  }, []);
 
   return (
     <FavoritesContext.Provider value={{ statuses, setStatuses, updateStatus, clearStatuses, quota, setQuota }}>
