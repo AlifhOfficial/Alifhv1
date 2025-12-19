@@ -21,7 +21,7 @@ import {
   BarChart3,
   Award
 } from 'lucide-react';
-import { usePartnerMiniProfile } from '@/hooks/partner/use-partner-mini-profile';
+import { usePartnerProfile } from '@/hooks/partner';
 import { BrandAvatar } from './ui/brand-avatar';
 import { BrandHero } from './ui/brand-hero';
 
@@ -36,7 +36,7 @@ export function PartnerProfilePreviewModal({
   isOpen,
   onClose,
 }: PartnerProfilePreviewModalProps) {
-  const { data: partner, isLoading } = usePartnerMiniProfile(isOpen ? partnerId : null);
+  const { profile: partner, isLoading } = usePartnerProfile(isOpen ? partnerId : null);
 
   // Lock body scroll when modal is open
   useEffect(() => {

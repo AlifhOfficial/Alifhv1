@@ -42,15 +42,25 @@ const CACHE_HEADERS_NO_CACHE = {
 } as const;
 
 const UpdatePartnerProfileSchema = z.object({
-  name: z.string().optional(),
+  companyNameLegal: z.string().optional(),
+  brandName: z.string().optional(),
+  website: z.string().optional(),
+  address: z.string().optional(),
+  emirate: z.string().optional(),
+  city: z.string().optional(),
+  locationLat: z.number().nullable().optional(),
+  locationLng: z.number().nullable().optional(),
+  showroomCount: z.number().optional(),
+  logo: z.string().nullable().optional(),
+  heroImage: z.string().nullable().optional(),
   description: z.string().optional(),
-  logo: z.string().url().optional(),
-  phone: z.string().optional(),
-  website: z.string().url().optional(),
-  location: z.string().optional(),
-  operatingHours: z.string().optional(),
   specialties: z.array(z.string()).optional(),
-}).strict();
+  experienceYears: z.number().optional(),
+  foundedYear: z.number().optional(),
+  googleReviewUrl: z.string().optional(),
+  badges: z.array(z.string()).optional(),
+  tags: z.array(z.string()).optional(),
+});
 
 export async function GET(
   request: NextRequest,

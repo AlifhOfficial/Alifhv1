@@ -1,1 +1,1 @@
-export * from './use-partner-mini-profile';
+export * from './use-partner-profile';
