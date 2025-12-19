@@ -327,6 +327,8 @@ export const partnerStaff = pgTable('partner_staff', {
   index('partner_staff_userId_idx').on(table.userId),
   index('partner_staff_status_idx').on(table.status),
   index('partner_staff_role_idx').on(table.role),
+  // Composite index for customSession query: WHERE userId = ? AND status = 'active'
+  index('partner_staff_userId_status_idx').on(table.userId, table.status),
   unique('partner_staff_partnerId_userId_unique').on(table.partnerId, table.userId), // One person, one seat per company
 ]);
 
