@@ -6,17 +6,28 @@
  * - Uses select() instead of query API for better performance
  * - Minimizes data normalization overhead
  * - Reduces object spread operations
+ * - Memory cache with 60s TTL (matches API revalidate time)
  */
 
 import { eq } from 'drizzle-orm';
 import { db } from '../../dbclient';
+import { memoryCache, CacheKeys, CacheTTL } from '../../caches/memory-cache';
 import { partner } from '../../schema/partner';
 
 /**
  * Mini Partner Profile - For listing cards/profile preview
  * Returns all essential partner info (30 fields)
+ * Cached for 60s to reduce database load
  */
 export async function getPartnerMiniProfile(partnerId: string) {
+  const cacheKey = CacheKeys.partnerMiniProfile(partnerId);
+  
+  // Check cache first
+  const cached = memoryCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   // Use select() for better performance - only fetches specified columns
   const [result] = await db
     .select({
@@ -100,6 +111,9 @@ export async function getPartnerMiniProfile(partnerId: string) {
     badges: result.badges || [],
     tags: result.tags || [],
   };
+
+  // Store in cache (60s TTL matches API revalidate)
+  memoryCache.set(cacheKey, normalized, CacheTTL.partnerMiniProfile);
 
   return normalized;
 }

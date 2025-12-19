@@ -156,6 +156,7 @@ export const CacheKeys = {
   listingCards: (filters: string) => `listings:cards:${filters}`,
   listingCardsBatch: (ids: string[]) => `listings:cards:batch:${ids.sort().join(',')}`,
   partnerInventory: (partnerId: string, status?: string) => `listings:partner:${partnerId}:${status || 'all'}`,
+  partnerMiniProfile: (partnerId: string) => `partner:${partnerId}:mini`,
 } as const;
 
 /**
@@ -168,4 +169,5 @@ export const CacheTTL = {
   listingCards: 120, // 2 minutes - listing cards (main browse page)
   listingCardsBatch: 60, // 1 minute - batch requests (favorites/superlikes)
   partnerInventory: 180, // 3 minutes - partner inventory pages
+  partnerMiniProfile: 60, // 1 minute - partner mini profile (matches API revalidate)
 } as const;

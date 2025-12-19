@@ -56,10 +56,13 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ partnerId: string }> }
 ) {
+  const start = performance.now();
   try {
     const { partnerId } = await params;
 
+    const queryStart = performance.now();
     const profile = await getPartnerMiniProfile(partnerId);
+    const queryTime = performance.now() - queryStart;
 
     if (!profile) {
       return NextResponse.json(
@@ -67,6 +70,9 @@ export async function GET(
         { status: 404 }
       );
     }
+
+    const totalTime = performance.now() - start;
+    console.log(`[partner mini-profile] GET ${partnerId.slice(0, 8)}... - Query: ${queryTime.toFixed(2)}ms, Total: ${totalTime.toFixed(2)}ms`);
 
     const response = NextResponse.json(profile);
     Object.entries(CACHE_HEADERS_PUBLIC).forEach(([key, value]) => 

@@ -6,10 +6,12 @@
  * - Minimizes payload by only returning necessary fields
  * - Avoids unnecessary object spread in set()
  * - Uses destructuring for cleaner return
+ * - Invalidates memory cache on update
  */
 
 import { eq } from 'drizzle-orm';
 import { db } from '../../dbclient';
+import { memoryCache, CacheKeys } from '../../caches/memory-cache';
 import { partner } from '../../schema/partner';
 
 export interface UpdatePartnerMiniProfileData {
@@ -114,6 +116,9 @@ export async function updatePartnerMiniProfile(
       badges: partner.badges,
       tags: partner.tags,
     });
+
+  // Invalidate cache after update
+  memoryCache.delete(CacheKeys.partnerMiniProfile(partnerId));
 
   return result;
 }
