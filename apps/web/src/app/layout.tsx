@@ -3,7 +3,6 @@ import './globals.css'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { Toaster } from '@/components/ui'
-import { FavoritesProvider } from '@/contexts/favorites-context'
 
 export const metadata: Metadata = {
   title: 'Alifh - Vehicle Marketplace',
@@ -40,10 +39,8 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           <QueryProvider>
-            <FavoritesProvider>
-              {children}
-              <Toaster />
-            </FavoritesProvider>
+            {children}
+            <Toaster />
           </QueryProvider>
         </ThemeProvider>
       </body>

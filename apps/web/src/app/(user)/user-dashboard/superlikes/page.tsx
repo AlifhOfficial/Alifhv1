@@ -1,12 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Loader2, RefreshCw } from 'lucide-react';
 import { CarCard } from '@/components/inventory/car-card';
 import { DashboardPageLayout } from '@/components/layout';
 import { SuperlikeQuotaBadge } from '@/components/inventory/superlike-quota-badge';
-import { useFavoritesContext } from '@/contexts/favorites-context';
+import { useFavoritesQuery, useQuotaQuery } from '@/hooks/favorites/use-favorites';
 
 type SuperlikeQuota = {
   currentMonthSuperlikesUsed: number;
@@ -49,97 +49,40 @@ type CarCardResponse = {
 };
 
 export default function SuperlikesPage() {
-  const { setStatuses } = useFavoritesContext();
+  const { data: favoritesData, isLoading, error: favError, refetch } = useFavoritesQuery();
+  const { data: quotaData } = useQuotaQuery();
   const [listings, setListings] = useState<ListingPayload[]>([]);
-  const [superlikeIds, setSuperlikeIds] = useState<string[]>([]);
-  const [quota, setQuota] = useState<SuperlikeQuota | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isLoadingListings, setIsLoadingListings] = useState(false);
   const hasFetchedRef = useRef(false);
 
-  const loadSuperlikes = useCallback(async (showRefreshIndicator = false) => {
-    if (showRefreshIndicator) {
-      setIsRefreshing(true);
-    } else {
-      setIsLoading(true);
-    }
-    setError(null);
+  const superlikeIds = favoritesData?.superlikes || [];
+  
+  const quota: SuperlikeQuota | null = quotaData ? {
+    ...quotaData,
+    remaining: (quotaData.maxSuperlikesPerMonth + quotaData.premiumSuperlikesBonus) - quotaData.currentMonthSuperlikesUsed
+  } : null;
 
-    try {
-      // SECURITY: Add timestamp to prevent cached data from previous user
-      const res = await fetch(`/api/superlikes?includeStatuses=true&_t=${Date.now()}`, {
-        credentials: 'include',
-        // Removed cache: 'no-store' - API now handles caching with 30s revalidation
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || 'Failed to load superlikes');
-      }
-
-      const data: SuperlikesResponse = await res.json();
-      
-      // Convert arrays to status map for context
-      const favSet = new Set(data.favorites || []);
-      const superlikeSet = new Set(data.superlikes || []);
-      
-      const allIds = new Set([...favSet, ...superlikeSet]);
-      const statusMap: Record<string, { isFavorite: boolean; isSuperliked: boolean }> = {};
-      allIds.forEach(id => {
-        statusMap[id] = {
-          isFavorite: favSet.has(id),
-          isSuperliked: superlikeSet.has(id),
-        };
-      });
-      
-      setStatuses(statusMap);
-      
-      const superlikeIdsList = data.superlikes || [];
-      setSuperlikeIds(superlikeIdsList);
-
-      if (data.quota) {
-        const baseMax = data.quota.maxSuperlikesPerMonth || 0;
-        const bonus = data.quota.premiumSuperlikesBonus || 0;
-        const used = data.quota.currentMonthSuperlikesUsed || 0;
-        setQuota({
-          ...data.quota,
-          remaining: Math.max(baseMax + bonus - used, 0),
-        });
-      } else {
-        setQuota(null);
-      }
-
-      if (superlikeIdsList.length === 0) {
-        setListings([]);
-      } else {
-        const cardsRes = await fetch(`/api/listings/car-card?ids=${encodeURIComponent(superlikeIdsList.join(','))}`, {
-          credentials: 'include',
-          // Removed cache: 'no-store' - API handles caching with 60s revalidation
-        });
-
-        if (!cardsRes.ok) {
-          const cardsErr = await cardsRes.json().catch(() => ({}));
-          throw new Error(cardsErr.error || 'Failed to load listing cards');
-        }
-
-        const cardsData: CarCardResponse = await cardsRes.json();
-        setListings(cardsData.data || []);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load superlikes');
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, [setStatuses]);
-
+  // Load listing details when superlike IDs change
   useEffect(() => {
-    if (!hasFetchedRef.current) {
-      hasFetchedRef.current = true;
-      loadSuperlikes();
+    if (!superlikeIds.length) {
+      setListings([]);
+      hasFetchedRef.current = false;
+      return;
     }
-  }, [loadSuperlikes]);
+
+    if (hasFetchedRef.current) return;
+
+    hasFetchedRef.current = true;
+    setIsLoadingListings(true);
+
+    fetch(`/api/listings/car-card?ids=${encodeURIComponent(superlikeIds.join(','))}`, {
+      credentials: 'include',
+    })
+      .then(res => res.json())
+      .then((data: CarCardResponse) => setListings(data.data || []))
+      .catch(() => setListings([]))
+      .finally(() => setIsLoadingListings(false));
+  }, [superlikeIds]);
 
   const listingsById = useMemo(() => {
     const map = new Map<string, ListingPayload>();
@@ -159,26 +102,26 @@ export default function SuperlikesPage() {
       }
       headerActions={
         <button
-          onClick={() => loadSuperlikes(true)}
-          disabled={isRefreshing || isLoading}
+          onClick={() => refetch()}
+          disabled={isLoading}
           className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg bg-muted hover:bg-muted/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Refresh superlikes"
         >
-          <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
           <span>Refresh</span>
         </button>
       }
     >
 
-        {isLoading && (
+        {(isLoading || isLoadingListings) && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
             Loading your superlikes…
           </div>
         )}
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        {favError && <p className="text-sm text-destructive">{favError.message}</p>}
 
-        {!isLoading && !error && (
+        {!isLoading && !isLoadingListings && !favError && (
           <section className="space-y-6">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">{superlikeIds.length} item{superlikeIds.length === 1 ? '' : 's'}</span>

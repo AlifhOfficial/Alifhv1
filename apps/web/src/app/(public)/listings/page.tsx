@@ -5,73 +5,19 @@
 
 'use client';
 
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useState } from 'react';
 import { Navbar } from '@/components/navbar';
 import { CarCard } from '@/components/inventory/car-card';
 import { CarListItem } from '@/components/inventory/car-list-item';
 import { useListings } from '@/hooks/listings';
-import { useFavoritesContext } from '@/contexts/favorites-context';
 import { LayoutGrid, List } from 'lucide-react';
 
 export default function InventoryPage() {
   const { listings, isLoading, isLoadingMore, error, hasMore, totalCount, loadMore } = useListings();
-  const { setStatuses, setQuota } = useFavoritesContext();
-  const hasFetchedRef = useRef(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
-  // Fetch favorites AND quota once when listings load (only if authenticated)
-  useEffect(() => {
-    if (listings.length === 0 || hasFetchedRef.current) return;
-    
-    hasFetchedRef.current = true;
-
-    const fetchFavoritesAndQuota = async () => {
-      try {
-        // Simplified: Fetch ALL user favorites (typically <50 items)
-        // Much cleaner than passing 30+ listing IDs in URL
-        const [favRes, quotaRes] = await Promise.all([
-          fetch(`/api/favorites`, { credentials: 'include' }),
-          fetch(`/api/superlikes`, { credentials: 'include' })
-        ]);
-        
-        // Handle favorites
-        if (favRes.ok) {
-          const favData = await favRes.json();
-          if (favData.favorites && favData.superlikes) {
-            // Build hash map client-side (instant operation)
-            const favSet = new Set(favData.favorites);
-            const superlikeSet = new Set(favData.superlikes);
-            
-            const statusMap: Record<string, { isFavorite: boolean; isSuperliked: boolean }> = {};
-            listings.forEach(listing => {
-              statusMap[listing.id] = {
-                isFavorite: favSet.has(listing.id),
-                isSuperliked: superlikeSet.has(listing.id),
-              };
-            });
-            
-            setStatuses(statusMap);
-          }
-        }
-        
-        // Handle quota
-        if (quotaRes.ok) {
-          const quotaData = await quotaRes.json();
-          if (quotaData.quota) {
-            const quota = {
-              ...quotaData.quota,
-              remaining: (quotaData.quota.maxSuperlikesPerMonth + quotaData.quota.premiumSuperlikesBonus) - quotaData.quota.currentMonthSuperlikesUsed
-            };
-            setQuota(quota);
-          }
-        }
-      } catch (err) {
-        // Silently ignore - user may not be authenticated
-      }
-    };
-
-    fetchFavoritesAndQuota();
-  }, [listings.length, setStatuses, setQuota]);
+  // NOTE: Favorites/superlikes state is now handled automatically by React Query
+  // Each car-card component uses useFavorites(id) which reads from the shared cache
 
   return (
     <>

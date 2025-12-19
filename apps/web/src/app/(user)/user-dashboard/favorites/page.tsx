@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Loader2, RefreshCw } from 'lucide-react';
 import { CarCard } from '@/components/inventory/car-card';
 import { DashboardPageLayout } from '@/components/layout';
-import { useFavoritesContext } from '@/contexts/favorites-context';
+import { useFavoritesQuery } from '@/hooks/favorites/use-favorites';
 
 type ListingPayload = {
   id: string;
@@ -37,84 +37,34 @@ type CarCardResponse = {
 };
 
 export default function FavoritesPage() {
-  const { setStatuses } = useFavoritesContext();
+  const { data: favoritesData, isLoading, error: favError, refetch } = useFavoritesQuery();
   const [listings, setListings] = useState<ListingPayload[]>([]);
-  const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isLoadingListings, setIsLoadingListings] = useState(false);
   const hasFetchedRef = useRef(false);
 
-  const loadFavorites = useCallback(async (showRefreshIndicator = false) => {
-    if (showRefreshIndicator) {
-      setIsRefreshing(true);
-    } else {
-      setIsLoading(true);
-    }
-    setError(null);
+  const favoriteIds = favoritesData?.favorites || [];
 
-    try {
-      // SECURITY: Add timestamp to prevent cached data from previous user
-      const res = await fetch(`/api/favorites?_t=${Date.now()}`, {
-        credentials: 'include',
-        // Removed cache: 'no-store' - API now handles caching with 30s revalidation
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || 'Failed to load favorites');
-      }
-
-      const data: FavoritesResponse = await res.json();
-      
-      // Convert arrays to status map for context
-      const favSet = new Set(data.favorites || []);
-      const superlikeSet = new Set(data.superlikes || []);
-      
-      const allIds = new Set([...favSet, ...superlikeSet]);
-      const statusMap: Record<string, { isFavorite: boolean; isSuperliked: boolean }> = {};
-      allIds.forEach(id => {
-        statusMap[id] = {
-          isFavorite: favSet.has(id),
-          isSuperliked: superlikeSet.has(id),
-        };
-      });
-      
-      setStatuses(statusMap);
-      
-      const favoriteIdsList = data.favorites || [];
-      setFavoriteIds(favoriteIdsList);
-
-      if (favoriteIdsList.length === 0) {
-        setListings([]);
-      } else {
-        const cardsRes = await fetch(`/api/listings/car-card?ids=${encodeURIComponent(favoriteIdsList.join(','))}`, {
-          credentials: 'include',
-          // Removed cache: 'no-store' - API handles caching with 60s revalidation
-        });
-
-        if (!cardsRes.ok) {
-          const cardsErr = await cardsRes.json().catch(() => ({}));
-          throw new Error(cardsErr.error || 'Failed to load listing cards');
-        }
-
-        const cardsData: CarCardResponse = await cardsRes.json();
-        setListings(cardsData.data || []);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load favorites');
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, [setStatuses]);
-
+  // Load listing details when favorite IDs change
   useEffect(() => {
-    if (!hasFetchedRef.current) {
-      hasFetchedRef.current = true;
-      loadFavorites();
+    if (!favoriteIds.length) {
+      setListings([]);
+      hasFetchedRef.current = false;
+      return;
     }
-  }, [loadFavorites]);
+
+    if (hasFetchedRef.current) return;
+
+    hasFetchedRef.current = true;
+    setIsLoadingListings(true);
+
+    fetch(`/api/listings/car-card?ids=${encodeURIComponent(favoriteIds.join(','))}`, {
+      credentials: 'include',
+    })
+      .then(res => res.json())
+      .then((data: CarCardResponse) => setListings(data.data || []))
+      .catch(() => setListings([]))
+      .finally(() => setIsLoadingListings(false));
+  }, [favoriteIds]);
 
   const listingsById = useMemo(() => {
     const map = new Map<string, ListingPayload>();
@@ -129,26 +79,26 @@ export default function FavoritesPage() {
       title="Favorites"
       headerActions={
         <button
-          onClick={() => loadFavorites(true)}
-          disabled={isRefreshing || isLoading}
+          onClick={() => refetch()}
+          disabled={isLoading}
           className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg bg-muted hover:bg-muted/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Refresh favorites"
         >
-          <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
           <span>Refresh</span>
         </button>
       }
     >
 
-        {isLoading && (
+        {(isLoading || isLoadingListings) && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
             Loading your favorites…
           </div>
         )}
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        {favError && <p className="text-sm text-destructive">{favError.message}</p>}
 
-        {!isLoading && !error && (
+        {!isLoading && !isLoadingListings && !favError && (
           <section className="space-y-6">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">{favoriteIds.length} item{favoriteIds.length === 1 ? '' : 's'}</span>
