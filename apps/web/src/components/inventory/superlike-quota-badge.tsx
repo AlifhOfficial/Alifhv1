@@ -1,7 +1,7 @@
 'use client';
 
 import { Sparkles } from 'lucide-react';
-import { SuperlikeQuota } from '@/hooks/favorites/use-favorites';
+import { SuperlikeQuota } from '@/hooks/favorites';
 import { cn } from '@/utils';
 
 interface SuperlikeQuotaBadgeProps {

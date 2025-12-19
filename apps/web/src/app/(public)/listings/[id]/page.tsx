@@ -16,7 +16,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useListingDetail } from '@/hooks/use-listing-detail';
-import { useFavorites } from '@/hooks/favorites';
+import { useFavorite, useSuperlike } from '@/hooks/favorites';
 import { cn } from '@/utils';
 import { CarDetailContent } from '@/components/listing/car-detail-content';
 
@@ -26,12 +26,15 @@ export default function CarDetailPage() {
   const listingId = params.id as string;
   
   const { data: listing, isLoading, error } = useListingDetail(listingId);
-  const {
-    isFavorite,
-    isSuperliked,
-    toggleFavorite,
-    toggleSuperlike,
-  } = useFavorites(listingId);
+  
+  // Separate hooks for favorites and superlikes
+  const favorite = useFavorite(listingId);
+  const superlike = useSuperlike(listingId);
+  
+  const isFavorite = favorite.isFavorite;
+  const isSuperliked = superlike.isSuperliked;
+  const toggleFavorite = favorite.toggle;
+  const toggleSuperlike = superlike.toggle;
   
   if (isLoading) {
     return (

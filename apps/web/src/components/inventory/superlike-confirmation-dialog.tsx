@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Sparkles, X } from 'lucide-react';
-import { SuperlikeQuota } from '@/hooks/favorites/use-favorites';
+import { SuperlikeQuota } from '@/hooks/favorites';
 
 interface SuperlikeConfirmationDialogProps {
   isOpen: boolean;
