@@ -1,6 +1,5 @@
-import { DashboardLayoutProvider, DashboardMainContent } from "@/components/dashboard-components/dashboard-layout-wrapper";
+import { DashboardLayout, DashboardContent } from "@/components/dashboard-components/dashboard-layout";
 import { Sidebar } from "@/components/dashboard-components/sidebar";
-import { ThreeColumnLayout } from "@/components/dashboard-components/three-column-layout";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { redirect } from "next/navigation";
 
@@ -19,17 +18,11 @@ const navItems = [
 export default async function PartnerDashboardLayout({ children }: { children: React.ReactNode }) {
   const user = await getSessionUser();
   if (!user) redirect('/');
-  
-  // Auth check already done in middleware - proxy validates partner access
 
   return (
-    <DashboardLayoutProvider>
+    <DashboardLayout enableRightPanel>
       <Sidebar user={user} items={navItems} />
-      <DashboardMainContent>
-        <ThreeColumnLayout>
-          {children}
-        </ThreeColumnLayout>
-      </DashboardMainContent>
-    </DashboardLayoutProvider>
+      <DashboardContent>{children}</DashboardContent>
+    </DashboardLayout>
   );
 }

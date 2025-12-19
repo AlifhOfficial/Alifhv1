@@ -41,7 +41,7 @@ import {
 import { useEffect, useMemo, useState, type ComponentType } from "react";
 import { Avatar } from "@/components/ui/data-display/avatar";
 import { useUserProfile } from "@/hooks/profile";
-import { useDrawer } from "./dashboard-layout-wrapper";
+import { useDrawer } from "./dashboard-layout";
 
 interface SidebarProps {
   user: {

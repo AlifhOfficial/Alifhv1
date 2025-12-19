@@ -1,55 +1,15 @@
 import { getSessionUser } from "@/lib/auth/session-context";
-import { StaffDashboardLayout } from "@/components/layouts/dashboard-layout";
-import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 export default async function StaffDashboard() {
-  // Proxy middleware already handles auth, just get session
   const user = await getSessionUser();
-  
-  if (!user) {
-    redirect('/');
-  }
+  if (!user) return null; // Layout handles redirect
 
-  // TODO: Replace with API endpoint to fetch full staff membership details
-  // Check if user has staff membership (from session)
   const staffMembership = user.partnerMemberships?.find(m => m.staffRole !== 'owner');
-
-  // If no active membership, deny access (not dealer staff)
-  if (!staffMembership) {
-    redirect('/access-denied?reason=not-dealer-staff');
-  }
-  
-  // If user is owner, redirect to partner dashboard
-  if (staffMembership.staffRole === 'owner') {
-    redirect('/partner-dashboard');
-  }
-
   const dealerName = "Dealership"; // TODO: Fetch from API
 
-  // Right panel content
-  const rightPanel = (
-    <div className="space-y-4">
-      <h3 className="text-sm font-medium text-foreground">Your Dealership</h3>
-      <div className="bg-muted/20 p-3 rounded-lg">
-        <p className="text-sm font-medium">{dealerName}</p>
-        <p className="text-xs text-muted-foreground capitalize">{staffMembership.staffRole} Role</p>
-      </div>
-      
-      <div className="space-y-2 mt-4">
-        <button className="w-full text-left px-3 py-2 bg-muted/20 rounded-lg text-sm hover:bg-muted/30 transition-colors">
-          Add Vehicle
-        </button>
-        <button className="w-full text-left px-3 py-2 bg-muted/20 rounded-lg text-sm hover:bg-muted/30 transition-colors">
-          View Leads
-        </button>
-      </div>
-    </div>
-  );
-
   return (
-    <StaffDashboardLayout user={user} activeTab="overview" rightPanel={rightPanel}>
       <div className="space-y-6">
         {/* Header */}
         <div className="border-l-4 border-primary p-4 bg-card rounded-lg">
@@ -149,6 +109,5 @@ export default async function StaffDashboard() {
           </div>
         </div>
       </div>
-    </StaffDashboardLayout>
   );
 }

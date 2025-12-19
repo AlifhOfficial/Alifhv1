@@ -1,4 +1,4 @@
-import { DashboardLayoutProvider, DashboardMainContent } from "@/components/dashboard-components/dashboard-layout-wrapper";
+import { DashboardLayout, DashboardContent } from "@/components/dashboard-components/dashboard-layout";
 import { Sidebar } from "@/components/dashboard-components/sidebar";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { redirect } from "next/navigation";
@@ -18,11 +18,9 @@ export default async function UserDashboardLayout({ children }: { children: Reac
   if (!user) redirect('/');
 
   return (
-    <DashboardLayoutProvider>
+    <DashboardLayout>
       <Sidebar user={user} items={navItems} />
-      <DashboardMainContent>
-        {children}
-      </DashboardMainContent>
-    </DashboardLayoutProvider>
+      <DashboardContent>{children}</DashboardContent>
+    </DashboardLayout>
   );
 }
