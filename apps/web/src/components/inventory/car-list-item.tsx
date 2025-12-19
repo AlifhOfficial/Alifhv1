@@ -74,13 +74,6 @@ export function CarListItem({
   // Separate hooks for favorites and superlikes
   const favorite = useFavorite(id);
   const superlike = useSuperlike(id);
-  
-  const isFavorite = favorite.isFavorite;
-  const isSuperliked = superlike.isSuperliked;
-  const isUpdating = favorite.isUpdating || superlike.isUpdating;
-  const toggleFavorite = favorite.toggle;
-  const toggleSuperlike = superlike.toggle;
-  const quota = superlike.quota;
 
   const [showSuperlikeConfirm, setShowSuperlikeConfirm] = useState(false);
   const [showSuperlikeLimit, setShowSuperlikeLimit] = useState(false);
@@ -88,17 +81,17 @@ export function CarListItem({
   const [heartScale, setHeartScale] = useState(false);
 
   const handleSuperlikeClick = () => {
-    if (isSuperliked) {
-      toggleSuperlike();
+    if (superlike.isSuperliked) {
+      superlike.toggle();
       return;
     }
 
-    if (!quota) {
+    if (!superlike.quota) {
       setShowSuperlikeConfirm(true);
       return;
     }
 
-    if (quota.remaining <= 0) {
+    if (superlike.quota.remaining <= 0) {
       setShowSuperlikeLimit(true);
       return;
     }
@@ -108,13 +101,13 @@ export function CarListItem({
 
   const confirmSuperlike = async () => {
     setShowSparkles(true);
-    setTimeout(() => toggleSuperlike(), 100);
+    setTimeout(() => superlike.toggle(), 100);
     setTimeout(() => setShowSparkles(false), 2000);
   };
 
   const handleFavoriteClick = () => {
     setHeartScale(true);
-    toggleFavorite();
+    favorite.toggle();
     setTimeout(() => setHeartScale(false), 400);
   };
 
@@ -261,8 +254,8 @@ export function CarListItem({
               <button 
                 className={cn(
                   "relative rounded-full p-2.5 transition-all active:scale-95",
-                  isUpdating && "opacity-50 cursor-not-allowed",
-                  isFavorite
+                  favorite.isUpdating && "opacity-50 cursor-not-allowed",
+                  favorite.isFavorite
                     ? isBlackMember
                       ? "text-rose-400"
                       : "text-rose-500"
@@ -270,9 +263,9 @@ export function CarListItem({
                       ? "text-zinc-400 hover:text-zinc-200"
                       : "text-muted-foreground/70 hover:text-foreground"
                 )}
-                aria-label={isFavorite ? "Remove favorite" : "Add to favorites"}
-                aria-pressed={isFavorite}
-                disabled={isUpdating}
+                aria-label={favorite.isFavorite ? "Remove favorite" : "Add to favorites"}
+                aria-pressed={favorite.isFavorite}
+                disabled={favorite.isUpdating}
                 onClick={(event) => {
                   event.preventDefault();
                   event.stopPropagation();
@@ -281,11 +274,11 @@ export function CarListItem({
               >
                 <Heart
                   className={cn(
-                    "h-4.5 w-4.5 transition-transform duration-300",
-                    heartScale && "scale-150"
+                    "h-4.5 w-4.5 transition-transform",
+                    heartScale && "scale-125"
                   )}
-                  strokeWidth={isFavorite ? 2.5 : 2}
-                  fill={isFavorite ? "currentColor" : "none"}
+                  strokeWidth={favorite.isFavorite ? 2.5 : 2}
+                  fill={favorite.isFavorite ? "currentColor" : "none"}
                 />
               </button>
               
@@ -293,16 +286,16 @@ export function CarListItem({
               <button
                 className={cn(
                   "relative rounded-full p-2.5 transition-all active:scale-95",
-                  isUpdating && "opacity-50 cursor-not-allowed",
-                  isSuperliked
+                  superlike.isUpdating && "opacity-50 cursor-not-allowed",
+                  superlike.isSuperliked
                     ? "text-yellow-500"
                     : isBlackMember
                       ? "text-zinc-400 hover:text-zinc-200"
                       : "text-muted-foreground/70 hover:text-foreground"
                 )}
-                aria-label={isSuperliked ? "Remove superlike" : "Superlike"}
-                aria-pressed={isSuperliked}
-                disabled={isUpdating}
+                aria-label={superlike.isSuperliked ? "Remove superlike" : "Superlike"}
+                aria-pressed={superlike.isSuperliked}
+                disabled={superlike.isUpdating}
                 onClick={(event) => {
                   event.preventDefault();
                   event.stopPropagation();
@@ -311,8 +304,8 @@ export function CarListItem({
               >
                 <Sparkles
                   className="h-4.5 w-4.5"
-                  strokeWidth={isSuperliked ? 2.5 : 2}
-                  fill={isSuperliked ? "currentColor" : "none"}
+                  strokeWidth={superlike.isSuperliked ? 2.5 : 2}
+                  fill={superlike.isSuperliked ? "currentColor" : "none"}
                 />
               </button>
             </div>
@@ -356,7 +349,7 @@ export function CarListItem({
         isOpen={showSuperlikeConfirm}
         onClose={() => setShowSuperlikeConfirm(false)}
         onConfirm={confirmSuperlike}
-        quota={quota}
+        quota={superlike.quota}
         listingTitle={carTitle}
       />
 
@@ -364,7 +357,7 @@ export function CarListItem({
       <SuperlikeLimitDialog
         isOpen={showSuperlikeLimit}
         onClose={() => setShowSuperlikeLimit(false)}
-        resetDate={quota?.periodEndDate}
+        resetDate={superlike.quota?.periodEndDate}
       />
 
       {/* Falling Sparkles Effect */}

@@ -77,25 +77,9 @@ export function CarCard({
   const displaySpecs = specs || 'GCC';
   const { user, isSignedIn } = useUser();
   
-  // Separate hooks for favorites and superlikes
+  // Separate hooks for favorites and superlikes - completely independent
   const favorite = useFavorite(id);
   const superlike = useSuperlike(id);
-  
-  const isFavorite = favorite.isFavorite;
-  const isSuperliked = superlike.isSuperliked;
-  const isUpdating = favorite.isUpdating || superlike.isUpdating;
-  const toggleFavorite = favorite.toggle;
-  const toggleSuperlike = superlike.toggle;
-  const quota = superlike.quota;
-  
-  // Handle auth dialogs from either feature
-  const authRequired = favorite.authRequired || superlike.authRequired;
-  const authMessage = favorite.authMessage || superlike.authMessage;
-  const authFeature = favorite.authRequired ? 'favorites' : 'superlikes';
-  const closeAuthDialog = () => {
-    favorite.closeAuthDialog();
-    superlike.closeAuthDialog();
-  };
 
   const [showSuperlikeConfirm, setShowSuperlikeConfirm] = useState(false);
   const [showSuperlikeLimit, setShowSuperlikeLimit] = useState(false);
@@ -103,36 +87,37 @@ export function CarCard({
   const [heartScale, setHeartScale] = useState(false);
 
   // Close superlike dialogs when auth dialog appears
+  // Close superlike dialogs when auth is required
   useEffect(() => {
-    if (authRequired) {
+    if (favorite.authRequired || superlike.authRequired) {
       setShowSuperlikeConfirm(false);
       setShowSuperlikeLimit(false);
     }
-  }, [authRequired]);
+  }, [favorite.authRequired, superlike.authRequired]);
 
   const handleSuperlikeClick = () => {
     // Check if user is authenticated first
     if (!isSignedIn) {
-      // Directly trigger the auth flow by calling toggleSuperlike
-      // which will set authRequired state
-      toggleSuperlike();
+      // Directly trigger the auth flow by calling toggle
+      // which will set authRequired state in the superlike hook
+      superlike.toggle();
       return;
     }
 
     // If already superliked, remove it without confirmation
-    if (isSuperliked) {
-      toggleSuperlike();
+    if (superlike.isSuperliked) {
+      superlike.toggle();
       return;
     }
 
     // If quota isn't loaded yet, try anyway (API will validate)
-    if (!quota) {
+    if (!superlike.quota) {
       setShowSuperlikeConfirm(true);
       return;
     }
 
     // Check if user has superlikes remaining
-    if (quota.remaining <= 0) {
+    if (superlike.quota.remaining <= 0) {
       setShowSuperlikeLimit(true);
       return;
     }
@@ -147,7 +132,7 @@ export function CarCard({
     
     // Trigger the toggle after a brief delay
     setTimeout(() => {
-      toggleSuperlike();
+      superlike.toggle();
     }, 100);
     
     // Hide sparkles after animation
@@ -160,13 +145,13 @@ export function CarCard({
     // Check if user is authenticated first
     if (!isSignedIn) {
       // Directly trigger the auth flow
-      toggleFavorite();
+      favorite.toggle();
       return;
     }
 
     // Trigger heart scale animation
     setHeartScale(true);
-    toggleFavorite();
+    favorite.toggle();
     
     // Reset animation after it completes
     setTimeout(() => {
@@ -353,8 +338,8 @@ export function CarCard({
             <button 
               className={cn(
                 "relative rounded-full p-2 transition-all active:scale-95",
-                isUpdating && "opacity-50 cursor-not-allowed",
-                isFavorite
+                favorite.isUpdating && "opacity-50 cursor-not-allowed",
+                favorite.isFavorite
                   ? isBlackMember
                     ? "text-rose-400"
                     : "text-rose-500"
@@ -362,9 +347,9 @@ export function CarCard({
                     ? "text-zinc-400 hover:text-zinc-200"
                     : "text-muted-foreground/70 hover:text-foreground"
               )}
-              aria-label={isFavorite ? "Remove favorite" : "Add to favorites"}
-              aria-pressed={isFavorite}
-              disabled={isUpdating}
+              aria-label={favorite.isFavorite ? "Remove favorite" : "Add to favorites"}
+              aria-pressed={favorite.isFavorite}
+              disabled={favorite.isUpdating}
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
@@ -377,8 +362,8 @@ export function CarCard({
                   "h-4 w-4 transition-transform duration-300",
                   heartScale && "scale-150"
                 )}
-                strokeWidth={isFavorite ? 2.5 : 2}
-                fill={isFavorite ? "currentColor" : "none"}
+                strokeWidth={favorite.isFavorite ? 2.5 : 2}
+                fill={favorite.isFavorite ? "currentColor" : "none"}
               />
             </button>
             
@@ -386,16 +371,16 @@ export function CarCard({
             <button
               className={cn(
                 "relative rounded-full p-2 transition-all active:scale-95",
-                isUpdating && "opacity-50 cursor-not-allowed",
-                isSuperliked
+                superlike.isUpdating && "opacity-50 cursor-not-allowed",
+                superlike.isSuperliked
                   ? "text-yellow-500"
                   : isBlackMember
                     ? "text-zinc-400 hover:text-zinc-200"
                     : "text-muted-foreground/70 hover:text-foreground"
               )}
-              aria-label={isSuperliked ? "Remove superlike" : "Superlike"}
-              aria-pressed={isSuperliked}
-              disabled={isUpdating}
+              aria-label={superlike.isSuperliked ? "Remove superlike" : "Superlike"}
+              aria-pressed={superlike.isSuperliked}
+              disabled={superlike.isUpdating}
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
@@ -405,8 +390,8 @@ export function CarCard({
             >
               <Sparkles
                 className="h-4 w-4"
-                strokeWidth={isSuperliked ? 2.5 : 2}
-                fill={isSuperliked ? "currentColor" : "none"}
+                strokeWidth={superlike.isSuperliked ? 2.5 : 2}
+                fill={superlike.isSuperliked ? "currentColor" : "none"}
               />
             </button>
           </div>
@@ -418,7 +403,7 @@ export function CarCard({
         isOpen={showSuperlikeConfirm}
         onClose={() => setShowSuperlikeConfirm(false)}
         onConfirm={confirmSuperlike}
-        quota={quota}
+        quota={superlike.quota}
         listingTitle={carTitle}
       />
 
@@ -426,15 +411,22 @@ export function CarCard({
       <SuperlikeLimitDialog
         isOpen={showSuperlikeLimit}
         onClose={() => setShowSuperlikeLimit(false)}
-        resetDate={quota?.periodEndDate}
+        resetDate={superlike.quota?.periodEndDate}
       />
 
-      {/* Auth Required Dialog */}
+      {/* Auth Required Dialogs - Separate for each feature */}
       <AuthRequiredDialog
-        isOpen={authRequired}
-        onClose={closeAuthDialog}
-        message={authMessage}
-        feature={authFeature}
+        isOpen={favorite.authRequired}
+        onClose={favorite.closeAuthDialog}
+        message={favorite.authMessage}
+        feature="favorites"
+      />
+      
+      <AuthRequiredDialog
+        isOpen={superlike.authRequired}
+        onClose={superlike.closeAuthDialog}
+        message={superlike.authMessage}
+        feature="superlikes"
       />
 
       {/* Falling Sparkles Effect */}
