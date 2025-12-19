@@ -42,7 +42,7 @@ export default function FavoritesPage() {
   const [isLoadingListings, setIsLoadingListings] = useState(false);
   const hasFetchedRef = useRef(false);
 
-  const favoriteIds = favoritesData?.favorites || [];
+  const favoriteIds = useMemo(() => favoritesData?.favorites || [], [favoritesData?.favorites]);
 
   // Load listing details when favorite IDs change
   useEffect(() => {

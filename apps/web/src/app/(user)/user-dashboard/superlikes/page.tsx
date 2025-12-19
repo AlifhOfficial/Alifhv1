@@ -55,12 +55,15 @@ export default function SuperlikesPage() {
   const [isLoadingListings, setIsLoadingListings] = useState(false);
   const hasFetchedRef = useRef(false);
 
-  const superlikeIds = favoritesData?.superlikes || [];
+  const superlikeIds = useMemo(() => favoritesData?.superlikes || [], [favoritesData?.superlikes]);
   
-  const quota: SuperlikeQuota | null = quotaData ? {
-    ...quotaData,
-    remaining: (quotaData.maxSuperlikesPerMonth + quotaData.premiumSuperlikesBonus) - quotaData.currentMonthSuperlikesUsed
-  } : null;
+  const quota: SuperlikeQuota | null = useMemo(() => 
+    quotaData ? {
+      ...quotaData,
+      remaining: (quotaData.maxSuperlikesPerMonth + quotaData.premiumSuperlikesBonus) - quotaData.currentMonthSuperlikesUsed
+    } : null,
+    [quotaData]
+  );
 
   // Load listing details when superlike IDs change
   useEffect(() => {
