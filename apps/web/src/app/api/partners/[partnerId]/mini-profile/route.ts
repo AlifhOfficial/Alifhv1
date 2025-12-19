@@ -31,6 +31,8 @@ import { z } from 'zod';
 import { getPartnerMiniProfile, updatePartnerMiniProfile } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 
+export const revalidate = 60; // Cache for 60 seconds
+
 const CACHE_HEADERS_PUBLIC = {
   'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
 } as const;
