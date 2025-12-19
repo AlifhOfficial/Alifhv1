@@ -1,0 +1,3 @@
+CREATE INDEX "kyc_record_status_createdAt_idx" ON "kyc_record" USING btree ("status","created_at" DESC NULLS LAST);--> statement-breakpoint
+CREATE INDEX "car_listing_partnerId_createdAt_idx" ON "car_listing" USING btree ("partner_id","created_at" DESC NULLS LAST);--> statement-breakpoint
+CREATE INDEX "car_listing_partnerId_status_createdAt_idx" ON "car_listing" USING btree ("partner_id","status","created_at" DESC NULLS LAST);

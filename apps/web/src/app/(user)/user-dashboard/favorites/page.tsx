@@ -18,7 +18,7 @@ type ListingPayload = {
   emirate: string | null;
   specs: string | null;
   thumbnail: string | null;
-  images: string[] | null;
+  images?: string[] | null; // Optional: Not returned in car-card API, lazy-loaded separately
   qiScore: number | null;
   partnerName: string | null;
   partnerVerified: boolean | null;
@@ -57,7 +57,7 @@ export default function FavoritesPage() {
       // SECURITY: Add timestamp to prevent cached data from previous user
       const res = await fetch(`/api/favorites?_t=${Date.now()}`, {
         credentials: 'include',
-        cache: 'no-store',
+        // Removed cache: 'no-store' - API now handles caching with 30s revalidation
       });
 
       if (!res.ok) {
@@ -90,7 +90,7 @@ export default function FavoritesPage() {
       } else {
         const cardsRes = await fetch(`/api/listings/car-card?ids=${encodeURIComponent(favoriteIdsList.join(','))}`, {
           credentials: 'include',
-          cache: 'no-store',
+          // Removed cache: 'no-store' - API handles caching with 60s revalidation
         });
 
         if (!cardsRes.ok) {

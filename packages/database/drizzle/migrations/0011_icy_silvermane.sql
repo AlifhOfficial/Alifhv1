@@ -1,0 +1,2 @@
+CREATE INDEX "user_favorite_userId_createdAt_idx" ON "user_favorite" USING btree ("user_id","created_at" DESC NULLS LAST);--> statement-breakpoint
+CREATE INDEX "user_superlike_userId_createdAt_idx" ON "user_superlike" USING btree ("user_id","created_at" DESC NULLS LAST);

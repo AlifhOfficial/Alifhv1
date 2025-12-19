@@ -7,20 +7,6 @@ const nextConfig = {
     },
   },
   
-  // Optimize Turbopack dev server
-  experimental: {
-    // Enable Turbopack optimizations
-    turbo: {
-      resolveAlias: {
-        // Prevent duplicate package resolution
-        '@alifh/database': './packages/database/src',
-        '@alifh/shared': './packages/shared/src',
-      },
-    },
-    // Use SWC minifier for faster builds
-    swcMinify: true,
-  },
-  
   transpilePackages: ['@alifh/shared', '@alifh/database'],
   serverExternalPackages: ['better-auth', '@node-rs/argon2', '@node-rs/bcrypt'],
   images: {

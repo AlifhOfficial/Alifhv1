@@ -78,6 +78,20 @@
       "when": 1766071996727,
       "tag": "0010_slippery_killer_shrike",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1766102428979,
+      "tag": "0011_icy_silvermane",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1766103093692,
+      "tag": "0012_chilly_loki",
+      "breakpoints": true
     }
   ]
 }

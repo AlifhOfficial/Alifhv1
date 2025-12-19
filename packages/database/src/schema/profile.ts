@@ -151,6 +151,8 @@ export const kycRecord = pgTable('kyc_record', {
 }, (table) => [
   index('kyc_record_userId_idx').on(table.userId),
   index('kyc_record_status_idx').on(table.status),
+  // Critical: Composite index for admin KYC list (filter by status + sort by date)
+  index('kyc_record_status_createdAt_idx').on(table.status, table.createdAt.desc()),
 ]);
 
 /**
@@ -173,6 +175,8 @@ export const userFavorite = pgTable('user_favorite', {
   index('user_favorite_listingId_idx').on(table.listingId),
   index('user_favorite_userId_listingId_idx').on(table.userId, table.listingId),
   index('user_favorite_createdAt_idx').on(table.createdAt),
+  // Composite index for efficient sorted retrieval: WHERE user_id = X ORDER BY created_at DESC
+  index('user_favorite_userId_createdAt_idx').on(table.userId, table.createdAt.desc()),
   // Unique constraint to prevent duplicate favorites and enable efficient UPSERT
   uniqueIndex('user_favorite_userId_listingId_unique').on(table.userId, table.listingId),
 ]);
@@ -197,6 +201,8 @@ export const userSuperlike = pgTable('user_superlike', {
   index('user_superlike_listingId_idx').on(table.listingId),
   index('user_superlike_userId_listingId_idx').on(table.userId, table.listingId),
   index('user_superlike_createdAt_idx').on(table.createdAt),
+  // Composite index for efficient sorted retrieval: WHERE user_id = X ORDER BY created_at DESC
+  index('user_superlike_userId_createdAt_idx').on(table.userId, table.createdAt.desc()),
   // Unique constraint to prevent duplicate superlikes and enable efficient UPSERT
   uniqueIndex('user_superlike_userId_listingId_unique').on(table.userId, table.listingId),
 ]);

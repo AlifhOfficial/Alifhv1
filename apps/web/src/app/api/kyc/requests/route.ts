@@ -5,6 +5,7 @@ import { db, kycRecord, userProfile, user } from "@alifh/database";
 import { eq } from "drizzle-orm";
 
 export const runtime = "edge";
+export const revalidate = 30; // Cache for 30s - admin data changes infrequently
 
 const KYCActionSchema = z.object({
   kycId: z.string().min(1, 'KYC ID is required'),
@@ -12,7 +13,7 @@ const KYCActionSchema = z.object({
   rejectionReason: z.string().optional(),
 });
 
-// Get all KYC requests
+// Get all KYC requests (optimized with pagination and filtering)
 export async function GET(req: NextRequest) {
   try {
     const currentUser = await getSessionUser();
@@ -20,7 +21,21 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { searchParams } = new URL(req.url);
+    const status = searchParams.get('status') || undefined; // Filter by status if provided
+    const limit = parseInt(searchParams.get('limit') || '50'); // Default 50, max 100
+    const offset = parseInt(searchParams.get('offset') || '0');
+
+    const queryStart = performance.now();
+
+    // Build where conditions
+    const whereConditions = [];
+    if (status) {
+      whereConditions.push(eq(kycRecord.status, status));
+    }
+
     // Get all KYC records with user info
+    // Uses composite index: kyc_record_status_createdAt_idx
     const records = await db
       .select({
         id: kycRecord.id,
@@ -45,9 +60,22 @@ export async function GET(req: NextRequest) {
       .from(kycRecord)
       .leftJoin(user, eq(kycRecord.userId, user.id))
       .leftJoin(userProfile, eq(kycRecord.userId, userProfile.userId))
-      .orderBy(kycRecord.createdAt);
+      .where(whereConditions.length > 0 ? whereConditions[0] : undefined)
+      .orderBy(kycRecord.createdAt)
+      .limit(Math.min(limit, 100))
+      .offset(offset);
 
-    return NextResponse.json({ records });
+    const queryTime = performance.now() - queryStart;
+    console.log(`[kyc/requests] Query completed in ${queryTime.toFixed(2)}ms - ${records.length} results`);
+
+    return NextResponse.json({ 
+      records,
+      meta: {
+        total: records.length,
+        limit: Math.min(limit, 100),
+        offset,
+      }
+    });
   } catch (error) {
     console.error("[kyc/requests] GET failed", error);
     return NextResponse.json(

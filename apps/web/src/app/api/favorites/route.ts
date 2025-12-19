@@ -27,11 +27,10 @@ import { getSessionUser } from '@/lib/auth/session-context';
 
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 30; // Cache for 30s to reduce DB load
 
 const CACHE_HEADERS = {
-  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
-  'Pragma': 'no-cache',
+  'Cache-Control': 'private, s-maxage=30, stale-while-revalidate=60',
 } as const;
 
 const ToggleFavoriteSchema = z.object({

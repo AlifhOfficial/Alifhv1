@@ -317,6 +317,10 @@ export const carListing = pgTable('car_listing', {
   index('car_listing_userId_idx').on(table.userId),
   index('car_listing_postedByStaffId_idx').on(table.postedByStaffId),
   index('car_listing_sellerType_idx').on(table.sellerType),
+  // Critical: Composite index for partner inventory queries (all statuses, sorted by date)
+  index('car_listing_partnerId_createdAt_idx').on(table.partnerId, table.createdAt.desc()),
+  // Critical: Composite index for partner inventory with status filter
+  index('car_listing_partnerId_status_createdAt_idx').on(table.partnerId, table.status, table.createdAt.desc()),
   
   // Status & Discovery
   index('car_listing_status_idx').on(table.status),
