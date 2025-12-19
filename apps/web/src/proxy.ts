@@ -35,34 +35,36 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(signInUrl);
   }
 
-  const needsRoleCheck =
-    pathname.startsWith("/admin-dashboard") ||
-    pathname.startsWith("/partner-dashboard") ||
-    pathname.startsWith("/staff-dashboard");
+  // Fetch session once for all protected routes (including user-dashboard)
+  try {
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
 
-  if (needsRoleCheck) {
-    try {
-      // Use Better Auth directly - with cookie cache enabled, this is fast!
-      const session = await auth.api.getSession({
-        headers: request.headers,
-      });
+    if (!session?.user) {
+      return NextResponse.redirect(new URL("/sign-in", request.url));
+    }
 
-      if (!session?.user) {
-        return NextResponse.redirect(new URL("/sign-in", request.url));
-      }
+    // Better Auth typing can be a union; only proceed once we confirm customSession fields exist.
+    if (!isExtendedUser(session.user)) {
+      return NextResponse.redirect(new URL("/sign-in", request.url));
+    }
 
-      // Better Auth typing can be a union; only proceed once we confirm customSession fields exist.
-      if (!isExtendedUser(session.user)) {
-        return NextResponse.redirect(new URL("/sign-in", request.url));
-      }
+    const user = session.user;
 
-      const user = session.user;
+    // Store session in request headers for Server Components to reuse
+    // This eliminates redundant session fetches during the request lifecycle
+    const response = NextResponse.next();
+    response.headers.set(SESSION_HEADER_KEY, JSON.stringify(user));
+
+    // Role-based access control for specific dashboards
+    const needsRoleCheck =
+      pathname.startsWith("/admin-dashboard") ||
+      pathname.startsWith("/partner-dashboard") ||
+      pathname.startsWith("/staff-dashboard");
+
+    if (needsRoleCheck) {
       const access = getUserPortalAccess(user);
-
-      // Store session in request headers for Server Components to reuse
-      // This eliminates redundant session fetches during the request lifecycle
-      const response = NextResponse.next();
-      response.headers.set(SESSION_HEADER_KEY, JSON.stringify(user));
 
       // Admin dashboard - ONLY super_admin or admin (platform admins)
       if (pathname.startsWith("/admin-dashboard")) {
@@ -93,15 +95,13 @@ export async function proxy(request: NextRequest) {
           );
         }
       }
-
-      return response;
-    } catch (error) {
-      console.error("[Middleware] Error checking role:", error);
-      return NextResponse.redirect(new URL("/sign-in", request.url));
     }
-  }
 
-  return NextResponse.next();
+    return response;
+  } catch (error) {
+    console.error("[Proxy] Error checking session:", error);
+    return NextResponse.redirect(new URL("/sign-in", request.url));
+  }
 }
 
 export const config = {
