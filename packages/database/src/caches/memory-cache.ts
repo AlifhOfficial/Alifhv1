@@ -149,8 +149,6 @@ export const memoryCache = new MemoryCache();
  * Cache Keys
  */
 export const CacheKeys = {
-  userFavorites: (userId: string) => `user:${userId}:favorites`,
-  userSuperlikes: (userId: string) => `user:${userId}:superlikes`,
   userSession: (userId: string) => `user:${userId}:session`,
   listingDetail: (listingId: string) => `listing:${listingId}:detail`,
   listingCards: (filters: string) => `listings:cards:${filters}`,
@@ -163,11 +161,10 @@ export const CacheKeys = {
  * Cache TTL (seconds)
  */
 export const CacheTTL = {
-  userFavorites: 30, // 30 seconds - frequently updated
   userSession: 30, // 30 seconds - session data (role, partner memberships)
   listingDetail: 300, // 5 minutes - full listing details
   listingCards: 120, // 2 minutes - listing cards (main browse page)
-  listingCardsBatch: 60, // 1 minute - batch requests (favorites/superlikes)
+  listingCardsBatch: 60, // 1 minute - batch requests
   partnerInventory: 180, // 3 minutes - partner inventory pages
   partnerMiniProfile: 60, // 1 minute - partner mini profile (matches API revalidate)
 } as const;
