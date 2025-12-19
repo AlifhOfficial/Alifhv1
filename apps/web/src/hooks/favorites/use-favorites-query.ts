@@ -138,7 +138,7 @@ export function useFavorites(listingId: string) {
   });
 
   const superlikeMutation = useMutation({
-    mutationFn: async (add: boolean) => {
+    mutationFn: async () => {
       const res = await fetch(`/api/superlikes?_t=${Date.now()}`, {
         method: 'POST',
         credentials: 'include',
@@ -154,15 +154,16 @@ export function useFavorites(listingId: string) {
       if (!res.ok) throw new Error('Failed to update superlike');
       return res.json();
     },
-    onMutate: async (add) => {
-      // Optimistic update
+    onMutate: async () => {
+      // Optimistic update - toggle current state
       await queryClient.cancelQueries({ queryKey: ['favorites'] });
       const previous = queryClient.getQueryData<FavoritesData>(['favorites']);
       
       if (previous) {
+        const willBeAdded = !isSuperliked;
         queryClient.setQueryData<FavoritesData>(['favorites'], {
           favorites: previous.favorites,
-          superlikes: add 
+          superlikes: willBeAdded
             ? [...previous.superlikes, listingId]
             : previous.superlikes.filter(id => id !== listingId),
         });
@@ -196,8 +197,8 @@ export function useFavorites(listingId: string) {
     isSuperliked,
     isUpdating: favoriteMutation.isPending || superlikeMutation.isPending,
     error: favoriteMutation.error?.message || superlikeMutation.error?.message || null,
-    quota,
     toggleFavorite: () => favoriteMutation.mutate(!isFavorite),
+    toggleSuperlike: () => superlikeMutation.mutate(),
     toggleSuperlike: () => superlikeMutation.mutate(!isSuperliked),
     authRequired: authRequired.show,
     authMessage: authRequired.message,
