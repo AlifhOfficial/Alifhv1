@@ -43,6 +43,8 @@ import { userFavorite, userSuperlike, userSuperlikeQuota } from '../schema/profi
 const FAV_ID_PREFIX = 'fav_';
 const SUPERLIKE_ID_PREFIX = 'superlike_';
 const SUPERLIKE_PERIOD_DAYS = 30;
+const SUPERLIKE_MAX_PER_PERIOD = 5;
+const SUPERLIKE_PREMIUM_BONUS = 0;
 
 const makeFavoriteId = () => `${FAV_ID_PREFIX}${createId()}`;
 const makeSuperlikeId = () => `${SUPERLIKE_ID_PREFIX}${createId()}`;
@@ -67,6 +69,11 @@ async function ensureSuperlikeQuota(userId: string) {
 
   const current = existing[0];
 
+  const canonicalQuota = {
+    maxSuperlikesPerMonth: SUPERLIKE_MAX_PER_PERIOD,
+    premiumSuperlikesBonus: SUPERLIKE_PREMIUM_BONUS,
+  } as const;
+
   if (!current) {
     const start = now;
     const end = addDays(now, SUPERLIKE_PERIOD_DAYS);
@@ -75,8 +82,8 @@ async function ensureSuperlikeQuota(userId: string) {
       id: newId,
       userId,
       currentMonthSuperlikesUsed: 0,
-      maxSuperlikesPerMonth: 5,
-      premiumSuperlikesBonus: 0,
+      maxSuperlikesPerMonth: canonicalQuota.maxSuperlikesPerMonth,
+      premiumSuperlikesBonus: canonicalQuota.premiumSuperlikesBonus,
       periodStartDate: start,
       periodEndDate: end,
       lastResetAt: now,
@@ -88,8 +95,8 @@ async function ensureSuperlikeQuota(userId: string) {
       id: newId,
       userId,
       currentMonthSuperlikesUsed: 0,
-      maxSuperlikesPerMonth: 5,
-      premiumSuperlikesBonus: 0,
+      maxSuperlikesPerMonth: canonicalQuota.maxSuperlikesPerMonth,
+      premiumSuperlikesBonus: canonicalQuota.premiumSuperlikesBonus,
       periodStartDate: start,
       periodEndDate: end,
       lastResetAt: now,
@@ -117,6 +124,26 @@ async function ensureSuperlikeQuota(userId: string) {
     return { ...current, currentMonthSuperlikesUsed: 0, periodStartDate: start, periodEndDate: end, lastResetAt: now };
   }
 
+  // Normalize legacy rows that had higher defaults (e.g., 50) or bonuses
+  if (
+    current.maxSuperlikesPerMonth !== canonicalQuota.maxSuperlikesPerMonth ||
+    (current.premiumSuperlikesBonus || 0) !== canonicalQuota.premiumSuperlikesBonus
+  ) {
+    await db
+      .update(userSuperlikeQuota)
+      .set({
+        maxSuperlikesPerMonth: canonicalQuota.maxSuperlikesPerMonth,
+        premiumSuperlikesBonus: canonicalQuota.premiumSuperlikesBonus,
+      })
+      .where(eq(userSuperlikeQuota.userId, userId));
+
+    return {
+      ...current,
+      maxSuperlikesPerMonth: canonicalQuota.maxSuperlikesPerMonth,
+      premiumSuperlikesBonus: canonicalQuota.premiumSuperlikesBonus,
+    };
+  }
+
   return current;
 }
 
@@ -127,27 +154,13 @@ export async function getSuperlikeQuotaForUser(userId: string) {
 export async function getFavoriteStatusForListings(userId: string) {
   if (!userId) return { favorites: [], superlikes: [] };
 
-  // ⚡ MEMORY CACHE: Check cache first (30s TTL)
-  // IMPORTANT: Only cache for authenticated users with valid session
-  const { memoryCache, CacheKeys, CacheTTL } = await import('../caches');
-  const cacheKey = CacheKeys.userFavorites(userId);
-  const cached = memoryCache.get<{ favorites: string[]; superlikes: string[] }>(cacheKey);
-  
-  if (cached) {
-    return cached;
-  }
-
   // ⚡ OPTIMIZED: Use raw SQL for maximum performance (bypasses ORM overhead)
-  const queryStart = performance.now();
-  
-  // Single query using UNION ALL - faster than 2 parallel queries
+  // NOTE: No server-side cache - React Query handles client-side caching efficiently
   const results = await db.execute(sql`
     SELECT listing_id, 'fav' as type FROM user_favorite WHERE user_id = ${userId}
     UNION ALL
     SELECT listing_id, 'super' as type FROM user_superlike WHERE user_id = ${userId}
   `);
-  
-  const queryTime = performance.now() - queryStart;
   
   // Split results by type
   const favorites: string[] = [];
@@ -161,12 +174,7 @@ export async function getFavoriteStatusForListings(userId: string) {
     }
   }
   
-  const result = { favorites, superlikes };
-  
-  // Store in cache
-  memoryCache.set(cacheKey, result, CacheTTL.userFavorites);
-
-  return result;
+  return { favorites, superlikes };
 }
 
 // Removed: getAllFavoritesForUser - use getFavoriteStatusForListings instead
@@ -178,10 +186,6 @@ export async function toggleFavoriteForUser(
 ) {
   // Optimized: Try to delete first, if nothing deleted then insert
   // This reduces from 3 round trips to 2 round trips (or 1 if we guess right)
-  
-  // Invalidate cache
-  const { memoryCache, CacheKeys } = await import('../caches');
-  memoryCache.delete(CacheKeys.userFavorites(userId));
   
   // Try to delete existing favorite
   const deleted = await db
@@ -226,10 +230,6 @@ export async function toggleSuperlikeForUser(
   // Get quota first (required for validation)
   const quota = await ensureSuperlikeQuota(userId);
   const allowed = (quota.maxSuperlikesPerMonth || 0) + (quota.premiumSuperlikesBonus || 0);
-  
-  // Invalidate cache
-  const { memoryCache, CacheKeys } = await import('../caches');
-  memoryCache.delete(CacheKeys.userFavorites(userId));
   
   // Try to delete existing superlike
   const deleted = await db

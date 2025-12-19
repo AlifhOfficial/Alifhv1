@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Loader2, RefreshCw } from 'lucide-react';
 import { CarCard } from '@/components/inventory/car-card';
 import { DashboardPageLayout } from '@/components/layout';
-import { useFavoritesOnly } from '@/hooks/favorites/use-favorites-simple';
+import { useFavoritesStatus } from '@/hooks/favorites';
 
 type ListingPayload = {
   id: string;
@@ -37,7 +37,7 @@ type CarCardResponse = {
 };
 
 export default function FavoritesPage() {
-  const { data: favoritesData, isLoading, error: favError, refetch } = useFavoritesOnly();
+  const { data: favoritesData, isLoading, error: favError, refetch } = useFavoritesStatus();
   const [listings, setListings] = useState<ListingPayload[]>([]);
   const [isLoadingListings, setIsLoadingListings] = useState(false);
   const hasFetchedRef = useRef(false);

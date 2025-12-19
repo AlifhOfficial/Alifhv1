@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { Sparkles, X } from 'lucide-react';
-import { SuperlikeQuota } from '@/hooks/favorites';
+import { type FavoritesStatusData } from '@/hooks/favorites';
+
+type SuperlikeQuota = FavoritesStatusData['quota'];
 
 interface SuperlikeConfirmationDialogProps {
   isOpen: boolean;

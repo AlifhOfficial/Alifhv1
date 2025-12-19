@@ -8,8 +8,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Share2, Heart, CheckCircle2, Sparkles } from 'lucide-react';
-import { useFavorite } from '@/hooks/favorites/use-favorites-simple';
-import { useSuperlike } from '@/hooks/favorites/use-superlikes-simple';
+import { useFavorite, useSuperlike } from '@/hooks/favorites';
 import { useUser } from '@/hooks/auth/use-auth';
 import { cn } from '@/utils';
 import { useState, useEffect } from 'react';
@@ -417,14 +416,14 @@ export function CarCard({
       {/* Auth Required Dialogs - Separate for each feature */}
       <AuthRequiredDialog
         isOpen={favorite.authRequired}
-        onClose={favorite.closeAuthDialog}
+        onClose={favorite.dismissAuth}
         message={favorite.authMessage}
         feature="favorites"
       />
       
       <AuthRequiredDialog
         isOpen={superlike.authRequired}
-        onClose={superlike.closeAuthDialog}
+        onClose={superlike.dismissAuth}
         message={superlike.authMessage}
         feature="superlikes"
       />

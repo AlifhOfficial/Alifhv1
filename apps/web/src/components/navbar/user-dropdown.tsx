@@ -148,8 +148,8 @@ export function ProfileMenu({
     };
     
     const getInitials = () => {
-      const source = profileFirstName || profileLastName
-        ? [profileFirstName, profileLastName].filter(Boolean).join(' ')
+      const source = firstName || lastName
+        ? [firstName, lastName].filter(Boolean).join(' ')
         : user.name;
       if (!source) return user.email?.charAt(0).toUpperCase() || 'U';
       return source

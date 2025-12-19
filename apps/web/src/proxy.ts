@@ -110,5 +110,8 @@ export const config = {
     "/admin-dashboard/:path*",
     "/partner-dashboard/:path*",
     "/staff-dashboard/:path*",
+    // Apply to authenticated APIs so session is injected once per request.
+    // Excludes /api/auth to avoid interfering with Better Auth handlers.
+    "/api/((?!auth).*)",
   ],
 };

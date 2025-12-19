@@ -6,7 +6,7 @@ import { Loader2, RefreshCw } from 'lucide-react';
 import { CarCard } from '@/components/inventory/car-card';
 import { DashboardPageLayout } from '@/components/layout';
 import { SuperlikeQuotaBadge } from '@/components/inventory/superlike-quota-badge';
-import { useSuperlikesOnly, useSuperlikeQuota } from '@/hooks/favorites/use-superlikes-simple';
+import { useFavoritesStatus } from '@/hooks/favorites';
 
 type SuperlikeQuota = {
   currentMonthSuperlikesUsed: number;
@@ -49,14 +49,13 @@ type CarCardResponse = {
 };
 
 export default function SuperlikesPage() {
-  const { data: superlikesData, isLoading, error: superlikeError, refetch } = useSuperlikesOnly();
-  const { data: quotaData } = useSuperlikeQuota();
+  const { data: statusData, isLoading, error: superlikeError, refetch } = useFavoritesStatus();
   const [listings, setListings] = useState<ListingPayload[]>([]);
   const [isLoadingListings, setIsLoadingListings] = useState(false);
   const hasFetchedRef = useRef(false);
 
-  const superlikeIds = useMemo(() => superlikesData?.superlikes || [], [superlikesData?.superlikes]);
-  const quota = quotaData || null;
+  const superlikeIds = useMemo(() => statusData?.superlikes || [], [statusData?.superlikes]);
+  const quota = statusData?.quota || null;
 
   // Load listing details when superlike IDs change
   useEffect(() => {

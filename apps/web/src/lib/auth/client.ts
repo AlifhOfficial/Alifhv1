@@ -35,6 +35,13 @@ function getAuthClient() {
   if (!_authClient) {
     _authClient = createAuthClient({
       baseURL: window.location.origin,
+      fetchOptions: {
+        onError(context) {
+          if (context.error.status === 401) {
+            console.warn('[Auth] Unauthorized request');
+          }
+        },
+      },
       plugins: [
         magicLinkClient(),
         adminClient({

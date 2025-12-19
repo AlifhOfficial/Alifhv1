@@ -1,21 +1,18 @@
 /**
- * Favorites & Superlikes Hooks - Single Source of Truth
+ * Favorites & Superlikes Hooks - Unified Single Source of Truth
  * 
- * Completely separated implementations:
- * - Favorites: use-favorites-simple.ts
- * - Superlikes: use-superlikes-simple.ts
+ * One API endpoint, one cache, simple state management.
+ * React Query handles all caching - no server-side cache duplication.
  * 
- * Each feature has its own cache, mutations, and API routes.
- * No shared state - prevents cross-contamination.
+ * Main exports:
+ * - useFavoritesStatus(): Get all favorites, superlikes, and quota
+ * - useFavorite(id): Individual favorite operations
+ * - useSuperlike(id): Individual superlike operations
  */
 
-// Favorites exports
-export { useFavorite, useFavoritesOnly } from './use-favorites-simple';
-
-// Superlikes exports
 export { 
-  useSuperlike, 
-  useSuperlikesOnly, 
-  useSuperlikeQuota,
-  type SuperlikeQuota 
-} from './use-superlikes-simple';
+  useFavoritesStatus,
+  useFavorite, 
+  useSuperlike,
+  type FavoritesStatusData 
+} from './use-favorites-unified';

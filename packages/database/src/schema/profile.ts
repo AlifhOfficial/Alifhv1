@@ -218,7 +218,8 @@ export const userSuperlikeQuota = pgTable('user_superlike_quota', {
   
   // Monthly Tracking (rolling 30 days)
   currentMonthSuperlikesUsed: integer('current_month_superlikes_used').default(0).notNull(),
-  maxSuperlikesPerMonth: integer('max_superlikes_per_month').default(50).notNull(),
+  // Default quota aligns with ensureSuperlikeQuota() seed (5 per 30 days)
+  maxSuperlikesPerMonth: integer('max_superlikes_per_month').default(5).notNull(),
   
   // Current Period
   periodStartDate: timestamp('period_start_date').defaultNow().notNull(),

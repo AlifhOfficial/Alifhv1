@@ -14,6 +14,7 @@
  */
 
 import { signOut as betterAuthSignOut } from './client';
+import { getQueryClient } from '@/lib/query-client';
 
 /**
  * Signs out current user and clears all caches
@@ -31,6 +32,15 @@ export async function handleSignOut() {
       } catch (e) {
         console.warn('Failed to clear storage:', e);
       }
+    }
+
+    // Clear client-side caches for favorites/superlikes to avoid reuse after logout
+    try {
+      const queryClient = getQueryClient();
+      queryClient.removeQueries({ queryKey: ['favorites-status'] });
+      queryClient.clear();
+    } catch (e) {
+      console.warn('Failed to clear query cache:', e);
     }
     
     await betterAuthSignOut({

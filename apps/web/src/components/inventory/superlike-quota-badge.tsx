@@ -1,8 +1,10 @@
 'use client';
 
 import { Sparkles } from 'lucide-react';
-import { SuperlikeQuota } from '@/hooks/favorites';
+import { type FavoritesStatusData } from '@/hooks/favorites';
 import { cn } from '@/utils';
+
+type SuperlikeQuota = FavoritesStatusData['quota'];
 
 interface SuperlikeQuotaBadgeProps {
   quota: SuperlikeQuota | null;

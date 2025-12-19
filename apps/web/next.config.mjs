@@ -7,6 +7,9 @@ const nextConfig = {
     },
   },
   
+  // Disable React Strict Mode to prevent double rendering in development
+  reactStrictMode: false,
+  
   transpilePackages: ['@alifh/shared', '@alifh/database'],
   serverExternalPackages: ['better-auth', '@node-rs/argon2', '@node-rs/bcrypt'],
   images: {

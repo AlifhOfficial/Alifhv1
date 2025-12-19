@@ -2,23 +2,23 @@
  * Authentication Hook
  * 
  * Provides user authentication state and session information.
- * Built on top of better-auth's useSession hook.
+ * Uses AuthProvider context to prevent duplicate session fetches.
  * 
  * @returns Authentication state with user, loading status, and error information
  */
 
 'use client';
 
-import { useSession } from '@/lib/auth/client';
+import { useAuth } from '@/providers/auth-provider';
 
 export function useUser() {
-  const { data: session, isPending, error } = useSession();
+  const { session: user, isLoading, error, isAuthenticated } = useAuth();
 
   return {
-    user: session?.user ?? null,
-    isLoading: isPending,
-    isSignedIn: !!session?.user,
+    user,
+    isLoading,
+    isSignedIn: isAuthenticated,
     error,
-    session,
+    session: user ? { user } : null,
   };
 }

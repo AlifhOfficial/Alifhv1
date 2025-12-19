@@ -8,8 +8,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Share2, Heart, Sparkles } from 'lucide-react';
-import { useFavorite } from '@/hooks/favorites/use-favorites-simple';
-import { useSuperlike } from '@/hooks/favorites/use-superlikes-simple';
+import { useFavorite, useSuperlike } from '@/hooks/favorites';
 import { cn } from '@/utils';
 import { useState } from 'react';
 import { SuperlikeConfirmationDialog } from './superlike-confirmation-dialog';

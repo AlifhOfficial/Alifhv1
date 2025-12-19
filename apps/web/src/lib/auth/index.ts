@@ -48,8 +48,8 @@ export const auth = betterAuth({
     updateAge: AUTH_CONFIG.SESSION.UPDATE_AGE,
     cookieCache: {
       enabled: true,
-      maxAge: 300,
-      strategy: "compact",
+      maxAge: 3600, // 1 hour - longer cache to reduce API calls
+      strategy: "compact", // Compact strategy for best performance
     },
   },
 
@@ -168,9 +168,14 @@ export const auth = betterAuth({
         permissions: m.permissions,
       }));
 
+      // Normalize profile shape in case Drizzle returns an array
+      const profileRecord = Array.isArray(userRecord.profile)
+        ? userRecord.profile[0]
+        : userRecord.profile;
+
       // Get avatar URL if avatar exists
       let avatarUrl: string | null = null;
-      const avatar = userRecord.profile?.avatar;
+      const avatar = profileRecord?.avatar;
       if (avatar && !avatar.startsWith('http')) {
         // Import getSignedUrl dynamically to avoid circular dependencies
         const { getSignedUrl } = await import("@/lib/storage");
@@ -191,8 +196,8 @@ export const auth = betterAuth({
         partnerMemberships,
         avatar,
         avatarUrl,
-        firstName: userRecord.profile?.firstName,
-        lastName: userRecord.profile?.lastName,
+        firstName: profileRecord?.firstName,
+        lastName: profileRecord?.lastName,
       };
       
       memoryCache.set(cacheKey, sessionData, CacheTTL.userSession);
