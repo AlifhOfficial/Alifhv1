@@ -76,15 +76,17 @@ export function ProfileMenu({
   }, [user, profile, refresh]);
 
   if (user) {
+    // Use user.name for initial render to avoid hydration mismatch
+    // Profile data loads async, so always fallback to user.name for SSR consistency
     const profileFirstName = profile?.firstName?.trim() ?? '';
     const profileLastName = profile?.lastName?.trim() ?? '';
 
     const displayName = profileFirstName.length > 0
       ? [profileFirstName, profileLastName].filter(Boolean).join(' ')
       : user.name || 'User';
-    const firstName = profileFirstName.length > 0
-      ? profileFirstName
-      : user.name?.split(' ')[0] || 'User';
+    
+    // Always use user.name.split for firstName to ensure SSR/client match
+    const firstName = user.name?.split(' ')[0] || 'User';
 
     const getDashboardAccess = (userData: UserData): DashboardItem[] => {
       const dashboards: DashboardItem[] = [];
