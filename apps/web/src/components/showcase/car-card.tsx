@@ -4,11 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 
-interface CarCardProps {
-  listing: any;
-}
-
-export function CarCard({ listing }: CarCardProps) {
+export function CarCard({ listing }) {
   const [imageError, setImageError] = useState(false);
   const [showAllDetails, setShowAllDetails] = useState(false);
   
