@@ -37,13 +37,20 @@ const CACHE_HEADERS_PRIVATE = {
 } as const;
 
 const UpdateProfileSchema = z.object({
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
-  bio: z.string().optional(),
-  avatar: z.string().optional(),
-  location: z.string().optional(),
-  occupation: z.string().optional(),
-}).strict();
+  firstName: z.string().nullable().optional(),
+  lastName: z.string().nullable().optional(),
+  phone: z.string().nullable().optional(),
+  description: z.string().nullable().optional(),
+  locationCity: z.string().nullable().optional(),
+  locationEmirate: z.string().nullable().optional(),
+  locationLat: z.number().nullable().optional(),
+  locationLng: z.number().nullable().optional(),
+  tags: z.array(z.string()).optional(),
+  consignmentMode: z.boolean().optional(),
+  privacySettings: z.object({ showPhone: z.boolean().optional() }).optional(),
+  avatar: z.string().nullable().optional(),
+  status: z.string().optional(),
+});
 
 async function attachAvatarUrl(profile: any) {
   if (!profile.avatar || profile.avatar.startsWith('http')) {

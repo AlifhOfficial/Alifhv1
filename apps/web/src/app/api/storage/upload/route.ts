@@ -41,12 +41,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid file payload" }, { status: 400 });
     }
 
-    // Validate metadata fields
+    // Extract and validate metadata fields
+    const directoryValue = formData.get("directory");
+    const fileNameValue = formData.get("fileName");
+    const contentTypeValue = formData.get("contentType");
+    const cacheControlValue = formData.get("cacheControl");
+
     const metadataValidation = FileUploadSchema.safeParse({
-      directory: formData.get("directory"),
-      fileName: formData.get("fileName"),
-      contentType: formData.get("contentType"),
-      cacheControl: formData.get("cacheControl"),
+      directory: directoryValue && typeof directoryValue === "string" ? directoryValue : undefined,
+      fileName: fileNameValue && typeof fileNameValue === "string" ? fileNameValue : undefined,
+      contentType: contentTypeValue && typeof contentTypeValue === "string" ? contentTypeValue : undefined,
+      cacheControl: cacheControlValue && typeof cacheControlValue === "string" ? cacheControlValue : undefined,
     });
 
     if (!metadataValidation.success) {
