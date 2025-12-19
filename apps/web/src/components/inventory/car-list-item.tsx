@@ -8,7 +8,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Share2, Heart, Sparkles } from 'lucide-react';
-import { useFavorites } from '@/hooks/favorites';
+import { useFavorite } from '@/hooks/favorites/use-favorites-simple';
+import { useSuperlike } from '@/hooks/favorites/use-superlikes-simple';
 import { cn } from '@/utils';
 import { useState } from 'react';
 import { SuperlikeConfirmationDialog } from './superlike-confirmation-dialog';
@@ -69,14 +70,17 @@ export function CarListItem({
 
   const displayImage = thumbnail || images?.[0] || '/assets/cars/car1.avif';
   const displaySpecs = specs || 'GCC';
-  const {
-    isFavorite,
-    isSuperliked,
-    isUpdating,
-    toggleFavorite,
-    toggleSuperlike,
-    quota,
-  } = useFavorites(id);
+  
+  // Separate hooks for favorites and superlikes
+  const favorite = useFavorite(id);
+  const superlike = useSuperlike(id);
+  
+  const isFavorite = favorite.isFavorite;
+  const isSuperliked = superlike.isSuperliked;
+  const isUpdating = favorite.isUpdating || superlike.isUpdating;
+  const toggleFavorite = favorite.toggle;
+  const toggleSuperlike = superlike.toggle;
+  const quota = superlike.quota;
 
   const [showSuperlikeConfirm, setShowSuperlikeConfirm] = useState(false);
   const [showSuperlikeLimit, setShowSuperlikeLimit] = useState(false);

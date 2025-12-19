@@ -8,7 +8,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Share2, Heart, CheckCircle2, Sparkles } from 'lucide-react';
-import { useFavorites } from '@/hooks/favorites';
+import { useFavorite } from '@/hooks/favorites/use-favorites-simple';
+import { useSuperlike } from '@/hooks/favorites/use-superlikes-simple';
 import { useUser } from '@/hooks/auth/use-auth';
 import { cn } from '@/utils';
 import { useState, useEffect } from 'react';
@@ -75,18 +76,26 @@ export function CarCard({
   const displayImage = thumbnail || images?.[0] || '/assets/cars/car1.avif';
   const displaySpecs = specs || 'GCC';
   const { user, isSignedIn } = useUser();
-  const {
-    isFavorite,
-    isSuperliked,
-    isUpdating,
-    toggleFavorite,
-    toggleSuperlike,
-    quota,
-    authRequired,
-    authMessage,
-    authFeature,
-    closeAuthDialog,
-  } = useFavorites(id);
+  
+  // Separate hooks for favorites and superlikes
+  const favorite = useFavorite(id);
+  const superlike = useSuperlike(id);
+  
+  const isFavorite = favorite.isFavorite;
+  const isSuperliked = superlike.isSuperliked;
+  const isUpdating = favorite.isUpdating || superlike.isUpdating;
+  const toggleFavorite = favorite.toggle;
+  const toggleSuperlike = superlike.toggle;
+  const quota = superlike.quota;
+  
+  // Handle auth dialogs from either feature
+  const authRequired = favorite.authRequired || superlike.authRequired;
+  const authMessage = favorite.authMessage || superlike.authMessage;
+  const authFeature = favorite.authRequired ? 'favorites' : 'superlikes';
+  const closeAuthDialog = () => {
+    favorite.closeAuthDialog();
+    superlike.closeAuthDialog();
+  };
 
   const [showSuperlikeConfirm, setShowSuperlikeConfirm] = useState(false);
   const [showSuperlikeLimit, setShowSuperlikeLimit] = useState(false);

@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Loader2, RefreshCw } from 'lucide-react';
 import { CarCard } from '@/components/inventory/car-card';
 import { DashboardPageLayout } from '@/components/layout';
-import { useFavoritesQuery } from '@/hooks/favorites/use-favorites';
+import { useFavoritesOnly } from '@/hooks/favorites/use-favorites-simple';
 
 type ListingPayload = {
   id: string;
@@ -37,7 +37,7 @@ type CarCardResponse = {
 };
 
 export default function FavoritesPage() {
-  const { data: favoritesData, isLoading, error: favError, refetch } = useFavoritesQuery();
+  const { data: favoritesData, isLoading, error: favError, refetch } = useFavoritesOnly();
   const [listings, setListings] = useState<ListingPayload[]>([]);
   const [isLoadingListings, setIsLoadingListings] = useState(false);
   const hasFetchedRef = useRef(false);
@@ -96,7 +96,7 @@ export default function FavoritesPage() {
             Loading your favorites…
           </div>
         )}
-        {favError && <p className="text-sm text-destructive">{favError.message}</p>}
+        {favError && <p className="text-sm text-destructive">{favError?.message || 'Failed to load favorites'}</p>}
 
         {!isLoading && !isLoadingListings && !favError && (
           <section className="space-y-6">

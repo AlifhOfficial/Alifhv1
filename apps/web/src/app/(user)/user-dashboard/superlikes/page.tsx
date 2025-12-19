@@ -6,7 +6,7 @@ import { Loader2, RefreshCw } from 'lucide-react';
 import { CarCard } from '@/components/inventory/car-card';
 import { DashboardPageLayout } from '@/components/layout';
 import { SuperlikeQuotaBadge } from '@/components/inventory/superlike-quota-badge';
-import { useFavoritesQuery, useQuotaQuery } from '@/hooks/favorites/use-favorites';
+import { useSuperlikesOnly, useSuperlikeQuota } from '@/hooks/favorites/use-superlikes-simple';
 
 type SuperlikeQuota = {
   currentMonthSuperlikesUsed: number;
@@ -49,21 +49,14 @@ type CarCardResponse = {
 };
 
 export default function SuperlikesPage() {
-  const { data: favoritesData, isLoading, error: favError, refetch } = useFavoritesQuery();
-  const { data: quotaData } = useQuotaQuery();
+  const { data: superlikesData, isLoading, error: superlikeError, refetch } = useSuperlikesOnly();
+  const { data: quotaData } = useSuperlikeQuota();
   const [listings, setListings] = useState<ListingPayload[]>([]);
   const [isLoadingListings, setIsLoadingListings] = useState(false);
   const hasFetchedRef = useRef(false);
 
-  const superlikeIds = useMemo(() => favoritesData?.superlikes || [], [favoritesData?.superlikes]);
-  
-  const quota: SuperlikeQuota | null = useMemo(() => 
-    quotaData ? {
-      ...quotaData,
-      remaining: (quotaData.maxSuperlikesPerMonth + quotaData.premiumSuperlikesBonus) - quotaData.currentMonthSuperlikesUsed
-    } : null,
-    [quotaData]
-  );
+  const superlikeIds = useMemo(() => superlikesData?.superlikes || [], [superlikesData?.superlikes]);
+  const quota = quotaData || null;
 
   // Load listing details when superlike IDs change
   useEffect(() => {
@@ -122,9 +115,9 @@ export default function SuperlikesPage() {
             Loading your superlikes…
           </div>
         )}
-        {favError && <p className="text-sm text-destructive">{favError.message}</p>}
+        {superlikeError && <p className="text-sm text-destructive">{superlikeError?.message || 'Failed to load superlikes'}</p>}
 
-        {!isLoading && !isLoadingListings && !favError && (
+        {!isLoading && !isLoadingListings && !superlikeError && (
           <section className="space-y-6">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">{superlikeIds.length} item{superlikeIds.length === 1 ? '' : 's'}</span>
