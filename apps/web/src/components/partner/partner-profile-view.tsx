@@ -93,7 +93,6 @@ export function PartnerProfileView({ partnerId }: PartnerProfileViewProps) {
   }, [profile]);
 
   const handleSaveSection = async (section: string) => {
-  const handleSaveSection = async (section: string) => {
     try {
       const payloadMap: Record<string, any> = {
         identity: {
