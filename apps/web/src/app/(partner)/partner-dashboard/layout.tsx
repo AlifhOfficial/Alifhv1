@@ -1,7 +1,8 @@
 import { DashboardLayoutProvider, DashboardMainContent } from "@/components/dashboard-components/dashboard-layout-wrapper";
 import { Sidebar } from "@/components/dashboard-components/sidebar";
 import { ThreeColumnLayout } from "@/components/dashboard-components/three-column-layout";
-import { requireAuth } from "@/lib/auth/roles";
+import { getSessionUser } from "@/lib/auth/session-context";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -16,10 +17,10 @@ const navItems = [
 ];
 
 export default async function PartnerDashboardLayout({ children }: { children: React.ReactNode }) {
-  const user = await requireAuth();
+  const user = await getSessionUser();
+  if (!user) redirect('/');
   
-  // Auth check already done in middleware - no need to re-query DB
-  // Middleware validates partner access via hasPartnerAccess field
+  // Auth check already done in middleware - proxy validates partner access
 
   return (
     <DashboardLayoutProvider>

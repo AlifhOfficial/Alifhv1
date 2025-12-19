@@ -1,11 +1,13 @@
 import { DashboardDisplayArea } from "@/components/dashboard-components/display-area";
 import { PartnerInventoryClient } from "@/components/inventory/partner-inventory-client";
-import { requireAuth } from "@/lib/auth/roles";
+import { getSessionUser } from "@/lib/auth/session-context";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 export default async function PartnerInventoryPage() {
-  const user = await requireAuth();
+  const user = await getSessionUser();
+  if (!user) redirect('/');
 
   // Get the first partner membership (if any)
   const membership = user.partnerMemberships?.[0];

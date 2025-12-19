@@ -1,9 +1,10 @@
 import { PartnerProfileView } from "@/components/partner/partner-profile-view";
-import { requireAuth } from "@/lib/auth/roles";
+import { getSessionUser } from "@/lib/auth/session-context";
 import { redirect } from "next/navigation";
 
 export default async function PartnerProfileSettingsPage() {
-  const user = await requireAuth();
+  const user = await getSessionUser();
+  if (!user) redirect('/');
 
   // Get the first active partner membership
   const partnerId = user.partnerMemberships?.[0]?.partnerId;
