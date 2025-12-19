@@ -7,7 +7,7 @@
 'use client';
 
 import { useEffect, useState, useMemo, useCallback, Suspense, lazy } from 'react';
-import { useUserProfile, type UserProfileUpdate } from '@/hooks/profile/user-profile-hook';
+import { useUserProfile, type UserProfileUpdate } from '@/hooks/profile/use-user-profile';
 import { useToast } from '@/hooks/use-toast';
 import { Camera, X, Edit3 } from 'lucide-react';
 import { Avatar } from '@/components/ui/data-display/avatar';
@@ -91,7 +91,7 @@ function TextArea({ label, value, onChange, editing: isEditing }: any) {
 }
 
 export function ProfileView({ userName, userEmail }: ProfileViewProps) {
-  const { profile, isUpdating, error, updateProfile, refresh } = useUserProfile({ fetchOnMount: true });
+  const { profile, isUpdating, error, updateProfile, refresh } = useUserProfile();
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({

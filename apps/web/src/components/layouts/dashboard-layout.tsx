@@ -18,7 +18,7 @@ import {
   Moon
 } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useUserProfile } from "@/hooks/profile/user-profile-hook";
+import { useUserProfile } from "@/hooks/profile";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -53,7 +53,7 @@ function DashboardSidebar({
   const router = useRouter();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const { profile } = useUserProfile({ fetchOnMount: false });
+  const { profile } = useUserProfile();
 
   useEffect(() => {
     setMounted(true);

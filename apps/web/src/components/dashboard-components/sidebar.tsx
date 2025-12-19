@@ -40,7 +40,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState, type ComponentType } from "react";
 import { Avatar } from "@/components/ui/data-display/avatar";
-import { useUserProfile } from "@/hooks/profile/user-profile-hook";
+import { useUserProfile } from "@/hooks/profile";
 import { useDrawer } from "./dashboard-layout-wrapper";
 
 interface SidebarProps {
@@ -95,7 +95,7 @@ export function Sidebar({ user, items }: SidebarProps) {
     return resolvedTheme ?? "light";
   }, [mounted, resolvedTheme]);
 
-  const { profile } = useUserProfile({ fetchOnMount: false });
+  const { profile } = useUserProfile();
 
   const displayName = useMemo(() => {
     if (profile?.firstName || profile?.lastName) {
