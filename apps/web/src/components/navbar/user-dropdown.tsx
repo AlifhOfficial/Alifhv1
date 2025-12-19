@@ -14,13 +14,16 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { UserRole } from "@/types/auth";
 import { getUserPortalAccess } from "@/lib/auth/routing";
-import { useUserProfile } from "@/hooks/profile/user-profile-hook";
 
 interface UserData {
   id: string;
   name?: string;
   email?: string;
   image?: string;
+  avatar?: string | null;
+  avatarUrl?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
   role?: UserRole | null;
   hasPartnerAccess?: boolean;
   isAlifhAdmin?: boolean;
@@ -59,34 +62,24 @@ export function ProfileMenu({
 }: ProfileMenuProps) {
   const router = useRouter();
   const [hasImageError, setHasImageError] = useState(false);
-  const { profile, refresh } = useUserProfile({ fetchOnMount: !!user });
 
+  // Avatar comes from session now - no separate fetch needed
   const avatarSrc = useMemo(() => {
-    return profile?.avatarUrl ?? undefined;
-  }, [profile?.avatarUrl]);
+    return user?.avatarUrl ?? user?.image ?? undefined;
+  }, [user?.avatarUrl, user?.image]);
 
   useEffect(() => {
     setHasImageError(false);
   }, [avatarSrc]);
 
-  useEffect(() => {
-    if (user && !profile) {
-      void refresh();
-    }
-  }, [user, profile, refresh]);
-
   if (user) {
-    // Use user.name for initial render to avoid hydration mismatch
-    // Profile data loads async, so always fallback to user.name for SSR consistency
-    const profileFirstName = profile?.firstName?.trim() ?? '';
-    const profileLastName = profile?.lastName?.trim() ?? '';
+    // Get name from session data (includes firstName/lastName if available)
+    const firstName = user.firstName?.trim() ?? user.name?.split(' ')[0] ?? 'User';
+    const lastName = user.lastName?.trim() ?? '';
 
-    const displayName = profileFirstName.length > 0
-      ? [profileFirstName, profileLastName].filter(Boolean).join(' ')
+    const displayName = firstName && lastName
+      ? `${firstName} ${lastName}`
       : user.name || 'User';
-    
-    // Always use user.name.split for firstName to ensure SSR/client match
-    const firstName = user.name?.split(' ')[0] || 'User';
 
     const getDashboardAccess = (userData: UserData): DashboardItem[] => {
       const dashboards: DashboardItem[] = [];

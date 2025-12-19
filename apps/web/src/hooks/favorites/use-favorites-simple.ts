@@ -23,7 +23,7 @@ const DEFAULT_AUTH_STATE: AuthState = { show: false, message: '' };
 
 // Fetch user favorites only
 async function fetchFavorites(): Promise<FavoritesData> {
-  const res = await fetch(`/api/favorites?_t=${Date.now()}`, { credentials: 'include' });
+  const res = await fetch('/api/favorites', { credentials: 'include' });
   if (!res.ok) throw new Error('Failed to fetch favorites');
   const data = await res.json();
   return { favorites: data.favorites || [] };
@@ -53,7 +53,7 @@ export function useFavorite(listingId: string) {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const res = await fetch(`/api/favorites?_t=${Date.now()}`, {
+      const res = await fetch('/api/favorites', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

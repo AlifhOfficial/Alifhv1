@@ -54,44 +54,14 @@ export const getSessionUser = cache(async (): Promise<ExtendedUser | null> => {
 });
 
 /**
- * Retrieves user profile with avatar URL signing and request-level caching
- * Uses API endpoint to avoid direct database access from presentation layer
- * Generates temporary signed URLs for R2-stored avatars (10min expiry)
+ * DEPRECATED: This function is removed to prevent duplicate session fetches.
  * 
- * @returns User profile with avatarUrl, or null if not found
- * @example
- * const profile = await getUserProfile();
- * if (profile?.avatarUrl) displayAvatar(profile.avatarUrl);
+ * Server components should directly use:
+ * - getSessionUser() to get the user
+ * - getUserProfileByUserId() from @alifh/database to get profile data
+ * 
+ * Client components should use:
+ * - useUserProfile() hook which calls /api/profile/user-profile
+ * 
+ * DO NOT fetch API endpoints from server-side code - it causes multiple session fetches.
  */
-export const getUserProfile = cache(async () => {
-  try {
-    const headersList = await headers();
-    
-    const cachedProfile = headersList.get(PROFILE_HEADER_KEY);
-    if (cachedProfile) {
-      try {
-        return JSON.parse(cachedProfile);
-      } catch {
-        // Fall through to fetch
-      }
-    }
-    
-    const user = await getSessionUser();
-    if (!user?.id) return null;
-
-    // Use API endpoint instead of direct database access
-    // This respects the presentation/API layer separation
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/profile/user-profile`, {
-      headers: headersList,
-      next: { revalidate: 30 }, // Cache for 30s
-    });
-
-    if (!response.ok) return null;
-    
-    const data = await response.json();
-    return data.profile || null;
-  } catch (error) {
-    console.error('[getUserProfile] Error:', error);
-    return null;
-  }
-});

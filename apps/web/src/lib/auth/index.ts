@@ -98,6 +98,10 @@ export const auth = betterAuth({
         hasPartnerAccess: boolean;
         isAlifhAdmin: boolean;
         partnerMemberships: any[];
+        avatar?: string | null;
+        avatarUrl?: string | null;
+        firstName?: string | null;
+        lastName?: string | null;
       }>(cacheKey);
 
       if (cached) {
@@ -121,6 +125,13 @@ export const auth = betterAuth({
           banned: true,
         },
         with: {
+          profile: {
+            columns: {
+              avatar: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
           partnerMemberships: {
             where: eq(schema.partnerStaff.status, "active"),
             with: {
@@ -157,12 +168,31 @@ export const auth = betterAuth({
         permissions: m.permissions,
       }));
 
+      // Get avatar URL if avatar exists
+      let avatarUrl: string | null = null;
+      const avatar = userRecord.profile?.avatar;
+      if (avatar && !avatar.startsWith('http')) {
+        // Import getSignedUrl dynamically to avoid circular dependencies
+        const { getSignedUrl } = await import("@/lib/storage");
+        try {
+          avatarUrl = await getSignedUrl(avatar, { expiresIn: 600 });
+        } catch (error) {
+          console.warn("Failed to generate signed avatar URL in session", error);
+        }
+      } else if (avatar) {
+        avatarUrl = avatar;
+      }
+
       const sessionData = {
         role: userRecord.role,
         banned: userRecord.banned,
         hasPartnerAccess,
         isAlifhAdmin,
         partnerMemberships,
+        avatar,
+        avatarUrl,
+        firstName: userRecord.profile?.firstName,
+        lastName: userRecord.profile?.lastName,
       };
       
       memoryCache.set(cacheKey, sessionData, CacheTTL.userSession);

@@ -39,6 +39,8 @@ export type User = {
   name: string;
   avatar?: string | null;
   avatarUrl?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
   emailVerified: boolean;
   createdAt: Date;
   updatedAt: Date;

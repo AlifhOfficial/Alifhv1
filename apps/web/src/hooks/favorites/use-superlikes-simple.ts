@@ -33,7 +33,7 @@ const DEFAULT_AUTH_STATE: AuthState = { show: false, message: '' };
 
 // Fetch user superlikes only
 async function fetchSuperlikes(): Promise<SuperlikesData> {
-  const res = await fetch(`/api/superlikes?includeStatuses=true&_t=${Date.now()}`, { credentials: 'include' });
+  const res = await fetch('/api/superlikes?includeStatuses=true', { credentials: 'include' });
   if (!res.ok) throw new Error('Failed to fetch superlikes');
   const data = await res.json();
   return { superlikes: data.superlikes || [] };
@@ -41,7 +41,7 @@ async function fetchSuperlikes(): Promise<SuperlikesData> {
 
 // Fetch superlike quota
 async function fetchQuota(): Promise<SuperlikeQuota> {
-  const res = await fetch(`/api/superlikes?_t=${Date.now()}`, { credentials: 'include' });
+  const res = await fetch('/api/superlikes?quotaOnly=true', { credentials: 'include' });
   if (!res.ok) throw new Error('Failed to fetch quota');
   const data = await res.json();
   const quota = data.quota;
@@ -92,7 +92,7 @@ export function useSuperlike(listingId: string) {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const res = await fetch(`/api/superlikes?_t=${Date.now()}`, {
+      const res = await fetch('/api/superlikes', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
