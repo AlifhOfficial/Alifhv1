@@ -13,6 +13,8 @@ const ALLOWED_ORIGINS = [
   process.env.NEXT_PUBLIC_NETWORK_URL || "",
   "http://192.168.1.14:3000",
   "http://192.168.1.14:8081",
+  "http://192.168.1.109:3000",
+  "http://192.168.1.109:8081",
 ].filter(Boolean);
 
 function addCorsHeaders(response: Response, origin: string | null): Response {

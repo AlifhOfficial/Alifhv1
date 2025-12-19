@@ -28,7 +28,7 @@ export async function proxy(request: NextRequest) {
   // Get session token from cookies - Better Auth stores session data in cookies
   const sessionToken = request.cookies.get("better-auth.session_token")?.value;
 
-  // Only redirect to sign-in if no session token AND it's a protected route
+  // Redirect to sign-in if no session token
   if (!sessionToken) {
     const signInUrl = new URL("/sign-in", request.url);
     signInUrl.searchParams.set("redirect", pathname);
@@ -110,8 +110,5 @@ export const config = {
     "/admin-dashboard/:path*",
     "/partner-dashboard/:path*",
     "/staff-dashboard/:path*",
-    // Apply to authenticated APIs so session is injected once per request.
-    // Excludes /api/auth to avoid interfering with Better Auth handlers.
-    "/api/((?!auth).*)",
   ],
 };

@@ -11,7 +11,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -99,6 +99,7 @@ export function Navbar() {
   const [triggerEmailVerification, setTriggerEmailVerification] = useState(false);
   const [triggerGoogleOnboarding, setTriggerGoogleOnboarding] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const closeTimeoutRef = useRef<NodeJS.Timeout>();
   
   const pathname = usePathname();
   const router = useRouter();
@@ -113,56 +114,34 @@ export function Navbar() {
 
   const isDark = mounted && resolvedTheme === "dark";
 
-  // Memoize scroll handler - close all menus on scroll
-  const handleScroll = useCallback(() => {
-    setIsScrolled(window.scrollY > 10);
-    // Close all menus on scroll
-    setActiveDropdown(null);
-    setShowProfileMenu(false);
-    setShowMobileMenu(false);
-  }, []);
-
+  // Scroll handler - just track scroll state
   useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [handleScroll]);
+  }, []);
 
-  // Close dropdowns when clicking outside
+  // Close profile menu when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      // Don't close if clicking inside the menu or its trigger
-      if (
-        target.closest('[data-menu-container]') || 
-        target.closest('[data-menu-trigger]')
-      ) {
-        return;
-      }
-      setActiveDropdown(null);
-      setShowProfileMenu(false);
-    };
+    if (!showProfileMenu) return;
+    
+    const handleClick = () => setShowProfileMenu(false);
+    setTimeout(() => document.addEventListener("click", handleClick), 0);
+    return () => document.removeEventListener("click", handleClick);
+  }, [showProfileMenu]);
 
-    if (activeDropdown || showProfileMenu) {
-      document.addEventListener("click", handleClickOutside, true);
-      return () => document.removeEventListener("click", handleClickOutside, true);
-    }
-  }, [activeDropdown, showProfileMenu]);
-
-  // Close mobile menu on escape key
+  // Close menus on escape key
   useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
         setShowMobileMenu(false);
         setActiveDropdown(null);
         setShowProfileMenu(false);
       }
     };
-
-    if (showMobileMenu || activeDropdown || showProfileMenu) {
-      document.addEventListener('keydown', handleEscape);
-      return () => document.removeEventListener('keydown', handleEscape);
-    }
-  }, [showMobileMenu, activeDropdown, showProfileMenu]);
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, []);
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
@@ -258,15 +237,33 @@ export function Navbar() {
     }
   }, [triggerGoogleOnboarding]);
 
+  // Handle dropdown close with delay
+  const handleDropdownClose = useCallback(() => {
+    closeTimeoutRef.current = setTimeout(() => {
+      setActiveDropdown(null);
+    }, 150);
+  }, []);
 
+  const handleDropdownOpen = useCallback((label: string) => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+    }
+    setActiveDropdown(label);
+  }, []);
+
+  const cancelDropdownClose = useCallback(() => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+    }
+  }, []);
 
   return (
     <>
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? "bg-background/95 backdrop-blur-sm border-b border-border/40 shadow-sm"
-            : "bg-background/95 backdrop-blur-sm"
+            ? "bg-background/95 backdrop-blur-md border-b border-border/40"
+            : "bg-background/80 backdrop-blur-md"
         }`}
       >
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
@@ -288,35 +285,21 @@ export function Navbar() {
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-1 flex-1">
               {navItems.map((item) => (
-                <div key={item.label} className="relative" data-menu-container>
-                  {item.submenu ? (
-                    <Link
-                      href={item.href}
-                      onMouseEnter={() => setActiveDropdown(item.label)}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveDropdown(item.label);
-                      }}
-                      className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg block ${
-                        pathname === item.href
-                          ? "text-foreground bg-muted/20"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
-                      }`}
-                    >
-                      {item.label}
-                    </Link>
-                  ) : (
-                    <Link
-                      href={item.href}
-                      className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg block ${
-                        pathname === item.href
-                          ? "text-foreground bg-muted/20"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
-                      }`}
-                    >
-                      {item.label}
-                    </Link>
-                  )}
+                <div 
+                  key={item.label}
+                  onMouseEnter={() => item.submenu && handleDropdownOpen(item.label)}
+                  onMouseLeave={() => item.submenu && handleDropdownClose()}
+                >
+                  <Link
+                    href={item.href}
+                    className={`px-3 py-1.5 text-sm font-normal transition-colors rounded-md block ${
+                      pathname === item.href
+                        ? "text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
                 </div>
               ))}
             </div>
@@ -326,7 +309,7 @@ export function Navbar() {
               {/* Theme Toggle */}
               <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="p-2.5 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20 active:scale-95"
+                className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md"
                 aria-label="Toggle theme"
                 suppressHydrationWarning
               >
@@ -334,36 +317,31 @@ export function Navbar() {
               </button>
 
               {/* Profile/Auth Actions */}
-              <div data-menu-trigger>
-                <ProfileMenu
-                  user={user}
-                  showMenu={showProfileMenu}
-                  onToggleMenu={(e) => {
-                    e?.stopPropagation();
-                    setShowProfileMenu(!showProfileMenu);
-                  }}
-                  onSignIn={() => {
-                    setShowProfileMenu(false);
-                    setCurrentAuthModal("signin");
-                  }}
-                  onSignUp={() => {
-                    setShowProfileMenu(false);
-                    setCurrentAuthModal("signup");
-                  }}
-                  onSignOut={onSignOut}
-                  onProfile={() => {
-                    setShowProfileMenu(false);
-                    router.push("/profile");
-                  }}
-                />
-              </div>
+              <ProfileMenu
+                user={user}
+                showMenu={showProfileMenu}
+                onToggleMenu={(e) => {
+                  e?.stopPropagation();
+                  setShowProfileMenu(!showProfileMenu);
+                }}
+                onSignIn={() => {
+                  setShowProfileMenu(false);
+                  setCurrentAuthModal("signin");
+                }}
+                onSignUp={() => {
+                  setShowProfileMenu(false);
+                  setCurrentAuthModal("signup");
+                }}
+                onSignOut={onSignOut}
+                onProfile={() => {
+                  setShowProfileMenu(false);
+                  router.push("/profile");
+                }}
+              />
 
               {/* Mobile Menu Toggle */}
               <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowMobileMenu(!showMobileMenu);
-                }}
+                onClick={() => setShowMobileMenu(!showMobileMenu)}
                 className="lg:hidden p-2.5 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20 active:scale-95"
                 aria-label="Menu"
               >
@@ -374,19 +352,13 @@ export function Navbar() {
         </div>
       </nav>
 
-      {/* Blur Overlay */}
-      {activeDropdown && (
-        <div 
-          className="fixed inset-0 bg-background/40 backdrop-blur-sm z-30"
-          onClick={() => setActiveDropdown(null)}
-        />
-      )}
-
       {/* Mega Dropdown */}
       <MegaDropdown
         activeDropdown={activeDropdown}
         navItems={navItems}
         onClose={() => setActiveDropdown(null)}
+        onMouseEnter={cancelDropdownClose}
+        onMouseLeave={handleDropdownClose}
       />
 
       {/* Mobile Menu */}
