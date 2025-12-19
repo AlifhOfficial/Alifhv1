@@ -25,10 +25,12 @@ export async function getPartnerMiniProfile(partnerId: string) {
   // Check cache first
   const cached = memoryCache.get(cacheKey);
   if (cached) {
+    console.log(`[getPartnerMiniProfile] Cache HIT for ${partnerId.slice(0, 8)}...`);
     return cached;
   }
 
   // Use select() for better performance - only fetches specified columns
+  const queryStart = performance.now();
   const [result] = await db
     .select({
       // Identity & Legal
@@ -85,6 +87,9 @@ export async function getPartnerMiniProfile(partnerId: string) {
     .from(partner)
     .where(eq(partner.id, partnerId))
     .limit(1);
+  
+  const queryTime = performance.now() - queryStart;
+  console.log(`[getPartnerMiniProfile] Cache MISS for ${partnerId.slice(0, 8)}... - DB query: ${queryTime.toFixed(2)}ms`);
 
   if (!result) return null;
 
