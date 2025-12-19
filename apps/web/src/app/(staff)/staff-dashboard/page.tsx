@@ -1,11 +1,16 @@
-import { requireAuth } from "@/lib/auth/roles";
+import { getSessionUser } from "@/lib/auth/session-context";
 import { StaffDashboardLayout } from "@/components/layouts/dashboard-layout";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 export default async function StaffDashboard() {
-  const user = await requireAuth();
+  // Proxy middleware already handles auth, just get session
+  const user = await getSessionUser();
+  
+  if (!user) {
+    redirect('/');
+  }
 
   // TODO: Replace with API endpoint to fetch full staff membership details
   // Check if user has staff membership (from session)
