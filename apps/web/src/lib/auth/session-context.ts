@@ -16,8 +16,6 @@ import { cache } from "react";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import type { ExtendedUser } from "@/types/auth";
-import { getUserProfileByUserId } from "@alifh/database";
-import { getSignedUrl } from "@/lib/storage";
 
 const SESSION_HEADER_KEY = "x-auth-user";
 const PROFILE_HEADER_KEY = "x-user-profile";
@@ -57,6 +55,7 @@ export const getSessionUser = cache(async (): Promise<ExtendedUser | null> => {
 
 /**
  * Retrieves user profile with avatar URL signing and request-level caching
+ * Uses API endpoint to avoid direct database access from presentation layer
  * Generates temporary signed URLs for R2-stored avatars (10min expiry)
  * 
  * @returns User profile with avatarUrl, or null if not found
@@ -80,19 +79,17 @@ export const getUserProfile = cache(async () => {
     const user = await getSessionUser();
     if (!user?.id) return null;
 
-    const profile = await getUserProfileByUserId(user.id);
-    if (!profile) return null;
+    // Use API endpoint instead of direct database access
+    // This respects the presentation/API layer separation
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/profile/user-profile`, {
+      headers: headersList,
+      next: { revalidate: 30 }, // Cache for 30s
+    });
 
-    if (profile.avatar && !profile.avatar.startsWith('http')) {
-      try {
-        const signedUrl = await getSignedUrl(profile.avatar, { expiresIn: 600 });
-        return { ...profile, avatarUrl: signedUrl };
-      } catch {
-        return { ...profile, avatarUrl: null };
-      }
-    }
-
-    return { ...profile, avatarUrl: profile.avatar };
+    if (!response.ok) return null;
+    
+    const data = await response.json();
+    return data.profile || null;
   } catch (error) {
     console.error('[getUserProfile] Error:', error);
     return null;
