@@ -1,8 +1,5 @@
 import { requireAuth } from "@/lib/auth/roles";
 import { StaffDashboardLayout } from "@/components/layouts/dashboard-layout";
-import { db } from "@alifh/database";
-import * as schema from "@alifh/database";
-import { eq, and } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -10,38 +7,21 @@ export const dynamic = "force-dynamic";
 export default async function StaffDashboard() {
   const user = await requireAuth();
 
-  // Fetch partner membership with full partner details (is dealer staff)
-  const membership = await db
-    .select({
-      partnerId: schema.partnerStaff.partnerId,
-      role: schema.partnerStaff.role,
-      status: schema.partnerStaff.status,
-      partner: schema.partner,
-    })
-    .from(schema.partnerStaff)
-    .leftJoin(schema.partner, eq(schema.partnerStaff.partnerId, schema.partner.id))
-    .where(
-      and(
-        eq(schema.partnerStaff.userId, user.id),
-        eq(schema.partnerStaff.status, "active")
-      )
-    )
-    .limit(1)
-    .execute();
+  // TODO: Replace with API endpoint to fetch full staff membership details
+  // Check if user has staff membership (from session)
+  const staffMembership = user.partnerMemberships?.find(m => m.staffRole !== 'owner');
 
   // If no active membership, deny access (not dealer staff)
-  if (membership.length === 0) {
+  if (!staffMembership) {
     redirect('/access-denied?reason=not-dealer-staff');
   }
-
-  const staffData = membership[0];
   
   // If user is owner, redirect to partner dashboard
-  if (staffData.role === 'owner') {
+  if (staffMembership.staffRole === 'owner') {
     redirect('/partner-dashboard');
   }
 
-  const dealerName = staffData.partner?.brandName || "Dealership";
+  const dealerName = "Dealership"; // TODO: Fetch from API
 
   // Right panel content
   const rightPanel = (
@@ -49,7 +29,7 @@ export default async function StaffDashboard() {
       <h3 className="text-sm font-medium text-foreground">Your Dealership</h3>
       <div className="bg-muted/20 p-3 rounded-lg">
         <p className="text-sm font-medium">{dealerName}</p>
-        <p className="text-xs text-muted-foreground capitalize">{staffData.role} Role</p>
+        <p className="text-xs text-muted-foreground capitalize">{staffMembership.staffRole} Role</p>
       </div>
       
       <div className="space-y-2 mt-4">
@@ -156,7 +136,7 @@ export default async function StaffDashboard() {
               <span className="text-foreground font-medium">Email:</span> {user.email || 'Not provided'}
             </p>
             <p className="text-muted-foreground">
-              <span className="text-foreground font-medium">Role:</span> <span className="capitalize">{staffData.role}</span>
+              <span className="text-foreground font-medium">Role:</span> <span className="capitalize">{staffMembership.staffRole}</span>
             </p>
             <p className="text-muted-foreground">
               <span className="text-foreground font-medium">Dealership:</span> {dealerName}
