@@ -134,8 +134,9 @@ export function usePartnerProfile(partnerId: string | null | undefined) {
 
   const mutation = useMutation({
     mutationFn: (updates: PartnerProfileUpdate) => updatePartnerProfileAPI(partnerId!, updates),
-    onSuccess: (data) => {
-      queryClient.setQueryData(['partner-profile', partnerId], data);
+    onSuccess: () => {
+      // Invalidate to refetch fresh data
+      queryClient.invalidateQueries({ queryKey: ['partner-profile', partnerId] });
     },
   });
 

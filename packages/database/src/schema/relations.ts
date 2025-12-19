@@ -78,8 +78,6 @@ export const userRelations = relations(user, ({ many, one }) => ({
   // Listings
   listings: many(carListing), // P2P listings created by user
   listingViews: many(listingView), // Listings this user viewed
-  reservedListings: many(carListing, { relationName: 'reservedListings' }), // Listings reserved by user
-  purchasedListings: many(carListing, { relationName: 'purchasedListings' }), // Listings bought by user
   
   // Bookings
   bookings: many(booking), // Bookings created by user
@@ -248,10 +246,6 @@ export const carListingRelations = relations(carListing, ({ one, many }) => ({
     fields: [carListing.userId],
     references: [user.id],
   }),
-  postedByStaff: one(partnerStaff, {
-    fields: [carListing.postedByStaffId],
-    references: [partnerStaff.id],
-  }),
   
   // Reservation & Sale
   reservedByUser: one(user, {
@@ -279,12 +273,6 @@ export const carListingRelations = relations(carListing, ({ one, many }) => ({
   
   // Consignment
   consignmentLeads: many(consignmentLead), // Consignment leads for this listing
-  
-  // Moderation
-  reviewer: one(user, {
-    fields: [carListing.reviewedBy],
-    references: [user.id],
-  }),
 }));
 
 // Listing Price History relations
@@ -352,10 +340,6 @@ export const bookingRelations = relations(booking, ({ one }) => ({
     fields: [booking.slotId],
     references: [bookingSlot.id],
   }),
-  confirmedByUser: one(user, {
-    fields: [booking.confirmedBy],
-    references: [user.id],
-  }),
 }));
 
 // User Booking Restriction relations
@@ -386,10 +370,6 @@ export const conversationRelations = relations(conversation, ({ one, many }) => 
   partner: one(partner, {
     fields: [conversation.partnerId],
     references: [partner.id],
-  }),
-  lastMessageSender: one(user, {
-    fields: [conversation.lastMessageSenderId],
-    references: [user.id],
   }),
   
   // Content
@@ -461,14 +441,6 @@ export const consignmentLeadRelations = relations(consignmentLead, ({ one, many 
   listing: one(carListing, {
     fields: [consignmentLead.listingId],
     references: [carListing.id],
-  }),
-  acceptedByUser: one(user, {
-    fields: [consignmentLead.acceptedByUserId],
-    references: [user.id],
-  }),
-  lostToPartner: one(partner, {
-    fields: [consignmentLead.lostToPartnerId],
-    references: [partner.id],
   }),
   activities: many(consignmentLeadActivity),
 }));

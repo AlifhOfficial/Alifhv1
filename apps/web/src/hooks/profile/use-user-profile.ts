@@ -113,9 +113,8 @@ export function useUserProfile() {
   // Update profile mutation
   const mutation = useMutation({
     mutationFn: updateUserProfileAPI,
-    onSuccess: (updatedProfile) => {
-      // Update cache with new data
-      queryClient.setQueryData(['user-profile'], updatedProfile);
+    onSuccess: () => {
+      // Invalidate to refetch fresh data
       queryClient.invalidateQueries({ queryKey: ['user-profile'] });
     },
   });
