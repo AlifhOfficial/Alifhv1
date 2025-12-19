@@ -2,11 +2,10 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { carListing } from '@alifh/database';
 import { useState } from 'react';
 
 interface CarCardProps {
-  listing: typeof carListing.$inferSelect;
+  listing: any;
 }
 
 export function CarCard({ listing }: CarCardProps) {
