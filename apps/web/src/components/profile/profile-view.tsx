@@ -336,10 +336,12 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
               )}
             </div>
           </div>
+          {/* ❌ avgResponseTime removed from user profile - only for partners
           <div>
             <p className="text-xs font-medium text-muted-foreground mb-1">Response Time</p>
             <p className="text-xl font-semibold tracking-tight">{profile?.avgResponseTime ? `${profile.avgResponseTime} min` : '—'}</p>
           </div>
+          */}
           <div>
             <p className="text-xs font-medium text-muted-foreground mb-1">Member since</p>
             <p className="text-xl font-semibold tracking-tight">{profile?.memberSince ? new Date(profile.memberSince).getFullYear() : profile?.createdAt ? new Date(profile.createdAt).getFullYear() : '—'}</p>

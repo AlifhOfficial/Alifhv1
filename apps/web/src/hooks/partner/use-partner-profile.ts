@@ -50,13 +50,8 @@ export interface PartnerProfile {
   platformRating: number | null;
   platformReviewCount: number;
   
-  // Inventory
-  totalInventory: number;
-  activeListings: number;
-  
-  // Response Metrics
-  avgResponseTime: number | null;
-  responseRate: number | null;
+  // ❌ Removed denormalized fields (calculate on-demand with 5min cache):
+  // totalInventory, activeListings, avgResponseTime, responseRate
   
   // Trust & Verification
   isVerified: boolean;

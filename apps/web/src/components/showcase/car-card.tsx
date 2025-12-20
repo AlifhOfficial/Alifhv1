@@ -134,11 +134,7 @@ export function CarCard({ listing }) {
                 <span>❤️</span> {listing.favouriteCount} saves
               </span>
             )}
-            {listing.inquiryCount > 0 && (
-              <span className="flex items-center gap-1">
-                <span>💬</span> {listing.inquiryCount} inquiries
-              </span>
-            )}
+            {/* ❌ inquiryCount removed - field doesn't exist */}
           </div>
         )}
 
@@ -200,7 +196,7 @@ export function CarCard({ listing }) {
                 <div><span className="font-medium">Est. Min:</span> {listing.estimateMin || 'N/A'}</div>
                 <div><span className="font-medium">Est. Max:</span> {listing.estimateMax || 'N/A'}</div>
                 <div><span className="font-medium">Price Trend:</span> {listing.priceTrend || 'N/A'}</div>
-                <div><span className="font-medium">Price Changes:</span> {listing.priceChanges}</div>
+                {/* ❌ priceChanges removed - field doesn't exist */}
               </div>
             </div>
 
@@ -220,11 +216,8 @@ export function CarCard({ listing }) {
                 <div><span className="font-medium">View Count:</span> {listing.viewCount}</div>
                 <div><span className="font-medium">Favourite Count:</span> {listing.favouriteCount}</div>
                 <div><span className="font-medium">Superlike Count:</span> {listing.superlikeCount}</div>
-                <div><span className="font-medium">Share Count:</span> {listing.shareCount}</div>
-                <div><span className="font-medium">Inquiry Count:</span> {listing.inquiryCount}</div>
-                <div><span className="font-medium">Booking Count:</span> {listing.bookingCount}</div>
-                <div><span className="font-medium">Call Count:</span> {listing.callCount}</div>
-                <div><span className="font-medium">WhatsApp Count:</span> {listing.whatsappCount}</div>
+                {/* ❌ Removed fields (don't exist in schema):
+                    shareCount, inquiryCount, bookingCount, callCount, whatsappCount */}
               </div>
             </div>
 
@@ -233,11 +226,8 @@ export function CarCard({ listing }) {
               <div className="text-xs font-semibold text-gray-700 mb-2">PERFORMANCE METRICS</div>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div><span className="font-medium">QI Score:</span> {listing.qiScore || 'N/A'}</div>
-                <div><span className="font-medium">Performance Score:</span> {listing.performanceScore || 'N/A'}</div>
-                <div><span className="font-medium">Days on Market:</span> {listing.daysOnMarket || 'N/A'}</div>
-                <div><span className="font-medium">Lead Quality:</span> {listing.leadQuality || 'N/A'}</div>
-                <div><span className="font-medium">Conversion Rate:</span> {listing.conversionRate ? `${listing.conversionRate}%` : 'N/A'}</div>
-                <div><span className="font-medium">Avg Time to Sale:</span> {listing.avgTimeToSale || 'N/A'}</div>
+                {/* ❌ Removed fields (don't exist in schema):
+                    performanceScore, daysOnMarket, leadQuality, conversionRate, avgTimeToSale */}
               </div>
             </div>
 

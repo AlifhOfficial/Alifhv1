@@ -1,10 +1,3 @@
-/**
- * User Profile Schema
- * 
- * Extended user profile information for the Alifh platform
- * Includes personal details, location, preferences, and activity tracking
- */
-
 import { 
   pgTable, 
   text, 
@@ -19,54 +12,35 @@ import {
 } from 'drizzle-orm/pg-core';
 import { user } from './auth';
 
-// Enums
 export const favoriteTypeEnum = pgEnum('favorite_type', ['favorite', 'superlike']);
 
-/**
- * User Profile Table
- * Extends the base user table with additional profile information
- * Separate ID allows user to exist without profile (partial signup flows)
- */
 export const userProfile = pgTable('user_profile', {
-  // Primary identification (separate from user.id)
   id: text('id').primaryKey(),
-  userId: text('user_id')
-    .notNull()
-    .unique() // One profile per user
-    .references(() => user.id, { onDelete: 'cascade' }),
+  userId: text('user_id').notNull().unique().references(() => user.id, { onDelete: 'cascade' }),
   
-  // Contact Information
   phone: text('phone'),
-  
-  // Personal Information (syncs to user.name)
   firstName: text('first_name'),
   lastName: text('last_name'),
   avatar: text('avatar'),
   description: text('description'),
   
-  // KYC Verification
   kycVerified: boolean('kyc_verified').default(false).notNull(),
   kycVerifiedAt: timestamp('kyc_verified_at'),
   
-  // Badges and Tags (e.g., ["verified_seller", "premium_member"])
   badges: jsonb('badges').$type<string[]>().default([]),
   tags: jsonb('tags').$type<string[]>().default([]),
   
-  // Location Information (used for user's P2P listings)
   locationLat: doublePrecision('location_lat'),
   locationLng: doublePrecision('location_lng'),
   locationCity: text('location_city'),
   locationEmirate: text('location_emirate'),
   
-  // Business Metrics
   inventoryCount: integer('inventory_count').default(0).notNull(),
   rating: doublePrecision('rating').default(0.0),
   
-  // Activity Tracking
-  avgResponseTime: integer('avg_response_time'), // in minutes
+  avgResponseTime: integer('avg_response_time'),
   lastActiveAt: timestamp('last_active_at'),
   
-  // Preferences and Settings
   notificationPreferences: jsonb('notification_preferences').$type<{
     emailKYC: boolean;
     emailEscrow: boolean;
@@ -103,10 +77,8 @@ export const userProfile = pgTable('user_profile', {
     distanceUnit: 'km',
   }).notNull(),
   
-  // Consignment Mode
   consignmentMode: boolean('consignment_mode').default(false).notNull(),
   
-  // Timestamps
   memberSince: timestamp('member_since').defaultNow().notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
@@ -117,49 +89,34 @@ export const userProfile = pgTable('user_profile', {
   index('user_profile_kyc_verified_idx').on(table.kycVerified),
 ]);
 
-/**
- * KYC Records Table
- * Stores KYC verification history and documents
- */
 export const kycRecord = pgTable('kyc_record', {
   id: text('id').primaryKey(),
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   
-  // KYC Status
-  status: text('status').notNull(), // pending, approved, rejected, expired
-  type: text('type').notNull(), // individual, business
+  status: text('status').notNull(),
+  type: text('type').notNull(),
   
-  // Document Information
-  documentType: text('document_type'), // passport, emirates_id, driving_license
+  documentType: text('document_type'),
   documentNumber: text('document_number'),
   documentFrontUrl: text('document_front_url'),
   documentBackUrl: text('document_back_url'),
   selfieUrl: text('selfie_url'),
   
-  // Verification Details
-  verifiedBy: text('verified_by'), // admin user id
+  verifiedBy: text('verified_by'),
   verifiedAt: timestamp('verified_at'),
   rejectionReason: text('rejection_reason'),
   expiresAt: timestamp('expires_at'),
   
-  // Additional Data
   metadata: jsonb('metadata').$type<Record<string, any>>(),
   
-  // Timestamps
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
 }, (table) => [
   index('kyc_record_userId_idx').on(table.userId),
   index('kyc_record_status_idx').on(table.status),
-  // Critical: Composite index for admin KYC list (filter by status + sort by date)
   index('kyc_record_status_createdAt_idx').on(table.status, table.createdAt.desc()),
 ]);
 
-/**
- * User Favorites Table
- * Tracks user favorites (unlimited)
- * Users can favorite as many listings as they want
- */
 export const userFavorite = pgTable('user_favorite', {
   id: text('id').primaryKey(),
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
@@ -171,21 +128,11 @@ export const userFavorite = pgTable('user_favorite', {
   // Timestamps
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, (table) => [
-  index('user_favorite_userId_idx').on(table.userId),
-  index('user_favorite_listingId_idx').on(table.listingId),
-  index('user_favorite_userId_listingId_idx').on(table.userId, table.listingId),
-  index('user_favorite_createdAt_idx').on(table.createdAt),
-  // Composite index for efficient sorted retrieval: WHERE user_id = X ORDER BY created_at DESC
   index('user_favorite_userId_createdAt_idx').on(table.userId, table.createdAt.desc()),
-  // Unique constraint to prevent duplicate favorites and enable efficient UPSERT
+  index('user_favorite_listingId_idx').on(table.listingId),
   uniqueIndex('user_favorite_userId_listingId_unique').on(table.userId, table.listingId),
 ]);
 
-/**
- * User Superlikes Table
- * Tracks user superlikes (limited to 5 per month)
- * Users can have both a favorite AND a superlike on the same listing
- */
 export const userSuperlike = pgTable('user_superlike', {
   id: text('id').primaryKey(),
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
@@ -197,43 +144,27 @@ export const userSuperlike = pgTable('user_superlike', {
   // Timestamps
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, (table) => [
-  index('user_superlike_userId_idx').on(table.userId),
-  index('user_superlike_listingId_idx').on(table.listingId),
-  index('user_superlike_userId_listingId_idx').on(table.userId, table.listingId),
-  index('user_superlike_createdAt_idx').on(table.createdAt),
-  // Composite index for efficient sorted retrieval: WHERE user_id = X ORDER BY created_at DESC
   index('user_superlike_userId_createdAt_idx').on(table.userId, table.createdAt.desc()),
-  // Unique constraint to prevent duplicate superlikes and enable efficient UPSERT
+  index('user_superlike_listingId_idx').on(table.listingId),
   uniqueIndex('user_superlike_userId_listingId_unique').on(table.userId, table.listingId),
 ]);
 
-/**
- * User Superlike Quota Table
- * Tracks monthly superlike usage and limits
- * Each user gets 5 superlikes per month
- */
 export const userSuperlikeQuota = pgTable('user_superlike_quota', {
   id: text('id').primaryKey(),
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }).unique(),
   
-  // Monthly Tracking (rolling 30 days)
   currentMonthSuperlikesUsed: integer('current_month_superlikes_used').default(0).notNull(),
-  // Default quota aligns with ensureSuperlikeQuota() seed (5 per 30 days)
   maxSuperlikesPerMonth: integer('max_superlikes_per_month').default(5).notNull(),
   
-  // Current Period
   periodStartDate: timestamp('period_start_date').defaultNow().notNull(),
   periodEndDate: timestamp('period_end_date').notNull(),
   lastResetAt: timestamp('last_reset_at').defaultNow().notNull(),
   
-  // Lifetime Stats
   totalSuperlikesUsed: integer('total_superlikes_used').default(0).notNull(),
   
-  // Premium Features (future)
-  isPremium: boolean('is_premium').default(false).notNull(), // Premium users might get more
-  premiumSuperlikesBonus: integer('premium_superlikes_bonus').default(0), // Extra superlikes for premium
+  isPremium: boolean('is_premium').default(false).notNull(),
+  premiumSuperlikesBonus: integer('premium_superlikes_bonus').default(0),
   
-  // Timestamps
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
 }, (table) => [

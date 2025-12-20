@@ -71,13 +71,8 @@ export async function getPartnerMiniProfile(partnerId: string) {
       platformRating: partner.platformRating,
       platformReviewCount: partner.platformReviewCount,
       
-      // Inventory
-      totalInventory: partner.totalInventory,
-      activeListings: partner.activeListings,
-      
-      // Response Metrics
-      avgResponseTime: partner.avgResponseTime,
-      responseRate: partner.responseRate,
+      // ❌ Removed denormalized fields - calculate on-demand:
+      // totalInventory, activeListings, avgResponseTime, responseRate
       
       // Trust & Tags
       isVerified: partner.isVerified,

@@ -134,22 +134,14 @@ export interface ListingDetail {
   isFeatured: boolean;
   isBlackMember: boolean;
   
-  // Engagement Metrics
+  // Engagement Metrics (for seller insights only)
   viewCount: number;
   favouriteCount: number;
   superlikeCount: number;
-  shareCount: number;
   
-  // Lead Generation Metrics
-  inquiryCount: number;
-  bookingCount: number;
-  callCount: number;
-  whatsappCount: number;
-  
-  // Conversion Tracking
-  leadQuality: number | null;
-  conversionRate: number | null;
-  avgTimeToSale: number | null;
+  // ❌ Removed fields (not in schema anymore):
+  // shareCount, inquiryCount, bookingCount, callCount, whatsappCount
+  // leadQuality, conversionRate, avgTimeToSale
   
   // SEO & Discovery
   slug: string | null;
@@ -183,7 +175,8 @@ export interface ListingDetail {
   partnerCity: string | null;
   partnerRating: number | null;
   partnerReviewCount: number | null;
-  partnerActiveListings: number | null;
+  
+  // ❌ Removed: partnerActiveListings (calculate on-demand)
 }
 
 interface ListingDetailResponse {

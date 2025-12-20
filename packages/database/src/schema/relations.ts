@@ -1,10 +1,3 @@
-/**
- * Schema Relations
- * 
- * Defines relationships between all database tables
- * Clean separation: User (person) → PartnerStaff (seat) → Partner (company)
- */
-
 import { relations } from 'drizzle-orm';
 import { 
   user,
@@ -34,21 +27,22 @@ import {
   booking,
   bookingSlot,
   partnerAvailability,
-  userBookingRestriction,
   partnerBookingSettings,
 } from './booking';
 import {
   conversation,
   conversationParticipant,
   message,
-  messageReaction,
 } from './messaging';
 import {
   consignmentLead,
-  consignmentLeadActivity,
   partnerConsignmentPreference,
 } from './consignment';
-// Note: analytics, bookingFeedback, consignmentStats, typingIndicator removed in V1
+
+// Note: Removed tables (not imported):
+// - userBookingRestriction (simplified to app logic)
+// - messageReaction (not needed for V1)
+// - consignmentLeadActivity (use main auditLog)
 
 // User relations (one-to-many and one-to-one)
 export const userRelations = relations(user, ({ many, one }) => ({
@@ -63,7 +57,7 @@ export const userRelations = relations(user, ({ many, one }) => ({
   }),
   kycRecords: many(kycRecord),
   
-  // User Activity
+  // Favorites & Superlikes
   favorites: many(userFavorite),
   superlikeQuota: one(userSuperlikeQuota, {
     fields: [user.id],
@@ -71,32 +65,23 @@ export const userRelations = relations(user, ({ many, one }) => ({
   }),
   
   // Partner Relationships
-  partnerMemberships: many(partnerStaff), // Companies this person works for
-  partnerReviews: many(partnerReview), // Reviews this person wrote
-  partnerRequests: many(partnerRequest), // Partner applications submitted
+  partnerMemberships: many(partnerStaff),
   
   // Listings
-  listings: many(carListing), // P2P listings created by user
-  listingViews: many(listingView), // Listings this user viewed
+  listings: many(carListing),
   
   // Bookings
-  bookings: many(booking), // Bookings created by user
-  bookingRestriction: one(userBookingRestriction, {
-    fields: [user.id],
-    references: [userBookingRestriction.userId],
-  }),
+  bookings: many(booking),
   
   // Messaging
-  conversations: many(conversationParticipant), // Conversations user is part of
-  sentMessages: many(message), // Messages sent by user
-  messageReactions: many(messageReaction), // Reactions user added
+  conversations: many(conversationParticipant),
+  sentMessages: many(message),
   
-  // Consignment
-  consignmentLeads: many(consignmentLead), // Consignment leads for user's listings
-  consignmentActivities: many(consignmentLeadActivity), // Actions in consignment process
-  
-  // Audit Trail
-  auditLogs: many(auditLog), // Actions performed by this user
+  // ❌ Removed for V1 (unused relations that bloat bundle):
+  // - partnerReviews, partnerRequests (not implemented yet)
+  // - listingViews (tracked without relation)
+  // - consignmentLeads (partner feature, not user-facing)
+  // - auditLogs (admin only, not user-facing)
 }));
 
 // User Profile relations (one-to-one)
@@ -137,31 +122,32 @@ export const userSuperlikeQuotaRelations = relations(userSuperlikeQuota, ({ one 
 
 // Partner relations (the company)
 export const partnerRelations = relations(partner, ({ many, one }) => ({
-  staff: many(partnerStaff), // Team members (seats)
-  reviews: many(partnerReview), // Customer reviews
-  requests: many(partnerRequest), // Original applications (if linked)
+  staff: many(partnerStaff),
   
   // Listings
-  listings: many(carListing), // Cars listed by this partner
+  listings: many(carListing),
   
   // Bookings
-  bookings: many(booking), // Bookings for this partner's listings
-  bookingSlots: many(bookingSlot), // Available time slots
-  availability: many(partnerAvailability), // Weekly availability schedule
+  bookings: many(booking),
+  bookingSlots: many(bookingSlot),
+  availability: many(partnerAvailability),
   bookingSettings: one(partnerBookingSettings, {
     fields: [partner.id],
     references: [partnerBookingSettings.partnerId],
   }),
   
   // Messaging
-  conversations: many(conversation), // Conversations with this partner
+  conversations: many(conversation),
   
   // Consignment
-  consignmentLeads: many(consignmentLead), // Consignment leads for this partner
+  consignmentLeads: many(consignmentLead),
   consignmentPreference: one(partnerConsignmentPreference, {
     fields: [partner.id],
     references: [partnerConsignmentPreference.partnerId],
   }),
+  
+  // ❌ Removed for V1:
+  // - reviews, requests (not implemented yet)
 }));
 
 // Partner Staff relations (the seat/membership)
@@ -233,11 +219,7 @@ export const sessionRelations = relations(session, ({ one }) => ({
 
 // Car Listing relations
 export const carListingRelations = relations(carListing, ({ one, many }) => ({
-  // Ownership & Location Strategy:
-  // - listing.emirate and listing.city are denormalized (copied from owner)
-  // - For full address/coordinates: join with owner (partner or userProfile)
-  // Partner listings → join partner for partner.address, partner.locationLat/Lng
-  // User listings → join user → userProfile for userProfile.locationCity/Emirate/Lat/Lng
+  // Ownership
   partner: one(partner, {
     fields: [carListing.partnerId],
     references: [partner.id],
@@ -247,32 +229,23 @@ export const carListingRelations = relations(carListing, ({ one, many }) => ({
     references: [user.id],
   }),
   
-  // Reservation & Sale
-  reservedByUser: one(user, {
-    fields: [carListing.reservedBy],
-    references: [user.id],
-    relationName: 'reservedListings',
-  }),
-  soldToUser: one(user, {
-    fields: [carListing.soldTo],
-    references: [user.id],
-    relationName: 'purchasedListings',
-  }),
-  
-  // Activity
-  priceHistory: many(listingPriceHistory),
-  views: many(listingView),
+  // Activity (most used in V1)
   favorites: many(userFavorite),
+  views: many(listingView),
   
   // Bookings
   bookings: many(booking),
   bookingSlots: many(bookingSlot),
   
   // Messaging
-  conversations: many(conversation), // Conversations about this listing
+  conversations: many(conversation),
   
   // Consignment
-  consignmentLeads: many(consignmentLead), // Consignment leads for this listing
+  consignmentLeads: many(consignmentLead),
+  
+  // ❌ Removed for V1:
+  // - reservedByUser, soldToUser (not implemented)
+  // - priceHistory (tracked without relation)
 }));
 
 // Listing Price History relations
@@ -342,13 +315,7 @@ export const bookingRelations = relations(booking, ({ one }) => ({
   }),
 }));
 
-// User Booking Restriction relations
-export const userBookingRestrictionRelations = relations(userBookingRestriction, ({ one }) => ({
-  user: one(user, {
-    fields: [userBookingRestriction.userId],
-    references: [user.id],
-  }),
-}));
+// ❌ Removed: userBookingRestrictionRelations (table removed)
 
 // Partner Booking Settings relations
 export const partnerBookingSettingsRelations = relations(partnerBookingSettings, ({ one }) => ({
@@ -399,23 +366,6 @@ export const messageRelations = relations(message, ({ one, many }) => ({
     fields: [message.senderId],
     references: [user.id],
   }),
-  replyToMessage: one(message, {
-    fields: [message.replyToMessageId],
-    references: [message.id],
-  }),
-  reactions: many(messageReaction),
-}));
-
-// Message Reaction relations
-export const messageReactionRelations = relations(messageReaction, ({ one }) => ({
-  message: one(message, {
-    fields: [messageReaction.messageId],
-    references: [message.id],
-  }),
-  user: one(user, {
-    fields: [messageReaction.userId],
-    references: [user.id],
-  }),
 }));
 
 // ===== CONSIGNMENT RELATIONS =====
@@ -442,17 +392,16 @@ export const consignmentLeadRelations = relations(consignmentLead, ({ one, many 
     fields: [consignmentLead.listingId],
     references: [carListing.id],
   }),
-  activities: many(consignmentLeadActivity),
 }));
 
-// Consignment Lead Activity relations
-export const consignmentLeadActivityRelations = relations(consignmentLeadActivity, ({ one }) => ({
-  lead: one(consignmentLead, {
-    fields: [consignmentLeadActivity.leadId],
-    references: [consignmentLead.id],
-  }),
-  user: one(user, {
-    fields: [consignmentLeadActivity.userId],
-    references: [user.id],
-  }),
-}));
+/**
+ * ❌ REMOVED RELATIONS:
+ * - userBookingRestriction (table removed - simplified to app logic)
+ * - messageReaction (table removed - not needed for V1)
+ * - consignmentLeadActivity (table removed - use main auditLog)
+ * - User.bookingRestriction
+ * - User.messageReactions
+ * - User.consignmentActivities
+ * - Message.replyToMessage
+ * - Message.reactions
+ */

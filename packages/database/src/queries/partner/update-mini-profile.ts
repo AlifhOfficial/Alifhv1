@@ -103,14 +103,6 @@ export async function updatePartnerMiniProfile(
       platformRating: partner.platformRating,
       platformReviewCount: partner.platformReviewCount,
       
-      // Inventory
-      totalInventory: partner.totalInventory,
-      activeListings: partner.activeListings,
-      
-      // Response Metrics
-      avgResponseTime: partner.avgResponseTime,
-      responseRate: partner.responseRate,
-      
       // Trust & Tags
       isVerified: partner.isVerified,
       badges: partner.badges,

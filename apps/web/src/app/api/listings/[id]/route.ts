@@ -111,14 +111,6 @@ export async function GET(
         viewCount: schema.carListing.viewCount,
         favouriteCount: schema.carListing.favouriteCount,
         superlikeCount: schema.carListing.superlikeCount,
-        shareCount: schema.carListing.shareCount,
-        inquiryCount: schema.carListing.inquiryCount,
-        bookingCount: schema.carListing.bookingCount,
-        callCount: schema.carListing.callCount,
-        whatsappCount: schema.carListing.whatsappCount,
-        leadQuality: schema.carListing.leadQuality,
-        conversionRate: schema.carListing.conversionRate,
-        avgTimeToSale: schema.carListing.avgTimeToSale,
         slug: schema.carListing.slug,
         metaTitle: schema.carListing.metaTitle,
         metaDescription: schema.carListing.metaDescription,
@@ -142,7 +134,6 @@ export async function GET(
         partnerCity: schema.partner.city,
         partnerRating: schema.partner.platformRating,
         partnerReviewCount: schema.partner.platformReviewCount,
-        partnerActiveListings: schema.partner.activeListings,
       })
       .from(schema.carListing)
       .leftJoin(schema.partner, eq(schema.carListing.partnerId, schema.partner.id))

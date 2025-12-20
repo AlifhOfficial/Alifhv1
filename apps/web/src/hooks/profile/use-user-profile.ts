@@ -31,7 +31,9 @@ export interface UserProfile {
   badges?: string[];
   inventoryCount?: number;
   rating?: number;
-  avgResponseTime?: number;
+  
+  // ❌ avgResponseTime removed from user profile (only for partners)
+  
   memberSince?: Date | string;
   status?: string;
   createdAt?: Date | string;

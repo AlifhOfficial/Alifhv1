@@ -198,6 +198,7 @@ export function PartnerProfileView({ partnerId }: PartnerProfileViewProps) {
         {/* Header */}
         <div className="mb-6 pb-6 border-b border-border">
           <div className="flex items-center justify-between mb-4">
+            {/* ❌ Removed props: totalInventory, avgResponseTime, responseRate */}
             <PartnerProfileHeader
               brandName={profile.brandName}
               companyNameLegal={profile.companyNameLegal}
@@ -208,9 +209,6 @@ export function PartnerProfileView({ partnerId }: PartnerProfileViewProps) {
               googleReviewCount={profile.googleReviewCount}
               platformRating={profile.platformRating}
               platformReviewCount={profile.platformReviewCount}
-              totalInventory={profile.totalInventory}
-              avgResponseTime={profile.avgResponseTime}
-              responseRate={profile.responseRate}
             />
 
             <div className="flex items-center gap-3">
@@ -225,16 +223,14 @@ export function PartnerProfileView({ partnerId }: PartnerProfileViewProps) {
         </div>
 
         {/* Stats Grid */}
+        {/* ❌ Removed props: totalInventory, avgResponseTime, responseRate */}
         <div className="mb-12 pb-6 border-b border-border">
           <PartnerProfileStats
             googleRating={profile.googleRating}
             googleReviewCount={profile.googleReviewCount}
             platformRating={profile.platformRating}
             platformReviewCount={profile.platformReviewCount}
-            totalInventory={profile.totalInventory}
             experienceYears={profile.experienceYears}
-            avgResponseTime={profile.avgResponseTime}
-            responseRate={profile.responseRate}
             tier={profile.tier}
           />
         </div>

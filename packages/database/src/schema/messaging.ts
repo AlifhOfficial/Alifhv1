@@ -1,32 +1,3 @@
-/**
- * Messaging Schema
- * 
- * ===== ARCHITECTURE =====
- * Real-time messaging system for:
- * - Buyers ↔ Partners (inquiries about listings)
- * - Buyers ↔ Sellers (P2P negotiations)
- * - Partners ↔ Users (consignment leads)
- * - System notifications (automated messages)
- * 
- * ===== KEY FEATURES =====
- * - Conversation-based messaging (like WhatsApp/Messenger)
- * - Multi-participant support
- * - Unread count tracking per participant
- * - Media sharing (images, documents, voice notes)
- * - Read receipts
- * - Context linking (conversations about specific listings)
- * - Typing indicators (handled client-side with websockets)
- * 
- * ===== MESSAGE FLOW =====
- * User clicks "Message" on listing → Creates/Opens Conversation
- *                                   ↓
- *                        Conversation with 2+ participants
- *                                   ↓
- *                           Messages sent back/forth
- *                                   ↓
- *                    Unread counts update, notifications sent
- */
-
 import {
   pgTable,
   text,
@@ -96,12 +67,11 @@ export const conversation = pgTable('conversation', {
   updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
   closedAt: timestamp('closed_at'),
 }, (table) => [
+  // Essential query patterns only
   index('conversation_lastMessageAt_idx').on(table.lastMessageAt),
   index('conversation_listingId_idx').on(table.listingId),
   index('conversation_partnerId_idx').on(table.partnerId),
-  index('conversation_status_idx').on(table.status),
-  index('conversation_type_idx').on(table.type),
-  index('conversation_lastMessageSenderId_idx').on(table.lastMessageSenderId),
+  // ❌ Removed: status, type, lastMessageSenderId (low usage in V1)
 ]);
 
 /**
@@ -136,10 +106,9 @@ export const conversationParticipant = pgTable('conversation_participant', {
 }, (table) => [
   index('conversation_participant_conversationId_idx').on(table.conversationId),
   index('conversation_participant_userId_idx').on(table.userId),
-  index('conversation_participant_unreadCount_idx').on(table.unreadCount),
   index('conversation_participant_userId_unreadCount_idx').on(table.userId, table.unreadCount),
-  index('conversation_participant_isArchived_idx').on(table.isArchived),
   unique('conversation_participant_conversationId_userId_unique').on(table.conversationId, table.userId),
+  // ❌ Removed: unreadCount, isArchived (standalone indexes not useful)
 ]);
 
 /**
@@ -164,26 +133,6 @@ export const message = pgTable('message', {
     height?: number;
   }>(),
   
-  // Rich Content (optional - for future features)
-  richContent: jsonb('rich_content').$type<{
-    linkPreview?: {
-      url: string;
-      title?: string;
-      description?: string;
-      image?: string;
-    };
-    location?: {
-      lat: number;
-      lng: number;
-      address?: string;
-    };
-    quotedMessage?: {
-      id: string;
-      text?: string;
-      senderName: string;
-    };
-  }>(),
-  
   // System Message (automated messages)
   isSystemMessage: boolean('is_system_message').default(false).notNull(),
   systemMessageType: text('system_message_type'), // 'booking_confirmed', 'listing_sold', etc.
@@ -192,18 +141,12 @@ export const message = pgTable('message', {
   deliveredAt: timestamp('delivered_at'),
   readAt: timestamp('read_at'),
   
-  // Read By (for group conversations - future)
-  readBy: jsonb('read_by').$type<string[]>().default([]), // Array of user IDs who read this
-  
   // Editing & Deletion
   isEdited: boolean('is_edited').default(false).notNull(),
   editedAt: timestamp('edited_at'),
   isDeleted: boolean('is_deleted').default(false).notNull(),
   deletedAt: timestamp('deleted_at'),
   deletedBy: text('deleted_by'), // Who deleted it (sender or admin)
-  
-  // Reply/Thread (optional - for threading)
-  replyToMessageId: text('reply_to_message_id').references(() => message.id, { onDelete: 'set null' }),
   
   // Timestamps
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -212,50 +155,28 @@ export const message = pgTable('message', {
   index('message_conversationId_idx').on(table.conversationId),
   index('message_senderId_idx').on(table.senderId),
   index('message_conversationId_createdAt_idx').on(table.conversationId, table.createdAt),
-  index('message_readAt_idx').on(table.readAt),
-  index('message_isSystemMessage_idx').on(table.isSystemMessage),
-  index('message_replyToMessageId_idx').on(table.replyToMessageId),
-  index('message_isDeleted_idx').on(table.isDeleted),
+  // ❌ Removed: readAt, isSystemMessage, isDeleted (not queried separately in V1)
 ]);
 
 /**
- * Message Reactions Table (optional - for future features like emoji reactions)
- */
-export const messageReaction = pgTable('message_reaction', {
-  id: text('id').primaryKey(),
-  messageId: text('message_id').notNull().references(() => message.id, { onDelete: 'cascade' }),
-  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
-  
-  emoji: text('emoji').notNull(), // "👍", "❤️", "😂", etc.
-  
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-}, (table) => [
-  index('message_reaction_messageId_idx').on(table.messageId),
-  index('message_reaction_userId_idx').on(table.userId),
-  unique('message_reaction_messageId_userId_emoji_unique').on(table.messageId, table.userId, table.emoji),
-]);
-
-/**
- * ❌ REMOVED IN V1: Typing Indicators Table
+ * ❌ REMOVED: Message Reactions, Rich Content, Threading
  * 
- * @reason Ephemeral data with high write frequency (every keystroke) belongs in Redis/WebSocket, not PostgreSQL
- * @impact PostgreSQL would bloat with millions of expired records with zero historical value
- * @v1_solution Use client-side WebSocket state management
- * @v2_solution If backend tracking needed, use Redis with 5s TTL
+ * @reason V1 focuses on simple 1:1 messaging
+ * @removed:
+ *   - messageReaction table (emoji reactions)
+ *   - richContent field (link previews, locations, quoted messages)
+ *   - replyToMessageId (threading/replies)
+ *   - readBy array (for group read receipts)
  * 
- * Example V1 implementation (client-side):
- * ```typescript
- * // apps/web/src/hooks/useTypingIndicator.ts
- * socket.emit('typing:start', { conversationId, userId });
- * socket.on('user:typing', ({ userId, isTyping }) => setTypingUsers(...));
- * ```
+ * @v1_solution:
+ *   - Basic text + media messages
+ *   - Simple read receipts (readAt timestamp)
+ *   - Linear conversation history
  * 
- * Example V2 implementation (Redis):
- * ```typescript
- * // Set typing indicator with auto-expire
- * await redis.setex(`typing:${conversationId}:${userId}`, 5, Date.now());
- * 
- * // Get all typing users
- * const keys = await redis.keys(`typing:${conversationId}:*`);
- * ```
+ * @v2_solution:
+ *   Add back when you need:
+ *   - Emoji reactions to messages
+ *   - Rich link previews
+ *   - Threaded conversations
+ *   - Group messaging with individual read status
  */

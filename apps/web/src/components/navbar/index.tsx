@@ -99,7 +99,7 @@ export function Navbar() {
   const [triggerEmailVerification, setTriggerEmailVerification] = useState(false);
   const [triggerGoogleOnboarding, setTriggerGoogleOnboarding] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const closeTimeoutRef = useRef<NodeJS.Timeout>();
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const pathname = usePathname();
   const router = useRouter();

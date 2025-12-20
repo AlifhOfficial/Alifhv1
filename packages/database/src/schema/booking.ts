@@ -1,36 +1,3 @@
-/**
- * Booking Schema
- * 
- * ===== V1 SCOPE =====
- * - Users can book viewing slots for PARTNER listings only
- * - No peer-to-peer (P2P) bookings in v1
- * - No payment involved - completely free booking system
- * - Partners set their available time slots
- * - Users book, reschedule, or cancel with limits to prevent abuse
- * 
- * ===== BOOKING FLOW =====
- * 1. Partner creates availability slots for their listings
- * 2. User browses listing → Sees "Book Viewing" button
- * 3. User selects available slot → Booking created (pending)
- * 4. Partner confirms → Booking becomes active
- * 5. User can reschedule/cancel (with limits)
- * 6. After viewing → Booking marked as completed
- * 
- * ===== ABUSE PREVENTION =====
- * - Max 3 active bookings per user
- * - Max 2 cancellations per user per month
- * - Max 1 reschedule per booking
- * - Automatic no-show tracking
- * - Partner can blacklist problematic users
- * 
- * ===== KEY FEATURES =====
- * - Slot-based availability system
- * - Confirmation tokens for verification
- * - Automated reminders (SMS/Email)
- * - Feedback collection after viewing
- * - Analytics for partners (show-up rate, conversion)
- */
-
 import {
   pgTable,
   text,
@@ -47,29 +14,28 @@ import { user } from './auth';
 import { partner } from './partner';
 import { carListing } from './listing';
 
-// Enums
 export const bookingStatusEnum = pgEnum('booking_status', [
-  'pending',      // Awaiting partner confirmation
-  'confirmed',    // Partner confirmed, slot reserved
-  'completed',    // Viewing happened successfully
-  'cancelled',    // User cancelled
-  'rejected',     // Partner rejected
-  'no_show',      // User didn't show up
-  'expired',      // Booking time passed without action
+  'pending',
+  'confirmed',
+  'completed',
+  'cancelled',
+  'rejected',
+  'no_show',
+  'expired',
 ]);
 
 export const slotStatusEnum = pgEnum('slot_status', [
-  'available',    // Open for booking
-  'booked',       // Someone booked it
-  'blocked',      // Partner blocked this slot
-  'past',         // Slot time has passed
+  'available',
+  'booked',
+  'blocked',
+  'past',
 ]);
 
 export const bookingSourceEnum = pgEnum('booking_source', [
   'web',
   'mobile',
-  'call',         // Booked via phone call
-  'walk_in',      // Direct showroom visit
+  'call',
+  'walk_in',
 ]);
 
 export const cancellationReasonEnum = pgEnum('cancellation_reason', [
@@ -82,11 +48,6 @@ export const cancellationReasonEnum = pgEnum('cancellation_reason', [
   'other',
 ]);
 
-/**
- * Partner Availability Table
- * Partners define their general availability for viewings
- * This is the template for creating slots
- */
 export const partnerAvailability = pgTable('partner_availability', {
   id: text('id').primaryKey(),
   partnerId: text('partner_id').notNull().references(() => partner.id, { onDelete: 'cascade' }),
@@ -285,87 +246,51 @@ export const booking = pgTable('booking', {
 ]);
 
 /**
- * ❌ REMOVED IN V1: Booking Feedback Table (Now embedded as JSONB in booking table)
+ * ❌ REMOVED: User Booking Restrictions Table
  * 
- * @reason 1:1 relationship with booking, rarely queried independently, eliminates unnecessary joins
- * @impact Reduced complexity: 1 less table, 1 less relation, faster queries (no join needed)
- * @v1_solution Embedded as `feedback` JSONB field in booking table
- * @v2_solution If you need to query feedback independently (e.g., "all 5-star feedbacks"), extract to separate table
+ * @reason Over-engineered for V1 - implement as simple app logic instead
+ * @removed: userBookingRestriction table with 15+ fields for abuse tracking
  * 
- * Trade-off analysis:
- * ✅ Pros: Simpler queries, fewer tables, no join overhead, feedback loaded with booking
- * ⚠️ Cons: Can't easily query "all feedback with rating > 4" without scanning bookings
+ * @v1_solution: Simple rules in application code:
+ *   - Max 3 active bookings per user
+ *   - Max 2 cancellations per month
+ *   - Calculate from booking table when user tries to book
  * 
- * V1 is optimized for: "Show feedback for THIS booking" (99% of use cases)
- * V2 would optimize for: "Show all feedback across all bookings" (analytics use case)
+ * @v2_solution: Add back if you need:
+ *   - Complex blacklisting system
+ *   - Reliability scoring
+ *   - Detailed abuse tracking
+ *   - Partner-specific restrictions
  * 
- * Example V1 query:
+ * Example V1 implementation:
  * ```typescript
- * const booking = await db.query.booking.findFirst({
- *   where: eq(booking.id, bookingId),
+ * // Check if user can book
+ * const activeBookings = await db.query.booking.findMany({
+ *   where: and(
+ *     eq(booking.userId, userId),
+ *     inArray(booking.status, ['pending', 'confirmed'])
+ *   )
  * });
- * // booking.feedback contains all feedback data
- * ```
  * 
- * If V2 needed:
- * ```sql
- * CREATE TABLE booking_feedback (
- *   id TEXT PRIMARY KEY,
- *   booking_id TEXT UNIQUE REFERENCES booking(id),
- *   overall_rating INTEGER NOT NULL,
- *   ...
- * );
- * CREATE INDEX idx_feedback_rating ON booking_feedback(overall_rating);
+ * if (activeBookings.length >= 3) {
+ *   throw new Error('Maximum 3 active bookings allowed');
+ * }
+ * 
+ * // Check cancellations this month
+ * const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+ * const cancellations = await db.query.booking.findMany({
+ *   where: and(
+ *     eq(booking.userId, userId),
+ *     eq(booking.status, 'cancelled'),
+ *     gte(booking.cancelledAt, thirtyDaysAgo)
+ *   )
+ * });
+ * 
+ * if (cancellations.length >= 2) {
+ *   throw new Error('Maximum 2 cancellations per month');
+ * }
  * ```
  */
-
-/**
- * User Booking Restrictions Table
- * Track and enforce booking limits to prevent abuse
- */
-export const userBookingRestriction = pgTable('user_booking_restriction', {
-  id: text('id').primaryKey(),
-  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }).unique(),
-  
-  // Current Month Tracking (rolling 30 days)
-  currentMonthCancellations: integer('current_month_cancellations').default(0).notNull(),
-  currentMonthNoShows: integer('current_month_no_shows').default(0).notNull(),
-  
-  // Limits
-  maxActiveBookings: integer('max_active_bookings').default(3).notNull(),
-  maxCancellationsPerMonth: integer('max_cancellations_per_month').default(2).notNull(),
-  maxNoShowsAllowed: integer('max_no_shows_allowed').default(3).notNull(), // Lifetime
-  
-  // Current Active Count
-  activeBookingsCount: integer('active_bookings_count').default(0).notNull(),
-  
-  // Lifetime Stats
-  totalBookings: integer('total_bookings').default(0).notNull(),
-  totalCompletedBookings: integer('total_completed_bookings').default(0).notNull(),
-  totalCancellations: integer('total_cancellations').default(0).notNull(),
-  totalNoShows: integer('total_no_shows').default(0).notNull(),
-  
-  // Reliability Score
-  reliabilityScore: doublePrecision('reliability_score').default(100).notNull(), // 0-100
-  
-  // Blacklist/Suspension
-  isBlacklisted: boolean('is_blacklisted').default(false).notNull(),
-  blacklistedAt: timestamp('blacklisted_at'),
-  blacklistReason: text('blacklist_reason'),
-  blacklistedBy: text('blacklisted_by'), // Partner or admin ID
-  suspendedUntil: timestamp('suspended_until'), // Temporary suspension
-  
-  // Last Reset (for monthly counters)
-  lastMonthlyReset: timestamp('last_monthly_reset').defaultNow().notNull(),
-  
-  // Timestamps
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
-}, (table) => [
-  index('user_booking_restriction_userId_idx').on(table.userId),
-  index('user_booking_restriction_isBlacklisted_idx').on(table.isBlacklisted),
-  index('user_booking_restriction_reliabilityScore_idx').on(table.reliabilityScore),
-]);
 
 /**
  * Partner Booking Settings Table

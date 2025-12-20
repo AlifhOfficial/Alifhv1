@@ -260,7 +260,7 @@ export function PartnerProfilePreviewModal({
                   </div>
                 )}
 
-                {/* Inventory */}
+                {/* ❌ Inventory & Metrics removed - calculate on-demand
                 <div className="flex items-center justify-between py-1.5 border-b border-border/40">
                   <span className="text-xs text-muted-foreground">Inventory</span>
                   <span className="text-xs font-semibold">
@@ -268,7 +268,6 @@ export function PartnerProfilePreviewModal({
                   </span>
                 </div>
 
-                {/* Total Sales */}
                 <div className="flex items-center justify-between py-1.5 border-b border-border/40">
                   <span className="text-xs text-muted-foreground">Total Sales</span>
                   <span className="text-xs font-semibold">
@@ -276,7 +275,6 @@ export function PartnerProfilePreviewModal({
                   </span>
                 </div>
 
-                {/* Response Time */}
                 <div className="flex items-center justify-between py-1.5 border-b border-border/40">
                   <span className="text-xs text-muted-foreground">Response Time</span>
                   <span className="text-xs font-semibold">
@@ -284,13 +282,13 @@ export function PartnerProfilePreviewModal({
                   </span>
                 </div>
 
-                {/* Response Rate */}
                 <div className="flex items-center justify-between py-1.5 border-b border-border/40">
                   <span className="text-xs text-muted-foreground">Response Rate</span>
                   <span className="text-xs font-semibold">
                     {partner.responseRate ? `${Math.round(partner.responseRate * 100)}%` : 'N/A'}
                   </span>
                 </div>
+                */}
 
                 {/* Customer Satisfaction */}
                 {partner.platformRating && (

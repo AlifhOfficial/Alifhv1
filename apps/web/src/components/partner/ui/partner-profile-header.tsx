@@ -14,10 +14,10 @@ interface PartnerProfileHeaderProps {
   googleReviewCount: number;
   platformRating?: number | null;
   platformReviewCount: number;
-  totalInventory: number;
-  avgResponseTime?: number | null;
-  responseRate?: number | null;
   experienceYears?: number | null;
+  
+  // ❌ Removed: totalInventory, avgResponseTime, responseRate
+  // Calculate these on-demand when needed
 }
 
 export function PartnerProfileHeader({
@@ -30,9 +30,6 @@ export function PartnerProfileHeader({
   googleReviewCount,
   platformRating,
   platformReviewCount,
-  totalInventory,
-  avgResponseTime,
-  responseRate,
 }: PartnerProfileHeaderProps) {
   return (
     <div className="flex-1 min-w-0 space-y-2">
@@ -73,14 +70,11 @@ export function PartnerProfileStats({
   googleReviewCount,
   platformRating,
   platformReviewCount,
-  totalInventory,
-  avgResponseTime,
-  responseRate,
   experienceYears,
   tier,
-}: Pick<PartnerProfileHeaderProps, 'googleRating' | 'googleReviewCount' | 'platformRating' | 'platformReviewCount' | 'totalInventory' | 'avgResponseTime' | 'responseRate' | 'experienceYears' | 'tier'>) {
+}: Pick<PartnerProfileHeaderProps, 'googleRating' | 'googleReviewCount' | 'platformRating' | 'platformReviewCount' | 'experienceYears' | 'tier'>) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
       <div>
         <p className="text-xs font-medium text-muted-foreground mb-1">Google Rating</p>
         <div className="flex items-center gap-1.5">
@@ -112,24 +106,15 @@ export function PartnerProfileStats({
       </div>
 
       <div>
-        <p className="text-xs font-medium text-muted-foreground mb-1">Total Inventory</p>
-        <p className="text-xl font-semibold tracking-tight">{totalInventory}</p>
-      </div>
-
-      <div>
         <p className="text-xs font-medium text-muted-foreground mb-1">Experience</p>
         <p className="text-xl font-semibold tracking-tight">{experienceYears ? `${experienceYears}+ yrs` : '—'}</p>
       </div>
 
-      <div>
-        <p className="text-xs font-medium text-muted-foreground mb-1">Response Time</p>
-        <p className="text-xl font-semibold tracking-tight">{avgResponseTime ? `${avgResponseTime} min` : '—'}</p>
-      </div>
-
-      <div>
-        <p className="text-xs font-medium text-muted-foreground mb-1">Response Rate</p>
-        <p className="text-xl font-semibold tracking-tight">{responseRate ? `${responseRate.toFixed(0)}%` : '—'}</p>
-      </div>
+      {/* ❌ Removed stats (calculate on-demand):
+          - Total Inventory
+          - Response Time
+          - Response Rate
+      */}
     </div>
   );
 }

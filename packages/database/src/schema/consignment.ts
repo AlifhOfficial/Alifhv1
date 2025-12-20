@@ -1,28 +1,3 @@
-/**
- * Consignment Schema
- * 
- * ===== WHAT IS CONSIGNMENT MODE? =====
- * Users can toggle "Open for Consignment" in their profile.
- * When enabled + they post a listing that matches a partner's filters:
- * → That listing appears in the partner's portal as a potential lead
- * → Partner can reach out to the user about consigning their car
- * 
- * ===== KEY POINTS =====
- * - Only applies to USER listings (not partner-to-partner)
- * - Partners set filters for cars they're interested in
- * - System automatically matches user listings to interested partners
- * - Partners see these as "Consignment Leads" in their dashboard
- * - No automated transactions - just lead generation
- * 
- * ===== FLOW =====
- * 1. Partner sets consignment preferences (make, model, price range, etc.)
- * 2. User enables consignment mode in profile
- * 3. User posts a listing → System checks partner filters
- * 4. If match → Creates ConsignmentLead record
- * 5. Partner sees lead in dashboard → Can contact user
- * 6. Partner + User negotiate outside platform
- */
-
 import {
   pgTable,
   text,
@@ -49,12 +24,6 @@ export const consignmentLeadStatusEnum = pgEnum('consignment_lead_status', [
   'rejected',         // Partner not interested OR user declined
   'expired',          // Lead expired (user sold car or removed listing)
   'lost',             // User chose another partner
-]);
-
-export const consignmentFilterMatchTypeEnum = pgEnum('consignment_filter_match_type', [
-  'exact',            // Exact match on all criteria
-  'partial',          // Matches some criteria
-  'broad',            // Loose match
 ]);
 
 /**
@@ -131,24 +100,11 @@ export const consignmentLead = pgTable('consignment_lead', {
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }), // Listing owner
   listingId: text('listing_id').notNull().references(() => carListing.id, { onDelete: 'cascade' }),
   
-  // Match Information
+  // Match Information (simplified for V1)
   status: consignmentLeadStatusEnum('status').default('new').notNull(),
-  matchType: consignmentFilterMatchTypeEnum('match_type').default('exact').notNull(),
-  matchScore: integer('match_score').default(0).notNull(), // 0-100: How well it matches criteria
   
-  // Matched Criteria (what filters matched this listing)
-  matchedCriteria: jsonb('matched_criteria').$type<{
-    make?: boolean;
-    model?: boolean;
-    bodyType?: boolean;
-    fuelType?: boolean;
-    yearRange?: boolean;
-    priceRange?: boolean;
-    mileage?: boolean;
-    emirate?: boolean;
-    specs?: boolean;
-    features?: string[]; // Which features matched
-  }>().default({}),
+  // Simplified matching - just show all matches, let partner filter manually
+  // V2 can add: matchType, matchScore, matchedCriteria if needed
   
   // Partner Actions
   viewedAt: timestamp('viewed_at'),
@@ -195,9 +151,9 @@ export const consignmentLead = pgTable('consignment_lead', {
   followUpAt: timestamp('follow_up_at'),
   followUpCount: integer('follow_up_count').default(0).notNull(),
   
-  // Analytics
-  timeToContact: integer('time_to_contact'), // Minutes from created to contacted
-  timeToAccept: integer('time_to_accept'), // Minutes from created to accepted
+  // Performance tracking removed - calculate when needed:
+  // - timeToContact → Calculate: contactedAt - createdAt
+  // - timeToAccept → Calculate: acceptedAt - createdAt
   
   // Timestamps
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -214,7 +170,6 @@ export const consignmentLead = pgTable('consignment_lead', {
   
   // Dashboard sorting
   index('consignment_lead_partnerId_createdAt_idx').on(table.partnerId, table.createdAt),
-  index('consignment_lead_matchScore_idx').on(table.matchScore),
   index('consignment_lead_isPriority_idx').on(table.isPriority),
   
   // Analytics
@@ -229,29 +184,28 @@ export const consignmentLead = pgTable('consignment_lead', {
 ]);
 
 /**
- * Consignment Lead Activity Log
- * Tracks all actions on a consignment lead for transparency
+ * ❌ REMOVED: Consignment Lead Activity, Match Scoring, Filter Match Types
+ * 
+ * @reason V1 keeps consignment simple - show leads, let partners contact users
+ * @removed:
+ *   - consignmentLeadActivity table (detailed audit trail)
+ *   - matchScore, matchType, matchedCriteria (complex matching algorithm)
+ *   - consignmentFilterMatchTypeEnum (exact/partial/broad matching)
+ *   - timeToContact, timeToAccept (analytics metrics)
+ * 
+ * @v1_solution:
+ *   - Partner sets simple filters (makes, price range, year)
+ *   - System shows ALL matching leads
+ *   - Partner manually reviews and contacts
+ *   - Use main auditLog for critical actions
+ * 
+ * @v2_solution:
+ *   Add back when you need:
+ *   - Complex matching algorithms with scores
+ *   - Detailed activity tracking per lead
+ *   - Advanced analytics on lead conversion
+ *   - AI-powered lead quality scoring
  */
-export const consignmentLeadActivity = pgTable('consignment_lead_activity', {
-  id: text('id').primaryKey(),
-  leadId: text('lead_id').notNull().references(() => consignmentLead.id, { onDelete: 'cascade' }),
-  
-  // Who did what
-  userId: text('user_id').references(() => user.id, { onDelete: 'set null' }), // Can be partner staff
-  action: text('action').notNull(), // 'viewed', 'contacted', 'offered', 'accepted', 'rejected'
-  
-  // Details
-  details: jsonb('details').$type<Record<string, any>>(),
-  notes: text('notes'),
-  
-  // Timestamp
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-}, (table) => [
-  index('consignment_lead_activity_leadId_idx').on(table.leadId),
-  index('consignment_lead_activity_userId_idx').on(table.userId),
-  index('consignment_lead_activity_action_idx').on(table.action),
-  index('consignment_lead_activity_createdAt_idx').on(table.createdAt),
-]);
 
 /**
  * ❌ REMOVED IN V1: Consignment Stats Table

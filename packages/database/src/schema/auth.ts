@@ -1,18 +1,6 @@
-/**
- * Auth Schema
- * 
- * Better Auth tables with admin plugin support
- */
-
 import { pgTable, text, timestamp, boolean, index, pgEnum } from 'drizzle-orm/pg-core';
 
-// Platform-wide role enum
-// Note: Partner membership is handled via partner_staff table, not User.role
-export const platformRoleEnum = pgEnum('platform_role', [
-  'user',        // Regular marketplace user (everyone starts here)
-  'admin',       // Alifh platform admin
-  'super_admin'  // Super administrator with full access
-]);
+export const platformRoleEnum = pgEnum('platform_role', ['user', 'admin', 'super_admin']);
 
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
