@@ -113,6 +113,16 @@ export const partner = pgTable('partner', {
   lastAuditAt: timestamp('last_audit_at'),
   nextAuditAt: timestamp('next_audit_at'),
   complianceScore: integer('compliance_score'),
+  
+  // Analytics Cache (updated via background jobs)
+  activeListingsCount: integer('active_listings_count').default(0).notNull(),
+  totalInventoryValue: integer('total_inventory_value').default(0).notNull(),
+  avgListingPrice: integer('avg_listing_price').default(0).notNull(),
+  soldThisMonth: integer('sold_this_month').default(0).notNull(),
+  revenueThisMonth: integer('revenue_this_month').default(0).notNull(),
+  conversionRate: doublePrecision('conversion_rate').default(0).notNull(),
+  analyticsLastUpdated: timestamp('analytics_last_updated'),
+  
   submittedAt: timestamp('submitted_at'),
   approvedAt: timestamp('approved_at'),
   approvedBy: text('approved_by').references(() => user.id, { onDelete: 'set null' }),
@@ -144,6 +154,7 @@ export const partnerStaff = pgTable('partner_staff', {
   partnerId: text('partner_id').notNull().references(() => partner.id, { onDelete: 'cascade' }),
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   role: staffRoleEnum('role').notNull(),
+  isOwner: boolean('is_owner').default(false).notNull(),
   title: text('title'),
   department: text('department'),
   isPrimaryContact: boolean('is_primary_contact').default(false).notNull(),

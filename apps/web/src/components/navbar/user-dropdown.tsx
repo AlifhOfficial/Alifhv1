@@ -1,13 +1,8 @@
 "use client";
 
 import { 
-  User, 
-  LogOut, 
-  Settings,
-  Shield,
-  Briefcase,
-  Users,
-  LayoutGrid
+  User,
+  LogOut
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -48,7 +43,6 @@ interface ProfileMenuProps {
 interface DashboardItem {
   name: string;
   path: string;
-  icon: React.ComponentType<{ className?: string }>;
 }
 
 export function ProfileMenu({
@@ -63,7 +57,6 @@ export function ProfileMenu({
   const router = useRouter();
   const [hasImageError, setHasImageError] = useState(false);
 
-  // Avatar comes from session now - no separate fetch needed
   const avatarSrc = useMemo(() => {
     return user?.avatarUrl ?? user?.image ?? undefined;
   }, [user?.avatarUrl, user?.image]);
@@ -73,7 +66,6 @@ export function ProfileMenu({
   }, [avatarSrc]);
 
   if (user) {
-    // Get name from session data (includes firstName/lastName if available)
     const firstName = user.firstName?.trim() ?? user.name?.split(' ')[0] ?? 'User';
     const lastName = user.lastName?.trim() ?? '';
 
@@ -85,58 +77,25 @@ export function ProfileMenu({
       const dashboards: DashboardItem[] = [];
       const access = getUserPortalAccess(userData as any);
       
-      // Platform Admin (super_admin or admin) - Admin Dashboard + User Dashboard
       if (access.admin) {
-        dashboards.push({ 
-          name: 'Platform Admin', 
-          path: '/admin-dashboard',
-          icon: Shield
-        });
-        dashboards.push({ 
-          name: 'My Dashboard', 
-          path: '/user-dashboard',
-          icon: LayoutGrid
-        });
+        dashboards.push({ name: 'Platform Admin', path: '/admin-dashboard' });
+        dashboards.push({ name: 'My Dashboard', path: '/user-dashboard' });
         return dashboards;
       }
       
-      // Dealer Owner (partnerRole === 'owner') - Partner Dashboard + User Dashboard
       if (access.partnerOwner) {
-        dashboards.push({ 
-          name: 'Dealership Manager', 
-          path: '/partner-dashboard',
-          icon: Briefcase
-        });
-        dashboards.push({ 
-          name: 'My Dashboard', 
-          path: '/user-dashboard',
-          icon: LayoutGrid
-        });
+        dashboards.push({ name: 'Dealership Manager', path: '/partner-dashboard' });
+        dashboards.push({ name: 'My Dashboard', path: '/user-dashboard' });
         return dashboards;
       }
       
-      // Dealer Staff (has partner access but NOT owner) - Staff Dashboard + User Dashboard
       if (access.partnerStaff) {
-        dashboards.push({ 
-          name: 'Staff Dashboard', 
-          path: '/staff-dashboard',
-          icon: Users
-        });
-        dashboards.push({ 
-          name: 'My Dashboard', 
-          path: '/user-dashboard',
-          icon: LayoutGrid
-        });
+        dashboards.push({ name: 'Staff Dashboard', path: '/staff-dashboard' });
+        dashboards.push({ name: 'My Dashboard', path: '/user-dashboard' });
         return dashboards;
       }
       
-      // Regular Users/Customers - ONLY User Dashboard
-      dashboards.push({ 
-        name: 'My Dashboard', 
-        path: '/user-dashboard',
-        icon: LayoutGrid
-      });
-      
+      dashboards.push({ name: 'My Dashboard', path: '/user-dashboard' });
       return dashboards;
     };
 
@@ -162,7 +121,7 @@ export function ProfileMenu({
     };
     
     return (
-      <div className="relative flex items-center gap-2" data-menu-container>
+      <div className="relative flex items-center gap-2.5" data-menu-container>
         <span className="text-sm text-muted-foreground hidden sm:inline">
           {firstName}
         </span>
@@ -172,7 +131,7 @@ export function ProfileMenu({
             e.stopPropagation();
             onToggleMenu(e);
           }}
-          className="relative w-8 h-8 rounded-full bg-muted hover:bg-muted/80 transition-colors overflow-hidden border border-border/50"
+          className="relative w-8 h-8 rounded-full bg-muted hover:bg-muted/80 transition-colors overflow-hidden border border-border/40"
           aria-label="Profile menu"
           data-menu-trigger
         >
@@ -188,7 +147,7 @@ export function ProfileMenu({
               priority={false}
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-foreground text-xs font-medium">
+            <div className="w-full h-full flex items-center justify-center text-foreground text-xs">
               {getInitials()}
             </div>
           )}
@@ -196,68 +155,54 @@ export function ProfileMenu({
 
         {showMenu && (
           <div 
-            className="absolute right-0 top-full mt-2 w-56 bg-card border border-border/40 rounded-lg shadow-lg z-50 overflow-hidden"
+            className="absolute right-0 top-full mt-2 w-60 bg-card/95 backdrop-blur-xl border border-border/50 rounded-2xl shadow-2xl shadow-black/10 z-50 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
             data-menu-container
           >
-            {/* User Info */}
-            <div className="p-4 border-b border-border/20">
-              <p className="text-sm font-medium text-foreground">{displayName}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{user.email}</p>
+            {/* User Header */}
+            <div className="px-4 py-3.5 border-b border-border/30">
+              <p className="text-sm font-medium text-foreground truncate">{displayName}</p>
+              <p className="text-xs text-muted-foreground/60 truncate mt-0.5">{user.email}</p>
             </div>
 
-            {/* Dashboards */}
+            {/* Menu Items */}
             <div className="py-2">
-              {availableDashboards.map((dashboard) => {
-                const Icon = dashboard.icon;
-                return (
-                  <button
-                    key={dashboard.path}
-                    onClick={() => handleDashboardNavigation(dashboard.path)}
-                    className="w-full text-left px-4 py-2.5 text-sm text-foreground hover:bg-muted/20 transition-colors flex items-center gap-3"
-                  >
-                    <Icon className="w-4 h-4 text-muted-foreground" />
-                    <span>{dashboard.name}</span>
-                  </button>
-                );
-              })}
-            </div>
+              {/* Dashboards Section */}
+              {availableDashboards.map((dashboard, index) => (
+                <button
+                  key={dashboard.path}
+                  onClick={() => handleDashboardNavigation(dashboard.path)}
+                  className="w-full text-left px-4 py-2.5 text-[15px] text-foreground hover:bg-muted/50 active:bg-muted/70 transition-all"
+                >
+                  {dashboard.name}
+                </button>
+              ))}
               
-            {/* Divider */}
-            <div className="border-t border-border/20" />
-            
-            {/* Actions */}
-            <div className="py-2">
+              {/* Divider */}
+              <div className="my-2 mx-4 border-t border-border/30" />
+              
+              {/* Account Actions */}
               <button
                 onClick={() => {
                   router.push('/user-dashboard/profile');
                   onToggleMenu();
                 }}
-                className="w-full text-left px-4 py-2.5 text-sm text-foreground hover:bg-muted/20 transition-colors flex items-center gap-3"
+                className="w-full text-left px-4 py-2.5 text-[15px] text-foreground hover:bg-muted/50 active:bg-muted/70 transition-all flex items-center gap-3"
               >
-                <User className="w-4 h-4 text-muted-foreground" />
-                <span>Profile</span>
+                <User size={16} strokeWidth={1.5} className="text-muted-foreground" />
+                Profile
               </button>
-              <button
-                onClick={onToggleMenu}
-                className="w-full text-left px-4 py-2.5 text-sm text-foreground hover:bg-muted/20 transition-colors flex items-center gap-3"
-              >
-                <Settings className="w-4 h-4 text-muted-foreground" />
-                <span>Settings</span>
-              </button>
-            </div>
-            
-            {/* Divider */}
-            <div className="border-t border-border/20" />
-            
-            {/* Sign Out */}
-            <div className="py-2">
+              
+              {/* Divider */}
+              <div className="my-2 mx-4 border-t border-border/30" />
+              
+              {/* Sign Out */}
               <button
                 onClick={onSignOut}
-                className="w-full text-left px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10 transition-colors flex items-center gap-3"
+                className="w-full text-left px-4 py-2.5 text-[15px] text-destructive hover:bg-destructive/10 active:bg-destructive/20 transition-all flex items-center gap-3"
               >
-                <LogOut className="w-4 h-4" />
-                <span>Sign out</span>
+                <LogOut size={16} strokeWidth={1.5} />
+                Sign out
               </button>
             </div>
           </div>
@@ -273,31 +218,31 @@ export function ProfileMenu({
           e.stopPropagation();
           onToggleMenu(e);
         }}
-        className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20"
+        className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md"
         aria-label="Profile menu"
         data-menu-trigger
       >
-        <User className="w-4 h-4" />
+        <User size={16} />
       </button>
 
       {showMenu && (
         <div 
-          className="absolute right-0 top-full mt-2 w-40 bg-card border border-border/40 rounded-lg shadow-lg z-50 overflow-hidden"
+          className="absolute right-0 top-full mt-2 w-44 bg-card border border-border/40 rounded-lg shadow-lg z-50"
           onClick={(e) => e.stopPropagation()}
           data-menu-container
         >
-          <div className="py-2">
+          <div className="p-1.5">
             <button
               onClick={onSignIn}
-              className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted/20 transition-colors"
+              className="w-full text-left px-2.5 py-1.5 text-sm text-foreground hover:bg-muted/40 transition-colors rounded"
             >
               Sign in
             </button>
             <button
               onClick={onSignUp}
-              className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted/20 transition-colors"
+              className="w-full text-left px-2.5 py-1.5 text-sm text-foreground hover:bg-muted/40 transition-colors rounded"
             >
-              Sign up
+              Create account
             </button>
           </div>
         </div>

@@ -39,15 +39,15 @@ export function MegaDropdown({ activeDropdown, navItems, onClose, onMouseEnter, 
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <div className="bg-background/95 backdrop-blur-md border-b border-border/40 shadow-lg">
+      <div className="bg-background/95 backdrop-blur-xl border-b border-border/50 shadow-2xl shadow-black/5">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {activeItem.submenu.map((section) => (
               <div key={section.title}>
-                <h3 className="text-sm font-medium text-foreground mb-4">
+                <h3 className="text-[13px] font-semibold tracking-wide text-foreground/90 mb-4 uppercase">
                   {section.title}
                 </h3>
-                <div className="space-y-3">
+                <div className="space-y-3.5">
                   {section.items.map((item) => (
                     <Link
                       key={item.href}
@@ -55,11 +55,11 @@ export function MegaDropdown({ activeDropdown, navItems, onClose, onMouseEnter, 
                       onClick={onClose}
                       className="block group"
                     >
-                      <div className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+                      <div className="text-[15px] font-normal text-foreground/90 group-hover:text-foreground transition-colors">
                         {item.label}
                       </div>
                       {item.description && (
-                        <div className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                        <div className="text-[13px] text-muted-foreground/60 mt-1 leading-relaxed font-light">
                           {item.description}
                         </div>
                       )}

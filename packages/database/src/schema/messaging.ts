@@ -49,6 +49,9 @@ export const conversation = pgTable('conversation', {
   type: conversationTypeEnum('type').default('inquiry').notNull(),
   status: conversationStatusEnum('status').default('active').notNull(),
   
+  // Conversation Initiator (who started this conversation)
+  initiatedBy: text('initiated_by').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  
   // Context Links (what is this conversation about?)
   listingId: text('listing_id').references(() => carListing.id, { onDelete: 'set null' }),
   partnerId: text('partner_id').references(() => partner.id, { onDelete: 'set null' }), // If conversation with partner

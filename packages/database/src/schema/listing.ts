@@ -239,6 +239,15 @@ export const carListing = pgTable('car_listing', {
   price: integer('price').notNull(),
   currency: text('currency').default('AED').notNull(),
   isNegotiable: boolean('is_negotiable').default(true).notNull(),
+  
+  // AI Pricing Insights
+  aiEstimatedPrice: integer('ai_estimated_price'),
+  aiPriceMin: integer('ai_price_min'),
+  aiPriceMax: integer('ai_price_max'),
+  aiConfidenceScore: doublePrecision('ai_confidence_score'),
+  aiPriceUpdatedAt: timestamp('ai_price_updated_at'),
+  aiModel: text('ai_model').default('v1'),
+  
   fairValue: integer('fair_value'),
   estimateMin: integer('estimate_min'),
   estimateMax: integer('estimate_max'),
@@ -303,6 +312,11 @@ export const carListing = pgTable('car_listing', {
   viewCount: integer('view_count').default(0).notNull(),
   favouriteCount: integer('favourite_count').default(0).notNull(),
   superlikeCount: integer('superlike_count').default(0).notNull(),
+  
+  // Heat Score (trending/hot cars)
+  heatScore: integer('heat_score').default(0).notNull(),
+  heatScoreUpdatedAt: timestamp('heat_score_updated_at'),
+  
   slug: text('slug').unique(),
   metaTitle: text('meta_title'),
   metaDescription: text('meta_description'),

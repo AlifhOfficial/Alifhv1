@@ -309,11 +309,11 @@ export function Navbar() {
               {/* Theme Toggle */}
               <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md"
+                className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-md"
                 aria-label="Toggle theme"
                 suppressHydrationWarning
               >
-                {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               </button>
 
               {/* Profile/Auth Actions */}

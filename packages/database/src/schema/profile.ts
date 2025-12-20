@@ -12,8 +12,6 @@ import {
 } from 'drizzle-orm/pg-core';
 import { user } from './auth';
 
-export const favoriteTypeEnum = pgEnum('favorite_type', ['favorite', 'superlike']);
-
 export const userProfile = pgTable('user_profile', {
   id: text('id').primaryKey(),
   userId: text('user_id').notNull().unique().references(() => user.id, { onDelete: 'cascade' }),

@@ -4,6 +4,7 @@
  */
 
 import { HeroSection } from '@/components/home/hero-section';
+import { WhySection } from '@/components/home/why-section';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -20,12 +21,11 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <HeroSection />
+      <WhySection />
       
-      {/* Future sections can be added here */}
+      {/* Future sections */}
       {/* <FeaturedListings /> */}
-      {/* <HowItWorks /> */}
-      {/* <PartnerShowcase /> */}
-      {/* <Testimonials /> */}
+      {/* <CTASection /> */}
     </div>
   );
 }

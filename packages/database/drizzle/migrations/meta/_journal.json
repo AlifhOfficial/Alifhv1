@@ -134,6 +134,13 @@
       "when": 1766192066199,
       "tag": "0018_lucky_warhawk",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1766210664727,
+      "tag": "0019_striped_wraith",
+      "breakpoints": true
     }
   ]
 }
