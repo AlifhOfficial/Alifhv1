@@ -261,15 +261,15 @@ function generateComprehensiveListing(
   const exportStatus = getRandomItem(exportStatuses);
   
   // Engine
-  const engineType = fuelType === 'electric' ? 'Electric' : getRandomItem(engineTypes);
+  const engineType = fuelType === 'electric' ? 'electric' : getRandomItem(['inline-3', 'inline-4', 'inline-6', 'v6', 'v8', 'v10', 'v12', 'w12', 'hybrid', 'other']);
   const cylinders = fuelType === 'electric' ? undefined : randomInt(3, 12);
-  const engineSize = fuelType === 'electric' ? undefined : `${(Math.random() * 4 + 1.5).toFixed(1)}L`;
+  const engineSize = fuelType === 'electric' ? undefined : getRandomItem(['1.0L', '1.2L', '1.4L', '1.5L', '1.6L', '1.8L', '2.0L', '2.2L', '2.4L', '2.5L', '2.7L', '3.0L', '3.5L', '3.6L', '3.8L', '4.0L', '4.4L', '5.0L', '5.5L', '6.0L', '6.2L', 'other']);
   
   // Physical
-  const doors = getRandomItem([2, 4, 5]);
-  const seatingCapacity = doors === 2 ? getRandomItem([2, 4]) : getRandomItem([4, 5, 7, 8]);
-  const exteriorColor = getRandomItem(colors);
-  const interiorColor = getRandomItem(interiorColors);
+  const doors = getRandomItem(['2', '4', '5']);
+  const seatingCapacity = doors === '2' ? getRandomItem(['2', '4']) : getRandomItem(['4', '5', '7', '8']);
+  const exteriorColor = getRandomItem(['white', 'black', 'silver', 'grey', 'blue', 'red', 'green', 'brown', 'beige', 'gold', 'orange', 'yellow', 'purple', 'other']);
+  const interiorColor = getRandomItem(['black', 'beige', 'brown', 'tan', 'grey', 'white', 'red', 'burgundy', 'other']);
   
   // Mileage (older cars = more mileage)
   const carAge = 2025 - year;
@@ -326,9 +326,6 @@ function generateComprehensiveListing(
   // Badges and tags
   const listingBadges = getRandomSubarray(badges, 0, 4);
   const listingTags = getRandomSubarray(tags, 1, 5);
-  
-  // Featured listings (20% if black member, 5% otherwise)
-  const isFeatured = getRandomBoolean(isBlackMember ? 0.2 : 0.05);
   
   // Timestamps
   const createdAt = new Date(Date.now() - randomInt(1, 180) * 24 * 60 * 60 * 1000);
@@ -402,7 +399,7 @@ function generateComprehensiveListing(
     engineSize,
     engineType,
     cylinders,
-    power: cylinders ? `${randomInt(150, 800)} HP` : undefined,
+    powerRange: cylinders ? getRandomItem(['100_200', '200_300', '300_400', '400_500', '500_600', '600_700', '700_plus']) : 'under_100',
     torque: cylinders ? `${randomInt(200, 1000)} Nm` : undefined,
     fuelEconomy: `${randomInt(6, 20)} L/100km`,
     
@@ -439,7 +436,7 @@ function generateComprehensiveListing(
     technicalFeatures,
     extras,
     specialNotes,
-    warranty,
+    warrantyType: getRandomItem(['manufacturer', 'extended', 'dealer', 'none', 'other']),
     
     // Status
     status,
@@ -448,7 +445,6 @@ function generateComprehensiveListing(
     // Badges & Tags
     badges: listingBadges,
     tags: listingTags,
-    isFeatured,
     isBlackMember,
     
     // Engagement

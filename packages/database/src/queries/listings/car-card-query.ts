@@ -12,6 +12,9 @@ import { eq } from 'drizzle-orm';
 import { db } from '../../dbclient';
 import { carListing } from '../../schema/listing';
 
+// Re-export car card list query
+export { getListingCards, type CarCardFilters, type CarCardData } from './car-card-list-query';
+
 const LISTING_ID_PREFIX = 'listing_';
 const makeListingId = () => `${LISTING_ID_PREFIX}${createId()}`;
 

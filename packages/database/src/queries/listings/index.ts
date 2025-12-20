@@ -7,4 +7,5 @@
  */
 
 export * from './car-card-query';
+export * from './car-card-list-query';
 export * from './cache-invalidation';

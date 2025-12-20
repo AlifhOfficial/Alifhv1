@@ -31,9 +31,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { db, memoryCache, CacheKeys, CacheTTL } from "@alifh/database";
-import * as schema from "@alifh/database";
-import { eq, and, desc, inArray } from "drizzle-orm";
+import { memoryCache, CacheKeys, CacheTTL, getListingCards } from "@alifh/database";
 
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
@@ -93,94 +91,18 @@ export async function GET(req: NextRequest) {
       return response;
     }
 
-    // ⚡ CACHE MISS: Query database with 2-step fetch optimization
+    // ⚡ CACHE MISS: Query database using query function
     console.log(`[car-card] Cache MISS for ${cacheKey.substring(0, 50)}... - querying DB`);
     const queryStart = performance.now();
 
-    const whereConditions = [] as any[];
-    if (ids?.length) whereConditions.push(inArray(schema.carListing.id, ids));
-    if (partnerId) whereConditions.push(eq(schema.carListing.partnerId, partnerId));
-    if (!partnerId || statusExplicit) whereConditions.push(eq(schema.carListing.status, status as any));
-
-    let listings;
-    
-    // 2-STEP OPTIMIZATION: Only when NOT fetching by specific IDs
-    if (!ids?.length) {
-      // STEP 1: Fast query to get IDs only (index-driven, minimal data transfer)
-      const step1Start = performance.now();
-      const listingIds = await db
-        .select({ id: schema.carListing.id })
-        .from(schema.carListing)
-        .where(and(...whereConditions))
-        .orderBy(desc(schema.carListing.createdAt))
-        .limit(limit)
-        .offset(offset);
-      
-      const step1Time = performance.now() - step1Start;
-      console.log(`[car-card] Step 1 (IDs only): ${step1Time.toFixed(2)}ms - ${listingIds.length} IDs`);
-      
-      if (listingIds.length === 0) {
-        listings = [];
-      } else {
-        // STEP 2: Batch fetch full details for those specific IDs
-        const step2Start = performance.now();
-        const idsToFetch = listingIds.map(l => l.id);
-        listings = await db
-          .select({
-            id: schema.carListing.id,
-            make: schema.carListing.make,
-            model: schema.carListing.model,
-            year: schema.carListing.year,
-            trim: schema.carListing.trim,
-            price: schema.carListing.price,
-            mileage: schema.carListing.mileage,
-            emirate: schema.carListing.emirate,
-            specs: schema.carListing.specs,
-            thumbnail: schema.carListing.thumbnail,
-            // images: schema.carListing.images, // Removed: Lazy-load on card interaction to reduce payload
-            qiScore: schema.carListing.qiScore,
-            isBlackMember: schema.carListing.isBlackMember,
-            status: schema.carListing.status,
-            partnerName: schema.carListing.partnerBrandName,
-            partnerVerified: schema.carListing.partnerVerified,
-          })
-          .from(schema.carListing)
-          .where(inArray(schema.carListing.id, idsToFetch));
-        
-        // Restore original sort order from step 1
-        const idOrder = new Map(idsToFetch.map((id, idx) => [id, idx]));
-        listings.sort((a, b) => (idOrder.get(a.id) ?? 0) - (idOrder.get(b.id) ?? 0));
-        
-        const step2Time = performance.now() - step2Start;
-        console.log(`[car-card] Step 2 (full details): ${step2Time.toFixed(2)}ms`);
-      }
-    } else {
-      // Single query when fetching by specific IDs (favorites/superlikes)
-      listings = await db
-        .select({
-          id: schema.carListing.id,
-          make: schema.carListing.make,
-          model: schema.carListing.model,
-          year: schema.carListing.year,
-          trim: schema.carListing.trim,
-          price: schema.carListing.price,
-          mileage: schema.carListing.mileage,
-          emirate: schema.carListing.emirate,
-          specs: schema.carListing.specs,
-          thumbnail: schema.carListing.thumbnail,
-          // images: schema.carListing.images, // Removed: Lazy-load on card interaction to reduce payload
-          qiScore: schema.carListing.qiScore,
-          isBlackMember: schema.carListing.isBlackMember,
-          status: schema.carListing.status,
-          partnerName: schema.carListing.partnerBrandName,
-          partnerVerified: schema.carListing.partnerVerified,
-        })
-        .from(schema.carListing)
-        .where(and(...whereConditions))
-        .orderBy(desc(schema.carListing.createdAt))
-        .limit(limit)
-        .offset(offset);
-    }
+    // Use exported query function - handles 2-step optimization internally
+    const listings = await getListingCards({
+      ids: ids || undefined,
+      status,
+      partnerId: partnerId || undefined,
+      limit,
+      offset,
+    });
     
     const queryTime = performance.now() - queryStart;
     console.log(`[car-card] Total DB time: ${queryTime.toFixed(2)}ms - ${listings.length} results`);

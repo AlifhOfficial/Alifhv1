@@ -135,13 +135,8 @@ export default function SuperlikesPage() {
               <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
                 {superlikeIds.map((listingId) => {
                   const listing = listingsById.get(listingId);
-                  if (!listing) {
-                    return (
-                      <div key={listingId} className="rounded-lg border border-border bg-card p-4">
-                        <p className="text-sm text-muted-foreground">Listing {listingId} unavailable.</p>
-                      </div>
-                    );
-                  }
+                  if (!listing) return null;
+                  
                   return (
                     <CarCard
                       key={listingId}
