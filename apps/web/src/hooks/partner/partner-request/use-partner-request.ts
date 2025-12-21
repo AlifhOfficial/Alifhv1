@@ -1,19 +1,16 @@
 /**
  * Partner Request Hook - User Operations
  * 
- * Handles partner application workflow for users
- * - Submit new applications
+ * Simplified partner application workflow for logged-in users:
+ * - Submit new applications (required fields only)
  * - Check application status
- * - Update pending applications
- * - Cancel applications
- * - Validate before submission
+ * - Cancel pending applications
  * 
  * Usage:
  * ```tsx
  * const { request, isLoading } = usePartnerRequest();
  * const { submit, isSubmitting } = usePartnerRequestSubmit();
- * const { update, isUpdating } = usePartnerRequestUpdate();
- * const { validate } = usePartnerRequestValidate();
+ * const { cancel, isCancelling } = usePartnerRequestCancel();
  * ```
  */
 
@@ -30,20 +27,12 @@ export interface PartnerRequest {
   id: string;
   userId: string;
   companyNameLegal: string;
-  email: string;
-  phone: string;
   tradeLicense: string;
   tradeLicenseExpiry: Date | string;
-  partnerType: 'dealer' | 'showroom' | 'multi_brand' | 'rental' | 'broker' | 'other';
-  vatNumber?: string | null;
-  brandName?: string | null;
-  tradeLicenseDocumentUrl?: string | null;
-  website?: string | null;
-  address?: string | null;
-  emirate?: string | null;
-  description?: string | null;
-  experienceYears?: number | null;
-  specialties?: string[];
+  tradeLicenseDocumentUrl: string;
+  vatNumber: string;
+  partnerType: 'car_dealer' | 'showroom';
+  companySize: 'small' | 'medium' | 'large' | 'enterprise';
   status: 'pending' | 'approved' | 'rejected';
   reviewedBy?: string | null;
   reviewedAt?: Date | string | null;
@@ -56,40 +45,12 @@ export interface PartnerRequest {
 
 export interface CreatePartnerRequestInput {
   companyNameLegal: string;
-  email: string;
-  phone: string;
   tradeLicense: string;
   tradeLicenseExpiry: string; // ISO date string
-  partnerType: 'dealer' | 'showroom' | 'multi_brand' | 'rental' | 'broker' | 'other';
-  vatNumber?: string;
-  brandName?: string;
-  tradeLicenseDocumentUrl?: string;
-  website?: string;
-  address?: string;
-  emirate?: string;
-  description?: string;
-  experienceYears?: number;
-  specialties?: string[];
-}
-
-export interface UpdatePartnerRequestInput {
-  brandName?: string;
-  tradeLicenseDocumentUrl?: string;
-  website?: string;
-  address?: string;
-  emirate?: string;
-  description?: string;
-  experienceYears?: number;
-  specialties?: string[];
-}
-
-export interface ValidationResult {
-  valid: boolean;
-  errors: string[];
-  checks: {
-    hasActiveRequest: boolean;
-    licenseInUse: boolean;
-  };
+  tradeLicenseDocumentUrl: string;
+  vatNumber: string;
+  partnerType: 'car_dealer' | 'showroom';
+  companySize: 'small' | 'medium' | 'large' | 'enterprise';
 }
 
 interface AuthState {
@@ -142,28 +103,6 @@ async function submitPartnerRequestAPI(input: CreatePartnerRequestInput): Promis
   return data.request;
 }
 
-async function updatePartnerRequestAPI(input: UpdatePartnerRequestInput): Promise<PartnerRequest> {
-  const res = await fetch('/api/partners/request', {
-    method: 'PATCH',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
-
-  if (res.status === 401) {
-    const data = await res.json();
-    throw new Error(JSON.stringify({ auth: true, message: data.error || 'Please sign in' }));
-  }
-
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    throw new Error(data.error || 'Failed to update partner request');
-  }
-
-  const data = await res.json();
-  return data.request;
-}
-
 async function cancelPartnerRequestAPI(): Promise<void> {
   const res = await fetch('/api/partners/request', {
     method: 'DELETE',
@@ -179,29 +118,6 @@ async function cancelPartnerRequestAPI(): Promise<void> {
     const data = await res.json().catch(() => ({}));
     throw new Error(data.error || 'Failed to cancel partner request');
   }
-}
-
-async function validatePartnerRequestAPI(
-  tradeLicense: string,
-  checkType: 'user' | 'license' | 'both' = 'both'
-): Promise<ValidationResult> {
-  const res = await fetch('/api/partners/request/validate', {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ tradeLicense, checkType }),
-  });
-
-  if (res.status === 401) {
-    const data = await res.json();
-    throw new Error(JSON.stringify({ auth: true, message: data.error || 'Please sign in' }));
-  }
-
-  if (!res.ok) {
-    throw new Error('Validation failed');
-  }
-
-  return res.json();
 }
 
 // ============================================================================
@@ -254,61 +170,6 @@ export function usePartnerRequestSubmit() {
 }
 
 // ============================================================================
-// Update Partner Request Hook
-// ============================================================================
-
-export function usePartnerRequestUpdate() {
-  const queryClient = useQueryClient();
-  const [authRequired, setAuthRequired] = useState<AuthState>(DEFAULT_AUTH_STATE);
-
-  const mutation = useMutation({
-    mutationFn: (input: UpdatePartnerRequestInput) => updatePartnerRequestAPI(input),
-    onMutate: async (input) => {
-      // Optimistic update
-      await queryClient.cancelQueries({ queryKey: ['partner-request'] });
-      const previous = queryClient.getQueryData<PartnerRequest | null>(['partner-request']);
-
-      if (previous) {
-        queryClient.setQueryData<PartnerRequest>(['partner-request'], {
-          ...previous,
-          ...input,
-          updatedAt: new Date().toISOString(),
-        });
-      }
-
-      return { previous };
-    },
-    onError: (error: Error, _, context) => {
-      // Rollback on error
-      if (context?.previous) {
-        queryClient.setQueryData(['partner-request'], context.previous);
-      }
-
-      try {
-        const parsed = JSON.parse(error.message);
-        if (parsed.auth) {
-          setAuthRequired({ show: true, message: parsed.message });
-        }
-      } catch {}
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['partner-request'] });
-    },
-  });
-
-  return {
-    update: mutation.mutate,
-    isUpdating: mutation.isPending,
-    error: mutation.error,
-    success: mutation.isSuccess,
-    authRequired: authRequired.show,
-    authMessage: authRequired.message,
-    dismissAuth: () => setAuthRequired(DEFAULT_AUTH_STATE),
-    reset: mutation.reset,
-  };
-}
-
-// ============================================================================
 // Cancel Partner Request Hook
 // ============================================================================
 
@@ -345,36 +206,4 @@ export function usePartnerRequestCancel() {
   };
 }
 
-// ============================================================================
-// Validate Partner Request Hook
-// ============================================================================
 
-export function usePartnerRequestValidate() {
-  const [authRequired, setAuthRequired] = useState<AuthState>(DEFAULT_AUTH_STATE);
-
-  const mutation = useMutation({
-    mutationFn: ({ tradeLicense, checkType }: { 
-      tradeLicense: string; 
-      checkType?: 'user' | 'license' | 'both' 
-    }) => validatePartnerRequestAPI(tradeLicense, checkType),
-    onError: (error: Error) => {
-      try {
-        const parsed = JSON.parse(error.message);
-        if (parsed.auth) {
-          setAuthRequired({ show: true, message: parsed.message });
-        }
-      } catch {}
-    },
-  });
-
-  return {
-    validate: mutation.mutate,
-    isValidating: mutation.isPending,
-    validationResult: mutation.data,
-    error: mutation.error,
-    authRequired: authRequired.show,
-    authMessage: authRequired.message,
-    dismissAuth: () => setAuthRequired(DEFAULT_AUTH_STATE),
-    reset: mutation.reset,
-  };
-}
