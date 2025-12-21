@@ -1,8 +1,11 @@
 /**
  * Partner Request Queries
  * 
- * Handles partner application/signup workflow
- * Users apply to become partners, admins review and approve
+ * Simplified partner application workflow:
+ * - User must be logged in (userId from session)
+ * - Collect only essential info: company name, trade license, company size, 
+ *   trade license document, VAT number, partner type (car_dealer/showroom), expiry date
+ * - Admins review and approve/reject
  * 
  * @module queries/partner/partner-request
  */
@@ -18,36 +21,13 @@ import { createId } from '@paralleldrive/cuid2';
 
 export interface CreatePartnerRequestInput {
   userId: string;
-  
-  // Required fields
   companyNameLegal: string;
-  email: string;
-  phone: string;
   tradeLicense: string;
   tradeLicenseExpiry: Date;
-  partnerType: 'dealer' | 'showroom' | 'multi_brand' | 'rental' | 'broker' | 'other';
-  
-  // Optional fields
-  vatNumber?: string;
-  brandName?: string;
-  tradeLicenseDocumentUrl?: string;
-  website?: string;
-  address?: string;
-  emirate?: string;
-  description?: string;
-  experienceYears?: number;
-  specialties?: string[];
-}
-
-export interface UpdatePartnerRequestInput {
-  brandName?: string;
-  tradeLicenseDocumentUrl?: string;
-  website?: string;
-  address?: string;
-  emirate?: string;
-  description?: string;
-  experienceYears?: number;
-  specialties?: string[];
+  tradeLicenseDocumentUrl: string;
+  vatNumber: string;
+  partnerType: 'car_dealer' | 'showroom';
+  companySize: 'small' | 'medium' | 'large' | 'enterprise';
 }
 
 export interface ReviewPartnerRequestInput {
@@ -64,7 +44,8 @@ export interface ReviewPartnerRequestInput {
 
 /**
  * Submit a new partner application
- * Used when a user fills out the partner signup form
+ * User must be logged in - userId comes from session
+ * Collects only essential business registration info
  */
 export async function createPartnerRequest(input: CreatePartnerRequestInput) {
   const requestId = createId();
@@ -75,20 +56,12 @@ export async function createPartnerRequest(input: CreatePartnerRequestInput) {
       id: requestId,
       userId: input.userId,
       companyNameLegal: input.companyNameLegal,
-      email: input.email,
-      phone: input.phone,
       tradeLicense: input.tradeLicense,
       tradeLicenseExpiry: input.tradeLicenseExpiry,
-      partnerType: input.partnerType,
-      vatNumber: input.vatNumber,
-      brandName: input.brandName,
       tradeLicenseDocumentUrl: input.tradeLicenseDocumentUrl,
-      website: input.website,
-      address: input.address,
-      emirate: input.emirate,
-      description: input.description,
-      experienceYears: input.experienceYears,
-      specialties: input.specialties || [],
+      vatNumber: input.vatNumber,
+      partnerType: input.partnerType,
+      companySize: input.companySize,
       status: 'pending',
     })
     .returning();
@@ -205,37 +178,6 @@ export async function getPartnerRequestCounts() {
     .from(partnerRequest);
   
   return counts;
-}
-
-// ============================================================================
-// Update Partner Request
-// ============================================================================
-
-/**
- * Update partner request details
- * User can update optional fields while request is pending
- */
-export async function updatePartnerRequest(
-  requestId: string,
-  userId: string,
-  input: UpdatePartnerRequestInput
-) {
-  const [updated] = await db
-    .update(partnerRequest)
-    .set({
-      ...input,
-      updatedAt: new Date(),
-    })
-    .where(
-      and(
-        eq(partnerRequest.id, requestId),
-        eq(partnerRequest.userId, userId),
-        eq(partnerRequest.status, 'pending') // Only allow updates for pending requests
-      )
-    )
-    .returning();
-  
-  return updated || null;
 }
 
 // ============================================================================

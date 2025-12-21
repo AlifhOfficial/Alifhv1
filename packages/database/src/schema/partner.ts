@@ -14,7 +14,8 @@ import { user } from './auth';
 
 export const partnerStatusEnum = pgEnum('partner_status', ['pending', 'active', 'suspended', 'cancelled']);
 export const partnerTierEnum = pgEnum('partner_tier', ['standard', 'gold', 'platinum', 'black']);
-export const partnerTypeEnum = pgEnum('partner_type', ['dealer', 'showroom', 'multi_brand', 'rental', 'broker', 'other']);
+export const partnerTypeEnum = pgEnum('partner_type', ['car_dealer', 'showroom']);
+export const companySizeEnum = pgEnum('company_size', ['small', 'medium', 'large', 'enterprise']);
 export const partnerRequestStatusEnum = pgEnum('partner_request_status', ['pending', 'approved', 'rejected']);
 export const staffRoleEnum = pgEnum('staff_role', ['owner', 'admin', 'sales', 'viewer']);
 export const staffStatusEnum = pgEnum('staff_status', ['active', 'invited', 'suspended', 'left']);
@@ -221,22 +222,12 @@ export const partnerRequest = pgTable('partner_request', {
   
   // Required for signup - Legal/Business Registration Info
   companyNameLegal: text('company_name_legal').notNull(),
-  email: text('email').notNull(),
-  phone: text('phone').notNull(),
   tradeLicense: text('trade_license').notNull(),
   tradeLicenseExpiry: timestamp('trade_license_expiry').notNull(),
+  tradeLicenseDocumentUrl: text('trade_license_document_url').notNull(),
+  vatNumber: text('vat_number').notNull(),
   partnerType: partnerTypeEnum('partner_type').notNull(),
-  vatNumber: text('vat_number'), // Optional - null if not available
-  
-  // Optional - can be added later in profile after approval
-  brandName: text('brand_name'),
-  tradeLicenseDocumentUrl: text('trade_license_document_url'),
-  website: text('website'),
-  address: text('address'),
-  emirate: text('emirate'),
-  description: text('description'),
-  experienceYears: integer('experience_years'),
-  specialties: jsonb('specialties').$type<string[]>().default([]),
+  companySize: companySizeEnum('company_size').notNull(),
   status: partnerRequestStatusEnum('status').default('pending').notNull(),
   reviewedBy: text('reviewed_by').references(() => user.id, { onDelete: 'set null' }),
   reviewedAt: timestamp('reviewed_at'),
