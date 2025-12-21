@@ -61,21 +61,14 @@ const navItems: NavItem[] = [
     href: "/showcase",
   },
   {
-    label: "Retailers",
-    href: "/retailers",
+    label: "Partners",
+    href: "/become-partner",
     submenu: [
       {
-        title: "Explore",
+        title: "Join Us",
         items: [
-          { label: "All Retailers", href: "/retailers", description: "Browse verified retailers" },
-          { label: "Premium Retailers", href: "/retailers/premium", description: "Top-rated retailers" },
-        ],
-      },
-      {
-        title: "For Retailers",
-        items: [
-          { label: "Become a Retailer", href: "/retailers/join" },
-          { label: "Retailer Portal", href: "/retailer" },
+          { label: "Become a Partner", href: "/become-partner", description: "Apply to join as a partner" },
+          { label: "Partner Dashboard", href: "/partner-dashboard", description: "Manage your dealership" },
         ],
       },
     ],

@@ -1,23 +1,26 @@
+/**
+ * Admin Dashboard Page
+ * Main admin dashboard with statistics and overview
+ */
+
 import { DashboardDisplayArea } from "@/components/dashboard-components/display-area";
+import { AdminDashboardStats } from "@/components/admin/admin-dashboard-stats";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = {
+  title: "Admin Dashboard",
+  description: "Admin dashboard with system statistics and overview",
+};
+
 export default async function AdminDashboardPage() {
-  // TODO: Build admin dashboard with proper API endpoints
-  // No direct database access allowed in presentation layer
-  
   return (
     <DashboardDisplayArea
       title="Admin Dashboard"
-      description="Welcome back to the Alifh admin panel"
+      description="System overview and management tools"
     >
       <div className="p-6 md:p-10">
-        {/* Welcome Message */}
-        <div className="bg-card border border-border rounded-lg p-8 text-center">
-          <h2 className="text-xl font-medium text-foreground mb-2">Admin Dashboard</h2>
-          <p className="text-muted-foreground">System overview and management tools</p>
-          <p className="text-sm text-muted-foreground mt-4">Coming soon...</p>
-        </div>
+        <AdminDashboardStats />
       </div>
     </DashboardDisplayArea>
   );

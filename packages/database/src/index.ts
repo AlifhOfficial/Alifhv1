@@ -10,3 +10,6 @@ export * from './dbclient';
 export * from './schema';
 export * from './queries';
 export * from './caches';
+
+// Admin functions - direct export to ensure inclusion
+export * from './queries/admin';

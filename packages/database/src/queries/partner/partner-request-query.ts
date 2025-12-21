@@ -7,10 +7,10 @@
  * @module queries/partner/partner-request
  */
 
-import { db } from '../../client';
+import { db } from '../../dbclient';
 import { partnerRequest, user } from '../../schema';
 import { eq, and, desc, sql } from 'drizzle-orm';
-import { nanoid } from 'nanoid';
+import { createId } from '@paralleldrive/cuid2';
 
 // ============================================================================
 // Types
@@ -67,7 +67,7 @@ export interface ReviewPartnerRequestInput {
  * Used when a user fills out the partner signup form
  */
 export async function createPartnerRequest(input: CreatePartnerRequestInput) {
-  const requestId = nanoid();
+  const requestId = createId();
   
   const [request] = await db
     .insert(partnerRequest)
@@ -111,7 +111,6 @@ export async function getPartnerRequestById(requestId: string) {
         id: user.id,
         name: user.name,
         email: user.email,
-        image: user.image,
       },
     })
     .from(partnerRequest)
@@ -167,27 +166,27 @@ export interface ListPartnerRequestsOptions {
 export async function listPartnerRequests(options: ListPartnerRequestsOptions = {}) {
   const { status, limit = 50, offset = 0 } = options;
   
-  let query = db
+  const baseQuery = db
     .select({
       request: partnerRequest,
       user: {
         id: user.id,
         name: user.name,
         email: user.email,
-        image: user.image,
       },
     })
     .from(partnerRequest)
     .leftJoin(user, eq(partnerRequest.userId, user.id))
+    .$dynamic();
+  
+  const filteredQuery = status 
+    ? baseQuery.where(eq(partnerRequest.status, status))
+    : baseQuery;
+  
+  const requests = await filteredQuery
     .orderBy(desc(partnerRequest.createdAt))
     .limit(limit)
     .offset(offset);
-  
-  if (status) {
-    query = query.where(eq(partnerRequest.status, status));
-  }
-  
-  const requests = await query;
   
   return requests;
 }

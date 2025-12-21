@@ -121,7 +121,7 @@ export function ProfileMenu({
     };
     
     return (
-      <div className="relative flex items-center gap-2.5" data-menu-container>
+      <div className="relative flex items-center gap-2.5" data-menu-container suppressHydrationWarning>
         <span className="text-sm text-muted-foreground hidden sm:inline">
           {firstName}
         </span>
@@ -212,7 +212,7 @@ export function ProfileMenu({
   }
 
   return (
-    <div className="relative flex items-center" data-menu-container>
+    <div className="relative flex items-center" data-menu-container suppressHydrationWarning>
       <button
         onClick={(e) => {
           e.stopPropagation();
