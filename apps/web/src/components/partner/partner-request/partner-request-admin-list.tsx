@@ -18,8 +18,6 @@ import {
   XCircle,
   Loader2,
   Building2,
-  Mail,
-  Phone,
   Calendar,
   FileText,
   Eye,
@@ -176,11 +174,6 @@ export function PartnerRequestAdminList() {
                     <h3 className="font-semibold text-lg">{request.companyNameLegal}</h3>
                     {getStatusBadge(request.status)}
                   </div>
-                  {request.brandName && (
-                    <p className="text-sm text-muted-foreground">
-                      Brand: {request.brandName}
-                    </p>
-                  )}
                 </div>
                 
                 <button
@@ -201,18 +194,18 @@ export function PartnerRequestAdminList() {
                 </div>
 
                 <div className="flex items-center gap-2 text-sm">
-                  <Mail className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">{request.email}</span>
-                </div>
-
-                <div className="flex items-center gap-2 text-sm">
-                  <Phone className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">{request.phone}</span>
-                </div>
-
-                <div className="flex items-center gap-2 text-sm">
                   <FileText className="w-4 h-4 text-muted-foreground" />
                   <span className="text-muted-foreground">License: {request.tradeLicense}</span>
+                </div>
+
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-muted-foreground">
+                    {request.companySize.charAt(0).toUpperCase() + request.companySize.slice(1)} Company
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-muted-foreground">VAT: {request.vatNumber}</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm">
