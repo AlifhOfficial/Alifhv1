@@ -3,14 +3,11 @@
  * Optimized unified profile component
  */
 
-// === Main View ===
+// === Main Views ===
 export { ProfileView } from './profile-view';
+export { SettingsView } from './settings-view';
 
 // === Location Components ===
 export { LocationMap } from './sections/location-map';
 export { MapClickHandler } from './sections/map-click-handler';
-
-// === Modals ===
-export { KycVerificationModal } from './modals/kyc-verification-modal';
-export { EmailVerificationModal } from './modals/email-verification-modal';
-export { PhoneVerificationModal } from './modals/phone-verification-modal';
+export { MapUpdater } from './sections/map-updater';

@@ -7,6 +7,7 @@ export const user = pgTable('user', {
   name: text('name').notNull(),
   email: text('email').notNull().unique(),
   emailVerified: boolean('email_verified').default(false).notNull(),
+  image: text('image'), // Profile picture URL from OAuth providers
   phoneVerified: boolean('phone_verified').default(false).notNull(),
   phoneVerifiedAt: timestamp('phone_verified_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),

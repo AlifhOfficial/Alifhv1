@@ -29,6 +29,12 @@ const MapClickHandler = dynamic(
   { ssr: false }
 );
 
+// Dynamically import MapUpdater for auto-panning
+const MapUpdater = dynamic(
+  () => import('./map-updater').then((mod) => mod.MapUpdater),
+  { ssr: false }
+);
+
 interface LocationMapProps {
   latitude?: number;
   longitude?: number;
@@ -84,6 +90,7 @@ function LocationMapComponent({ latitude, longitude, onLocationSelect }: Locatio
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <Marker position={position} />
+        <MapUpdater latitude={position[0]} longitude={position[1]} />
         {onLocationSelect && <MapClickHandler onLocationSelect={onLocationSelect} />}
       </MapContainer>
     </div>

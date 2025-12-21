@@ -10,6 +10,7 @@ const navItems = [
   { label: "Profile", href: "/user-dashboard/profile", icon: "user" },
   { label: "Favorites", href: "/user-dashboard/favorites", icon: "heart" },
   { label: "Superlikes", href: "/user-dashboard/superlikes", icon: "sparkles" },
+  { label: "Settings", href: "/user-dashboard/settings", icon: "settings" },
   { label: "Dev: KYC Requests", href: "/user-dashboard/dev/kyc-requests", icon: "shield-check" },
 ];
 

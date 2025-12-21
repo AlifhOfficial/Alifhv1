@@ -85,7 +85,7 @@ export interface PartnerProfileUpdate {
 // ============================================================================
 
 async function fetchPartnerProfile(partnerId: string): Promise<PartnerProfile> {
-  const res = await fetch(`/api/partners/${partnerId}/mini-profile`, {
+  const res = await fetch(`/api/partners/${partnerId}/dealer-profile`, {
     credentials: 'include',
   });
 
@@ -97,7 +97,7 @@ async function fetchPartnerProfile(partnerId: string): Promise<PartnerProfile> {
 }
 
 async function updatePartnerProfileAPI(partnerId: string, updates: PartnerProfileUpdate): Promise<PartnerProfile> {
-  const res = await fetch(`/api/partners/${partnerId}/mini-profile`, {
+  const res = await fetch(`/api/partners/${partnerId}/dealer-profile`, {
     method: 'PATCH',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
