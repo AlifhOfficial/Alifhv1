@@ -1,13 +1,16 @@
 /**
  * API: Partner Request Management
- * POST /api/partners/request - Submit new partner application
+ * POST /api/partners/request - Submit new partner application (logged-in users only)
  * GET /api/partners/request - Get user's partner request status
- * PATCH /api/partners/request - Update pending partner request
  * DELETE /api/partners/request - Cancel pending partner request
  * 
- * Purpose: Handle partner application workflow for users
- * Authentication: Required
+ * Purpose: Simplified partner application - collect only essential business info
+ * Authentication: Required (user must be logged in)
  * Session Source: getSessionUser() from middleware cache
+ * 
+ * Required Fields:
+ * - companyNameLegal, tradeLicense, tradeLicenseExpiry
+ * - tradeLicenseDocumentUrl, vatNumber, partnerType, companySize
  * 
  * Cache Strategy: No cache (user-specific data)
  * 
@@ -22,7 +25,6 @@ import { z } from 'zod';
 import { 
   createPartnerRequest, 
   getPartnerRequestByUserId,
-  updatePartnerRequest,
   deletePartnerRequest,
   hasActivePartnerRequest,
   isTradeLicenseInUse,
@@ -42,35 +44,14 @@ const CACHE_HEADERS_NO_CACHE = {
 // ============================================================================
 
 const CreatePartnerRequestSchema = z.object({
-  // Required fields
+  // Required fields only
   companyNameLegal: z.string().min(2, 'Company name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  phone: z.string().regex(/^\+?[0-9]{10,15}$/, 'Invalid phone number'),
   tradeLicense: z.string().min(5, 'Trade license is required'),
   tradeLicenseExpiry: z.string().datetime('Invalid date format'),
-  partnerType: z.enum(['dealer', 'showroom', 'multi_brand', 'rental', 'broker', 'other']),
-  
-  // Optional fields
-  vatNumber: z.string().optional(),
-  brandName: z.string().optional(),
-  tradeLicenseDocumentUrl: z.string().url().optional(),
-  website: z.string().url().optional(),
-  address: z.string().optional(),
-  emirate: z.string().optional(),
-  description: z.string().max(1000).optional(),
-  experienceYears: z.number().int().min(0).max(100).optional(),
-  specialties: z.array(z.string()).optional(),
-});
-
-const UpdatePartnerRequestSchema = z.object({
-  brandName: z.string().optional(),
-  tradeLicenseDocumentUrl: z.string().url().optional(),
-  website: z.string().url().optional(),
-  address: z.string().optional(),
-  emirate: z.string().optional(),
-  description: z.string().max(1000).optional(),
-  experienceYears: z.number().int().min(0).max(100).optional(),
-  specialties: z.array(z.string()).optional(),
+  tradeLicenseDocumentUrl: z.string().url('Valid document URL required'),
+  vatNumber: z.string().min(1, 'VAT number is required'),
+  partnerType: z.enum(['car_dealer', 'showroom']),
+  companySize: z.enum(['small', 'medium', 'large', 'enterprise']),
 });
 
 // ============================================================================
@@ -125,20 +106,12 @@ export async function POST(req: NextRequest) {
     const request = await createPartnerRequest({
       userId: user.id,
       companyNameLegal: data.companyNameLegal,
-      email: data.email,
-      phone: data.phone,
       tradeLicense: data.tradeLicense,
       tradeLicenseExpiry: new Date(data.tradeLicenseExpiry),
-      partnerType: data.partnerType,
-      vatNumber: data.vatNumber,
-      brandName: data.brandName,
       tradeLicenseDocumentUrl: data.tradeLicenseDocumentUrl,
-      website: data.website,
-      address: data.address,
-      emirate: data.emirate,
-      description: data.description,
-      experienceYears: data.experienceYears,
-      specialties: data.specialties,
+      vatNumber: data.vatNumber,
+      partnerType: data.partnerType,
+      companySize: data.companySize,
     });
 
     const response = NextResponse.json({ 
@@ -192,81 +165,6 @@ export async function GET(req: NextRequest) {
     console.error('[partners/request] GET failed', error);
     return NextResponse.json({ 
       error: 'Failed to fetch partner request' 
-    }, { status: 500 });
-  }
-}
-
-// ============================================================================
-// PATCH - Update Partner Request
-// ============================================================================
-
-export async function PATCH(req: NextRequest) {
-  try {
-    const user = await getSessionUser();
-    if (!user) {
-      return NextResponse.json({ 
-        error: 'Unauthorized',
-        requiresAuth: true 
-      }, { status: 401 });
-    }
-
-    // Get user's request
-    const existingRequest = await getPartnerRequestByUserId(user.id);
-    if (!existingRequest) {
-      return NextResponse.json(
-        { error: 'Partner request not found' },
-        { status: 404 }
-      );
-    }
-
-    if (existingRequest.status !== 'pending') {
-      return NextResponse.json(
-        { error: 'Can only update pending requests' },
-        { status: 400 }
-      );
-    }
-
-    // Parse and validate input
-    const payload = await req.json().catch(() => null);
-    const result = UpdatePartnerRequestSchema.safeParse(payload);
-
-    if (!result.success) {
-      return NextResponse.json(
-        { 
-          error: 'Invalid input',
-          details: result.error.format()
-        },
-        { status: 400 }
-      );
-    }
-
-    const updated = await updatePartnerRequest(
-      existingRequest.id,
-      user.id,
-      result.data
-    );
-
-    if (!updated) {
-      return NextResponse.json(
-        { error: 'Failed to update request' },
-        { status: 400 }
-      );
-    }
-
-    const response = NextResponse.json({ 
-      success: true,
-      request: updated
-    });
-
-    Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
-      response.headers.set(key, value)
-    );
-
-    return response;
-  } catch (error) {
-    console.error('[partners/request] PATCH failed', error);
-    return NextResponse.json({ 
-      error: 'Failed to update partner request' 
     }, { status: 500 });
   }
 }

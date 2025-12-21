@@ -5,6 +5,10 @@
  * Purpose: Allow public users to submit partner applications
  * Authentication: Not required (email used to link to user account later)
  * 
+ * Required Fields:
+ * - userEmail, companyNameLegal, tradeLicense, tradeLicenseExpiry
+ * - tradeLicenseDocumentUrl, vatNumber, partnerType (car_dealer/showroom), companySize
+ * 
  * Cache Strategy: No cache
  * 
  * Standards:
@@ -38,32 +42,15 @@ const CACHE_HEADERS_NO_CACHE = {
 const publicPartnerRequestSchema = z.object({
   userEmail: z.string().email('Valid email required'),
   companyNameLegal: z.string().min(2, 'Company name required'),
-  email: z.string().email('Valid company email required'),
-  phone: z.string().min(10, 'Valid phone number required'),
   tradeLicense: z.string().min(5, 'Trade license number required'),
   tradeLicenseExpiry: z.string().refine((date) => {
     const expiry = new Date(date);
     return expiry > new Date();
   }, 'Trade license must be valid'),
-  partnerType: z.enum(['dealer', 'showroom', 'multi_brand', 'rental', 'broker', 'other']),
-  
-  // Optional fields
-  brandName: z.string().optional(),
-  vatNumber: z.string().optional(),
-  website: z.string().optional().transform(val => {
-    if (!val || val === '') return undefined;
-    // Add protocol if missing
-    if (!val.startsWith('http://') && !val.startsWith('https://')) {
-      return `https://${val}`;
-    }
-    return val;
-  }),
-  address: z.string().optional(),
-  emirate: z.string().optional(),
-  description: z.string().optional(),
-  experienceYears: z.number().int().min(0).optional(),
-  specialties: z.array(z.string()).optional(),
-  tradeLicenseDocumentUrl: z.string().url().optional().or(z.literal('')),
+  tradeLicenseDocumentUrl: z.string().url('Valid document URL required'),
+  vatNumber: z.string().min(1, 'VAT number is required'),
+  partnerType: z.enum(['car_dealer', 'showroom']),
+  companySize: z.enum(['small', 'medium', 'large', 'enterprise']),
 });
 
 /**
@@ -126,20 +113,12 @@ export async function POST(req: NextRequest) {
     const request = await createPartnerRequest({
       userId,
       companyNameLegal: validatedData.companyNameLegal,
-      email: validatedData.email,
-      phone: validatedData.phone,
       tradeLicense: validatedData.tradeLicense,
       tradeLicenseExpiry: new Date(validatedData.tradeLicenseExpiry),
-      partnerType: validatedData.partnerType,
-      brandName: validatedData.brandName,
-      vatNumber: validatedData.vatNumber,
-      website: validatedData.website || undefined,
-      address: validatedData.address,
-      emirate: validatedData.emirate,
-      description: validatedData.description,
-      experienceYears: validatedData.experienceYears,
-      specialties: validatedData.specialties,
       tradeLicenseDocumentUrl: validatedData.tradeLicenseDocumentUrl,
+      vatNumber: validatedData.vatNumber,
+      partnerType: validatedData.partnerType,
+      companySize: validatedData.companySize,
     });
 
     const response = NextResponse.json({ 
