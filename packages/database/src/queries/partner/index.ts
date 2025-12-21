@@ -6,5 +6,5 @@
  * @module queries/partner
  */
 
-export { getPartnerMiniProfile } from './get-mini-profile';
-export { updatePartnerMiniProfile } from './update-mini-profile';
+export * from './car-dealer';
+export * from './partner-request-query';

@@ -7,8 +7,8 @@
 
 import { Suspense, useState } from 'react';
 import { Navbar } from '@/components/navbar';
-import { CarCard } from '@/components/inventory/car-card';
-import { CarListItem } from '@/components/inventory/car-list-item';
+import { CarCard } from '@/components/inventory';
+import { CarListItem } from '@/components/inventory';
 import { useListings } from '@/hooks/listings';
 import { LayoutGrid, List } from 'lucide-react';
 

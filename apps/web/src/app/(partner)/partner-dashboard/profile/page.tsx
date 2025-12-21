@@ -1,4 +1,4 @@
-import { PartnerProfileView } from "@/components/partner/partner-profile-view";
+import { PartnerProfileView } from "@/components/partner";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { redirect } from "next/navigation";
 

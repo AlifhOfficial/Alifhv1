@@ -141,6 +141,13 @@
       "when": 1766210664727,
       "tag": "0019_striped_wraith",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1766341280045,
+      "tag": "0020_true_starhawk",
+      "breakpoints": true
     }
   ]
 }

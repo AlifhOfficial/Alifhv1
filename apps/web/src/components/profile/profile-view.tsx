@@ -7,7 +7,7 @@
 'use client';
 
 import { useEffect, useState, useMemo, useCallback, Suspense, lazy } from 'react';
-import { useUserProfile, type UserProfileUpdate } from '@/hooks/profile/use-user-profile';
+import { useUserProfile, type UserProfileUpdate } from '@/hooks/profile';
 import { useToast } from '@/hooks/use-toast';
 import { Camera, X, Edit3 } from 'lucide-react';
 import { Avatar } from '@/components/ui/data-display/avatar';
@@ -227,7 +227,7 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
       return;
     }
     try {
-      const res = await fetch('/api/profile/delete-account', { method: 'POST', credentials: 'include' });
+      const res = await fetch('/api/profile/user/delete-account', { method: 'POST', credentials: 'include' });
       const data = await res.json();
       if (res.ok) {
         toast({ title: 'Account marked for deletion', description: `Deleted after 6 months (${new Date(data.deletionDate).toLocaleDateString()}).` });

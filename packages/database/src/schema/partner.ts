@@ -14,6 +14,7 @@ import { user } from './auth';
 
 export const partnerStatusEnum = pgEnum('partner_status', ['pending', 'active', 'suspended', 'cancelled']);
 export const partnerTierEnum = pgEnum('partner_tier', ['standard', 'gold', 'platinum', 'black']);
+export const partnerTypeEnum = pgEnum('partner_type', ['dealer', 'showroom', 'multi_brand', 'rental', 'broker', 'other']);
 export const partnerRequestStatusEnum = pgEnum('partner_request_status', ['pending', 'approved', 'rejected']);
 export const staffRoleEnum = pgEnum('staff_role', ['owner', 'admin', 'sales', 'viewer']);
 export const staffStatusEnum = pgEnum('staff_status', ['active', 'invited', 'suspended', 'left']);
@@ -23,10 +24,12 @@ export const partner = pgTable('partner', {
   companyNameLegal: text('company_name_legal').notNull(),
   brandName: text('brand_name').notNull(),
   tradeLicense: text('trade_license').notNull().unique(),
-  tradeLicenseExpiry: timestamp('trade_license_expiry'),
+  vatNumber: text('vat_number'),
+  tradeLicenseExpiry: timestamp('trade_license_expiry').notNull(),
   tradeLicenseDocumentUrl: text('trade_license_document_url'),
   status: partnerStatusEnum('status').default('pending').notNull(),
   tier: partnerTierEnum('tier').default('standard').notNull(),
+  partnerType: partnerTypeEnum('partner_type').notNull(),
   email: text('email').notNull().unique(),
   phone: text('phone').notNull(),
   website: text('website'),
@@ -215,13 +218,19 @@ export const partnerReview = pgTable('partner_review', {
 export const partnerRequest = pgTable('partner_request', {
   id: text('id').primaryKey(),
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  
+  // Required for signup - Legal/Business Registration Info
   companyNameLegal: text('company_name_legal').notNull(),
-  brandName: text('brand_name').notNull(),
-  tradeLicense: text('trade_license').notNull(),
-  tradeLicenseDocumentUrl: text('trade_license_document_url'),
-  tradeLicenseExpiry: timestamp('trade_license_expiry'),
   email: text('email').notNull(),
   phone: text('phone').notNull(),
+  tradeLicense: text('trade_license').notNull(),
+  tradeLicenseExpiry: timestamp('trade_license_expiry').notNull(),
+  partnerType: partnerTypeEnum('partner_type').notNull(),
+  vatNumber: text('vat_number'), // Optional - null if not available
+  
+  // Optional - can be added later in profile after approval
+  brandName: text('brand_name'),
+  tradeLicenseDocumentUrl: text('trade_license_document_url'),
   website: text('website'),
   address: text('address'),
   emirate: text('emirate'),

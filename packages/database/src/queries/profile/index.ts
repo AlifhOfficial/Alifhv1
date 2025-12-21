@@ -6,4 +6,4 @@
  * @module queries/profile
  */
 
-export * from './user-profile-query';
+export * from './user';

@@ -3,10 +3,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Loader2, RefreshCw } from 'lucide-react';
-import { CarCard } from '@/components/inventory/car-card';
+import { CarCard } from '@/components/inventory';
 import { DashboardPageLayout } from '@/components/layout';
-import { SuperlikeQuotaBadge } from '@/components/inventory/superlike-quota-badge';
-import { useFavoritesStatus } from '@/hooks/favorites';
+import { SuperlikeQuotaBadge } from '@/components/engagement';
+import { useFavoritesStatus } from '@/hooks/engagement';
 
 type SuperlikeQuota = {
   currentMonthSuperlikesUsed: number;
@@ -87,6 +87,12 @@ export default function SuperlikesPage() {
     return map;
   }, [listings]);
 
+  // Filter to only IDs that have valid listing data (excludes deleted listings)
+  const validSuperlikeIds = useMemo(() => 
+    superlikeIds.filter(id => listingsById.has(id)), 
+    [superlikeIds, listingsById]
+  );
+
   return (
     <DashboardPageLayout
       title={
@@ -119,10 +125,10 @@ export default function SuperlikesPage() {
         {!isLoading && !isLoadingListings && !superlikeError && (
           <section className="space-y-6">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">{superlikeIds.length} item{superlikeIds.length === 1 ? '' : 's'}</span>
+              <span className="text-sm text-muted-foreground">{validSuperlikeIds.length} item{validSuperlikeIds.length === 1 ? '' : 's'}</span>
             </div>
 
-            {superlikeIds.length === 0 ? (
+            {validSuperlikeIds.length === 0 ? (
               <div className="min-h-[400px] flex items-center justify-center">
                 <div className="text-center space-y-3">
                   <svg className="w-16 h-16 mx-auto text-muted-foreground/40" fill="currentColor" viewBox="0 0 24 24">
@@ -133,9 +139,8 @@ export default function SuperlikesPage() {
               </div>
             ) : (
               <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
-                {superlikeIds.map((listingId) => {
-                  const listing = listingsById.get(listingId);
-                  if (!listing) return null;
+                {validSuperlikeIds.map((listingId) => {
+                  const listing = listingsById.get(listingId)!;
                   
                   return (
                     <CarCard

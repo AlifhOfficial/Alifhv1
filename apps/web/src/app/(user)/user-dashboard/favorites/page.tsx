@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Loader2, RefreshCw } from 'lucide-react';
-import { CarCard } from '@/components/inventory/car-card';
+import { CarCard } from '@/components/inventory';
 import { DashboardPageLayout } from '@/components/layout';
-import { useFavoritesStatus } from '@/hooks/favorites';
+import { useFavoritesStatus } from '@/hooks/engagement';
 
 type ListingPayload = {
   id: string;
@@ -74,6 +74,12 @@ export default function FavoritesPage() {
     return map;
   }, [listings]);
 
+  // Filter to only IDs that have valid listing data (excludes deleted listings)
+  const validFavoriteIds = useMemo(() => 
+    favoriteIds.filter(id => listingsById.has(id)), 
+    [favoriteIds, listingsById]
+  );
+
   return (
     <DashboardPageLayout
       title="Favorites"
@@ -101,10 +107,10 @@ export default function FavoritesPage() {
         {!isLoading && !isLoadingListings && !favError && (
           <section className="space-y-6">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">{favoriteIds.length} item{favoriteIds.length === 1 ? '' : 's'}</span>
+              <span className="text-sm text-muted-foreground">{validFavoriteIds.length} item{validFavoriteIds.length === 1 ? '' : 's'}</span>
             </div>
 
-            {favoriteIds.length === 0 ? (
+            {validFavoriteIds.length === 0 ? (
               <div className="min-h-[400px] flex items-center justify-center">
                 <div className="text-center space-y-3">
                   <svg className="w-16 h-16 mx-auto text-muted-foreground/40" fill="currentColor" viewBox="0 0 24 24">
@@ -115,9 +121,8 @@ export default function FavoritesPage() {
               </div>
             ) : (
               <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
-                {favoriteIds.map((listingId) => {
-                  const listing = listingsById.get(listingId);
-                  if (!listing) return null;
+                {validFavoriteIds.map((listingId) => {
+                  const listing = listingsById.get(listingId)!;
                   
                   return (
                     <CarCard

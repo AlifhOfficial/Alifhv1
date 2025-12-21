@@ -22,14 +22,14 @@ import {
 const authRoute = await import("../../src/app/api/auth/[...auth]/route");
 const magicLinkRoute = await import("../../src/app/api/auth/magic-link-validated/route");
 const passwordResetRoute = await import("../../src/app/api/auth/password-reset-validated/route");
-const favoritesRoute = await import("../../src/app/api/favorites/route");
-const favoritesStatusRoute = await import("../../src/app/api/favorites-status/route");
-const superlikesRoute = await import("../../src/app/api/superlikes/route");
+const favoritesRoute = await import("../../src/app/api/engagement/favorites/route");
+const favoritesStatusRoute = await import("../../src/app/api/engagement/favorites-status/route");
+const superlikesRoute = await import("../../src/app/api/engagement/superlikes/route");
 const userProfileRoute = await import("../../src/app/api/profile/user-profile/route");
 const deleteAccountRoute = await import("../../src/app/api/profile/delete-account/route");
 const listingDetailRoute = await import("../../src/app/api/listings/[id]/route");
 const carCardRoute = await import("../../src/app/api/listings/car-card/route");
-const partnerMiniProfileRoute = await import("../../src/app/api/partners/[partnerId]/mini-profile/route");
+const partnerDealerProfileRoute = await import("../../src/app/api/partners/[partnerId]/dealer-profile/route");
 const storageStatusRoute = await import("../../src/app/api/storage/status/route");
 const storageSignRoute = await import("../../src/app/api/storage/sign/route");
 const storageUploadRoute = await import("../../src/app/api/storage/upload/route");
@@ -365,19 +365,19 @@ describe("Listing APIs", () => {
   });
 });
 
-describe("Partner mini profile", () => {
+describe("Partner dealer profile", () => {
   it("returns 404 for unknown partner", async () => {
-    const response = await partnerMiniProfileRoute.GET(
-      new Request("http://localhost/api/partners/p1/mini-profile") as any,
+    const response = await partnerDealerProfileRoute.GET(
+      new Request("http://localhost/api/partners/p1/dealer-profile") as any,
       { params: Promise.resolve({ partnerId: "missing" }) } as any,
     );
     expect(response.status).toBe(404);
   });
 
-  it("returns partner mini profile with cache headers", async () => {
+  it("returns partner dealer profile with cache headers", async () => {
     setPartnerProfile("p1", { id: "p1", brandName: "Dealer One" });
-    const response = await partnerMiniProfileRoute.GET(
-      new Request("http://localhost/api/partners/p1/mini-profile") as any,
+    const response = await partnerDealerProfileRoute.GET(
+      new Request("http://localhost/api/partners/p1/dealer-profile") as any,
       { params: Promise.resolve({ partnerId: "p1" }) } as any,
     );
     const body = await readJson(response);
@@ -388,8 +388,8 @@ describe("Partner mini profile", () => {
   });
 
   it("requires auth for partner updates", async () => {
-    const response = await partnerMiniProfileRoute.PATCH(
-      new Request("http://localhost/api/partners/p1/mini-profile", { method: "PATCH" }) as any,
+    const response = await partnerDealerProfileRoute.PATCH(
+      new Request("http://localhost/api/partners/p1/dealer-profile", { method: "PATCH" }) as any,
       { params: Promise.resolve({ partnerId: "p1" }) } as any,
     );
     expect(response.status).toBe(401);
@@ -397,19 +397,19 @@ describe("Partner mini profile", () => {
 
   it("validates partner update payload", async () => {
     setSessionUser({ id: "staff-1" });
-    const request = createJsonRequest("/api/partners/p1/mini-profile", "PATCH", { showroomCount: "bad" });
-    const response = await partnerMiniProfileRoute.PATCH(request as any, {
+    const request = createJsonRequest("/api/partners/p1/dealer-profile", "PATCH", { showroomCount: "bad" });
+    const response = await partnerDealerProfileRoute.PATCH(request as any, {
       params: Promise.resolve({ partnerId: "p1" }),
     } as any);
     expect(response.status).toBe(400);
   });
 
-  it("updates partner mini profile", async () => {
+  it("updates partner dealer profile", async () => {
     setSessionUser({ id: "staff-1" });
     setPartnerProfile("p1", { id: "p1", brandName: "Old Name" });
 
-    const request = createJsonRequest("/api/partners/p1/mini-profile", "PATCH", { brandName: "New Name" });
-    const response = await partnerMiniProfileRoute.PATCH(request as any, {
+    const request = createJsonRequest("/api/partners/p1/dealer-profile", "PATCH", { brandName: "New Name" });
+    const response = await partnerDealerProfileRoute.PATCH(request as any, {
       params: Promise.resolve({ partnerId: "p1" }),
     } as any);
     const body = await readJson(response);
