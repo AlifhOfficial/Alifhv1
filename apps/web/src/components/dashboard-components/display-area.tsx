@@ -9,7 +9,7 @@ interface DashboardDisplayAreaProps {
 
 export function DashboardDisplayArea({ title, description, action, children }: DashboardDisplayAreaProps) {
   return (
-    <div className="flex-1 h-full overflow-y-auto">
+    <div className="min-h-screen">
       {title ? (
         <header className="sticky top-0 z-10 border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 px-6 py-4 md:px-8">
           <div className="flex items-center justify-between gap-4">

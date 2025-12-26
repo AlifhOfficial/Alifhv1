@@ -3,7 +3,7 @@
 /**
  * UserAvatar Component - Single Source of Truth for User Avatars
  * 
- * This component establishes a consistent avatar resolution strategy:
+ * Built on shadcn's Avatar component with smart resolution strategy:
  * 1. Custom profile avatar (uploaded by user) - highest priority
  * 2. OAuth provider image (e.g., Google profile picture) - fallback
  * 3. Initials - final fallback
@@ -27,10 +27,10 @@
  */
 
 import * as React from "react";
-import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn, getPublicUrl } from "@/utils";
 
-interface UserAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
+interface UserAvatarProps extends React.ComponentProps<typeof Avatar> {
   /** 
    * Pre-resolved avatar URL - use when source is already determined
    * (e.g., from database COALESCE query)
@@ -60,6 +60,9 @@ interface UserAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   
   /** Avatar size */
   size?: "xs" | "sm" | "md" | "lg" | "xl";
+  
+  /** Avatar shape */
+  shape?: "circle" | "square";
 }
 
 const sizeClasses: Record<NonNullable<UserAvatarProps["size"]>, string> = {
@@ -68,6 +71,11 @@ const sizeClasses: Record<NonNullable<UserAvatarProps["size"]>, string> = {
   md: "h-10 w-10 text-sm",
   lg: "h-12 w-12 text-base",
   xl: "h-16 w-16 text-lg",
+};
+
+const shapeClasses: Record<NonNullable<UserAvatarProps["shape"]>, string> = {
+  circle: "rounded-full",
+  square: "rounded-lg",
 };
 
 /**
@@ -86,81 +94,73 @@ function getInitials(name?: string | null, fallback = "U"): string {
   return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
 }
 
-const UserAvatar = React.forwardRef<HTMLDivElement, UserAvatarProps>(
-  ({ 
-    className, 
-    src: directSrc,
-    profileAvatar,
-    oauthImage,
-    name,
-    initials,
-    alt = "User avatar", 
-    size = "md", 
-    ...props 
-  }, ref) => {
-    const [hasError, setHasError] = React.useState(false);
+function UserAvatar({ 
+  className, 
+  src: directSrc,
+  profileAvatar,
+  oauthImage,
+  name,
+  initials,
+  alt = "User avatar", 
+  size = "md",
+  shape = "circle",
+  ...props 
+}: UserAvatarProps) {
+  // Resolve the avatar URL with priority:
+  // 1. Direct src (pre-resolved, e.g., from DB query)
+  // 2. Profile avatar (custom upload)
+  // 3. OAuth image (Google, etc.)
+  // 4. Generated avatar (DiceBear/Boring Avatars)
+  const resolvedUrl = React.useMemo(() => {
+    let url: string | null = null;
+    
+    // If direct src is provided, use it (already resolved)
+    if (directSrc) {
+      url = getPublicUrl(directSrc);
+    }
+    // Profile avatar takes priority over OAuth
+    else if (profileAvatar) {
+      url = getPublicUrl(profileAvatar);
+    }
+    // Fall back to OAuth image
+    else if (oauthImage) {
+      // OAuth images are already full URLs
+      url = oauthImage;
+    }
+    // Generate avatar if no image available
+    else if (name) {
+      // Use DiceBear bottts - cute robots, gender-neutral
+      const seed = encodeURIComponent(name);
+      url = `https://api.dicebear.com/7.x/bottts/svg?seed=${seed}`;
+    }
+    
+    return url;
+  }, [directSrc, profileAvatar, oauthImage, name]);
 
-    // Resolve the avatar URL with priority:
-    // 1. Direct src (pre-resolved, e.g., from DB query)
-    // 2. Profile avatar (custom upload)
-    // 3. OAuth image (Google, etc.)
-    const resolvedUrl = React.useMemo(() => {
-      // If direct src is provided, use it (already resolved)
-      if (directSrc) {
-        return getPublicUrl(directSrc);
-      }
-      
-      // Profile avatar takes priority over OAuth
-      if (profileAvatar) {
-        return getPublicUrl(profileAvatar);
-      }
-      
-      // Fall back to OAuth image
-      if (oauthImage) {
-        // OAuth images are already full URLs
-        return oauthImage;
-      }
-      
-      return null;
-    }, [directSrc, profileAvatar, oauthImage]);
+  const displayInitials = initials || getInitials(name);
 
-    // Reset error state when URL changes
-    React.useEffect(() => {
-      setHasError(false);
-    }, [resolvedUrl]);
-
-    const displayInitials = initials || getInitials(name);
-    const showImage = resolvedUrl && !hasError;
-
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          "relative inline-flex items-center justify-center overflow-hidden rounded-full border border-border bg-card font-medium text-foreground",
-          sizeClasses[size],
-          className
-        )}
-        {...props}
-      >
-        {showImage ? (
-          <Image
-            src={resolvedUrl}
-            alt={alt}
-            fill
-            sizes="(max-width: 768px) 32px, 40px"
-            className="object-cover"
-            onError={() => setHasError(true)}
-            referrerPolicy="no-referrer"
-            priority={false}
-          />
-        ) : (
-          <span className="uppercase">{displayInitials}</span>
-        )}
-      </div>
-    );
-  }
-);
-UserAvatar.displayName = "UserAvatar";
+  return (
+    <Avatar
+      className={cn(
+        "border border-border",
+        sizeClasses[size],
+        shapeClasses[shape],
+        className
+      )}
+      {...props}
+    >
+      {resolvedUrl && (
+        <AvatarImage 
+          src={resolvedUrl} 
+          alt={alt}
+        />
+      )}
+      <AvatarFallback className={cn("uppercase font-medium", shapeClasses[shape])}>
+        {displayInitials}
+      </AvatarFallback>
+    </Avatar>
+  );
+}
 
 export { UserAvatar };
 export type { UserAvatarProps };

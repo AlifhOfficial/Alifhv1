@@ -11,14 +11,25 @@ import { createId } from '@paralleldrive/cuid2';
 import { eq } from 'drizzle-orm';
 import { db } from '../../dbclient';
 import { user } from '../../schema';
+import { memoryCache, CacheKeys, CacheTTL } from '../../caches';
 
 // Essential user queries
 export const getUserById = async (id: string) => {
+  // Check cache first
+  const cacheKey = CacheKeys.userById(id);
+  const cached = memoryCache.get<typeof user.$inferSelect>(cacheKey);
+  if (cached) return cached;
+
   const [result] = await db
     .select()
     .from(user)
     .where(eq(user.id, id))
     .limit(1);
+  
+  // Cache the result
+  if (result) {
+    memoryCache.set(cacheKey, result, CacheTTL.userById);
+  }
     
   return result || null;
 };
@@ -58,6 +69,9 @@ export const createUser = async (data: CreateUserData) => {
 };
 
 export const updateUser = async (id: string, data: Partial<CreateUserData>) => {
+  // Invalidate cache before update
+  memoryCache.delete(CacheKeys.userById(id));
+  
   const [result] = await db
     .update(user)
     .set({
@@ -71,16 +85,25 @@ export const updateUser = async (id: string, data: Partial<CreateUserData>) => {
 };
 
 export const deleteUser = async (id: string) => {
+  // Invalidate cache before delete
+  memoryCache.delete(CacheKeys.userById(id));
+  
   await db
     .delete(user)
     .where(eq(user.id, id));
 };
 
+// Max limit guard to prevent abuse
+const MAX_USERS_LIMIT = 100;
+
 export const getAllUsers = async (limit: number = 100) => {
+  // Guard against excessive limits
+  const safeLimit = Math.min(Math.max(1, limit), MAX_USERS_LIMIT);
+  
   return await db
     .select()
     .from(user)
-    .limit(limit);
+    .limit(safeLimit);
 };
 
 /**
@@ -102,6 +125,9 @@ export const checkUserExistsByEmail = async (email: string): Promise<boolean> =>
  * Called after OTP verification succeeds
  */
 export const updateUserPhoneVerified = async (userId: string, verified: boolean = true) => {
+  // Invalidate cache before update
+  memoryCache.delete(CacheKeys.userById(userId));
+  
   const [result] = await db
     .update(user)
     .set({

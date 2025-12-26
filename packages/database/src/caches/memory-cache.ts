@@ -236,6 +236,7 @@ export const memoryCache = new MemoryCache();
  * Cache Keys
  */
 export const CacheKeys = {
+  userById: (userId: string) => `user:${userId}:data`,
   userSession: (userId: string) => `user:${userId}:session`,
   listingDetail: (listingId: string) => `listing:${listingId}:detail`,
   listingCards: (filters: string) => `listings:cards:${filters}`,
@@ -248,6 +249,7 @@ export const CacheKeys = {
  * Cache TTL (seconds)
  */
 export const CacheTTL = {
+  userById: 120, // 2 minutes - user record (invalidate on updates)
   userSession: 300, // 5 minutes - session data (role, partner memberships)
   listingDetail: 120, // 2 minutes - full listing details
   listingCards: 30, // 30 seconds - listing cards (main browse page) - short TTL, invalidated on new listings

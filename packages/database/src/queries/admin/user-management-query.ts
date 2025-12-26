@@ -677,7 +677,10 @@ export const getAdminAllPartners = async (options?: {
 
 /**
  * Search users by email or name (for autocomplete/search)
+ * Max limit: 50 results to prevent abuse
  */
+const MAX_SEARCH_LIMIT = 50;
+
 export const searchAdminUsers = async (query: string, limit: number = 10): Promise<Array<{
   id: string;
   name: string;
@@ -685,7 +688,16 @@ export const searchAdminUsers = async (query: string, limit: number = 10): Promi
   avatar: string | null;
   role: string;
 }>> => {
-  const searchPattern = `%${query}%`;
+  // Guard against excessive limits and empty queries
+  const safeLimit = Math.min(Math.max(1, limit), MAX_SEARCH_LIMIT);
+  
+  // Sanitize query - minimum 2 chars to prevent wildcard abuse
+  const trimmedQuery = query.trim();
+  if (trimmedQuery.length < 2) {
+    return [];
+  }
+  
+  const searchPattern = `%${trimmedQuery}%`;
   
   const results = await db
     .select({
@@ -700,7 +712,7 @@ export const searchAdminUsers = async (query: string, limit: number = 10): Promi
     .where(
       sql`${user.email} ILIKE ${searchPattern} OR ${user.name} ILIKE ${searchPattern}`
     )
-    .limit(limit);
+    .limit(safeLimit);
 
   return results;
 };

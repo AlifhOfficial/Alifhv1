@@ -10,6 +10,13 @@
       "outputs": ["dist/**", ".next/**", "build/**"],
       "dependsOn": ["^build"]
     },
+    "@alifh/database#build": {
+      "outputs": [],
+      "cache": false
+    },
+    "@alifh/ai#build": {
+      "outputs": ["dist/**"]
+    },
     "test": {
       "outputs": [],
       "dependsOn": ["^build"]

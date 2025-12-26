@@ -1,5 +1,5 @@
 import { DashboardLayout, DashboardContent } from "@/components/dashboard-components/dashboard-layout";
-import { Sidebar } from "@/components/dashboard-components/sidebar";
+import { AppSidebar } from "@/components/dashboard-components/app-sidebar";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { WebSocketProvider } from "@/providers/websocket-provider";
 import { redirect } from "next/navigation";
@@ -9,35 +9,35 @@ export const dynamic = "force-dynamic";
 const navSections = [
   {
     items: [
-      { label: "Overview", href: "/user-dashboard", icon: "home" },
+      { label: "Overview", href: "/user-dashboard", icon: "layout-dashboard" },
     ]
   },
   {
-    title: "Activity",
+    collapsible: { label: "Activity", icon: "package" },
     items: [
-      { label: "My Listings", href: "/user-dashboard/listings/my-listings", icon: "car-front" },
-      { label: "Bookings", href: "/user-dashboard/bookings", icon: "calendar-check" },
+      { label: "My Listings", href: "/user-dashboard/listings/my-listings" },
+      { label: "Bookings", href: "/user-dashboard/bookings" },
     ]
   },
   {
-    title: "Communication",
+    collapsible: { label: "Communication", icon: "message-square" },
     items: [
-      { label: "Messages", href: "/user-dashboard/messaging", icon: "mail" },
-      { label: "Requests", href: "/user-dashboard/requests", icon: "inbox" },
+      { label: "Messages", href: "/user-dashboard/messaging" },
+      { label: "Requests", href: "/user-dashboard/requests" },
     ]
   },
   {
-    title: "Saved",
+    collapsible: { label: "Saved", icon: "heart" },
     items: [
-      { label: "Favorites", href: "/user-dashboard/favorites", icon: "heart" },
-      { label: "Superlikes", href: "/user-dashboard/superlikes", icon: "star" },
+      { label: "Favorites", href: "/user-dashboard/favorites" },
+      { label: "Superlikes", href: "/user-dashboard/superlikes" },
     ]
   },
   {
-    title: "Account",
+    collapsible: { label: "Account", icon: "user" },
     items: [
-      { label: "Profile", href: "/user-dashboard/profile", icon: "circle-user" },
-      { label: "Settings", href: "/user-dashboard/settings", icon: "settings-2" },
+      { label: "Profile", href: "/user-dashboard/profile" },
+      { label: "Settings", href: "/user-dashboard/settings" },
     ]
   },
 ];
@@ -48,8 +48,8 @@ export default async function UserDashboardLayout({ children }: { children: Reac
 
   return (
     <WebSocketProvider userId={user.id} autoConnect>
-      <DashboardLayout>
-        <Sidebar user={user} sections={navSections} />
+      <DashboardLayout enableRightPanel>
+        <AppSidebar user={user} sections={navSections} />
         <DashboardContent>{children}</DashboardContent>
       </DashboardLayout>
     </WebSocketProvider>

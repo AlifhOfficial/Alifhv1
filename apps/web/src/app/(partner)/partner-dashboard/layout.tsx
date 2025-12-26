@@ -1,19 +1,32 @@
 import { DashboardLayout, DashboardContent } from "@/components/dashboard-components/dashboard-layout";
-import { Sidebar } from "@/components/dashboard-components/sidebar";
+import { AppSidebar } from "@/components/dashboard-components/app-sidebar";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { WebSocketProvider } from "@/providers/websocket-provider";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-const navItems = [
-  { label: "Overview", href: "/partner-dashboard", icon: "layout-dashboard" },
-  { label: "Inventory", href: "/partner-dashboard/inventory", icon: "package" },
-  { label: "Bookings", href: "/partner-dashboard/bookings", icon: "calendar" },
-  // V1: Messaging moved to staff-dashboard - partner owners access via staff role
-  { label: "Basic Profile", href: "/partner-dashboard/basic", icon: "building" },
-  { label: "Full Settings", href: "/partner-dashboard/profile", icon: "settings" },
-  { label: "Staff", href: "/partner-dashboard/staff", icon: "users" },
+const navSections = [
+  {
+    items: [
+      { label: "Overview", href: "/partner-dashboard", icon: "layout-dashboard" },
+    ]
+  },
+  {
+    collapsible: { label: "Business", icon: "briefcase" },
+    items: [
+      { label: "Inventory", href: "/partner-dashboard/inventory" },
+      { label: "Bookings", href: "/partner-dashboard/bookings" },
+    ]
+  },
+  {
+    collapsible: { label: "Settings", icon: "settings" },
+    items: [
+      { label: "Basic Profile", href: "/partner-dashboard/basic" },
+      { label: "Full Settings", href: "/partner-dashboard/profile" },
+      { label: "Staff", href: "/partner-dashboard/staff" },
+    ]
+  },
 ];
 
 export default async function PartnerDashboardLayout({ children }: { children: React.ReactNode }) {
@@ -27,7 +40,7 @@ export default async function PartnerDashboardLayout({ children }: { children: R
   return (
     <WebSocketProvider userId={user.id} autoConnect>
       <DashboardLayout enableRightPanel>
-        <Sidebar user={user} items={navItems} />
+        <AppSidebar user={user} sections={navSections} />
         <DashboardContent>{children}</DashboardContent>
       </DashboardLayout>
     </WebSocketProvider>

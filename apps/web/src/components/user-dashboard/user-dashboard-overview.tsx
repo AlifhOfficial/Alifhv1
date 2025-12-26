@@ -226,8 +226,8 @@ export function UserDashboardOverview({ user }: UserDashboardOverviewProps) {
   const firstName = user?.profile?.firstName || user?.name?.split(' ')[0] || 'there';
   const lastName = user?.profile?.lastName || user?.name?.split(' ')[1] || '';
   const fullName = firstName && lastName ? `${firstName} ${lastName}` : (user?.name || 'User');
-  // Profile avatar takes priority, OAuth image as fallback
-  const profileAvatar = user?.profile?.avatar || null;
+  // Use consistent avatar props with other components
+  const profileAvatar = user?.profile?.avatarUrl || user?.avatarUrl || null;
   const oauthImage = user?.image || null;
   const kycVerified = user?.profile?.kycVerified || false;
   const locationEmirate = user?.profile?.locationEmirate || null;

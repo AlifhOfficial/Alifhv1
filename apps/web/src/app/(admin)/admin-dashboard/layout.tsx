@@ -1,20 +1,44 @@
 import { DashboardLayout, DashboardContent } from "@/components/dashboard-components/dashboard-layout";
-import { Sidebar } from "@/components/dashboard-components/sidebar";
+import { AppSidebar } from "@/components/dashboard-components/app-sidebar";
 import { requireRole } from "@/lib/auth/roles";
 import { WebSocketProvider } from "@/providers/websocket-provider";
 
 export const dynamic = "force-dynamic";
 
-const navItems = [
-  { label: "Overview", href: "/admin-dashboard", icon: "layout-dashboard" },
-  { label: "Listings", href: "/admin-dashboard/listings", icon: "car" },
-  { label: "Active Partners", href: "/admin-dashboard/partners", icon: "building" },
-  { label: "Partner Requests", href: "/admin-dashboard/partner-requests", icon: "inbox" },
-  { label: "Ban Appeals", href: "/admin-dashboard/ban-appeals", icon: "alert-circle" },
-  { label: "KYC Management", href: "/admin-dashboard/kyc", icon: "shield-check" },
-  { label: "Reviews", href: "/admin-dashboard/reviews", icon: "star" },
-  { label: "Users", href: "/admin-dashboard/users", icon: "users" },
-  { label: "Audit Logs", href: "/admin-dashboard/audit-logs", icon: "file-text" },
+const navSections = [
+  {
+    items: [
+      { label: "Overview", href: "/admin-dashboard", icon: "layout-dashboard" },
+    ]
+  },
+  {
+    collapsible: { label: "Content", icon: "file-text" },
+    items: [
+      { label: "Listings", href: "/admin-dashboard/listings" },
+      { label: "Reviews", href: "/admin-dashboard/reviews" },
+    ]
+  },
+  {
+    collapsible: { label: "Partners", icon: "building" },
+    items: [
+      { label: "Active Partners", href: "/admin-dashboard/partners" },
+      { label: "Partner Requests", href: "/admin-dashboard/partner-requests" },
+    ]
+  },
+  {
+    collapsible: { label: "Users", icon: "users" },
+    items: [
+      { label: "All Users", href: "/admin-dashboard/users" },
+      { label: "Ban Appeals", href: "/admin-dashboard/ban-appeals" },
+      { label: "KYC Management", href: "/admin-dashboard/kyc" },
+    ]
+  },
+  {
+    collapsible: { label: "System", icon: "settings" },
+    items: [
+      { label: "Audit Logs", href: "/admin-dashboard/audit-logs" },
+    ]
+  },
 ];
 
 export default async function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
@@ -22,8 +46,8 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
 
   return (
     <WebSocketProvider userId={user.id} autoConnect>
-      <DashboardLayout>
-        <Sidebar user={user} items={navItems} />
+      <DashboardLayout enableRightPanel>
+        <AppSidebar user={user} sections={navSections} />
         <DashboardContent>{children}</DashboardContent>
       </DashboardLayout>
     </WebSocketProvider>
