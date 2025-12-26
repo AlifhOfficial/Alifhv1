@@ -1,0 +1,268 @@
+/**
+ * Staff Profile Component
+ * Edit work identity - display name, work email, work phone
+ * Following profile-view design system
+ */
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useToast } from '@/hooks/use-toast';
+import { User, Mail, Phone, Loader2, Info } from 'lucide-react';
+import { cn } from '@/utils/cn';
+
+interface StaffProfileData {
+  id: string;
+  displayName: string | null;
+  workEmail: string | null;
+  workPhone: string | null;
+  title: string | null;
+  department: string | null;
+  role: string;
+}
+
+export function StaffProfile() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
+  const [editing, setEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    displayName: '',
+    workEmail: '',
+    workPhone: '',
+  });
+
+  // Fetch current profile
+  const { data: profileData, isLoading } = useQuery({
+    queryKey: ['staff', 'profile'],
+    queryFn: async () => {
+      const res = await fetch('/api/partner/staff/profile');
+      if (!res.ok) throw new Error('Failed to fetch profile');
+      return res.json();
+    },
+  });
+
+  const profile: StaffProfileData | null = profileData?.data || null;
+
+  // Populate form when data loads
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        displayName: profile.displayName || '',
+        workEmail: profile.workEmail || '',
+        workPhone: profile.workPhone || '',
+      });
+    }
+  }, [profile]);
+
+  // Update mutation
+  const updateMutation = useMutation({
+    mutationFn: async (data: typeof formData) => {
+      const res = await fetch('/api/partner/staff/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to update profile');
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['staff', 'profile'] });
+      toast({ title: 'Profile saved' });
+      setEditing(false);
+    },
+    onError: (error) => {
+      toast({
+        title: 'Failed to save',
+        description: (error as Error).message,
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const handleSave = () => {
+    updateMutation.mutate(formData);
+  };
+
+  const handleCancel = () => {
+    if (profile) {
+      setFormData({
+        displayName: profile.displayName || '',
+        workEmail: profile.workEmail || '',
+        workPhone: profile.workPhone || '',
+      });
+    }
+    setEditing(false);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-muted-foreground">Unable to load profile</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background pb-32">
+      <div className="max-w-4xl mx-auto px-8 py-16 space-y-16">
+        
+        {/* Header */}
+        <div className="flex flex-col md:flex-row gap-8 items-start md:items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Work Profile</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Set up your work identity for client interactions
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {editing ? (
+              <>
+                <button
+                  onClick={handleCancel}
+                  disabled={updateMutation.isPending}
+                  className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={updateMutation.isPending}
+                  className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium transition-colors disabled:opacity-50"
+                >
+                  {updateMutation.isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  Save Changes
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => setEditing(true)}
+                className="px-5 py-2 rounded-full border border-border bg-background text-sm font-medium hover:bg-secondary/50 transition-colors"
+              >
+                Edit Profile
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Info Banner */}
+        <div className="rounded-xl bg-secondary/20 border border-border/40 p-4">
+          <div className="flex gap-3">
+            <Info className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+            <div className="text-sm">
+              <p className="font-medium mb-1">Why separate work details?</p>
+              <p className="text-muted-foreground">
+                Your display name will be shown to clients instead of your personal name. 
+                Work email and phone are used for business communications, keeping your personal contact private.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Form Sections */}
+        <div className="space-y-12">
+          
+          {/* Work Identity */}
+          <section className="space-y-6">
+            <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
+              <h3 className="text-lg font-medium tracking-tight">Work Identity</h3>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">Display Name</label>
+                <input
+                  value={formData.displayName}
+                  onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
+                  disabled={!editing}
+                  placeholder="e.g. Ahmed, Alex, Sarah"
+                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/30"
+                />
+                <p className="text-xs text-muted-foreground">
+                  This name will be shown to clients
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">Work Email</label>
+                <input
+                  type="email"
+                  value={formData.workEmail}
+                  onChange={(e) => setFormData({ ...formData, workEmail: e.target.value })}
+                  disabled={!editing}
+                  placeholder="sales@company.ae"
+                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/30"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Clients will contact you at this email
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">Work Phone</label>
+                <input
+                  type="tel"
+                  value={formData.workPhone}
+                  onChange={(e) => setFormData({ ...formData, workPhone: e.target.value })}
+                  disabled={!editing}
+                  placeholder="+971 50 123 4567"
+                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/30"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Your work number for client calls
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Role Information */}
+          <section className="space-y-6">
+            <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
+              <h3 className="text-lg font-medium tracking-tight">Role Information</h3>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 border-y border-border divide-x divide-border bg-background">
+              <div className="p-8 flex flex-col gap-3">
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Role</span>
+                <span className="text-lg font-medium text-foreground capitalize">{profile.role}</span>
+              </div>
+              <div className="p-8 flex flex-col gap-3">
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Title</span>
+                <span className="text-lg font-medium text-foreground">{profile.title || 'Not set'}</span>
+              </div>
+              <div className="p-8 flex flex-col gap-3">
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Department</span>
+                <span className="text-lg font-medium text-foreground">{profile.department || 'Not set'}</span>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+        {/* Footer */}
+        <footer className="pt-12 border-t border-border/40">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-muted-foreground">
+            <p>© {new Date().getFullYear()} ALIFH LLC</p>
+            <div className="flex gap-6">
+              <a href="/data-policy" className="hover:text-foreground transition-colors">Data Policy</a>
+              <a href="/terms" className="hover:text-foreground transition-colors">Terms of Service</a>
+              <a href="/privacy" className="hover:text-foreground transition-colors">Privacy</a>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+  );
+}

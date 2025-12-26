@@ -35,6 +35,8 @@ export const userProfile = pgTable('user_profile', {
   
   inventoryCount: integer('inventory_count').default(0).notNull(),
   rating: doublePrecision('rating').default(0.0),
+  platformRating: doublePrecision('platform_rating'),
+  platformReviewCount: integer('platform_review_count').default(0).notNull(),
   
   avgResponseTime: integer('avg_response_time'),
   lastActiveAt: timestamp('last_active_at'),

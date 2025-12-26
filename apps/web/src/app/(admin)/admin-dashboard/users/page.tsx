@@ -15,10 +15,7 @@ export const metadata = {
 
 export default async function AdminUsersPage() {
   return (
-    <DashboardDisplayArea
-      title="User Management"
-      description="View and manage all user accounts"
-    >
+    <DashboardDisplayArea>
       <div className="p-6 md:p-10">
         <AdminUsersList />
       </div>

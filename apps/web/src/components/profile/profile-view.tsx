@@ -8,16 +8,17 @@
 'use client';
 
 import React, { useState, useEffect, lazy, Suspense } from 'react';
-import { useUserProfile, type UserProfileUpdate } from '@/hooks/profile';
+import { useUserProfile, type UserProfileUpdate, useUserStats } from '@/hooks/profile';
 import { useToast } from '@/hooks/use-toast';
 import { 
   MapPin, 
   Loader2, 
   Camera,
   Check,
-  X
+  AlertCircle,
+  Star
 } from 'lucide-react';
-import { Avatar } from '@/components/ui/data-display/avatar';
+import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { cn } from '@/utils/cn';
 
 const LocationMap = lazy(() => 
@@ -56,6 +57,7 @@ interface ProfileViewProps {
 
 export function ProfileView({ userName, userEmail }: ProfileViewProps) {
   const { profile, updateProfile, refresh } = useUserProfile();
+  const { stats } = useUserStats();
   const { toast } = useToast();
 
   const [form, setForm] = useState({
@@ -313,9 +315,9 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
                   avatarUploading ? "opacity-50" : "hover:opacity-90"
                 )}
               >
-                <Avatar 
-                  src={profile?.avatarUrl} 
-                  initials={initials} 
+                <UserAvatar 
+                  profileAvatar={profile?.avatarUrl}
+                  name={displayName}
                   size="xl" 
                   className="w-24 h-24 border border-border/40 shadow-sm" 
                 />
@@ -331,24 +333,35 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
             </div>
             
             <div className="space-y-1">
-              <h1 className="text-2xl font-semibold tracking-tight text-foreground">{displayName}</h1>
-              <p className="text-sm text-muted-foreground">{userEmail}</p>
-              
-              <div className="flex flex-wrap gap-3 pt-4">
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-semibold tracking-tight text-foreground">{displayName}</h1>
                 {profile?.kycVerified && (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-primary text-primary-foreground text-xs font-medium tracking-wide uppercase shadow-sm">
-                    <Check className="w-3.5 h-3.5" />
-                    Verified
-                  </span>
+                  <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
+                    <Check className="w-3 h-3 text-white" />
+                  </div>
                 )}
-                {profile?.badges?.map((badge, i) => (
-                  <span key={i} className="px-3 py-1 rounded-md bg-secondary text-secondary-foreground text-xs font-medium border border-border/50">
-                    {badge}
-                  </span>
-                ))}
-                <span className="text-xs text-muted-foreground py-1 flex items-center">
+              </div>
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-foreground/70">{userEmail}</p>
+                <span className="text-sm text-foreground/70">•</span>
+                <span className="text-sm text-foreground/70">
                   Member since {memberSinceYear ?? '—'}
                 </span>
+              </div>
+              
+              <div className="flex flex-wrap gap-3 pt-4">
+                {profile?.kycVerified ? (
+                  <span className="text-xs font-medium text-foreground/80">
+                    Verified
+                  </span>
+                ) : (
+                  <a 
+                    href="/kyc/verify" 
+                    className="text-xs text-blue-500 hover:text-blue-600 font-medium transition-colors"
+                  >
+                    Verify Account
+                  </a>
+                )}
               </div>
             </div>
           </div>
@@ -366,7 +379,7 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
                 <button
                   onClick={save}
                   disabled={saving}
-                  className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-colors disabled:opacity-50"
                 >
                   {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   Save Changes
@@ -383,39 +396,50 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
           </div>
         </div>
 
-        {/* Stats Grid - Minimalist & High Contrast */}
-        <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border divide-x divide-border bg-background">
-          <div className="p-8 flex flex-col gap-3">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Status</span>
-            <span className="text-lg font-medium text-foreground flex items-center gap-2">
-              {profile?.kycVerified ? (
-                <>
-                  <Check className="w-4 h-4 text-primary" />
-                  Verified
-                </>
-              ) : 'Unverified'}
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-5 border-y border-border divide-x divide-border">
+          <div className="p-8 flex flex-col gap-2">
+            <span className="text-xs font-medium text-muted-foreground">Listings</span>
+            <span className="text-xl font-semibold text-foreground">
+              {stats?.listingsCount ?? '—'}
             </span>
           </div>
-          <div className="p-8 flex flex-col gap-3">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Completion</span>
-            <div className="flex items-center gap-3">
-              <span className="text-lg font-medium text-foreground">{completionPercent}%</span>
-              <div className="flex-1 h-1 bg-secondary rounded-full overflow-hidden max-w-[80px]">
-                <div 
-                  className="h-full bg-primary transition-all duration-500" 
-                  style={{ width: `${completionPercent}%` }}
-                />
-              </div>
-            </div>
+          <div className="p-8 flex flex-col gap-2">
+            <span className="text-xs font-medium text-muted-foreground">Sold</span>
+            <span className="text-xl font-semibold text-foreground">
+              {stats?.soldCount ?? '—'}
+            </span>
           </div>
-          <div className="p-8 flex flex-col gap-3">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Tags</span>
-            <span className="text-lg font-medium text-foreground">{form.tags.length} / 3</span>
+          <div className="p-8 flex flex-col gap-2">
+            <span className="text-xs font-medium text-muted-foreground">Response Rate</span>
+            <span className="text-xl font-semibold text-foreground">
+              {stats?.responseRate !== null && stats?.responseRate !== undefined ? `${stats.responseRate}%` : '—'}
+            </span>
           </div>
-          <div className="p-8 flex flex-col gap-3">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Location</span>
-            <span className="text-lg font-medium text-foreground truncate" title={`${form.city}, ${form.emirate}`}>
-              {form.city || 'Not set'}
+          <div className="p-8 flex flex-col gap-2">
+            <span className="text-xs font-medium text-muted-foreground">Rating</span>
+            <span className="text-xl font-semibold text-foreground">
+              {profile?.platformRating ? (
+                <span className="flex items-center gap-1.5">
+                  <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                  {profile.platformRating.toFixed(1)}
+                </span>
+              ) : '—'}
+            </span>
+          </div>
+          <div className="p-8 flex flex-col gap-2">
+            <span className="text-xs font-medium text-muted-foreground">Status</span>
+            <span className="text-xl font-semibold">
+              {profile?.kycVerified ? (
+                <span className="flex items-center gap-2 text-foreground">
+                  <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
+                    <Check className="w-3 h-3 text-white" />
+                  </div>
+                  Verified
+                </span>
+              ) : (
+                <span className="text-muted-foreground">Unverified</span>
+              )}
             </span>
           </div>
         </div>
@@ -423,51 +447,117 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
         {/* Form Sections */}
         <div className="space-y-12">
           
+          {/* Awards & Badges */}
+          <section className="space-y-6">
+            <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
+              <h3 className="text-lg font-medium tracking-tight">Awards & Badges</h3>
+            </div>
+            
+            <div className="rounded-xl border border-border bg-card p-6">
+              {profile?.badges && profile.badges.length > 0 ? (
+                <div className="flex flex-wrap gap-3">
+                  {profile.badges.map((badge, i) => (
+                    <span 
+                      key={i} 
+                      className="px-4 py-2 rounded-md bg-muted/20 text-foreground text-sm font-medium border border-border"
+                    >
+                      {badge}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <p className="text-sm text-muted-foreground mb-2">No badges earned yet</p>
+                  <a 
+                    href="/badges" 
+                    className="text-sm text-blue-500 hover:text-blue-600 font-medium transition-colors"
+                  >
+                    Learn more about badges
+                  </a>
+                </div>
+              )}
+            </div>
+          </section>
+          
           {/* Personal Information */}
           <section className="space-y-6">
             <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
               <h3 className="text-lg font-medium tracking-tight">Personal Information</h3>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+            <div className="rounded-xl border border-border bg-card p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">First Name</label>
+                <label className="text-sm font-medium text-foreground">First Name</label>
                 <input
                   value={form.firstName}
                   onChange={(e) => updateField({ firstName: e.target.value })}
                   disabled={!editing}
                   placeholder="Enter first name"
-                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/30"
+                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">Last Name</label>
+                <label className="text-sm font-medium text-foreground">Last Name</label>
                 <input
                   value={form.lastName}
                   onChange={(e) => updateField({ lastName: e.target.value })}
                   disabled={!editing}
                   placeholder="Enter last name"
-                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/30"
+                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">Email Address</label>
+                <label className="text-sm font-medium text-foreground flex items-center justify-between">
+                  <span>Email Address</span>
+                  {profile?.emailVerified ? (
+                    <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
+                      <Check className="w-3 h-3 text-white" />
+                    </div>
+                  ) : (
+                    <a 
+                      href="/verify-email" 
+                      className="text-xs text-blue-500 hover:text-blue-600 font-medium transition-colors"
+                    >
+                      Verify
+                    </a>
+                  )}
+                </label>
                 <input
                   value={userEmail ?? ''}
                   disabled
-                  className="w-full h-10 bg-transparent border-b border-border text-muted-foreground/70 cursor-not-allowed outline-none"
+                  className="w-full h-10 bg-transparent border-b border-border text-foreground/60 cursor-not-allowed outline-none"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">Phone Number</label>
+                <label className="text-sm font-medium text-foreground flex items-center justify-between">
+                  <span>Phone Number</span>
+                  {profile?.phoneVerified ? (
+                    <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
+                      <Check className="w-3 h-3 text-white" />
+                    </div>
+                  ) : form.phone ? (
+                    <a 
+                      href="/verify-phone" 
+                      className="text-xs text-blue-500 hover:text-blue-600 font-medium transition-colors"
+                    >
+                      Verify
+                    </a>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">
+                      Not set
+                    </span>
+                  )}
+                </label>
                 <input
                   value={form.phone}
                   onChange={(e) => updateField({ phone: e.target.value })}
                   disabled={!editing}
                   placeholder="+971 50 000 0000"
-                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/30"
+                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
                 />
               </div>
+            </div>
             </div>
           </section>
 
@@ -476,14 +566,14 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
             <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
               <h3 className="text-lg font-medium tracking-tight">Bio</h3>
             </div>
-            <div className="space-y-2">
+            <div className="rounded-xl border border-border bg-card p-6">
               <textarea
                 value={form.bio}
                 onChange={(e) => updateField({ bio: e.target.value })}
                 disabled={!editing}
                 rows={4}
                 placeholder="Tell others about yourself..."
-                className="w-full p-4 bg-secondary/20 rounded-xl border-0 focus:ring-1 focus:ring-foreground/20 resize-none transition-all disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40"
+                className="w-full p-4 bg-card rounded-xl border border-border focus:border-foreground outline-none resize-none transition-all disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
               />
               <p className="text-xs text-muted-foreground text-right">
                 {form.bio.length} characters
@@ -498,7 +588,8 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
               <span className="text-sm text-muted-foreground">{form.tags.length}/3 selected</span>
             </div>
             
-            <div className="flex flex-wrap gap-3">
+            <div className="rounded-xl border border-border bg-card p-6">
+              <div className="flex flex-wrap gap-3">
               {TAGS.map(tag => {
                 const isSelected = form.tags.includes(tag);
                 return (
@@ -507,10 +598,10 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
                     onClick={() => editing && toggleTag(tag)}
                     disabled={!editing}
                     className={cn(
-                      "px-4 py-2.5 rounded-md text-sm font-medium transition-all border",
+                      "px-4 py-2 rounded-md text-sm font-medium transition-all border",
                       isSelected 
-                        ? "bg-primary text-primary-foreground border-primary shadow-sm" 
-                        : "bg-background text-muted-foreground border-input hover:border-foreground/50 hover:text-foreground",
+                        ? "bg-blue-500 text-white border-blue-500" 
+                        : "bg-muted/20 text-foreground border-border hover:border-blue-500/40 hover:bg-muted/30",
                       !editing && !isSelected && "opacity-50",
                       !editing && "cursor-default"
                     )}
@@ -520,6 +611,7 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
                 );
               })}
             </div>
+          </div>
           </section>
 
           {/* Location */}
@@ -546,7 +638,7 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
                   onChange={(e) => updateField({ city: e.target.value })}
                   disabled={!editing}
                   placeholder="Dubai"
-                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/30"
+                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
                 />
               </div>
               <div className="space-y-2">
@@ -556,7 +648,7 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
                   onChange={(e) => updateField({ emirate: e.target.value })}
                   disabled={!editing}
                   placeholder="Dubai"
-                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/30"
+                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
                 />
               </div>
             </div>

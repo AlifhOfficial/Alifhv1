@@ -37,7 +37,27 @@ export const runtime = 'nodejs';
 
 ---
 
-## 3. Auth Check
+## 3. Runtime Selection
+
+```typescript
+// Default - use for ALL database operations
+export const runtime = 'nodejs';
+
+// Edge - ONLY for external API proxies (no DB)
+export const runtime = 'edge';
+```
+
+**When to use:**
+| Runtime | Use For |
+|---------|---------|
+| `nodejs` | Any Drizzle/DB queries, auth, heavy logic |
+| `edge` | External API calls only (S3, webhooks) |
+
+**Rule:** If it touches the database → `nodejs`. No exceptions.
+
+---
+
+## 4. Auth Check
 
 ```typescript
 // Required auth

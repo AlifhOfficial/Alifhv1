@@ -7,8 +7,8 @@
  * 
  * Flow:
  * 1. Validates email exists in database
- * 2. Returns success/error to client
- * 3. Client proceeds to Better Auth's /api/auth/[...auth]/magic-link
+ * 2. If valid, triggers Better Auth magic link email
+ * 3. Returns result to client
  * 
  * Standards:
  * - Returns 400 for validation errors
@@ -18,10 +18,12 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { auth } from "@/lib/auth";
 import { validateUserExists } from "../validation-utils";
 
 const MagicLinkSchema = z.object({
   email: z.string().email('Invalid email address'),
+  callbackURL: z.string().optional(), // Can be relative path like "/dashboard"
 });
 
 export async function POST(request: NextRequest) {
@@ -39,7 +41,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { email } = result.data;
+    const { email, callbackURL } = result.data;
 
     const validation = await validateUserExists(email);
 
@@ -53,14 +55,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ 
-      success: true,
-      message: "User validated. Proceed with magic link request."
+    console.log("📧 Proceeding with magic link for existing user:", email);
+
+    // Send the magic link through Better Auth
+    const authResult = await auth.api.signInMagicLink({
+      body: { email, callbackURL },
+      headers: request.headers,
     });
+
+    return NextResponse.json(authResult);
   } catch (error: any) {
     console.error("[magic-link] Error", error);
     return NextResponse.json(
-      { error: error?.message || "Failed to validate user for magic link" },
+      { error: error?.message || "Failed to send magic link" },
       { status: 500 }
     );
   }

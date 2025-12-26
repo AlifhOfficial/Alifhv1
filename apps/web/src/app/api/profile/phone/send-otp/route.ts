@@ -25,7 +25,7 @@ import { getSessionUser } from '@/lib/auth/session-context';
 import { sendOTP, generateOTP, isValidPhoneNumber } from "@/lib/otp-service";
 import { otpStore } from "@/lib/otp-store";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 const SendOTPSchema = z.object({
   phoneNumber: z.string().regex(/^\+[1-9]\d{1,14}$/, 'Phone number must be in E.164 format (e.g., +971501234567)'),

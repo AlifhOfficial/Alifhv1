@@ -1,0 +1,4 @@
+CREATE INDEX "car_listing_userId_createdAt_idx" ON "car_listing" USING btree ("user_id","created_at" DESC NULLS LAST);--> statement-breakpoint
+CREATE INDEX "car_listing_userId_updatedAt_idx" ON "car_listing" USING btree ("user_id","updated_at" DESC NULLS LAST);--> statement-breakpoint
+CREATE INDEX "car_listing_partnerId_updatedAt_idx" ON "car_listing" USING btree ("partner_id","updated_at" DESC NULLS LAST);--> statement-breakpoint
+CREATE INDEX "car_listing_moderationStatus_lifecycleStatus_publishedAt_createdAt_idx" ON "car_listing" USING btree ("moderation_status","lifecycle_status","published_at" DESC NULLS LAST,"created_at" DESC NULLS LAST);

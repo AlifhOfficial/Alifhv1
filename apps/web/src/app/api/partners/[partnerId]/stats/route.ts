@@ -1,0 +1,55 @@
+/**
+ * Partner Stats API
+ * GET - Calculate dynamic partner statistics
+ * 
+ * Expensive queries - results cached for 5min via React Query
+ * 
+ * Calculates:
+ * - inventoryCount: Active listings
+ * - totalSales: Completed sales
+ * - responseTime: Avg minutes to first response
+ * - responseRate: % of inquiries answered
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { getSessionUser } from '@/lib/auth/session-context';
+import { calculatePartnerStats } from '@alifh/database/server';
+
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ partnerId: string }> }
+) {
+  try {
+    const user = await getSessionUser();
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const { partnerId } = await params;
+
+    // Authorization: partner staff only
+    const hasAccess = user.partnerMemberships?.some(m => m.partnerId === partnerId);
+    if (!hasAccess) {
+      return NextResponse.json(
+        { error: 'Forbidden' },
+        { status: 403 }
+      );
+    }
+
+    const stats = await calculatePartnerStats(partnerId);
+
+    return NextResponse.json(stats);
+  } catch (error) {
+    console.error('[Partner Stats API] Error:', error);
+    return NextResponse.json(
+      { error: 'Failed to calculate stats' },
+      { status: 500 }
+    );
+  }
+}

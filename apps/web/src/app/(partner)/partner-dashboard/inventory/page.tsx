@@ -14,14 +14,11 @@ export default async function PartnerInventoryPage() {
 
   if (!membership?.partnerId) {
     return (
-      <DashboardDisplayArea
-        title="Inventory"
-        description="Manage your vehicle listings"
-      >
-        <div className="p-6 md:p-10">
-          <div className="bg-card border border-border rounded-lg p-8 text-center">
-            <h2 className="text-xl font-medium text-foreground mb-2">No Partner Access</h2>
-            <p className="text-muted-foreground">You need to be associated with a partner to manage inventory.</p>
+      <DashboardDisplayArea>
+        <div className="max-w-4xl mx-auto px-6 py-16">
+          <div className="rounded-xl border border-border p-8 text-center">
+            <h2 className="text-lg font-medium text-foreground mb-2">No Partner Access</h2>
+            <p className="text-sm text-muted-foreground">You need to be associated with a partner to manage inventory.</p>
           </div>
         </div>
       </DashboardDisplayArea>
@@ -30,13 +27,13 @@ export default async function PartnerInventoryPage() {
 
   return (
     <DashboardDisplayArea
-      title="Inventory"
-      description="Manage your vehicle listings"
+     
     >
       <PartnerInventoryClient
         partnerId={membership.partnerId}
         partnerName={membership.partnerName || "Partner"}
         partnerVerified={false}
+        userRole={membership.staffRole}
       />
     </DashboardDisplayArea>
   );

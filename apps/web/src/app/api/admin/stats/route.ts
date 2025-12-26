@@ -30,32 +30,17 @@ const CACHE_HEADERS_NO_CACHE = {
 } as const;
 
 // ============================================================================
-// Helper: Check Admin Role
-// ============================================================================
-
-async function checkAdminAccess(user: any) {
-  return user.role === 'admin' || user.role === 'super_admin';
-}
-
-// ============================================================================
 // GET - Dashboard Statistics
 // ============================================================================
 
 export async function GET(req: NextRequest) {
   try {
     const user = await getSessionUser();
-    if (!user) {
+    if (!user || (user.role !== 'admin' && user.role !== 'super_admin')) {
       return NextResponse.json({ 
         error: 'Unauthorized',
         requiresAuth: true 
       }, { status: 401 });
-    }
-
-    const isAdmin = await checkAdminAccess(user);
-    if (!isAdmin) {
-      return NextResponse.json({ 
-        error: 'Forbidden: Admin access required' 
-      }, { status: 403 });
     }
 
     // Fetch statistics in parallel
@@ -75,13 +60,9 @@ export async function GET(req: NextRequest) {
       headers: CACHE_HEADERS_NO_CACHE,
     });
 
-  } catch (error) {
-    console.error('[Admin Stats API] Error:', error);
+  } catch {
     return NextResponse.json(
-      { 
-        error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error',
-      },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

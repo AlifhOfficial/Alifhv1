@@ -11,7 +11,7 @@
  */
 
 import { db } from '../../dbclient';
-import { partnerRequest, user } from '../../schema';
+import { partnerRequest, user, partner, partnerStaff } from '../../schema';
 import { eq, and, desc, sql } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 
@@ -210,6 +210,73 @@ export async function reviewPartnerRequest(input: ReviewPartnerRequestInput) {
     .returning();
   
   return updated || null;
+}
+
+/**
+ * Create partner and partner staff after approval
+ * Called after partner request is approved
+ * 
+ * Note: A user CAN be staff at another company AND become an owner of a new company.
+ * The unique constraint is (partnerId, userId) - one person, one seat per company.
+ * This allows the same user to be owner of Company A AND staff at Company B.
+ */
+export async function createPartnerFromRequest(requestId: string, requestData: any) {
+  const partnerId = createId();
+  const staffId = createId();
+
+  // Create partner record
+  const newPartnerResult = await db
+    .insert(partner)
+    .values({
+      id: partnerId,
+      companyNameLegal: requestData.companyNameLegal,
+      brandName: requestData.companyNameLegal, // Use company name as brand name
+      tradeLicense: requestData.tradeLicense,
+      tradeLicenseExpiry: requestData.tradeLicenseExpiry,
+      tradeLicenseDocumentUrl: requestData.tradeLicenseDocumentUrl,
+      vatNumber: requestData.vatNumber,
+      partnerType: requestData.partnerType,
+      status: 'active',
+      tier: 'standard',
+      email: requestData.userEmail || requestData.email,
+      phone: requestData.userPhone || '+971000000000', // Default phone
+      showroomCount: 1,
+    })
+    .returning();
+  
+  const newPartner = Array.isArray(newPartnerResult) ? newPartnerResult[0] : newPartnerResult;
+
+  // Create partner staff record (owner)
+  // Note: User can be owner of NEW company even if they're staff elsewhere
+  const newStaffResult = await db
+    .insert(partnerStaff)
+    .values({
+      id: staffId,
+      partnerId: partnerId,
+      userId: requestData.userId,
+      role: 'owner',
+      isOwner: true,
+      status: 'active',
+      displayName: requestData.userName || requestData.companyNameLegal,
+      workEmail: requestData.userEmail || requestData.email,
+      isPrimaryContact: true,
+      joinedAt: new Date(),
+      acceptedAt: new Date(),
+    })
+    .returning();
+  
+  const newStaff = Array.isArray(newStaffResult) ? newStaffResult[0] : newStaffResult;
+
+  // Link partner request to partner
+  await db
+    .update(partnerRequest)
+    .set({
+      partnerId,
+      updatedAt: new Date(),
+    })
+    .where(eq(partnerRequest.id, requestId));
+
+  return { partner: newPartner, staff: newStaff };
 }
 
 /**

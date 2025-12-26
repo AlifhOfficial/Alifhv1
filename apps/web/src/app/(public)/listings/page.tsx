@@ -29,7 +29,10 @@ interface Listing {
   isBlackMember?: boolean;
   status?: string;
   partnerName?: string | null;
+  partnerLogo?: string | null;
   partnerVerified?: boolean | null;
+  sellerName?: string | null;
+  sellerAvatarUrl?: string | null;
 }
 
 export default function InventoryPage() {
@@ -52,10 +55,7 @@ export default function InventoryPage() {
       }
       setError(null);
 
-      const response = await fetch(
-        `/api/listings/car-card?status=published&limit=${LIMIT}&offset=${currentOffset}`,
-        { credentials: 'include' }
-      );
+      const response = await fetch(`/api/listings/car-card?status=published&limit=${LIMIT}&offset=${currentOffset}`);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -64,10 +64,12 @@ export default function InventoryPage() {
 
       const data = await response.json();
       const newListings = data.data ?? [];
+      const meta = data.meta ?? {};
       
       setListings(prev => append ? [...prev, ...newListings] : newListings);
-      setTotalCount(data.meta?.total ?? newListings.length);
-      setHasMore(newListings.length === LIMIT);
+      // The API does not return a full total count (edge runtime). Use returned + hasMore.
+      setTotalCount(meta.returned ?? newListings.length);
+      setHasMore(meta.hasMore ?? (newListings.length === LIMIT));
       setOffset(currentOffset + newListings.length);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch listings');
@@ -191,7 +193,10 @@ export default function InventoryPage() {
                       images={listing.images}
                       qiScore={listing.qiScore}
                       partnerName={listing.partnerName || undefined}
+                      partnerLogo={listing.partnerLogo || undefined}
                       partnerVerified={listing.partnerVerified || undefined}
+                      sellerName={listing.sellerName || undefined}
+                      sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
                       isBlackMember={listing.isBlackMember || false}
                     />
                   ))}
@@ -217,7 +222,10 @@ export default function InventoryPage() {
                       images={listing.images}
                       qiScore={listing.qiScore}
                       partnerName={listing.partnerName || undefined}
+                      partnerLogo={listing.partnerLogo || undefined}
                       partnerVerified={listing.partnerVerified || undefined}
+                      sellerName={listing.sellerName || undefined}
+                      sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
                       isBlackMember={listing.isBlackMember || false}
                     />
                   ))}

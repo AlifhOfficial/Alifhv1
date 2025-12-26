@@ -1,44 +1,44 @@
 /**
  * Admin Users List Component
- * 
  * Displays all users with search, filtering, and detailed view
- * - Search by email/phone
- * - Filter by role
- * - View full user details
- * - Shows KYC status, partner memberships, etc.
+ * Following profile-view design system
  */
 
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import React from 'react';
-import { useAdminUsers, useAdminUserByEmail, useAdminUserByPhone, useAdminUserSearch } from '@/hooks/admin';
+import { useAdminUsers, useAdminUserByEmail, useAdminUserByPhone } from '@/hooks/admin';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/forms/select';
 import {
   Users,
   Mail,
   Phone,
   Calendar,
-  Shield,
   ShieldCheck,
   MapPin,
-  Star,
   Building2,
   Search,
-  Filter,
-  Loader2,
-  ChevronRight,
   CheckCircle2,
   XCircle,
   Crown,
   ShieldAlert,
   Ban,
+  ChevronRight,
 } from 'lucide-react';
 import { AdminUserDetailModal } from './admin-user-detail-modal';
+import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import type { AdminUserData } from '@/hooks/admin';
 
 // Custom hook for debounced value
 function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+  const [debouncedValue, setDebouncedValue] = React.useState<T>(value);
 
   React.useEffect(() => {
     const handler = setTimeout(() => {
@@ -56,14 +56,12 @@ function useDebounce<T>(value: T, delay: number): T {
 export function AdminUsersList() {
   const [searchType, setSearchType] = useState<'email' | 'phone'>('email');
   const [searchValue, setSearchValue] = useState('');
-  const [roleFilter, setRoleFilter] = useState<'user' | 'admin' | 'super_admin' | ''>('');
+  const [roleFilter, setRoleFilter] = useState<'user' | 'admin' | 'super_admin' | 'all'>('all');
   const [selectedUser, setSelectedUser] = useState<AdminUserData | null>(null);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   
-  // Debounce search value to prevent excessive API calls
   const debouncedSearchValue = useDebounce(searchValue, 500);
   
-  // Only search if we have enough characters and is a valid search
   const shouldSearch = useMemo(() => {
     const trimmed = debouncedSearchValue.trim();
     if (searchType === 'email') {
@@ -75,20 +73,17 @@ export function AdminUsersList() {
     return false;
   }, [debouncedSearchValue, searchType]);
   
-  // List all users (default view)
-  const { users, isLoading, pagination } = useAdminUsers({
+  const { users, isLoading } = useAdminUsers({
     limit: 20,
     sortBy: 'createdAt',
     sortOrder: 'desc',
   });
 
-  // Search user by email (only when we have a complete email format)
   const { user: emailUser, isLoading: emailLoading } = useAdminUserByEmail(
     shouldSearch && searchType === 'email' ? debouncedSearchValue : null,
     shouldSearch && searchType === 'email'
   );
 
-  // Search user by phone (only when we have enough digits)
   const { user: phoneUser, isLoading: phoneLoading } = useAdminUserByPhone(
     shouldSearch && searchType === 'phone' ? debouncedSearchValue : null,
     shouldSearch && searchType === 'phone'
@@ -98,8 +93,7 @@ export function AdminUsersList() {
   const searchedUser = searchType === 'email' ? emailUser : phoneUser;
   const displayUsers = shouldSearch && searchedUser ? [searchedUser] : users;
 
-  // Filter by role
-  const filteredUsers = roleFilter 
+  const filteredUsers = roleFilter && roleFilter !== 'all'
     ? displayUsers.filter(u => u.role === roleFilter)
     : displayUsers;
 
@@ -112,31 +106,29 @@ export function AdminUsersList() {
     const config = {
       super_admin: {
         icon: Crown,
-        color: 'text-purple-600 bg-purple-50 border-purple-200 dark:text-purple-400 dark:bg-purple-950/20 dark:border-purple-900/30',
+        color: 'bg-purple-500/10 text-purple-600 dark:text-purple-400',
         label: 'Super Admin',
       },
       admin: {
         icon: ShieldAlert,
-        color: 'text-blue-600 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-950/20 dark:border-blue-900/30',
+        color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
         label: 'Admin',
       },
       user: {
         icon: Users,
-        color: 'text-gray-600 bg-gray-50 border-gray-200 dark:text-gray-400 dark:bg-gray-950/20 dark:border-gray-900/30',
+        color: 'bg-foreground/10 text-foreground',
         label: 'User',
       },
     }[role] || {
       icon: Users,
-      color: 'text-muted-foreground bg-muted/20 border-border',
+      color: 'bg-foreground/10 text-foreground',
       label: role,
     };
 
     const Icon = config.icon;
 
     return (
-      <span
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-medium ${config.color}`}
-      >
+      <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-medium ${config.color}`}>
         <Icon className="w-3 h-3" />
         {config.label}
       </span>
@@ -146,234 +138,229 @@ export function AdminUsersList() {
   if (isLoading && !searchValue) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-card rounded-lg border border-border p-4">
-          <div className="flex items-center gap-2 mb-1">
-            <Users className="w-4 h-4 text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">Total Users</p>
-          </div>
-          <p className="text-2xl font-bold">{users.length}</p>
-        </div>
-        <div className="bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-900/30 p-4">
-          <div className="flex items-center gap-2 mb-1">
-            <ShieldCheck className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-            <p className="text-sm text-blue-600 dark:text-blue-400">Verified</p>
-          </div>
-          <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
-            {users.filter(u => u.profile?.kycVerified).length}
-          </p>
-        </div>
-        <div className="bg-purple-50 dark:bg-purple-950/20 rounded-lg border border-purple-200 dark:border-purple-900/30 p-4">
-          <div className="flex items-center gap-2 mb-1">
-            <Building2 className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-            <p className="text-sm text-purple-600 dark:text-purple-400">Partner Staff</p>
-          </div>
-          <p className="text-2xl font-bold text-purple-700 dark:text-purple-300">
-            {users.filter(u => u.partnerMemberships.length > 0).length}
-          </p>
-        </div>
-        <div className="bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-900/30 p-4">
-          <div className="flex items-center gap-2 mb-1">
-            <Ban className="w-4 h-4 text-red-600 dark:text-red-400" />
-            <p className="text-sm text-red-600 dark:text-red-400">Banned</p>
-          </div>
-          <p className="text-2xl font-bold text-red-700 dark:text-red-300">
-            {users.filter(u => u.banned).length}
-          </p>
-        </div>
-      </div>
-
-      {/* Search & Filters */}
-      <div className="flex flex-col md:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder={
-              searchType === 'email' 
-                ? 'Search by email (e.g., user@example.com)...' 
-                : 'Search by phone (min 5 digits)...'
-            }
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20"
-          />
-          {isSearching && (
-            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-muted-foreground" />
-          )}
+    <div className="max-w-6xl mx-auto space-y-16">
+      
+      {/* Stats */}
+      <section className="space-y-6">
+        <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
+          <h3 className="text-lg font-medium tracking-tight">Overview</h3>
         </div>
         
-        <div className="flex items-center gap-2">
-          <select
-            value={searchType}
-            onChange={(e) => setSearchType(e.target.value as 'email' | 'phone')}
-            className="px-3 py-2.5 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-          >
-            <option value="email">Email</option>
-            <option value="phone">Phone</option>
-          </select>
-
-          <div className="h-6 w-px bg-border" />
-
-          <Filter className="w-4 h-4 text-muted-foreground" />
-          <select
-            value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value as any)}
-            className="px-3 py-2.5 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-          >
-            <option value="">All Roles</option>
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-            <option value="super_admin">Super Admin</option>
-          </select>
+        <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border divide-x divide-border bg-background">
+          <div className="p-8 flex flex-col gap-3">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Total</span>
+            <span className="text-2xl font-semibold text-blue-500">{users.length}</span>
+          </div>
+          <div className="p-8 flex flex-col gap-3">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Verified</span>
+            <span className="text-2xl font-semibold text-green-500">
+              {users.filter(u => u.profile?.kycVerified).length}
+            </span>
+          </div>
+          <div className="p-8 flex flex-col gap-3">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Partner Staff</span>
+            <span className="text-2xl font-semibold text-foreground">
+              {users.filter(u => u.partnerMemberships.length > 0).length}
+            </span>
+          </div>
+          <div className="p-8 flex flex-col gap-3">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Banned</span>
+            <span className="text-2xl font-semibold text-red-500">
+              {users.filter(u => u.banned).length}
+            </span>
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* No Results */}
-      {searchValue && !searchedUser && !isSearching && (
-        <div className="bg-card rounded-lg border border-border p-8 text-center">
-          <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-          <h3 className="font-medium mb-1">No user found</h3>
-          <p className="text-sm text-muted-foreground">
-            No user found with {searchType}: "{searchValue}"
-          </p>
+      {/* Search & Filters */}
+      <section className="space-y-6">
+        <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
+          <h3 className="text-lg font-medium tracking-tight">Users</h3>
         </div>
-      )}
 
-      {/* Users List */}
-      <div className="space-y-3">
+        <div className="flex flex-col md:flex-row gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder={
+                searchType === 'email' 
+                  ? 'Search by email...' 
+                  : 'Search by phone...'
+              }
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              className="w-full pl-10 pr-4 h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors placeholder:text-muted-foreground/30"
+            />
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <Select value={searchType} onValueChange={(v) => setSearchType(v as 'email' | 'phone')}>
+              <SelectTrigger className="w-[100px]">
+                <SelectValue placeholder="Search by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="email">Email</SelectItem>
+                <SelectItem value="phone">Phone</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={roleFilter} onValueChange={(v) => setRoleFilter(v as any)}>
+              <SelectTrigger className="w-[130px]">
+                <SelectValue placeholder="All Roles" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Roles</SelectItem>
+                <SelectItem value="user">User</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="super_admin">Super Admin</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {searchValue && !searchedUser && !isSearching && (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <Users className="w-12 h-12 text-muted-foreground/30 mb-4" />
+            <p className="text-sm text-muted-foreground">
+              No user found with {searchType}: "{searchValue}"
+            </p>
+          </div>
+        )}
+
+        {/* Users List */}
         {filteredUsers.length > 0 ? (
-          filteredUsers.map((user) => (
-            <div
-              key={user.id}
-              className="bg-card rounded-lg border border-border p-6 hover:border-border/60 transition-colors"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-start gap-4">
-                  {/* Avatar */}
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold">
-                    {user.name.charAt(0).toUpperCase()}
-                  </div>
+          <div className="space-y-0 border border-border rounded-xl overflow-hidden divide-y divide-border">
+            {filteredUsers.map((user) => (
+              <div key={user.id} className="p-6 hover:bg-secondary/10 transition-colors">
+                
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-start gap-4">
+                    <UserAvatar
+                      src={user.profile?.avatar}
+                      name={user.name}
+                      size="md"
+                    />
 
-                  {/* User Info */}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-semibold text-lg">{user.name}</h3>
-                      {getRoleBadge(user.role)}
-                      {user.banned && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 text-xs text-red-600 dark:text-red-400">
-                          <Ban className="w-3 h-3" />
-                          Banned
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1.5">
-                        <Mail className="w-4 h-4" />
-                        {user.email}
-                        {user.emailVerified && (
-                          <CheckCircle2 className="w-3 h-3 text-green-500" />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-base font-medium text-foreground">{user.name}</h3>
+                        {getRoleBadge(user.role)}
+                        {user.banned && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-red-500/10 text-xs text-red-600 dark:text-red-400">
+                            <Ban className="w-3 h-3" />
+                            Banned
+                          </span>
                         )}
                       </div>
-                      
-                      {user.profile?.phone && (
+
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1.5">
-                          <Phone className="w-4 h-4" />
-                          {user.profile.phone}
-                          {user.phoneVerified && (
+                          <Mail className="w-3.5 h-3.5" />
+                          {user.email}
+                          {user.emailVerified && (
                             <CheckCircle2 className="w-3 h-3 text-green-500" />
                           )}
                         </div>
-                      )}
+                        
+                        {user.profile?.phone && (
+                          <div className="flex items-center gap-1.5">
+                            <Phone className="w-3.5 h-3.5" />
+                            {user.profile.phone}
+                            {user.phoneVerified && (
+                              <CheckCircle2 className="w-3 h-3 text-green-500" />
+                            )}
+                          </div>
+                        )}
 
-                      <div className="flex items-center gap-1.5">
-                        <Calendar className="w-4 h-4" />
-                        {new Date(user.createdAt).toLocaleDateString()}
+                        <div className="flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5" />
+                          {new Date(user.createdAt).toLocaleDateString('en-AE', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
+                        </div>
                       </div>
                     </div>
                   </div>
+
+                  <button
+                    onClick={() => handleViewDetails(user)}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium transition-colors"
+                  >
+                    View
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
                 </div>
 
-                <button
-                  onClick={() => handleViewDetails(user)}
-                  className="px-3 py-1.5 border border-border rounded-lg text-sm font-medium hover:bg-muted/50 transition-colors flex items-center gap-2"
-                >
-                  View Details
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Additional Info */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-border">
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">KYC Status</p>
-                  <div className="flex items-center gap-1.5">
-                    {user.profile?.kycVerified ? (
-                      <>
-                        <ShieldCheck className="w-4 h-4 text-green-500" />
-                        <span className="text-sm font-medium text-green-600 dark:text-green-400">Verified</span>
-                      </>
-                    ) : (
-                      <>
-                        <XCircle className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">Not Verified</span>
-                      </>
-                    )}
+                {/* Additional Info */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-border text-sm">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">KYC Status</p>
+                    <div className="flex items-center gap-1.5">
+                      {user.profile?.kycVerified ? (
+                        <>
+                          <ShieldCheck className="w-3.5 h-3.5 text-green-500" />
+                          <span className="text-green-500">Verified</span>
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="w-3.5 h-3.5 text-muted-foreground" />
+                          <span className="text-muted-foreground">Not Verified</span>
+                        </>
+                      )}
+                    </div>
                   </div>
+
+                  {user.profile?.locationEmirate && (
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1">Location</p>
+                      <div className="flex items-center gap-1.5">
+                        <MapPin className="w-3.5 h-3.5" />
+                        <span>{user.profile.locationEmirate}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {user.profile && user.profile.inventoryCount > 0 && (
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1">Listings</p>
+                      <span className="font-medium">{user.profile.inventoryCount}</span>
+                    </div>
+                  )}
+
+                  {user.partnerMemberships.length > 0 && (
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1">Partner Staff</p>
+                      <div className="flex items-center gap-1.5">
+                        <Building2 className="w-3.5 h-3.5 text-blue-500" />
+                        <span className="text-blue-500 font-medium">
+                          {user.partnerMemberships.length} Partner{user.partnerMemberships.length > 1 ? 's' : ''}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
-                {user.profile?.locationEmirate && (
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1">Location</p>
-                    <div className="flex items-center gap-1.5">
-                      <MapPin className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm">{user.profile.locationEmirate}</span>
-                    </div>
-                  </div>
-                )}
-
-                {user.profile && user.profile.inventoryCount > 0 && (
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1">Listings</p>
-                    <span className="text-sm font-medium">{user.profile.inventoryCount}</span>
-                  </div>
-                )}
-
-                {user.partnerMemberships.length > 0 && (
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1">Partner Staff</p>
-                    <div className="flex items-center gap-1.5">
-                      <Building2 className="w-4 h-4 text-purple-500" />
-                      <span className="text-sm font-medium text-purple-600 dark:text-purple-400">
-                        {user.partnerMemberships.length} Partner{user.partnerMemberships.length > 1 ? 's' : ''}
-                      </span>
-                    </div>
-                  </div>
-                )}
               </div>
-            </div>
-          ))
+            ))}
+          </div>
         ) : (
           !searchValue && (
-            <div className="bg-card rounded-lg border border-border p-8 text-center">
-              <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-              <h3 className="font-medium mb-1">No users found</h3>
-              <p className="text-sm text-muted-foreground">
-                No users match the selected filters
-              </p>
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <Users className="w-12 h-12 text-muted-foreground/30 mb-4" />
+              <p className="text-sm text-muted-foreground">No users match the selected filters</p>
             </div>
           )
         )}
-      </div>
+      </section>
 
       {/* User Detail Modal */}
       {selectedUser && (

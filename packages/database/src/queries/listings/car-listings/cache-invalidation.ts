@@ -21,8 +21,9 @@ import { memoryCache, CacheKeys } from '../../../caches';
  */
 export function invalidateListingDetail(listingId: string): void {
   const key = CacheKeys.listingDetail(listingId);
-  memoryCache.delete(key);
-  console.log(`[cache] Invalidated listing detail: ${listingId}`);
+  // Also clear legacy detailed API key to avoid stale responses.
+  const legacyDetailedKey = `listing:detailed:${listingId}`;
+  memoryCache.delete(key, legacyDetailedKey);
 }
 
 /**
@@ -37,8 +38,6 @@ export function invalidateListingCaches(listingId: string, partnerId?: string): 
   if (partnerId) {
     invalidatePartnerInventory(partnerId);
   }
-  
-  console.log(`[cache] Invalidated all caches for listing: ${listingId}`);
 }
 
 /**
@@ -50,13 +49,12 @@ export function invalidatePartnerInventory(partnerId: string): void {
   // For memory cache, we track keys that need manual invalidation
   
   // Invalidate common status variations
-  const statuses = ['all', 'published', 'draft', 'archived'];
+  const statuses = ['all', 'public', 'draft', 'archived', 'sold', 'expired', 'pending'];
   const keys = statuses.map(status => 
     CacheKeys.partnerInventory(partnerId, status === 'all' ? undefined : status)
   );
   
   memoryCache.delete(...keys);
-  console.log(`[cache] Invalidated partner inventory: ${partnerId}`);
 }
 
 /**
@@ -98,7 +96,7 @@ export function smartInvalidateListing(
   changedFields: string[]
 ): void {
   const criticalFields = [
-    'status', 'price', 'images', 'thumbnail', 'qiScore',
+    'moderationStatus', 'lifecycleStatus', 'expiresAt', 'publishedAt', 'price', 'images', 'thumbnail', 'qiScore',
     'isFeatured', 'isBlackMember', 'make', 'model', 'year'
   ];
   

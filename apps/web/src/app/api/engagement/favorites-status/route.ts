@@ -27,7 +27,7 @@ import {
   getSuperlikeQuotaForUser,
 } from '@alifh/database';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0; // User-specific data must bypass CDN caching
 

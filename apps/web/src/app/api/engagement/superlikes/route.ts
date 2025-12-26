@@ -11,7 +11,7 @@ import { z } from 'zod';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { toggleSuperlikeForUser } from '@alifh/database';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const ToggleSuperlikeSchema = z.object({

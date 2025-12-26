@@ -1,0 +1,539 @@
+/**
+ * Conversation Queries
+ * Handles conversation creation, retrieval, and participant management
+ */
+
+import { db } from '../index';
+import { conversation, conversationParticipant, user, carListing, partner, userProfile, partnerStaff } from '../schema';
+import { eq, and, desc, or, sql, inArray, isNull, not } from 'drizzle-orm';
+import { createId } from '@paralleldrive/cuid2';
+
+// ============================================================================
+// Types
+// ============================================================================
+
+export interface ConversationWithDetails {
+  id: string;
+  type: string;
+  status: string;
+  listingId: string | null;
+  partnerId: string | null;
+  subject: string | null;
+  lastMessageAt: Date;
+  lastMessagePreview: string | null;
+  messageCount: number;
+  unreadCount: number;
+  isArchived: boolean;
+  isMuted: boolean;
+  isPinned: boolean;
+  otherParticipant: {
+    id: string;
+    name: string | null;
+    avatarUrl: string | null;
+    lastReadAt: Date | null;
+  } | null;
+  listing: {
+    id: string;
+    title: string;
+    thumbnail: string | null;
+    partnerId?: string | null;
+  } | null;
+  partner: {
+    id: string;
+    name: string;
+    logo: string | null;
+  } | null;
+}
+
+export interface ConversationParticipantInfo {
+  userId: string;
+  unreadCount: number;
+  lastReadAt: Date | null;
+  isMuted: boolean;
+  isArchived: boolean;
+  isPinned: boolean;
+}
+
+export interface ConversationParticipantWithProfile {
+  userId: string;
+  name: string | null;
+  avatarUrl: string | null;
+  lastReadAt: Date | null;
+}
+
+// ============================================================================
+// Create Conversation
+// ============================================================================
+
+/**
+ * Create or get existing conversation for a listing inquiry
+ * Ensures only one conversation per buyer-seller-listing combo
+ */
+export async function createOrGetConversation(params: {
+  initiatedBy: string;
+  otherUserId: string;
+  listingId?: string;
+  partnerId?: string;
+  type?: 'inquiry'; // V1: Only inquiry type supported
+  subject?: string;
+}): Promise<string> {
+  const { initiatedBy, otherUserId, listingId, type = 'inquiry', subject } = params;
+
+  // Derive partnerId from listing when present (partner listings should resolve to partner identity)
+  let derivedPartnerId: string | undefined = params.partnerId;
+  if (!derivedPartnerId && listingId) {
+    const listing = await db
+      .select({ partnerId: carListing.partnerId })
+      .from(carListing)
+      .where(eq(carListing.id, listingId))
+      .limit(1);
+    derivedPartnerId = listing[0]?.partnerId ?? undefined;
+  }
+
+  // Check if conversation already exists
+  if (listingId) {
+    const existingQuery = await db
+      .select({ id: conversation.id })
+      .from(conversation)
+      .innerJoin(
+        conversationParticipant,
+        eq(conversationParticipant.conversationId, conversation.id)
+      )
+      .where(
+        and(
+          eq(conversation.listingId, listingId),
+          inArray(conversationParticipant.userId, [initiatedBy, otherUserId])
+        )
+      )
+      .groupBy(conversation.id)
+      .having(sql`count(distinct ${conversationParticipant.userId}) = 2`);
+
+    if (existingQuery.length > 0) {
+      // Backfill partnerId if missing (keeps inbox scoping consistent for older conversations)
+      if (derivedPartnerId) {
+        await db
+          .update(conversation)
+          .set({ partnerId: derivedPartnerId })
+          .where(and(eq(conversation.id, existingQuery[0].id), isNull(conversation.partnerId)));
+      }
+      return existingQuery[0].id;
+    }
+  }
+
+  // Create new conversation
+  const conversationId = createId();
+
+  // Note: neon-http does not support transactions. We perform inserts sequentially and
+  // best-effort cleanup if participant insertion fails.
+  let conversationInserted = false;
+  try {
+    await db.insert(conversation).values({
+      id: conversationId,
+      type,
+      status: 'active',
+      initiatedBy,
+      listingId: listingId || null,
+      partnerId: derivedPartnerId || null,
+      subject: subject || null,
+      lastMessageAt: new Date(),
+      messageCount: 0,
+    });
+    conversationInserted = true;
+
+    await db.insert(conversationParticipant).values([
+      {
+        id: createId(),
+        conversationId,
+        userId: initiatedBy,
+        unreadCount: 0,
+        role: 'member',
+        notificationsEnabled: true,
+      },
+      {
+        id: createId(),
+        conversationId,
+        userId: otherUserId,
+        unreadCount: 0,
+        role: 'member',
+        notificationsEnabled: true,
+      },
+    ]);
+  } catch (error) {
+    if (conversationInserted) {
+      try {
+        await db
+          .delete(conversationParticipant)
+          .where(eq(conversationParticipant.conversationId, conversationId));
+      } catch {
+        // ignore cleanup errors
+      }
+
+      try {
+        await db.delete(conversation).where(eq(conversation.id, conversationId));
+      } catch {
+        // ignore cleanup errors
+      }
+    }
+
+    throw error;
+  }
+
+  return conversationId;
+}
+
+// ============================================================================
+// Get Conversations
+// ============================================================================
+
+/**
+ * Get all conversations for a user with details
+ * Includes other participant info, unread counts, and listing context
+ */
+export async function getUserConversations(
+  userId: string,
+  options: {
+    limit?: number;
+    offset?: number;
+    includeArchived?: boolean;
+    partnerIds?: string[];
+    partnerScope?: 'only' | 'exclude';
+  } = {}
+): Promise<ConversationWithDetails[]> {
+  const { limit = 50, offset = 0, includeArchived = false, partnerIds, partnerScope } = options;
+
+  const whereConditions = [];
+  if (!includeArchived) {
+    whereConditions.push(eq(conversationParticipant.isArchived, false));
+  }
+
+  if (partnerScope === 'only' && partnerIds?.length) {
+    whereConditions.push(
+      or(
+        inArray(conversation.partnerId, partnerIds),
+        inArray(carListing.partnerId, partnerIds)
+      )
+    );
+  }
+
+  if (partnerScope === 'exclude' && partnerIds?.length) {
+    whereConditions.push(
+      and(
+        or(isNull(conversation.partnerId), not(inArray(conversation.partnerId, partnerIds))),
+        or(isNull(carListing.partnerId), not(inArray(carListing.partnerId, partnerIds)))
+      )
+    );
+  }
+
+  // Single optimized query with all joins - eliminates N+1 pattern
+  // Fetches conversations with participant data, other participant, listing, and partner in one query
+  const results = await db
+    .select({
+      // Conversation fields
+      id: conversation.id,
+      type: conversation.type,
+      status: conversation.status,
+      listingId: conversation.listingId,
+      partnerId: conversation.partnerId,
+      subject: conversation.subject,
+      lastMessageAt: conversation.lastMessageAt,
+      lastMessagePreview: conversation.lastMessagePreview,
+      messageCount: conversation.messageCount,
+      // Current user's participant data
+      unreadCount: conversationParticipant.unreadCount,
+      isArchived: conversationParticipant.isArchived,
+      isMuted: conversationParticipant.isMuted,
+      isPinned: conversationParticipant.isPinned,
+      lastReadAt: conversationParticipant.lastReadAt,
+      // Listing data (joined)
+      listingTitle: sql<string | null>`CASE WHEN ${carListing.id} IS NOT NULL THEN concat(${carListing.year}, ' ', ${carListing.make}, ' ', ${carListing.model}) ELSE NULL END`,
+      listingThumbnail: carListing.thumbnail,
+      listingPartnerId: carListing.partnerId,
+      // Partner data (joined)
+      partnerName: partner.brandName,
+      partnerLogo: partner.logo,
+    })
+    .from(conversation)
+    .innerJoin(
+      conversationParticipant,
+      and(
+        eq(conversationParticipant.conversationId, conversation.id),
+        eq(conversationParticipant.userId, userId)
+      )
+    )
+    .leftJoin(carListing, eq(carListing.id, conversation.listingId))
+    .leftJoin(
+      partner,
+      sql`${partner.id} = COALESCE(${conversation.partnerId}, ${carListing.partnerId})`
+    )
+    .where(whereConditions.length ? and(...whereConditions) : undefined)
+    .orderBy(desc(conversation.lastMessageAt))
+    .limit(limit)
+    .offset(offset);
+
+  if (results.length === 0) {
+    return [];
+  }
+
+  const conversationIds = results.map((c) => c.id);
+
+  // Second query: Get OTHER participants (this is necessary as it's a many-to-one relationship)
+  // This is the only additional query needed - reduced from 4 queries to 2
+  const otherParticipants = await db
+    .select({
+      conversationId: conversationParticipant.conversationId,
+      oderId: user.id,
+      userName: user.name,
+      userImage: sql<string | null>`COALESCE(${userProfile.avatar}, ${user.image})`,
+      lastReadAt: conversationParticipant.lastReadAt,
+    })
+    .from(conversationParticipant)
+    .innerJoin(user, eq(user.id, conversationParticipant.userId))
+    .leftJoin(userProfile, eq(userProfile.userId, user.id))
+    .where(
+      and(
+        inArray(conversationParticipant.conversationId, conversationIds),
+        sql`${conversationParticipant.userId} != ${userId}`
+      )
+    );
+
+  // Map participants by conversation ID
+  const participantMap = new Map(
+    otherParticipants.map((p) => [p.conversationId, p])
+  );
+
+  return results.map((row) => {
+    const participant = participantMap.get(row.id);
+    const effectivePartnerId = row.partnerId ?? row.listingPartnerId;
+
+    return {
+      id: row.id,
+      type: row.type,
+      status: row.status,
+      listingId: row.listingId,
+      partnerId: row.partnerId,
+      subject: row.subject,
+      lastMessageAt: row.lastMessageAt,
+      lastMessagePreview: row.lastMessagePreview,
+      messageCount: row.messageCount,
+      unreadCount: row.unreadCount,
+      isArchived: row.isArchived,
+      isMuted: row.isMuted,
+      isPinned: row.isPinned,
+      otherParticipant: participant
+        ? {
+            id: participant.oderId,
+            name: participant.userName,
+            avatarUrl: participant.userImage,
+            lastReadAt: participant.lastReadAt,
+          }
+        : null,
+      listing: row.listingId && row.listingTitle
+        ? {
+            id: row.listingId,
+            title: row.listingTitle,
+            thumbnail: row.listingThumbnail,
+            partnerId: row.listingPartnerId,
+          }
+        : null,
+      partner: effectivePartnerId && row.partnerName
+        ? {
+            id: effectivePartnerId,
+            name: row.partnerName,
+            logo: row.partnerLogo,
+          }
+        : null,
+    };
+  });
+}
+
+/**
+ * Get a single conversation by ID with participant verification
+ */
+export async function getConversation(
+  conversationId: string,
+  userId: string
+): Promise<ConversationWithDetails | null> {
+  const conversations = await getUserConversations(userId, { limit: 1 });
+  return conversations.find((c) => c.id === conversationId) || null;
+}
+
+/**
+ * Find existing conversation between buyer and seller for a listing
+ */
+export async function getConversationByListing(
+  userId: string,
+  listingId: string,
+  otherUserId?: string
+): Promise<string | null> {
+  const query = await db
+    .select({ id: conversation.id })
+    .from(conversation)
+    .innerJoin(
+      conversationParticipant,
+      eq(conversationParticipant.conversationId, conversation.id)
+    )
+    .where(
+      and(
+        eq(conversation.listingId, listingId),
+        eq(conversationParticipant.userId, userId)
+      )
+    );
+
+  if (query.length === 0) return null;
+
+  // If otherUserId specified, verify they're in the conversation
+  if (otherUserId) {
+    const hasOtherUser = await db
+      .select({ id: conversationParticipant.id })
+      .from(conversationParticipant)
+      .where(
+        and(
+          eq(conversationParticipant.conversationId, query[0].id),
+          eq(conversationParticipant.userId, otherUserId)
+        )
+      );
+
+    if (hasOtherUser.length === 0) return null;
+  }
+
+  return query[0].id;
+}
+
+// ============================================================================
+// Update Conversation
+// ============================================================================
+
+/**
+ * Mark conversation as read for a user
+ */
+export async function markConversationAsRead(
+  conversationId: string,
+  userId: string
+): Promise<void> {
+  await db
+    .update(conversationParticipant)
+    .set({
+      unreadCount: 0,
+      lastReadAt: new Date(),
+    })
+    .where(
+      and(
+        eq(conversationParticipant.conversationId, conversationId),
+        eq(conversationParticipant.userId, userId)
+      )
+    );
+}
+
+/**
+ * Update conversation participant settings
+ */
+export async function updateConversationSettings(
+  conversationId: string,
+  userId: string,
+  settings: {
+    isMuted?: boolean;
+    isArchived?: boolean;
+    isPinned?: boolean;
+    notificationsEnabled?: boolean;
+  }
+): Promise<void> {
+  await db
+    .update(conversationParticipant)
+    .set(settings)
+    .where(
+      and(
+        eq(conversationParticipant.conversationId, conversationId),
+        eq(conversationParticipant.userId, userId)
+      )
+    );
+}
+
+/**
+ * Get conversation participants
+ */
+export async function getConversationParticipants(
+  conversationId: string
+): Promise<ConversationParticipantInfo[]> {
+  const participants = await db
+    .select({
+      userId: conversationParticipant.userId,
+      unreadCount: conversationParticipant.unreadCount,
+      lastReadAt: conversationParticipant.lastReadAt,
+      isMuted: conversationParticipant.isMuted,
+      isArchived: conversationParticipant.isArchived,
+      isPinned: conversationParticipant.isPinned,
+    })
+    .from(conversationParticipant)
+    .where(
+      and(
+        eq(conversationParticipant.conversationId, conversationId),
+        isNull(conversationParticipant.leftAt)
+      )
+    );
+
+  return participants;
+}
+
+/**
+ * Get conversation participants with their profile info (for group chat seen status)
+ */
+export async function getConversationParticipantsWithProfiles(
+  conversationId: string
+): Promise<ConversationParticipantWithProfile[]> {
+  const participants = await db
+    .select({
+      userId: conversationParticipant.userId,
+      lastReadAt: conversationParticipant.lastReadAt,
+      firstName: userProfile.firstName,
+      lastName: userProfile.lastName,
+      avatar: userProfile.avatar,
+    })
+    .from(conversationParticipant)
+    .innerJoin(userProfile, eq(userProfile.userId, conversationParticipant.userId))
+    .where(
+      and(
+        eq(conversationParticipant.conversationId, conversationId),
+        isNull(conversationParticipant.leftAt)
+      )
+    );
+
+  return participants.map(p => ({
+    userId: p.userId,
+    name: [p.firstName, p.lastName].filter(Boolean).join(' ') || null,
+    avatarUrl: p.avatar,
+    lastReadAt: p.lastReadAt,
+  }));
+}
+
+/**
+ * Get total unread count for user across all conversations
+ */
+export async function getTotalUnreadCount(userId: string): Promise<number> {
+  const result = await db
+    .select({
+      total: sql<number>`sum(${conversationParticipant.unreadCount})::int`,
+    })
+    .from(conversationParticipant)
+    .where(
+      and(
+        eq(conversationParticipant.userId, userId),
+        eq(conversationParticipant.isArchived, false)
+      )
+    );
+
+  return result[0]?.total || 0;
+}
+
+// ============================================================================
+// Partner Internal (Team Chat) Conversations
+// V1: Disabled for launch - keeping schema intact for V2
+// ============================================================================
+
+// Team chat functions removed for V1 launch:
+// - getOrCreatePartnerTeamConversation
+// - addUserToPartnerTeamConversation
+// - removeUserFromPartnerTeamConversation
+// - getPartnerTeamConversation
+//
+// These will be re-implemented in V2 with proper caching and
+// deferred initialization (not on every page load)

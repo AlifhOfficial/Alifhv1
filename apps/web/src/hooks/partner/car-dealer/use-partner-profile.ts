@@ -50,13 +50,13 @@ export interface PartnerProfile {
   platformRating: number | null;
   platformReviewCount: number;
   
-  // ❌ Removed denormalized fields (calculate on-demand with 5min cache):
-  // totalInventory, activeListings, avgResponseTime, responseRate
-  
   // Trust & Verification
   isVerified: boolean;
-  badges: string[];
+  badges: string[]; // e.g., ["Alifh Certified", "BLK Member", "ISO 9001"]
   tags: string[];
+  
+  // ❌ Removed - Now in usePartnerStats() with 5min cache:
+  // inventoryCount, totalSales, responseTime, responseRate
 }
 
 export interface PartnerProfileUpdate {

@@ -162,6 +162,83 @@
       "when": 1766353872193,
       "tag": "0022_natural_the_anarchist",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1766369780667,
+      "tag": "0023_amusing_grim_reaper",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1766374589700,
+      "tag": "0024_pink_karnak",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1766412879917,
+      "tag": "0025_bizarre_gressill",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1766446149107,
+      "tag": "0026_flashy_gorgon",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1766465126817,
+      "tag": "0027_bumpy_mentallo",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1766540871985,
+      "tag": "0028_moaning_hammerhead",
+      "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1766544571074,
+      "tag": "0030_overjoyed_energizer",
+      "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1766573014321,
+      "tag": "0030_optimal_betty_ross",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1766574997127,
+      "tag": "0031_cool_bushwacker",
+      "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1766641298166,
+      "tag": "0032_yielding_monster_badoon",
+      "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1766648952594,
+      "tag": "0033_ambiguous_tarantula",
+      "breakpoints": true
     }
   ]
 }

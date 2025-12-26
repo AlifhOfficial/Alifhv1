@@ -82,3 +82,34 @@ export const getAllUsers = async (limit: number = 100) => {
     .from(user)
     .limit(limit);
 };
+
+/**
+ * Check if a user exists by email
+ * Used for validation during registration or sign-in
+ */
+export const checkUserExistsByEmail = async (email: string): Promise<boolean> => {
+  const [result] = await db
+    .select({ id: user.id })
+    .from(user)
+    .where(eq(user.email, email))
+    .limit(1);
+    
+  return !!result;
+};
+
+/**
+ * Update user phone verification status
+ * Called after OTP verification succeeds
+ */
+export const updateUserPhoneVerified = async (userId: string, verified: boolean = true) => {
+  const [result] = await db
+    .update(user)
+    .set({
+      phoneVerified: verified,
+      updatedAt: new Date(),
+    })
+    .where(eq(user.id, userId))
+    .returning();
+    
+  return result || null;
+};

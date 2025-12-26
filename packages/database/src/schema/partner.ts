@@ -44,6 +44,11 @@ export const partner = pgTable('partner', {
   heroImage: text('hero_image'),
   coverImage: text('cover_image'),
   galleryImages: jsonb('gallery_images').$type<string[]>().default([]),
+  
+  // Video Support
+  showroomVideoUrl: text('showroom_video_url'), // Main showroom tour/promo video
+  showroomVideoThumbnail: text('showroom_video_thumbnail'), // Custom thumbnail for video
+  
   description: text('description'),
   specialties: jsonb('specialties').$type<string[]>().default([]),
   experienceYears: integer('experience_years'),
@@ -57,7 +62,7 @@ export const partner = pgTable('partner', {
   isVerified: boolean('is_verified').default(false).notNull(),
   verifiedAt: timestamp('verified_at'),
   verifiedBy: text('verified_by').references(() => user.id, { onDelete: 'set null' }),
-  badges: jsonb('badges').$type<string[]>().default([]),
+  badges: jsonb('badges').$type<string[]>().default([]), // e.g., ["Alifh Certified", "BLK Member", "ISO 9001"]
   tags: jsonb('tags').$type<string[]>().default([]),
   features: jsonb('features').$type<{
     homeDelivery: boolean;
@@ -89,7 +94,6 @@ export const partner = pgTable('partner', {
     saturday: { open: '09:00', close: '18:00' },
     sunday: { open: '09:00', close: '18:00' },
   }),
-  commissionRate: doublePrecision('commission_rate').default(0).notNull(),
   subscriptionTier: text('subscription_tier').default('basic'),
   subscriptionExpiresAt: timestamp('subscription_expires_at'),
   paymentTerms: text('payment_terms').default('net30'),
@@ -161,6 +165,12 @@ export const partnerStaff = pgTable('partner_staff', {
   isOwner: boolean('is_owner').default(false).notNull(),
   title: text('title'),
   department: text('department'),
+  
+  // Staff Profile - Work identity (separate from personal)
+  displayName: text('display_name'), // Preferred name for client interactions (code names common in UAE)
+  workEmail: text('work_email'), // Dedicated work email
+  workPhone: text('work_phone'), // Dedicated work phone for calls
+  
   isPrimaryContact: boolean('is_primary_contact').default(false).notNull(),
   status: staffStatusEnum('status').default('active').notNull(),
   joinedAt: timestamp('joined_at').defaultNow().notNull(),

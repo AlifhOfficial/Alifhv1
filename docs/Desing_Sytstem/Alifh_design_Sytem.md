@@ -1,230 +1,417 @@
-# Alifh Design Philosophy
+# Alifh Design System
 
-**Last Updated:** December 7, 2025
+**Last Updated:** December 22, 2025
 
 ## Core Principle
-**"Less is More"** - Apple-inspired minimalism with premium feel
+**"Minimal, Clean, Consistent"** - Profile-view inspired minimalism with subtle accents
 
 ---
 
 ## 🎨 Visual Design Rules
 
 ### Typography
-- **Titles:** `text-xl` (20px) - font-medium
+- **Page Titles:** `text-2xl font-semibold tracking-tight`
+- **Section Headers:** `text-lg font-medium tracking-tight`
 - **Body Text:** `text-sm` (14px) - regular weight
-- **Hints/Labels:** `text-xs` (12px) - text-muted-foreground
-- **Font Family:** Inter (already configured)
-- **No bold titles** - use font-medium only
+- **Labels/Hints:** `text-xs` (12px) - text-muted-foreground
+- **Font Family:** Inter (system default)
+- **Never use bold** - use font-medium or font-semibold only
 
-### Colors
-- **Primary Actions:** `bg-primary` / `text-primary`
-- **Backgrounds:** `bg-card` (main), `bg-muted/20` (subtle info boxes)
-- **Borders:** `border border-border/40` (subtle), `border-border/20` (ultra subtle)
-- **Text Hierarchy:**
-  - Primary: `text-foreground`
-  - Secondary: `text-muted-foreground`
-  - Destructive: `text-destructive`
-- **Never use:** Hardcoded colors (blue-50, green-600, etc.)
-- **Always use:** Semantic tokens for dark/light mode support
+### Colors & Semantic Usage
+- **Blue (blue-500):** Primary actions, total counts, key CTAs
+- **Green (green-500):** Active status, success states, verified badges
+- **Yellow (yellow-500):** Pending status, warnings, ratings
+- **Red (red-500):** Errors, bans, destructive actions
+- **Foreground:** Default text and counts when neutral
+- **Muted Foreground:** Secondary text, icon colors, labels
+
+**Color Application Rules:**
+- Use semantic colors sparingly for meaning
+- Default to foreground/muted-foreground for neutrality
+- Never use gradients
+- Badge backgrounds: `{color}-500/10` with `text-{color}-500`
+- Status dots: `w-1.5 h-1.5 rounded-full bg-current`
 
 ### Spacing
-- **Modal Content:** `space-y-6` (main sections), `space-y-4` (subsections)
-- **Padding:** `p-6` on modals (set by Dialog component)
-- **Margins:** Minimal - rely on space-y-* utilities
-- **Section Spacing:** `pt-2` for subtle divisions
+- **Page Container:** `max-w-4xl mx-auto px-6 py-16` (or max-w-6xl for wider content)
+- **Section Spacing:** `space-y-16` between major sections
+- **Subsection Spacing:** `space-y-8` within sections
+- **Form Field Spacing:** `space-y-10` between input groups
+- **Card Grid Gaps:** `gap-4` for cards, `gap-6` for info grids
 
 ### Borders & Corners
-- **Border Width:** `border` (1px) - never `border-2` unless critical
-- **Border Opacity:** `border-border/40` (normal), `border-border/20` (subtle)
-- **Corner Radius:** `rounded-lg` (8px) - consistent everywhere
-- **Modal Corners:** `rounded-2xl` (16px) - set by Dialog component
+- **Card Corners:** `rounded-xl` (12px) - always use this, never rounded-lg
+- **Button Corners:** `rounded-full` for primary actions
+- **Badge Corners:** `rounded-md` (6px)
+- **Border Width:** `border` (1px) - never border-2
+- **Border Opacity:** `border-border/40` (section headers), `border-border` (cards/dividers)
 
 ---
 
-## 🧩 Component Layout Rules
+## 🧩 Component Patterns
 
-### Icons
-- **Size:** `w-4 h-4` (16px) - small and minimal
-- **Position:** **Top left only** - never centered
-- **Exception:** Logos can be centered (success states only)
-- **Color:** `text-muted-foreground` or semantic colors
-- **No icon backgrounds** - no rounded containers
-
-### Modal Structure
+### Input Fields (Border-Bottom Style)
+```tsx
+<input
+  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors px-0"
+/>
 ```
-┌─────────────────────────┐
-│ 🔹 Icon (top-left 4x4)  │
-│                         │
-│ Title (text-xl)         │
-│ Description (text-sm)   │
-│                         │
-│ ┌─────────────────┐     │
-│ │ Info Box        │     │
-│ └─────────────────┘     │
-│                         │
-│ [Primary Button]        │
-│ [Secondary Button]      │
-│                         │
-│ ─────────────────       │
-│ Footer text/link        │
-└─────────────────────────┘
+- No backgrounds, no rounded corners
+- Border only on bottom
+- Focus state changes border to foreground color
+- Labels above with icon: `<User className="w-3.5 h-3.5 text-muted-foreground" />`
+
+### Section Headers
+```tsx
+<div className="border-b border-border/40 pb-2">
+  <h3 className="text-lg font-medium tracking-tight">Section Title</h3>
+</div>
+```
+- Always border-bottom to separate sections
+- Tight tracking for cleaner look
+- Optional subtitle: `<p className="text-sm text-muted-foreground mt-1">`
+
+### Cards (Information Containers)
+```tsx
+<div className="rounded-xl border border-border p-8 space-y-6">
+  {/* Card content */}
+</div>
+```
+- Always rounded-xl, never rounded-lg
+- Standard padding: p-6 or p-8
+- Hover state for interactive cards: `hover:bg-secondary/10`
+
+### Primary Buttons
+```tsx
+<button className="px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-sm transition-colors">
+  Action Text
+</button>
+```
+- Rounded-full for pill shape
+- Blue-500 background
+- No icons inside buttons - text only
+- Disabled state: `disabled:opacity-50 disabled:cursor-not-allowed`
+
+### Secondary Buttons
+```tsx
+<button className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors">
+  Cancel
+</button>
+```
+- Same shape as primary but with border
+- Hover shows subtle background
+
+### Stats Grids (Border-Y Style)
+```tsx
+<div className="grid grid-cols-2 md:grid-cols-4 border-y border-border divide-x divide-border">
+  <div className="p-8 text-center">
+    <Icon className="w-5 h-5 text-blue-500 mx-auto mb-3" />
+    <p className="text-xs text-muted-foreground mb-1">Label</p>
+    <p className="text-xl font-semibold text-blue-500">123</p>
+  </div>
+</div>
+```
+- Border-y creates top and bottom borders
+- Divide-x creates vertical separators
+- Icons centered above text
+- Colored numbers for emphasis
+- Clickable filters: `cursor-pointer hover:bg-secondary/10 transition-colors`
+
+### Status Badges (Minimal)
+```tsx
+{/* Active/Success */}
+<span className="px-3 py-1 rounded-md bg-green-500/10 text-green-500 text-xs font-medium">
+  Active
+</span>
+
+{/* Pending/Warning */}
+<span className="px-3 py-1 rounded-md bg-yellow-500/10 text-yellow-500 text-xs font-medium">
+  Pending
+</span>
+
+{/* With Status Dot */}
+<span className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-green-500/10 text-sm text-green-500">
+  <div className="w-1.5 h-1.5 rounded-full bg-current" />
+  Active
+</span>
+```
+- Rounded-md, not rounded-full
+- 10% opacity background of accent color
+- Text matches accent color
+- Optional status dot indicator
+
+### Modals (Detail Views)
+```tsx
+<div className="fixed inset-0 z-50 flex items-center justify-center">
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+  
+  <div className="relative z-50 w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-background border border-border rounded-xl shadow-xl m-4">
+    {/* Sticky Header */}
+    <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-border bg-background">
+      <h2 className="text-lg font-medium">Modal Title</h2>
+      <button onClick={onClose} className="p-2 hover:bg-secondary/50 rounded-full">
+        <X className="w-4 h-4" />
+      </button>
+    </div>
+    
+    {/* Content */}
+    <div className="p-6 space-y-12">
+      {/* Sections */}
+    </div>
+  </div>
+</div>
+```
+- Backdrop blur for depth
+- Sticky header for long content
+- Space-y-12 between major sections
+
+---
+
+## 🎯 Layout Patterns
+
+### Dashboard Page Structure
+```tsx
+<div className="max-w-4xl mx-auto px-6 py-16 space-y-16">
+  {/* Section 1 */}
+  <section className="space-y-8">
+    <div className="border-b border-border/40 pb-2">
+      <h3 className="text-lg font-medium tracking-tight">Section Title</h3>
+    </div>
+    {/* Section content */}
+  </section>
+  
+  {/* Section 2 */}
+  <section className="space-y-8">
+    {/* ... */}
+  </section>
+</div>
 ```
 
-### Buttons
-- **Height:** `h-10` (40px) - consistent
-- **Padding:** `px-4`
-- **Text:** `text-sm font-medium`
-- **Corners:** `rounded-lg`
-- **Primary:** `bg-primary text-primary-foreground hover:bg-primary/90`
-- **Secondary:** `bg-muted text-foreground hover:bg-muted/80`
-- **Disabled:** `disabled:opacity-50 disabled:cursor-not-allowed`
-- **Transitions:** `transition-colors` (not transition-all)
-- **No icons in buttons** - text only for clean look
+### Information Grid (Contact Info, Profile Fields)
+```tsx
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <div className="space-y-2">
+    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <Mail className="w-3.5 h-3.5" />
+      <span>Email</span>
+    </div>
+    <p className="text-sm font-medium">user@example.com</p>
+  </div>
+</div>
+```
 
-### Info Boxes
-- **Background:** `bg-muted/20` (very subtle)
-- **Border:** `border border-border/20`
-- **Padding:** `p-3`
-- **Corners:** `rounded-lg`
-- **Text:** `text-xs text-muted-foreground leading-relaxed`
+### Card Lists (Partners, Users, Requests)
+```tsx
+<div className="space-y-4">
+  {items.map(item => (
+    <div key={item.id} className="rounded-xl border border-border p-6 hover:bg-secondary/10 transition-colors">
+      {/* Card content */}
+    </div>
+  ))}
+</div>
+```
+
+### Quick Access Links
+```tsx
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <Link href="/path" className="group rounded-xl border border-border p-6 hover:bg-secondary/10 transition-colors">
+    <div className="flex items-center justify-between mb-3">
+      <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
+        <Icon className="w-5 h-5 text-blue-500" />
+      </div>
+      <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+    </div>
+    <h4 className="font-medium mb-1">Link Title</h4>
+    <p className="text-sm text-muted-foreground">Description</p>
+  </Link>
+</div>
+```
 
 ---
 
 ## ✨ Animation Guidelines
 
-### What's Allowed
-- **Smooth opacity transitions:** `transition-opacity duration-500`
-- **Simple scale/grow:** Logo growing from small to normal
-- **Subtle pulse:** 2-second cycles for decorative elements
-- **Loading spinners:** Small (4x4) with `animate-spin`
-- **Bouncing text dots:** For "Loading..." text only
+### Allowed Animations
+- **Hover states:** `hover:bg-secondary/10` or `hover:border-blue-500/40`
+- **Button transitions:** `transition-colors`
+- **Chevron slides:** `group-hover:translate-x-1 transition-transform`
+- **Loading spinners:** `animate-spin` on small icons
+- **Skeleton loading:** `animate-pulse` on placeholder blocks
 
-### What's NOT Allowed
-- ❌ Ping effects
-- ❌ Multiple bouncing dots (unless in text)
-- ❌ Flying particles
-- ❌ Slide-in animations
-- ❌ Complex keyframe animations
-- ❌ Shake or wobble effects
-- ❌ Color transitions
-
-### Animation Durations
-- **Fast:** 200ms - 300ms (interactions)
-- **Normal:** 500ms (modal content)
-- **Slow:** 2s (decorative pulse)
-
----
-
-## 🎯 Component-Specific Rules
-
-### Email Sent Modal
-- Small mail icon top left (4x4)
-- Title: "Check your inbox"
-- Show email inline in sentence
-- One info box with instructions
-- **Resend button with 60s countdown timer** to prevent abuse
-- Shows "Resend in 59s..." → "Resend email"
-- Simple "Back to sign in" link at bottom
-
-### Loading Modal
-- Small spinner top left (4x4, animate-spin)
-- Title: "Verifying email" with animated dots (...)
-- Description: "Please wait a moment"
-- No progress bars or extra indicators
-
-### Success Modal (Exception - Logo Centered)
-- **Logo in center** (grows from 32px to 80px)
-- **No background** behind logo
-- **2 sparkle emojis (✨)** on sides with subtle pulse
-- Title: "You're all set"
-- Description: "Your email has been verified"
-- Footer: "Redirecting..." (text-xs)
-- Auto-redirects after 3 seconds
-
-### Error Modal
-- Small error icon top left (4x4, text-destructive)
-- Title: "Verification failed"
-- Clear error message
-- Info box with bullet points (• prefix)
-- Two buttons: "Try again" (primary) and "Resend email" (secondary)
-- Support email link at bottom
+### Forbidden Animations
+- ❌ No gradients or gradient animations
+- ❌ No slide-in/slide-out page transitions
+- ❌ No bounce/shake/wiggle effects
+- ❌ No color transitions
+- ❌ No complex keyframes
 
 ---
 
 ## 🚫 Anti-Patterns to Avoid
 
 ### Never Do These
-1. **Large centered icons** (except logo in success)
-2. **Icon backgrounds** (bg-blue-50, rounded-full containers)
-3. **Multiple borders** (border-2 everywhere)
-4. **Heavy animations** (flying, bouncing, sliding)
-5. **Hardcoded colors** (blue-600, green-50, red-500)
-6. **Large fonts** (text-2xl, text-3xl in modals)
-7. **Icons in buttons** (keep buttons text-only)
-8. **Complex spacing** (stick to space-y-4 and space-y-6)
-9. **Instant resend buttons** (always use countdown timers)
-10. **Emoji overuse** (max 2 decorative elements)
+1. **Using rounded-lg for cards** - Always use rounded-xl
+2. **Icons in buttons** - Keep buttons text-only
+3. **Heavy backgrounds** - Use 10% opacity (e.g., bg-blue-500/10)
+4. **Gradient backgrounds** - Stick to solid colors
+5. **Border-2 or thick borders** - Always use border (1px)
+6. **Centered icons in cards** - Icons go top-left or as labels
+7. **Multiple competing colors** - Use blue as primary, others sparingly
+8. **Large avatars or icons** - Keep icons small (4x4 or 5x5)
+9. **Inconsistent button shapes** - Primary = rounded-full, always
+10. **Heavy shadows** - Use border-border instead for depth
 
 ---
 
-## 🎪 User Feedback Loop
+## 📋 Component Checklist
 
-### States to Show
-1. **Loading** - Spinner + animated dots in title
-2. **Success** - Logo grows + sparkles + auto-redirect
-3. **Error** - Clear message + actionable buttons
-4. **Waiting** - Countdown timer for rate limiting
-
-### Timing Guidelines
-- **Success modal:** 3 seconds before redirect
-- **Resend cooldown:** 60 seconds between attempts
-- **Loading states:** Show immediately, no artificial delays
-- **Error states:** Persist until user dismisses or retries
-
----
-
-## 📱 Responsive Behavior
-- **Modal width:** `max-w-md` (448px) - consistent
-- **Mobile:** Same design, rely on Dialog's responsive handling
-- **No breakpoint changes** - one design for all screens
+Before implementing any component:
+- [ ] Section headers use border-b border-border/40
+- [ ] Cards use rounded-xl (never rounded-lg)
+- [ ] Primary buttons are rounded-full with blue-500
+- [ ] Inputs use border-bottom style with focus states
+- [ ] Colors are semantic (blue primary, green success, yellow warning, red error)
+- [ ] Badges use rounded-md with 10% opacity backgrounds
+- [ ] Stats grids use border-y and divide-x patterns
+- [ ] No gradients anywhere
+- [ ] Spacing uses space-y-8 or space-y-16
+- [ ] Icons are small (w-4 h-4 or w-5 h-5)
+- [ ] Text-only buttons (no icons inside)
+- [ ] Hover states use hover:bg-secondary/10
 
 ---
 
-## 🎨 Theme Support
-- **All colors must use semantic tokens** from tailwind.config
-- **Never hardcode RGB or hex values**
-- **Test in both light and dark modes**
-- **Logo:** Use `dark:invert` for proper dark mode rendering
+## 🎨 Color Reference
+
+### Primary Accent - Blue
+- Actions: `bg-blue-500 hover:bg-blue-600`
+- Badges: `bg-blue-500/10 text-blue-500`
+- Icons: `text-blue-500`
+- Links: `text-blue-500 hover:text-blue-600`
+
+### Success/Active - Green
+- Status: `text-green-500`
+- Badges: `bg-green-500/10 text-green-500`
+- Icons: `text-green-500`
+
+### Warning/Pending - Yellow
+- Status: `text-yellow-500`
+- Badges: `bg-yellow-500/10 text-yellow-500`
+- Icons: `text-yellow-500`
+
+### Error/Destructive - Red
+- Status: `text-red-500`
+- Badges: `bg-red-500/10 text-red-500`
+- Icons: `text-red-500`
+
+### Neutral
+- Default text: `text-foreground`
+- Secondary text: `text-muted-foreground`
+- Backgrounds: `bg-background`, `bg-card`, `bg-secondary/10`
+- Borders: `border-border` or `border-border/40`
 
 ---
 
-## ✅ Checklist for New Modals
+## 🔑 Key Takeaways
 
-Before implementing any modal:
-- [ ] Icon is 4x4 and top left (or logo centered for success)
-- [ ] Title is text-xl font-medium
-- [ ] Body text is text-sm
-- [ ] All borders are `border` (not border-2) with opacity
-- [ ] Buttons are h-10 with text-sm
-- [ ] No icons in buttons
-- [ ] Spacing uses space-y-4 or space-y-6
-- [ ] Colors use semantic tokens (bg-card, text-foreground, etc.)
-- [ ] Animations are subtle (opacity/scale only)
-- [ ] Rate limiting on actions (countdown timers)
-- [ ] Info boxes use bg-muted/20 with border-border/20
-- [ ] Tested in both light and dark modes
+**Visual Identity:**
+- Clean, minimal, professional
+- Border-bottom section headers everywhere
+- Rounded-xl cards consistently
+- Rounded-full primary buttons
+- Subtle color accents for meaning
+
+**Information Hierarchy:**
+1. Page title (text-2xl font-semibold)
+2. Section headers (border-b, text-lg)
+3. Content cards (rounded-xl, proper spacing)
+4. Actions (blue rounded-full buttons)
+
+**When in doubt:**
+- **Remove, don't add** - keep it minimal
+- **Use borders, not shadows** - for depth
+- **Choose semantic colors** - blue/green/yellow/red
+- **Follow the border-bottom pattern** - for section headers
+- **Always rounded-xl for cards** - consistency matters
 
 ---
 
-## 🔑 Key Takeaway
+## 📱 Responsive Design
 
-**"Simple, neat, minimal, premium UI/UX friendly"**
+- **Mobile-first approach:** Start with single column, expand to grid on md+
+- **Container widths:** max-w-2xl (forms), max-w-4xl (standard), max-w-6xl (wide content)
+- **Grid breakpoints:** `grid-cols-1 md:grid-cols-2` or `md:grid-cols-4`
+- **Padding:** Consistent px-6 on mobile, same on desktop (no need to increase)
+- **No breakpoint-specific designs** - same patterns across all sizes
 
-Think Apple's design language:
-- Clean white space
-- Subtle depth (not heavy shadows)
-- Clear hierarchy (size + color + weight)
-- Purposeful animations (not decorative)
-- Respect user's time (fast, clear, actionable)
+---
 
-When in doubt: **Remove, don't add.**
+## 🎪 Practical Examples
+
+### Form Section
+```tsx
+<section className="space-y-8">
+  <div className="border-b border-border/40 pb-2">
+    <h3 className="text-lg font-medium tracking-tight">Work Identity</h3>
+    <p className="text-sm text-muted-foreground mt-1">Information for client interactions</p>
+  </div>
+
+  <form className="space-y-10">
+    <div className="space-y-3">
+      <label className="flex items-center gap-2 text-sm font-medium">
+        <User className="w-3.5 h-3.5 text-muted-foreground" />
+        Display Name
+      </label>
+      <input
+        type="text"
+        className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors px-0"
+      />
+      <p className="text-xs text-muted-foreground">Helper text here</p>
+    </div>
+  </form>
+</section>
+```
+
+### Stats Overview
+```tsx
+<section className="space-y-8">
+  <div className="border-b border-border/40 pb-2">
+    <h3 className="text-lg font-medium tracking-tight">Overview</h3>
+  </div>
+
+  <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border divide-x divide-border">
+    <button className="p-8 text-center cursor-pointer hover:bg-secondary/10 transition-colors">
+      <Users className="w-5 h-5 text-blue-500 mx-auto mb-3" />
+      <p className="text-xs text-muted-foreground mb-1">Total</p>
+      <p className="text-xl font-semibold text-blue-500">1,234</p>
+    </button>
+  </div>
+</section>
+```
+
+### Card List
+```tsx
+<div className="space-y-4">
+  {items.map(item => (
+    <div key={item.id} className="rounded-xl border border-border p-6 space-y-4">
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <h4 className="font-medium mb-1">{item.title}</h4>
+          <p className="text-sm text-muted-foreground">{item.description}</p>
+        </div>
+        <span className="px-2 py-0.5 rounded-md bg-green-500/10 text-green-500 text-xs font-medium">
+          Active
+        </span>
+      </div>
+      
+      <button className="px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-sm transition-colors">
+        Manage
+      </button>
+    </div>
+  ))}
+</div>
+```
+
+---
+
+**Remember:** Consistency is key. Follow these patterns religiously to maintain a cohesive, professional design throughout the application.

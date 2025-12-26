@@ -4,11 +4,11 @@ import {
   User,
   LogOut
 } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { UserRole } from "@/types/auth";
 import { getUserPortalAccess } from "@/lib/auth/routing";
+import { UserAvatar } from "@/components/ui/data-display/user-avatar";
 
 interface UserData {
   id: string;
@@ -55,15 +55,21 @@ export function ProfileMenu({
   onProfile,
 }: ProfileMenuProps) {
   const router = useRouter();
-  const [hasImageError, setHasImageError] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  const avatarSrc = useMemo(() => {
-    return user?.avatarUrl ?? user?.image ?? undefined;
-  }, [user?.avatarUrl, user?.image]);
-
+  // Prevent hydration mismatch by only rendering user-specific content after mount
   useEffect(() => {
-    setHasImageError(false);
-  }, [avatarSrc]);
+    setMounted(true);
+  }, []);
+
+  // Show loading placeholder during SSR to prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <div className="relative flex items-center" data-menu-container>
+        <div className="w-8 h-8 rounded-full bg-muted animate-pulse" />
+      </div>
+    );
+  }
 
   if (user) {
     const firstName = user.firstName?.trim() ?? user.name?.split(' ')[0] ?? 'User';
@@ -106,22 +112,8 @@ export function ProfileMenu({
       onToggleMenu();
     };
     
-    const getInitials = () => {
-      const source = firstName || lastName
-        ? [firstName, lastName].filter(Boolean).join(' ')
-        : user.name;
-      if (!source) return user.email?.charAt(0).toUpperCase() || 'U';
-      return source
-        .split(' ')
-        .filter(Boolean)
-        .map(part => part.charAt(0))
-        .join('')
-        .toUpperCase()
-        .slice(0, 2);
-    };
-    
     return (
-      <div className="relative flex items-center gap-2.5" data-menu-container suppressHydrationWarning>
+      <div className="relative flex items-center gap-2.5" data-menu-container>
         <span className="text-sm text-muted-foreground hidden sm:inline">
           {firstName}
         </span>
@@ -131,26 +123,17 @@ export function ProfileMenu({
             e.stopPropagation();
             onToggleMenu(e);
           }}
-          className="relative w-8 h-8 rounded-full bg-muted hover:bg-muted/80 transition-colors overflow-hidden border border-border/40"
+          className="relative"
           aria-label="Profile menu"
           data-menu-trigger
         >
-          {avatarSrc && !hasImageError ? (
-            <Image
-              src={avatarSrc}
-              alt={displayName}
-              fill
-              sizes="32px"
-              className="object-cover"
-              onError={() => setHasImageError(true)}
-              referrerPolicy="no-referrer"
-              priority={false}
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-foreground text-xs">
-              {getInitials()}
-            </div>
-          )}
+          <UserAvatar
+            profileAvatar={user?.avatarUrl}
+            oauthImage={user?.image}
+            name={displayName}
+            size="sm"
+            className="hover:opacity-90 transition-opacity"
+          />
         </button>
 
         {showMenu && (

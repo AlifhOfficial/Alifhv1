@@ -23,7 +23,7 @@ import { validateUserExists } from "../validation-utils";
 
 const PasswordResetSchema = z.object({
   email: z.string().email('Invalid email address'),
-  redirectTo: z.string().url('Invalid redirect URL').optional(),
+  redirectTo: z.string().optional(), // Can be relative path like "/reset-password"
 });
 
 export async function POST(request: NextRequest) {

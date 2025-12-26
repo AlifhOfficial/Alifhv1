@@ -11,7 +11,7 @@ import { z } from 'zod';
 import { toggleFavoriteForUser } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const ToggleFavoriteSchema = z.object({

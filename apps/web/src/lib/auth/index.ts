@@ -9,7 +9,7 @@
  * - Magic link authentication
  * - Google OAuth integration
  * - Role-based permissions (admin plugin)
- * - Session caching (30s TTL) for partner memberships
+ * - Session caching (5min TTL) for partner memberships
  * - Account linking for trusted providers
  * 
  * @module lib/auth

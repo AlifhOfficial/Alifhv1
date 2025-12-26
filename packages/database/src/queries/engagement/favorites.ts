@@ -39,6 +39,7 @@ import { createId } from '@paralleldrive/cuid2';
 import { and, eq, sql } from 'drizzle-orm';
 import { db } from '../../dbclient';
 import { userFavorite, userSuperlike, userSuperlikeQuota } from '../../schema/profile';
+import { carListing } from '../../schema/listing';
 
 const FAV_ID_PREFIX = 'fav_';
 const SUPERLIKE_ID_PREFIX = 'superlike_';
@@ -194,30 +195,36 @@ export async function toggleFavoriteForUser(
     .returning({ id: userFavorite.id });
 
   if (deleted.length > 0) {
-    // Favorite was removed - check superlike status
-    const superlike = await db
-      .select({ id: userSuperlike.id })
-      .from(userSuperlike)
-      .where(and(eq(userSuperlike.userId, userId), eq(userSuperlike.listingId, listingId)))
-      .limit(1);
+    // Favorite was removed - decrement counter atomically and check superlike status
+    const [, superlike] = await Promise.all([
+      db.update(carListing)
+        .set({ favouriteCount: sql`GREATEST(0, ${carListing.favouriteCount} - 1)` })
+        .where(eq(carListing.id, listingId)),
+      db.select({ id: userSuperlike.id })
+        .from(userSuperlike)
+        .where(and(eq(userSuperlike.userId, userId), eq(userSuperlike.listingId, listingId)))
+        .limit(1),
+    ]);
     
     return { isFavorite: false, isSuperliked: superlike.length > 0 };
   }
 
-  // No favorite existed, so insert new one
-  await db.insert(userFavorite).values({
-    id: makeFavoriteId(),
-    userId,
-    listingId,
-    addedFrom,
-  });
-
-  // Check superlike status
-  const superlike = await db
-    .select({ id: userSuperlike.id })
-    .from(userSuperlike)
-    .where(and(eq(userSuperlike.userId, userId), eq(userSuperlike.listingId, listingId)))
-    .limit(1);
+  // No favorite existed, so insert new one and increment counter atomically
+  const [, , superlike] = await Promise.all([
+    db.insert(userFavorite).values({
+      id: makeFavoriteId(),
+      userId,
+      listingId,
+      addedFrom,
+    }),
+    db.update(carListing)
+      .set({ favouriteCount: sql`${carListing.favouriteCount} + 1` })
+      .where(eq(carListing.id, listingId)),
+    db.select({ id: userSuperlike.id })
+      .from(userSuperlike)
+      .where(and(eq(userSuperlike.userId, userId), eq(userSuperlike.listingId, listingId)))
+      .limit(1),
+  ]);
 
   return { isFavorite: true, isSuperliked: superlike.length > 0 };
 }
@@ -238,12 +245,16 @@ export async function toggleSuperlikeForUser(
     .returning({ id: userSuperlike.id });
 
   if (deleted.length > 0) {
-    // Superlike was removed - check favorite status
-    const favorite = await db
-      .select({ id: userFavorite.id })
-      .from(userFavorite)
-      .where(and(eq(userFavorite.userId, userId), eq(userFavorite.listingId, listingId)))
-      .limit(1);
+    // Superlike was removed - decrement counter atomically and check favorite status
+    const [, favorite] = await Promise.all([
+      db.update(carListing)
+        .set({ superlikeCount: sql`GREATEST(0, ${carListing.superlikeCount} - 1)` })
+        .where(eq(carListing.id, listingId)),
+      db.select({ id: userFavorite.id })
+        .from(userFavorite)
+        .where(and(eq(userFavorite.userId, userId), eq(userFavorite.listingId, listingId)))
+        .limit(1),
+    ]);
     
     // Note: We don't refund quota - once used, it stays consumed for the period
     return { isFavorite: favorite.length > 0, isSuperliked: false, quota };
@@ -257,7 +268,7 @@ export async function toggleSuperlikeForUser(
     throw new Error('Superlike limit reached');
   }
 
-  // No superlike existed, so insert new one and update quota in parallel
+  // No superlike existed, so insert new one, update quota, and increment counter in parallel
   await Promise.all([
     db.insert(userSuperlike).values({
       id: makeSuperlikeId(),
@@ -271,7 +282,10 @@ export async function toggleSuperlikeForUser(
         currentMonthSuperlikesUsed: sql`${userSuperlikeQuota.currentMonthSuperlikesUsed} + 1`,
         totalSuperlikesUsed: sql`${userSuperlikeQuota.totalSuperlikesUsed} + 1`,
       })
-      .where(eq(userSuperlikeQuota.userId, userId))
+      .where(eq(userSuperlikeQuota.userId, userId)),
+    db.update(carListing)
+      .set({ superlikeCount: sql`${carListing.superlikeCount} + 1` })
+      .where(eq(carListing.id, listingId)),
   ]);
 
   // Check favorite status

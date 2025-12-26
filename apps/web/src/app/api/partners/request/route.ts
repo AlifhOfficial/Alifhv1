@@ -28,6 +28,7 @@ import {
   deletePartnerRequest,
   hasActivePartnerRequest,
   isTradeLicenseInUse,
+  getActivePartnerStaffMembershipByUserId,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 
@@ -83,6 +84,19 @@ export async function POST(req: NextRequest) {
     }
 
     const data = result.data;
+
+    // Check if user is currently a staff member of any partner
+    // Staff must leave their organization before applying to become a partner
+    const existingMembership = await getActivePartnerStaffMembershipByUserId(user.id);
+    if (existingMembership) {
+      return NextResponse.json(
+        { 
+          error: 'You are currently a staff member of an organization. Please leave your current organization before applying to become a partner.',
+          code: 'ACTIVE_STAFF_MEMBER'
+        },
+        { status: 400 }
+      );
+    }
 
     // Check if user already has an active request
     const hasActive = await hasActivePartnerRequest(user.id);

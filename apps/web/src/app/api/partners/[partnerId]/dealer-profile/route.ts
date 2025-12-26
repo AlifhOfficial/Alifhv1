@@ -125,6 +125,10 @@ export async function PATCH(
     const validationResult = UpdatePartnerProfileSchema.safeParse(body);
 
     if (!validationResult.success) {
+      console.error('[partner dealer-profile] PATCH validation failed:', {
+        body,
+        errors: validationResult.error.format()
+      });
       return NextResponse.json(
         { 
           error: 'Invalid input',

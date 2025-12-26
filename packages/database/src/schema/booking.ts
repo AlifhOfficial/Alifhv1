@@ -56,7 +56,7 @@ export const partnerAvailability = pgTable('partner_availability', {
   dayOfWeek: integer('day_of_week').notNull(), // 0 = Sunday, 1 = Monday, ... 6 = Saturday
   startTime: text('start_time').notNull(), // "09:00"
   endTime: text('end_time').notNull(), // "18:00"
-  slotDuration: integer('slot_duration').default(30).notNull(), // Minutes per slot
+  slotDuration: integer('slot_duration').default(45).notNull(), // Minutes per slot (45 min test drive sessions)
   
   // Capacity
   maxConcurrentBookings: integer('max_concurrent_bookings').default(1).notNull(), // How many at same time
@@ -92,7 +92,7 @@ export const bookingSlot = pgTable('booking_slot', {
   // Slot Time
   startTime: timestamp('start_time').notNull(),
   endTime: timestamp('end_time').notNull(),
-  duration: integer('duration').default(30).notNull(), // Minutes
+  duration: integer('duration').default(45).notNull(), // Minutes (45 min test drive sessions)
   
   // Status
   status: slotStatusEnum('status').default('available').notNull(),
@@ -228,6 +228,8 @@ export const booking = pgTable('booking', {
   // Status & time-based queries
   index('booking_status_idx').on(table.status),
   index('booking_scheduledStartTime_idx').on(table.scheduledStartTime),
+  index('booking_partnerId_scheduledStartTime_idx').on(table.partnerId, table.scheduledStartTime),
+  index('booking_userId_scheduledStartTime_idx').on(table.userId, table.scheduledStartTime),
   index('booking_status_scheduledStartTime_idx').on(table.status, table.scheduledStartTime),
   
   // Partner dashboard queries

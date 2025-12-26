@@ -43,6 +43,7 @@ neonConfig.webSocketConstructor = undefined; // Disable WebSocket fallback
 // Bun's fetch() is native C++ implementation (faster than Node.js undici)
 const fetchOptions: RequestInit = {
   keepalive: true, // Enable TCP connection reuse (reduces latency by ~5ms)
+  // Note: AbortSignal.timeout not supported in Edge runtime, using default Neon timeout
 };
 
 // Create Neon client with optimized fetch configuration

@@ -8,41 +8,72 @@
  * Features:
  * - Denormalized partner data (no JOIN needed)
  * - Only UI-essential fields (reduces payload ~60%)
- * - CDN-friendly caching (60s cache, 120s stale-while-revalidate)
+ * - 2-tier caching: CDN (60s) + Memory cache (2-3min)
  * - Batch fetching via IDs for favorites/superlikes pages
  * 
  * Query Params:
  * - ids: Comma-separated listing IDs (max 100, for favorites/superlikes)
- * - status: 'published' | 'draft' | 'pending' (default: published)
+ * - status: Legacy param; only 'public'/'published' allowed (public endpoint)
  * - partnerId: Filter by partner (inventory pages)
  * - limit: Results per page (default: 20, max: 100)
  * - offset: Pagination offset (default: 0)
  * 
  * Cache Strategy:
- * - Public cache: 60s (s-maxage)
- * - Stale-while-revalidate: 120s (serve stale during refresh)
- * - ISR revalidation: 60s
- * - Partner inventory: No explicit status filter (shows all)
+ * - Browse/Partner pages: CDN cached (s-maxage=60, stale-while-revalidate=120)
+ * - Batch requests (favorites): No CDN cache (personalized content)
+ * - Memory cache: 1-3min depending on request type
+ * - Cache invalidation: Handled by listing mutations
  * 
  * Standards:
  * - Returns 500 for server errors
  * - Max 100 IDs per request
  * - Sorted by createdAt DESC
+ * - Rate limited: 200 requests/min per IP
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { memoryCache, CacheKeys, CacheTTL, getListingCards } from "@alifh/database";
+import { getClientIp } from "@/lib/utils/get-client-ip";
+import { listingBrowseRateLimiter, getRateLimitHeaders } from "@/lib/api/rate-limit";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const revalidate = 60;
+export const revalidate = 0; // No ISR caching - rely on memory cache only
 
-const CACHE_HEADERS = {
+// CDN caching for public feed - reduces origin hits significantly
+// Memory cache handles invalidation; CDN provides edge distribution
+const CDN_CACHE_HEADERS = {
+  // CDN caches for 60s, serves stale for 120s while revalidating
   'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
 } as const;
 
+// For personalized/batch requests (favorites, superlikes) - no CDN cache
+const NO_CACHE_HEADERS = {
+  'Cache-Control': 'private, no-cache, no-store, must-revalidate',
+} as const;
+
+const RATE_LIMIT_MAX_REQUESTS = 200;
+
+// Only log in development or for cache misses in production
+const DEBUG_LOGGING = process.env.NODE_ENV !== 'production';
+
 export async function GET(req: NextRequest) {
   try {
+    const isProd = process.env.NODE_ENV === 'production';
+
+    // Rate limiting for public endpoint
+    const clientIp = getClientIp(req) || 'unknown';
+    const rateLimit = listingBrowseRateLimiter(clientIp);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please try again later.' },
+        { 
+          status: 429,
+          headers: getRateLimitHeaders(rateLimit, RATE_LIMIT_MAX_REQUESTS),
+        }
+      );
+    }
+
     const { searchParams } = new URL(req.url);
 
     const statusParam = searchParams.get('status');
@@ -50,8 +81,18 @@ export async function GET(req: NextRequest) {
     const status = statusParam || 'published';
     const partnerId = searchParams.get('partnerId');
     const idsParam = searchParams.get('ids');
-    const limit = parseInt(searchParams.get('limit') || '20');
-    const offset = parseInt(searchParams.get('offset') || '0');
+    const limitRaw = Number(searchParams.get('limit') ?? '20');
+    const offsetRaw = Number(searchParams.get('offset') ?? '0');
+    const limit = Number.isFinite(limitRaw) ? Math.min(Math.max(Math.trunc(limitRaw), 1), 100) : 20;
+    const offset = Number.isFinite(offsetRaw) ? Math.max(Math.trunc(offsetRaw), 0) : 0;
+
+    // Public endpoint: only allow public visibility.
+    if (statusExplicit && !['published', 'public'].includes(status)) {
+      return NextResponse.json(
+        { error: "Only 'public' listings are available on this endpoint" },
+        { status: 400 }
+      );
+    }
 
     const ids = idsParam
       ? idsParam
@@ -64,56 +105,95 @@ export async function GET(req: NextRequest) {
     // ⚡ MEMORY CACHE: Generate cache key based on request params
     let cacheKey: string;
     let cacheTTL: number;
+    let usesCdnCache = false; // Track if this request can use CDN caching
     
     if (ids?.length) {
-      // Batch request (favorites/superlikes) - 1min cache
+      // Batch request (favorites/superlikes) - 1min cache, no CDN (personalized)
       cacheKey = CacheKeys.listingCardsBatch(ids);
       cacheTTL = CacheTTL.listingCardsBatch;
+      usesCdnCache = false;
     } else if (partnerId) {
-      // Partner inventory - 3min cache
+      // Partner inventory - 3min cache, can use CDN
       cacheKey = CacheKeys.partnerInventory(partnerId, statusExplicit ? status : undefined);
       cacheTTL = CacheTTL.partnerInventory;
+      usesCdnCache = true;
     } else {
-      // Main browse/search - 2min cache
+      // Main browse/search - 2min cache, can use CDN
       const filterKey = `${status}:${limit}:${offset}`;
       cacheKey = CacheKeys.listingCards(filterKey);
       cacheTTL = CacheTTL.listingCards;
+      usesCdnCache = true;
+    }
+
+    // Select appropriate cache headers
+    const cacheHeaders = usesCdnCache ? CDN_CACHE_HEADERS : NO_CACHE_HEADERS;
+
+    // In dev, bypass cache so new/updated listings reflect immediately.
+    if (!isProd) {
+      const listings = await getListingCards({
+        ids: ids || undefined,
+        visibility: 'public',
+        partnerId: partnerId || undefined,
+        limit,
+        offset,
+      });
+
+      const response = NextResponse.json({
+        data: listings,
+        meta: { total: listings.length, limit, offset },
+      });
+      response.headers.set('Cache-Control', 'no-store');
+      return response;
     }
 
     // ⚡ CACHE HIT: Return cached data
     const cached = memoryCache.get<any>(cacheKey);
     if (cached) {
-      console.log(`[car-card] Cache HIT for ${cacheKey.substring(0, 50)}...`);
+      if (DEBUG_LOGGING) {
+        console.log(`[car-card] ✅ Cache HIT for ${cacheKey.substring(0, 50)}...`);
+      }
       const response = NextResponse.json(cached);
-      Object.entries(CACHE_HEADERS).forEach(([key, value]) => 
+      Object.entries(cacheHeaders).forEach(([key, value]) => 
         response.headers.set(key, value)
       );
+      response.headers.set('X-Cache', 'HIT');
+      response.headers.set('X-RateLimit-Remaining', String(rateLimit.remaining));
       return response;
     }
 
     // ⚡ CACHE MISS: Query database using query function
-    console.log(`[car-card] Cache MISS for ${cacheKey.substring(0, 50)}... - querying DB`);
+    if (DEBUG_LOGGING) {
+      console.log(`[car-card] ❌ Cache MISS for ${cacheKey.substring(0, 50)}... - querying DB`);
+    }
     const queryStart = performance.now();
 
     // Use exported query function - handles 2-step optimization internally
     const listings = await getListingCards({
       ids: ids || undefined,
-      status,
+      visibility: 'public',
       partnerId: partnerId || undefined,
       limit,
       offset,
     });
     
     const queryTime = performance.now() - queryStart;
-    console.log(`[car-card] Total DB time: ${queryTime.toFixed(2)}ms - ${listings.length} results`);
+    if (DEBUG_LOGGING) {
+      console.log(`[car-card] 📊 Total DB time: ${queryTime.toFixed(2)}ms - ${listings.length} results`);
+    }
+
+    // Calculate hasMore based on whether we got a full page of results
+    const hasMore = listings.length === limit;
 
     // ⚡ CACHE: Store results
     const responseData = {
       data: listings,
       meta: {
-        total: listings.length,
+        returned: listings.length,
         limit,
         offset,
+        hasMore,
+        // Note: total count requires expensive COUNT(*) query and is not available in edge runtime
+        // Use hasMore flag for pagination instead
       },
     };
     
@@ -121,9 +201,12 @@ export async function GET(req: NextRequest) {
     
     const response = NextResponse.json(responseData);
     
-    Object.entries(CACHE_HEADERS).forEach(([key, value]) => 
+    Object.entries(cacheHeaders).forEach(([key, value]) => 
       response.headers.set(key, value)
     );
+    response.headers.set('X-Cache', 'MISS');
+    response.headers.set('X-Query-Time', `${queryTime.toFixed(2)}ms`);
+    response.headers.set('X-RateLimit-Remaining', String(rateLimit.remaining));
     
     return response;
   } catch (error) {

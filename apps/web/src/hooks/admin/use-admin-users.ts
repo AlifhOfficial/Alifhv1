@@ -100,6 +100,7 @@ export interface AdminPartnerData {
   id: string;
   companyNameLegal: string;
   brandName: string;
+  logo: string | null;
   tradeLicense: string;
   email: string;
   phone: string;

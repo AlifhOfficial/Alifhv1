@@ -1,26 +1,23 @@
 /**
- * Admin Partners Page
- * Manage partner applications and approvals
+ * Admin Active Partners Page
+ * Manage active partners (suspend, tier, etc.)
  */
 
 import { DashboardDisplayArea } from "@/components/dashboard-components/display-area";
-import { PartnerRequestAdminList } from "@/components/partner";
+import { AdminPartnersList } from "@/components/admin/partners";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Partner Applications - Admin",
-  description: "Manage partner applications and approvals",
+  title: "Active Partners - Admin",
+  description: "Manage active partners and their settings",
 };
 
 export default async function AdminPartnersPage() {
   return (
-    <DashboardDisplayArea
-      title="Partner Applications"
-      description="Review and manage partner applications"
-    >
+    <DashboardDisplayArea>
       <div className="p-6 md:p-10">
-        <PartnerRequestAdminList />
+        <AdminPartnersList />
       </div>
     </DashboardDisplayArea>
   );

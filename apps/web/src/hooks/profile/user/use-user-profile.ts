@@ -31,6 +31,8 @@ export interface UserProfile {
   badges?: string[];
   inventoryCount?: number;
   rating?: number;
+  platformRating?: number | null;
+  platformReviewCount?: number | null;
   
   // ❌ avgResponseTime removed from user profile (only for partners)
   

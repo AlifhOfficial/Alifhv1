@@ -7,19 +7,7 @@
 'use client';
 
 import { useState } from 'react';
-
-// Public R2 URL - embedded at build time
-const R2_PUBLIC_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
-
-// Convert storage key to public URL
-function getPublicUrl(key: string | null | undefined): string | null {
-  if (!key) return null;
-  if (!R2_PUBLIC_URL) {
-    console.warn('NEXT_PUBLIC_R2_PUBLIC_URL is not configured');
-    return null;
-  }
-  return `${R2_PUBLIC_URL.replace(/\/$/, '')}/${key}`;
-}
+import { getPublicUrl } from '@/utils';
 
 interface BrandHeroProps {
   heroImageUrl?: string | null;

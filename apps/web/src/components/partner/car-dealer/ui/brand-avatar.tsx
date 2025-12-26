@@ -1,39 +1,52 @@
 /**
- * Brand Avatar Component
- * Displays partner logo with fallback to initials
- * Handles R2 storage keys automatically
+ * BrandAvatar Component - Single Source of Truth for Partner/Brand Logos
+ * 
+ * This component is the ONLY way to display brand/partner logos throughout the app.
+ * Automatically handles R2 storage key to public URL conversion.
+ * 
+ * For user avatars, use UserAvatar instead.
+ * 
+ * @example
+ * <BrandAvatar logoUrl={partner.logo} brandName={partner.brandName} />
  */
 
 'use client';
 
-import { useState } from 'react';
-
-// Public R2 URL - embedded at build time
-const R2_PUBLIC_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
-
-// Convert storage key to public URL
-function getPublicUrl(key: string | null | undefined): string | null {
-  if (!key) return null;
-  if (!R2_PUBLIC_URL) {
-    console.warn('NEXT_PUBLIC_R2_PUBLIC_URL is not configured');
-    return null;
-  }
-  return `${R2_PUBLIC_URL.replace(/\/$/, '')}/${key}`;
-}
+import * as React from 'react';
+import Image from 'next/image';
+import { cn, getPublicUrl } from '@/utils';
 
 interface BrandAvatarProps {
+  /** Logo storage key or full URL */
   logoUrl?: string | null;
+  /** Brand name for alt text and initials fallback */
   brandName: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  /** Avatar size */
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  /** Additional CSS classes */
   className?: string;
 }
 
 const sizeClasses = {
+  xs: 'w-8 h-8 text-sm',
   sm: 'w-12 h-12 text-lg',
   md: 'w-16 h-16 text-xl',
   lg: 'w-20 h-20 text-2xl',
   xl: 'w-24 h-24 text-3xl',
 };
+
+/**
+ * Generates initials from brand name
+ */
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .map(word => word[0])
+    .filter(Boolean)
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || 'B';
+}
 
 export function BrandAvatar({ 
   logoUrl, 
@@ -41,27 +54,39 @@ export function BrandAvatar({
   size = 'lg',
   className = '' 
 }: BrandAvatarProps) {
-  const [hasError, setHasError] = useState(false);
+  const [hasError, setHasError] = React.useState(false);
 
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(word => word[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
+  // Resolve storage key to public URL
+  const resolvedUrl = React.useMemo(() => {
+    if (!logoUrl) return null;
+    return getPublicUrl(logoUrl);
+  }, [logoUrl]);
+
+  // Reset error state when URL changes
+  React.useEffect(() => {
+    setHasError(false);
+  }, [resolvedUrl]);
+
+  const showImage = resolvedUrl && !hasError;
 
   return (
     <div 
-      className={`rounded-xl bg-card border border-border/40 flex items-center justify-center flex-shrink-0 overflow-hidden ${sizeClasses[size]} ${className}`}
+      className={cn(
+        "relative rounded-full bg-card border border-border/40 flex items-center justify-center flex-shrink-0 overflow-hidden",
+        sizeClasses[size],
+        className
+      )}
     >
-      {logoUrl && !hasError ? (
-        <img
-          src={getPublicUrl(logoUrl) || logoUrl}
+      {showImage ? (
+        <Image
+          src={resolvedUrl}
           alt={brandName}
-          className="w-full h-full object-cover"
+          fill
+          sizes="(max-width: 768px) 64px, 96px"
+          className="object-cover"
           onError={() => setHasError(true)}
+          referrerPolicy="no-referrer"
+          priority={false}
         />
       ) : (
         <span className="font-bold text-muted-foreground">
@@ -71,3 +96,5 @@ export function BrandAvatar({
     </div>
   );
 }
+
+export type { BrandAvatarProps };

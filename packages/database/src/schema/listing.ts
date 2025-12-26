@@ -12,14 +12,25 @@ import {
 import { user } from './auth';
 import { partner } from './partner';
 
-export const listingStatusEnum = pgEnum('listing_status', [
+export const listingModerationStatusEnum = pgEnum('listing_moderation_status', [
   'draft',
-  'pending',
-  'published',
-  'reserved',
-  'sold',
-  'archived',
+  'submitted',
+  'pending_review',
+  'approved',
   'rejected',
+]);
+
+export const listingLifecycleStatusEnum = pgEnum('listing_lifecycle_status', [
+  'active',
+  'archived',
+  'sold',
+  'expired',
+  'deleted',
+]);
+
+export const listingPostedByRoleEnum = pgEnum('listing_posted_by_role', [
+  'user',
+  'staff',
 ]);
 
 export const sellerTypeEnum = pgEnum('seller_type', [
@@ -214,8 +225,15 @@ export const carListing = pgTable('car_listing', {
   partnerId: text('partner_id').references(() => partner.id, { onDelete: 'cascade' }),
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   postedByStaffId: text('posted_by_staff_id'),
+  postedByRole: listingPostedByRoleEnum('posted_by_role').notNull(),
+  moderationStatus: listingModerationStatusEnum('moderation_status').default('draft').notNull(),
+  lifecycleStatus: listingLifecycleStatusEnum('lifecycle_status').default('active').notNull(),
   sellerType: sellerTypeEnum('seller_type').default('dealer').notNull(),
   isConsignment: boolean('is_consignment').default(false).notNull(),
+  
+  // Consignment Lead Flow
+  openToConsignment: boolean('open_to_consignment').default(false).notNull(), // User consent for consignment leads
+  
   make: text('make').notNull(),
   model: text('model').notNull(),
   year: integer('year').notNull(),
@@ -302,9 +320,17 @@ export const carListing = pgTable('car_listing', {
     customizations?: string[];
     recentServices?: string[];
     knownIssues?: string[];
+    // Admin moderation fields
+    rejectionReason?: string;
+    rejectedAt?: string;
+    rejectedBy?: string;
+    rejectedByName?: string;
+    suspensionReason?: string;
+    suspendedAt?: string;
+    suspendedBy?: string;
+    suspendedByName?: string;
   }>().default({}),
   warrantyType: warrantyTypeEnum('warranty_type'),
-  status: listingStatusEnum('status').default('draft').notNull(),
   exportStatus: exportStatusEnum('export_status').default('local_only').notNull(),
   badges: jsonb('badges').$type<string[]>().default([]),
   tags: jsonb('tags').$type<string[]>().default([]),
@@ -327,20 +353,46 @@ export const carListing = pgTable('car_listing', {
   soldPrice: integer('sold_price'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
+  lastEditedAt: timestamp('last_edited_at').defaultNow().notNull(),
+  submittedAt: timestamp('submitted_at'),
+  approvedAt: timestamp('approved_at'),
+  lastModeratedAt: timestamp('last_moderated_at'),
+  needsRemoderation: boolean('needs_remoderation').default(false).notNull(),
   publishedAt: timestamp('published_at'),
+  expiresAt: timestamp('expires_at'),
+  extensionCount: integer('extension_count').default(0).notNull(),
+  extensionHistory: jsonb('extension_history').$type<Array<{
+    extendedAt: string;
+    days: 7 | 14;
+    previousExpiresAt: string;
+    newExpiresAt: string;
+    extendedBy: string | null;
+  }>>().default([]).notNull(),
+  lastExtendedAt: timestamp('last_extended_at'),
   archivedAt: timestamp('archived_at'),
-  reviewedBy: text('reviewed_by').references(() => user.id, { onDelete: 'set null' }),
-  reviewedAt: timestamp('reviewed_at'),
+  deletedAt: timestamp('deleted_at'),
   rejectionReason: text('rejection_reason'),
 }, (table) => [
   index('car_listing_vin_idx').on(table.vin),
   index('car_listing_slug_idx').on(table.slug),
   index('car_listing_partnerId_idx').on(table.partnerId),
   index('car_listing_userId_idx').on(table.userId),
+  index('car_listing_userId_createdAt_idx').on(table.userId, table.createdAt.desc()),
+  index('car_listing_userId_updatedAt_idx').on(table.userId, table.updatedAt.desc()),
   index('car_listing_partnerId_createdAt_idx').on(table.partnerId, table.createdAt.desc()),
-  index('car_listing_partnerId_status_createdAt_idx').on(table.partnerId, table.status, table.createdAt.desc()),
-  index('car_listing_status_idx').on(table.status),
-  index('car_listing_status_createdAt_idx').on(table.status, table.createdAt.desc()),
+  index('car_listing_partnerId_lifecycleStatus_createdAt_idx').on(table.partnerId, table.lifecycleStatus, table.createdAt.desc()),
+  index('car_listing_partnerId_updatedAt_idx').on(table.partnerId, table.updatedAt.desc()),
+  index('car_listing_moderationStatus_idx').on(table.moderationStatus),
+  index('car_listing_lifecycleStatus_idx').on(table.lifecycleStatus),
+  index('car_listing_moderationStatus_lifecycleStatus_createdAt_idx').on(table.moderationStatus, table.lifecycleStatus, table.createdAt.desc()),
+  index('car_listing_moderationStatus_lifecycleStatus_publishedAt_createdAt_idx').on(
+    table.moderationStatus,
+    table.lifecycleStatus,
+    table.publishedAt.desc(),
+    table.createdAt.desc()
+  ),
+  index('car_listing_lifecycleStatus_expiresAt_idx').on(table.lifecycleStatus, table.expiresAt),
+  index('car_listing_moderationStatus_lifecycleStatus_expiresAt_idx').on(table.moderationStatus, table.lifecycleStatus, table.expiresAt),
   index('car_listing_make_idx').on(table.make),
   index('car_listing_model_idx').on(table.model),
   index('car_listing_year_idx').on(table.year),
@@ -349,8 +401,11 @@ export const carListing = pgTable('car_listing', {
   index('car_listing_fuelType_idx').on(table.fuelType),
   index('car_listing_transmission_idx').on(table.transmission),
   index('car_listing_emirate_idx').on(table.emirate),
-  index('car_listing_emirate_status_idx').on(table.emirate, table.status),
+  index('car_listing_emirate_lifecycleStatus_idx').on(table.emirate, table.lifecycleStatus),
   index('car_listing_price_idx').on(table.price),
+  
+  // Consignment lead matching index
+  index('car_listing_openToConsignment_publicish_idx').on(table.openToConsignment, table.moderationStatus, table.lifecycleStatus),
 ]);
 
 export const listingPriceHistory = pgTable('listing_price_history', {

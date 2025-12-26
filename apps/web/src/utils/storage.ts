@@ -10,6 +10,50 @@
 import { createId } from "@paralleldrive/cuid2";
 import type { StorageData, UploadFileParams } from "@/lib/storage/types";
 
+// ============================================================================
+// Public URL Resolution - Single Source of Truth
+// ============================================================================
+
+const R2_PUBLIC_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+
+/**
+ * Converts a storage key to a public URL.
+ * This is the SINGLE SOURCE OF TRUTH for all R2 URL resolution.
+ * 
+ * Handles:
+ * - Null/undefined values → returns null
+ * - Already full URLs (http://, https://, /) → returns as-is
+ * - Storage keys → converts to full public URL
+ * 
+ * @param key - Storage key or full URL
+ * @returns Full public URL or null
+ * 
+ * @example
+ * getPublicUrl("avatars/user123.jpg") → "https://pub-xxx.r2.dev/avatars/user123.jpg"
+ * getPublicUrl("https://example.com/img.jpg") → "https://example.com/img.jpg"
+ * getPublicUrl(null) → null
+ */
+export function getPublicUrl(key: string | null | undefined): string | null {
+  if (!key) return null;
+  
+  // Already a full URL - return as-is
+  if (key.startsWith('http://') || key.startsWith('https://') || key.startsWith('/')) {
+    return key;
+  }
+  
+  // Storage key - convert to public URL
+  if (!R2_PUBLIC_URL) {
+    console.warn('NEXT_PUBLIC_R2_PUBLIC_URL is not configured');
+    return null;
+  }
+  
+  return `${R2_PUBLIC_URL.replace(/\/$/, '')}/${key}`;
+}
+
+// ============================================================================
+// Key Management
+// ============================================================================
+
 /**
  * Normalizes storage key by converting backslashes and removing leading/trailing slashes
  * @param key - Raw storage key

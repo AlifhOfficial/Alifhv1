@@ -1,0 +1,2 @@
+CREATE INDEX "booking_partnerId_scheduledStartTime_idx" ON "booking" USING btree ("partner_id","scheduled_start_time");--> statement-breakpoint
+CREATE INDEX "booking_userId_scheduledStartTime_idx" ON "booking" USING btree ("user_id","scheduled_start_time");

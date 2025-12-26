@@ -10,9 +10,7 @@
  * - No session required (pre-auth validation)
  */
 
-import { db } from "@alifh/database";
-import * as schema from "@alifh/database";
-import { eq } from "drizzle-orm";
+import { checkUserExistsByEmail } from "@alifh/database";
 
 export interface ValidationResult {
   exists: boolean;
@@ -24,11 +22,9 @@ export interface ValidationResult {
  */
 export async function validateUserExists(email: string): Promise<ValidationResult> {
   try {
-    const existingUser = await db.query.user.findFirst({
-      where: eq(schema.user.email, email),
-    });
+    const exists = await checkUserExistsByEmail(email);
 
-    if (!existingUser) {
+    if (!exists) {
       return {
         exists: false,
         error: "No account found with this email address. Please check your email or sign up for a new account."

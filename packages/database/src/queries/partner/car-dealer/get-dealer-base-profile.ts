@@ -44,6 +44,8 @@ export async function getDealerBaseProfile(partnerId: string) {
       tier: partner.tier,
       
       // Contact & Location
+      email: partner.email,
+      phone: partner.phone,
       website: partner.website,
       address: partner.address,
       emirate: partner.emirate,

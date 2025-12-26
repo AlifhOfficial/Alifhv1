@@ -158,7 +158,15 @@ export function CarCard({ listing }) {
                 <div><span className="font-medium">ID:</span> {listing.id}</div>
                 <div><span className="font-medium">VIN:</span> {listing.vin}</div>
                 <div><span className="font-medium">Slug:</span> {listing.slug}</div>
-                <div><span className="font-medium">Status:</span> {listing.status}</div>
+                <div>
+                  <span className="font-medium">Public:</span> {listing.isPublic ? 'Yes' : 'No'}
+                </div>
+                <div>
+                  <span className="font-medium">Moderation:</span> {listing.moderationStatus}
+                </div>
+                <div>
+                  <span className="font-medium">Lifecycle:</span> {listing.lifecycleStatus}
+                </div>
                 <div><span className="font-medium">Partner ID:</span> {listing.partnerId}</div>
                 <div><span className="font-medium">Seller Type:</span> {listing.sellerType}</div>
               </div>

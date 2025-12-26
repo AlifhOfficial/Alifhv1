@@ -5,7 +5,7 @@
  * Lightweight Redis alternative for MVP with automatic cleanup.
  * 
  * USAGE:
- * - Session data (30s TTL) - prevents N+1 auth queries
+ * - Session data (5min TTL) - prevents N+1 auth queries
  * - User favorites (30s TTL) - reduces listing page load
  * - Listing details (5min TTL) - caches rarely-changing data
  * 
@@ -36,9 +36,23 @@ interface CacheEntry<T> {
   expiresAt: number;
 }
 
+interface CacheStats {
+  hits: number;
+  misses: number;
+  sets: number;
+  deletes: number;
+  hitRate: number;
+}
+
 class MemoryCache {
   private cache = new Map<string, CacheEntry<any>>();
   private cleanupInterval: ReturnType<typeof setInterval> | null = null;
+  private stats = {
+    hits: 0,
+    misses: 0,
+    sets: 0,
+    deletes: 0,
+  };
 
   constructor() {
     // Background cleanup every 60s to prevent memory bloat
@@ -53,14 +67,19 @@ class MemoryCache {
   get<T>(key: string): T | null {
     const entry = this.cache.get(key);
     
-    if (!entry) return null;
+    if (!entry) {
+      this.stats.misses++;
+      return null;
+    }
     
     // Check if expired
     if (Date.now() > entry.expiresAt) {
       this.cache.delete(key);
+      this.stats.misses++;
       return null;
     }
     
+    this.stats.hits++;
     return entry.data;
   }
 
@@ -72,6 +91,7 @@ class MemoryCache {
       data: value,
       expiresAt: Date.now() + (ttlSeconds * 1000),
     });
+    this.stats.sets++;
   }
 
   /**
@@ -80,7 +100,25 @@ class MemoryCache {
   delete(...keys: string[]): void {
     for (const key of keys) {
       this.cache.delete(key);
+      this.stats.deletes++;
     }
+  }
+
+  /**
+   * Delete all keys matching a prefix
+   * Useful for invalidating families of cached queries (e.g. listings cards).
+   *
+   * @returns number of deleted keys
+   */
+  deleteByPrefix(prefix: string): number {
+    let deleted = 0;
+    for (const key of this.cache.keys()) {
+      if (key.startsWith(prefix)) {
+        this.cache.delete(key);
+        deleted++;
+      }
+    }
+    return deleted;
   }
 
   /**
@@ -91,9 +129,9 @@ class MemoryCache {
   }
 
   /**
-   * Get cache stats
+   * Get cache stats with hit rate
    */
-  stats() {
+  getStats(): CacheStats {
     let expired = 0;
     const now = Date.now();
     
@@ -101,10 +139,59 @@ class MemoryCache {
       if (now > entry.expiresAt) expired++;
     }
     
+    const totalRequests = this.stats.hits + this.stats.misses;
+    const hitRate = totalRequests > 0 ? (this.stats.hits / totalRequests) * 100 : 0;
+    
     return {
-      total: this.cache.size,
-      expired,
-      active: this.cache.size - expired,
+      hits: this.stats.hits,
+      misses: this.stats.misses,
+      sets: this.stats.sets,
+      deletes: this.stats.deletes,
+      hitRate: Math.round(hitRate * 100) / 100, // Round to 2 decimals
+    };
+  }
+
+  /**
+   * Reset stats counters
+   */
+  resetStats(): void {
+    this.stats = {
+      hits: 0,
+      misses: 0,
+      sets: 0,
+      deletes: 0,
+    };
+  }
+
+  /**
+   * Get cache info (for monitoring)
+   */
+  info() {
+    let expired = 0;
+    const now = Date.now();
+    
+    for (const entry of this.cache.values()) {
+      if (now > entry.expiresAt) expired++;
+    }
+    
+    const totalRequests = this.stats.hits + this.stats.misses;
+    const hitRate = totalRequests > 0 ? (this.stats.hits / totalRequests) * 100 : 0;
+    
+    return {
+      entries: {
+        total: this.cache.size,
+        expired,
+        active: this.cache.size - expired,
+      },
+      performance: {
+        hits: this.stats.hits,
+        misses: this.stats.misses,
+        hitRate: `${Math.round(hitRate * 100) / 100}%`,
+      },
+      operations: {
+        sets: this.stats.sets,
+        deletes: this.stats.deletes,
+      },
     };
   }
 
@@ -161,10 +248,10 @@ export const CacheKeys = {
  * Cache TTL (seconds)
  */
 export const CacheTTL = {
-  userSession: 30, // 30 seconds - session data (role, partner memberships)
-  listingDetail: 300, // 5 minutes - full listing details
-  listingCards: 120, // 2 minutes - listing cards (main browse page)
-  listingCardsBatch: 60, // 1 minute - batch requests
-  partnerInventory: 180, // 3 minutes - partner inventory pages
+  userSession: 300, // 5 minutes - session data (role, partner memberships)
+  listingDetail: 120, // 2 minutes - full listing details
+  listingCards: 30, // 30 seconds - listing cards (main browse page) - short TTL, invalidated on new listings
+  listingCardsBatch: 30, // 30 seconds - batch requests
+  partnerInventory: 60, // 1 minute - partner inventory pages - invalidated on changes
   partnerMiniProfile: 60, // 1 minute - partner mini profile (matches API revalidate)
 } as const;

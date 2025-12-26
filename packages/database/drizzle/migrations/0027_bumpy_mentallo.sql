@@ -1,0 +1,2 @@
+ALTER TABLE "car_listing" ADD COLUMN "open_to_consignment" boolean DEFAULT false NOT NULL;--> statement-breakpoint
+CREATE INDEX "car_listing_openToConsignment_status_idx" ON "car_listing" USING btree ("open_to_consignment","status");

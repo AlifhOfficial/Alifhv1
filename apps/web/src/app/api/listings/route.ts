@@ -1,0 +1,311 @@
+/**
+ * API: Create Car Listing
+ * POST /api/listings
+ * 
+ * Purpose: Create a new car listing
+ * Authentication: Required (users and staff only)
+ * Session Source: getSessionUser() from middleware cache
+ * 
+ * Approval Flow:
+ * - Staff-posted listings: Can become public immediately (moderationStatus: 'approved')
+ * - User-posted listings: Require admin approval (moderationStatus goes to 'submitted'/'pending_review')
+ * 
+ * Standards:
+ * - Returns 401 for no auth
+ * - Returns 400 for invalid input
+ * - Returns 500 for server errors
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { getSessionUser } from '@/lib/auth/session-context';
+import {
+  createAuditLogEntry,
+  createCarListing,
+  getActivePartnerStaffMembershipByUserIdAndPartnerId,
+  memoryCache,
+  type CreateCarListingInput,
+} from '@alifh/database';
+import { getClientIp } from '@/lib/utils/get-client-ip';
+import { listingCreateRateLimiter, getRateLimitHeaders } from '@/lib/api/rate-limit';
+
+export const runtime = 'nodejs';
+
+// Rate limit config for listing creation
+// Regular users: 5 per day (spam prevention)
+// Staff/Partners: No limit (legitimate business operations like inventory onboarding)
+const RATE_LIMIT_MAX_REQUESTS = 5;
+
+export async function POST(req: NextRequest) {
+  try {
+    // Auth check - only authenticated users can create listings
+    const user = await getSessionUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Staff members (have partner membership) bypass rate limiting
+    // This allows dealers to onboard full inventory without hitting limits
+    const isStaffOrAdmin = 
+      user.role === 'admin' || 
+      user.role === 'super_admin' || 
+      (user.partnerMemberships && user.partnerMemberships.length > 0);
+
+    // Rate limit check - only for regular users
+    if (!isStaffOrAdmin) {
+      const rateLimit = listingCreateRateLimiter(user.id);
+      if (!rateLimit.allowed) {
+        return NextResponse.json(
+          { 
+            error: 'Rate limit exceeded',
+            message: `You can create up to ${RATE_LIMIT_MAX_REQUESTS} listings per day. Try again tomorrow.`,
+            retryAfter: Math.ceil((rateLimit.resetAt - Date.now()) / 1000),
+          },
+          { 
+            status: 429,
+            headers: getRateLimitHeaders(rateLimit, RATE_LIMIT_MAX_REQUESTS),
+          }
+        );
+      }
+    }
+
+    // Parse request body
+    const body = await req.json();
+
+    // Validate required fields
+    if (!body.make || !body.model || !body.year || !body.price || !body.mileage || !body.specs || !body.steeringSide || !body.emirate) {
+      return NextResponse.json(
+        { 
+          error: 'Missing required fields',
+          required: ['make', 'model', 'year', 'price', 'mileage', 'specs', 'steeringSide', 'emirate']
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate data types
+    if (typeof body.year !== 'number' || body.year < 1900 || body.year > new Date().getFullYear() + 1) {
+      return NextResponse.json(
+        { error: 'Invalid year' },
+        { status: 400 }
+      );
+    }
+
+    if (typeof body.price !== 'number' || body.price <= 0) {
+      return NextResponse.json(
+        { error: 'Invalid price' },
+        { status: 400 }
+      );
+    }
+
+    if (typeof body.mileage !== 'number' || body.mileage < 0) {
+      return NextResponse.json(
+        { error: 'Invalid mileage' },
+        { status: 400 }
+      );
+    }
+
+    // Validate specs enum
+    const validSpecs = ['gcc', 'american', 'european', 'japanese', 'canadian', 'other'];
+    if (!validSpecs.includes(body.specs)) {
+      return NextResponse.json(
+        { 
+          error: 'Invalid specs',
+          validValues: validSpecs
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate steeringSide enum
+    const validSteeringSide = ['left', 'right'];
+    if (!validSteeringSide.includes(body.steeringSide)) {
+      return NextResponse.json(
+        { 
+          error: 'Invalid steeringSide',
+          validValues: validSteeringSide
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate images array if provided
+    if (body.images && !Array.isArray(body.images)) {
+      return NextResponse.json(
+        { error: 'Images must be an array' },
+        { status: 400 }
+      );
+    }
+
+    // Set thumbnail to first image if not explicitly provided
+    const thumbnail = body.thumbnail || (body.images && body.images.length > 0 ? body.images[0] : undefined);
+
+    // Listing type is determined by the listing itself, not the user's role:
+    // - Partner/staff listing: has a `partnerId`
+    // - Personal user listing: no `partnerId` (always moderated if publishing)
+    const isPartnerListing = typeof body.partnerId === 'string' && body.partnerId.length > 0;
+
+    if (isPartnerListing) {
+      // Ensure the user is actually staff/owner for this partner (and can manage listings).
+      // Prefer session data, but fall back to DB in case middleware/session shape is incomplete for API routes.
+      const sessionMembership = user.partnerMemberships?.find((m) => m.partnerId === body.partnerId);
+
+      const roleFromSession = (sessionMembership as any)?.staffRole as string | undefined;
+      const permissionsFromSession = (sessionMembership as any)?.permissions as any;
+      const canCreateFromSession =
+        permissionsFromSession?.manageListings ??
+        permissionsFromSession?.listings?.create ??
+        undefined;
+
+      if (!sessionMembership) {
+        const dbMembership = await getActivePartnerStaffMembershipByUserIdAndPartnerId(user.id, body.partnerId);
+        if (!dbMembership) {
+          return NextResponse.json(
+            { error: 'Not authorized to create listings for this partner' },
+            { status: 403 }
+          );
+        }
+        if (dbMembership.role === 'viewer') {
+          return NextResponse.json(
+            { error: 'Your staff role does not allow creating listings' },
+            { status: 403 }
+          );
+        }
+      } else {
+        // Session membership exists; validate role/permissions.
+        if (roleFromSession === 'viewer' || canCreateFromSession === false) {
+          return NextResponse.json(
+            { error: 'Not authorized to create listings for this partner' },
+            { status: 403 }
+          );
+        }
+      }
+    }
+    
+    const postedByRole = isPartnerListing ? 'staff' : 'user';
+
+    // Legacy status mapping (kept for current clients):
+    // - 'draft' -> moderationStatus 'draft'
+    // - 'published' -> staff: 'approved' (public), user: 'submitted' (queued)
+    const legacyStatus = body.status || 'draft';
+    const moderationStatus =
+      legacyStatus === 'published'
+        ? postedByRole === 'staff'
+          ? 'approved'
+          : 'submitted'
+        : 'draft';
+
+    // Prepare input data
+    const input: CreateCarListingInput = {
+      userId: user.id,
+      postedByRole,
+      make: body.make,
+      model: body.model,
+      year: body.year,
+      price: body.price,
+      mileage: body.mileage,
+      specs: body.specs,
+      steeringSide: body.steeringSide,
+      emirate: body.emirate,
+      
+      // Partner info (for dealer/staff listings)
+      partnerId: isPartnerListing ? body.partnerId : undefined,
+      
+      // Optional fields
+      vin: body.vin || undefined,
+      trim: body.trim || undefined,
+      description: body.description || undefined,
+      currency: body.currency || 'AED',
+      isNegotiable: body.isNegotiable ?? false,
+      
+      // Specifications
+      bodyType: body.bodyType || undefined,
+      fuelType: body.fuelType || undefined,
+      transmission: body.transmission || undefined,
+      engineSize: body.engineSize || undefined,
+      engineType: body.engineType || undefined,
+      cylinders: body.cylinders || undefined,
+      powerRange: body.powerRange || undefined,
+      torque: body.torque || undefined,
+      fuelEconomy: body.fuelEconomy || undefined,
+      doors: body.doors || undefined,
+      seatingCapacity: body.seatingCapacity || undefined,
+      exteriorColor: body.exteriorColor || undefined,
+      interiorColor: body.interiorColor || undefined,
+      
+      // Moderation & Lifecycle
+      moderationStatus,
+      lifecycleStatus: 'active',
+
+      // Export
+      exportStatus: body.exportStatus || 'local_only',
+      warrantyType: body.warrantyType || undefined,
+      sellerType: body.sellerType || 'private',
+      
+      // Location
+      city: body.city || undefined,
+      
+      // Media (thumbnail auto-set to first image)
+      thumbnail: thumbnail,
+      images: body.images || undefined,
+      videoUrl: body.videoUrl || undefined,
+      
+      // Features & Notes
+      technicalFeatures: body.technicalFeatures || undefined,
+      extras: body.extras || undefined,
+      specialNotes: body.specialNotes || undefined,
+      badges: body.badges || undefined,
+      tags: body.tags || undefined,
+    };
+
+    // Create listing
+    const listingId = await createCarListing(input);
+
+    void createAuditLogEntry({
+      action: 'listing.create',
+      entityType: 'car_listing',
+      entityId: listingId,
+      userId: user.id,
+      ipAddress: getClientIp(req),
+      userAgent: req.headers.get('user-agent'),
+      metadata: {
+        postedByRole,
+        partnerId: input.partnerId ?? null,
+        moderationStatus: input.moderationStatus ?? 'draft',
+        lifecycleStatus: input.lifecycleStatus ?? 'active',
+      },
+    }).catch((error) => {
+      console.error('[Audit] Failed to write listing.create log:', error);
+    });
+
+    // Invalidate listing caches so new inventory reflects immediately
+    memoryCache.deleteByPrefix('listings:cards:');
+    memoryCache.deleteByPrefix('listings:partner:');
+
+    return NextResponse.json(
+      {
+        success: true,
+        data: {
+          id: listingId,
+        },
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error('Error creating listing:', error);
+    
+    // Extract more detailed error info for debugging
+    const errorDetails = {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      name: error instanceof Error ? error.name : undefined,
+      stack: error instanceof Error ? error.stack?.split('\n').slice(0, 5).join('\n') : undefined,
+    };
+    
+    return NextResponse.json(
+      { 
+        error: errorDetails.message || 'Internal server error',
+        details: process.env.NODE_ENV === 'development' ? errorDetails : undefined
+      },
+      { status: 500 }
+    );
+  }
+}

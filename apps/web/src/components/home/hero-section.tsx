@@ -14,17 +14,38 @@ export function HeroSection() {
       <div className="max-w-[1400px] mx-auto">
         
         {/* Brand & Tagline */}
-        <div className="text-center mb-10 space-y-2">
-          <h1 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight">
-            Alifh<span className="text-primary">™</span>
+        <div className="text-center mb-16 space-y-4">
+          <p className="text-xs uppercase tracking-widest text-muted-foreground">
+            Alifh
+          </p>
+          <h1 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+            Buy and sell cars.
+            <br />
+            <span className="text-muted-foreground/70">Done right.</span>
           </h1>
-          <p className="text-sm text-muted-foreground">
-            Buy and sell cars. Done right.
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-xl mx-auto pt-2">
+            Browse listings. Book test drives. List your car—free.
           </p>
         </div>
 
+        {/* Main CTAs */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-16">
+          <Link
+            href="/listings"
+            className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
+          >
+            Browse Cars
+          </Link>
+          <Link
+            href="/sell"
+            className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
+          >
+            Sell Your Car
+          </Link>
+        </div>
+
         {/* Hero Image */}
-        <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] overflow-hidden rounded-lg mb-8">
+        <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] overflow-hidden rounded-lg mb-16">
           <Image
             src="/Images/Hero_img.png"
             alt="Automotive marketplace"
@@ -35,31 +56,8 @@ export function HeroSection() {
           />
         </div>
 
-        {/* Introduction */}
-        <div className="text-center mb-10 max-w-2xl mx-auto">
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            List for free. Browse verified inventory. Save favorites. Book test drives—all in one place.
-          </p>
-        </div>
-
-        {/* Main CTAs */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-12">
-          <Link
-            href="/listings"
-            className="w-full sm:w-auto h-10 px-6 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center"
-          >
-            Browse Cars
-          </Link>
-          <Link
-            href="/sell"
-            className="w-full sm:w-auto h-10 px-6 bg-muted text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
-          >
-            Sell Your Car
-          </Link>
-        </div>
-
         {/* Trust Indicators */}
-        <div className="flex items-center justify-center gap-12 md:gap-16 pt-8 border-t border-border/40">
+        <div className="flex items-center justify-center gap-12 md:gap-20 pt-8 border-t border-border/40">
           <div className="text-center space-y-1">
             <div className="text-2xl font-semibold tracking-tight text-foreground">Free</div>
             <div className="text-xs text-muted-foreground">List unlimited</div>

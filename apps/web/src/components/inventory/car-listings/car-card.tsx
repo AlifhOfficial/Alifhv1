@@ -15,6 +15,8 @@ import { useState, useEffect } from 'react';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
 import { SuperlikeLimitDialog } from '@/components/engagement/favorites/superlike-limit-dialog';
 import { AuthRequiredDialog } from '@/components/auth/auth-required-dialog';
+import { UserAvatar } from '@/components/ui/data-display/user-avatar';
+import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 
 interface CarCardProps {
   id: string;
@@ -32,7 +34,10 @@ interface CarCardProps {
   qiScore?: number | null;
   // Partner/Dealer info
   partnerName?: string;
+  partnerLogo?: string | null;
   partnerVerified?: boolean;
+  sellerName?: string | null;
+  sellerAvatarUrl?: string | null;
   isBlackMember?: boolean; // Black tier partner listing
   className?: string;
 }
@@ -51,18 +56,21 @@ export function CarCard({
   images,
   qiScore,
   partnerName,
+  partnerLogo,
   partnerVerified,
+  sellerName,
+  sellerAvatarUrl,
   isBlackMember = false,
   className
 }: CarCardProps) {
   // Format functions
-  const formatPrice = (cents: number) => {
+  const formatPrice = (amount: number) => {
     return new Intl.NumberFormat('en-AE', {
       style: 'currency',
       currency: 'AED',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(cents / 100);
+    }).format(amount); // Price stored as full AED, not fils
   };
 
   const formatMileage = (km: number) => {
@@ -159,6 +167,18 @@ export function CarCard({
   };
 
   const carTitle = `${year} ${make} ${model}${trim ? ` ${trim}` : ''}`;
+  const displaySellerName = partnerName || sellerName || 'Private Seller';
+  const isPartnerListing = Boolean(partnerLogo || partnerName);
+
+  // Debug: Check what avatar data we're receiving
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[CarCard ${id}] Avatar debug:`, {
+      partnerLogo,
+      sellerAvatarUrl,
+      isPartnerListing,
+      displaySellerName,
+    });
+  }
 
   return (
     <div className={cn(
@@ -290,23 +310,33 @@ export function CarCard({
         )}>
           {/* Dealer Info */}
           <div className="flex items-center gap-2 min-w-0">
-            <div className={cn(
-              "relative w-7 h-7 rounded-full overflow-hidden flex-shrink-0",
-              isBlackMember ? "bg-zinc-800 ring-1 ring-zinc-700" : "bg-muted ring-1 ring-border/20"
-            )}>
-              <div className={cn(
-                "w-full h-full flex items-center justify-center text-[10px] font-semibold",
-                isBlackMember ? "text-zinc-400" : "text-muted-foreground"
-              )}>
-                {(partnerName || 'PS').substring(0, 2).toUpperCase()}
-              </div>
-            </div>
+            {isPartnerListing ? (
+              <BrandAvatar
+                logoUrl={partnerLogo}
+                brandName={displaySellerName}
+                size="xs"
+                className={cn(
+                  'w-7 h-7 flex-shrink-0',
+                  isBlackMember ? 'bg-zinc-800 border-zinc-700' : 'bg-muted border-border/20'
+                )}
+              />
+            ) : (
+              <UserAvatar
+                src={sellerAvatarUrl}
+                name={displaySellerName}
+                size="sm"
+                className={cn(
+                  'w-7 h-7 flex-shrink-0',
+                  isBlackMember ? 'bg-zinc-800 border-zinc-700 text-zinc-400' : 'bg-muted border-border/20 text-muted-foreground'
+                )}
+              />
+            )}
             <div className="flex items-center gap-1.5 min-w-0">
               <span className={cn(
                 "text-xs font-medium truncate",
                 isBlackMember ? "text-zinc-300" : "text-foreground"
               )}>
-                {partnerName || 'Private Seller'}
+                {displaySellerName}
               </span>
               {(isBlackMember || partnerVerified) && (
                 <div className="relative inline-flex items-center justify-center w-4 h-4 flex-shrink-0" title="Verified">

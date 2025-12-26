@@ -1,0 +1,77 @@
+/**
+ * Mark Conversation as Read API
+ * PATCH: Mark all messages in conversation as read
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { getSessionUser } from '@/lib/auth/session-context';
+import { getConversationParticipants, markConversationAsRead } from '@alifh/database/server';
+
+export const runtime = 'nodejs';
+
+// ============================================================================
+// PATCH /api/conversations/:id/read
+// Mark conversation as read (reset unread count)
+// ============================================================================
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const user = await getSessionUser();
+    if (!user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const { id } = await params;
+    const lastReadAt = new Date().toISOString();
+    await markConversationAsRead(id, user.id);
+
+    // Notify other participants (best-effort; WS is optional in dev)
+    try {
+      const participants = await getConversationParticipants(id);
+      const otherParticipants = participants.filter((p) => p.userId !== user.id);
+      const wsBroadcastUrl = process.env.WS_BROADCAST_URL || 'http://localhost:3001/broadcast';
+
+      // Fire all broadcasts in parallel
+      const broadcasts = otherParticipants.map((participant) =>
+        fetch(wsBroadcastUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            channel: `user:${participant.userId}`,
+            message: {
+              type: 'read_receipt',
+              conversationId: id,
+              userId: user.id,
+              lastReadAt,
+            },
+          }),
+        }).catch(() => {
+          // Ignore WebSocket broadcast failures
+        })
+      );
+      
+      Promise.allSettled(broadcasts).catch(() => {});
+    } catch {
+      // Ignore WebSocket failures
+    }
+
+    return NextResponse.json({ success: true, lastReadAt });
+  } catch (error) {
+    const details =
+      process.env.NODE_ENV !== 'production'
+        ? error instanceof Error
+          ? error.message
+          : String(error)
+        : undefined;
+    return NextResponse.json(
+      { error: 'Failed to mark as read', details },
+      { status: 500 }
+    );
+  }
+}

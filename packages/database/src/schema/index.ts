@@ -10,5 +10,6 @@ export * from './listing';
 export * from './booking';
 export * from './messaging';
 export * from './consignment';
+export * from './admin';
 
 export * from './relations';

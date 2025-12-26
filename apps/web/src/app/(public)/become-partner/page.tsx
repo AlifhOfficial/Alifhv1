@@ -1,10 +1,10 @@
 /**
- * Become a Partner Page - Public
- * Allow anyone to apply to become a partner
+ * Become a Partner Page - Redirects to application form
+ * Users must be logged in to apply
  */
 
 import { Metadata } from 'next';
-import { BecomePartnerPublicForm } from '@/components/partner';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Become a Partner - Alifh',
@@ -29,7 +29,7 @@ export default function BecomePartnerPage() {
             <p className="text-lg md:text-xl text-muted-foreground mb-8">
               Join the UAE's most transparent car marketplace and grow your business with Alifh
             </p>
-            <div className="flex flex-wrap justify-center gap-6 text-sm">
+            <div className="flex flex-wrap justify-center gap-6 text-sm mb-8">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-primary rounded-full" />
                 <span>Increased Visibility</span>
@@ -47,13 +47,14 @@ export default function BecomePartnerPage() {
                 <span>Dedicated Support</span>
               </div>
             </div>
+            <Link
+              href="/user-dashboard/partner-application"
+              className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-primary-foreground rounded-lg text-lg font-semibold hover:bg-primary/90 transition-colors"
+            >
+              Apply Now
+            </Link>
           </div>
         </div>
-      </section>
-
-      {/* Form Section */}
-      <section className="container mx-auto px-4 py-12">
-        <BecomePartnerPublicForm />
       </section>
 
       {/* Benefits Section */}

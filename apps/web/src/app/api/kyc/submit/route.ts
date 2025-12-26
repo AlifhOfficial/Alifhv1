@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { db, kycRecord } from "@alifh/database";
-import { createId } from "@paralleldrive/cuid2";
+import { createKycRecord } from "@alifh/database";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 const KYCSubmitSchema = z.object({
   documentType: z.enum(['passport', 'national_id', 'driving_license']),
@@ -36,23 +35,16 @@ export async function POST(req: NextRequest) {
 
     const { documentType, documentNumber, documentFrontUrl, documentBackUrl, selfieUrl } = validationResult.data;
 
-    // Create KYC record
-    const [record] = await db
-      .insert(kycRecord)
-      .values({
-        id: `kyc_${createId()}`,
-        userId: user.id,
-        status: 'pending',
-        type: 'individual',
-        documentType,
-        documentNumber,
-        documentFrontUrl,
-        documentBackUrl: documentBackUrl || null,
-        selfieUrl,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      })
-      .returning();
+    // Create KYC record using query function
+    const record = await createKycRecord({
+      userId: user.id,
+      type: 'basic',
+      documentType,
+      documentNumber,
+      documentFrontUrl,
+      documentBackUrl: documentBackUrl || undefined,
+      selfieUrl,
+    });
 
     return NextResponse.json({ 
       success: true,

@@ -319,12 +319,13 @@ function generateListing(
   const qiScore = randomInt(65, 98) / 100;
   
   // Engagement metrics
-  const viewCount = status === 'published' ? randomInt(50, 3000) : randomInt(0, 50);
-  const favouriteCount = status === 'published' ? randomInt(5, 200) : randomInt(0, 10);
-  const superlikeCount = status === 'published' ? randomInt(0, 30) : 0;
+  const isPublicish = status === 'published' || status === 'reserved';
+  const viewCount = isPublicish ? randomInt(50, 3000) : randomInt(0, 50);
+  const favouriteCount = isPublicish ? randomInt(5, 200) : randomInt(0, 10);
+  const superlikeCount = isPublicish ? randomInt(0, 30) : 0;
   
   // Heat score for trending cars
-  const heatScore = status === 'published' ? randomInt(0, 100) : 0;
+  const heatScore = isPublicish ? randomInt(0, 100) : 0;
   
   // Badges and tags
   const listingBadges = getRandomSubarray(badges, 1, 4);
@@ -349,8 +350,6 @@ function generateListing(
   const soldPrice = status === 'sold' ? Math.floor(price * (0.88 + Math.random() * 0.1)) : undefined;
   const archivedAt = status === 'archived' ? new Date() : undefined;
   
-  // Review info
-  const reviewedAt = ['published', 'rejected'].includes(status) ? publishedAt : undefined;
   const rejectionReason = status === 'rejected' ? getRandomItem([
     'Images not clear enough',
     'Missing required documentation',
@@ -358,6 +357,27 @@ function generateListing(
     'Duplicate listing',
     'Incomplete vehicle information'
   ]) : undefined;
+
+  const postedByRole = (sellerType === 'dealer' || sellerType === 'consignment') ? 'staff' : 'user';
+  const moderationStatus =
+    status === 'draft'
+      ? 'draft'
+      : status === 'pending'
+      ? 'pending_review'
+      : status === 'rejected'
+      ? 'rejected'
+      : 'approved';
+  const lifecycleStatus =
+    status === 'sold'
+      ? 'sold'
+      : status === 'archived' || status === 'rejected'
+      ? 'archived'
+      : 'active';
+  const submittedAt = moderationStatus === 'pending_review' ? createdAt : null;
+  const approvedAt = moderationStatus === 'approved' ? (publishedAt ?? createdAt) : null;
+  const lastModeratedAt = moderationStatus === 'draft' ? null : (approvedAt ?? submittedAt ?? createdAt);
+  const needsRemoderation = moderationStatus === 'pending_review';
+  const expiresAt = publishedAt ? new Date(publishedAt.getTime() + 24 * 24 * 60 * 60 * 1000) : null;
   
   // SEO
   const slug = generateSlug(make, model, year, trim);
@@ -379,6 +399,9 @@ function generateListing(
     partnerId: sellerType === 'dealer' || sellerType === 'consignment' ? partnerId : null,
     userId: sellerType === 'private' ? userId : null,
     postedByStaffId: null,
+    postedByRole,
+    moderationStatus,
+    lifecycleStatus,
     sellerType,
     isConsignment,
     
@@ -452,8 +475,6 @@ function generateListing(
     specialNotes,
     warrantyType: getRandomItem(warrantyTypes),
     
-    // Status
-    status,
     exportStatus,
     
     // Badges & Tags
@@ -486,12 +507,19 @@ function generateListing(
     createdAt,
     updatedAt,
     publishedAt,
+    expiresAt,
+    extensionCount: 0,
+    extensionHistory: [],
+    lastEditedAt: updatedAt,
     archivedAt,
     
     // Moderation
-    reviewedBy: ['published', 'rejected'].includes(status) ? reviewerId : null,
-    reviewedAt,
+    submittedAt,
+    approvedAt,
+    lastModeratedAt,
+    needsRemoderation,
     rejectionReason,
+    deletedAt: null,
   };
 }
 
@@ -633,13 +661,12 @@ async function seedListings() {
     console.log('='.repeat(60));
     console.log('\n📊 Summary:\n');
     console.log(`   Total listings: ${listings.length}`);
-    console.log(`   • Published: ${listings.filter(l => l.status === 'published').length}`);
-    console.log(`   • Draft: ${listings.filter(l => l.status === 'draft').length}`);
-    console.log(`   • Reserved: ${listings.filter(l => l.status === 'reserved').length}`);
-    console.log(`   • Sold: ${listings.filter(l => l.status === 'sold').length}`);
-    console.log(`   • Archived: ${listings.filter(l => l.status === 'archived').length}`);
-    console.log(`   • Pending: ${listings.filter(l => l.status === 'pending').length}`);
-    console.log(`   • Rejected: ${listings.filter(l => l.status === 'rejected').length}`);
+    console.log(`   • Public: ${listings.filter(l => l.isPublic).length}`);
+    console.log(`   • Draft: ${listings.filter(l => l.moderationStatus === 'draft').length}`);
+    console.log(`   • In Review: ${listings.filter(l => l.moderationStatus === 'submitted' || l.moderationStatus === 'pending_review').length}`);
+    console.log(`   • Sold: ${listings.filter(l => l.lifecycleStatus === 'sold').length}`);
+    console.log(`   • Archived: ${listings.filter(l => l.lifecycleStatus === 'archived').length}`);
+    console.log(`   • Rejected: ${listings.filter(l => l.moderationStatus === 'rejected').length}`);
     console.log(`\n   Black member listings: ${listings.filter(l => l.isBlackMember).length}`);
     console.log(`   Private listings: ${listings.filter(l => l.sellerType === 'private').length}`);
     console.log(`   Consignment: ${listings.filter(l => l.isConsignment).length}`);

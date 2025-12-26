@@ -23,6 +23,7 @@ import {
   getPartnerRequestCounts,
   reviewPartnerRequest,
   getPartnerRequestById,
+  createPartnerFromRequest,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 
@@ -188,15 +189,36 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Note: If approved, the actual partner creation should happen in a separate service/workflow
-    // This API only updates the request status
-    // You may want to trigger a background job or webhook here
+    // If approved, create partner and partner staff
+    let partnerData = null;
+    if (status === 'approved') {
+      try {
+        partnerData = await createPartnerFromRequest(requestId, {
+          ...existingRequest.request,
+          userId: existingRequest.request.userId,
+          userEmail: existingRequest.user?.email,
+          userName: existingRequest.user?.name,
+        });
+      } catch (error) {
+        console.error('[partners/request/admin] Failed to create partner:', error);
+        // Request was approved but partner creation failed - this needs manual intervention
+        return NextResponse.json(
+          { 
+            error: 'Request approved but partner creation failed. Please create partner manually.',
+            request: updated 
+          },
+          { status: 500 }
+        );
+      }
+    }
 
     const response = NextResponse.json({ 
       success: true,
       request: updated,
+      partner: partnerData?.partner || null,
+      staff: partnerData?.staff || null,
       message: status === 'approved' 
-        ? 'Partner request approved. Partner account will be created.'
+        ? 'Partner request approved and partner account created.'
         : 'Partner request rejected.'
     });
 

@@ -13,6 +13,8 @@ import { cn } from '@/utils';
 import { useState } from 'react';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
 import { SuperlikeLimitDialog } from '@/components/engagement/favorites/superlike-limit-dialog';
+import { UserAvatar } from '@/components/ui/data-display/user-avatar';
+import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 
 interface CarListItemProps {
   id: string;
@@ -28,7 +30,10 @@ interface CarListItemProps {
   images?: string[];
   qiScore?: number | null;
   partnerName?: string;
+  partnerLogo?: string | null;
   partnerVerified?: boolean;
+  sellerName?: string | null;
+  sellerAvatarUrl?: string | null;
   isBlackMember?: boolean;
   className?: string;
 }
@@ -47,17 +52,20 @@ export function CarListItem({
   images,
   qiScore,
   partnerName,
+  partnerLogo,
   partnerVerified,
+  sellerName,
+  sellerAvatarUrl,
   isBlackMember = false,
   className
 }: CarListItemProps) {
-  const formatPrice = (cents: number) => {
+  const formatPrice = (amount: number) => {
     return new Intl.NumberFormat('en-AE', {
       style: 'currency',
       currency: 'AED',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(cents / 100);
+    }).format(amount); // Price stored as full AED, not fils
   };
 
   const formatMileage = (km: number) => {
@@ -69,6 +77,8 @@ export function CarListItem({
 
   const displayImage = thumbnail || images?.[0] || '/assets/cars/car1.avif';
   const displaySpecs = specs || 'GCC';
+  const displaySellerName = partnerName || sellerName || 'Private Seller';
+  const isPartnerListing = Boolean(partnerLogo || partnerName);
   
   // Separate hooks for favorites and superlikes
   const favorite = useFavorite(id);
@@ -313,23 +323,33 @@ export function CarListItem({
 
         {/* Dealer Info - Bottom */}
         <div className="flex items-center gap-2.5 pt-4 border-t border-border/20">
-          <div className={cn(
-            "relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0",
-            isBlackMember ? "bg-zinc-800 ring-1 ring-zinc-700" : "bg-muted ring-1 ring-border/20"
-          )}>
-            <div className={cn(
-              "w-full h-full flex items-center justify-center text-[10px] font-semibold",
-              isBlackMember ? "text-zinc-400" : "text-muted-foreground"
-            )}>
-              {(partnerName || 'PS').substring(0, 2).toUpperCase()}
-            </div>
-          </div>
+          {isPartnerListing ? (
+            <BrandAvatar
+              logoUrl={partnerLogo}
+              brandName={displaySellerName}
+              size="xs"
+              className={cn(
+                'w-8 h-8 flex-shrink-0',
+                isBlackMember ? 'bg-zinc-800 border-zinc-700' : 'bg-muted border-border/20'
+              )}
+            />
+          ) : (
+            <UserAvatar
+              src={sellerAvatarUrl}
+              name={displaySellerName}
+              size="sm"
+              className={cn(
+                'w-8 h-8 flex-shrink-0',
+                isBlackMember ? 'bg-zinc-800 border-zinc-700 text-zinc-400' : 'bg-muted border-border/20 text-muted-foreground'
+              )}
+            />
+          )}
           <div className="flex items-center gap-2 min-w-0">
             <span className={cn(
               "text-sm font-medium truncate",
               isBlackMember ? "text-zinc-300" : "text-foreground"
             )}>
-              {partnerName || 'Private Seller'}
+              {displaySellerName}
             </span>
             {(isBlackMember || partnerVerified) && (
               <div className="relative inline-flex items-center justify-center w-4 h-4 flex-shrink-0" title="Verified">

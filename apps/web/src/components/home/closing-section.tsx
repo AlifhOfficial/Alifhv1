@@ -11,28 +11,30 @@ export function ClosingSection() {
       
       {/* Content */}
       <div className="max-w-[1400px] mx-auto px-4 py-24">
-        <h2 className="text-2xl sm:text-3xl font-medium text-foreground tracking-tight leading-[1.1] mb-4 max-w-2xl">
-          We didn't build this to compete.
+        <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
+          Our promise
+        </p>
+        <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight mb-4 max-w-2xl">
+          Transparency first.
           <br />
-          We built it because nothing else worked.
+          <span className="text-muted-foreground/70">Always.</span>
         </h2>
         
-        <p className="text-sm sm:text-base text-muted-foreground/70 max-w-lg mb-8 leading-relaxed">
-          No investors telling us to add more ads. No shareholders demanding 
-          we squeeze every penny. Just a simple promise: if we know something, 
-          you know it too.
+        <p className="text-sm text-muted-foreground max-w-xl mb-8 leading-relaxed">
+          What you see is what you get. Full vehicle history, honest pricing, real availability. 
+          We believe buying or selling a car should be simple—not a negotiation game.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 mb-16">
           <Link
             href="/listings"
-            className="h-10 px-6 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center"
+            className="h-11 px-8 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
           >
             Start Browsing
           </Link>
           <Link
             href="/partner"
-            className="h-10 px-6 bg-muted text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
+            className="h-11 px-8 bg-muted text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
           >
             Partner With Us
           </Link>

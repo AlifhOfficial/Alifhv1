@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { db, kycRecord, userProfile, user } from "@alifh/database";
-import { eq } from "drizzle-orm";
+import { 
+  getKycRequestsByStatus, 
+  getPendingKycRequests,
+  getKycRecordById,
+  approveKycRecord, 
+  rejectKycRecord,
+  type KycStatus 
+} from "@alifh/database";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 export const revalidate = 30; // Cache for 30s - admin data changes infrequently
 
 const KYCActionSchema = z.object({
@@ -22,56 +28,46 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
-    const status = searchParams.get('status') || undefined; // Filter by status if provided
-    const limit = parseInt(searchParams.get('limit') || '50'); // Default 50, max 100
+    const status = searchParams.get('status') as KycStatus | null;
+    const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
     const queryStart = performance.now();
 
-    // Build where conditions
-    const whereConditions = [];
-    if (status) {
-      whereConditions.push(eq(kycRecord.status, status));
-    }
+    // Use appropriate query function based on status filter
+    const records = status 
+      ? await getKycRequestsByStatus(status, Math.min(limit, 100), offset)
+      : await getPendingKycRequests(Math.min(limit, 100), offset);
 
-    // Get all KYC records with user info
-    // Uses composite index: kyc_record_status_createdAt_idx
-    const records = await db
-      .select({
-        id: kycRecord.id,
-        userId: kycRecord.userId,
-        status: kycRecord.status,
-        type: kycRecord.type,
-        documentType: kycRecord.documentType,
-        documentNumber: kycRecord.documentNumber,
-        documentFrontUrl: kycRecord.documentFrontUrl,
-        documentBackUrl: kycRecord.documentBackUrl,
-        selfieUrl: kycRecord.selfieUrl,
-        verifiedBy: kycRecord.verifiedBy,
-        verifiedAt: kycRecord.verifiedAt,
-        rejectionReason: kycRecord.rejectionReason,
-        createdAt: kycRecord.createdAt,
-        updatedAt: kycRecord.updatedAt,
-        userName: user.name,
-        userEmail: user.email,
-        userProfileFirstName: userProfile.firstName,
-        userProfileLastName: userProfile.lastName,
-      })
-      .from(kycRecord)
-      .leftJoin(user, eq(kycRecord.userId, user.id))
-      .leftJoin(userProfile, eq(kycRecord.userId, userProfile.userId))
-      .where(whereConditions.length > 0 ? whereConditions[0] : undefined)
-      .orderBy(kycRecord.createdAt)
-      .limit(Math.min(limit, 100))
-      .offset(offset);
+    // Transform records to match expected API response format
+    const formattedRecords = records.map(r => ({
+      id: r.id,
+      userId: r.userId,
+      status: r.status,
+      type: r.type,
+      documentType: r.documentType,
+      documentNumber: r.documentNumber,
+      documentFrontUrl: r.documentFrontUrl,
+      documentBackUrl: r.documentBackUrl,
+      selfieUrl: r.selfieUrl,
+      verifiedBy: r.verifiedBy,
+      verifiedAt: r.verifiedAt,
+      rejectionReason: r.rejectionReason,
+      createdAt: r.createdAt,
+      updatedAt: r.updatedAt,
+      userName: r.user.name,
+      userEmail: r.user.email,
+      userProfileFirstName: r.profile?.firstName ?? null,
+      userProfileLastName: r.profile?.lastName ?? null,
+    }));
 
     const queryTime = performance.now() - queryStart;
-    console.log(`[kyc/requests] Query completed in ${queryTime.toFixed(2)}ms - ${records.length} results`);
+    console.log(`[kyc/requests] Query completed in ${queryTime.toFixed(2)}ms - ${formattedRecords.length} results`);
 
     return NextResponse.json({ 
-      records,
+      records: formattedRecords,
       meta: {
-        total: records.length,
+        total: formattedRecords.length,
         limit: Math.min(limit, 100),
         offset,
       }
@@ -108,58 +104,22 @@ export async function PATCH(req: NextRequest) {
 
     const { kycId, action, rejectionReason } = validationResult.data;
 
-    // Get the KYC record
-    const [record] = await db
-      .select()
-      .from(kycRecord)
-      .where(eq(kycRecord.id, kycId))
-      .limit(1);
+    // Get the KYC record to verify it exists
+    const record = await getKycRecordById(kycId);
 
     if (!record) {
       return NextResponse.json({ error: "KYC record not found" }, { status: 404 });
     }
 
-    const now = new Date();
-
     if (action === 'approve') {
-      // Update KYC record status
-      await db
-        .update(kycRecord)
-        .set({
-          status: 'approved',
-          verifiedBy: currentUser.id,
-          verifiedAt: now,
-          rejectionReason: null,
-          updatedAt: now,
-        })
-        .where(eq(kycRecord.id, kycId));
-
-      // Update user profile to verified
-      await db
-        .update(userProfile)
-        .set({
-          kycVerified: true,
-          kycVerifiedAt: now,
-          updatedAt: now,
-        })
-        .where(eq(userProfile.userId, record.userId));
+      await approveKycRecord(kycId, currentUser.id);
 
       return NextResponse.json({
         success: true,
         message: 'KYC request approved',
       });
     } else {
-      // Reject
-      await db
-        .update(kycRecord)
-        .set({
-          status: 'rejected',
-          verifiedBy: currentUser.id,
-          verifiedAt: now,
-          rejectionReason: rejectionReason || 'No reason provided',
-          updatedAt: now,
-        })
-        .where(eq(kycRecord.id, kycId));
+      await rejectKycRecord(kycId, currentUser.id, rejectionReason || 'No reason provided');
 
       return NextResponse.json({
         success: true,

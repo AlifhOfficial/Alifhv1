@@ -25,11 +25,9 @@ import { z } from 'zod';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { isValidOTP } from "@/lib/otp-service";
 import { otpStore } from "@/lib/otp-store";
-import { db } from "@alifh/database";
-import { user } from "@alifh/database";
-import { eq } from "drizzle-orm";
+import { updateUserPhoneVerified } from "@alifh/database";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 const VerifyOTPSchema = z.object({
   otp: z.string().regex(/^\d{6}$/, 'OTP must be a 6-digit code'),
@@ -113,13 +111,7 @@ export async function POST(req: NextRequest) {
     }
 
     // OTP is correct! Update user's phone verification status
-    await db
-      .update(user)
-      .set({
-        phoneVerified: true,
-        phoneVerifiedAt: new Date(),
-      })
-      .where(eq(user.id, sessionUser.id));
+    await updateUserPhoneVerified(sessionUser.id, true);
 
     // Clean up OTP
     otpStore.delete(otpKey);

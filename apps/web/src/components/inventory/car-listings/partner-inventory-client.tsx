@@ -1,56 +1,204 @@
 /**
  * Partner Inventory Client Component
- * Displays partner's listings using API
+ * Displays partner's work listings using my-listings API
+ * Partners can view and organize, but not create listings
  */
 
 'use client';
 
 import { CarCard } from "./car-card";
-import { Plus } from "lucide-react";
+import { UserAvatar } from "@/components/ui/data-display/user-avatar";
+import { Users, CheckCircle2, Clock, Archive, ShoppingCart, AlertCircle, XCircle, User } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/forms/select';
+
+// Status tab types
+type StatusTab = 'active' | 'sold' | 'archived' | 'expired' | 'all';
 
 interface PartnerInventoryClientProps {
   partnerId: string;
   partnerName: string;
   partnerVerified: boolean;
+  userRole?: string; // owner | admin | staff
+}
+
+interface ListingData {
+  id: string;
+  make: string;
+  model: string;
+  year: number;
+  trim: string | null;
+  price: number;
+  mileage?: number;
+  emirate?: string;
+  specs?: string;
+  thumbnail: string | null;
+  images?: string[];
+  qiScore?: number;
+  isPublic: boolean;
+  moderationStatus: string;
+  lifecycleStatus: string;
+  postedByUserId?: string;
+  postedByUsername?: string;
+  postedByDisplayName?: string;
+  postedByAvatar?: string | null;
+  staffMember?: {
+    id: string;
+    displayName: string;
+    username: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface ListingStats {
+  all: number;
+  active: number;
+  public: number;
+  inReview: number;
+  draft: number;
+  rejected: number;
+  archived: number;
+  suspended: number;
+  sold: number;
+  expired: number;
+  deleted: number;
+}
+
+interface StaffMemberStats {
+  userId: string;
+  displayName: string;
+  username: string;
+  listingCount: number;
+  isActive?: boolean; // true if still active, false if resigned
+}
+
+interface TeamMember {
+  id: string;
+  userId: string;
+  status: 'active' | 'left';
+  displayName: string;
+  username: string;
+  avatar: string | null;
 }
 
 export function PartnerInventoryClient({ 
   partnerId, 
   partnerName, 
-  partnerVerified 
+  partnerVerified,
+  userRole 
 }: PartnerInventoryClientProps) {
-  const [listings, setListings] = useState<any[]>([]);
+  const [listings, setListings] = useState<ListingData[]>([]);
+  const [stats, setStats] = useState<ListingStats | null>(null);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [ownerUserId, setOwnerUserId] = useState<string | null>(null);
+  const [selectedStaffFilter, setSelectedStaffFilter] = useState<string>('all');
+  const [selectedStatusTab, setSelectedStatusTab] = useState<StatusTab>('active');
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const hasFetchedRef = useRef(false);
+  const abortRef = useRef<AbortController | null>(null);
+  
+  // Reassign modal state
+  const [reassignModal, setReassignModal] = useState<{
+    open: boolean;
+    listingId: string | null;
+    listingTitle: string;
+    currentManagerId: string | null;
+  }>({ open: false, listingId: null, listingTitle: '', currentManagerId: null });
+  const [reassignTargetUserId, setReassignTargetUserId] = useState<string>('');
+  const [isReassigning, setIsReassigning] = useState(false);
+  const [reassignError, setReassignError] = useState<string | null>(null);
 
-  const fetchListings = useCallback(async () => {
+  // Check if user can reassign (owner or admin)
+  const canReassign = userRole === 'owner' || userRole === 'admin';
+
+  const fetchListings = useCallback(async (isRefresh = false) => {
     if (!partnerId) return;
+    
+    // Cancel any in-flight request
+    abortRef.current?.abort();
+    abortRef.current = new AbortController();
 
     try {
-      setIsLoading(true);
+      if (isRefresh) {
+        setIsRefreshing(true);
+      } else {
+        setIsLoading(true);
+      }
       setError(null);
 
-      const response = await fetch(`/api/listings/car-card?partnerId=${partnerId}`, {
-        method: 'GET',
-        credentials: 'include',
-      });
+      // Fetch listings and team data in parallel
+      const [listingsResponse, teamResponse] = await Promise.all([
+        fetch(
+          `/api/listings/my-listings?listingType=work&partnerId=${partnerId}&includeStats=1`,
+          {
+            method: 'GET',
+            credentials: 'include',
+            cache: 'no-store',
+            signal: abortRef.current.signal,
+          }
+        ),
+        fetch('/api/partner/staff', {
+          method: 'GET',
+          credentials: 'include',
+          cache: 'no-store',
+          signal: abortRef.current.signal,
+        }),
+      ]);
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Failed to fetch partner listings: ${response.status}`);
+      if (!listingsResponse.ok) {
+        const errorData = await listingsResponse.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to fetch partner listings: ${listingsResponse.status}`);
       }
 
-      const data = await response.json();
-      setListings(data.data || []);
+      const listingsData = await listingsResponse.json();
+      setListings(listingsData.data || listingsData.listings || []);
+      
+      if (listingsData.stats) {
+        setStats(listingsData.stats);
+      }
+
+      // Process team data if available
+      if (teamResponse.ok) {
+        const teamData = await teamResponse.json();
+        const allStaff = teamData.data || [];
+        
+        // Find and store owner's userId (check both isOwner flag and role)
+        const owner = allStaff.find((m: any) => m.isOwner || m.role === 'owner');
+        if (owner) {
+          setOwnerUserId(owner.userId);
+        }
+        
+        // Filter out owners - they shouldn't appear in staff inventory
+        const members = allStaff
+          .filter((m: any) => !m.isOwner && m.role !== 'owner')
+          .map((m: any) => ({
+            id: m.id,
+            userId: m.userId, // Use actual userId, not staff record id
+            status: m.status,
+            displayName: m.displayName || m.userName || m.userEmail,
+            username: m.userEmail?.split('@')[0] || '',
+            avatar: m.userAvatar, // Use personal avatar for internal ops
+          }));
+        setTeamMembers(members);
+      }
     } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') return;
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch listings';
       setError(errorMessage);
       console.error('[PartnerInventoryClient] Error:', err);
     } finally {
       setIsLoading(false);
+      setIsRefreshing(false);
     }
   }, [partnerId]);
 
@@ -59,149 +207,636 @@ export function PartnerInventoryClient({
       hasFetchedRef.current = true;
       fetchListings();
     }
+    return () => { abortRef.current?.abort(); };
   }, [fetchListings]);
 
-  // Group by status
-  const { publishedListings, draftListings, soldListings } = useMemo(() => {
-    return {
-      publishedListings: listings.filter(l => l.status === 'published'),
-      draftListings: listings.filter(l => l.status === 'draft'),
-      soldListings: listings.filter(l => l.status === 'sold'),
-    };
-  }, [listings]);
+  // Handle reassigning a listing to a different staff member
+  const handleReassign = async () => {
+    if (!reassignModal.listingId || !reassignTargetUserId) return;
+    
+    setIsReassigning(true);
+    setReassignError(null);
+    
+    try {
+      const response = await fetch(`/api/listings/${reassignModal.listingId}/reassign`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ newUserId: reassignTargetUserId }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to reassign listing');
+      }
+      
+      // Refresh listings
+      await fetchListings(true);
+      
+      // Close modal
+      setReassignModal({ open: false, listingId: null, listingTitle: '', currentManagerId: null });
+      setReassignTargetUserId('');
+    } catch (err) {
+      setReassignError(err instanceof Error ? err.message : 'Failed to reassign listing');
+    } finally {
+      setIsReassigning(false);
+    }
+  };
+
+
+
+  // Create a Map for O(1) team member lookups
+  const teamMemberMap = useMemo(() => {
+    const map = new Map<string, TeamMember>();
+    teamMembers.forEach(m => map.set(m.userId, m));
+    return map;
+  }, [teamMembers]);
+
+  // Calculate staff member stats with active/resigned status (excluding owner)
+  // Also includes team members with 0 listings for complete staff display
+  // Listing count is based on the selected status tab for consistency
+  const allStaffData = useMemo(() => {
+    const staffMap = new Map<string, StaffMemberStats & { avatar?: string | null }>();
+    
+    // Filter listings by selected status tab first
+    const listingsForStats = selectedStatusTab === 'all' 
+      ? listings 
+      : listings.filter(l => l.lifecycleStatus === selectedStatusTab);
+    
+    // Build stats from filtered listings (for staff who have posted)
+    listingsForStats.forEach(listing => {
+      // Skip listings created by the owner
+      if (listing.postedByUserId && listing.postedByDisplayName && listing.postedByUserId !== ownerUserId) {
+        const existing = staffMap.get(listing.postedByUserId);
+        if (existing) {
+          existing.listingCount++;
+        } else {
+          const teamMember = teamMemberMap.get(listing.postedByUserId);
+          const isActive = teamMember ? teamMember.status === 'active' : true;
+          
+          staffMap.set(listing.postedByUserId, {
+            userId: listing.postedByUserId,
+            displayName: listing.postedByDisplayName,
+            username: listing.postedByUsername || '',
+            listingCount: 1,
+            avatar: teamMember?.avatar || listing.postedByAvatar, // Prefer personal avatar
+            isActive,
+          });
+        }
+      }
+    });
+    
+    // Add active team members who don't have any listings yet
+    teamMembers.forEach(m => {
+      if (m.status === 'active' && !staffMap.has(m.userId)) {
+        staffMap.set(m.userId, {
+          userId: m.userId,
+          displayName: m.displayName,
+          username: m.displayName?.split(' ')[0]?.toLowerCase() || '',
+          listingCount: 0,
+          isActive: true,
+          avatar: m.avatar,
+        });
+      }
+    });
+    
+    // Convert to array and sort: active staff first, then resigned, each sorted by listing count
+    const allStaff = Array.from(staffMap.values()).sort((a, b) => {
+      if (a.isActive !== b.isActive) return a.isActive ? -1 : 1;
+      return b.listingCount - a.listingCount;
+    });
+    
+    // Separate for different uses
+    const activeStaff = allStaff.filter(s => s.isActive !== false);
+    const staffWithListings = allStaff.filter(s => s.listingCount > 0);
+    
+    return { allStaff, activeStaff, staffWithListings };
+  }, [listings, teamMembers, teamMemberMap, ownerUserId, selectedStatusTab]);
+
+  // Derived values for different use cases
+  const allStaffForDisplay = allStaffData.allStaff;
+  const staffStats = allStaffData.staffWithListings;
+
+  // Filter listings by selected staff
+  const filteredListings = useMemo(() => {
+    let filtered = listings;
+    
+    // Filter by staff
+    if (selectedStaffFilter !== 'all') {
+      filtered = filtered.filter(l => l.postedByUserId === selectedStaffFilter);
+    }
+    
+    // Filter by status tab
+    if (selectedStatusTab !== 'all') {
+      filtered = filtered.filter(l => l.lifecycleStatus === selectedStatusTab);
+    }
+    
+    return filtered;
+  }, [listings, selectedStaffFilter, selectedStatusTab]);
+
+  const publicListings = useMemo(() => filteredListings.filter((l) => l.isPublic), [filteredListings]);
+
+  // Get status badge props based on listing status
+  const getStatusBadge = (listing: ListingData) => {
+    // Lifecycle status takes priority
+    if (listing.lifecycleStatus === 'sold') {
+      return { label: 'Sold', className: 'bg-purple-500/10 text-purple-500', icon: ShoppingCart };
+    }
+    if (listing.lifecycleStatus === 'expired') {
+      return { label: 'Expired', className: 'bg-orange-500/10 text-orange-500', icon: Clock };
+    }
+    if (listing.lifecycleStatus === 'archived') {
+      return { label: 'Archived', className: 'bg-gray-500/10 text-gray-500', icon: Archive };
+    }
+    if (listing.lifecycleStatus === 'deleted') {
+      return { label: 'Deleted', className: 'bg-red-500/10 text-red-500', icon: XCircle };
+    }
+    
+    // For active listings, check moderation status
+    if (listing.moderationStatus === 'rejected') {
+      return { label: 'Rejected', className: 'bg-red-500/10 text-red-500', icon: XCircle };
+    }
+    if (listing.moderationStatus === 'draft') {
+      return { label: 'Draft', className: 'bg-yellow-500/10 text-yellow-500', icon: AlertCircle };
+    }
+    if (listing.moderationStatus === 'submitted' || listing.moderationStatus === 'pending_review') {
+      return { label: 'In Review', className: 'bg-blue-500/10 text-blue-500', icon: Clock };
+    }
+    if (listing.isPublic) {
+      return { label: 'Active', className: 'bg-green-500/10 text-green-500', icon: CheckCircle2 };
+    }
+    
+    return { label: 'Not Public', className: 'bg-gray-500/10 text-gray-500', icon: AlertCircle };
+  };
 
   return (
-    <div className="max-w-7xl mx-auto px-8 py-12 space-y-12">
+    <div className="max-w-7xl mx-auto px-6 py-16 space-y-16">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <h1 className="text-xl font-medium">Inventory</h1>
-          <p className="text-sm text-muted-foreground">
-            Manage your vehicle listings
-          </p>
+      <section className="space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">Inventory</h1>
+            <p className="text-sm text-muted-foreground mt-2">
+              View and organize your dealership vehicle listings
+            </p>
+          </div>
+          <button
+            onClick={() => fetchListings(true)}
+            disabled={isRefreshing}
+            className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isRefreshing ? 'Refreshing...' : 'Refresh'}
+          </button>
         </div>
-        <Link
-          href="/partner-dashboard/inventory/new"
-          className="h-10 px-4 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          Add Listing
-        </Link>
-      </div>
+
+        {/* Stats */}
+        {stats && (
+          <div className="space-y-6">
+            {/* Primary Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border divide-x divide-border">
+              <div className="p-8 text-center">
+                <Users className="w-5 h-5 text-blue-500 mx-auto mb-3" />
+                <p className="text-xs text-muted-foreground mb-1">Active</p>
+                <p className="text-xl font-semibold text-blue-500">{stats.active}</p>
+              </div>
+              <div className="p-8 text-center">
+                <Users className="w-5 h-5 text-green-500 mx-auto mb-3" />
+                <p className="text-xs text-muted-foreground mb-1">Public</p>
+                <p className="text-xl font-semibold text-green-500">{stats.public}</p>
+              </div>
+              <div className="p-8 text-center">
+                <Users className="w-5 h-5 text-yellow-500 mx-auto mb-3" />
+                <p className="text-xs text-muted-foreground mb-1">Draft</p>
+                <p className="text-xl font-semibold text-yellow-500">{stats.draft}</p>
+              </div>
+              <div className="p-8 text-center">
+                <Users className="w-5 h-5 text-foreground mx-auto mb-3" />
+                <p className="text-xs text-muted-foreground mb-1">Total</p>
+                <p className="text-xl font-semibold text-foreground">{stats.all}</p>
+              </div>
+            </div>
+
+            {/* Secondary Stats */}
+            {(stats.inReview > 0 || stats.rejected > 0 || stats.archived > 0 || stats.sold > 0 || stats.expired > 0 || stats.suspended > 0) && (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                {stats.inReview > 0 && (
+                  <div className="p-4 rounded-xl border border-border text-center">
+                    <p className="text-xs text-muted-foreground mb-1">In Review</p>
+                    <p className="text-lg font-semibold text-blue-500">{stats.inReview}</p>
+                  </div>
+                )}
+                {stats.rejected > 0 && (
+                  <div className="p-4 rounded-xl border border-border text-center">
+                    <p className="text-xs text-muted-foreground mb-1">Rejected</p>
+                    <p className="text-lg font-semibold text-red-500">{stats.rejected}</p>
+                  </div>
+                )}
+                {stats.archived > 0 && (
+                  <div className="p-4 rounded-xl border border-border text-center">
+                    <p className="text-xs text-muted-foreground mb-1">Archived</p>
+                    <p className="text-lg font-semibold text-muted-foreground">{stats.archived}</p>
+                  </div>
+                )}
+                {stats.sold > 0 && (
+                  <div className="p-4 rounded-xl border border-border text-center">
+                    <p className="text-xs text-muted-foreground mb-1">Sold</p>
+                    <p className="text-lg font-semibold text-green-500">{stats.sold}</p>
+                  </div>
+                )}
+                {stats.expired > 0 && (
+                  <div className="p-4 rounded-xl border border-border text-center">
+                    <p className="text-xs text-muted-foreground mb-1">Expired</p>
+                    <p className="text-lg font-semibold text-orange-500">{stats.expired}</p>
+                  </div>
+                )}
+                {stats.suspended > 0 && (
+                  <div className="p-4 rounded-xl border border-border text-center">
+                    <p className="text-xs text-muted-foreground mb-1">Suspended</p>
+                    <p className="text-lg font-semibold text-red-500">{stats.suspended}</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Status Tabs */}
+        {stats && (
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setSelectedStatusTab('active')}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                selectedStatusTab === 'active'
+                  ? 'bg-green-500 text-white'
+                  : 'bg-muted/20 text-muted-foreground hover:bg-muted/40'
+              }`}
+            >
+              Active ({stats.active})
+            </button>
+            {stats.sold > 0 && (
+              <button
+                onClick={() => setSelectedStatusTab('sold')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  selectedStatusTab === 'sold'
+                    ? 'bg-purple-500 text-white'
+                    : 'bg-muted/20 text-muted-foreground hover:bg-muted/40'
+                }`}
+              >
+                Sold ({stats.sold})
+              </button>
+            )}
+            {stats.archived > 0 && (
+              <button
+                onClick={() => setSelectedStatusTab('archived')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  selectedStatusTab === 'archived'
+                    ? 'bg-gray-500 text-white'
+                    : 'bg-muted/20 text-muted-foreground hover:bg-muted/40'
+                }`}
+              >
+                Archived ({stats.archived})
+              </button>
+            )}
+            {stats.expired > 0 && (
+              <button
+                onClick={() => setSelectedStatusTab('expired')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  selectedStatusTab === 'expired'
+                    ? 'bg-orange-500 text-white'
+                    : 'bg-muted/20 text-muted-foreground hover:bg-muted/40'
+                }`}
+              >
+                Expired ({stats.expired})
+              </button>
+            )}
+            <button
+              onClick={() => setSelectedStatusTab('all')}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                selectedStatusTab === 'all'
+                  ? 'bg-foreground text-background'
+                  : 'bg-muted/20 text-muted-foreground hover:bg-muted/40'
+              }`}
+            >
+              All ({stats.all})
+            </button>
+          </div>
+        )}
+
+        {/* Staff Stats */}
+        {allStaffForDisplay.length > 0 && (
+          <section className="space-y-8">
+            <div className="border-b border-border/40 pb-2">
+              <h3 className="text-lg font-medium tracking-tight">Staff Inventory</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Listings managed by each team member
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {allStaffForDisplay.map((staff) => (
+                <button
+                  key={staff.userId}
+                  onClick={() => setSelectedStaffFilter(staff.userId)}
+                  className={`p-6 rounded-xl border text-left transition-colors ${
+                    selectedStaffFilter === staff.userId
+                      ? 'border-blue-500 bg-blue-500/10'
+                      : staff.isActive === false
+                        ? 'border-red-500/30 bg-red-500/5 hover:bg-red-500/10'
+                        : 'border-border hover:bg-secondary/10'
+                  }`}
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <UserAvatar
+                      size="md"
+                      src={staff.avatar}
+                      name={staff.displayName}
+                      className={staff.isActive === false ? 'opacity-60' : ''}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className={`text-sm font-medium truncate ${staff.isActive === false ? 'text-muted-foreground' : 'text-foreground'}`}>
+                          {staff.displayName}
+                        </p>
+                        {staff.isActive === false ? (
+                          <span className="px-2 py-0.5 rounded-md bg-red-500/10 text-red-500 text-xs font-medium">Resigned</span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-md bg-green-500/10 text-green-500 text-xs font-medium">Active</span>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground truncate">@{staff.username}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-baseline gap-2">
+                    <p className={`text-2xl font-semibold ${staff.isActive === false ? 'text-red-500' : 'text-blue-500'}`}>{staff.listingCount}</p>
+                    <p className="text-xs text-muted-foreground">{staff.listingCount === 1 ? 'listing' : 'listings'}</p>
+                    {staff.isActive === false && (
+                      <span className="text-xs text-red-500">needs reassignment</span>
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+            
+            {/* Filter Actions */}
+            {selectedStaffFilter !== 'all' && (() => {
+              const selectedStaff = allStaffForDisplay.find(s => s.userId === selectedStaffFilter);
+              const isResigned = selectedStaff?.isActive === false;
+              
+              return (
+                <div className={`flex items-center justify-between p-4 rounded-xl border ${
+                  isResigned 
+                    ? 'border-red-500/20 bg-red-500/10' 
+                    : 'border-blue-500/20 bg-blue-500/10'
+                }`}>
+                  <div className="flex-1">
+                    <p className="text-sm text-foreground">
+                      Showing listings managed by <span className="font-medium">{selectedStaff?.displayName}</span>
+                      {isResigned && (
+                        <span className="ml-2 text-red-500">(Resigned - these listings need reassignment)</span>
+                      )}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setSelectedStaffFilter('all')}
+                      className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors"
+                    >
+                      Show All
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
+          </section>
+        )}
+      </section>
 
       {/* Error State */}
       {error && (
-        <div className="text-center py-12 bg-muted/20 border border-border/40 rounded-lg">
-          <p className="text-sm text-destructive">{error}</p>
+        <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+          <p className="text-sm text-red-500">{error}</p>
         </div>
       )}
 
       {/* Loading State */}
       {isLoading && (
-        <div className="text-center py-12">
+        <div className="text-center py-16">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
           <p className="text-sm text-muted-foreground">Loading inventory...</p>
         </div>
       )}
 
-      {/* Stats */}
-      {!isLoading && !error && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 border border-border/40 rounded-lg bg-card/50">
-            <p className="text-xs text-muted-foreground mb-2">Active Listings</p>
-            <p className="text-2xl font-medium">{publishedListings.length}</p>
+      {/* Listings Section */}
+      {!isLoading && !error && filteredListings.length > 0 && (
+        <section className="space-y-8">
+          <div className="border-b border-border/40 pb-2">
+            <h3 className="text-lg font-medium tracking-tight">
+              {selectedStatusTab === 'active' ? 'Active Listings' : 
+               selectedStatusTab === 'sold' ? 'Sold Listings' : 
+               selectedStatusTab === 'archived' ? 'Archived Listings' : 
+               selectedStatusTab === 'expired' ? 'Expired Listings' : 
+               'All Listings'}
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              {filteredListings.length} {filteredListings.length === 1 ? 'listing' : 'listings'}
+              {selectedStaffFilter !== 'all' && ` by ${staffStats.find(s => s.userId === selectedStaffFilter)?.displayName}`}
+            </p>
           </div>
-          <div className="p-6 border border-border/40 rounded-lg bg-card/50">
-            <p className="text-xs text-muted-foreground mb-2">Draft Listings</p>
-            <p className="text-2xl font-medium">{draftListings.length}</p>
+
+          <div className="space-y-4">
+            {filteredListings.map((listing) => {
+              const statusBadge = getStatusBadge(listing);
+              const StatusIcon = statusBadge.icon;
+              
+              return (
+              <div key={listing.id} className="rounded-xl border border-border p-6 hover:bg-secondary/10 transition-colors relative">
+                {/* Status Badge - Top Right */}
+                <div className="absolute top-4 right-4">
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${statusBadge.className}`}>
+                    <StatusIcon className="w-3 h-3" />
+                    {statusBadge.label}
+                  </span>
+                </div>
+                
+                <div className="flex gap-6">
+                  {/* Thumbnail */}
+                  <div className="w-48 h-32 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+                    {listing.thumbnail ? (
+                      <img
+                        src={listing.thumbnail}
+                        alt={`${listing.year} ${listing.make} ${listing.model}`}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                        <span className="text-xs">No image</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Details */}
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between pr-24">
+                      <div>
+                        <Link
+                          href={`/listings/${listing.id}`}
+                          className="text-lg font-medium hover:text-primary transition-colors"
+                        >
+                          {listing.year} {listing.make} {listing.model}
+                          {listing.trim && ` ${listing.trim}`}
+                        </Link>
+                        
+                        {/* Staff Member Info */}
+                        <div className="flex items-center gap-3 mt-2">
+                          {listing.postedByDisplayName && (
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                              <UserAvatar
+                                size="xs"
+                                src={teamMemberMap.get(listing.postedByUserId || '')?.avatar || listing.postedByAvatar}
+                                name={listing.postedByDisplayName}
+                              />
+                              <span>Managed by <span className="font-medium text-foreground">{listing.postedByDisplayName}</span></span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Price */}
+                      <div className="text-right">
+                        <p className="text-base font-medium text-foreground">
+                          {listing.price.toLocaleString()} AED
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Updated {new Date(listing.updatedAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex flex-wrap gap-3 mt-4">
+                      <Link href={`/listings/${listing.id}`}>
+                        <button className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors">
+                          View
+                        </button>
+                      </Link>
+                      {canReassign && allStaffData.activeStaff.length > 1 && (
+                        <button
+                          onClick={() => setReassignModal({
+                            open: true,
+                            listingId: listing.id,
+                            listingTitle: `${listing.year} ${listing.make} ${listing.model}`,
+                            currentManagerId: listing.postedByUserId || null,
+                          })}
+                          className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors"
+                        >
+                          Reassign
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              );
+            })}
           </div>
-          <div className="p-6 border border-border/40 rounded-lg bg-card/50">
-            <p className="text-xs text-muted-foreground mb-2">Sold</p>
-            <p className="text-2xl font-medium">{soldListings.length}</p>
-          </div>
-        </div>
+        </section>
       )}
 
-      {/* Published Listings */}
-      {!isLoading && !error && publishedListings.length > 0 && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between border-b border-border/40 pb-4">
-            <h2 className="text-lg font-medium">Active Listings</h2>
-            <span className="text-sm text-muted-foreground">
-              {publishedListings.length} {publishedListings.length === 1 ? 'listing' : 'listings'}
-            </span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {publishedListings.map((listing) => (
-              <CarCard
-                key={listing.id}
-                id={listing.id}
-                make={listing.make}
-                model={listing.model}
-                year={listing.year}
-                trim={listing.trim}
-                price={listing.price}
-                mileage={listing.mileage}
-                emirate={listing.emirate}
-                specs={listing.specs}
-                thumbnail={listing.thumbnail}
-                images={listing.images}
-                qiScore={listing.qiScore}
-                partnerName={partnerName}
-                partnerVerified={partnerVerified}
-                isBlackMember={listing.isBlackMember || false}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Draft Listings */}
-      {!isLoading && !error && draftListings.length > 0 && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between border-b border-border/40 pb-4">
-            <h2 className="text-lg font-medium">Drafts</h2>
-            <span className="text-sm text-muted-foreground">
-              {draftListings.length} {draftListings.length === 1 ? 'draft' : 'drafts'}
-            </span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {draftListings.map((listing) => (
-              <CarCard
-                key={listing.id}
-                id={listing.id}
-                make={listing.make}
-                model={listing.model}
-                year={listing.year}
-                trim={listing.trim}
-                price={listing.price}
-                mileage={listing.mileage}
-                emirate={listing.emirate}
-                specs={listing.specs}
-                thumbnail={listing.thumbnail}
-                images={listing.images}
-                qiScore={listing.qiScore}
-                partnerName={partnerName}
-                partnerVerified={partnerVerified}
-                isBlackMember={listing.isBlackMember || false}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Empty State */}
+      {/* Empty State - No listings at all */}
       {!isLoading && !error && listings.length === 0 && (
-        <div className="text-center py-12 border border-border/40 rounded-lg bg-muted/20">
-          <p className="text-sm text-muted-foreground mb-4">No listings yet</p>
-          <Link
-            href="/partner-dashboard/inventory/new"
-            className="inline-flex items-center gap-2 h-10 px-4 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Create Your First Listing
-          </Link>
+        <div className="rounded-xl border border-border p-16 text-center">
+          <Users className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
+          <h3 className="text-lg font-medium text-foreground mb-2">No listings yet</h3>
+          <p className="text-sm text-muted-foreground">
+            Your staff members haven't created any listings yet. Staff can create listings from the Work Listings dashboard.
+          </p>
         </div>
       )}
+
+      {/* Empty State - No listings in current filter */}
+      {!isLoading && !error && listings.length > 0 && filteredListings.length === 0 && (
+        <div className="rounded-xl border border-border p-16 text-center">
+          <Archive className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
+          <h3 className="text-lg font-medium text-foreground mb-2">
+            No {selectedStatusTab === 'all' ? '' : selectedStatusTab} listings
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            No listings match the current filter. Try selecting a different status tab.
+          </p>
+        </div>
+      )}
+
+      {/* Reassign Modal */}
+      {reassignModal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => {
+            setReassignModal({ open: false, listingId: null, listingTitle: '', currentManagerId: null });
+            setReassignTargetUserId('');
+            setReassignError(null);
+          }} />
+          
+          <div className="relative z-50 bg-background border border-border rounded-xl p-6 max-w-md w-full mx-4 space-y-6">
+            <div>
+              <h3 className="text-lg font-medium">Reassign Listing</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Reassign <span className="font-medium text-foreground">{reassignModal.listingTitle}</span> to a different staff member.
+              </p>
+            </div>
+            
+            {/* Staff Selection */}
+            <div className="space-y-3">
+              <label className="flex items-center gap-2 text-sm font-medium">
+                <User className="w-3.5 h-3.5 text-muted-foreground" />
+                Select Staff Member
+              </label>
+              <Select value={reassignTargetUserId} onValueChange={(v) => setReassignTargetUserId(v)}>
+                <SelectTrigger className="h-10 border-0 border-b border-border rounded-none bg-transparent">
+                  <SelectValue placeholder="Select an active staff member..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {allStaffData.activeStaff
+                    .filter(staff => staff.userId !== reassignModal.currentManagerId)
+                    .map(staff => (
+                      <SelectItem key={staff.userId} value={staff.userId}>
+                        {staff.displayName} (@{staff.username}) - {staff.listingCount} listings
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Error */}
+            {reassignError && (
+              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20">
+                <p className="text-sm text-red-500">{reassignError}</p>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="flex justify-end gap-3 pt-2">
+              <button
+                onClick={() => {
+                  setReassignModal({ open: false, listingId: null, listingTitle: '', currentManagerId: null });
+                  setReassignTargetUserId('');
+                  setReassignError(null);
+                }}
+                disabled={isReassigning}
+                className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleReassign}
+                disabled={!reassignTargetUserId || isReassigning}
+                className="px-5 py-2 rounded-full bg-blue-500 text-white text-sm transition-colors hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isReassigning ? 'Reassigning...' : 'Reassign'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

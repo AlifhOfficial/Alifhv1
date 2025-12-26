@@ -9,7 +9,7 @@
  */
 
 import { Suspense } from "react";
-import { AuthErrorPageClient } from "./client";
+import { AuthErrorView } from "@/components/auth/auth-error-view";
 
 // Disable static generation for this page (uses searchParams)
 export const dynamic = 'force-dynamic';
@@ -21,7 +21,7 @@ export default function AuthErrorPage() {
         <p className="text-muted-foreground">Loading...</p>
       </div>
     }>
-      <AuthErrorPageClient />
+      <AuthErrorView />
     </Suspense>
   );
 }

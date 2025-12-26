@@ -14,9 +14,9 @@
  * workflows while keeping cache concerns isolated from query logic.
  * 
  * CACHE STRATEGY:
- * - Session cache TTL: 30 seconds
+ * - Session cache TTL: 5 minutes
  * - Invalidate eagerly on mutations to prevent stale role/permission data
- * - Partner staff changes reflect within 30s without invalidation
+ * - Partner staff changes reflect within 5min without invalidation
  * 
  * @module caches/auth-cache
  */
@@ -54,11 +54,11 @@ export function invalidateUserSessions(userIds: string[]): void {
  * Invalidate partner staff sessions (NOT IMPLEMENTED)
  * 
  * @param partnerId - Partner ID whose staff sessions to invalidate
- * @deprecated Partner changes reflect within 30s cache TTL naturally.
+ * @deprecated Partner changes reflect within 5min cache TTL naturally.
  * Only implement if immediate invalidation becomes critical.
  */
 export async function invalidatePartnerStaffSessions(partnerId: string): Promise<void> {
   // Would require: SELECT userId FROM partnerMembership WHERE partnerId = ?
   // Then: invalidateUserSessions(staffUserIds)
-  // Current: Accept 30s delay for partner-level changes
+  // Current: Accept 5min delay for partner-level changes
 }

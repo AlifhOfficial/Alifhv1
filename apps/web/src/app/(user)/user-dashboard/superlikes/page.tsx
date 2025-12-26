@@ -32,8 +32,11 @@ type ListingPayload = {
   images?: string[] | null; // Optional: Not returned in car-card API, lazy-loaded separately
   qiScore: number | null;
   partnerName: string | null;
+  partnerLogo?: string | null;
   partnerVerified: boolean | null;
   isBlackMember: boolean | null;
+  sellerName?: string | null;
+  sellerAvatarUrl?: string | null;
 };
 
 type SuperlikesResponse = {
@@ -158,7 +161,10 @@ export default function SuperlikesPage() {
                       images={listing.images ?? undefined}
                       qiScore={listing.qiScore ?? undefined}
                       partnerName={listing.partnerName ?? undefined}
+                      partnerLogo={listing.partnerLogo ?? undefined}
                       partnerVerified={listing.partnerVerified ?? undefined}
+                      sellerName={listing.sellerName ?? undefined}
+                      sellerAvatarUrl={listing.sellerAvatarUrl ?? undefined}
                       isBlackMember={listing.isBlackMember ?? undefined}
                     />
                   );

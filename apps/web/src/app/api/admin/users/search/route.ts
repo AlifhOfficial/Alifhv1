@@ -33,14 +33,6 @@ const CACHE_HEADERS_NO_CACHE = {
 } as const;
 
 // ============================================================================
-// Helper: Check Admin Role
-// ============================================================================
-
-async function checkAdminAccess(user: any) {
-  return user.role === 'admin' || user.role === 'super_admin';
-}
-
-// ============================================================================
 // GET - Search User
 // ============================================================================
 
@@ -53,12 +45,9 @@ export async function GET(req: NextRequest) {
         requiresAuth: true 
       }, { status: 401 });
     }
-
-    const isAdmin = await checkAdminAccess(user);
-    if (!isAdmin) {
-      return NextResponse.json({ 
-        error: 'Forbidden: Admin access required' 
-      }, { status: 403 });
+    
+    if (user.role !== 'admin' && user.role !== 'super_admin') {
+      return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 
     const { searchParams } = new URL(req.url);
@@ -130,13 +119,9 @@ export async function GET(req: NextRequest) {
       error: 'Bad request: Provide email, phone, or q (query) parameter',
     }, { status: 400 });
 
-  } catch (error) {
-    console.error('[Admin User Search API] Error:', error);
+  } catch {
     return NextResponse.json(
-      { 
-        error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error',
-      },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

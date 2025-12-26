@@ -26,6 +26,7 @@ import {
   Users,
   Building2,
   Settings,
+  Settings2,
   FileText,
   BarChart3,
   Package,
@@ -37,10 +38,19 @@ import {
   X,
   Sparkles,
   ShieldCheck,
+  Car,
+  CarFront,
+  Calendar,
+  CalendarCheck,
+  Mail,
+  Inbox,
+  Star,
+  CircleUser,
+  Home,
 } from "lucide-react";
 import { useEffect, useMemo, useState, type ComponentType } from "react";
-import { Avatar } from "@/components/ui/data-display/avatar";
-import { useUserProfile } from "@/hooks/profile";
+import { UserAvatar } from "@/components/ui/data-display/user-avatar";
+import { BrandAvatar } from "@/components/partner/car-dealer/ui/brand-avatar";
 import { useDrawer } from "./dashboard-layout";
 
 interface SidebarProps {
@@ -49,6 +59,9 @@ interface SidebarProps {
     name?: string | null;
     email?: string | null;
     image?: string | null;
+    firstName?: string | null;  // From session (profile data)
+    lastName?: string | null;   // From session (profile data)
+    avatarUrl?: string | null;  // From session (signed URL)
   };
   items: Array<{
     label: string;
@@ -56,25 +69,42 @@ interface SidebarProps {
     isActive?: boolean;
     icon?: string;
   }>;
+  /** Staff override data - when present, uses work identity instead of personal */
+  staffOverride?: {
+    displayName?: string | null;
+    workEmail?: string | null;
+    companyLogo?: string | null;
+    companyName?: string | null;
+  };
 }
 
 const iconMap: Record<string, ComponentType<{ className?: string }>> = {
   "layout-dashboard": LayoutDashboard,
+  "home": Home,
   "user": User,
+  "circle-user": CircleUser,
   "users": Users,
   "building": Building2,
   "settings": Settings,
+  "settings-2": Settings2,
   "file-text": FileText,
   "bar-chart": BarChart3,
   "package": Package,
   "shopping-cart": ShoppingCart,
   "message-square": MessageSquare,
+  "mail": Mail,
+  "inbox": Inbox,
   "heart": Heart,
+  "star": Star,
   "sparkles": Sparkles,
   "shield-check": ShieldCheck,
+  "car": Car,
+  "car-front": CarFront,
+  "calendar": Calendar,
+  "calendar-check": CalendarCheck,
 };
 
-export function Sidebar({ user, items }: SidebarProps) {
+export function Sidebar({ user, items, staffOverride }: SidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { resolvedTheme, setTheme } = useTheme();
@@ -95,23 +125,44 @@ export function Sidebar({ user, items }: SidebarProps) {
     return resolvedTheme ?? "light";
   }, [mounted, resolvedTheme]);
 
-  const { profile } = useUserProfile();
-
+  // Use session data directly - no client-side fetch needed
   const displayName = useMemo(() => {
-    if (profile?.firstName || profile?.lastName) {
-      return [profile.firstName, profile.lastName].filter(Boolean).join(' ');
+    // Staff override takes priority (work identity)
+    if (staffOverride?.displayName) {
+      return staffOverride.displayName;
+    }
+    // Fall back to user profile name from session
+    if (user.firstName || user.lastName) {
+      return [user.firstName, user.lastName].filter(Boolean).join(' ');
     }
     return user.name ?? 'User';
-  }, [profile?.firstName, profile?.lastName, user.name]);
+  }, [staffOverride?.displayName, user.firstName, user.lastName, user.name]);
 
   const displayEmail = useMemo(() => {
+    // Staff override takes priority (work email)
+    if (staffOverride?.workEmail) {
+      return staffOverride.workEmail;
+    }
     return user.email ?? '';
-  }, [user.email]);
+  }, [staffOverride?.workEmail, user.email]);
 
   const initials = useMemo(() => {
-    if (profile?.firstName || profile?.lastName) {
-      const first = profile.firstName?.charAt(0) ?? '';
-      const last = profile.lastName?.charAt(0) ?? '';
+    // If staff override with company name, use company initials
+    if (staffOverride?.companyName) {
+      const letters = staffOverride.companyName
+        .split(' ')
+        .map((part) => part.trim().charAt(0))
+        .filter(Boolean)
+        .join('')
+        .slice(0, 2);
+      if (letters.length > 0) {
+        return letters.toUpperCase();
+      }
+    }
+    
+    if (user.firstName || user.lastName) {
+      const first = user.firstName?.charAt(0) ?? '';
+      const last = user.lastName?.charAt(0) ?? '';
       const combined = `${first}${last}`.trim();
       return combined.length > 0 ? combined.toUpperCase() : 'U';
     }
@@ -129,11 +180,10 @@ export function Sidebar({ user, items }: SidebarProps) {
     }
 
     return 'U';
-  }, [profile?.firstName, profile?.lastName, user.name]);
+  }, [staffOverride?.companyName, user.firstName, user.lastName, user.name]);
 
-  const avatarSrc = useMemo(() => {
-    return profile?.avatarUrl ?? null;
-  }, [profile?.avatarUrl]);
+  // Determine if we're showing staff/company mode or personal mode
+  const isStaffMode = Boolean(staffOverride?.companyLogo);
 
   const toggleTheme = () => {
     setTheme(currentTheme === "dark" ? "light" : "dark");
@@ -172,12 +222,22 @@ export function Sidebar({ user, items }: SidebarProps) {
       
       {/* User Profile Section */}
       <div className="flex items-center gap-3 px-4 py-6 border-b border-border">
-        <Avatar
-          src={avatarSrc}
-          initials={initials}
-          size="sm"
-          className="border border-border bg-background text-foreground shrink-0"
-        />
+        {isStaffMode ? (
+          <BrandAvatar
+            logoUrl={staffOverride?.companyLogo}
+            brandName={staffOverride?.companyName || 'Company'}
+            size="xs"
+            className="border border-border bg-background shrink-0"
+          />
+        ) : (
+          <UserAvatar
+            profileAvatar={user.avatarUrl}
+            oauthImage={user.image}
+            name={displayName}
+            size="sm"
+            className="border border-border bg-background text-foreground shrink-0"
+          />
+        )}
         {!isCollapsed && (
           <div className="min-w-0 text-left">
             <p className="truncate text-sm font-semibold text-foreground tracking-tight">{displayName}</p>

@@ -67,7 +67,6 @@ const partnersData = [
       saturday: { open: '10:00', close: '22:00' },
       sunday: { open: '10:00', close: '22:00' },
     },
-    commissionRate: 2.5,
     subscriptionTier: 'platinum',
     subscriptionExpiresAt: new Date('2025-12-31'),
   },
@@ -126,7 +125,7 @@ const partnersData = [
       saturday: { open: '10:00', close: '20:00' },
       sunday: { open: '10:00', close: '20:00' },
     },
-    commissionRate: 3.0,
+
     subscriptionTier: 'gold',
     subscriptionExpiresAt: new Date('2025-06-30'),
   },
@@ -185,7 +184,6 @@ const partnersData = [
       saturday: { open: '10:00', close: '18:00' },
       sunday: { open: '10:00', close: '18:00' },
     },
-    commissionRate: 3.5,
     subscriptionTier: 'gold',
     subscriptionExpiresAt: new Date('2025-09-30'),
   },
@@ -244,7 +242,7 @@ const partnersData = [
       saturday: { open: '10:00', close: '23:00' },
       sunday: { open: '10:00', close: '23:00' },
     },
-    commissionRate: 1.5,
+
     subscriptionTier: 'black',
     subscriptionExpiresAt: new Date('2026-12-31'),
   },
@@ -303,7 +301,7 @@ const partnersData = [
       saturday: { open: '09:00', close: '17:00' },
       sunday: { open: '09:00', close: '17:00' },
     },
-    commissionRate: 4.0,
+
     subscriptionTier: 'standard',
     subscriptionExpiresAt: new Date('2025-08-31'),
   },

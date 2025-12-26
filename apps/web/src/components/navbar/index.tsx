@@ -62,16 +62,7 @@ const navItems: NavItem[] = [
   },
   {
     label: "Partners",
-    href: "/become-partner",
-    submenu: [
-      {
-        title: "Join Us",
-        items: [
-          { label: "Become a Partner", href: "/become-partner", description: "Apply to join as a partner" },
-          { label: "Partner Dashboard", href: "/partner-dashboard", description: "Manage your dealership" },
-        ],
-      },
-    ],
+    href: "/partner",
   },
   {
     label: "About",

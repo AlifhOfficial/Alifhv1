@@ -1,0 +1,506 @@
+/**
+ * Car Listing - Update Operations
+ * 
+ * Functions for updating existing car listings.
+ * 
+ * @module queries/listings/car-listings/mutations/update
+ */
+
+import { eq, and, sql, inArray } from 'drizzle-orm';
+import { db } from '../../../../dbclient';
+import { carListing } from '../../../../schema/listing';
+import { conversation, conversationParticipant } from '../../../../schema/messaging';
+import { 
+  addDays, 
+  recordPriceChange, 
+  isListingPublic,
+  DEFAULT_LISTING_EXPIRY_DAYS 
+} from './helpers';
+import type { 
+  UpdateCarListingInput, 
+  ListingModerationStatus, 
+  ListingLifecycleStatus,
+  CONTENT_EDIT_KEYS 
+} from './types';
+import { CONTENT_EDIT_KEYS as contentEditKeys } from './types';
+
+/**
+ * Build the common update data object from input
+ * Shared between owner and staff update functions
+ */
+function buildUpdateData(input: UpdateCarListingInput, now: Date): Record<string, any> {
+  const updateData: Record<string, any> = {};
+
+  // Basic info
+  if (input.make !== undefined) updateData.make = input.make;
+  if (input.model !== undefined) updateData.model = input.model;
+  if (input.year !== undefined) updateData.year = input.year;
+  if (input.trim !== undefined) updateData.trim = input.trim;
+  if (input.description !== undefined) updateData.description = input.description;
+  if (input.vin !== undefined) updateData.vin = input.vin;
+
+  // Pricing
+  if (input.price !== undefined) updateData.price = input.price;
+  if (input.currency !== undefined) updateData.currency = input.currency;
+  if (input.isNegotiable !== undefined) updateData.isNegotiable = input.isNegotiable;
+
+  // Specifications
+  if (input.bodyType !== undefined) updateData.bodyType = input.bodyType;
+  if (input.fuelType !== undefined) updateData.fuelType = input.fuelType;
+  if (input.transmission !== undefined) updateData.transmission = input.transmission;
+  if (input.specs !== undefined) updateData.specs = input.specs;
+  if (input.steeringSide !== undefined) updateData.steeringSide = input.steeringSide;
+  if (input.engineSize !== undefined) updateData.engineSize = input.engineSize;
+  if (input.engineType !== undefined) updateData.engineType = input.engineType;
+  if (input.cylinders !== undefined) updateData.cylinders = input.cylinders;
+  if (input.powerRange !== undefined) updateData.powerRange = input.powerRange;
+  if (input.torque !== undefined) updateData.torque = input.torque;
+  if (input.fuelEconomy !== undefined) updateData.fuelEconomy = input.fuelEconomy;
+  if (input.doors !== undefined) updateData.doors = input.doors;
+  if (input.seatingCapacity !== undefined) updateData.seatingCapacity = input.seatingCapacity;
+  if (input.exteriorColor !== undefined) updateData.exteriorColor = input.exteriorColor;
+  if (input.interiorColor !== undefined) updateData.interiorColor = input.interiorColor;
+  if (input.mileage !== undefined) updateData.mileage = input.mileage;
+
+  // Export
+  if (input.exportStatus !== undefined) updateData.exportStatus = input.exportStatus;
+  if (input.warrantyType !== undefined) updateData.warrantyType = input.warrantyType;
+  if (input.sellerType !== undefined) updateData.sellerType = input.sellerType;
+
+  // Location
+  if (input.emirate !== undefined) updateData.emirate = input.emirate;
+  if (input.city !== undefined) updateData.city = input.city;
+
+  // Media
+  if (input.thumbnail !== undefined) updateData.thumbnail = input.thumbnail;
+  if (input.images !== undefined) updateData.images = input.images;
+  if (input.videoUrl !== undefined) updateData.videoUrl = input.videoUrl;
+
+  // Features & Notes
+  if (input.technicalFeatures !== undefined) updateData.technicalFeatures = input.technicalFeatures;
+  if (input.extras !== undefined) updateData.extras = input.extras;
+  if (input.specialNotes !== undefined) updateData.specialNotes = input.specialNotes;
+  if (input.badges !== undefined) updateData.badges = input.badges;
+  if (input.tags !== undefined) updateData.tags = input.tags;
+
+  if (input.rejectionReason !== undefined) updateData.rejectionReason = input.rejectionReason;
+
+  return updateData;
+}
+
+/**
+ * Check if input contains any content edits that would trigger re-moderation
+ */
+function hasContentEdits(input: UpdateCarListingInput): boolean {
+  return contentEditKeys.some((k) => (input as any)[k] !== undefined);
+}
+
+/**
+ * Apply lifecycle status updates to the update data
+ */
+function applyLifecycleUpdates(
+  updateData: Record<string, any>,
+  lifecycleStatus: ListingLifecycleStatus | undefined,
+  now: Date
+): void {
+  if (lifecycleStatus === undefined) return;
+  
+  updateData.lifecycleStatus = lifecycleStatus;
+  if (lifecycleStatus === 'archived') updateData.archivedAt = now;
+  if (lifecycleStatus === 'sold') updateData.soldAt = now;
+  if (lifecycleStatus === 'deleted') updateData.deletedAt = now;
+}
+
+/**
+ * Apply moderation status updates to the update data
+ */
+function applyModerationUpdates(
+  updateData: Record<string, any>,
+  moderationStatus: ListingModerationStatus | undefined,
+  now: Date
+): void {
+  if (moderationStatus === undefined) return;
+
+  updateData.moderationStatus = moderationStatus;
+  updateData.lastModeratedAt = now;
+
+  if (moderationStatus === 'approved') {
+    updateData.approvedAt = now;
+    updateData.needsRemoderation = false;
+    updateData.rejectionReason = null;
+  } else if (moderationStatus === 'rejected') {
+    updateData.needsRemoderation = false;
+  } else if (moderationStatus === 'submitted' || moderationStatus === 'pending_review') {
+    updateData.submittedAt = now;
+    updateData.needsRemoderation = true;
+  } else {
+    updateData.needsRemoderation = false;
+  }
+}
+
+/**
+ * Ensure publish fields are set when listing becomes public
+ */
+function ensurePublishFields(
+  updateData: Record<string, any>,
+  currentPublishedAt: Date | null,
+  currentExpiresAt: Date | null,
+  nextModerationStatus: ListingModerationStatus,
+  nextLifecycleStatus: ListingLifecycleStatus,
+  now: Date
+): void {
+  const willBePublic = nextModerationStatus === 'approved' && nextLifecycleStatus === 'active';
+
+  if (willBePublic && (!currentPublishedAt || !currentExpiresAt)) {
+    const publishedAt = currentPublishedAt ?? now;
+    if (!currentPublishedAt) updateData.publishedAt = publishedAt;
+    if (!currentExpiresAt) updateData.expiresAt = addDays(publishedAt, DEFAULT_LISTING_EXPIRY_DAYS);
+  }
+}
+
+/**
+ * Update an existing car listing
+ * Only allows updates by the listing owner or staff
+ * 
+ * Price changes are automatically recorded in listing_price_history table
+ */
+export async function updateCarListing(
+  listingId: string,
+  userId: string,
+  input: UpdateCarListingInput
+): Promise<boolean> {
+  const now = new Date();
+
+  const existing = await db
+    .select({
+      id: carListing.id,
+      postedByRole: carListing.postedByRole,
+      moderationStatus: carListing.moderationStatus,
+      lifecycleStatus: carListing.lifecycleStatus,
+      publishedAt: carListing.publishedAt,
+      expiresAt: carListing.expiresAt,
+      price: carListing.price,
+    })
+    .from(carListing)
+    .where(and(eq(carListing.id, listingId), eq(carListing.userId, userId)))
+    .limit(1);
+
+  if (existing.length === 0) return false;
+
+  const current = existing[0];
+  const oldPrice = current.price;
+  const isCurrentlyPublic = isListingPublic(
+    current.moderationStatus,
+    current.lifecycleStatus,
+    current.expiresAt,
+    now
+  );
+  const canSelfModerate = current.postedByRole === 'staff';
+
+  const updateData: Record<string, any> = {
+    updatedAt: now,
+    lastEditedAt: now,
+    ...buildUpdateData(input, now),
+  };
+
+  // Lifecycle updates (owner-controlled)
+  applyLifecycleUpdates(updateData, input.lifecycleStatus, now);
+
+  // Moderation updates (only staff-posted listings can self-moderate)
+  if (input.moderationStatus !== undefined) {
+    if (!canSelfModerate && input.moderationStatus !== 'draft' && input.moderationStatus !== 'submitted') {
+      throw new Error('Not authorized to change moderation status for this listing');
+    }
+    applyModerationUpdates(updateData, input.moderationStatus, now);
+  }
+
+  // User-posted listings: any edit while public triggers re-moderation (V1: hide on edit).
+  if (current.postedByRole === 'user' && isCurrentlyPublic && hasContentEdits(input)) {
+    updateData.moderationStatus = 'pending_review';
+    updateData.submittedAt = now;
+    updateData.lastModeratedAt = now;
+    updateData.needsRemoderation = true;
+  }
+
+  // Ensure publish fields are set the first time it becomes public.
+  const nextModerationStatus = (updateData.moderationStatus ?? current.moderationStatus) as ListingModerationStatus;
+  const nextLifecycleStatus = (updateData.lifecycleStatus ?? current.lifecycleStatus) as ListingLifecycleStatus;
+  ensurePublishFields(
+    updateData,
+    current.publishedAt,
+    current.expiresAt,
+    nextModerationStatus,
+    nextLifecycleStatus,
+    now
+  );
+
+  // Staff/admin-controlled timestamp overrides (ignored for user-posted listings).
+  if (canSelfModerate) {
+    if (input.submittedAt !== undefined) updateData.submittedAt = input.submittedAt;
+    if (input.approvedAt !== undefined) updateData.approvedAt = input.approvedAt;
+    if (input.lastModeratedAt !== undefined) updateData.lastModeratedAt = input.lastModeratedAt;
+    if (input.needsRemoderation !== undefined) updateData.needsRemoderation = input.needsRemoderation;
+    if (input.publishedAt !== undefined) updateData.publishedAt = input.publishedAt;
+    if (input.expiresAt !== undefined) updateData.expiresAt = input.expiresAt;
+    if (input.deletedAt !== undefined) updateData.deletedAt = input.deletedAt;
+    if (input.rejectionReason !== undefined) updateData.rejectionReason = input.rejectionReason;
+  }
+
+  // Perform update and record price history in parallel for better performance
+  const newPrice = input.price;
+  const priceChanged = newPrice !== undefined && newPrice !== oldPrice;
+
+  const [result] = await Promise.all([
+    db.update(carListing)
+      .set(updateData)
+      .where(and(eq(carListing.id, listingId), eq(carListing.userId, userId)))
+      .returning({ id: carListing.id }),
+    // Record price history if price changed (with error handling)
+    priceChanged 
+      ? recordPriceChange(listingId, oldPrice, newPrice, userId).catch((err) => {
+          console.error(`[updateCarListing] Failed to record price history for ${listingId}:`, err);
+          // Don't fail the update if price history fails
+          return null;
+        })
+      : Promise.resolve(),
+  ]);
+
+  return result.length > 0;
+}
+
+/**
+ * Update listing by staff (no user ownership check)
+ * Used by admin/staff to modify any listing
+ * 
+ * Price changes are automatically recorded in listing_price_history table
+ */
+export async function updateCarListingByStaff(
+  listingId: string,
+  input: UpdateCarListingInput,
+  staffUserId?: string // Optional: staff user ID for price history tracking
+): Promise<boolean> {
+  const now = new Date();
+
+  const existing = await db
+    .select({
+      id: carListing.id,
+      postedByRole: carListing.postedByRole,
+      moderationStatus: carListing.moderationStatus,
+      lifecycleStatus: carListing.lifecycleStatus,
+      publishedAt: carListing.publishedAt,
+      expiresAt: carListing.expiresAt,
+      price: carListing.price,
+    })
+    .from(carListing)
+    .where(eq(carListing.id, listingId))
+    .limit(1);
+
+  if (existing.length === 0) return false;
+
+  const current = existing[0];
+  const oldPrice = current.price;
+  const isCurrentlyPublic = isListingPublic(
+    current.moderationStatus,
+    current.lifecycleStatus,
+    current.expiresAt,
+    now
+  );
+
+  const updateData: Record<string, any> = {
+    updatedAt: now,
+    ...buildUpdateData(input, now),
+  };
+
+  // Only treat as an "edit" when content/lifecycle changes (not just moderation).
+  if (hasContentEdits(input) || input.lifecycleStatus !== undefined) {
+    updateData.lastEditedAt = now;
+  }
+
+  // Lifecycle updates
+  applyLifecycleUpdates(updateData, input.lifecycleStatus, now);
+
+  // Moderation updates (staff/admin controlled)
+  applyModerationUpdates(updateData, input.moderationStatus, now);
+
+  // User-posted listings: any edit while public triggers re-moderation (V1: hide on edit).
+  if (current.postedByRole === 'user' && isCurrentlyPublic && hasContentEdits(input)) {
+    updateData.moderationStatus = 'pending_review';
+    updateData.submittedAt = now;
+    updateData.lastModeratedAt = now;
+    updateData.needsRemoderation = true;
+  }
+
+  // Ensure publish fields are set the first time it becomes public.
+  const nextModerationStatus = (updateData.moderationStatus ?? current.moderationStatus) as ListingModerationStatus;
+  const nextLifecycleStatus = (updateData.lifecycleStatus ?? current.lifecycleStatus) as ListingLifecycleStatus;
+  ensurePublishFields(
+    updateData,
+    current.publishedAt,
+    current.expiresAt,
+    nextModerationStatus,
+    nextLifecycleStatus,
+    now
+  );
+
+  // Explicit overrides (admin/system)
+  if (input.submittedAt !== undefined) updateData.submittedAt = input.submittedAt;
+  if (input.approvedAt !== undefined) updateData.approvedAt = input.approvedAt;
+  if (input.lastModeratedAt !== undefined) updateData.lastModeratedAt = input.lastModeratedAt;
+  if (input.needsRemoderation !== undefined) updateData.needsRemoderation = input.needsRemoderation;
+  if (input.publishedAt !== undefined) updateData.publishedAt = input.publishedAt;
+  if (input.expiresAt !== undefined) updateData.expiresAt = input.expiresAt;
+  if (input.deletedAt !== undefined) updateData.deletedAt = input.deletedAt;
+
+  // Perform update and record price history in parallel for better performance
+  const newPrice = input.price;
+  const priceChanged = newPrice !== undefined && newPrice !== oldPrice;
+
+  const [result] = await Promise.all([
+    db.update(carListing)
+      .set(updateData)
+      .where(eq(carListing.id, listingId))
+      .returning({ id: carListing.id }),
+    // Record price history if price changed (staff userId is optional, with error handling)
+    priceChanged 
+      ? recordPriceChange(listingId, oldPrice, newPrice, staffUserId ?? null, 'Staff update').catch((err) => {
+          console.error(`[updateCarListingByStaff] Failed to record price history for ${listingId}:`, err);
+          // Don't fail the update if price history fails
+          return null;
+        })
+      : Promise.resolve(),
+  ]);
+
+  return result.length > 0;
+}
+
+/**
+ * Reassign a listing to a different staff member
+ * Used when staff leaves or for workload balancing
+ * Only changes the userId (manager), not the partnerId (owner)
+ * 
+ * Also reassigns:
+ * - Conversation participants (replaces old staff with new staff in listing conversations)
+ */
+export async function reassignListingManager(input: {
+  listingId: string;
+  newUserId: string;
+  partnerId: string;
+}): Promise<{ id: string; userId: string; conversationsReassigned: number }> {
+  const now = new Date();
+
+  // First, get the current listing to find the old userId
+  const [currentListing] = await db
+    .select({ userId: carListing.userId })
+    .from(carListing)
+    .where(
+      and(
+        eq(carListing.id, input.listingId),
+        eq(carListing.partnerId, input.partnerId)
+      )
+    );
+
+  if (!currentListing) {
+    throw new Error('Listing not found or not owned by this partner');
+  }
+
+  const oldUserId = currentListing.userId;
+
+  // Don't do anything if reassigning to the same user
+  if (oldUserId === input.newUserId) {
+    return { id: input.listingId, userId: input.newUserId, conversationsReassigned: 0 };
+  }
+
+  // Update the listing
+  const [result] = await db
+    .update(carListing)
+    .set({
+      userId: input.newUserId,
+      updatedAt: now,
+    })
+    .where(
+      and(
+        eq(carListing.id, input.listingId),
+        eq(carListing.partnerId, input.partnerId)
+      )
+    )
+    .returning({ id: carListing.id, userId: carListing.userId });
+
+  if (!result) {
+    throw new Error('Failed to update listing');
+  }
+
+  // Find all conversations for this listing where the old staff is a participant
+  // OPTIMIZED: Use JOINs instead of N+1 queries
+  const conversationsWithOldStaff = await db
+    .select({
+      conversationId: conversation.id,
+      participantId: conversationParticipant.id,
+    })
+    .from(conversation)
+    .innerJoin(
+      conversationParticipant,
+      and(
+        eq(conversationParticipant.conversationId, conversation.id),
+        eq(conversationParticipant.userId, oldUserId)
+      )
+    )
+    .where(eq(conversation.listingId, input.listingId));
+
+  if (conversationsWithOldStaff.length === 0) {
+    return { ...result, conversationsReassigned: 0 };
+  }
+
+  const conversationIds = conversationsWithOldStaff.map(c => c.conversationId);
+  const participantIdsToUpdate = conversationsWithOldStaff.map(c => c.participantId);
+
+  // Check which conversations already have the new staff as a participant
+  const existingNewStaffParticipants = await db
+    .select({ conversationId: conversationParticipant.conversationId })
+    .from(conversationParticipant)
+    .where(
+      and(
+        inArray(conversationParticipant.conversationId, conversationIds),
+        eq(conversationParticipant.userId, input.newUserId)
+      )
+    );
+
+  const conversationsWithNewStaff = new Set(
+    existingNewStaffParticipants.map(p => p.conversationId)
+  );
+
+  // Split participants: those to mark as left vs those to reassign
+  const participantsToMarkLeft: string[] = [];
+  const participantsToReassign: string[] = [];
+
+  for (const conv of conversationsWithOldStaff) {
+    if (conversationsWithNewStaff.has(conv.conversationId)) {
+      // New staff already exists, mark old staff as left
+      participantsToMarkLeft.push(conv.participantId);
+    } else {
+      // Reassign old staff to new staff
+      participantsToReassign.push(conv.participantId);
+    }
+  }
+
+  // Batch update: mark old staff as left
+  if (participantsToMarkLeft.length > 0) {
+    await db
+      .update(conversationParticipant)
+      .set({ leftAt: now, updatedAt: now })
+      .where(inArray(conversationParticipant.id, participantsToMarkLeft));
+  }
+
+  // Batch update: reassign to new staff
+  if (participantsToReassign.length > 0) {
+    await db
+      .update(conversationParticipant)
+      .set({
+        userId: input.newUserId,
+        updatedAt: now,
+        unreadCount: 0,
+      })
+      .where(inArray(conversationParticipant.id, participantsToReassign));
+  }
+
+  return { ...result, conversationsReassigned: conversationsWithOldStaff.length };
+}

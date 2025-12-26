@@ -574,12 +574,12 @@ export const getAdminAllPartners = async (options?: {
   // Build where clause
   const whereClause = status ? eq(partner.status, status) : undefined;
 
-  // Get sort column
+  // Get sort column with fallback
   const sortColumn = {
     createdAt: partner.createdAt,
     brandName: partner.brandName,
     status: partner.status,
-  }[sortBy];
+  }[sortBy] || partner.createdAt;
 
   const sortFn = sortOrder === 'asc' ? asc : desc;
 
@@ -589,6 +589,7 @@ export const getAdminAllPartners = async (options?: {
       id: partner.id,
       companyNameLegal: partner.companyNameLegal,
       brandName: partner.brandName,
+      logo: partner.logo,
       tradeLicense: partner.tradeLicense,
       email: partner.email,
       phone: partner.phone,
@@ -649,6 +650,7 @@ export const getAdminAllPartners = async (options?: {
       id: p.id,
       companyNameLegal: p.companyNameLegal,
       brandName: p.brandName,
+      logo: p.logo,
       tradeLicense: p.tradeLicense,
       email: p.email,
       phone: p.phone,
