@@ -61,7 +61,7 @@ export function WebSocketProvider({ children, userId, autoConnect = true }: Prop
   
   const wsRef = useRef<WebSocket | null>(null);
   const handlersRef = useRef<Set<MessageHandler>>(new Set());
-  const reconnectRef = useRef<NodeJS.Timeout>();
+  const reconnectRef = useRef<NodeJS.Timeout>(undefined);
   const attemptsRef = useRef(0);
 
   // Connect

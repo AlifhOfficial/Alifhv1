@@ -35,6 +35,7 @@ import {
   Heart,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   X,
   Sparkles,
   ShieldCheck,
@@ -53,6 +54,18 @@ import { UserAvatar } from "@/components/ui/data-display/user-avatar";
 import { BrandAvatar } from "@/components/partner/car-dealer/ui/brand-avatar";
 import { useDrawer } from "./dashboard-layout";
 
+interface SidebarItem {
+  label: string;
+  href: string;
+  isActive?: boolean;
+  icon?: string;
+}
+
+interface SidebarSection {
+  title?: string;
+  items: SidebarItem[];
+}
+
 interface SidebarProps {
   user: {
     id?: string | null;
@@ -63,12 +76,9 @@ interface SidebarProps {
     lastName?: string | null;   // From session (profile data)
     avatarUrl?: string | null;  // From session (signed URL)
   };
-  items: Array<{
-    label: string;
-    href: string;
-    isActive?: boolean;
-    icon?: string;
-  }>;
+  /** Flat items list (legacy) or sections for grouped navigation */
+  items?: SidebarItem[];
+  sections?: SidebarSection[];
   /** Staff override data - when present, uses work identity instead of personal */
   staffOverride?: {
     displayName?: string | null;
@@ -104,13 +114,34 @@ const iconMap: Record<string, ComponentType<{ className?: string }>> = {
   "calendar-check": CalendarCheck,
 };
 
-export function Sidebar({ user, items, staffOverride }: SidebarProps) {
+export function Sidebar({ user, items, sections, staffOverride }: SidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
   const { isOpen, setIsOpen } = useDrawer();
+
+  // Toggle section collapse
+  const toggleSection = (sectionTitle: string) => {
+    setCollapsedSections(prev => {
+      const next = new Set(prev);
+      if (next.has(sectionTitle)) {
+        next.delete(sectionTitle);
+      } else {
+        next.add(sectionTitle);
+      }
+      return next;
+    });
+  };
+
+  // Convert flat items to sections if sections not provided
+  const navSections: SidebarSection[] = useMemo(() => {
+    if (sections && sections.length > 0) return sections;
+    if (items && items.length > 0) return [{ items }];
+    return [];
+  }, [items, sections]);
 
   useEffect(() => {
     setMounted(true);
@@ -204,8 +235,8 @@ export function Sidebar({ user, items, staffOverride }: SidebarProps) {
         />
       )}
       
-      <aside className={`h-[100dvh] bg-background border-r border-border flex-col shrink-0 overflow-y-auto transition-all duration-300 ease-in-out
-        md:h-screen md:bg-muted/20
+      <aside className={`h-[100dvh] bg-background border-r border-border/40 flex-col shrink-0 overflow-y-auto transition-all duration-300 ease-in-out
+        md:h-screen md:bg-card dark:md:bg-muted/10
         fixed md:relative z-50 md:z-auto left-0 top-0
         ${isCollapsed ? 'w-16' : 'w-64'}
         ${isOpen ? 'flex' : 'hidden md:flex'}
@@ -214,20 +245,20 @@ export function Sidebar({ user, items, staffOverride }: SidebarProps) {
       {/* Mobile Close Button */}
       <button
         onClick={() => setIsOpen(false)}
-        className="md:hidden absolute top-4 right-4 p-2 rounded-lg hover:bg-muted transition-colors"
+        className="md:hidden absolute top-4 right-4 p-2 rounded-xl hover:bg-muted/50 transition-colors duration-200"
         aria-label="Close menu"
       >
-        <X className="h-5 w-5" />
+        <X className="h-5 w-5 text-muted-foreground" />
       </button>
       
       {/* User Profile Section */}
-      <div className="flex items-center gap-3 px-4 py-6 border-b border-border">
+      <div className="flex items-center gap-3 px-4 py-5 border-b border-border/40">
         {isStaffMode ? (
           <BrandAvatar
             logoUrl={staffOverride?.companyLogo}
             brandName={staffOverride?.companyName || 'Company'}
             size="xs"
-            className="border border-border bg-background shrink-0"
+            className="border border-border/30 bg-muted/30 shrink-0"
           />
         ) : (
           <UserAvatar
@@ -235,100 +266,147 @@ export function Sidebar({ user, items, staffOverride }: SidebarProps) {
             oauthImage={user.image}
             name={displayName}
             size="sm"
-            className="border border-border bg-background text-foreground shrink-0"
+            className="border border-border/30 bg-muted/30 text-foreground shrink-0"
           />
         )}
         {!isCollapsed && (
-          <div className="min-w-0 text-left">
+          <div className="min-w-0 text-left flex-1">
             <p className="truncate text-sm font-semibold text-foreground tracking-tight">{displayName}</p>
-            <p className="truncate text-xs text-muted-foreground mt-0.5">{displayEmail}</p>
+            <p className="truncate text-[11px] text-muted-foreground/70 mt-0.5">{displayEmail}</p>
           </div>
         )}
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 px-3 py-4">
-        {items.map((item) => {
-          const isActive = pathname === item.href;
-          const Icon = item.icon ? iconMap[item.icon] : undefined;
+      {/* Navigation with Sections */}
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        {navSections.map((section, sectionIndex) => {
+          const sectionKey = section.title || `section-${sectionIndex}`;
+          const isSectionCollapsed = section.title ? collapsedSections.has(section.title) : false;
+          const firstItemIcon = section.items[0]?.icon ? iconMap[section.items[0].icon] : undefined;
+          
           return (
-            <Link
-              key={item.label}
-              href={item.href}
-              onClick={handleLinkClick}
-              data-active={isActive ? "true" : undefined}
-              className="group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium mb-1 transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-muted/50 data-[active=true]:bg-muted data-[active=true]:text-foreground data-[active=true]:shadow-sm"
-              title={isCollapsed ? item.label : undefined}
-            >
-              {Icon ? (
-                <Icon className="h-4 w-4 shrink-0" />
-              ) : (
-                <span className="flex h-5 w-5 items-center justify-center rounded text-xs font-semibold text-foreground shrink-0">
-                  {item.label.charAt(0)}
-                </span>
+            <div key={sectionKey}>
+              {/* Section Header - clickable to collapse */}
+              {section.title ? (
+                <button
+                  onClick={() => toggleSection(section.title!)}
+                  className={`w-full flex items-center justify-between rounded-lg px-3 py-2 text-sm transition-all duration-200 hover:bg-muted/40 ${
+                    isCollapsed ? 'justify-center' : ''
+                  }`}
+                >
+                  {isCollapsed ? (
+                    // Show first item's icon when sidebar collapsed
+                    firstItemIcon ? (
+                      <span className="text-muted-foreground/70">
+                        {(() => { const Icon = firstItemIcon; return <Icon className="h-4 w-4" />; })()}
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-medium text-muted-foreground/70 uppercase">
+                        {section.title.charAt(0)}
+                      </span>
+                    )
+                  ) : (
+                    <>
+                      <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground/60">
+                        {section.title}
+                      </span>
+                      <ChevronDown 
+                        className={`h-3.5 w-3.5 text-muted-foreground/50 transition-transform duration-200 ${
+                          isSectionCollapsed ? '-rotate-90' : ''
+                        }`} 
+                      />
+                    </>
+                  )}
+                </button>
+              ) : null}
+              
+              {/* Section Items */}
+              {(!section.title || (!isSectionCollapsed && !isCollapsed)) && (
+                <div className="space-y-0.5 mt-1">
+                  {section.items.map((item) => {
+                    const isActive = pathname === item.href;
+                    const Icon = item.icon ? iconMap[item.icon] : undefined;
+                    return (
+                      <Link
+                        key={item.label}
+                        href={item.href}
+                        onClick={handleLinkClick}
+                        data-active={isActive ? "true" : undefined}
+                        className={`group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-muted/50 data-[active=true]:bg-muted/60 data-[active=true]:text-foreground ${
+                          isCollapsed ? 'justify-center px-2' : ''
+                        }`}
+                        title={isCollapsed ? item.label : undefined}
+                      >
+                        {Icon ? (
+                          <Icon className="h-4 w-4 shrink-0" />
+                        ) : (
+                          <span className="flex h-5 w-5 items-center justify-center rounded-md text-[10px] font-semibold bg-muted/40 text-foreground shrink-0">
+                            {item.label.charAt(0)}
+                          </span>
+                        )}
+                        {!isCollapsed && <span className="tracking-tight">{item.label}</span>}
+                      </Link>
+                    );
+                  })}
+                </div>
               )}
-              {!isCollapsed && <span className="tracking-tight">{item.label}</span>}
-            </Link>
+            </div>
           );
         })}
       </nav>
 
       {/* Bottom Actions */}
-      <div className="border-t border-border p-3 pb-8 md:pb-3 space-y-1">
+      <div className={`border-t border-border/40 p-3 pb-8 md:pb-3 ${
+        isCollapsed ? 'flex flex-col items-center gap-1' : 'flex items-center justify-between'
+      }`}>
+        {/* Action icons */}
+        <div className={`flex items-center ${isCollapsed ? 'flex-col gap-1' : 'gap-1'}`}>
+          <button
+            onClick={() => router.push("/")}
+            className="flex items-center justify-center rounded-lg p-2 text-muted-foreground/70 transition-all duration-200 hover:text-foreground hover:bg-muted/50"
+            title="Home"
+          >
+            <Home className="h-4 w-4" />
+          </button>
+          
+          <button
+            onClick={toggleTheme}
+            className="flex items-center justify-center rounded-lg p-2 text-muted-foreground/70 transition-all duration-200 hover:text-foreground hover:bg-muted/50"
+            title={mounted ? (currentTheme === "dark" ? "Light mode" : "Dark mode") : "Toggle theme"}
+          >
+            {mounted ? (
+              currentTheme === "dark" ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )
+            ) : (
+              <span className="h-4 w-4" aria-hidden />
+            )}
+          </button>
+
+          <button
+            onClick={onSignOut}
+            className="flex items-center justify-center rounded-lg p-2 text-rose-500/70 transition-all duration-200 hover:text-rose-500 hover:bg-rose-500/10"
+            title="Sign out"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
+        </div>
+
         {/* Collapse Toggle - Desktop Only */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="hidden md:flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:text-foreground hover:bg-muted/50"
+          className={`hidden md:flex items-center justify-center rounded-lg p-2 text-muted-foreground/70 transition-all duration-200 hover:text-foreground hover:bg-muted/50 ${
+            isCollapsed ? 'mt-2' : ''
+          }`}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {isCollapsed ? (
-            <ChevronRight className="h-4 w-4 shrink-0" />
+            <ChevronRight className="h-4 w-4" />
           ) : (
-            <>
-              <ChevronLeft className="h-4 w-4 shrink-0" />
-              <span className="tracking-tight">Collapse</span>
-            </>
+            <ChevronLeft className="h-4 w-4" />
           )}
-        </button>
-
-        <button
-          onClick={toggleTheme}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:text-foreground hover:bg-muted/50"
-          title={isCollapsed ? "Switch theme" : undefined}
-        >
-          {mounted ? (
-            currentTheme === "dark" ? (
-              <>
-                <Sun className="h-4 w-4 shrink-0" />
-                {!isCollapsed && <span className="tracking-tight">Light mode</span>}
-              </>
-            ) : (
-              <>
-                <Moon className="h-4 w-4 shrink-0" />
-                {!isCollapsed && <span className="tracking-tight">Dark mode</span>}
-              </>
-            )
-          ) : (
-            <span className="h-4 w-4 shrink-0" aria-hidden />
-          )}
-        </button>
-        
-        <button
-          onClick={() => router.push("/")}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:text-foreground hover:bg-muted/50"
-          title={isCollapsed ? "Back to Alifh" : undefined}
-        >
-          <ArrowLeft className="h-4 w-4 shrink-0" />
-          {!isCollapsed && <span className="tracking-tight">Back to Alifh</span>}
-        </button>
-        
-        <button
-          onClick={onSignOut}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-destructive transition-all hover:bg-destructive/10"
-          title={isCollapsed ? "Sign out" : undefined}
-        >
-          <LogOut className="h-4 w-4 shrink-0" />
-          {!isCollapsed && <span className="tracking-tight">Sign out</span>}
         </button>
       </div>
     </aside>

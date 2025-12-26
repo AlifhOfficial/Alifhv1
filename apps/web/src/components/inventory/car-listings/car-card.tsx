@@ -170,16 +170,6 @@ export function CarCard({
   const displaySellerName = partnerName || sellerName || 'Private Seller';
   const isPartnerListing = Boolean(partnerLogo || partnerName);
 
-  // Debug: Check what avatar data we're receiving
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[CarCard ${id}] Avatar debug:`, {
-      partnerLogo,
-      sellerAvatarUrl,
-      isPartnerListing,
-      displaySellerName,
-    });
-  }
-
   return (
     <div className={cn(
       "group relative flex flex-col overflow-hidden rounded-xl transition-all duration-300 min-w-[280px]",

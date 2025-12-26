@@ -89,7 +89,7 @@ export function useMessages(conversationId: string, userId?: string, options: Us
   });
   const [otherLastSeenAt, setOtherLastSeenAt] = useState<Date | null>(null);
 
-  const typingTimeoutRef = useRef<NodeJS.Timeout>();
+  const typingTimeoutRef = useRef<NodeJS.Timeout>(undefined);
   const watchingRef = useRef(false);
 
   // Query

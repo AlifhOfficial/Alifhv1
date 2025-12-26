@@ -12,4 +12,3 @@ export { UserConversationGroup } from './user-conversation-group';
 export { ChatWindow } from './chat-window';
 export { ChatContainer } from './chat-container';
 export { WebSocketStatus } from './websocket-status';
-export { WebSocketDebugPanel } from './websocket-debug-panel';

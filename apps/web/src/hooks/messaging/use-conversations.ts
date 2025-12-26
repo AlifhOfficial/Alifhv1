@@ -13,6 +13,19 @@ import { useEffect } from 'react';
 // Types
 // ============================================================================
 
+export interface ConversationPartner {
+  id: string;
+  name: string;
+  logo: string | null;
+}
+
+export interface ConversationParticipant {
+  id: string;
+  name: string | null;
+  avatarUrl: string | null;
+  lastReadAt?: Date | string | null;
+}
+
 export interface Conversation {
   id: string;
   type: string;
