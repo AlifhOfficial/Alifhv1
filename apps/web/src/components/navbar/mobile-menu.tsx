@@ -55,7 +55,7 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp,
                 <>
                   <button
                     onClick={() => toggleExpanded(item.label)}
-                    className={`w-full flex items-center justify-between px-3 py-2 text-sm font-medium transition-colors rounded-lg ${
+                    className={`w-full flex items-center justify-between px-3 py-2 text-sm font-medium tracking-tight transition-colors rounded-lg ${
                       pathname === item.href
                         ? "text-foreground bg-muted/20"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
@@ -73,7 +73,7 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp,
                     <div className="ml-4 mt-2 space-y-3 border-l border-border/40 pl-4">
                       {item.submenu.map((section) => (
                         <div key={section.title}>
-                          <div className="text-xs font-medium text-muted-foreground mb-2">
+                          <div className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70 mb-2">
                             {section.title}
                           </div>
                           <div className="space-y-2">
@@ -82,7 +82,7 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp,
                                 key={subItem.href}
                                 href={subItem.href}
                                 onClick={onNavigate}
-                                className="block text-sm text-muted-foreground hover:text-foreground transition-colors"
+                                className="block text-sm font-medium tracking-tight text-muted-foreground hover:text-foreground transition-colors"
                               >
                                 {subItem.label}
                               </Link>
@@ -97,7 +97,7 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp,
                 <Link
                   href={item.href}
                   onClick={onNavigate}
-                  className={`block px-3 py-2 text-sm font-medium transition-colors rounded-lg ${
+                  className={`block px-3 py-2 text-sm font-medium tracking-tight transition-colors rounded-lg ${
                     pathname === item.href
                       ? "text-foreground bg-muted/20"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/20"
@@ -119,14 +119,14 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp,
                   onProfile?.();
                   onNavigate();
                 }}
-                className="block w-full px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20 text-left"
+                className="block w-full px-3 py-2 text-sm font-medium tracking-tight text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20 text-left"
               >
                 Profile
               </button>
               <Link
                 href="/user-dashboard"
                 onClick={onNavigate}
-                className="block w-full px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20 text-left"
+                className="block w-full px-3 py-2 text-sm font-medium tracking-tight text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20 text-left"
               >
                 Dashboard
               </Link>
@@ -135,7 +135,7 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp,
                   onSignOut?.();
                   onNavigate();
                 }}
-                className="block w-full px-3 py-2 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors rounded-lg text-left"
+                className="block w-full px-3 py-2 text-sm font-medium tracking-tight text-destructive hover:bg-destructive/10 transition-colors rounded-lg text-left"
               >
                 Sign Out
               </button>

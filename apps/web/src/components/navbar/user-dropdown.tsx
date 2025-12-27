@@ -114,7 +114,7 @@ export function ProfileMenu({
     
     return (
       <div className="relative flex items-center gap-2.5" data-menu-container>
-        <span className="text-sm text-muted-foreground hidden sm:inline">
+        <span className="text-sm text-muted-foreground/70 hidden sm:inline">
           {firstName}
         </span>
         
@@ -144,8 +144,8 @@ export function ProfileMenu({
           >
             {/* User Header */}
             <div className="px-4 py-3.5 border-b border-border/30">
-              <p className="text-sm font-medium text-foreground truncate">{displayName}</p>
-              <p className="text-xs text-muted-foreground/60 truncate mt-0.5">{user.email}</p>
+              <p className="text-sm font-semibold tracking-tight text-foreground truncate">{displayName}</p>
+              <p className="text-xs text-muted-foreground/70 truncate mt-0.5">{user.email}</p>
             </div>
 
             {/* Menu Items */}
@@ -155,7 +155,7 @@ export function ProfileMenu({
                 <button
                   key={dashboard.path}
                   onClick={() => handleDashboardNavigation(dashboard.path)}
-                  className="w-full text-left px-4 py-2.5 text-[15px] text-foreground hover:bg-muted/50 active:bg-muted/70 transition-all"
+                  className="w-full text-left px-4 py-2.5 text-sm font-medium tracking-tight text-foreground hover:bg-muted/50 active:bg-muted/70 transition-all"
                 >
                   {dashboard.name}
                 </button>
@@ -170,7 +170,7 @@ export function ProfileMenu({
                   router.push('/user-dashboard/profile');
                   onToggleMenu();
                 }}
-                className="w-full text-left px-4 py-2.5 text-[15px] text-foreground hover:bg-muted/50 active:bg-muted/70 transition-all flex items-center gap-3"
+                className="w-full text-left px-4 py-2.5 text-sm font-medium tracking-tight text-foreground hover:bg-muted/50 active:bg-muted/70 transition-all flex items-center gap-3"
               >
                 <User size={16} strokeWidth={1.5} className="text-muted-foreground" />
                 Profile
@@ -182,7 +182,7 @@ export function ProfileMenu({
               {/* Sign Out */}
               <button
                 onClick={onSignOut}
-                className="w-full text-left px-4 py-2.5 text-[15px] text-destructive hover:bg-destructive/10 active:bg-destructive/20 transition-all flex items-center gap-3"
+                className="w-full text-left px-4 py-2.5 text-sm font-medium tracking-tight text-destructive hover:bg-destructive/10 active:bg-destructive/20 transition-all flex items-center gap-3"
               >
                 <LogOut size={16} strokeWidth={1.5} />
                 Sign out

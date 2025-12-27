@@ -671,17 +671,6 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
 
         </div>
 
-        {/* Footer */}
-        <footer className="pt-12 border-t border-border/40">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-muted-foreground">
-            <p>© {new Date().getFullYear()} ALIFH LLC</p>
-            <div className="flex gap-6">
-              <a href="/data-policy" className="hover:text-foreground transition-colors">Data Policy</a>
-              <a href="/terms" className="hover:text-foreground transition-colors">Terms of Service</a>
-              <a href="/privacy" className="hover:text-foreground transition-colors">Privacy</a>
-            </div>
-          </div>
-        </footer>
       </div>
     </div>
   );

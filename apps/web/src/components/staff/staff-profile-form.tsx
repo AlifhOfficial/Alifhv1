@@ -6,11 +6,11 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Loader2, User, Mail, Phone } from 'lucide-react';
+import { ArrowLeft, Loader2, User, Mail, Phone, Info, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 
 interface StaffProfile {
@@ -37,21 +37,26 @@ export function StaffProfileForm() {
     },
   });
 
-  const [displayName, setDisplayName] = useState('');
-  const [workEmail, setWorkEmail] = useState('');
-  const [workPhone, setWorkPhone] = useState('');
-  const [initialized, setInitialized] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    displayName: '',
+    workEmail: '',
+    workPhone: '',
+  });
 
-  // Initialize form when data loads
-  if (profile && !initialized) {
-    setDisplayName(profile.displayName || '');
-    setWorkEmail(profile.workEmail || '');
-    setWorkPhone(profile.workPhone || '');
-    setInitialized(true);
-  }
+  // Populate form when data loads
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        displayName: profile.displayName || '',
+        workEmail: profile.workEmail || '',
+        workPhone: profile.workPhone || '',
+      });
+    }
+  }, [profile]);
 
   const updateMutation = useMutation({
-    mutationFn: async (data: { displayName: string; workEmail: string; workPhone: string }) => {
+    mutationFn: async (data: typeof formData) => {
       const res = await fetch('/api/staff/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -62,160 +67,180 @@ export function StaffProfileForm() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['staff-profile'] });
-      toast({
-        title: 'Profile Updated',
-        description: 'Your work identity has been saved.',
-      });
+      toast({ title: 'Profile saved' });
+      setEditing(false);
     },
     onError: () => {
       toast({
-        title: 'Error',
-        description: 'Failed to update profile. Please try again.',
+        title: 'Failed to save',
+        description: 'Please try again.',
         variant: 'destructive',
       });
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    updateMutation.mutate({ displayName, workEmail, workPhone });
+  const handleSave = () => {
+    updateMutation.mutate(formData);
+  };
+
+  const handleCancel = () => {
+    if (profile) {
+      setFormData({
+        displayName: profile.displayName || '',
+        workEmail: profile.workEmail || '',
+        workPhone: profile.workPhone || '',
+      });
+    }
+    setEditing(false);
   };
 
   if (isLoading) {
     return (
-      <div className="max-w-2xl mx-auto px-6 py-16">
-        <div className="animate-pulse space-y-8">
-          <div className="h-10 bg-secondary/50 rounded-xl w-48" />
-          <div className="h-96 bg-secondary/50 rounded-xl" />
-        </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div className="max-w-2xl mx-auto px-6 py-16">
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">No staff profile found</p>
-        </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-muted-foreground">Unable to load profile</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-16 space-y-16">
-      
-      {/* Back Button */}
-      <Link 
-        href="/staff-dashboard"
-        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Back to Dashboard
-      </Link>
+    <div className="min-h-screen bg-background pb-32">
+      <div className="max-w-4xl mx-auto px-8 py-16 space-y-16">
+        
+        {/* Header */}
+        <div className="flex flex-col md:flex-row gap-8 items-start md:items-center justify-between">
+          <div className="flex items-start gap-3">
+            <Link
+              href="/staff-dashboard"
+              className="p-2 hover:bg-secondary/50 rounded-lg transition-colors mt-0.5"
+            >
+              <ArrowLeft className="w-4 h-4 text-muted-foreground" />
+            </Link>
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">Work Profile</h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Manage your professional identity at {profile.partner.brandName}
+              </p>
+            </div>
+          </div>
 
-      {/* Header */}
-      <section className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Work Profile</h1>
-        <p className="text-sm text-muted-foreground">
-          Manage your professional identity at {profile.partner.brandName}
-        </p>
-      </section>
-
-      {/* Form */}
-      <section className="space-y-8">
-        <div className="border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">Work Identity</h3>
-          <p className="text-sm text-muted-foreground mt-1">
-            This information is used when interacting with clients
-          </p>
+          <div className="flex items-center gap-3 ml-12 md:ml-0">
+            <button
+              onClick={() => queryClient.invalidateQueries({ queryKey: ['staff-profile'] })}
+              className="p-2 hover:bg-secondary/50 rounded-lg transition-colors"
+              title="Refresh"
+            >
+              <RefreshCw className="w-4 h-4 text-muted-foreground" />
+            </button>
+            {editing ? (
+              <>
+                <button
+                  onClick={handleCancel}
+                  disabled={updateMutation.isPending}
+                  className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={updateMutation.isPending}
+                  className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-colors disabled:opacity-50"
+                >
+                  {updateMutation.isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  Save Changes
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => setEditing(true)}
+                className="px-5 py-2 rounded-full border border-border bg-background text-sm font-medium hover:bg-secondary/50 transition-colors"
+              >
+                Edit Profile
+              </button>
+            )}
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-10">
+        {/* Info Banner */}
+        <div className="rounded-xl border border-border/40 p-6 bg-muted/30">
+          <div className="flex gap-3">
+            <Info className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+            <div className="text-sm space-y-2">
+              <p className="font-medium text-foreground">Why separate work details?</p>
+              <p className="text-muted-foreground">
+                Your display name will be shown to clients instead of your personal name. 
+                Work email and phone are used for business communications, keeping your personal contact private.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Form Sections */}
+        <div className="space-y-12">
           
-          {/* Display Name */}
-          <div className="space-y-3">
-            <label htmlFor="displayName" className="flex items-center gap-2 text-sm font-medium">
-              <User className="w-3.5 h-3.5 text-muted-foreground" />
-              Display Name
-            </label>
-            <input
-              id="displayName"
-              type="text"
-              placeholder="e.g., Ahmed K. or your code name"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors px-0"
-            />
-            <p className="text-xs text-muted-foreground">
-              The name shown to clients. Can be a nickname or professional alias.
-            </p>
-          </div>
+          {/* Work Identity */}
+          <section className="space-y-6">
+            <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
+              <h3 className="text-lg font-medium tracking-tight">Work Identity</h3>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">Display Name</label>
+                <input
+                  value={formData.displayName}
+                  onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
+                  disabled={!editing}
+                  placeholder="e.g. Ahmed, Alex, Sarah"
+                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/30"
+                />
+                <p className="text-xs text-muted-foreground">
+                  This name will be shown to clients
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">Work Email</label>
+                <input
+                  type="email"
+                  value={formData.workEmail}
+                  onChange={(e) => setFormData({ ...formData, workEmail: e.target.value })}
+                  disabled={!editing}
+                  placeholder="your.name@dealership.com"
+                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/30"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Clients will contact you at this email
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">Work Phone</label>
+                <input
+                  type="tel"
+                  value={formData.workPhone}
+                  onChange={(e) => setFormData({ ...formData, workPhone: e.target.value })}
+                  disabled={!editing}
+                  placeholder="+971 50 123 4567"
+                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/30"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Your work number for client calls
+                </p>
+              </div>
+            </div>
+          </section>
 
-          {/* Work Email */}
-          <div className="space-y-3">
-            <label htmlFor="workEmail" className="flex items-center gap-2 text-sm font-medium">
-              <Mail className="w-3.5 h-3.5 text-muted-foreground" />
-              Work Email
-            </label>
-            <input
-              id="workEmail"
-              type="email"
-              placeholder="your.name@dealership.com"
-              value={workEmail}
-              onChange={(e) => setWorkEmail(e.target.value)}
-              className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors px-0"
-            />
-            <p className="text-xs text-muted-foreground">
-              Your dealership email for client communications.
-            </p>
-          </div>
+        </div>
 
-          {/* Work Phone */}
-          <div className="space-y-3">
-            <label htmlFor="workPhone" className="flex items-center gap-2 text-sm font-medium">
-              <Phone className="w-3.5 h-3.5 text-muted-foreground" />
-              Work Phone
-            </label>
-            <input
-              id="workPhone"
-              type="tel"
-              placeholder="+971 50 123 4567"
-              value={workPhone}
-              onChange={(e) => setWorkPhone(e.target.value)}
-              className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors px-0"
-            />
-            <p className="text-xs text-muted-foreground">
-              Your work phone number for receiving client calls.
-            </p>
-          </div>
-
-          {/* Actions */}
-          <div className="flex justify-end gap-3 pt-8 border-t border-border">
-            <button
-              type="button"
-              onClick={() => router.push('/staff-dashboard')}
-              className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors"
-            >
-              Cancel
-            </button>
-            <button 
-              type="submit" 
-              disabled={updateMutation.isPending}
-              className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {updateMutation.isPending ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                'Save Changes'
-              )}
-            </button>
-          </div>
-        </form>
-      </section>
+      </div>
     </div>
   );
 }

@@ -8,20 +8,105 @@ Clean, minimal design that prioritizes clarity and usability over decorative ele
 ---
 
 ## Typography Scale
-Based on `globals.css`:
 
-```
-h1: text-4xl to text-6xl, font-semibold
-h2: text-lg to text-xl, font-medium  
-h3: text-base, font-medium
-p:  text-sm
-small: text-xs with opacity-70
+### Semantic HTML (Content Pages)
+Based on `globals.css` - for articles, documentation, forms:
+
+```tsx
+<h1>        // text-4xl to text-6xl, font-semibold
+<h2>        // text-lg to text-xl, font-medium  
+<h3>        // text-base, font-medium
+<p>         // text-sm
+<small>     // text-xs with opacity-70
 ```
 
 **Usage:**
-- Use semantic HTML tags (`<h1>`, `<h2>`, `<p>`, `<small>`)
+- Use semantic HTML tags in content-heavy pages
 - Let global CSS handle the styling automatically
 - Maintain hierarchy: h1 → h2 → h3 → p → small
+
+### Component Typography (UI Components)
+For specialized UI components (cards, sidebars, menus):
+
+```tsx
+// Primary Labels (user names, titles)
+text-sm font-semibold tracking-tight
+
+// Secondary Labels (emails, descriptions)  
+text-xs text-muted-foreground/70
+
+// Section Headers (uppercase labels)
+text-xs uppercase tracking-wider font-medium text-muted-foreground/70
+
+// Menu Items & Buttons
+text-sm font-medium tracking-tight
+
+// Data Values (numbers, stats)
+text-sm font-bold tabular-nums
+
+// Micro Labels (badges, tags)
+text-[10px] font-medium uppercase tracking-wider
+```
+
+### Font Weight Patterns
+
+```tsx
+font-semibold    // User names, primary identifiers
+font-medium      // Navigation items, buttons, section headers
+font-bold        // Data values, numbers, emphasis
+font-normal      // Body text, descriptions (default)
+```
+
+### Tracking (Letter Spacing)
+
+```tsx
+tracking-tight    // Headings, names, titles (condensed feel)
+tracking-normal   // Body text (default)
+tracking-wider    // UPPERCASE LABELS, micro text
+tracking-widest   // Special emphasis (rare)
+```
+
+### Opacity for Secondary Text
+
+```tsx
+text-foreground           // Primary (100%)
+text-foreground/70        // Secondary labels
+text-muted-foreground     // Muted text
+text-muted-foreground/70  // Very subtle labels
+```
+
+### Complete Examples
+
+**User Profile Header:**
+```tsx
+<div>
+  <span className="text-sm font-semibold tracking-tight">
+    {userName}
+  </span>
+  <span className="text-xs text-muted-foreground/70">
+    {email}
+  </span>
+</div>
+```
+
+**Data Grid:**
+```tsx
+<div>
+  <small className="uppercase tracking-wider font-medium">
+    Mileage
+  </small>
+  <p className="font-bold tabular-nums">
+    {mileage} km
+  </p>
+</div>
+```
+
+**Navigation Item:**
+```tsx
+<span className="text-sm font-medium tracking-tight">
+  Dashboard
+</span>
+```
 
 ---
 

@@ -276,7 +276,7 @@ export function Navbar() {
                 >
                   <Link
                     href={item.href}
-                    className={`px-3 py-1.5 text-sm font-normal transition-colors rounded-md block ${
+                    className={`px-3 py-1.5 text-sm font-medium tracking-tight transition-colors rounded-md block ${
                       pathname === item.href
                         ? "text-foreground"
                         : "text-muted-foreground hover:text-foreground"

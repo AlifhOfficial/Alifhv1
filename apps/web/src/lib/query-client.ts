@@ -1,19 +1,26 @@
-'use client';
+import { QueryClient, isServer } from '@tanstack/react-query';
 
-import { QueryClient } from '@tanstack/react-query';
+function makeQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 60 * 1000,
+        refetchOnWindowFocus: false,
+      },
+    },
+  });
+}
 
-let client: QueryClient | null = null;
+let browserQueryClient: QueryClient | undefined = undefined;
 
 export function getQueryClient() {
-  if (!client) {
-    client = new QueryClient({
-      defaultOptions: {
-        queries: {
-          staleTime: 60 * 1000,
-          refetchOnWindowFocus: false,
-        },
-      },
-    });
+  if (isServer) {
+    // Server: always make a new query client
+    return makeQueryClient();
+  } else {
+    // Browser: make a new query client if we don't already have one
+    // This is important to avoid re-making a new client on every render
+    if (!browserQueryClient) browserQueryClient = makeQueryClient();
+    return browserQueryClient;
   }
-  return client;
 }

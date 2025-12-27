@@ -193,26 +193,18 @@ export function CarCard({
             src={displayImage}
             alt={`${year} ${make} ${model}`}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         
-        {/* Overlay Gradient - Subtle for Black Members */}
-        <div className={cn(
-          "absolute inset-0 transition-opacity duration-300",
-          isBlackMember 
-            ? "bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-40 group-hover:opacity-60" 
-            : "bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100"
-        )} />
-        
         {/* Badge - Top Right */}
         {isBlackMember ? (
-          <div className="absolute top-3 right-3 flex items-center px-3 py-1.5 bg-black border border-black">
+          <div className="absolute top-3 right-3 px-3 py-1.5 bg-black border border-zinc-800">
             <span className="text-xs font-bold text-white tracking-widest">BLK</span>
           </div>
         ) : qiScore ? (
-          <div className="absolute top-3 right-3 flex items-center justify-center px-2 py-1 rounded bg-black/60 backdrop-blur-sm">
-            <span className="text-[10px] font-medium text-white/90">QI {Math.round(qiScore)}</span>
+          <div className="absolute top-3 right-3 px-2 py-1 rounded bg-muted border border-border/40">
+            <span className="text-[10px] font-medium text-foreground">QI {Math.round(qiScore)}</span>
           </div>
         ) : null}
         </Link>
@@ -225,7 +217,7 @@ export function CarCard({
           <div className="flex items-start justify-between gap-3">
             <Link href={`/listings/${id}`} className="group/title min-w-0 flex-1">
               <h3 className={cn(
-                "text-sm font-semibold transition-colors line-clamp-1 tracking-tight",
+                "text-sm font-semibold tracking-tight transition-colors line-clamp-1",
                 isBlackMember
                   ? "text-white group-hover/title:text-zinc-200"
                   : "text-foreground group-hover/title:text-primary"
@@ -246,7 +238,7 @@ export function CarCard({
               )}
             </Link>
             <p className={cn(
-              "text-sm font-semibold whitespace-nowrap tracking-tight",
+              "text-sm font-semibold tracking-tight whitespace-nowrap",
               isBlackMember ? "text-white" : "text-foreground"
             )}>
               {formatPrice(price)}
@@ -261,7 +253,7 @@ export function CarCard({
         )}>
           <div className="space-y-1.5">
             <p className={cn(
-              "text-[10px] uppercase tracking-wider font-medium",
+              "text-xs uppercase tracking-wider font-medium",
               isBlackMember ? "text-zinc-500" : "text-muted-foreground/70"
             )}>Mileage</p>
             <p className={cn(
@@ -272,7 +264,7 @@ export function CarCard({
           
           <div className="space-y-1.5">
             <p className={cn(
-              "text-[10px] uppercase tracking-wider font-medium",
+              "text-xs uppercase tracking-wider font-medium",
               isBlackMember ? "text-zinc-500" : "text-muted-foreground/70"
             )}>Specs</p>
             <p className={cn(
@@ -283,7 +275,7 @@ export function CarCard({
           
           <div className="space-y-1.5">
             <p className={cn(
-              "text-[10px] uppercase tracking-wider font-medium",
+              "text-xs uppercase tracking-wider font-medium",
               isBlackMember ? "text-zinc-500" : "text-muted-foreground/70"
             )}>Location</p>
             <p className={cn(

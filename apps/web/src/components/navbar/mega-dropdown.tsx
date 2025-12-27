@@ -44,7 +44,7 @@ export function MegaDropdown({ activeDropdown, navItems, onClose, onMouseEnter, 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {activeItem.submenu.map((section) => (
               <div key={section.title}>
-                <h3 className="text-[13px] font-semibold tracking-wide text-foreground/90 mb-4 uppercase">
+                <h3 className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70 mb-4">
                   {section.title}
                 </h3>
                 <div className="space-y-3.5">
@@ -55,11 +55,11 @@ export function MegaDropdown({ activeDropdown, navItems, onClose, onMouseEnter, 
                       onClick={onClose}
                       className="block group"
                     >
-                      <div className="text-[15px] font-normal text-foreground/90 group-hover:text-foreground transition-colors">
+                      <div className="text-sm font-medium tracking-tight text-foreground/90 group-hover:text-foreground transition-colors">
                         {item.label}
                       </div>
                       {item.description && (
-                        <div className="text-[13px] text-muted-foreground/60 mt-1 leading-relaxed font-light">
+                        <div className="text-xs text-muted-foreground/70 mt-1">
                           {item.description}
                         </div>
                       )}

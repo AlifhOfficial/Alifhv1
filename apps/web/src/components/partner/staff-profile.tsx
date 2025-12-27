@@ -176,7 +176,7 @@ export function StaffProfile() {
         {/* Info Banner */}
         <div className="rounded-xl border border-border/40 p-6 bg-muted/30">
           <div className="flex gap-3">
-            <Info className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+            <Info className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
             <div className="text-sm space-y-2">
               <p className="font-medium text-foreground">Why separate work details?</p>
               <p className="text-muted-foreground">
@@ -267,17 +267,6 @@ export function StaffProfile() {
 
         </div>
 
-        {/* Footer */}
-        <footer className="pt-12 border-t border-border/40">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-muted-foreground">
-            <p>© {new Date().getFullYear()} ALIFH LLC</p>
-            <div className="flex gap-6">
-              <a href="/data-policy" className="hover:text-foreground transition-colors">Data Policy</a>
-              <a href="/terms" className="hover:text-foreground transition-colors">Terms of Service</a>
-              <a href="/privacy" className="hover:text-foreground transition-colors">Privacy</a>
-            </div>
-          </div>
-        </footer>
       </div>
     </div>
   );

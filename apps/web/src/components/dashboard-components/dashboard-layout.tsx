@@ -129,7 +129,7 @@ export function DashboardContent({ children, header }: DashboardContentProps) {
   };
 
   return (
-    <SidebarInset>
+    <SidebarInset className="flex flex-col overflow-hidden">
       {/* Header with SidebarTrigger, ThemeToggle, and actions */}
       <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border px-4">
         <SidebarTrigger className="-ml-1" />
@@ -162,8 +162,10 @@ export function DashboardContent({ children, header }: DashboardContentProps) {
       </header>
       
       {/* Main scrollable content */}
-      <div className="flex-1 overflow-y-auto p-4">
-        {children}
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-4">
+          {children}
+        </div>
       </div>
     </SidebarInset>
   );

@@ -40,7 +40,12 @@ export function PartnerStaffManagement() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [showInviteForm, setShowInviteForm] = useState(false);
-  const [inviteFormData, setInviteFormData] = useState({ email: '', role: 'staff' });
+  const [inviteFormData, setInviteFormData] = useState({ 
+    email: '', 
+    role: 'staff',
+    title: '',
+    department: ''
+  });
   const [deleteModal, setDeleteModal] = useState<{ open: boolean; member: TeamMember | null }>({ open: false, member: null });
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
@@ -77,7 +82,7 @@ export function PartnerStaffManagement() {
       queryClient.invalidateQueries({ queryKey: ['staff', 'team'] });
       queryClient.invalidateQueries({ queryKey: ['staff', 'overview'] });
       toast({ title: 'Invite sent successfully' });
-      setInviteFormData({ email: '', role: 'staff' });
+      setInviteFormData({ email: '', role: 'staff', title: '', department: '' });
       setShowInviteForm(false);
     },
     onError: (error) => {
@@ -258,6 +263,34 @@ export function PartnerStaffManagement() {
                 </SelectContent>
               </Select>
             </div>
+
+            <div className="space-y-3">
+              <label className="flex items-center gap-2 text-sm font-medium">
+                <User className="w-3.5 h-3.5 text-muted-foreground" />
+                Title
+              </label>
+              <input
+                type="text"
+                value={inviteFormData.title}
+                onChange={(e) => setInviteFormData({ ...inviteFormData, title: e.target.value })}
+                placeholder="Sales Manager (optional)"
+                className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors px-0 placeholder:text-muted-foreground/30"
+              />
+            </div>
+
+            <div className="space-y-3">
+              <label className="flex items-center gap-2 text-sm font-medium">
+                <User className="w-3.5 h-3.5 text-muted-foreground" />
+                Department
+              </label>
+              <input
+                type="text"
+                value={inviteFormData.department}
+                onChange={(e) => setInviteFormData({ ...inviteFormData, department: e.target.value })}
+                placeholder="Sales (optional)"
+                className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors px-0 placeholder:text-muted-foreground/30"
+              />
+            </div>
           </div>
 
           <div className="flex items-center gap-3 pt-2">
@@ -271,7 +304,7 @@ export function PartnerStaffManagement() {
             <button
               onClick={() => {
                 setShowInviteForm(false);
-                setInviteFormData({ email: '', role: 'staff' });
+                setInviteFormData({ email: '', role: 'staff', title: '', department: '' });
               }}
               className="px-5 py-2 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium transition-colors"
             >

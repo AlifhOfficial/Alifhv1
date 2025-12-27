@@ -82,26 +82,28 @@ export function SettingsView({ userName, userEmail }: SettingsViewProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="max-w-3xl mx-auto px-6 py-12 space-y-12">
+    <div className="min-h-screen bg-background pb-32">
+      <div className="max-w-3xl mx-auto px-6 py-16 space-y-16">
 
         {/* Header */}
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
-          <p className="text-muted-foreground">Manage your preferences and account</p>
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Settings</h1>
+          <p className="text-sm text-muted-foreground mt-2">
+            Manage your preferences and account
+          </p>
         </div>
 
         {/* Preferences */}
-        <section className="space-y-8">
+        <section className="space-y-6">
           <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
             <h3 className="text-lg font-medium tracking-tight">Preferences</h3>
           </div>
 
-          <div className="space-y-8">
+          <div className="space-y-4">
             {/* Consignment Mode */}
-            <div className="flex items-center justify-between gap-4">
-              <div className="space-y-1">
-                <p className="font-medium text-foreground">Consignment Mode</p>
+            <div className="rounded-xl border border-border/40 p-6 flex items-start justify-between gap-6">
+              <div className="space-y-2 flex-1">
+                <p className="text-sm font-medium text-foreground">Consignment Mode</p>
                 <p className="text-sm text-muted-foreground max-w-md">
                   Enable this to list vehicles on consignment. This changes how your listings are displayed.
                 </p>
@@ -127,9 +129,9 @@ export function SettingsView({ userName, userEmail }: SettingsViewProps) {
             </div>
 
             {/* Show Phone */}
-            <div className="flex items-center justify-between gap-4">
-              <div className="space-y-1">
-                <p className="font-medium text-foreground">Show Phone Number</p>
+            <div className="rounded-xl border border-border/40 p-6 flex items-start justify-between gap-6">
+              <div className="space-y-2 flex-1">
+                <p className="text-sm font-medium text-foreground">Show Phone Number</p>
                 <p className="text-sm text-muted-foreground max-w-md">
                   Display your phone number on your public profile so buyers can contact you directly.
                 </p>
@@ -157,53 +159,44 @@ export function SettingsView({ userName, userEmail }: SettingsViewProps) {
         </section>
 
         {/* Danger Zone */}
-        <section className="space-y-8 pt-8">
+        <section className="space-y-6">
           <div className="flex items-baseline justify-between border-b border-destructive/20 pb-2">
             <h3 className="text-lg font-medium tracking-tight text-destructive">Danger Zone</h3>
           </div>
 
-          <div className="flex items-center justify-between gap-4">
-            <div className="space-y-1">
-              <p className="font-medium text-foreground">Delete Account</p>
+          <div className="rounded-xl border border-destructive/30 p-6 flex items-start justify-between gap-6">
+            <div className="space-y-2 flex-1">
+              <p className="text-sm font-medium text-foreground">Delete Account</p>
               <p className="text-sm text-muted-foreground max-w-md">
                 Permanently delete your account and all associated data. This action cannot be undone.
               </p>
             </div>
             <button
               onClick={() => setShowDeleteModal(true)}
-              className="px-4 py-2 rounded-lg border border-destructive/30 text-sm font-medium text-destructive hover:bg-destructive/5 transition-colors"
+              className="px-5 py-2 rounded-full border border-destructive/30 text-sm font-medium text-destructive hover:bg-destructive/5 transition-colors flex-shrink-0"
             >
               Delete Account
             </button>
           </div>
         </section>
 
-        {/* Footer */}
-        <footer className="pt-12 border-t border-border/40">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-muted-foreground">
-            <p>© {new Date().getFullYear()} ALIFH LLC</p>
-            <div className="flex gap-6">
-              <a href="/data-policy" className="hover:text-foreground transition-colors">Data Policy</a>
-              <a href="/terms" className="hover:text-foreground transition-colors">Terms of Service</a>
-              <a href="/privacy" className="hover:text-foreground transition-colors">Privacy</a>
-            </div>
-          </div>
-        </footer>
       </div>
 
       {/* Delete Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-background border border-border rounded-2xl p-8 max-w-md w-full shadow-2xl space-y-6 animate-in fade-in zoom-in-95 duration-200">
-            <div className="space-y-2">
-              <h3 className="text-xl font-semibold tracking-tight">Delete Account</h3>
+          <div className="bg-card border border-border/40 rounded-2xl p-8 max-w-md w-full shadow-2xl space-y-6 animate-in fade-in zoom-in-95 duration-200">
+            
+            {/* Content */}
+            <div className="space-y-3">
+              <h2 className="text-xl font-semibold">Delete Account</h2>
               <p className="text-sm text-muted-foreground">
                 This action cannot be undone. Your account will be permanently deleted after 6 months.
               </p>
             </div>
             
             <div className="space-y-3">
-              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <label className="text-xs uppercase tracking-wider font-medium text-muted-foreground block">
                 Type "DELETE" to confirm
               </label>
               <input
@@ -221,14 +214,14 @@ export function SettingsView({ userName, userEmail }: SettingsViewProps) {
                   setShowDeleteModal(false);
                   setDeleteText('');
                 }}
-                className="flex-1 h-11 px-4 text-sm font-medium bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-xl transition-colors"
+                className="flex-1 px-6 py-3 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={deleteAccount}
                 disabled={deleteText !== 'DELETE'}
-                className="flex-1 h-11 px-4 text-sm font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex-1 px-6 py-3 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Delete Account
               </button>
