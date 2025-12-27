@@ -121,9 +121,10 @@ export function DashboardLayout({ children, enableRightPanel = false }: Dashboar
 interface DashboardContentProps {
   children: ReactNode;
   header?: ReactNode;
+  fullHeight?: boolean;
 }
 
-export function DashboardContent({ children, header }: DashboardContentProps) {
+export function DashboardContent({ children, header, fullHeight = false }: DashboardContentProps) {
   const onSignOut = async () => {
     await handleSignOut();
   };
@@ -161,12 +162,18 @@ export function DashboardContent({ children, header }: DashboardContentProps) {
         </div>
       </header>
       
-      {/* Main scrollable content */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-4">
+      {/* Main content - full height for chat, scrollable with padding for others */}
+      {fullHeight ? (
+        <div className="flex-1 min-h-0 overflow-hidden">
           {children}
         </div>
-      </div>
+      ) : (
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-4">
+            {children}
+          </div>
+        </div>
+      )}
     </SidebarInset>
   );
 }

@@ -213,7 +213,15 @@ export function useMarkAsRead() {
 // ============================================================================
 
 export function useCreateConversation() {
-  const mutation = useMutation({ mutationFn: createConversationAPI });
+  const queryClient = useQueryClient();
+  
+  const mutation = useMutation({ 
+    mutationFn: createConversationAPI,
+    onSuccess: () => {
+      // Refetch conversations to show the newly created one
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+    },
+  });
 
   return {
     createConversation: mutation.mutateAsync,

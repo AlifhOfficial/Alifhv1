@@ -192,11 +192,11 @@ export function ConversationList({
       {/* Header */}
       <div className="p-5 border-b border-border bg-background/80 backdrop-blur-sm flex-shrink-0">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-foreground">Messages</h2>
+          <h2>Messages</h2>
           {totalUnread > 0 && (
-            <span className="bg-blue-500 text-white text-xs font-medium px-2 py-0.5 rounded-full min-w-[18px] text-center">
+            <small className="bg-blue-500 text-white font-medium px-2 py-0.5 rounded-full min-w-[18px] text-center">
               {totalUnread > 99 ? '99+' : totalUnread}
-            </span>
+            </small>
           )}
         </div>
 
@@ -208,7 +208,7 @@ export function ConversationList({
             placeholder="Search conversations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-3 py-3 text-sm border border-border bg-muted text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 rounded-xl transition-all duration-200"
+            className="w-full pl-10 pr-3 py-3 border border-border bg-muted text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 rounded-xl transition-all duration-200"
           />
         </div>
       </div>
@@ -225,7 +225,7 @@ export function ConversationList({
               <svg className="w-16 h-16 mx-auto text-muted-foreground/40" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/>
               </svg>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground">
                 {searchQuery ? 'No conversations found' : 'No messages yet'}
               </p>
             </div>

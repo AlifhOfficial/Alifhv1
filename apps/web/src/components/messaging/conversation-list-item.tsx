@@ -66,9 +66,9 @@ export function ConversationListItem({
       className={cn(
         'w-full text-left transition-colors duration-150',
         isNested 
-          ? 'py-2.5 px-3 hover:bg-muted/25 rounded-xl' 
-          : 'py-3.5 px-4 hover:bg-muted/25 rounded-xl',
-        isActive && 'bg-muted/15'
+          ? 'py-2.5 px-3 hover:bg-muted/20 rounded-xl' 
+          : 'py-3.5 px-4 hover:bg-muted/20 rounded-xl',
+        isActive && 'bg-secondary/50'
       )}
     >
       <div className="flex items-start overflow-hidden gap-3">
@@ -94,28 +94,28 @@ export function ConversationListItem({
           <div className="flex items-center justify-between mb-1 overflow-hidden">
             <h3
               className={cn(
-                'text-sm font-medium truncate',
+                'font-medium truncate',
                 unreadCount > 0 ? 'text-foreground' : 'text-foreground/90'
               )}
             >
               {displayName}
             </h3>
-            <span className="text-xs text-muted-foreground/80 ml-2 flex-shrink-0">
+            <small className="text-muted-foreground/70 ml-2 flex-shrink-0">
               {lastMessageDate ? formatDistanceToNow(lastMessageDate, { addSuffix: true }) : ''}
-            </span>
+            </small>
           </div>
 
           {/* Listing Context (only for non-nested items) */}
           {showListingContext && (
-            <p className="text-xs text-muted-foreground mb-0.5 truncate">
+            <small className="text-muted-foreground/70 mb-0.5 truncate block">
               Re: {listing.title}
-            </p>
+            </small>
           )}
 
           <div className="flex items-center justify-between overflow-hidden">
             <p
               className={cn(
-                'text-sm truncate pr-2 min-w-0 flex-1',
+                'truncate pr-2 min-w-0 flex-1',
                 unreadCount > 0
                   ? 'text-foreground/80 font-medium'
                   : 'text-muted-foreground'
@@ -124,9 +124,9 @@ export function ConversationListItem({
               {lastMessagePreview || 'No messages yet'}
             </p>
             {unreadCount > 0 && (
-              <span className="flex-shrink-0 px-2 py-0.5 text-xs font-medium bg-blue-500 text-white rounded-full min-w-[18px] text-center">
+              <small className="flex-shrink-0 px-2 py-0.5 font-medium bg-blue-500 text-white rounded-full min-w-[18px] text-center">
                 {unreadCount > 9 ? '9+' : unreadCount}
-              </span>
+              </small>
             )}
           </div>
         </div>

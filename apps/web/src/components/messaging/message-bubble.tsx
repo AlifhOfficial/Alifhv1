@@ -19,6 +19,7 @@ interface MessageBubbleProps {
   showSeen?: boolean;
   seenAt?: Date | string | null;
   otherUserAvatar?: string | null;
+  otherUserName?: string | null;
 }
 
 export function MessageBubble({
@@ -29,6 +30,7 @@ export function MessageBubble({
   showSeen = false,
   seenAt,
   otherUserAvatar,
+  otherUserName,
 }: MessageBubbleProps) {
   const { sender, text, mediaUrl, mediaType, createdAt, isEdited, isSystemMessage } = message;
 
@@ -36,9 +38,9 @@ export function MessageBubble({
   if (isSystemMessage) {
     return (
       <div className="flex justify-center py-3">
-        <p className="text-xs text-muted-foreground px-4 py-2 bg-secondary/30 rounded-full">
+        <small className="text-muted-foreground/70 px-4 py-2 bg-secondary/30 rounded-full">
           {text}
-        </p>
+        </small>
       </div>
     );
   }
@@ -66,9 +68,9 @@ export function MessageBubble({
       <div className={cn('flex flex-col max-w-[80%] md:max-w-[65%] min-w-0', isOwn ? 'items-end' : 'items-start')}>
         {/* Sender Name (only for received messages with avatar) */}
         {!isOwn && showAvatar && (
-          <span className="text-xs text-muted-foreground mb-1 px-2 font-medium">
+          <small className="text-muted-foreground/70 mb-1 px-2">
             {sender.name || 'User'}
-          </span>
+          </small>
         )}
 
         {/* Message Bubble with Hover Timestamp */}
@@ -101,26 +103,26 @@ export function MessageBubble({
 
             {/* Edited indicator */}
             {isEdited && (
-              <span className={cn(
-                'text-xs opacity-70 mt-1 block',
+              <small className={cn(
+                'opacity-70 mt-1 block',
                 isOwn ? 'text-primary-foreground/70' : 'text-muted-foreground'
               )}>
                 (edited)
-              </span>
+              </small>
             )}
           </div>
 
           {/* Hover Timestamp - Shows on hover */}
-          <div 
+          <small 
             className={cn(
-              'absolute top-1/2 -translate-y-1/2 text-xs text-muted-foreground',
+              'absolute top-1/2 -translate-y-1/2 text-muted-foreground/70',
               'opacity-0 group-hover:opacity-100 transition-opacity duration-200',
               'pointer-events-none whitespace-nowrap z-10',
               isOwn ? '-left-2 -translate-x-full' : '-right-2 translate-x-full'
             )}
           >
             {formatDistanceToNow(new Date(createdAt), { addSuffix: true })}
-          </div>
+          </small>
         </div>
 
         {/* Failed indicator - only show X if message failed to send */}
@@ -133,14 +135,13 @@ export function MessageBubble({
         {/* Seen indicator */}
         {showSeen && isOwn && (
           <div className="mt-1 flex items-center justify-end gap-1.5 px-2">
-            <span className="text-[10px] text-muted-foreground">Seen</span>
-            {otherUserAvatar && (
-              <UserAvatar
-                src={otherUserAvatar}
-                size="xs"
-                className="w-4 h-4"
-              />
-            )}
+            <small className="text-muted-foreground/70">Seen</small>
+            <UserAvatar
+              src={otherUserAvatar}
+              name={otherUserName || 'User'}
+              size="xs"
+              className="w-4 h-4"
+            />
           </div>
         )}
       </div>

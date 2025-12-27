@@ -138,7 +138,7 @@ export function ChatWindow({
   return (
     <div className={cn('flex flex-col h-full w-full min-h-0 bg-background', className)}>
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/90 shadow-sm">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-border/40 bg-background">
         {onBack && (
           <button onClick={onBack} className="p-2 hover:bg-secondary/50 rounded-xl transition-colors lg:hidden" aria-label="Back">
             <ArrowLeft className="w-5 h-5" />
@@ -154,53 +154,68 @@ export function ChatWindow({
         </div>
 
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-base truncate text-foreground">{displayName}</h3>
+          <h3 className="font-semibold tracking-tight truncate text-foreground">{displayName}</h3>
           <div className="flex items-center gap-1.5 mt-0.5">
-            {isOtherTyping ? (
-              <span className="text-xs text-muted-foreground italic">typing...</span>
-            ) : isOtherOnline ? (
+            {isOtherOnline ? (
               <>
                 <Moon className="w-3 h-3 text-rose-500 fill-rose-500" />
-                <span className="text-xs text-rose-600 dark:text-rose-400 font-medium">Active now</span>
+                <small className="text-rose-600 dark:text-rose-400 font-medium">Active now</small>
               </>
             ) : lastActiveAt ? (
               <>
                 <Moon className="w-3 h-3 text-purple-500 fill-purple-500" />
-                <span className="text-xs text-muted-foreground font-medium">Last seen {formatLastSeen(lastActiveAt)}</span>
+                <small className="text-muted-foreground/70 font-medium">Last seen {formatLastSeen(lastActiveAt)}</small>
               </>
             ) : (
               <>
                 <Cloud className="w-3 h-3 text-slate-500 fill-slate-400" />
-                <span className="text-xs text-muted-foreground font-medium">Away</span>
+                <small className="text-muted-foreground/70 font-medium">Away</small>
               </>
             )}
           </div>
         </div>
 
-        <button className="p-2 hover:bg-secondary/50 rounded-xl transition-colors" aria-label="More">
-          <MoreVertical className="w-5 h-5 text-muted-foreground" />
-        </button>
+        <div className="flex items-center gap-1">
+          <button className="p-2 hover:bg-secondary/50 rounded-lg transition-colors" aria-label="More">
+            <MoreVertical className="w-4 h-4 text-muted-foreground" />
+          </button>
+          
+          {onBack && (
+            <button 
+              onClick={onBack} 
+              className="p-2 hover:bg-secondary/50 rounded-lg transition-colors hidden lg:flex" 
+              aria-label="Close"
+              title="Close"
+            >
+              <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Listing Context */}
       {listing && (
-        <div className="border-b border-border bg-muted/20 backdrop-blur-sm">
-          <Link href={`/listings/${listing.id}`} className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/30 transition-colors">
-            {listing.thumbnail ? (
-              <img src={listing.thumbnail} alt={listing.title} className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
-            ) : (
-              <div className="w-12 h-12 rounded-lg flex-shrink-0 bg-muted" />
-            )}
-            <div className="min-w-0 flex-1">
-              <div className="text-xs text-muted-foreground">Re: Listing</div>
-              <div className="font-medium text-sm truncate">{listing.title}</div>
-            </div>
-            <div className="text-xs text-blue-500 hover:text-blue-600 flex-shrink-0">View →</div>
-          </Link>
-        </div>
+        <Link 
+          href={`/listings/${listing.id}`} 
+          className="flex items-center gap-3 px-4 py-2.5 border-b border-border/40 hover:bg-secondary/50 transition-colors"
+        >
+          {listing.thumbnail ? (
+            <img 
+              src={listing.thumbnail} 
+              alt={listing.title} 
+              className="w-10 h-10 rounded-lg object-cover flex-shrink-0" 
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-lg flex-shrink-0 bg-muted" />
+          )}
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium tracking-tight truncate">{listing.title}</p>
+          </div>
+          <small className="text-muted-foreground/70">→</small>
+        </Link>
       )}
 
-      {/* Messages */}
       <div ref={containerRef} onScroll={handleScroll} className="flex-1 min-h-0 overflow-y-auto p-4 bg-background flex flex-col-reverse gap-2">
         {isFetchingMore && (
           <div className="flex justify-center py-4">
@@ -218,11 +233,20 @@ export function ChatWindow({
               <svg className="w-16 h-16 mx-auto text-muted-foreground/40" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
               </svg>
-              <p className="text-sm text-muted-foreground">No messages yet</p>
+              <p className="text-muted-foreground">No messages yet</p>
             </div>
           </div>
         ) : (
           <>
+            {isOtherTyping && (
+              <div key="typing" className="flex items-start gap-2.5 mb-1.5 px-2">
+                <div className="w-8 flex-shrink-0" />
+                <div className="flex items-center gap-2 px-4 py-2 bg-muted rounded-2xl rounded-tl-sm">
+                  <small className="text-muted-foreground italic">typing...</small>
+                </div>
+              </div>
+            )}
+
             {messages.flatMap((message, index, arr) => {
               const elements: ReactNode[] = [];
               const messageDate = new Date(message.createdAt);
@@ -234,9 +258,9 @@ export function ChatWindow({
               if (!nextDate || !isSameDay(nextDate, messageDate)) {
                 elements.push(
                   <div key={`date-${message.id}`} className="flex justify-center py-3">
-                    <span className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
+                    <small className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-muted-foreground/70">
                       {format(messageDate, 'EEE, MMM d')}
-                    </span>
+                    </small>
                   </div>
                 );
               }
@@ -256,22 +280,16 @@ export function ChatWindow({
                   showSeen={showSeen}
                   seenAt={otherLastReadAt}
                   otherUserAvatar={otherParticipant?.avatarUrl || null}
+                  otherUserName={otherParticipant?.name || null}
                 />
               );
 
               return elements;
             })}
-
-            {isOtherTyping && (
-              <div className="flex items-center gap-2 px-2 py-1">
-                <span className="text-xs text-muted-foreground italic">typing...</span>
-              </div>
-            )}
           </>
         )}
       </div>
 
-      {/* Input */}
       <MessageInput
         onSend={handleSend}
         onTyping={(isTyping) => otherParticipant?.id && sendTyping(otherParticipant.id, isTyping)}

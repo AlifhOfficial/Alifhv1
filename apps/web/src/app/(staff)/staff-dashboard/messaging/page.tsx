@@ -13,9 +13,5 @@ export default async function MessagingPage() {
   const user = await getSessionUser();
   if (!user) redirect('/sign-in');
 
-  return (
-    <div className="h-full">
-      <ChatContainer userId={user.id} inbox="staff" />
-    </div>
-  );
+  return <ChatContainer userId={user.id} inbox="staff" />;
 }

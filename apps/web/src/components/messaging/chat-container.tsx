@@ -40,7 +40,7 @@ export function ChatContainer({ userId, inbox = 'personal', className }: ChatCon
   return (
     <div className={cn('flex h-full min-h-0 flex-col overflow-hidden', className)}>
       {/* Status */}
-      <div className="flex-shrink-0 border-b bg-muted/30 px-4 py-2">
+      <div className="flex-shrink-0 border-b border-border/40 bg-muted/20 px-4 py-2">
         <WebSocketStatus showText />
       </div>
 
@@ -77,7 +77,7 @@ export function ChatContainer({ userId, inbox = 'personal', className }: ChatCon
                 <svg className="w-16 h-16 mx-auto text-muted-foreground/40" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
                 </svg>
-                <p className="text-sm text-muted-foreground">Select a conversation</p>
+                <p className="text-muted-foreground">Select a conversation</p>
               </div>
             </div>
           )}

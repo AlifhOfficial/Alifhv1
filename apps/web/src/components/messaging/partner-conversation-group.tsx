@@ -62,18 +62,18 @@ export function PartnerConversationGroup({
         {/* Partner Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-medium text-foreground truncate">
+            <h3 className="font-medium tracking-tight text-foreground truncate">
               {partner.name}
             </h3>
             {conversations.length > 1 && (
-              <span className="text-xs text-muted-foreground">
+              <small className="text-muted-foreground/70">
                 ({conversations.length})
-              </span>
+              </small>
             )}
             {totalUnread > 0 && (
-              <span className="flex-shrink-0 w-5 h-5 text-[10px] font-medium bg-blue-500 text-white rounded-full flex items-center justify-center ml-auto">
+              <small className="flex-shrink-0 w-5 h-5 font-medium bg-blue-500 text-white rounded-full flex items-center justify-center ml-auto">
                 {totalUnread > 9 ? '9+' : totalUnread}
-              </span>
+              </small>
             )}
           </div>
         </div>

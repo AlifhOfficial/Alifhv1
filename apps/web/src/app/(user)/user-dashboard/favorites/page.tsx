@@ -100,17 +100,17 @@ export default function FavoritesPage() {
     >
 
         {(isLoading || isLoadingListings) && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Loading your favorites…
+          <div className="flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            <p>Loading your favorites…</p>
           </div>
         )}
-        {favError && <p className="text-sm text-destructive">{favError?.message || 'Failed to load favorites'}</p>}
+        {favError && <p className="text-destructive">{favError?.message || 'Failed to load favorites'}</p>}
 
         {!isLoading && !isLoadingListings && !favError && (
           <section className="space-y-6">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">{validFavoriteIds.length} item{validFavoriteIds.length === 1 ? '' : 's'}</span>
+              <small className="text-muted-foreground/70">{validFavoriteIds.length} item{validFavoriteIds.length === 1 ? '' : 's'}</small>
             </div>
 
             {validFavoriteIds.length === 0 ? (
@@ -119,7 +119,7 @@ export default function FavoritesPage() {
                   <svg className="w-16 h-16 mx-auto text-muted-foreground/40" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2C10.34 2 9 3.34 9 5c0 1.66 1.34 3 3 3s3-1.34 3-3c0-1.66-1.34-3-3-3zM9 5c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1zm6 0c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1zm-3 3c-3.87 0-7 3.13-7 7v5c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-5c0-3.87-3.13-7-7-7z"/>
                   </svg>
-                  <p className="text-sm text-muted-foreground">No favorites yet</p>
+                  <p className="text-muted-foreground">No favorites yet</p>
                 </div>
               </div>
             ) : (
