@@ -59,12 +59,13 @@ export function UserRequestsHub() {
     }
 
     return (
-      <div className="max-w-4xl mx-auto px-6 py-16 space-y-16">
+      <div className="max-w-3xl mx-auto px-6 py-12 space-y-12">
         
         {/* Partner Application Section */}
-        <section className="space-y-8">
-          <div className="border-b border-border/40 pb-2">
-            <h3 className="text-lg font-medium tracking-tight">Partner Application</h3>
+        <section className="space-y-6">
+          <div>
+            <h3 className="text-base font-medium">Partner Application</h3>
+            <p className="text-sm text-muted-foreground mt-1">Apply to become a verified dealership partner</p>
           </div>
           
           {/* Show status for pending/approved requests, show apply button if no request or rejected */}
@@ -73,25 +74,18 @@ export function UserRequestsHub() {
           ) : (
             <button
               onClick={() => setActiveTab('partner-application')}
-              className="group w-full p-6 rounded-xl border border-border hover:bg-secondary/30 transition-all text-left"
+              className="group w-full p-8 rounded-2xl border border-border/40 hover:border-border transition-all text-left bg-card"
             >
               <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 space-y-3">
-                  <h4 className="text-base font-medium">
+                <div className="flex-1 space-y-2">
+                  <h4 className="font-medium">
                     {partnerRequest?.status === 'rejected' ? 'Re-apply as Partner' : 'Become a Partner'}
                   </h4>
                   <p className="text-sm text-muted-foreground">
                     {partnerRequest?.status === 'rejected' 
                       ? 'Your previous application was not approved. You can submit a new application.'
-                      : 'Join the UAE\'s most transparent car marketplace. List your inventory and grow your business.'}
+                      : 'Join the UAE\'s most transparent car marketplace'}
                   </p>
-                  {!partnerRequest?.status && (
-                    <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
-                      <span>• Increased Visibility</span>
-                      <span>• Quality Leads</span>
-                      <span>• Professional Tools</span>
-                    </div>
-                  )}
                 </div>
                 <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all flex-shrink-0 mt-1" />
               </div>
@@ -100,36 +94,39 @@ export function UserRequestsHub() {
         </section>
 
         {/* Staff Invites Section */}
-        <section className="space-y-8">
-          <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-            <h3 className="text-lg font-medium tracking-tight">Staff Invitations</h3>
+        <section className="space-y-6">
+          <div className="flex items-baseline justify-between">
+            <div>
+              <h3 className="text-base font-medium">Staff Invitations</h3>
+              <p className="text-sm text-muted-foreground mt-1">Invitations from dealership partners</p>
+            </div>
             {inviteCount > 0 && (
-              <span className="text-sm text-muted-foreground font-medium">{inviteCount} pending</span>
+              <span className="px-2 py-1 rounded-full bg-muted text-xs font-medium">{inviteCount}</span>
             )}
           </div>
           
-          <button
-            onClick={() => setActiveTab('staff-invites')}
-            className="group w-full p-6 rounded-xl border border-border hover:bg-secondary/30 transition-all text-left"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 space-y-2">
-                <h4 className="text-base font-medium">
-                  {inviteCount > 0 
-                    ? `${inviteCount} Pending Invitation${inviteCount !== 1 ? 's' : ''}`
-                    : 'No Pending Invitations'
-                  }
-                </h4>
-                <p className="text-sm text-muted-foreground">
-                  {inviteCount > 0 
-                    ? 'Review and respond to staff invitations from partners'
-                    : 'Staff invitations from partners will appear here'
-                  }
-                </p>
+          {inviteCount > 0 ? (
+            <button
+              onClick={() => setActiveTab('staff-invites')}
+              className="group w-full p-8 rounded-2xl border border-border/40 hover:border-border transition-all text-left bg-card"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 space-y-2">
+                  <h4 className="font-medium">
+                    {inviteCount} Pending Invitation{inviteCount !== 1 ? 's' : ''}
+                  </h4>
+                  <p className="text-sm text-muted-foreground">
+                    Review and respond to invitations
+                  </p>
+                </div>
+                <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all flex-shrink-0 mt-1" />
               </div>
-              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all flex-shrink-0 mt-1" />
+            </button>
+          ) : (
+            <div className="p-12 rounded-2xl border border-border/40 bg-card text-center">
+              <p className="text-sm text-muted-foreground">No pending invitations</p>
             </div>
-          </button>
+          )}
         </section>
 
       </div>
@@ -137,12 +134,12 @@ export function UserRequestsHub() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-32">
+    <div className="min-h-screen bg-background">
       
       {/* Page Header */}
       {activeTab === 'overview' ? (
-        <div className="max-w-4xl mx-auto px-6 py-16">
-          <div className="flex items-center justify-between mb-6">
+        <div className="max-w-3xl mx-auto px-6 pt-12 pb-8">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <a
                 href="/user-dashboard"
@@ -152,8 +149,8 @@ export function UserRequestsHub() {
               </a>
               <div>
                 <h1 className="text-2xl font-semibold tracking-tight">Requests</h1>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Manage your partner applications and staff invitations
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  Partner applications and staff invitations
                 </p>
               </div>
             </div>
@@ -169,7 +166,7 @@ export function UserRequestsHub() {
           </div>
         </div>
       ) : (
-        <div className="max-w-4xl mx-auto px-6 py-8">
+        <div className="max-w-3xl mx-auto px-6 py-8">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setActiveTab('overview')}
