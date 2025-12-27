@@ -178,7 +178,7 @@ async function getListingCardsInternal(
         partnerLogo: partner.logo,
         partnerVerified: sql<boolean | null>`coalesce(${carListing.partnerVerified}, ${partner.isVerified})`,
         sellerName: user.name,
-        sellerAvatarUrl: sql<string | null>`coalesce(${userProfile.avatar}, ${user.image})`,
+        sellerAvatarUrl: userProfile.avatar,
       })
       .from(carListing)
       .leftJoin(user, eq(user.id, carListing.userId))
@@ -216,7 +216,7 @@ async function getListingCardsInternal(
       partnerLogo: partner.logo,
       partnerVerified: sql<boolean | null>`coalesce(${carListing.partnerVerified}, ${partner.isVerified})`,
       sellerName: user.name,
-      sellerAvatarUrl: sql<string | null>`coalesce(${userProfile.avatar}, ${user.image})`,
+      sellerAvatarUrl: userProfile.avatar,
     })
     .from(carListing)
     .leftJoin(user, eq(user.id, carListing.userId))

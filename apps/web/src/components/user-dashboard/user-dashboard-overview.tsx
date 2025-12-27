@@ -19,6 +19,7 @@ import {
 import { DashboardPageLayout } from '@/components/layout';
 import { PartnerApplicationStatus, UserBanNotice } from '@/components/user-dashboard';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
+import { useUserProfile } from '@/hooks/profile';
 
 type UserStats = {
   listingsCount: number;
@@ -83,6 +84,9 @@ export function UserDashboardOverview({ user }: UserDashboardOverviewProps) {
   const [superlikeQuota, setSuperlikeQuota] = useState({ used: 0, total: 5, remaining: 5 });
   const [isLoading, setIsLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
+  
+  // Subscribe to profile updates for instant avatar sync
+  const { profile } = useUserProfile();
 
   // Update time every minute
   useEffect(() => {
@@ -222,17 +226,17 @@ export function UserDashboardOverview({ user }: UserDashboardOverviewProps) {
     });
   };
 
-  // Extract user info properly
-  const firstName = user?.profile?.firstName || user?.name?.split(' ')[0] || 'there';
-  const lastName = user?.profile?.lastName || user?.name?.split(' ')[1] || '';
+  // Extract user info - prefer profile hook for instant sync, fall back to server data
+  const firstName = profile?.firstName || user?.profile?.firstName || user?.name?.split(' ')[0] || 'there';
+  const lastName = profile?.lastName || user?.profile?.lastName || user?.name?.split(' ')[1] || '';
   const fullName = firstName && lastName ? `${firstName} ${lastName}` : (user?.name || 'User');
-  // Use consistent avatar props with other components
-  const profileAvatar = user?.profile?.avatarUrl || user?.avatarUrl || null;
-  const oauthImage = user?.image || null;
-  const kycVerified = user?.profile?.kycVerified || false;
-  const locationEmirate = user?.profile?.locationEmirate || null;
-  const locationCity = user?.profile?.locationCity || null;
-  const memberSince = user?.profile?.memberSince || user?.createdAt || null;
+  // Use profile hook for instant sync of avatar/preferences
+  const avatarUrl = profile?.avatarUrl || user?.profile?.avatarUrl || user?.avatarUrl || null;
+  const useGeneratedAvatar = profile?.preferences?.useGeneratedAvatar ?? user?.useGeneratedAvatar ?? true;
+  const kycVerified = profile?.kycVerified || user?.profile?.kycVerified || false;
+  const locationEmirate = profile?.locationEmirate || user?.profile?.locationEmirate || null;
+  const locationCity = profile?.locationCity || user?.profile?.locationCity || null;
+  const memberSince = profile?.memberSince || user?.profile?.memberSince || user?.createdAt || null;
 
   const initials = firstName && lastName
     ? `${firstName[0]}${lastName[0]}`.toUpperCase()
@@ -277,11 +281,11 @@ export function UserDashboardOverview({ user }: UserDashboardOverviewProps) {
             {/* Profile Summary - Desktop Only */}
             <div className="hidden lg:flex items-center gap-4 border-l border-border pl-6">
               <UserAvatar
-                profileAvatar={profileAvatar}
-                oauthImage={oauthImage}
+                src={avatarUrl}
                 name={fullName}
                 size="md"
                 className="flex-shrink-0"
+                useGeneratedAvatar={useGeneratedAvatar}
               />
               <div className="space-y-0.5">
                 <p className="text-sm font-medium">{fullName}</p>

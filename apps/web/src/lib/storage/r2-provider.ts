@@ -71,11 +71,17 @@ export class R2StorageProvider implements StorageProvider {
       ResponseContentDisposition: options?.downloadName
         ? `attachment; filename="${encodeURIComponent(options.downloadName)}"`
         : undefined,
+      // Add cache control to prevent browser caching
+      ResponseCacheControl: 'no-cache, no-store, must-revalidate',
     });
 
-    return awsGetSignedUrl(this.client, command, {
+    const signedUrl = await awsGetSignedUrl(this.client, command, {
       expiresIn: options?.expiresIn ?? 900,
     });
+    
+    // Add timestamp to bust any intermediate caches
+    const separator = signedUrl.includes('?') ? '&' : '?';
+    return `${signedUrl}${separator}_t=${Date.now()}`;
   }
 }
 

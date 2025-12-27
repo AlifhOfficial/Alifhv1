@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { UserRole } from "@/types/auth";
 import { getUserPortalAccess } from "@/lib/auth/routing";
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
+import { useUserProfile } from "@/hooks/profile";
 
 interface UserData {
   id: string;
@@ -19,6 +20,7 @@ interface UserData {
   avatarUrl?: string | null;
   firstName?: string | null;
   lastName?: string | null;
+  useGeneratedAvatar?: boolean | null;
   role?: UserRole | null;
   hasPartnerAccess?: boolean;
   isAlifhAdmin?: boolean;
@@ -56,6 +58,9 @@ export function ProfileMenu({
 }: ProfileMenuProps) {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  
+  // Subscribe to profile for instant avatar sync after updates
+  const { profile } = useUserProfile();
 
   // Prevent hydration mismatch by only rendering user-specific content after mount
   useEffect(() => {
@@ -72,8 +77,11 @@ export function ProfileMenu({
   }
 
   if (user) {
-    const firstName = user.firstName?.trim() ?? user.name?.split(' ')[0] ?? 'User';
-    const lastName = user.lastName?.trim() ?? '';
+    // Profile hook provides instant updates, fallback to server session data
+    const firstName = profile?.firstName ?? user.firstName?.trim() ?? user.name?.split(' ')[0] ?? 'User';
+    const lastName = profile?.lastName ?? user.lastName?.trim() ?? '';
+    const avatarUrl = profile?.avatarUrl ?? user.avatarUrl;
+    const useGeneratedAvatar = profile?.preferences?.useGeneratedAvatar ?? user.useGeneratedAvatar ?? true;
 
     const displayName = firstName && lastName
       ? `${firstName} ${lastName}`
@@ -128,11 +136,11 @@ export function ProfileMenu({
           data-menu-trigger
         >
           <UserAvatar
-            profileAvatar={user?.avatarUrl}
-            oauthImage={user?.image}
+            src={avatarUrl}
             name={displayName}
             size="sm"
             className="hover:opacity-90 transition-opacity"
+            useGeneratedAvatar={useGeneratedAvatar}
           />
         </button>
 

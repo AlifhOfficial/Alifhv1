@@ -8,7 +8,7 @@
  * Session Source: getSessionUser() from middleware cache
  * 
  * Features:
- * - Signed avatar URLs (10min expiry)
+ * - Public avatar URLs (no signing needed for public bucket)
  * - Auto-creates profile if missing
  * - Only returns UI-needed fields
  * 
@@ -23,9 +23,9 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from 'zod';
-import { getUserProfileByUserId, updateUserProfileByUserId, ensureUserProfile } from "@alifh/database";
-import { getSignedUrl } from "@/lib/storage";
+import { getUserProfileByUserId, updateUserProfileByUserId, ensureUserProfile, invalidateUserSession } from "@alifh/database";
 import { getSessionUser } from "@/lib/auth/session-context";
+import { deleteFile } from "@/lib/storage";
 
 export const runtime = "nodejs";
 export const dynamic = 'force-dynamic';
@@ -48,22 +48,35 @@ const UpdateProfileSchema = z.object({
   tags: z.array(z.string()).optional(),
   consignmentMode: z.boolean().optional(),
   privacySettings: z.object({ showPhone: z.boolean().optional() }).optional(),
+  preferences: z.object({ 
+    theme: z.string().optional(),
+    language: z.string().optional(),
+    distanceUnit: z.string().optional(),
+    useGeneratedAvatar: z.boolean().optional(),
+  }).optional(),
   avatar: z.string().nullable().optional(),
   status: z.string().optional(),
 });
 
 async function attachAvatarUrl(profile: any) {
-  if (!profile.avatar || profile.avatar.startsWith('http')) {
+  if (!profile.avatar) {
+    return { ...profile, avatarUrl: null };
+  }
+  
+  // Already a full URL - return as-is
+  if (profile.avatar.startsWith('http')) {
     return { ...profile, avatarUrl: profile.avatar };
   }
 
-  try {
-    const signedUrl = await getSignedUrl(profile.avatar, { expiresIn: 600 });
-    return { ...profile, avatarUrl: signedUrl };
-  } catch (error) {
-    console.warn("Failed to generate signed avatar URL", error);
+  // Build public URL for avatar (avatars are public, no signing needed)
+  const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+  if (!publicUrl) {
+    console.warn("NEXT_PUBLIC_R2_PUBLIC_URL not configured");
     return { ...profile, avatarUrl: null };
   }
+  
+  const avatarUrl = `${publicUrl.replace(/\/$/, '')}/${profile.avatar}`;
+  return { ...profile, avatarUrl };
 }
 
 export async function GET(req: NextRequest) {
@@ -121,10 +134,33 @@ export async function PATCH(req: NextRequest) {
       );
     }
     
+    // Get current profile to check for old avatar to delete (only needed when removing)
+    let oldAvatarKey: string | null = null;
+    if ('avatar' in result.data && result.data.avatar === null) {
+      const currentProfile = await getUserProfileByUserId(user.id);
+      oldAvatarKey = currentProfile?.avatar ?? null;
+    }
+    
     const updated = await updateUserProfileByUserId(user.id, result.data);
     
     if (!updated) {
       return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });
+    }
+
+    // Clean up old avatar from R2 when user removes their avatar
+    // Note: When replacing, the new upload uses same key (avatars/{userId}.webp) so it overwrites
+    if (oldAvatarKey && !oldAvatarKey.startsWith('http')) {
+      try {
+        await deleteFile(oldAvatarKey);
+      } catch (e) {
+        // Log but don't fail the request - avatar cleanup is non-critical
+        console.warn('[user-profile] Failed to delete old avatar:', oldAvatarKey, e);
+      }
+    }
+
+    // Invalidate session cache so sidebar/navbar get fresh data
+    if ('avatar' in result.data || 'firstName' in result.data || 'lastName' in result.data || 'preferences' in result.data) {
+      invalidateUserSession(user.id);
     }
 
     const profileWithUrl = await attachAvatarUrl(updated);

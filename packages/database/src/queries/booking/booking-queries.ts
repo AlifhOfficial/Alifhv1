@@ -192,7 +192,7 @@ export async function getBookingById(bookingId: string): Promise<BookingWithDeta
       // Staff info (from listing owner)
       staffUserId: carListing.userId,
       staffName: user.name,
-      staffAvatar: sql<string | null>`coalesce(${userProfile.avatar}, ${user.image})`,
+      staffAvatar: userProfile.avatar,
       partnerName: partner.brandName,
       partnerLogo: partner.logo,
       partnerAddress: partner.address,
@@ -298,7 +298,7 @@ export async function getUserBookings(
         // Staff info (from listing owner)
         staffUserId: carListing.userId,
         staffName: user.name,
-        staffAvatar: sql<string | null>`coalesce(${userProfile.avatar}, ${user.image})`,
+        staffAvatar: userProfile.avatar,
         partnerName: partner.brandName,
         partnerLogo: partner.logo,
         partnerAddress: partner.address,
@@ -426,7 +426,7 @@ export async function getPartnerBookings(
         listingPrice: carListing.price,
         staffUserId: carListing.userId,
         staffName: user.name,
-        staffAvatar: sql<string | null>`coalesce(${userProfile.avatar}, ${user.image})`,
+        staffAvatar: userProfile.avatar,
         partnerName: partner.brandName,
         partnerLogo: partner.logo,
         partnerAddress: partner.address,
@@ -540,7 +540,7 @@ export async function getStaffListingsBookings(
         // Staff info (the staff member who created the listing)
         staffUserId: carListing.userId,
         staffName: user.name,
-        staffAvatar: sql<string | null>`coalesce(${userProfile.avatar}, ${user.image})`,
+        staffAvatar: userProfile.avatar,
         partnerName: partner.brandName,
         partnerLogo: partner.logo,
         partnerAddress: partner.address,

@@ -8,6 +8,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useSession } from '@/lib/auth/client';
 
 // ============================================================================
 // Types
@@ -27,6 +28,7 @@ export interface UserProfile {
   tags?: string[];
   consignmentMode?: boolean;
   privacySettings?: { showPhone?: boolean };
+  preferences?: { theme?: string; language?: string; distanceUnit?: string; useGeneratedAvatar?: boolean };
   kycVerified?: boolean;
   badges?: string[];
   inventoryCount?: number;
@@ -57,6 +59,7 @@ export interface UserProfileUpdate {
   tags?: string[];
   consignmentMode?: boolean;
   privacySettings?: { showPhone?: boolean };
+  preferences?: { theme?: string; language?: string; distanceUnit?: string; useGeneratedAvatar?: boolean };
   avatar?: string | null;
 }
 
@@ -67,6 +70,10 @@ export interface UserProfileUpdate {
 async function fetchUserProfile(): Promise<UserProfile | null> {
   const res = await fetch('/api/profile/user/user-profile', {
     credentials: 'include',
+    cache: 'no-store', // Bypass browser cache
+    headers: {
+      'Cache-Control': 'no-cache',
+    },
   });
 
   if (res.status === 401) {
@@ -104,12 +111,15 @@ async function updateUserProfileAPI(updates: UserProfileUpdate): Promise<UserPro
 
 export function useUserProfile() {
   const queryClient = useQueryClient();
+  const sessionQuery = useSession() as unknown as { refetch?: (params?: { query?: { disableCookieCache?: boolean } }) => Promise<void> };
+  const refetchSession = sessionQuery?.refetch;
 
   // Fetch profile data
   const query = useQuery<UserProfile | null>({
     queryKey: ['user-profile'],
     queryFn: fetchUserProfile,
-    staleTime: 30000, // 30s - profile doesn't change often
+    staleTime: 0, // Always refetch - avatars need instant updates
+    gcTime: 30000, // Keep in cache for 30s
     refetchOnWindowFocus: true,
     retry: false, // Don't retry on 401
   });
@@ -117,9 +127,22 @@ export function useUserProfile() {
   // Update profile mutation
   const mutation = useMutation({
     mutationFn: updateUserProfileAPI,
-    onSuccess: () => {
-      // Invalidate to refetch fresh data
-      queryClient.invalidateQueries({ queryKey: ['user-profile'] });
+    onSuccess: async (updatedProfile, variables) => {
+      // Immediately update the cache with the new data from API response
+      // The API already includes the signed avatarUrl, so no need to refetch
+      queryClient.setQueryData(['user-profile'], updatedProfile);
+      
+      // Ensure session-backed UI (sidebar/navbar) reflects changes immediately.
+      // Better Auth cookie cache can otherwise keep stale avatar/preferences for up to maxAge.
+      const touchesSession =
+        'avatar' in variables ||
+        'firstName' in variables ||
+        'lastName' in variables ||
+        'preferences' in variables;
+
+      if (touchesSession && refetchSession) {
+        await refetchSession({ query: { disableCookieCache: true } });
+      }
     },
   });
 
@@ -128,7 +151,7 @@ export function useUserProfile() {
     isLoading: query.isLoading,
     isUpdating: mutation.isPending,
     error: query.error?.message || mutation.error?.message || null,
-    refresh: () => queryClient.invalidateQueries({ queryKey: ['user-profile'] }),
+    refresh: () => queryClient.refetchQueries({ queryKey: ['user-profile'] }),
     updateProfile: (updates: UserProfileUpdate) => mutation.mutateAsync(updates),
   };
 }

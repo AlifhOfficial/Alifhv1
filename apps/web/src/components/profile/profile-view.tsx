@@ -10,13 +10,15 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useUserProfile, type UserProfileUpdate, useUserStats } from '@/hooks/profile';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/providers/auth-provider';
 import { 
   MapPin, 
   Loader2, 
   Camera,
   Check,
   AlertCircle,
-  Star
+  Star,
+  X
 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { cn } from '@/utils/cn';
@@ -56,6 +58,7 @@ interface ProfileViewProps {
 // ============================================================================
 
 export function ProfileView({ userName, userEmail }: ProfileViewProps) {
+  const { session: sessionUser } = useAuth();
   const { profile, updateProfile, refresh } = useUserProfile();
   const { stats } = useUserStats();
   const { toast } = useToast();
@@ -146,7 +149,7 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
     setEditing(false);
   };
 
-  // Avatar upload
+  // Avatar upload - uses dedicated endpoint with WebP conversion
   const uploadAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
@@ -165,15 +168,31 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
     try {
       const fd = new FormData();
       fd.append('file', file);
-      fd.append('directory', 'avatars');
-      const res = await fetch('/api/storage/upload', { method: 'POST', body: fd, credentials: 'include' });
+      // Use dedicated avatar endpoint - handles WebP conversion, compression, and cleanup
+      const res = await fetch('/api/storage/upload-avatar', { method: 'POST', body: fd, credentials: 'include' });
       const data = await res.json();
-      if (!res.ok) throw new Error();
+      if (!res.ok) throw new Error(data.error || 'Upload failed');
+      // Update profile - mutation will invalidate and refetch automatically
       await updateProfile({ avatar: data.key });
-      await refresh();
       toast({ title: 'Photo updated' });
     } catch {
       toast({ title: 'Upload failed', variant: 'destructive' });
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
+  // Remove avatar
+  const removeAvatar = async () => {
+    if (!profile?.avatar) return;
+    
+    setAvatarUploading(true);
+    try {
+      // Update profile - mutation will invalidate and refetch automatically
+      await updateProfile({ avatar: null });
+      toast({ title: 'Photo removed' });
+    } catch {
+      toast({ title: 'Failed to remove photo', variant: 'destructive' });
     } finally {
       setAvatarUploading(false);
     }
@@ -316,15 +335,32 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
                 )}
               >
                 <UserAvatar 
-                  profileAvatar={profile?.avatarUrl}
+                  key={profile?.avatarUrl || 'no-avatar'}
+                  src={profile?.avatarUrl}
                   name={displayName}
                   size="xl" 
-                  className="w-24 h-24 border border-border/40 shadow-sm" 
+                  className="w-24 h-24 border border-border/40 shadow-sm"
+                  useGeneratedAvatar={profile?.preferences?.useGeneratedAvatar ?? true}
                 />
                 <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                   <Camera className="w-6 h-6 text-white" />
                 </div>
               </label>
+              {/* Remove avatar button - only show when avatar exists */}
+              {profile?.avatar && !avatarUploading && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    removeAvatar();
+                  }}
+                  className="absolute -top-1 -right-1 z-10 w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/90"
+                  title="Remove photo"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
               {avatarUploading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-background/50 rounded-full">
                   <Loader2 className="w-6 h-6 animate-spin text-primary" />

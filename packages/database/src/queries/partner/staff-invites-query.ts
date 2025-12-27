@@ -5,7 +5,7 @@
 
 import { db } from '../../dbclient';
 import { partnerStaff, partner, user, userProfile } from '../../schema';
-import { eq, and, or } from 'drizzle-orm';
+import { eq, and, or, sql } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 
 /**

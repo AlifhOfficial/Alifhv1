@@ -39,6 +39,7 @@ import {
 import { useMemo, type ComponentType } from "react";
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
 import { BrandAvatar } from "@/components/partner/car-dealer/ui/brand-avatar";
+import { useUserProfile } from "@/hooks/profile";
 import {
   Sidebar,
   SidebarContent,
@@ -92,6 +93,7 @@ interface AppSidebarProps {
     firstName?: string | null;
     lastName?: string | null;
     avatarUrl?: string | null;
+    useGeneratedAvatar?: boolean | null;
   };
   items?: SidebarItem[];
   sections?: SidebarSection[];
@@ -142,6 +144,9 @@ const iconMap: Record<string, ComponentType<{ className?: string }>> = {
 
 export function AppSidebar({ user, items, sections, staffOverride }: AppSidebarProps) {
   const pathname = usePathname();
+  
+  // Subscribe to profile for instant avatar sync after updates
+  const { profile } = useUserProfile();
 
   // Convert flat items to sections if sections not provided
   const navSections: SidebarSection[] = useMemo(() => {
@@ -150,16 +155,22 @@ export function AppSidebar({ user, items, sections, staffOverride }: AppSidebarP
     return [];
   }, [items, sections]);
 
+  // Profile hook provides instant updates, fallback to server session data
+  const firstName = profile?.firstName ?? user.firstName;
+  const lastName = profile?.lastName ?? user.lastName;
+  const avatarUrl = profile?.avatarUrl ?? user.avatarUrl;
+  const useGeneratedAvatar = profile?.preferences?.useGeneratedAvatar ?? user.useGeneratedAvatar ?? true;
+
   // Display name logic
   const displayName = useMemo(() => {
     if (staffOverride?.displayName) {
       return staffOverride.displayName;
     }
-    if (user.firstName || user.lastName) {
-      return [user.firstName, user.lastName].filter(Boolean).join(' ');
+    if (firstName || lastName) {
+      return [firstName, lastName].filter(Boolean).join(' ');
     }
     return user.name ?? 'User';
-  }, [staffOverride?.displayName, user.firstName, user.lastName, user.name]);
+  }, [staffOverride?.displayName, firstName, lastName, user.name]);
 
   const isStaffMode = Boolean(staffOverride?.companyLogo);
 
@@ -179,10 +190,10 @@ export function AppSidebar({ user, items, sections, staffOverride }: AppSidebarP
                   />
                 ) : (
                   <UserAvatar
-                    profileAvatar={user.avatarUrl}
-                    oauthImage={user.image}
+                    src={avatarUrl}
                     name={displayName}
                     size="sm"
+                    useGeneratedAvatar={useGeneratedAvatar}
                   />
                 )}
                 <div className="flex flex-col min-w-0 flex-1 gap-0.5">

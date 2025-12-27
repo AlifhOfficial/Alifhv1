@@ -229,7 +229,7 @@ export async function getListingsByPartnerId(
       postedByUserId: carListing.userId,
       postedByDisplayName: user.name,
       postedByEmail: user.email,
-      postedByAvatar: sql<string | null>`coalesce(${userProfile.avatar}, ${user.image})`,
+      postedByAvatar: userProfile.avatar,
     })
     .from(carListing)
     .leftJoin(user, eq(carListing.userId, user.id))

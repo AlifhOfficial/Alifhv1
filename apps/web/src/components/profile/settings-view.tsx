@@ -25,6 +25,7 @@ export function SettingsView({ userName, userEmail }: SettingsViewProps) {
   const [form, setForm] = useState({
     consignmentMode: true,
     showPhone: true,
+    useGeneratedAvatar: true,
   });
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -38,6 +39,7 @@ export function SettingsView({ userName, userEmail }: SettingsViewProps) {
       setForm({
         consignmentMode: profile.consignmentMode ?? true,
         showPhone: profile.privacySettings?.showPhone ?? true,
+        useGeneratedAvatar: profile.preferences?.useGeneratedAvatar ?? true,
       });
       setInitialized(true);
     }
@@ -47,12 +49,13 @@ export function SettingsView({ userName, userEmail }: SettingsViewProps) {
     setForm(f => ({ ...f, ...updates }));
   };
 
-  const save = async (field: 'consignmentMode' | 'showPhone') => {
+  const save = async (field: 'consignmentMode' | 'showPhone' | 'useGeneratedAvatar') => {
     setSaving(true);
     try {
       const payload: UserProfileUpdate = {
         consignmentMode: field === 'consignmentMode' ? form.consignmentMode : undefined,
         privacySettings: field === 'showPhone' ? { showPhone: form.showPhone } : undefined,
+        preferences: field === 'useGeneratedAvatar' ? { useGeneratedAvatar: form.useGeneratedAvatar } : undefined,
       };
       await updateProfile(payload);
       await refresh();
@@ -151,6 +154,34 @@ export function SettingsView({ userName, userEmail }: SettingsViewProps) {
                   className={cn(
                     "absolute top-1 h-5 w-5 rounded-full bg-background shadow-sm transition-transform",
                     form.showPhone ? "left-6" : "left-1"
+                  )}
+                />
+              </button>
+            </div>
+
+            {/* Generated Avatar */}
+            <div className="rounded-xl border border-border/40 p-6 flex items-start justify-between gap-6">
+              <div className="space-y-2 flex-1">
+                <p className="text-sm font-medium text-foreground">Show Generated Avatar</p>
+                <p className="text-sm text-muted-foreground max-w-md">
+                  When you don't have a profile photo, show a fun robot avatar instead of your initials.
+                </p>
+              </div>
+              <button
+                onClick={async () => {
+                  updateField({ useGeneratedAvatar: !form.useGeneratedAvatar });
+                  await save('useGeneratedAvatar');
+                }}
+                disabled={saving}
+                className={cn(
+                  "relative h-7 w-12 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-foreground/20 disabled:opacity-50",
+                  form.useGeneratedAvatar ? "bg-foreground" : "bg-secondary"
+                )}
+              >
+                <span
+                  className={cn(
+                    "absolute top-1 h-5 w-5 rounded-full bg-background shadow-sm transition-transform",
+                    form.useGeneratedAvatar ? "left-6" : "left-1"
                   )}
                 />
               </button>

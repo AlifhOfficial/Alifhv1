@@ -114,7 +114,7 @@ export async function sendMessage(params: SendMessageParams): Promise<MessageWit
       .select({
         id: user.id,
         name: user.name,
-        image: sql<string | null>`COALESCE(${userProfile.avatar}, ${user.image})`,
+        image: userProfile.avatar,
       })
       .from(user)
       .leftJoin(userProfile, eq(userProfile.userId, user.id))
@@ -232,7 +232,7 @@ export async function getMessages(
       isDeleted: message.isDeleted,
       createdAt: message.createdAt,
       senderName: user.name,
-      senderImage: sql<string | null>`COALESCE(${userProfile.avatar}, ${user.image})`,
+      senderImage: userProfile.avatar,
     })
     .from(message)
     .innerJoin(user, eq(user.id, message.senderId))
@@ -297,7 +297,7 @@ export async function getMessage(messageId: string): Promise<MessageWithSender |
       isDeleted: message.isDeleted,
       createdAt: message.createdAt,
       senderName: user.name,
-      senderImage: sql<string | null>`COALESCE(${userProfile.avatar}, ${user.image})`,
+      senderImage: userProfile.avatar,
     })
     .from(message)
     .innerJoin(user, eq(user.id, message.senderId))

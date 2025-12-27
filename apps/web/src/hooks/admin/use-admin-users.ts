@@ -28,6 +28,7 @@ export interface AdminUserData {
   id: string;
   name: string;
   email: string;
+  image: string | null;
   emailVerified: boolean;
   phoneVerified: boolean;
   phoneVerifiedAt: Date | string | null;

@@ -102,6 +102,7 @@ export const auth = betterAuth({
         avatarUrl?: string | null;
         firstName?: string | null;
         lastName?: string | null;
+        useGeneratedAvatar?: boolean;
       }>(cacheKey);
 
       if (cached) {
@@ -130,6 +131,7 @@ export const auth = betterAuth({
               avatar: true,
               firstName: true,
               lastName: true,
+              preferences: true,
             },
           },
           partnerMemberships: {
@@ -173,20 +175,21 @@ export const auth = betterAuth({
         ? userRecord.profile[0]
         : userRecord.profile;
 
-      // Get avatar URL if avatar exists
+      // Get avatar URL if avatar exists - use public URL (no signing needed)
       let avatarUrl: string | null = null;
       const avatar = profileRecord?.avatar;
       if (avatar && !avatar.startsWith('http')) {
-        // Import getSignedUrl dynamically to avoid circular dependencies
-        const { getSignedUrl } = await import("@/lib/storage");
-        try {
-          avatarUrl = await getSignedUrl(avatar, { expiresIn: 600 });
-        } catch (error) {
-          console.warn("Failed to generate signed avatar URL in session", error);
+        const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+        if (publicUrl) {
+          avatarUrl = `${publicUrl.replace(/\/$/, '')}/${avatar}`;
         }
       } else if (avatar) {
         avatarUrl = avatar;
       }
+
+      // Extract useGeneratedAvatar from preferences (defaults to true)
+      const preferences = profileRecord?.preferences as { useGeneratedAvatar?: boolean } | null;
+      const useGeneratedAvatar = preferences?.useGeneratedAvatar ?? true;
 
       const sessionData = {
         role: userRecord.role,
@@ -198,6 +201,7 @@ export const auth = betterAuth({
         avatarUrl,
         firstName: profileRecord?.firstName,
         lastName: profileRecord?.lastName,
+        useGeneratedAvatar,
       };
       
       memoryCache.set(cacheKey, sessionData, CacheTTL.userSession);

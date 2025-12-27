@@ -283,7 +283,7 @@ export async function getUserConversations(
       conversationId: conversationParticipant.conversationId,
       oderId: user.id,
       userName: user.name,
-      userImage: sql<string | null>`COALESCE(${userProfile.avatar}, ${user.image})`,
+      userImage: userProfile.avatar,
       lastReadAt: conversationParticipant.lastReadAt,
     })
     .from(conversationParticipant)
@@ -489,7 +489,8 @@ export async function getConversationParticipantsWithProfiles(
       avatar: userProfile.avatar,
     })
     .from(conversationParticipant)
-    .innerJoin(userProfile, eq(userProfile.userId, conversationParticipant.userId))
+    .innerJoin(user, eq(user.id, conversationParticipant.userId))
+    .leftJoin(userProfile, eq(userProfile.userId, conversationParticipant.userId))
     .where(
       and(
         eq(conversationParticipant.conversationId, conversationId),
