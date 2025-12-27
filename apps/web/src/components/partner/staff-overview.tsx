@@ -7,7 +7,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import { Users, Clock, ArrowRight } from 'lucide-react';
+import { Users, Clock, ArrowRight, ArrowLeft, RefreshCw } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 
 interface StaffStats {
@@ -53,7 +53,7 @@ export function StaffOverview() {
   });
 
   const stats = data?.stats ?? null;
-  const team = data?.data ?? [];
+  const team = data?.data?.filter(m => m.status !== 'invited') ?? [];
   const invites = data?.invites ?? [];
 
   return (
@@ -61,11 +61,28 @@ export function StaffOverview() {
       <div className="max-w-6xl mx-auto px-8 py-16 space-y-16">
         
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Staff</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Manage your team members and their access
-          </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <Link
+                href="/partner-dashboard"
+                className="p-2 hover:bg-secondary/50 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4 text-muted-foreground" />
+              </Link>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">Staff</h1>
+            </div>
+            <p className="text-sm text-muted-foreground ml-12">
+              Manage your team members and their access
+            </p>
+          </div>
+          <button
+            onClick={() => window.location.reload()}
+            className="p-2 hover:bg-secondary/50 rounded-lg transition-colors"
+            title="Refresh"
+          >
+            <RefreshCw className="w-4 h-4 text-muted-foreground" />
+          </button>
         </div>
 
         {/* Quick Actions */}
@@ -74,14 +91,14 @@ export function StaffOverview() {
             <h3 className="text-lg font-medium tracking-tight">Quick Actions</h3>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Link
               href="/partner-dashboard/staff/manage"
-              className="group p-6 bg-background border border-border rounded-xl hover:border-blue-500/40 transition-all"
+              className="group p-6 bg-card border border-border/40 rounded-xl hover:bg-secondary/50 transition-colors"
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1 space-y-1">
-                  <h4 className="text-base font-medium text-foreground group-hover:text-foreground/80 transition-colors">
+                  <h4 className="text-base font-medium text-foreground">
                     Manage Team
                   </h4>
                   <p className="text-sm text-muted-foreground">
@@ -94,32 +111,15 @@ export function StaffOverview() {
 
             <Link
               href="/partner-dashboard/staff/profile"
-              className="group p-6 bg-background border border-border rounded-xl hover:border-blue-500/40 transition-all"
+              className="group p-6 bg-card border border-border/40 rounded-xl hover:bg-secondary/50 transition-colors"
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1 space-y-1">
-                  <h4 className="text-base font-medium text-foreground group-hover:text-foreground/80 transition-colors">
+                  <h4 className="text-base font-medium text-foreground">
                     Your Profile
                   </h4>
                   <p className="text-sm text-muted-foreground">
                     Edit your work identity
-                  </p>
-                </div>
-                <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all flex-shrink-0 mt-1" />
-              </div>
-            </Link>
-
-            <Link
-              href="/partner-dashboard/staff/permissions"
-              className="group p-6 bg-background border border-border rounded-xl hover:border-blue-500/40 transition-all"
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex-1 space-y-1">
-                  <h4 className="text-base font-medium text-foreground group-hover:text-foreground/80 transition-colors">
-                    Permissions
-                  </h4>
-                  <p className="text-sm text-muted-foreground">
-                    Configure role permissions
                   </p>
                 </div>
                 <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all flex-shrink-0 mt-1" />
@@ -135,22 +135,22 @@ export function StaffOverview() {
               <h3 className="text-lg font-medium tracking-tight">Team Stats</h3>
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border divide-x divide-border bg-background">
-              <div className="p-8 flex flex-col gap-3">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Total Staff</span>
-                <span className="text-2xl font-semibold text-blue-500">{stats.totalStaff}</span>
+            <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border/40 divide-x divide-border/40">
+              <div className="p-8 flex flex-col gap-2">
+                <small className="text-muted-foreground">Total Staff</small>
+                <h2 className="text-foreground">{stats.totalStaff}</h2>
               </div>
-              <div className="p-8 flex flex-col gap-3">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Active</span>
-                <span className="text-2xl font-semibold text-green-500">{stats.activeStaff}</span>
+              <div className="p-8 flex flex-col gap-2">
+                <small className="text-muted-foreground">Active</small>
+                <h2 className="text-foreground">{stats.activeStaff}</h2>
               </div>
-              <div className="p-8 flex flex-col gap-3">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Pending</span>
-                <span className="text-2xl font-semibold text-foreground">{stats.pendingInvites}</span>
+              <div className="p-8 flex flex-col gap-2">
+                <small className="text-muted-foreground">Pending</small>
+                <h2 className="text-foreground">{stats.pendingInvites}</h2>
               </div>
-              <div className="p-8 flex flex-col gap-3">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Managers</span>
-                <span className="text-2xl font-semibold text-foreground">{stats.managers}</span>
+              <div className="p-8 flex flex-col gap-2">
+                <small className="text-muted-foreground">Managers</small>
+                <h2 className="text-foreground">{stats.managers}</h2>
               </div>
             </div>
           </section>
@@ -180,9 +180,9 @@ export function StaffOverview() {
               </Link>
             </div>
           ) : (
-            <div className="space-y-0 border border-border rounded-xl overflow-hidden divide-y divide-border">
+            <div className="space-y-0 border border-border/40 rounded-xl overflow-hidden divide-y divide-border/40">
               {team.map((member) => (
-                <div key={member.id} className="p-5 flex items-center justify-between hover:bg-secondary/20 transition-colors">
+                <div key={member.id} className="p-5 flex items-center justify-between hover:bg-secondary/50 transition-colors">
                   <div className="flex items-center gap-4 flex-1 min-w-0">
                     <UserAvatar
                       src={member.userAvatar}
@@ -198,7 +198,7 @@ export function StaffOverview() {
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="px-2 py-1 rounded-md bg-secondary/40 text-xs font-medium text-foreground capitalize">
+                    <span className="px-3 py-1 rounded-full bg-muted border border-border/40 text-xs text-muted-foreground capitalize">
                       {member.role}
                     </span>
                     {member.joinedAt && (
@@ -226,21 +226,30 @@ export function StaffOverview() {
               </Link>
             </div>
 
-            <div className="rounded-xl bg-secondary/20 border border-border/40 divide-y divide-border/40">
+            <div className="rounded-xl border border-border/40 divide-y divide-border/40">
               {invites.map((invite) => (
-                <div key={invite.id} className="p-4 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Clock className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{invite.email}</p>
+                <div key={invite.id} className="p-4 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <UserAvatar
+                      name={invite.email}
+                      size="sm"
+                      className="shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{invite.email}</p>
                       <p className="text-xs text-muted-foreground">
-                        Invited as {invite.role} • Expires {new Date(invite.expiresAt).toLocaleDateString('en-AE')}
+                        Invited as {invite.role}
                       </p>
                     </div>
                   </div>
-                  <span className="px-2 py-1 rounded-md bg-background/60 text-xs font-medium text-muted-foreground">
-                    Pending
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-yellow-500 flex-shrink-0" />
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(invite.expiresAt).toLocaleDateString('en-AE', { month: 'short', day: 'numeric' })}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>

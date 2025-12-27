@@ -17,7 +17,7 @@ export const partnerTierEnum = pgEnum('partner_tier', ['standard', 'gold', 'plat
 export const partnerTypeEnum = pgEnum('partner_type', ['car_dealer', 'showroom']);
 export const companySizeEnum = pgEnum('company_size', ['small', 'medium', 'large', 'enterprise']);
 export const partnerRequestStatusEnum = pgEnum('partner_request_status', ['pending', 'approved', 'rejected']);
-export const staffRoleEnum = pgEnum('staff_role', ['owner', 'admin', 'sales', 'viewer']);
+export const staffRoleEnum = pgEnum('staff_role', ['owner', 'admin', 'sales', 'viewer', 'staff']);
 export const staffStatusEnum = pgEnum('staff_status', ['active', 'invited', 'suspended', 'left']);
 
 export const partner = pgTable('partner', {

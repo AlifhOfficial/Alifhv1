@@ -6,9 +6,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
-import { User, Mail, Phone, Loader2, Info } from 'lucide-react';
+import { User, Mail, Phone, Loader2, Info, ArrowLeft, RefreshCw } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 interface StaffProfileData {
@@ -120,14 +121,29 @@ export function StaffProfile() {
         
         {/* Header */}
         <div className="flex flex-col md:flex-row gap-8 items-start md:items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Work Profile</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Set up your work identity for client interactions
-            </p>
+          <div className="flex items-start gap-3">
+            <Link
+              href="/partner-dashboard/staff"
+              className="p-2 hover:bg-secondary/50 rounded-lg transition-colors mt-0.5"
+            >
+              <ArrowLeft className="w-4 h-4 text-muted-foreground" />
+            </Link>
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">Work Profile</h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Set up your work identity for client interactions
+              </p>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 ml-12 md:ml-0">
+            <button
+              onClick={() => queryClient.invalidateQueries({ queryKey: ['staff', 'profile'] })}
+              className="p-2 hover:bg-secondary/50 rounded-lg transition-colors"
+              title="Refresh"
+            >
+              <RefreshCw className="w-4 h-4 text-muted-foreground" />
+            </button>
             {editing ? (
               <>
                 <button
@@ -140,7 +156,7 @@ export function StaffProfile() {
                 <button
                   onClick={handleSave}
                   disabled={updateMutation.isPending}
-                  className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-colors disabled:opacity-50"
                 >
                   {updateMutation.isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   Save Changes
@@ -158,11 +174,11 @@ export function StaffProfile() {
         </div>
 
         {/* Info Banner */}
-        <div className="rounded-xl bg-secondary/20 border border-border/40 p-4">
+        <div className="rounded-xl border border-border/40 p-6 bg-muted/30">
           <div className="flex gap-3">
-            <Info className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-            <div className="text-sm">
-              <p className="font-medium mb-1">Why separate work details?</p>
+            <Info className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+            <div className="text-sm space-y-2">
+              <p className="font-medium text-foreground">Why separate work details?</p>
               <p className="text-muted-foreground">
                 Your display name will be shown to clients instead of your personal name. 
                 Work email and phone are used for business communications, keeping your personal contact private.
@@ -233,18 +249,18 @@ export function StaffProfile() {
               <h3 className="text-lg font-medium tracking-tight">Role Information</h3>
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-3 border-y border-border divide-x divide-border bg-background">
-              <div className="p-8 flex flex-col gap-3">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Role</span>
-                <span className="text-lg font-medium text-foreground capitalize">{profile.role}</span>
+            <div className="grid grid-cols-2 md:grid-cols-3 border-y border-border/40 divide-x divide-border/40">
+              <div className="p-8 flex flex-col gap-2">
+                <small className="text-muted-foreground">Role</small>
+                <h2 className="text-foreground capitalize">{profile.role}</h2>
               </div>
-              <div className="p-8 flex flex-col gap-3">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Title</span>
-                <span className="text-lg font-medium text-foreground">{profile.title || 'Not set'}</span>
+              <div className="p-8 flex flex-col gap-2">
+                <small className="text-muted-foreground">Title</small>
+                <h2 className="text-foreground">{profile.title || 'Not set'}</h2>
               </div>
-              <div className="p-8 flex flex-col gap-3">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Department</span>
-                <span className="text-lg font-medium text-foreground">{profile.department || 'Not set'}</span>
+              <div className="p-8 flex flex-col gap-2">
+                <small className="text-muted-foreground">Department</small>
+                <h2 className="text-foreground">{profile.department || 'Not set'}</h2>
               </div>
             </div>
           </section>

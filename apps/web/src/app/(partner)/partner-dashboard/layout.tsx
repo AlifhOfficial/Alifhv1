@@ -17,6 +17,7 @@ const navSections = [
     items: [
       { label: "Inventory", href: "/partner-dashboard/inventory" },
       { label: "Bookings", href: "/partner-dashboard/bookings" },
+      { label: "Performance", href: "/partner-dashboard/performance" },
     ]
   },
   {

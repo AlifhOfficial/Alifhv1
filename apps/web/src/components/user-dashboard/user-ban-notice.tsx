@@ -51,80 +51,79 @@ export function UserBanNotice({ banReason, banExpires, userId }: UserBanNoticePr
   };
 
   return (
-    <div className="rounded-xl bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 p-8 space-y-6">
+    <div className="rounded-2xl border border-border/40 bg-card p-10">
       
-      <div className="flex gap-4">
-        <AlertCircle className="w-6 h-6 text-red-500 flex-shrink-0 mt-0.5" />
-        <div className="flex-1 space-y-4">
-          <div>
-            <h3 className="text-lg font-medium tracking-tight text-red-900 dark:text-red-100 mb-1">
-              Account Suspended
-            </h3>
-            <p className="text-sm text-red-700 dark:text-red-300">
-              Your account has been temporarily restricted
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <p className="text-xs font-medium text-red-800 dark:text-red-200 uppercase tracking-wider">
-              Reason
-            </p>
-            <p className="text-sm text-red-700 dark:text-red-300">
-              {banReason}
-            </p>
-          </div>
-
-          {isTemporary && banExpires && (
-            <div className="flex items-center gap-2 text-sm text-red-700 dark:text-red-300">
-              <Clock className="w-4 h-4" />
-              <span>
-                Expires: {new Date(banExpires).toLocaleDateString('en-AE', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </span>
-            </div>
-          )}
-
-          {!isTemporary && (
-            <p className="text-sm text-red-700 dark:text-red-300">
-              This is a permanent suspension.
-            </p>
-          )}
-
-          {!showAppealForm && !submitted && (
-            <button
-              onClick={() => setShowAppealForm(true)}
-              className="text-sm font-medium text-red-700 dark:text-red-300 hover:text-red-900 dark:hover:text-red-100 transition-colors"
-            >
-              Think this is a mistake? Submit an appeal →
-            </button>
-          )}
+      <div className="flex flex-col items-center text-center space-y-6 mb-10">
+        <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+          <AlertCircle className="w-5 h-5 text-red-500" />
+        </div>
+        <div className="space-y-3">
+          <h2 className="text-xl font-semibold text-foreground">Account Suspended</h2>
+          <p className="text-sm text-muted-foreground/70 max-w-md">
+            Your account has been temporarily restricted
+          </p>
         </div>
       </div>
 
-      {showAppealForm && !submitted && (
-        <div className="space-y-4 pl-10">
+      <div className="space-y-6 mb-8">
+        <div className="space-y-2">
+          <p className="text-xs text-muted-foreground/70">Reason</p>
+          <p className="text-sm text-foreground">
+            {banReason}
+          </p>
+        </div>
+
+        {isTemporary && banExpires && (
           <div className="space-y-2">
-            <label className="text-xs font-medium text-red-800 dark:text-red-200 uppercase tracking-wider">
-              Your Appeal
-            </label>
+            <p className="text-xs text-muted-foreground/70">Expires</p>
+            <p className="text-sm text-foreground">
+              {new Date(banExpires).toLocaleDateString('en-AE', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </p>
+          </div>
+        )}
+
+        {!isTemporary && (
+          <div className="space-y-2">
+            <p className="text-sm text-foreground">This is a permanent suspension.</p>
+          </div>
+        )}
+      </div>
+
+      {!showAppealForm && !submitted && (
+        <div className="flex justify-center pt-6 border-t border-border/40">
+          <button
+            onClick={() => setShowAppealForm(true)}
+            className="text-xs text-muted-foreground/70 hover:text-foreground transition-colors"
+          >
+            Submit an appeal
+          </button>
+        </div>
+      )}
+
+      {showAppealForm && !submitted && (
+        <div className="space-y-6 pt-6 border-t border-border/40">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">Your Appeal</label>
             <textarea
               value={appealMessage}
               onChange={(e) => setAppealMessage(e.target.value)}
               placeholder="Explain why you believe this suspension should be reviewed..."
-              className="w-full h-24 p-3 bg-white dark:bg-red-950/60 border border-red-300 dark:border-red-800 rounded-xl text-sm text-red-900 dark:text-red-100 placeholder:text-red-400 dark:placeholder:text-red-600 focus:outline-none focus:border-red-500 resize-none"
+              className="w-full p-4 bg-background border border-border/40 rounded-xl focus:border-primary outline-none transition-all placeholder:text-muted-foreground/40 resize-none text-foreground"
+              rows={4}
               disabled={submitting}
             />
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <button
               onClick={handleAppeal}
               disabled={submitting || !appealMessage.trim()}
-              className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition-colors disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-all disabled:opacity-50"
             >
-              {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+              {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
               Submit Appeal
             </button>
             <button
@@ -133,7 +132,7 @@ export function UserBanNotice({ banReason, banExpires, userId }: UserBanNoticePr
                 setAppealMessage('');
               }}
               disabled={submitting}
-              className="px-4 py-2 text-sm font-medium text-red-700 dark:text-red-300 hover:text-red-900 dark:hover:text-red-100 transition-colors"
+              className="px-6 py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Cancel
             </button>
@@ -142,13 +141,12 @@ export function UserBanNotice({ banReason, banExpires, userId }: UserBanNoticePr
       )}
 
       {submitted && (
-        <div className="pl-10 rounded-xl bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/30 p-4">
-          <p className="text-sm text-green-800 dark:text-green-200">
-            ✓ Appeal submitted successfully. Our team will review your case within 24-48 hours.
+        <div className="space-y-2 pt-6 border-t border-border/40">
+          <p className="text-sm text-green-500">
+            Appeal submitted successfully. Our team will review your case within 24-48 hours.
           </p>
         </div>
       )}
-      
     </div>
   );
 }

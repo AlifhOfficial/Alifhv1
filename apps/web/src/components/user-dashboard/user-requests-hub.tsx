@@ -10,13 +10,14 @@ import { PartnerApplicationForm } from './partner-application-form';
 import { PartnerApplicationStatus } from './partner-application-status';
 import { UserStaffInvites } from './user-staff-invites';
 import { usePartnerRequest } from '@/hooks/partner';
-import { useQuery } from '@tanstack/react-query';
-import { ArrowRight, Loader2 } from 'lucide-react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { ArrowRight, Loader2, ArrowLeft, RefreshCw } from 'lucide-react';
 
 type TabType = 'overview' | 'partner-application' | 'staff-invites';
 
 export function UserRequestsHub() {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
+  const queryClient = useQueryClient();
   
   // Get partner request status
   const { data: partnerRequest, isLoading: loadingPartner } = usePartnerRequest();
@@ -72,7 +73,7 @@ export function UserRequestsHub() {
           ) : (
             <button
               onClick={() => setActiveTab('partner-application')}
-              className="group w-full p-6 rounded-xl border border-border hover:border-blue-500/40 hover:bg-secondary/10 transition-all text-left"
+              className="group w-full p-6 rounded-xl border border-border hover:bg-secondary/30 transition-all text-left"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 space-y-3">
@@ -103,13 +104,13 @@ export function UserRequestsHub() {
           <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
             <h3 className="text-lg font-medium tracking-tight">Staff Invitations</h3>
             {inviteCount > 0 && (
-              <span className="text-sm text-blue-500 font-medium">{inviteCount} pending</span>
+              <span className="text-sm text-muted-foreground font-medium">{inviteCount} pending</span>
             )}
           </div>
           
           <button
             onClick={() => setActiveTab('staff-invites')}
-            className="group w-full p-6 rounded-xl border border-border hover:border-blue-500/40 hover:bg-secondary/10 transition-all text-left"
+            className="group w-full p-6 rounded-xl border border-border hover:bg-secondary/30 transition-all text-left"
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 space-y-2">
@@ -141,24 +142,48 @@ export function UserRequestsHub() {
       {/* Page Header */}
       {activeTab === 'overview' ? (
         <div className="max-w-4xl mx-auto px-6 py-16">
-          <h1 className="text-2xl font-semibold tracking-tight">Requests</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Manage your partner applications and staff invitations
-          </p>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <a
+                href="/user-dashboard"
+                className="p-2 hover:bg-secondary rounded-lg transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4 text-muted-foreground" />
+              </a>
+              <div>
+                <h1 className="text-2xl font-semibold tracking-tight">Requests</h1>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Manage your partner applications and staff invitations
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                queryClient.invalidateQueries({ queryKey: ['partner', 'request'] });
+                queryClient.invalidateQueries({ queryKey: ['user', 'staff-invites'] });
+              }}
+              className="p-2 hover:bg-secondary rounded-lg transition-colors"
+            >
+              <RefreshCw className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
         </div>
       ) : (
         <div className="max-w-4xl mx-auto px-6 py-8">
-          <div className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setActiveTab('overview')}
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="p-2 hover:bg-secondary rounded-lg transition-colors"
             >
-              Requests
+              <ArrowLeft className="w-4 h-4 text-muted-foreground" />
             </button>
-            <span className="text-muted-foreground">/</span>
-            <span className="font-medium">
-              {activeTab === 'partner-application' ? 'Partner Application' : 'Staff Invitations'}
-            </span>
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-muted-foreground">Requests</span>
+              <span className="text-muted-foreground">/</span>
+              <span className="font-medium">
+                {activeTab === 'partner-application' ? 'Partner Application' : 'Staff Invitations'}
+              </span>
+            </div>
           </div>
         </div>
       )}

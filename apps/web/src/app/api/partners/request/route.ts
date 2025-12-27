@@ -49,7 +49,7 @@ const CreatePartnerRequestSchema = z.object({
   companyNameLegal: z.string().min(2, 'Company name must be at least 2 characters'),
   tradeLicense: z.string().min(5, 'Trade license is required'),
   tradeLicenseExpiry: z.string().datetime('Invalid date format'),
-  tradeLicenseDocumentUrl: z.string().url('Valid document URL required'),
+  tradeLicenseDocumentUrl: z.string().min(1, 'Trade license document is required'),
   vatNumber: z.string().min(1, 'VAT number is required'),
   partnerType: z.enum(['car_dealer', 'showroom']),
   companySize: z.enum(['small', 'medium', 'large', 'enterprise']),

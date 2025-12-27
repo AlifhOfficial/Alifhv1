@@ -44,7 +44,7 @@ const config: Config = {
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',
   			sidebar: {
-  				DEFAULT: 'hsl(var(--sidebar))',
+  				DEFAULT: 'hsl(var(--sidebar-background))',
   				foreground: 'hsl(var(--sidebar-foreground))',
   				border: 'hsl(var(--sidebar-border))',
   				accent: 'hsl(var(--sidebar-accent))',

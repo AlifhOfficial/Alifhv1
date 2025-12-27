@@ -15,10 +15,8 @@ import {
   CheckCircle2, 
   XCircle, 
   AlertCircle,
-  Trash2,
   Loader2,
-  Calendar,
-  Building2
+  AlertTriangle
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -34,9 +32,9 @@ export function PartnerRequestStatusCard({ onUpdate }: PartnerRequestStatusCardP
 
   if (isLoading) {
     return (
-      <div className="bg-card rounded-lg border border-border p-6">
-        <div className="flex items-center justify-center py-8">
-          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      <div className="rounded-2xl border border-border/40 bg-card/50 backdrop-blur-sm p-12">
+        <div className="flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       </div>
     );
@@ -71,38 +69,32 @@ export function PartnerRequestStatusCard({ onUpdate }: PartnerRequestStatusCardP
       case 'pending':
         return {
           icon: Clock,
-          color: 'text-yellow-600 dark:text-yellow-500',
-          bgColor: 'bg-yellow-50 dark:bg-yellow-950/20',
-          borderColor: 'border-yellow-200 dark:border-yellow-900/30',
-          title: 'Application Under Review',
-          description: 'Your partner application is being reviewed by our team.',
+          iconColor: 'text-yellow-500',
+          title: 'Under Review',
+          description: 'Your application is being reviewed by our team. We\'ll notify you once a decision has been made.',
+          badge: 'Pending Review',
         };
       case 'approved':
         return {
           icon: CheckCircle2,
-          color: 'text-green-600 dark:text-green-500',
-          bgColor: 'bg-green-50 dark:bg-green-950/20',
-          borderColor: 'border-green-200 dark:border-green-900/30',
+          iconColor: 'text-green-500',
           title: 'Application Approved',
-          description: 'Congratulations! Your partner application has been approved.',
+          description: 'Congratulations! Your partner application has been approved. You can now access your partner dashboard and start listing vehicles.',
+          badge: 'Approved',
         };
       case 'rejected':
         return {
           icon: XCircle,
-          color: 'text-red-600 dark:text-red-500',
-          bgColor: 'bg-red-50 dark:bg-red-950/20',
-          borderColor: 'border-red-200 dark:border-red-900/30',
-          title: 'Application Rejected',
-          description: 'Unfortunately, your partner application was not approved.',
+          title: 'Application Not Approved',
+          description: 'Unfortunately, your partner application was not approved at this time. Please review the feedback below and consider re-applying.',
+          badge: 'Rejected',
         };
       default:
         return {
           icon: AlertCircle,
-          color: 'text-muted-foreground',
-          bgColor: 'bg-muted/20',
-          borderColor: 'border-border',
           title: 'Application Status',
           description: 'Your application status is being processed.',
+          badge: 'Processing',
         };
     }
   };
@@ -112,98 +104,104 @@ export function PartnerRequestStatusCard({ onUpdate }: PartnerRequestStatusCardP
 
   return (
     <>
-      <div className={`rounded-lg border ${config.borderColor} ${config.bgColor} p-6`}>
-        <div className="flex items-start gap-4">
-          <div className={`p-3 rounded-full ${config.bgColor} ${config.color}`}>
-            <Icon className="w-6 h-6" />
+      <div className="bg-card rounded-2xl border border-border/40 p-10">
+        {/* Header */}
+        <div className="flex flex-col items-center text-center space-y-6 mb-10">
+          <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+            <Icon className={`w-5 h-5 ${config.iconColor || 'text-muted-foreground'}`} />
           </div>
-
-          <div className="flex-1">
-            <h3 className="font-semibold text-lg mb-1">{config.title}</h3>
-            <p className="text-sm text-muted-foreground mb-4">{config.description}</p>
-
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-sm">
-                <Building2 className="w-4 h-4 text-muted-foreground" />
-                <span className="font-medium">{request.companyNameLegal}</span>
-              </div>
-
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Calendar className="w-4 h-4" />
-                <span>
-                  Applied {new Date(request.createdAt).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                </span>
-              </div>
-
-              {request.status === 'rejected' && request.rejectionReason && (
-                <div className="mt-4 p-3 bg-background rounded-lg border border-border">
-                  <p className="text-xs font-medium text-muted-foreground mb-1">
-                    Rejection Reason
-                  </p>
-                  <p className="text-sm">{request.rejectionReason}</p>
-                </div>
-              )}
-
-              {request.status === 'approved' && request.reviewedAt && (
-                <div className="mt-4 p-3 bg-background rounded-lg border border-border">
-                  <p className="text-xs font-medium text-muted-foreground mb-1">
-                    Approved On
-                  </p>
-                  <p className="text-sm">
-                    {new Date(request.reviewedAt).toLocaleDateString('en-US', {
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {request.status === 'pending' && (
-              <div className="mt-6 flex gap-3">
-                <button
-                  onClick={onUpdate}
-                  className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
-                >
-                  Update Application
-                </button>
-                <button
-                  onClick={() => setShowCancelConfirm(true)}
-                  className="px-4 py-2 border border-border rounded-lg text-sm font-medium hover:bg-muted/50 transition-colors flex items-center gap-2"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  Cancel
-                </button>
-              </div>
-            )}
+          <div className="space-y-3">
+            <h2 className="text-xl font-semibold text-foreground">{config.title}</h2>
+            <p className="text-sm text-muted-foreground/70 max-w-md">
+              {config.description}
+            </p>
           </div>
         </div>
+
+        {/* Company Details Grid */}
+        <div className="space-y-6 mb-8">
+          <div className="space-y-2">
+            <p className="text-xs text-muted-foreground/70">Company Name</p>
+            <p className="text-sm text-foreground">{request.companyNameLegal}</p>
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-xs text-muted-foreground/70">Trade License</p>
+            <p className="text-sm font-mono text-foreground">{request.tradeLicense}</p>
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-xs text-muted-foreground/70">Applied Date</p>
+            <p className="text-sm text-foreground">
+              {new Date(request.createdAt).toLocaleDateString('en-AE', {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric',
+              })}
+            </p>
+          </div>
+
+          {request.status === 'approved' && request.reviewedAt && (
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground/70">Approved On</p>
+              <p className="text-sm text-foreground">
+                {new Date(request.reviewedAt).toLocaleDateString('en-AE', {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Rejection Reason */}
+        {request.status === 'rejected' && request.rejectionReason && (
+          <div className="space-y-2 mb-8">
+            <p className="text-xs text-muted-foreground/70">Feedback</p>
+            <p className="text-sm text-foreground">{request.rejectionReason}</p>
+          </div>
+        )}
+
+        {/* Actions */}
+        {request.status === 'pending' && (
+          <div className="flex justify-center pt-6 border-t border-border/40">
+            <button
+              onClick={() => setShowCancelConfirm(true)}
+              className="text-xs text-red-500 hover:text-red-600 transition-colors"
+            >
+              Cancel Application
+            </button>
+          </div>
+        )}
       </div>
 
       {showCancelConfirm && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-card rounded-lg border border-border p-6 max-w-md w-full mx-4">
-            <h3 className="font-semibold text-lg mb-2">Cancel Application?</h3>
-            <p className="text-muted-foreground mb-6">
-              Are you sure you want to cancel your partner application? This action cannot be undone.
-            </p>
-            <div className="flex gap-3">
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-md flex items-center justify-center z-50 animate-in fade-in duration-200">
+          <div className="bg-card rounded-2xl border border-border/40 shadow-2xl p-8 max-w-md w-full mx-4 animate-in zoom-in-95 duration-200">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center flex-shrink-0">
+                <AlertTriangle className="w-6 h-6 text-red-500" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground mb-1">Cancel Application?</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Are you sure you want to cancel your partner application? This action cannot be undone and you'll need to start over if you want to reapply.
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => setShowCancelConfirm(false)}
                 disabled={isCancelling}
-                className="flex-1 px-4 py-2 border border-border rounded-lg font-medium hover:bg-muted/50 transition-colors"
+                className="flex-1 px-6 py-3 rounded-full border border-border/40 hover:bg-secondary/30 font-medium transition-all"
               >
                 Keep Application
               </button>
               <button
                 onClick={handleCancel}
                 disabled={isCancelling}
-                className="flex-1 px-4 py-2 bg-destructive text-destructive-foreground rounded-lg font-medium hover:bg-destructive/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 px-6 py-3 rounded-full bg-red-500 hover:bg-red-600 text-white font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {isCancelling ? (
                   <>

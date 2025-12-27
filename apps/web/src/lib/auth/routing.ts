@@ -28,11 +28,17 @@ export function isDealerOwner(user: ExtendedUser): boolean {
 
 /**
  * Checks if user has partner access but is not an owner
+ * Staff roles include: sales, admin, viewer, manager, staff
  * @param user - Extended user with partner memberships
  * @returns True if user has partner access as staff (non-owner)
  */
 export function isDealerStaff(user: ExtendedUser): boolean {
-  return user.hasPartnerAccess === true && !isDealerOwner(user);
+  // Check if user has any partner membership with a non-owner role
+  const hasStaffRole = user.partnerMemberships?.some((membership) => 
+    membership.staffRole && membership.staffRole !== 'owner'
+  ) === true;
+  
+  return user.hasPartnerAccess === true && hasStaffRole;
 }
 
 /**

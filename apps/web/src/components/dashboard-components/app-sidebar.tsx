@@ -33,6 +33,8 @@ import {
   CircleUser,
   Home,
   Briefcase,
+  LifeBuoy,
+  Send,
 } from "lucide-react";
 import { useMemo, type ComponentType } from "react";
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
@@ -41,6 +43,7 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarHeader,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -51,7 +54,6 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarRail,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import {
   Collapsible,
@@ -130,6 +132,8 @@ const iconMap: Record<string, ComponentType<{ className?: string }>> = {
   "calendar": Calendar,
   "calendar-check": CalendarCheck,
   "briefcase": Briefcase,
+  "life-buoy": LifeBuoy,
+  "send": Send,
 };
 
 // ============================================================================
@@ -157,45 +161,42 @@ export function AppSidebar({ user, items, sections, staffOverride }: AppSidebarP
     return user.name ?? 'User';
   }, [staffOverride?.displayName, user.firstName, user.lastName, user.name]);
 
-  const initials = useMemo(() => {
-    if (staffOverride?.companyName) {
-      const letters = staffOverride.companyName
-        .split(' ')
-        .map((part) => part.trim().charAt(0))
-        .filter(Boolean)
-        .join('')
-        .slice(0, 2);
-      if (letters.length > 0) {
-        return letters.toUpperCase();
-      }
-    }
-    
-    if (user.firstName || user.lastName) {
-      const first = user.firstName?.charAt(0) ?? '';
-      const last = user.lastName?.charAt(0) ?? '';
-      const combined = `${first}${last}`.trim();
-      return combined.length > 0 ? combined.toUpperCase() : 'U';
-    }
-
-    if (user.name) {
-      const letters = user.name
-        .split(' ')
-        .map((part) => part.trim().charAt(0))
-        .filter(Boolean)
-        .join('')
-        .slice(0, 2);
-      if (letters.length > 0) {
-        return letters.toUpperCase();
-      }
-    }
-
-    return 'U';
-  }, [staffOverride?.companyName, user.firstName, user.lastName, user.name]);
-
   const isStaffMode = Boolean(staffOverride?.companyLogo);
 
   return (
     <Sidebar collapsible="icon">
+      {/* Header - User Profile */}
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" className="cursor-default hover:bg-transparent">
+              <div className="flex items-center gap-3 w-full">
+                {isStaffMode ? (
+                  <BrandAvatar
+                    logoUrl={staffOverride?.companyLogo}
+                    brandName={staffOverride?.companyName || 'Company'}
+                    size="xs"
+                  />
+                ) : (
+                  <UserAvatar
+                    profileAvatar={user.avatarUrl}
+                    oauthImage={user.image}
+                    name={displayName}
+                    size="sm"
+                  />
+                )}
+                <div className="flex flex-col min-w-0 flex-1 gap-0.5">
+                  <span className="truncate font-semibold text-sm tracking-tight">{displayName}</span>
+                  <span className="truncate text-xs text-sidebar-foreground/70">
+                    {isStaffMode ? staffOverride?.workEmail : user.email}
+                  </span>
+                </div>
+              </div>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+
       {/* Main Navigation */}
       <SidebarContent>
         {navSections.map((section, sectionIndex) => {
@@ -211,9 +212,9 @@ export function AppSidebar({ user, items, sections, staffOverride }: AppSidebarP
                   <Collapsible asChild defaultOpen className="group/collapsible">
                     <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
-                        <SidebarMenuButton tooltip={section.collapsible.label}>
+                        <SidebarMenuButton tooltip={section.collapsible.label} className="font-medium">
                           {CollapsibleIcon && <CollapsibleIcon className="size-4" />}
-                          <span>{section.collapsible.label}</span>
+                          <span className="tracking-tight">{section.collapsible.label}</span>
                           <ChevronDown className="ml-auto size-4 transition-transform duration-200 group-data-[state=closed]/collapsible:-rotate-90" />
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
@@ -225,7 +226,7 @@ export function AppSidebar({ user, items, sections, staffOverride }: AppSidebarP
                             return (
                               <SidebarMenuSubItem key={item.label}>
                                 <SidebarMenuSubButton asChild isActive={isActive}>
-                                  <Link href={item.href}>
+                                  <Link href={item.href} className="tracking-tight">
                                     <span>{item.label}</span>
                                   </Link>
                                 </SidebarMenuSubButton>
@@ -245,7 +246,9 @@ export function AppSidebar({ user, items, sections, staffOverride }: AppSidebarP
           return (
             <SidebarGroup key={sectionKey}>
               {section.title && (
-                <SidebarGroupLabel>{section.title}</SidebarGroupLabel>
+                <SidebarGroupLabel className="text-xs uppercase tracking-wider font-medium text-sidebar-foreground/70">
+                  {section.title}
+                </SidebarGroupLabel>
               )}
               <SidebarGroupContent>
                 <SidebarMenu>
@@ -259,10 +262,11 @@ export function AppSidebar({ user, items, sections, staffOverride }: AppSidebarP
                           asChild 
                           isActive={isActive}
                           tooltip={item.label}
+                          className="font-medium"
                         >
                           <Link href={item.href}>
                             {Icon && <Icon className="size-4" />}
-                            <span>{item.label}</span>
+                            <span className="tracking-tight">{item.label}</span>
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -275,33 +279,23 @@ export function AppSidebar({ user, items, sections, staffOverride }: AppSidebarP
         })}
       </SidebarContent>
 
-      {/* Footer - User Profile */}
+      {/* Footer - Support & Feedback */}
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" className="cursor-default hover:bg-transparent p-3">
-              <div className="flex items-center gap-3 w-full">
-                {isStaffMode ? (
-                  <BrandAvatar
-                    logoUrl={staffOverride?.companyLogo}
-                    brandName={staffOverride?.companyName || 'Company'}
-                    size="xs"
-                  />
-                ) : (
-                  <UserAvatar
-                    profileAvatar={user.avatarUrl}
-                    oauthImage={user.image}
-                    name={displayName}
-                    size="sm"
-                  />
-                )}
-                <div className="flex flex-col min-w-0 flex-1">
-                  <span className="truncate font-semibold text-sm">{displayName}</span>
-                  <span className="truncate text-xs text-muted-foreground">
-                    {isStaffMode ? staffOverride?.workEmail : user.email}
-                  </span>
-                </div>
-              </div>
+            <SidebarMenuButton asChild tooltip="Support">
+              <Link href="/support">
+                <LifeBuoy className="size-4" />
+                <span className="font-medium tracking-tight">Support</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="Feedback">
+              <Link href="/feedback">
+                <Send className="size-4" />
+                <span className="font-medium tracking-tight">Feedback</span>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

@@ -24,16 +24,6 @@ const LocationMap = lazy(() =>
 );
 
 // ============================================================================
-// Constants
-// ============================================================================
-
-const SPECIALTIES = [
-  'Luxury Vehicles', 'Sports Cars', 'SUVs', 'Electric Vehicles',
-  'Classic Cars', 'Motorcycles', 'Commercial Vehicles', 'Budget-Friendly',
-  'Import Specialist', 'Certified Pre-Owned', 'Exotic Cars', 'Family Cars'
-];
-
-// ============================================================================
 // Types
 // ============================================================================
 
@@ -55,8 +45,10 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
   const [initialized, setInitialized] = useState(false);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const isGeocodingRef = React.useRef(false);
+  const [customSpecialty, setCustomSpecialty] = useState('');
 
   const [form, setForm] = useState({
+    brandName: '',
     website: '',
     address: '',
     emirate: '',
@@ -78,6 +70,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
   useEffect(() => {
     if (profile && !initialized) {
       setForm({
+        brandName: profile.brandName ?? '',
         website: profile.website ?? '',
         address: profile.address ?? '',
         emirate: profile.emirate ?? '',
@@ -109,6 +102,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       const payload: any = {};
       
       // Only include fields that have values or are explicitly set
+      if (form.brandName?.trim()) payload.brandName = form.brandName.trim();
       if (form.website?.trim()) payload.website = form.website.trim();
       if (form.address?.trim()) payload.address = form.address.trim();
       if (form.emirate?.trim()) payload.emirate = form.emirate.trim();
@@ -144,6 +138,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
   const cancel = () => {
     if (profile) {
       setForm({
+        brandName: profile.brandName ?? '',
         website: profile.website ?? '',
         address: profile.address ?? '',
         emirate: profile.emirate ?? '',
@@ -294,11 +289,31 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
   const toggleSpecialty = (specialty: string) => {
     if (form.specialties.includes(specialty)) {
       updateField({ specialties: form.specialties.filter(s => s !== specialty) });
-    } else if (form.specialties.length < 6) {
+    } else if (form.specialties.length < 4) {
       updateField({ specialties: [...form.specialties, specialty] });
     } else {
-      toast({ title: 'Max 6 specialties', variant: 'destructive' });
+      toast({ title: 'Max 4 specialties', variant: 'destructive' });
     }
+  };
+
+  // Add custom specialty
+  const addCustomSpecialty = () => {
+    const trimmed = customSpecialty.trim();
+    if (!trimmed) return;
+    
+    if (form.specialties.includes(trimmed)) {
+      toast({ title: 'Specialty already added', variant: 'destructive' });
+      return;
+    }
+    
+    if (form.specialties.length >= 4) {
+      toast({ title: 'Max 4 specialties', variant: 'destructive' });
+      return;
+    }
+    
+    updateField({ specialties: [...form.specialties, trimmed] });
+    setCustomSpecialty('');
+    toast({ title: 'Specialty added' });
   };
 
   if (isLoading) {
@@ -346,8 +361,27 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                   size="xl"
                   className="w-24 h-24 border border-border/40 shadow-sm"
                 />
-                <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Camera className="w-6 h-6 text-white" />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity gap-2">
+                  <Camera className="w-5 h-5 text-white" />
+                  {form.logo && (
+                    <button
+                      type="button"
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (!editing) return;
+                        await updateProfile({ logo: null });
+                        updateField({ logo: null });
+                        toast({ title: 'Logo removed' });
+                      }}
+                      disabled={!editing}
+                      className="text-white hover:text-red-400 transition-colors"
+                    >
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
                 </div>
               </label>
               {imageUploading && (
@@ -431,51 +465,51 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-5 border-y border-border divide-x divide-border">
-          <div className="p-8 flex flex-col gap-2">
-            <span className="text-xs font-medium text-muted-foreground">Inventory</span>
-            <span className="text-xl font-semibold text-foreground">
+        <div className="grid grid-cols-2 md:grid-cols-5 border-y border-border/40 divide-x divide-border/40">
+          <div className="p-6 md:p-8 flex flex-col gap-1">
+            <small className="text-muted-foreground">Inventory</small>
+            <h2 className="text-foreground">
               {statsLoading ? '—' : stats?.inventoryCount ?? '—'}
-            </span>
+            </h2>
           </div>
-          <div className="p-8 flex flex-col gap-2">
-            <span className="text-xs font-medium text-muted-foreground">Total Sales</span>
-            <span className="text-xl font-semibold text-foreground">
+          <div className="p-6 md:p-8 flex flex-col gap-1">
+            <small className="text-muted-foreground">Total Sales</small>
+            <h2 className="text-foreground">
               {statsLoading ? '—' : stats?.totalSales ?? '—'}
-            </span>
+            </h2>
           </div>
-          <div className="p-8 flex flex-col gap-2">
-            <span className="text-xs font-medium text-muted-foreground">Response Rate</span>
-            <span className="text-xl font-semibold text-foreground">
+          <div className="p-6 md:p-8 flex flex-col gap-1">
+            <small className="text-muted-foreground">Response Rate</small>
+            <h2 className="text-foreground">
               {statsLoading ? '—' : stats?.responseRate !== null && stats?.responseRate !== undefined ? `${stats.responseRate}%` : '—'}
-            </span>
+            </h2>
           </div>
-          <div className="p-8 flex flex-col gap-2">
-            <span className="text-xs font-medium text-muted-foreground">Rating</span>
-            <span className="text-xl font-semibold text-foreground">
+          <div className="p-6 md:p-8 flex flex-col gap-1">
+            <small className="text-muted-foreground">Rating</small>
+            <h2 className="text-foreground">
               {profile.platformRating ? (
                 <span className="flex items-center gap-1.5">
                   <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                   {profile.platformRating.toFixed(1)}
                 </span>
               ) : '—'}
-            </span>
+            </h2>
           </div>
-          <div className="p-8 flex flex-col gap-2">
-            <span className="text-xs font-medium text-muted-foreground">Status</span>
-            <span className="text-xl font-semibold">
+          <div className="p-6 md:p-8 flex flex-col gap-1">
+            <small className="text-muted-foreground">Status</small>
+            <h2>
               {profile.isVerified ? (
                 <span className="flex items-center gap-2 text-foreground">
-                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-blue-500">
+                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-blue-500">
                     <circle cx="10" cy="10" r="10" />
                     <path fill="white" d="M14.3 6.7a1 1 0 0 1 0 1.4l-5 5a1 1 0 0 1-1.4 0l-2-2a1 1 0 1 1 1.4-1.4L9 11.3l4.3-4.3a1 1 0 0 1 1.4 0z" />
                   </svg>
-                  Verified
+                  <span className="text-sm">Verified</span>
                 </span>
               ) : (
-                <span className="text-muted-foreground">Unverified</span>
+                <span className="text-muted-foreground text-sm">Unverified</span>
               )}
-            </span>
+            </h2>
           </div>
         </div>
 
@@ -484,8 +518,8 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           
           {/* Awards & Badges */}
           <section className="space-y-6">
-            <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-              <h3 className="text-lg font-medium tracking-tight">Awards & Badges</h3>
+            <div className="flex items-baseline justify-between pb-3">
+              <h2>Awards & Badges</h2>
             </div>
             
             <div className="rounded-xl border border-border bg-card p-6">
@@ -516,14 +550,24 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           
           {/* Basic Information */}
           <section className="space-y-6">
-            <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-              <h3 className="text-lg font-medium tracking-tight">Basic Information</h3>
+            <div className="flex items-baseline justify-between pb-3">
+              <h2>Basic Information</h2>
             </div>
             
-            <div className="rounded-xl border border-border bg-card p-6">
+            <div className="rounded-xl border border-border/40 bg-card p-6">
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Website</label>
+                  <label className="text-sm font-medium text-muted-foreground">Brand Name</label>
+                  <input
+                    value={form.brandName}
+                    onChange={(e) => updateField({ brandName: e.target.value })}
+                    disabled={!editing}
+                    placeholder="Your Business Name"
+                    className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground">Website</label>
                   <input
                     value={form.website}
                     onChange={(e) => updateField({ website: e.target.value })}
@@ -538,8 +582,8 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           
           {/* Description */}
           <section className="space-y-6">
-            <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-              <h3 className="text-lg font-medium tracking-tight">Description</h3>
+            <div className="flex items-baseline justify-between pb-3">
+              <h2>Description</h2>
             </div>
             <div className="rounded-xl border border-border bg-card p-6">
               <textarea
@@ -558,9 +602,9 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           
           {/* Hero Image */}
           <section className="space-y-6">
-            <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-              <h3 className="text-lg font-medium tracking-tight">Hero Image</h3>
-              <span className="text-sm text-muted-foreground">Recommended: 1920x600px</span>
+            <div className="flex items-baseline justify-between pb-3">
+              <h2>Hero Image</h2>
+              <small className="text-muted-foreground">1920x600px</small>
             </div>
             
             <div className="rounded-xl overflow-hidden border border-border/40 bg-secondary/10">
@@ -625,41 +669,67 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           
           {/* Specialties */}
           <section className="space-y-6">
-            <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-              <h3 className="text-lg font-medium tracking-tight">Specialties</h3>
-              <span className="text-sm text-muted-foreground">{form.specialties.length}/6 selected</span>
+            <div className="flex items-baseline justify-between pb-3">
+              <h2>Specialties</h2>
+              <small className="text-muted-foreground">{form.specialties.length}/4</small>
             </div>
             
-            <div className="rounded-xl border border-border bg-card p-6">
-              <div className="flex flex-wrap gap-3">
-                {SPECIALTIES.map(specialty => {
-                  const isSelected = form.specialties.includes(specialty);
-                  return (
-                    <button
-                      key={specialty}
-                      onClick={() => editing && toggleSpecialty(specialty)}
-                      disabled={!editing}
-                      className={cn(
-                        "px-4 py-2 rounded-md text-sm font-medium transition-all border",
-                        isSelected 
-                          ? "bg-blue-500 text-white border-blue-500" 
-                          : "bg-muted/20 text-foreground border-border hover:border-blue-500/40 hover:bg-muted/30",
-                        !editing && !isSelected && "opacity-50",
-                        !editing && "cursor-default"
-                      )}
-                    >
-                      {specialty}
-                    </button>
-                  );
-                })}
+            {editing && (
+              <div className="rounded-xl border border-border bg-card p-4">
+                <div className="flex gap-2">
+                  <input
+                    value={customSpecialty}
+                    onChange={(e) => setCustomSpecialty(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && addCustomSpecialty()}
+                    placeholder="Add a specialty (e.g., Luxury Vehicles, Sports Cars)..."
+                    className="flex-1 h-10 px-4 bg-transparent border border-border rounded-lg focus:border-foreground outline-none transition-colors placeholder:text-muted-foreground/40 text-foreground"
+                  />
+                  <button
+                    onClick={addCustomSpecialty}
+                    disabled={!customSpecialty.trim() || form.specialties.length >= 4}
+                    className="px-4 py-2 rounded-lg bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Add
+                  </button>
+                </div>
+                <small className="block text-muted-foreground mt-2">What does your dealership specialize in? Add up to 4 specialties.</small>
               </div>
+            )}
+            
+            <div className="rounded-xl border border-border bg-card p-6">
+              {form.specialties.length > 0 ? (
+                <ul className="space-y-3">
+                  {form.specialties.map((specialty, index) => (
+                    <li key={specialty} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted/30 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-medium text-muted-foreground">{index + 1}.</span>
+                        <span className="text-sm text-foreground">{specialty}</span>
+                      </div>
+                      {editing && (
+                        <button
+                          onClick={() => toggleSpecialty(specialty)}
+                          className="text-xs text-red-500 hover:text-red-600 font-medium transition-colors px-2"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    {editing ? 'Add specialties to showcase what you focus on' : 'No specialties added yet'}
+                  </p>
+                </div>
+              )}
             </div>
           </section>
           
           {/* Business Details */}
           <section className="space-y-6">
-            <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-              <h3 className="text-lg font-medium tracking-tight">Business Details</h3>
+            <div className="flex items-baseline justify-between pb-3">
+              <h2>Business Details</h2>
             </div>
             
             <div className="rounded-xl border border-border bg-card p-6">
@@ -708,8 +778,8 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           
           {/* Location */}
           <section className="space-y-6">
-            <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-              <h3 className="text-lg font-medium tracking-tight">Location</h3>
+            <div className="flex items-baseline justify-between pb-3">
+              <h2>Location</h2>
               {editing && (
                 <button
                   onClick={handleUseCurrentLocation}

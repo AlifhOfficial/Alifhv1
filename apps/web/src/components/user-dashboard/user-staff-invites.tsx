@@ -8,8 +8,9 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
-import { Mail, Calendar, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { Mail, Calendar, CheckCircle2, XCircle, Loader2, RefreshCw } from 'lucide-react';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
+import { StaffInviteActionModal } from './staff-invite-action-modal';
 
 interface StaffInvite {
   id: string;
@@ -26,6 +27,10 @@ interface StaffInvite {
 export function UserStaffInvites() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedInvite, setSelectedInvite] = useState<{ id: string; name: string; role: string } | null>(null);
+  const [pendingAction, setPendingAction] = useState<'accept' | 'reject' | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   // Fetch invites
   const { data: invitesData, isLoading } = useQuery({
@@ -61,35 +66,37 @@ export function UserStaffInvites() {
           ? 'You are now a staff member. Check your partner dashboard.'
           : 'The invitation has been declined.',
       });
+      setTimeout(() => {
+        setModalOpen(false);
+        setSelectedInvite(null);
+        setPendingAction(null);
+        setActionError(null);
+      }, 1500);
     },
     onError: (error) => {
-      toast({
-        title: 'Action Failed',
-        description: (error as Error).message,
-        variant: 'destructive',
-      });
+      setActionError((error as Error).message || 'Action failed');
     },
   });
 
-  const handleAction = (inviteId: string, action: 'accept' | 'reject') => {
-    const message = action === 'accept'
-      ? 'Accept this staff invitation?'
-      : 'Reject this invitation?';
-    
-    if (confirm(message)) {
-      actionMutation.mutate({ inviteId, action });
-    }
+  const handleOpenModal = (invite: StaffInvite, action: 'accept' | 'reject') => {
+    setSelectedInvite({ id: invite.id, name: invite.partnerName, role: invite.role });
+    setPendingAction(action);
+    setActionError(null);
+    setModalOpen(true);
   };
 
-  const getRoleBadgeColor = (role: string) => {
-    const colors: Record<string, string> = {
-      owner: 'bg-purple-500/10 text-purple-500',
-      admin: 'bg-blue-500/10 text-blue-500',
-      manager: 'bg-blue-500/10 text-blue-500',
-      sales: 'bg-green-500/10 text-green-500',
-      viewer: 'bg-gray-500/10 text-gray-500',
-    };
-    return colors[role] || colors.viewer;
+  const handleConfirmAction = () => {
+    if (!selectedInvite || !pendingAction) return;
+    actionMutation.mutate({ inviteId: selectedInvite.id, action: pendingAction });
+  };
+
+  const handleCloseModal = () => {
+    if (!actionMutation.isPending) {
+      setModalOpen(false);
+      setSelectedInvite(null);
+      setPendingAction(null);
+      setActionError(null);
+    }
   };
 
   if (isLoading) {
@@ -121,10 +128,20 @@ export function UserStaffInvites() {
       
       {/* Header */}
       <section className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Staff Invitations</h1>
-        <p className="text-sm text-muted-foreground">
-          You have {invites.length} pending invitation{invites.length !== 1 ? 's' : ''}
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">Staff Invitations</h1>
+            <p className="text-sm text-muted-foreground">
+              You have {invites.length} pending invitation{invites.length !== 1 ? 's' : ''}
+            </p>
+          </div>
+          <button
+            onClick={() => queryClient.invalidateQueries({ queryKey: ['user', 'staff-invites'] })}
+            className="p-2 hover:bg-secondary rounded-lg transition-colors"
+          >
+            <RefreshCw className="w-4 h-4 text-muted-foreground" />
+          </button>
+        </div>
       </section>
 
       {/* Invites List */}
@@ -155,23 +172,20 @@ export function UserStaffInvites() {
                     </p>
                   </div>
 
-                  <div className="flex flex-wrap gap-2 items-center">
-                    <span className="text-sm text-muted-foreground">Role:</span>
-                    <span className={`px-2 py-0.5 rounded-md text-xs font-medium capitalize ${getRoleBadgeColor(invite.role)}`}>
-                      {invite.role}
-                    </span>
+                  <div className="flex flex-wrap gap-2 items-center text-sm text-muted-foreground">
+                    <span>Role: <span className="text-foreground capitalize">{invite.role}</span></span>
                     
                     {invite.title && (
                       <>
-                        <span className="text-muted-foreground">•</span>
-                        <span className="text-sm font-medium">{invite.title}</span>
+                        <span>•</span>
+                        <span className="text-foreground">{invite.title}</span>
                       </>
                     )}
                     
                     {invite.department && (
                       <>
-                        <span className="text-muted-foreground">•</span>
-                        <span className="text-sm text-muted-foreground">{invite.department}</span>
+                        <span>•</span>
+                        <span>{invite.department}</span>
                       </>
                     )}
                   </div>
@@ -184,28 +198,38 @@ export function UserStaffInvites() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col gap-2 flex-shrink-0">
+              <div className="flex gap-3 flex-shrink-0">
                 <button
-                  onClick={() => handleAction(invite.id, 'accept')}
-                  disabled={actionMutation.isPending}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500 hover:bg-green-600 text-white text-sm font-medium transition-colors disabled:opacity-50"
+                  onClick={() => handleOpenModal(invite, 'accept')}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-colors"
                 >
-                  <CheckCircle className="w-4 h-4" />
+                  <CheckCircle2 className="w-4 h-4" />
                   Accept
                 </button>
                 <button
-                  onClick={() => handleAction(invite.id, 'reject')}
-                  disabled={actionMutation.isPending}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm font-medium transition-colors disabled:opacity-50"
+                  onClick={() => handleOpenModal(invite, 'reject')}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium transition-colors"
                 >
                   <XCircle className="w-4 h-4" />
-                  Reject
+                  Decline
                 </button>
               </div>
             </div>
           </div>
         ))}
       </section>
+
+      {/* Action Modal */}
+      <StaffInviteActionModal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        action={pendingAction}
+        partnerName={selectedInvite?.name || ''}
+        role={selectedInvite?.role || ''}
+        isLoading={actionMutation.isPending}
+        error={actionError}
+        onConfirm={handleConfirmAction}
+      />
 
     </div>
   );

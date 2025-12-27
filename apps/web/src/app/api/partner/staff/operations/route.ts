@@ -41,11 +41,17 @@ const removeStaffSchema = z.object({
   reason: z.string().optional(),
 });
 
+const cancelInviteSchema = z.object({
+  operation: z.literal('cancel-invite'),
+  staffId: z.string(),
+});
+
 const operationSchema = z.discriminatedUnion('operation', [
   updateStaffSchema,
   suspendStaffSchema,
   activateStaffSchema,
   removeStaffSchema,
+  cancelInviteSchema,
 ]);
 
 export async function POST(req: NextRequest) {
@@ -97,6 +103,14 @@ export async function POST(req: NextRequest) {
           staffId: validated.staffId,
           partnerId,
           reason: validated.reason,
+        });
+        break;
+
+      case 'cancel-invite':
+        result = await removeStaffMember({
+          staffId: validated.staffId,
+          partnerId,
+          reason: 'Invite cancelled',
         });
         break;
     }

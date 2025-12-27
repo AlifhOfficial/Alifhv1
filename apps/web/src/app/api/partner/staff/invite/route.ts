@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic';
 
 const inviteSchema = z.object({
   email: z.string().email(),
-  role: z.enum(['owner', 'admin', 'sales', 'viewer']),
+  role: z.enum(['owner', 'admin', 'sales', 'viewer', 'staff']),
   title: z.string().optional(),
   department: z.string().optional(),
 });
@@ -41,10 +41,14 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const validated = inviteSchema.parse(body);
 
+    // Map UI role to database role
+    // 'staff' in UI -> 'sales' in database (for backward compatibility)
+    const dbRole = validated.role === 'staff' ? 'sales' : validated.role;
+
     const invite = await sendStaffInvite({
       partnerId,
       email: validated.email,
-      role: validated.role,
+      role: dbRole as 'owner' | 'admin' | 'sales' | 'viewer',
       title: validated.title,
       department: validated.department,
       invitedBy: user.id,

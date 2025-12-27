@@ -7,10 +7,12 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
-import { Trash2, Mail, User, UserMinus, Clock } from 'lucide-react';
+import { Trash2, Mail, User, UserMinus, Clock, ArrowLeft, RefreshCw } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
+import { StaffDeleteModal } from './staff-delete-modal';
 import {
   Select,
   SelectContent,
@@ -38,7 +40,9 @@ export function PartnerStaffManagement() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [showInviteForm, setShowInviteForm] = useState(false);
-  const [inviteFormData, setInviteFormData] = useState({ email: '', role: 'sales' });
+  const [inviteFormData, setInviteFormData] = useState({ email: '', role: 'staff' });
+  const [deleteModal, setDeleteModal] = useState<{ open: boolean; member: TeamMember | null }>({ open: false, member: null });
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   // Fetch all team members
   const { data: teamData, isLoading } = useQuery({
@@ -53,6 +57,7 @@ export function PartnerStaffManagement() {
   const team: TeamMember[] = teamData?.data || [];
   const activeTeam = team.filter(m => m.status === 'active');
   const formerTeam = team.filter(m => m.status === 'left');
+  const pendingInvites = teamData?.invites || [];
 
   // Invite mutation
   const inviteMutation = useMutation({
@@ -70,9 +75,9 @@ export function PartnerStaffManagement() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['staff', 'team'] });
-      queryClient.invalidateQueries({ queryKey: ['staff', 'pending-invites'] });
+      queryClient.invalidateQueries({ queryKey: ['staff', 'overview'] });
       toast({ title: 'Invite sent successfully' });
-      setInviteFormData({ email: '', role: 'sales' });
+      setInviteFormData({ email: '', role: 'staff' });
       setShowInviteForm(false);
     },
     onError: (error) => {
@@ -100,11 +105,40 @@ export function PartnerStaffManagement() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['staff', 'team'] });
-      toast({ title: 'Member removed' });
+      queryClient.invalidateQueries({ queryKey: ['staff', 'overview'] });
+      toast({ title: 'Member removed successfully' });
+      setTimeout(() => {
+        setDeleteModal({ open: false, member: null });
+        setDeleteError(null);
+      }, 1500);
+    },
+    onError: (error) => {
+      setDeleteError((error as Error).message || 'Failed to remove member');
+    },
+  });
+
+  // Cancel invite mutation
+  const cancelInviteMutation = useMutation({
+    mutationFn: async (inviteId: string) => {
+      const res = await fetch('/api/partner/staff/operations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ operation: 'cancel-invite', staffId: inviteId }),
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to cancel invite');
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['staff', 'team'] });
+      queryClient.invalidateQueries({ queryKey: ['staff', 'overview'] });
+      toast({ title: 'Invite cancelled' });
     },
     onError: (error) => {
       toast({
-        title: 'Failed to remove member',
+        title: 'Failed to cancel invite',
         description: (error as Error).message,
         variant: 'destructive',
       });
@@ -119,9 +153,20 @@ export function PartnerStaffManagement() {
     inviteMutation.mutate(inviteFormData);
   };
 
-  const handleRemove = (memberId: string) => {
-    if (confirm('Are you sure you want to remove this team member?')) {
-      removeMutation.mutate(memberId);
+  const handleOpenDeleteModal = (member: TeamMember) => {
+    setDeleteModal({ open: true, member });
+    setDeleteError(null);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!deleteModal.member) return;
+    removeMutation.mutate(deleteModal.member.id);
+  };
+
+  const handleCloseDeleteModal = () => {
+    if (!removeMutation.isPending) {
+      setDeleteModal({ open: false, member: null });
+      setDeleteError(null);
     }
   };
 
@@ -141,19 +186,36 @@ export function PartnerStaffManagement() {
       
       {/* Header */}
       <section className="flex items-start justify-between gap-8">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight">Team Management</h1>
-          <p className="text-sm text-muted-foreground">
-            Manage your staff members and their access levels
-          </p>
+        <div className="flex items-start gap-3">
+          <Link
+            href="/partner-dashboard/staff"
+            className="p-2 hover:bg-secondary/50 rounded-lg transition-colors mt-0.5"
+          >
+            <ArrowLeft className="w-4 h-4 text-muted-foreground" />
+          </Link>
+          <div className="space-y-2">
+            <h1 className="text-2xl font-semibold tracking-tight">Team Management</h1>
+            <p className="text-sm text-muted-foreground">
+              Manage your staff members and their access levels
+            </p>
+          </div>
         </div>
 
-        <button
-          onClick={() => setShowInviteForm(!showInviteForm)}
-          className="px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-sm transition-colors flex-shrink-0"
-        >
-          {showInviteForm ? 'Cancel' : 'Invite Member'}
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => queryClient.invalidateQueries({ queryKey: ['staff', 'team'] })}
+            className="p-2 hover:bg-secondary/50 rounded-lg transition-colors"
+            title="Refresh"
+          >
+            <RefreshCw className="w-4 h-4 text-muted-foreground" />
+          </button>
+          <button
+            onClick={() => setShowInviteForm(!showInviteForm)}
+            className="px-5 py-2 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-colors flex-shrink-0"
+          >
+            {showInviteForm ? 'Cancel' : 'Invite Member'}
+          </button>
+        </div>
       </section>
 
       {/* Invite Form */}
@@ -191,9 +253,7 @@ export function PartnerStaffManagement() {
                   <SelectValue placeholder="Select role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="sales">Sales</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="viewer">Viewer</SelectItem>
+                  <SelectItem value="staff">Staff</SelectItem>
                   <SelectItem value="owner">Owner</SelectItem>
                 </SelectContent>
               </Select>
@@ -204,19 +264,71 @@ export function PartnerStaffManagement() {
             <button
               onClick={handleInvite}
               disabled={inviteMutation.isPending || !inviteFormData.email}
-              className="px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-5 py-2 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {inviteMutation.isPending ? 'Sending...' : 'Send Invitation'}
             </button>
             <button
               onClick={() => {
                 setShowInviteForm(false);
-                setInviteFormData({ email: '', role: 'sales' });
+                setInviteFormData({ email: '', role: 'staff' });
               }}
-              className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors"
+              className="px-5 py-2 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium transition-colors"
             >
               Cancel
             </button>
+          </div>
+        </section>
+      )}
+
+      {/* Pending Invites */}
+      {pendingInvites.length > 0 && (
+        <section className="space-y-8">
+          <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
+            <h3 className="text-lg font-medium tracking-tight">Pending Invites</h3>
+            <span className="text-sm text-foreground font-medium">{pendingInvites.length}</span>
+          </div>
+
+          <div className="space-y-4">
+            {pendingInvites.map((invite: any) => (
+              <div 
+                key={invite.id} 
+                className="rounded-xl border border-border/40 p-5 flex items-center justify-between gap-4"
+              >
+                <div className="flex items-center gap-4 flex-1 min-w-0">
+                  <UserAvatar
+                    name={invite.email}
+                    size="md"
+                    className="shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">{invite.email}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Invited as {invite.role}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-yellow-500 flex-shrink-0" />
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">
+                      {new Date(invite.expiresAt).toLocaleDateString('en-AE', { month: 'short', day: 'numeric' })}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (confirm('Cancel this invitation?')) {
+                        cancelInviteMutation.mutate(invite.id);
+                      }
+                    }}
+                    disabled={cancelInviteMutation.isPending}
+                    className="px-3 py-1 text-xs text-muted-foreground hover:text-red-500 transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
       )}
@@ -234,7 +346,7 @@ export function PartnerStaffManagement() {
             <p className="text-sm text-muted-foreground mb-6">No team members yet</p>
             <button
               onClick={() => setShowInviteForm(true)}
-              className="px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-sm transition-colors"
+              className="px-5 py-2 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-colors"
             >
               Invite First Member
             </button>
@@ -244,7 +356,7 @@ export function PartnerStaffManagement() {
             {activeTeam.map((member) => (
               <div 
                 key={member.id} 
-                className="rounded-xl border border-border p-6 hover:bg-secondary/10 transition-colors"
+                className="rounded-xl border border-border/40 p-6 hover:bg-secondary/50 transition-colors"
               >
                 <div className="flex items-start justify-between gap-4">
                   
@@ -270,13 +382,13 @@ export function PartnerStaffManagement() {
                       )}
 
                       <div className="flex items-center gap-3">
-                        <span className="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-500 text-xs font-medium capitalize">
+                        <span className="px-3 py-1 rounded-full bg-muted border border-border/40 text-xs text-muted-foreground capitalize">
                           {member.role}
                         </span>
                         
                         {member.status === 'active' && (
-                          <span className="inline-flex items-center gap-1.5 text-xs text-green-500">
-                            <div className="w-1.5 h-1.5 rounded-full bg-current" />
+                          <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
                             Active
                           </span>
                         )}
@@ -286,9 +398,8 @@ export function PartnerStaffManagement() {
 
                   {/* Remove Button */}
                   <button
-                    onClick={() => handleRemove(member.id)}
-                    disabled={removeMutation.isPending}
-                    className="p-2 hover:bg-red-500/10 rounded-lg transition-colors group disabled:opacity-50"
+                    onClick={() => handleOpenDeleteModal(member)}
+                    className="p-2 hover:bg-red-500/10 rounded-lg transition-colors group"
                     title="Remove member"
                   >
                     <Trash2 className="w-4 h-4 text-muted-foreground group-hover:text-red-500 transition-colors" />
@@ -331,7 +442,7 @@ export function PartnerStaffManagement() {
                     </div>
                     
                     <div className="flex items-center gap-3 flex-wrap">
-                      <span className="px-2 py-0.5 rounded-md bg-muted text-muted-foreground text-xs font-medium capitalize">
+                      <span className="px-3 py-1 rounded-full bg-muted border border-border/40 text-xs text-muted-foreground capitalize">
                         Was: {member.role}
                       </span>
                       
@@ -364,39 +475,36 @@ export function PartnerStaffManagement() {
       {/* Role Descriptions */}
       <section className="space-y-8">
         <div className="border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">Role Permissions</h3>
+          <h3 className="text-lg font-medium tracking-tight">Understanding Roles</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="rounded-xl border border-border p-6 space-y-2">
-            <h4 className="font-medium">Sales</h4>
+          <div className="rounded-xl border border-border/40 p-6 space-y-2 bg-card">
+            <h4 className="font-medium">Owner</h4>
             <p className="text-sm text-muted-foreground">
-              Can manage listings, respond to inquiries, and view analytics. No access to settings or team management.
+              As an owner you get to know all stats and understand about your business. Full access to everything including business settings and team management.
             </p>
           </div>
 
-          <div className="rounded-xl border border-border p-6 space-y-2">
-            <h4 className="font-medium">Manager</h4>
+          <div className="rounded-xl border border-border/40 p-6 space-y-2 bg-card">
+            <h4 className="font-medium">Staff</h4>
             <p className="text-sm text-muted-foreground">
-              Full access to listings and team operations. Can invite/remove sales staff. Cannot modify business profile.
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-border p-6 space-y-2">
-            <h4 className="font-medium">Admin</h4>
-            <p className="text-sm text-muted-foreground">
-              Complete control over dealership account, including business profile, billing, and all team operations.
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-border p-6 space-y-2">
-            <h4 className="font-medium">Viewer</h4>
-            <p className="text-sm text-muted-foreground">
-              Read-only access to listings and analytics. Cannot modify anything or respond to inquiries.
+              As a staff member, they can do all the operations for you including managing listings, responding to inquiries, and handling day-to-day tasks.
             </p>
           </div>
         </div>
       </section>
+
+      {/* Delete Confirmation Modal */}
+      <StaffDeleteModal
+        open={deleteModal.open}
+        onClose={handleCloseDeleteModal}
+        memberName={deleteModal.member?.displayName || ''}
+        memberEmail={deleteModal.member?.email || deleteModal.member?.userEmail || ''}
+        isLoading={removeMutation.isPending}
+        error={deleteError}
+        onConfirm={handleConfirmDelete}
+      />
 
     </div>
   );

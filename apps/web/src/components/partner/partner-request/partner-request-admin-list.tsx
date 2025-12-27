@@ -1,7 +1,7 @@
 /**
  * Partner Request Admin List
  * Admin view for managing partner applications
- * Following profile-view design system
+ * Following Alifh design system
  */
 
 'use client';
@@ -9,12 +9,25 @@
 import { useState } from 'react';
 import { usePartnerRequestsAdmin, usePartnerRequestReview } from '@/hooks/partner';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Building2, CheckCircle2, XCircle } from 'lucide-react';
+import { 
+  Loader2, 
+  Building2, 
+  CheckCircle2, 
+  XCircle,
+  FileText,
+  Calendar,
+  User,
+  Mail,
+  ExternalLink,
+  Download,
+  Eye
+} from 'lucide-react';
 
 export function PartnerRequestAdminList() {
   const [statusFilter, setStatusFilter] = useState<'pending' | 'approved' | 'rejected' | undefined>();
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState('');
+  const [viewingDocument, setViewingDocument] = useState<string | null>(null);
   
   const { data, isLoading, refetch } = usePartnerRequestsAdmin({
     status: statusFilter,
@@ -48,185 +61,287 @@ export function PartnerRequestAdminList() {
     );
   };
 
+  const viewDocument = async (key: string) => {
+    try {
+      const response = await fetch(`/api/storage/private-url?key=${encodeURIComponent(key)}`);
+      if (!response.ok) throw new Error('Failed to generate URL');
+      const data = await response.json();
+      window.open(data.url, '_blank');
+    } catch (error) {
+      toast({
+        title: 'Failed to open document',
+        description: 'Could not generate secure URL',
+        variant: 'destructive',
+      });
+    }
+  };
+
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
+      <div className="flex items-center justify-center min-h-[400px]">
         <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-16">
-      
-      {/* Stats */}
-      <section className="space-y-6">
-        <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">Overview</h3>
-        </div>
+    <div className="min-h-screen bg-background pb-32">
+      <div className="max-w-6xl mx-auto px-8 py-16 space-y-16">
         
-        <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border divide-x divide-border bg-background">
-          <div className="p-8 flex flex-col gap-3">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Total</span>
-            <span className="text-2xl font-semibold text-blue-500">{counts?.total || 0}</span>
+        {/* Header */}
+        <section className="space-y-4">
+          <h1>Partner Applications</h1>
+          <p className="text-muted-foreground">
+            Review and manage partner verification requests
+          </p>
+        </section>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border/40 divide-x divide-border/40">
+          <div className="p-6 md:p-8 flex flex-col gap-1">
+            <small className="text-muted-foreground">Total</small>
+            <h2>{counts?.total || 0}</h2>
           </div>
           <button
-            onClick={() => setStatusFilter('pending')}
-            className={`p-8 flex flex-col gap-3 hover:bg-secondary/20 transition-colors ${
+            onClick={() => setStatusFilter(statusFilter === 'pending' ? undefined : 'pending')}
+            className={`p-6 md:p-8 flex flex-col gap-1 hover:bg-secondary/30 transition-colors text-left ${
               statusFilter === 'pending' ? 'bg-secondary/40' : ''
             }`}
           >
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Pending</span>
-            <span className="text-2xl font-semibold text-yellow-500">{counts?.pending || 0}</span>
+            <small className="text-muted-foreground">Pending</small>
+            <h2 className="text-yellow-500">{counts?.pending || 0}</h2>
           </button>
           <button
-            onClick={() => setStatusFilter('approved')}
-            className={`p-8 flex flex-col gap-3 hover:bg-secondary/20 transition-colors ${
+            onClick={() => setStatusFilter(statusFilter === 'approved' ? undefined : 'approved')}
+            className={`p-6 md:p-8 flex flex-col gap-1 hover:bg-secondary/30 transition-colors text-left ${
               statusFilter === 'approved' ? 'bg-secondary/40' : ''
             }`}
           >
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Approved</span>
-            <span className="text-2xl font-semibold text-green-500">{counts?.approved || 0}</span>
+            <small className="text-muted-foreground">Approved</small>
+            <h2 className="text-green-500">{counts?.approved || 0}</h2>
           </button>
           <button
-            onClick={() => setStatusFilter('rejected')}
-            className={`p-8 flex flex-col gap-3 hover:bg-secondary/20 transition-colors ${
+            onClick={() => setStatusFilter(statusFilter === 'rejected' ? undefined : 'rejected')}
+            className={`p-6 md:p-8 flex flex-col gap-1 hover:bg-secondary/30 transition-colors text-left ${
               statusFilter === 'rejected' ? 'bg-secondary/40' : ''
             }`}
           >
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Rejected</span>
-            <span className="text-2xl font-semibold text-foreground">{counts?.rejected || 0}</span>
+            <small className="text-muted-foreground">Rejected</small>
+            <h2>{counts?.rejected || 0}</h2>
           </button>
         </div>
-      </section>
 
-      {/* Requests List */}
-      <section className="space-y-6">
-        <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">Applications</h3>
-          {statusFilter && (
-            <button
-              onClick={() => setStatusFilter(undefined)}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Clear filter
-            </button>
+        {/* Requests List */}
+        <section className="space-y-8">
+          <div className="flex items-baseline justify-between pb-3">
+            <div>
+              <h2>Applications</h2>
+              {statusFilter && (
+                <small className="text-muted-foreground">Filtered by: {statusFilter}</small>
+              )}
+            </div>
+            {statusFilter && (
+              <button
+                onClick={() => setStatusFilter(undefined)}
+                className="text-sm text-primary hover:text-primary/80 transition-colors font-medium"
+              >
+                Clear filter
+              </button>
+            )}
+          </div>
+
+          {requests.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24 text-center rounded-2xl border border-border/40 bg-secondary/10">
+              <Building2 className="w-16 h-16 text-muted-foreground/20 mb-4" />
+              <p className="text-muted-foreground">
+                {statusFilter ? `No ${statusFilter} requests found` : 'No partner applications yet'}
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {requests.map(({ request, user }) => (
+                <div 
+                  key={request.id} 
+                  className="rounded-2xl border border-border/40 bg-card/50 backdrop-blur-sm overflow-hidden hover:border-border/60 transition-all"
+                >
+                  {/* Header */}
+                  <div className="p-8 border-b border-border/40">
+                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-3 mb-2">
+                          <h3 className="text-foreground">{request.companyNameLegal}</h3>
+                          <span className={`px-3 py-1 text-xs rounded-full ${
+                            request.status === 'pending' ? 'text-yellow-600 bg-yellow-500/10' :
+                            request.status === 'approved' ? 'text-green-600 bg-green-500/10' :
+                            'text-red-600 bg-red-500/10'
+                          }`}>
+                            {request.status}
+                          </span>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Mail className="w-3.5 h-3.5" />
+                            {user?.email}
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Calendar className="w-3.5 h-3.5" />
+                            Applied {new Date(request.createdAt).toLocaleDateString('en-AE', {
+                              month: 'long',
+                              day: 'numeric',
+                              year: 'numeric',
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Details Grid */}
+                  <div className="p-8 space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      {/* Company Info */}
+                      <div className="space-y-4">
+                        <h3 className="text-sm text-muted-foreground">Company Information</h3>
+                        <div className="space-y-3">
+                          <div className="space-y-1">
+                            <small className="text-muted-foreground">Type</small>
+                            <p className="text-sm text-foreground capitalize">{request.partnerType.replace('_', ' ')}</p>
+                          </div>
+                          <div className="space-y-1">
+                            <small className="text-muted-foreground">Company Size</small>
+                            <p className="text-sm text-foreground capitalize">{request.companySize}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Legal Info */}
+                      <div className="space-y-4">
+                        <h3 className="text-sm text-muted-foreground">Legal Documents</h3>
+                        <div className="space-y-3">
+                          <div className="space-y-1">
+                            <small className="text-muted-foreground">Trade License</small>
+                            <p className="text-sm text-foreground font-mono">{request.tradeLicense}</p>
+                          </div>
+                          <div className="space-y-1">
+                            <small className="text-muted-foreground">Expiry Date</small>
+                            <p className="text-sm text-foreground">
+                              {new Date(request.tradeLicenseExpiry).toLocaleDateString('en-AE', {
+                                month: 'long',
+                                day: 'numeric',
+                                year: 'numeric',
+                              })}
+                            </p>
+                          </div>
+                          <div className="space-y-1">
+                            <small className="text-muted-foreground">VAT Number</small>
+                            <p className="text-sm text-foreground font-mono">{request.vatNumber}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Document */}
+                    {request.tradeLicenseDocumentUrl && (
+                      <div className="pt-6 border-t border-border/40">
+                        <h3 className="text-sm text-muted-foreground mb-4">Uploaded Documents</h3>
+                        <button
+                          onClick={() => viewDocument(request.tradeLicenseDocumentUrl)}
+                          className="group flex items-center gap-4 p-4 rounded-xl border border-border/40 hover:bg-secondary/30 transition-all w-full md:w-auto"
+                        >
+                          <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                            <FileText className="w-4 h-4 text-muted-foreground" />
+                          </div>
+                          <div className="text-left flex-1 min-w-0">
+                            <p className="text-sm font-medium text-foreground mb-0.5">Trade License Document</p>
+                            <small className="text-muted-foreground">Click to view</small>
+                          </div>
+                          <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Actions */}
+                    {request.status === 'pending' && !rejectingId && (
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-6 border-t border-border/40">
+                        <button
+                          onClick={() => handleReview(request.id, 'approved')}
+                          disabled={isReviewing}
+                          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-green-500 hover:bg-green-600 text-white text-sm font-medium transition-all disabled:opacity-50"
+                        >
+                          {isReviewing ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <CheckCircle2 className="w-4 h-4" />
+                          )}
+                          Approve Application
+                        </button>
+                        <button
+                          onClick={() => setRejectingId(request.id)}
+                          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-border/40 hover:border-red-500/30 hover:bg-red-500/10 text-foreground hover:text-red-500 text-sm font-medium transition-all"
+                        >
+                          <XCircle className="w-4 h-4" />
+                          Reject
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Rejection Form */}
+                    {rejectingId === request.id && (
+                      <div className="space-y-4 pt-6 border-t border-border/40">
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-foreground">Rejection Reason</label>
+                          <textarea
+                            value={rejectionReason}
+                            onChange={(e) => setRejectionReason(e.target.value)}
+                            placeholder="Provide a clear reason for rejection..."
+                            rows={4}
+                            className="w-full p-4 bg-background border border-border/40 rounded-xl focus:border-primary outline-none transition-all placeholder:text-muted-foreground/40 resize-none text-foreground"
+                          />
+                        </div>
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                          <button
+                            onClick={() => {
+                              if (rejectionReason.trim()) {
+                                handleReview(request.id, 'rejected', rejectionReason);
+                              } else {
+                                toast({ title: 'Rejection reason required', variant: 'destructive' });
+                              }
+                            }}
+                            disabled={isReviewing || !rejectionReason.trim()}
+                            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition-all disabled:opacity-50"
+                          >
+                            {isReviewing && <Loader2 className="w-4 h-4 animate-spin" />}
+                            Confirm Rejection
+                          </button>
+                          <button
+                            onClick={() => {
+                              setRejectingId(null);
+                              setRejectionReason('');
+                            }}
+                            className="px-6 py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Rejection Reason Display */}
+                    {request.status === 'rejected' && request.rejectionReason && (
+                      <div className="space-y-2 pt-6 border-t border-border/40">
+                        <small className="text-muted-foreground">Rejection Reason</small>
+                        <p className="text-sm text-foreground">{request.rejectionReason}</p>
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+              ))}
+            </div>
           )}
-        </div>
+        </section>
 
-        {requests.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <Building2 className="w-12 h-12 text-muted-foreground/30 mb-4" />
-            <p className="text-sm text-muted-foreground">
-              {statusFilter ? `No ${statusFilter} requests found` : 'No partner applications yet'}
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-0 border border-border rounded-xl overflow-hidden divide-y divide-border">
-            {requests.map(({ request, user }) => (
-              <div key={request.id} className="p-6 hover:bg-secondary/10 transition-colors">
-                
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
-                      <h3 className="text-base font-medium text-foreground">{request.companyNameLegal}</h3>
-                      <span className={`px-2 py-0.5 text-xs font-medium rounded-md ${
-                        request.status === 'pending' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' :
-                        request.status === 'approved' ? 'bg-green-500/10 text-green-600 dark:text-green-400' :
-                        'bg-red-500/10 text-red-600 dark:text-red-400'
-                      }`}>
-                        {request.status}
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{user?.email}</p>
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {new Date(request.createdAt).toLocaleDateString('en-AE', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm text-muted-foreground mb-4">
-                  <div>
-                    <span className="font-medium">Type:</span> {request.partnerType.replace('_', ' ')}
-                  </div>
-                  <div>
-                    <span className="font-medium">License:</span> {request.tradeLicense}
-                  </div>
-                  <div>
-                    <span className="font-medium">Size:</span> {request.companySize}
-                  </div>
-                </div>
-
-                {request.status === 'pending' && !rejectingId && (
-                  <div className="flex items-center gap-3 pt-4 border-t border-border">
-                    <button
-                      onClick={() => handleReview(request.id, 'approved')}
-                      disabled={isReviewing}
-                      className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-green-500 hover:bg-green-600 text-white text-sm font-medium transition-colors disabled:opacity-50"
-                    >
-                      {isReviewing ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      ) : (
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                      )}
-                      Approve
-                    </button>
-                    <button
-                      onClick={() => setRejectingId(request.id)}
-                      className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition-colors"
-                    >
-                      <XCircle className="w-3.5 h-3.5" />
-                      Reject
-                    </button>
-                  </div>
-                )}
-
-                {rejectingId === request.id && (
-                  <div className="space-y-3 pt-4 border-t border-border">
-                    <textarea
-                      value={rejectionReason}
-                      onChange={(e) => setRejectionReason(e.target.value)}
-                      placeholder="Reason for rejection..."
-                      className="w-full h-24 p-3 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors placeholder:text-muted-foreground/30 resize-none"
-                    />
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => {
-                          if (rejectionReason.trim()) {
-                            handleReview(request.id, 'rejected', rejectionReason);
-                          } else {
-                            toast({ title: 'Rejection reason required', variant: 'destructive' });
-                          }
-                        }}
-                        disabled={isReviewing || !rejectionReason.trim()}
-                        className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition-colors disabled:opacity-50"
-                      >
-                        {isReviewing && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                        Confirm Rejection
-                      </button>
-                      <button
-                        onClick={() => {
-                          setRejectingId(null);
-                          setRejectionReason('');
-                        }}
-                        className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-
+      </div>
     </div>
   );
 }
