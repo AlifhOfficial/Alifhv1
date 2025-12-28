@@ -9,11 +9,105 @@ import { useState } from 'react';
 import { PartnerApplicationForm } from './partner-application-form';
 import { PartnerApplicationStatus } from './partner-application-status';
 import { UserStaffInvites } from './user-staff-invites';
-import { usePartnerRequest } from '@/hooks/partner';
+import { usePartnerRequest, usePartnerRequestDismiss, type PartnerRequest } from '@/hooks/partner';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowRight, Loader2, ArrowLeft, RefreshCw } from 'lucide-react';
+import { ArrowRight, Loader2, ArrowLeft, RefreshCw, XCircle, Trash2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+
+// ============================================================================
+// Types
+// ============================================================================
 
 type TabType = 'overview' | 'partner-application' | 'staff-invites';
+
+interface RejectedApplicationCardProps {
+  request: PartnerRequest;
+  onDismiss: () => void;
+  onReapply: () => void;
+}
+
+// ============================================================================
+// Rejected Application Card Component
+// ============================================================================
+
+/**
+ * Shows rejected partner application with dismiss option
+ */
+const RejectedApplicationCard = ({ request, onDismiss, onReapply }: RejectedApplicationCardProps) => {
+  const { dismiss, isDismissing } = usePartnerRequestDismiss();
+  const { toast } = useToast();
+
+  const handleDismiss = () => {
+    dismiss(undefined, {
+      onSuccess: () => {
+        toast({
+          title: 'Application Dismissed',
+          description: 'The rejected application has been cleared from your dashboard.',
+        });
+        onDismiss();
+      },
+      onError: (error) => {
+        toast({
+          title: 'Failed to Dismiss',
+          description: error.message,
+          variant: 'destructive',
+        });
+      },
+    });
+  };
+
+  return (
+    <div className="bg-card rounded-2xl border border-border/40 p-8">
+      <div className="flex items-start gap-4 mb-6">
+        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+          <XCircle className="w-5 h-5 text-red-500" />
+        </div>
+        <div className="flex-1">
+          <h4 className="font-medium text-foreground mb-1">Application Not Approved</h4>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+            Your application for <span className="font-medium text-foreground">{request.companyNameLegal}</span> was not approved.
+          </p>
+          {request.rejectionReason && (
+            <div className="bg-muted/50 rounded-lg p-3 mb-4">
+              <p className="text-xs text-muted-foreground mb-1">Feedback</p>
+              <p className="text-sm text-foreground">{request.rejectionReason}</p>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      <div className="flex items-center gap-3">
+        <button
+          onClick={onReapply}
+          className="flex-1 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-medium text-sm transition-colors"
+        >
+          Submit New Application
+        </button>
+        <button
+          onClick={handleDismiss}
+          disabled={isDismissing}
+          className="px-4 py-2.5 rounded-xl border border-border/40 hover:bg-secondary/50 text-muted-foreground hover:text-foreground font-medium text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
+        >
+          {isDismissing ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Dismissing...
+            </>
+          ) : (
+            <>
+              <Trash2 className="w-4 h-4" />
+              Dismiss
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// Main Component
+// ============================================================================
 
 export function UserRequestsHub() {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
@@ -68,9 +162,17 @@ export function UserRequestsHub() {
             <p className="text-sm text-muted-foreground mt-1">Apply to become a verified dealership partner</p>
           </div>
           
-          {/* Show status for pending/approved requests, show apply button if no request or rejected */}
+          {/* Show status for pending/approved requests */}
           {partnerRequest && (partnerRequest.status === 'pending' || partnerRequest.status === 'approved') ? (
             <PartnerApplicationStatus />
+          ) : partnerRequest?.status === 'rejected' ? (
+            <RejectedApplicationCard 
+              request={partnerRequest}
+              onDismiss={() => {
+                queryClient.invalidateQueries({ queryKey: ['partner', 'request'] });
+              }}
+              onReapply={() => setActiveTab('partner-application')}
+            />
           ) : (
             <button
               onClick={() => setActiveTab('partner-application')}
@@ -78,13 +180,9 @@ export function UserRequestsHub() {
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 space-y-2">
-                  <h4 className="font-medium">
-                    {partnerRequest?.status === 'rejected' ? 'Re-apply as Partner' : 'Become a Partner'}
-                  </h4>
+                  <h4 className="font-medium">Become a Partner</h4>
                   <p className="text-sm text-muted-foreground">
-                    {partnerRequest?.status === 'rejected' 
-                      ? 'Your previous application was not approved. You can submit a new application.'
-                      : 'Join the UAE\'s most transparent car marketplace'}
+                    Join the UAE's most transparent car marketplace
                   </p>
                 </div>
                 <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all flex-shrink-0 mt-1" />

@@ -8,7 +8,7 @@
 
 import { CarCard } from "./car-card";
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
-import { Users, CheckCircle2, Clock, Archive, ShoppingCart, AlertCircle, XCircle, User } from "lucide-react";
+import { Users, CheckCircle2, Clock, Archive, ShoppingCart, AlertCircle, XCircle, User, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import {
@@ -383,9 +383,10 @@ export function PartnerInventoryClient({
           <button
             onClick={() => fetchListings(true)}
             disabled={isRefreshing}
-            className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 rounded-full hover:bg-secondary/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Refresh"
           >
-            {isRefreshing ? 'Refreshing...' : 'Refresh'}
+            <RefreshCw className="w-4 h-4" />
           </button>
         </div>
 
@@ -393,26 +394,22 @@ export function PartnerInventoryClient({
         {stats && (
           <div className="space-y-6">
             {/* Primary Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border divide-x divide-border">
+            <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border/40 divide-x divide-border/40">
               <div className="p-8 text-center">
-                <Users className="w-5 h-5 text-blue-500 mx-auto mb-3" />
-                <p className="text-xs text-muted-foreground mb-1">Active</p>
-                <p className="text-xl font-semibold text-blue-500">{stats.active}</p>
+                <p className="text-sm text-muted-foreground mb-2">Active</p>
+                <p className="text-2xl font-semibold text-blue-500">{stats.active}</p>
               </div>
               <div className="p-8 text-center">
-                <Users className="w-5 h-5 text-green-500 mx-auto mb-3" />
-                <p className="text-xs text-muted-foreground mb-1">Public</p>
-                <p className="text-xl font-semibold text-green-500">{stats.public}</p>
+                <p className="text-sm text-muted-foreground mb-2">Public</p>
+                <p className="text-2xl font-semibold text-green-500">{stats.public}</p>
               </div>
               <div className="p-8 text-center">
-                <Users className="w-5 h-5 text-yellow-500 mx-auto mb-3" />
-                <p className="text-xs text-muted-foreground mb-1">Draft</p>
-                <p className="text-xl font-semibold text-yellow-500">{stats.draft}</p>
+                <p className="text-sm text-muted-foreground mb-2">Draft</p>
+                <p className="text-2xl font-semibold text-yellow-500">{stats.draft}</p>
               </div>
               <div className="p-8 text-center">
-                <Users className="w-5 h-5 text-foreground mx-auto mb-3" />
-                <p className="text-xs text-muted-foreground mb-1">Total</p>
-                <p className="text-xl font-semibold text-foreground">{stats.all}</p>
+                <p className="text-sm text-muted-foreground mb-2">Total</p>
+                <p className="text-2xl font-semibold text-foreground">{stats.all}</p>
               </div>
             </div>
 
@@ -420,39 +417,39 @@ export function PartnerInventoryClient({
             {(stats.inReview > 0 || stats.rejected > 0 || stats.archived > 0 || stats.sold > 0 || stats.expired > 0 || stats.suspended > 0) && (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                 {stats.inReview > 0 && (
-                  <div className="p-4 rounded-xl border border-border text-center">
-                    <p className="text-xs text-muted-foreground mb-1">In Review</p>
-                    <p className="text-lg font-semibold text-blue-500">{stats.inReview}</p>
+                  <div className="p-5 rounded-xl border border-border/40 text-center">
+                    <p className="text-sm text-muted-foreground mb-2">In Review</p>
+                    <p className="text-xl font-semibold text-blue-500">{stats.inReview}</p>
                   </div>
                 )}
                 {stats.rejected > 0 && (
-                  <div className="p-4 rounded-xl border border-border text-center">
-                    <p className="text-xs text-muted-foreground mb-1">Rejected</p>
-                    <p className="text-lg font-semibold text-red-500">{stats.rejected}</p>
+                  <div className="p-5 rounded-xl border border-border/40 text-center">
+                    <p className="text-sm text-muted-foreground mb-2">Rejected</p>
+                    <p className="text-xl font-semibold text-red-500">{stats.rejected}</p>
                   </div>
                 )}
                 {stats.archived > 0 && (
-                  <div className="p-4 rounded-xl border border-border text-center">
-                    <p className="text-xs text-muted-foreground mb-1">Archived</p>
-                    <p className="text-lg font-semibold text-muted-foreground">{stats.archived}</p>
+                  <div className="p-5 rounded-xl border border-border/40 text-center">
+                    <p className="text-sm text-muted-foreground mb-2">Archived</p>
+                    <p className="text-xl font-semibold text-muted-foreground">{stats.archived}</p>
                   </div>
                 )}
                 {stats.sold > 0 && (
-                  <div className="p-4 rounded-xl border border-border text-center">
-                    <p className="text-xs text-muted-foreground mb-1">Sold</p>
-                    <p className="text-lg font-semibold text-green-500">{stats.sold}</p>
+                  <div className="p-5 rounded-xl border border-border/40 text-center">
+                    <p className="text-sm text-muted-foreground mb-2">Sold</p>
+                    <p className="text-xl font-semibold text-green-500">{stats.sold}</p>
                   </div>
                 )}
                 {stats.expired > 0 && (
-                  <div className="p-4 rounded-xl border border-border text-center">
-                    <p className="text-xs text-muted-foreground mb-1">Expired</p>
-                    <p className="text-lg font-semibold text-orange-500">{stats.expired}</p>
+                  <div className="p-5 rounded-xl border border-border/40 text-center">
+                    <p className="text-sm text-muted-foreground mb-2">Expired</p>
+                    <p className="text-xl font-semibold text-orange-500">{stats.expired}</p>
                   </div>
                 )}
                 {stats.suspended > 0 && (
-                  <div className="p-4 rounded-xl border border-border text-center">
-                    <p className="text-xs text-muted-foreground mb-1">Suspended</p>
-                    <p className="text-lg font-semibold text-red-500">{stats.suspended}</p>
+                  <div className="p-5 rounded-xl border border-border/40 text-center">
+                    <p className="text-sm text-muted-foreground mb-2">Suspended</p>
+                    <p className="text-xl font-semibold text-red-500">{stats.suspended}</p>
                   </div>
                 )}
               </div>
@@ -465,10 +462,10 @@ export function PartnerInventoryClient({
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setSelectedStatusTab('active')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
                 selectedStatusTab === 'active'
-                  ? 'bg-green-500 text-white'
-                  : 'bg-muted/20 text-muted-foreground hover:bg-muted/40'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'border border-border/40 hover:bg-secondary/50'
               }`}
             >
               Active ({stats.active})
@@ -476,10 +473,10 @@ export function PartnerInventoryClient({
             {stats.sold > 0 && (
               <button
                 onClick={() => setSelectedStatusTab('sold')}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
                   selectedStatusTab === 'sold'
-                    ? 'bg-purple-500 text-white'
-                    : 'bg-muted/20 text-muted-foreground hover:bg-muted/40'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'border border-border/40 hover:bg-secondary/50'
                 }`}
               >
                 Sold ({stats.sold})
@@ -488,10 +485,10 @@ export function PartnerInventoryClient({
             {stats.archived > 0 && (
               <button
                 onClick={() => setSelectedStatusTab('archived')}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
                   selectedStatusTab === 'archived'
-                    ? 'bg-gray-500 text-white'
-                    : 'bg-muted/20 text-muted-foreground hover:bg-muted/40'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'border border-border/40 hover:bg-secondary/50'
                 }`}
               >
                 Archived ({stats.archived})
@@ -500,10 +497,10 @@ export function PartnerInventoryClient({
             {stats.expired > 0 && (
               <button
                 onClick={() => setSelectedStatusTab('expired')}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
                   selectedStatusTab === 'expired'
-                    ? 'bg-orange-500 text-white'
-                    : 'bg-muted/20 text-muted-foreground hover:bg-muted/40'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'border border-border/40 hover:bg-secondary/50'
                 }`}
               >
                 Expired ({stats.expired})
@@ -511,10 +508,10 @@ export function PartnerInventoryClient({
             )}
             <button
               onClick={() => setSelectedStatusTab('all')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
                 selectedStatusTab === 'all'
-                  ? 'bg-foreground text-background'
-                  : 'bg-muted/20 text-muted-foreground hover:bg-muted/40'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'border border-border/40 hover:bg-secondary/50'
               }`}
             >
               All ({stats.all})
@@ -536,13 +533,15 @@ export function PartnerInventoryClient({
               {allStaffForDisplay.map((staff) => (
                 <button
                   key={staff.userId}
-                  onClick={() => setSelectedStaffFilter(staff.userId)}
-                  className={`p-6 rounded-xl border text-left transition-colors ${
+                  onClick={() => setSelectedStaffFilter(
+                    selectedStaffFilter === staff.userId ? 'all' : staff.userId
+                  )}
+                  className={`p-6 rounded-xl border border-border/40 text-left transition-all ${
                     selectedStaffFilter === staff.userId
-                      ? 'border-blue-500 bg-blue-500/10'
+                      ? 'bg-secondary/50'
                       : staff.isActive === false
-                        ? 'border-red-500/30 bg-red-500/5 hover:bg-red-500/10'
-                        : 'border-border hover:bg-secondary/10'
+                        ? 'bg-red-500/5 hover:bg-red-500/10'
+                        : 'hover:bg-muted/15'
                   }`}
                 >
                   <div className="flex items-center gap-3 mb-3">
@@ -567,7 +566,7 @@ export function PartnerInventoryClient({
                     </div>
                   </div>
                   <div className="flex items-baseline gap-2">
-                    <p className={`text-2xl font-semibold ${staff.isActive === false ? 'text-red-500' : 'text-blue-500'}`}>{staff.listingCount}</p>
+                    <p className={`text-2xl font-semibold ${staff.isActive === false ? 'text-red-500' : 'text-primary'}`}>{staff.listingCount}</p>
                     <p className="text-xs text-muted-foreground">{staff.listingCount === 1 ? 'listing' : 'listings'}</p>
                     {staff.isActive === false && (
                       <span className="text-xs text-red-500">needs reassignment</span>
@@ -576,37 +575,6 @@ export function PartnerInventoryClient({
                 </button>
               ))}
             </div>
-            
-            {/* Filter Actions */}
-            {selectedStaffFilter !== 'all' && (() => {
-              const selectedStaff = allStaffForDisplay.find(s => s.userId === selectedStaffFilter);
-              const isResigned = selectedStaff?.isActive === false;
-              
-              return (
-                <div className={`flex items-center justify-between p-4 rounded-xl border ${
-                  isResigned 
-                    ? 'border-red-500/20 bg-red-500/10' 
-                    : 'border-blue-500/20 bg-blue-500/10'
-                }`}>
-                  <div className="flex-1">
-                    <p className="text-sm text-foreground">
-                      Showing listings managed by <span className="font-medium">{selectedStaff?.displayName}</span>
-                      {isResigned && (
-                        <span className="ml-2 text-red-500">(Resigned - these listings need reassignment)</span>
-                      )}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => setSelectedStaffFilter('all')}
-                      className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors"
-                    >
-                      Show All
-                    </button>
-                  </div>
-                </div>
-              );
-            })()}
           </section>
         )}
       </section>
@@ -621,7 +589,7 @@ export function PartnerInventoryClient({
       {/* Loading State */}
       {isLoading && (
         <div className="text-center py-16">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-sm text-muted-foreground">Loading inventory...</p>
         </div>
       )}
@@ -649,7 +617,7 @@ export function PartnerInventoryClient({
               const StatusIcon = statusBadge.icon;
               
               return (
-              <div key={listing.id} className="rounded-xl border border-border p-6 hover:bg-secondary/10 transition-colors relative">
+              <div key={listing.id} className="rounded-xl border border-border/40 p-6 hover:bg-secondary/50 transition-colors relative">
                 {/* Status Badge - Top Right */}
                 <div className="absolute top-4 right-4">
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${statusBadge.className}`}>
@@ -660,7 +628,7 @@ export function PartnerInventoryClient({
                 
                 <div className="flex gap-6">
                   {/* Thumbnail */}
-                  <div className="w-48 h-32 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+                  <div className="w-48 h-32 bg-muted rounded-xl overflow-hidden flex-shrink-0">
                     {listing.thumbnail ? (
                       <img
                         src={listing.thumbnail}
@@ -675,33 +643,55 @@ export function PartnerInventoryClient({
                   </div>
 
                   {/* Details */}
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between pr-24">
-                      <div>
-                        <Link
-                          href={`/listings/${listing.id}`}
-                          className="text-lg font-medium hover:text-primary transition-colors"
-                        >
-                          {listing.year} {listing.make} {listing.model}
-                          {listing.trim && ` ${listing.trim}`}
-                        </Link>
-                        
-                        {/* Staff Member Info */}
-                        <div className="flex items-center gap-3 mt-2">
-                          {listing.postedByDisplayName && (
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                              <UserAvatar
-                                size="xs"
-                                src={teamMemberMap.get(listing.postedByUserId || '')?.avatar || listing.postedByAvatar}
-                                name={listing.postedByDisplayName}
-                              />
-                              <span>Managed by <span className="font-medium text-foreground">{listing.postedByDisplayName}</span></span>
-                            </div>
-                          )}
-                        </div>
+                  <div className="flex-1 flex flex-col">
+                    <div className="pr-24 flex-1">
+                      <Link
+                        href={`/listings/${listing.id}`}
+                        className="text-lg font-medium hover:text-primary transition-colors"
+                      >
+                        {listing.year} {listing.make} {listing.model}
+                        {listing.trim && ` ${listing.trim}`}
+                      </Link>
+                      
+                      {/* Staff Member Info */}
+                      <div className="flex items-center gap-3 mt-2">
+                        {listing.postedByDisplayName && (
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <UserAvatar
+                              size="xs"
+                              src={teamMemberMap.get(listing.postedByUserId || '')?.avatar || listing.postedByAvatar}
+                              name={listing.postedByDisplayName}
+                            />
+                            <span>Managed by <span className="font-medium text-foreground">{listing.postedByDisplayName}</span></span>
+                          </div>
+                        )}
                       </div>
+                    </div>
 
-                      {/* Price */}
+                    {/* Actions and Price Row */}
+                    <div className="flex items-end justify-between mt-4">
+                      <div className="flex flex-wrap gap-3">
+                        <Link href={`/listings/${listing.id}`}>
+                          <button className="px-5 py-2 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium transition-colors">
+                            View
+                          </button>
+                        </Link>
+                        {canReassign && allStaffData.activeStaff.length > 1 && (
+                          <button
+                            onClick={() => setReassignModal({
+                              open: true,
+                              listingId: listing.id,
+                              listingTitle: `${listing.year} ${listing.make} ${listing.model}`,
+                              currentManagerId: listing.postedByUserId || null,
+                            })}
+                            className="px-5 py-2 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium transition-colors"
+                          >
+                            Reassign
+                          </button>
+                        )}
+                      </div>
+                      
+                      {/* Price - Bottom Right */}
                       <div className="text-right">
                         <p className="text-base font-medium text-foreground">
                           {listing.price.toLocaleString()} AED
@@ -710,28 +700,6 @@ export function PartnerInventoryClient({
                           Updated {new Date(listing.updatedAt).toLocaleDateString()}
                         </p>
                       </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex flex-wrap gap-3 mt-4">
-                      <Link href={`/listings/${listing.id}`}>
-                        <button className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors">
-                          View
-                        </button>
-                      </Link>
-                      {canReassign && allStaffData.activeStaff.length > 1 && (
-                        <button
-                          onClick={() => setReassignModal({
-                            open: true,
-                            listingId: listing.id,
-                            listingTitle: `${listing.year} ${listing.make} ${listing.model}`,
-                            currentManagerId: listing.postedByUserId || null,
-                          })}
-                          className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors"
-                        >
-                          Reassign
-                        </button>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -744,10 +712,12 @@ export function PartnerInventoryClient({
 
       {/* Empty State - No listings at all */}
       {!isLoading && !error && listings.length === 0 && (
-        <div className="rounded-xl border border-border p-16 text-center">
-          <Users className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
-          <h3 className="text-lg font-medium text-foreground mb-2">No listings yet</h3>
-          <p className="text-sm text-muted-foreground">
+        <div className="flex flex-col items-center justify-center py-24 px-6">
+          <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-6">
+            <ShoppingCart className="w-8 h-8 text-muted-foreground/50" />
+          </div>
+          <h3 className="text-xl font-semibold text-foreground mb-2">No listings yet</h3>
+          <p className="text-sm text-muted-foreground max-w-md text-center">
             Your staff members haven't created any listings yet. Staff can create listings from the Work Listings dashboard.
           </p>
         </div>
@@ -755,12 +725,14 @@ export function PartnerInventoryClient({
 
       {/* Empty State - No listings in current filter */}
       {!isLoading && !error && listings.length > 0 && filteredListings.length === 0 && (
-        <div className="rounded-xl border border-border p-16 text-center">
-          <Archive className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
-          <h3 className="text-lg font-medium text-foreground mb-2">
+        <div className="flex flex-col items-center justify-center py-24 px-6">
+          <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-6">
+            <Archive className="w-8 h-8 text-muted-foreground/50" />
+          </div>
+          <h3 className="text-xl font-semibold text-foreground mb-2">
             No {selectedStatusTab === 'all' ? '' : selectedStatusTab} listings
           </h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground max-w-md text-center">
             No listings match the current filter. Try selecting a different status tab.
           </p>
         </div>
@@ -821,14 +793,14 @@ export function PartnerInventoryClient({
                   setReassignError(null);
                 }}
                 disabled={isReassigning}
-                className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors disabled:opacity-50"
+                className="px-5 py-2 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 onClick={handleReassign}
                 disabled={!reassignTargetUserId || isReassigning}
-                className="px-5 py-2 rounded-full bg-blue-500 text-white text-sm transition-colors hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isReassigning ? 'Reassigning...' : 'Reassign'}
               </button>

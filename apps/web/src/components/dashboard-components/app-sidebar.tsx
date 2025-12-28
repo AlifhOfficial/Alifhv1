@@ -182,20 +182,22 @@ export function AppSidebar({ user, items, sections, staffOverride }: AppSidebarP
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" className="cursor-default hover:bg-transparent">
               <div className="flex items-center gap-3 w-full">
-                {isStaffMode ? (
-                  <BrandAvatar
-                    logoUrl={staffOverride?.companyLogo}
-                    brandName={staffOverride?.companyName || 'Company'}
-                    size="xs"
-                  />
-                ) : (
-                  <UserAvatar
-                    src={avatarUrl}
-                    name={displayName}
-                    size="sm"
-                    useGeneratedAvatar={useGeneratedAvatar}
-                  />
-                )}
+                <div className="shrink-0">
+                  {isStaffMode ? (
+                    <BrandAvatar
+                      logoUrl={staffOverride?.companyLogo}
+                      brandName={staffOverride?.companyName || 'Company'}
+                      size="xs"
+                    />
+                  ) : (
+                    <UserAvatar
+                      src={avatarUrl}
+                      name={displayName}
+                      size="sm"
+                      useGeneratedAvatar={useGeneratedAvatar}
+                    />
+                  )}
+                </div>
                 <div className="flex flex-col min-w-0 flex-1 gap-0.5">
                   <span className="truncate font-semibold text-sm tracking-tight">{displayName}</span>
                   <span className="truncate text-xs text-sidebar-foreground/70">

@@ -66,7 +66,21 @@ export default function InventoryPage() {
       const newListings = data.data ?? [];
       const meta = data.meta ?? {};
       
-      setListings(prev => append ? [...prev, ...newListings] : newListings);
+      // Deduplicate listings by ID to prevent duplicate key errors
+      setListings(prev => {
+        if (!append) return newListings;
+        
+        // Create a Set of existing IDs for fast lookup
+        const existingIds = new Set(prev.map(listing => listing.id));
+        
+        // Filter out duplicates from new listings
+        const uniqueNewListings = newListings.filter(
+          (listing: Listing) => !existingIds.has(listing.id)
+        );
+        
+        return [...prev, ...uniqueNewListings];
+      });
+      
       // The API does not return a full total count (edge runtime). Use returned + hasMore.
       setTotalCount(meta.returned ?? newListings.length);
       setHasMore(meta.hasMore ?? (newListings.length === LIMIT));
@@ -177,9 +191,9 @@ export default function InventoryPage() {
               {/* Grid View */}
               {viewMode === 'grid' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {listings.map((listing) => (
+                  {listings.map((listing, index) => (
                     <CarCard
-                      key={listing.id}
+                      key={`${listing.id}-${index}`}
                       id={listing.id}
                       make={listing.make}
                       model={listing.model}
@@ -206,9 +220,9 @@ export default function InventoryPage() {
               {/* List View */}
               {viewMode === 'list' && (
                 <div className="space-y-4">
-                  {listings.map((listing) => (
+                  {listings.map((listing, index) => (
                     <CarListItem
-                      key={listing.id}
+                      key={`${listing.id}-${index}`}
                       id={listing.id}
                       make={listing.make}
                       model={listing.model}

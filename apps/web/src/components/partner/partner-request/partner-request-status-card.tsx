@@ -85,6 +85,7 @@ export function PartnerRequestStatusCard({ onUpdate }: PartnerRequestStatusCardP
       case 'rejected':
         return {
           icon: XCircle,
+          iconColor: 'text-red-500',
           title: 'Application Not Approved',
           description: 'Unfortunately, your partner application was not approved at this time. Please review the feedback below and consider re-applying.',
           badge: 'Rejected',

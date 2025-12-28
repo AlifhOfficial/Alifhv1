@@ -12,7 +12,7 @@
 
 import { db } from '../../dbclient';
 import { partnerRequest, user, partner, partnerStaff } from '../../schema';
-import { eq, and, desc, sql } from 'drizzle-orm';
+import { eq, and, desc, sql, inArray } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 
 // ============================================================================
@@ -304,7 +304,9 @@ export async function linkPartnerRequestToPartner(
 // ============================================================================
 
 /**
- * Delete a partner request (User can delete their own pending request)
+ * Delete a partner request (User can delete their pending or rejected request)
+ * - Pending: Cancellation
+ * - Rejected: Dismissal to clear from their dashboard
  */
 export async function deletePartnerRequest(requestId: string, userId: string) {
   const [deleted] = await db
@@ -313,7 +315,7 @@ export async function deletePartnerRequest(requestId: string, userId: string) {
       and(
         eq(partnerRequest.id, requestId),
         eq(partnerRequest.userId, userId),
-        eq(partnerRequest.status, 'pending')
+        inArray(partnerRequest.status, ['pending', 'rejected'])
       )
     )
     .returning();

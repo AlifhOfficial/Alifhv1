@@ -184,7 +184,7 @@ export async function GET(req: NextRequest) {
 }
 
 // ============================================================================
-// DELETE - Cancel Partner Request
+// DELETE - Cancel/Dismiss Partner Request
 // ============================================================================
 
 export async function DELETE(req: NextRequest) {
@@ -206,18 +206,28 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
+    // Allow deletion for pending (cancel) and rejected (dismiss) requests
+    if (existingRequest.status === 'approved') {
+      return NextResponse.json(
+        { error: 'Cannot delete approved requests' },
+        { status: 400 }
+      );
+    }
+
     const deleted = await deletePartnerRequest(existingRequest.id, user.id);
 
     if (!deleted) {
       return NextResponse.json(
-        { error: 'Can only delete pending requests' },
+        { error: 'Failed to delete request' },
         { status: 400 }
       );
     }
 
     const response = NextResponse.json({ 
       success: true,
-      message: 'Partner request cancelled'
+      message: existingRequest.status === 'rejected' 
+        ? 'Partner request dismissed' 
+        : 'Partner request cancelled'
     });
 
     Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 

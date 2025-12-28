@@ -57,6 +57,7 @@ export function PartnerApplicationForm() {
   });
   
   const [selectedDate, setSelectedDate] = useState<Date>();
+  const [dateInputValue, setDateInputValue] = useState('');
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -389,32 +390,78 @@ export function PartnerApplicationForm() {
                     Expiry Date
                     <span className="text-red-500">*</span>
                   </label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <button
-                        type="button"
-                        className={cn(
-                          "w-full h-11 pl-7 pr-4 bg-transparent border-b border-border/40 hover:border-primary/60 focus:border-primary outline-none transition-all text-left flex items-center gap-2",
-                          !selectedDate && "text-muted-foreground/40"
-                        )}
-                      >
-                        <CalendarIcon className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        {selectedDate ? format(selectedDate, "PPP") : "Select expiry date"}
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={selectedDate}
-                        onSelect={(date) => {
-                          setSelectedDate(date);
-                          updateField('tradeLicenseExpiry', date ? format(date, 'yyyy-MM-dd') : '');
-                        }}
-                        disabled={(date) => date < new Date()}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={dateInputValue}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const digits = value.replace(/\D/g, '');
+                        
+                        let formatted = digits;
+                        if (digits.length >= 2) {
+                          formatted = digits.slice(0, 2) + '/' + digits.slice(2);
+                        }
+                        if (digits.length >= 4) {
+                          formatted = digits.slice(0, 2) + '/' + digits.slice(2, 4) + '/' + digits.slice(4, 8);
+                        }
+                        
+                        setDateInputValue(formatted.slice(0, 10));
+                        
+                        if (digits.length === 8) {
+                          const day = parseInt(digits.slice(0, 2));
+                          const month = parseInt(digits.slice(2, 4));
+                          const year = parseInt(digits.slice(4, 8));
+                          
+                          if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && year >= 2025) {
+                            const date = new Date(year, month - 1, day);
+                            if (!isNaN(date.getTime()) && date > new Date()) {
+                              setSelectedDate(date);
+                              updateField('tradeLicenseExpiry', format(date, 'yyyy-MM-dd'));
+                              setErrors(prev => ({ ...prev, tradeLicenseExpiry: '' }));
+                            }
+                          }
+                        }
+                      }}
+                      onBlur={(e) => {
+                        const digits = e.target.value.replace(/\D/g, '');
+                        if (digits.length > 0 && digits.length !== 8) {
+                          setErrors(prev => ({ ...prev, tradeLicenseExpiry: 'Please enter a valid date (DD/MM/YYYY)' }));
+                        } else if (digits.length === 8 && !selectedDate) {
+                          setErrors(prev => ({ ...prev, tradeLicenseExpiry: 'Invalid date or must be in the future' }));
+                        }
+                      }}
+                      placeholder="DD/MM/YYYY"
+                      className="w-full h-11 pl-4 pr-11 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-all placeholder:text-muted-foreground/40 text-foreground"
+                    />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button
+                          type="button"
+                          className="absolute right-0 top-1/2 -translate-y-1/2 h-9 w-9 hover:bg-secondary/60 rounded-lg transition-colors flex items-center justify-center"
+                        >
+                          <CalendarIcon className="w-4 h-4 text-muted-foreground" />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="end" sideOffset={4}>
+                        <Calendar
+                          mode="single"
+                          selected={selectedDate}
+                          onSelect={(date) => {
+                            setSelectedDate(date);
+                            setDateInputValue(date ? format(date, 'dd/MM/yyyy') : '');
+                            updateField('tradeLicenseExpiry', date ? format(date, 'yyyy-MM-dd') : '');
+                            setErrors(prev => ({ ...prev, tradeLicenseExpiry: '' }));
+                          }}
+                          disabled={(date) => date < new Date()}
+                          initialFocus
+                          captionLayout="dropdown"
+                          fromYear={2025}
+                          toYear={2050}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                   {errors.tradeLicenseExpiry && (
                     <small className="text-red-500 block mt-1">{errors.tradeLicenseExpiry}</small>
                   )}

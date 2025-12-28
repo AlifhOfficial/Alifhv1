@@ -190,7 +190,15 @@ async function getListingCardsInternal(
     const idOrder = new Map(idsToFetch.map((id, idx) => [id, idx]));
     listings.sort((a, b) => (idOrder.get(a.id) ?? 0) - (idOrder.get(b.id) ?? 0));
 
-    return listings;
+    // Deduplicate by ID in case of any database anomalies
+    const seen = new Set<string>();
+    const uniqueListings = listings.filter(listing => {
+      if (seen.has(listing.id)) return false;
+      seen.add(listing.id);
+      return true;
+    });
+
+    return uniqueListings;
   }
 
   // Single query when fetching by specific IDs (favorites/superlikes)
@@ -227,7 +235,15 @@ async function getListingCardsInternal(
     .limit(limit)
     .offset(offset);
 
-  return listings;
+  // Deduplicate by ID in case of any database anomalies
+  const seen = new Set<string>();
+  const uniqueListings = listings.filter(listing => {
+    if (seen.has(listing.id)) return false;
+    seen.add(listing.id);
+    return true;
+  });
+
+  return uniqueListings;
 }
 
 export async function getListingCards(filters: CarCardFilters): Promise<CarCardData[]> {

@@ -206,4 +206,41 @@ export function usePartnerRequestCancel() {
   };
 }
 
+// ============================================================================
+// Dismiss Rejected Partner Request Hook
+// ============================================================================
+
+export function usePartnerRequestDismiss() {
+  const queryClient = useQueryClient();
+  const [authRequired, setAuthRequired] = useState<AuthState>(DEFAULT_AUTH_STATE);
+
+  const mutation = useMutation({
+    mutationFn: () => cancelPartnerRequestAPI(), // Same DELETE endpoint works for dismissed rejected applications
+    onError: (error: Error) => {
+      try {
+        const parsed = JSON.parse(error.message);
+        if (parsed.auth) {
+          setAuthRequired({ show: true, message: parsed.message });
+        }
+      } catch {}
+    },
+    onSuccess: () => {
+      // Clear the request from cache
+      queryClient.setQueryData(['partner-request'], null);
+      queryClient.invalidateQueries({ queryKey: ['partner-request'] });
+    },
+  });
+
+  return {
+    dismiss: mutation.mutate,
+    isDismissing: mutation.isPending,
+    error: mutation.error,
+    success: mutation.isSuccess,
+    authRequired: authRequired.show,
+    authMessage: authRequired.message,
+    dismissAuth: () => setAuthRequired(DEFAULT_AUTH_STATE),
+    reset: mutation.reset,
+  };
+}
+
 

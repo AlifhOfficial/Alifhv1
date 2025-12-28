@@ -131,6 +131,24 @@ export async function runBookingMaintenance(options?: { retentionDays?: number }
       .set({ status: 'expired', updatedAt: now })
       .where(and(eq(booking.status, 'pending'), lt(booking.expiresAt, now)));
 
+    // Auto-cancel bookings where the scheduled time has passed with no action
+    // This handles both pending and confirmed bookings that weren't checked in or completed
+    await db
+      .update(booking)
+      .set({ 
+        status: 'cancelled', 
+        cancelledAt: now,
+        cancelledBy: 'system',
+        cancellationNotes: 'Automatically cancelled - scheduled time passed without action',
+        updatedAt: now 
+      })
+      .where(
+        and(
+          inArray(booking.status, ['pending', 'confirmed']),
+          lt(booking.scheduledStartTime, now)
+        )
+      );
+
     // Delete old cancelled/expired bookings
     await db.execute(sql`
       delete from booking

@@ -10,7 +10,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
-import { Trash2, Mail, User, UserMinus, Clock, ArrowLeft, RefreshCw } from 'lucide-react';
+import { Trash2, Mail, User, UserMinus, Clock, ArrowLeft, RefreshCw, Search } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { StaffDeleteModal } from './staff-delete-modal';
 import {
@@ -39,8 +39,7 @@ interface TeamMember {
 export function PartnerStaffManagement() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [showInviteForm, setShowInviteForm] = useState(false);
-  const [inviteFormData, setInviteFormData] = useState({ 
+  const [showInviteForm, setShowInviteForm] = useState(false);  const [searchQuery, setSearchQuery] = useState('');  const [inviteFormData, setInviteFormData] = useState({ 
     email: '', 
     role: 'staff',
     title: '',
@@ -63,6 +62,19 @@ export function PartnerStaffManagement() {
   const activeTeam = team.filter(m => m.status === 'active');
   const formerTeam = team.filter(m => m.status === 'left');
   const pendingInvites = teamData?.invites || [];
+
+  // Filter function for search
+  const filterBySearch = (member: TeamMember) => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    const name = (member.displayName || '').toLowerCase();
+    const email = (member.userEmail || member.email || '').toLowerCase();
+    return name.includes(query) || email.includes(query);
+  };
+
+  // Apply search filter
+  const filteredActiveTeam = activeTeam.filter(filterBySearch);
+  const filteredFormerTeam = formerTeam.filter(filterBySearch);
 
   // Invite mutation
   const inviteMutation = useMutation({
@@ -209,7 +221,7 @@ export function PartnerStaffManagement() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => queryClient.invalidateQueries({ queryKey: ['staff', 'team'] })}
-            className="p-2 hover:bg-secondary/50 rounded-lg transition-colors"
+            className="p-2 rounded-full hover:bg-secondary/50 transition-colors"
             title="Refresh"
           >
             <RefreshCw className="w-4 h-4 text-muted-foreground" />
@@ -220,6 +232,28 @@ export function PartnerStaffManagement() {
           >
             {showInviteForm ? 'Cancel' : 'Invite Member'}
           </button>
+        </div>
+      </section>
+
+      {/* Search Bar */}
+      <section>
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by name or email..."
+            className="w-full h-12 pl-12 pr-4 bg-transparent border border-border/40 rounded-xl focus:border-foreground outline-none transition-colors placeholder:text-muted-foreground/50"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Clear
+            </button>
+          )}
         </div>
       </section>
 
@@ -370,23 +404,40 @@ export function PartnerStaffManagement() {
       <section className="space-y-8">
         <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
           <h3 className="text-lg font-medium tracking-tight">Team Members</h3>
-          <span className="text-sm text-foreground font-medium">{activeTeam.length}</span>
+          <span className="text-sm text-foreground font-medium">
+            {searchQuery ? `${filteredActiveTeam.length} of ${activeTeam.length}` : activeTeam.length}
+          </span>
         </div>
 
-        {activeTeam.length === 0 ? (
-          <div className="text-center py-24 rounded-xl border border-border">
-            <Mail className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-sm text-muted-foreground mb-6">No team members yet</p>
-            <button
-              onClick={() => setShowInviteForm(true)}
-              className="px-5 py-2 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-colors"
-            >
-              Invite First Member
-            </button>
+        {filteredActiveTeam.length === 0 ? (
+          <div className="text-center py-24 rounded-xl border border-border/40">
+            {searchQuery ? (
+              <>
+                <Search className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-sm text-muted-foreground mb-6">No team members match your search</p>
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="px-5 py-2 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium transition-colors"
+                >
+                  Clear Search
+                </button>
+              </>
+            ) : (
+              <>
+                <Mail className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-sm text-muted-foreground mb-6">No team members yet</p>
+                <button
+                  onClick={() => setShowInviteForm(true)}
+                  className="px-5 py-2 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-colors"
+                >
+                  Invite First Member
+                </button>
+              </>
+            )}
           </div>
         ) : (
           <div className="space-y-4">
-            {activeTeam.map((member) => (
+            {filteredActiveTeam.map((member) => (
               <div 
                 key={member.id} 
                 className="rounded-xl border border-border/40 p-6 hover:bg-secondary/50 transition-colors"
@@ -445,15 +496,17 @@ export function PartnerStaffManagement() {
       </section>
 
       {/* Former Staff */}
-      {formerTeam.length > 0 && (
+      {filteredFormerTeam.length > 0 && (
         <section className="space-y-8">
           <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
             <h3 className="text-lg font-medium tracking-tight text-muted-foreground">Former Team Members</h3>
-            <span className="text-sm text-muted-foreground font-medium">{formerTeam.length}</span>
+            <span className="text-sm text-muted-foreground font-medium">
+              {searchQuery ? `${filteredFormerTeam.length} of ${formerTeam.length}` : formerTeam.length}
+            </span>
           </div>
 
           <div className="space-y-4">
-            {formerTeam.map((member) => (
+            {filteredFormerTeam.map((member) => (
               <div 
                 key={member.id} 
                 className="rounded-xl border border-border/50 bg-muted/20 p-6"

@@ -7,7 +7,7 @@
 'use client';
 
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
-import { Calendar, Users, Clock, CheckCircle2 } from "lucide-react";
+import { Calendar, Users, Clock, CheckCircle2, RefreshCw } from "lucide-react";
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 
 interface PartnerBookingsClientProps {
@@ -262,9 +262,10 @@ export function PartnerBookingsClient({
           <button
             onClick={() => fetchData(true)}
             disabled={isRefreshing}
-            className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 rounded-full hover:bg-secondary/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Refresh"
           >
-            {isRefreshing ? 'Refreshing...' : 'Refresh'}
+            <RefreshCw className="w-4 h-4" />
           </button>
         </div>
 
@@ -272,46 +273,42 @@ export function PartnerBookingsClient({
         {stats && (
           <div className="space-y-6">
             {/* Primary Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border divide-x divide-border">
+            <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border/40 divide-x divide-border/40">
               <div className="p-8 text-center">
-                <Calendar className="w-5 h-5 text-yellow-500 mx-auto mb-3" />
-                <p className="text-xs text-muted-foreground mb-1">Today</p>
-                <p className="text-xl font-semibold text-yellow-500">{stats.todayBookings}</p>
+                <p className="text-sm text-muted-foreground mb-2">Today</p>
+                <p className="text-2xl font-semibold text-yellow-500">{stats.todayBookings}</p>
               </div>
               <div className="p-8 text-center">
-                <Clock className="w-5 h-5 text-blue-500 mx-auto mb-3" />
-                <p className="text-xs text-muted-foreground mb-1">Upcoming</p>
-                <p className="text-xl font-semibold text-blue-500">{stats.upcomingBookings}</p>
+                <p className="text-sm text-muted-foreground mb-2">Upcoming</p>
+                <p className="text-2xl font-semibold text-blue-500">{stats.upcomingBookings}</p>
               </div>
               <div className="p-8 text-center">
-                <CheckCircle2 className="w-5 h-5 text-green-500 mx-auto mb-3" />
-                <p className="text-xs text-muted-foreground mb-1">Completed</p>
-                <p className="text-xl font-semibold text-green-500">{stats.completedBookings}</p>
+                <p className="text-sm text-muted-foreground mb-2">Completed</p>
+                <p className="text-2xl font-semibold text-green-500">{stats.completedBookings}</p>
               </div>
               <div className="p-8 text-center">
-                <Users className="w-5 h-5 text-foreground mx-auto mb-3" />
-                <p className="text-xs text-muted-foreground mb-1">Total</p>
-                <p className="text-xl font-semibold text-foreground">{stats.totalBookings}</p>
+                <p className="text-sm text-muted-foreground mb-2">Total</p>
+                <p className="text-2xl font-semibold text-foreground">{stats.totalBookings}</p>
               </div>
             </div>
 
             {/* Secondary Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="p-4 rounded-xl border border-border text-center">
-                <p className="text-xs text-muted-foreground mb-1">Pending</p>
-                <p className="text-lg font-semibold text-yellow-500">{stats.pendingBookings}</p>
+              <div className="p-5 rounded-xl border border-border/40 text-center">
+                <p className="text-sm text-muted-foreground mb-2">Pending</p>
+                <p className="text-xl font-semibold text-yellow-500">{stats.pendingBookings}</p>
               </div>
-              <div className="p-4 rounded-xl border border-border text-center">
-                <p className="text-xs text-muted-foreground mb-1">Confirmed</p>
-                <p className="text-lg font-semibold text-green-500">{stats.confirmedBookings}</p>
+              <div className="p-5 rounded-xl border border-border/40 text-center">
+                <p className="text-sm text-muted-foreground mb-2">Confirmed</p>
+                <p className="text-xl font-semibold text-green-500">{stats.confirmedBookings}</p>
               </div>
-              <div className="p-4 rounded-xl border border-border text-center">
-                <p className="text-xs text-muted-foreground mb-1">Cancelled</p>
-                <p className="text-lg font-semibold text-red-500">{stats.cancelledBookings}</p>
+              <div className="p-5 rounded-xl border border-border/40 text-center">
+                <p className="text-sm text-muted-foreground mb-2">Cancelled</p>
+                <p className="text-xl font-semibold text-red-500">{stats.cancelledBookings}</p>
               </div>
-              <div className="p-4 rounded-xl border border-border text-center">
-                <p className="text-xs text-muted-foreground mb-1">No Show</p>
-                <p className="text-lg font-semibold text-red-500">{stats.noShowBookings}</p>
+              <div className="p-5 rounded-xl border border-border/40 text-center">
+                <p className="text-sm text-muted-foreground mb-2">No Show</p>
+                <p className="text-xl font-semibold text-red-500">{stats.noShowBookings}</p>
               </div>
             </div>
           </div>
@@ -331,13 +328,15 @@ export function PartnerBookingsClient({
               {allStaffForDisplay.map((staff) => (
                 <button
                   key={staff.staffUserId}
-                  onClick={() => setSelectedStaffFilter(staff.staffUserId)}
-                  className={`p-6 rounded-xl border text-left transition-colors ${
+                  onClick={() => setSelectedStaffFilter(
+                    selectedStaffFilter === staff.staffUserId ? 'all' : staff.staffUserId
+                  )}
+                  className={`p-6 rounded-xl border border-border/40 text-left transition-all ${
                     selectedStaffFilter === staff.staffUserId
-                      ? 'border-blue-500 bg-blue-500/10'
+                      ? 'bg-secondary/50'
                       : staff.isActive === false
-                        ? 'border-red-500/30 bg-red-500/5 hover:bg-red-500/10'
-                        : 'border-border hover:bg-secondary/10'
+                        ? 'bg-red-500/5 hover:bg-red-500/10'
+                        : 'hover:bg-muted/15'
                   }`}
                 >
                   <div className="flex items-center gap-3 mb-3">
@@ -361,7 +360,7 @@ export function PartnerBookingsClient({
                     </div>
                   </div>
                   <div className="flex items-baseline gap-2">
-                    <p className={`text-2xl font-semibold ${staff.isActive === false ? 'text-red-500' : 'text-blue-500'}`}>{staff.bookingCount}</p>
+                    <p className={`text-2xl font-semibold ${staff.isActive === false ? 'text-red-500' : 'text-primary'}`}>{staff.bookingCount}</p>
                     <p className="text-xs text-muted-foreground">{staff.bookingCount === 1 ? 'booking' : 'bookings'}</p>
                     {staff.isActive === false && staff.bookingCount > 0 && (
                       <span className="text-xs text-red-500">needs attention</span>
@@ -370,37 +369,6 @@ export function PartnerBookingsClient({
                 </button>
               ))}
             </div>
-            
-            {/* Filter Actions */}
-            {selectedStaffFilter !== 'all' && (() => {
-              const selectedStaff = allStaffForDisplay.find(s => s.staffUserId === selectedStaffFilter);
-              const isResigned = selectedStaff?.isActive === false;
-              
-              return (
-                <div className={`flex items-center justify-between p-4 rounded-xl border ${
-                  isResigned 
-                    ? 'border-red-500/20 bg-red-500/10' 
-                    : 'border-blue-500/20 bg-blue-500/10'
-                }`}>
-                  <div className="flex-1">
-                    <p className="text-sm text-foreground">
-                      Showing bookings for <span className="font-medium">{selectedStaff?.staffName}</span>'s listings
-                      {isResigned && (
-                        <span className="ml-2 text-red-500">(Resigned - these bookings may need attention)</span>
-                      )}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => setSelectedStaffFilter('all')}
-                      className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors"
-                    >
-                      Show All
-                    </button>
-                  </div>
-                </div>
-              );
-            })()}
           </section>
         )}
       </section>
@@ -415,7 +383,7 @@ export function PartnerBookingsClient({
       {/* Loading State */}
       {isLoading && (
         <div className="text-center py-16">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-sm text-muted-foreground">Loading bookings...</p>
         </div>
       )}
@@ -439,11 +407,11 @@ export function PartnerBookingsClient({
               return (
                 <div
                   key={booking.id}
-                  className="rounded-xl border border-border p-6 hover:bg-secondary/10 transition-colors"
+                  className="rounded-xl border border-border/40 p-6 hover:bg-secondary/50 transition-colors"
                 >
                   <div className="flex gap-6">
                     {/* Thumbnail */}
-                    <div className="w-32 h-24 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="w-32 h-24 bg-muted rounded-xl overflow-hidden flex-shrink-0">
                       {booking.listingThumbnail ? (
                         <img
                           src={booking.listingThumbnail}
@@ -487,7 +455,7 @@ export function PartnerBookingsClient({
                           )}
                         </div>
 
-                        <span className={`px-3 py-1 rounded-md text-xs font-medium ${statusInfo.bg} ${statusInfo.text}`}>
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusInfo.bg} ${statusInfo.text}`}>
                           {statusInfo.label}
                         </span>
                       </div>
@@ -502,21 +470,25 @@ export function PartnerBookingsClient({
 
       {/* Empty State - No bookings at all */}
       {!isLoading && !error && allBookings.length === 0 && (
-        <div className="rounded-xl border border-border p-16 text-center">
-          <Calendar className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
-          <h3 className="text-lg font-medium text-foreground mb-2">No bookings yet</h3>
-          <p className="text-sm text-muted-foreground">
-            Customer bookings will appear here once they schedule appointments
+        <div className="flex flex-col items-center justify-center py-24 px-6">
+          <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-6">
+            <CheckCircle2 className="w-8 h-8 text-muted-foreground/50" />
+          </div>
+          <h3 className="text-xl font-semibold text-foreground mb-2">No bookings yet</h3>
+          <p className="text-sm text-muted-foreground max-w-md text-center">
+            Customer bookings will appear here once they schedule appointments for your listings
           </p>
         </div>
       )}
 
       {/* Empty State - No bookings in current filter */}
       {!isLoading && !error && allBookings.length > 0 && filteredBookings.length === 0 && (
-        <div className="rounded-xl border border-border p-16 text-center">
-          <Calendar className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
-          <h3 className="text-lg font-medium text-foreground mb-2">No bookings</h3>
-          <p className="text-sm text-muted-foreground">
+        <div className="flex flex-col items-center justify-center py-24 px-6">
+          <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-6">
+            <CheckCircle2 className="w-8 h-8 text-muted-foreground/50" />
+          </div>
+          <h3 className="text-xl font-semibold text-foreground mb-2">No bookings found</h3>
+          <p className="text-sm text-muted-foreground max-w-md text-center">
             No bookings found for {allStaffForDisplay.find(s => s.staffUserId === selectedStaffFilter)?.staffName}'s listings
           </p>
         </div>

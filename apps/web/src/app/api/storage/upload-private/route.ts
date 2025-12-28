@@ -1,8 +1,8 @@
 /**
- * API: Private Storage File Upload
+ * API: Private Storage File Upload with Image Optimization
  * POST /api/storage/upload-private
  * 
- * Purpose: Upload sensitive files to private storage bucket
+ * Purpose: Upload sensitive files to private storage bucket with automatic optimization
  * Authentication: Required (session-based)
  * 
  * Request Body (multipart/form-data):
@@ -11,6 +11,10 @@
  * - fileName: Custom filename (optional)
  * - contentType: MIME type (optional)
  * 
+ * Processing:
+ * - Images: Converts to WebP, compresses with quality 85, max 2048px
+ * - PDFs: Kept as-is (no compression)
+ * 
  * Returns: { key }
  * 
  * Note: Private files do not return public URLs
@@ -18,10 +22,11 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from 'zod';
+import sharp from "sharp";
 import { uploadPrivateFile } from "@/lib/storage";
 import { auth } from "@/lib/auth";
 
-export const runtime = "edge";
+export const runtime = "nodejs"; // Sharp requires Node.js runtime
 
 const FileUploadSchema = z.object({
   directory: z.string().optional(),
@@ -71,12 +76,41 @@ export async function POST(req: NextRequest) {
     const contentType = validatedContentType || file.type || "application/octet-stream";
 
     const arrayBuffer = await file.arrayBuffer();
+    let processedData: ArrayBuffer | Buffer = arrayBuffer;
+    let finalContentType = contentType;
+    let finalFileName = fileName;
+
+    // Process images with Sharp for optimization
+    const isImage = typeof contentType === "string" && contentType.startsWith("image/");
+    
+    if (isImage) {
+      try {
+        const buffer = Buffer.from(arrayBuffer);
+        const processedBuffer = await sharp(buffer)
+          .resize(2048, 2048, {
+            fit: "inside",
+            withoutEnlargement: true,
+          })
+          .webp({ quality: 85 })
+          .toBuffer();
+        
+        processedData = processedBuffer;
+        finalContentType = "image/webp";
+        // Change extension to .webp
+        finalFileName = typeof fileName === "string" 
+          ? fileName.replace(/\.[^.]+$/, ".webp") 
+          : "document.webp";
+      } catch (error) {
+        console.error('[Upload Private] Image processing failed, uploading original:', error);
+        // If processing fails, upload original
+      }
+    }
 
     const result = await uploadPrivateFile({
-      data: arrayBuffer,
-      contentType: typeof contentType === "string" ? contentType : "application/octet-stream",
+      data: processedData,
+      contentType: typeof finalContentType === "string" ? finalContentType : "application/octet-stream",
       directory: typeof directory === "string" ? directory : undefined,
-      fileName: typeof fileName === "string" ? fileName : undefined,
+      fileName: typeof finalFileName === "string" ? finalFileName : undefined,
       metadata: {
         uploadedBy: session.user.id,
         uploadedAt: new Date().toISOString(),
