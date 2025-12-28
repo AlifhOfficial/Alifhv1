@@ -31,9 +31,13 @@ export const runtime = "nodejs";
 export const dynamic = 'force-dynamic';
 
 const CACHE_HEADERS_PRIVATE = {
-  'Cache-Control': 'private, no-cache, no-store, must-revalidate',
-  'Pragma': 'no-cache',
-  'Expires': '0',
+  'Cache-Control': 'private, max-age=3600, stale-while-revalidate=1800', // 1hr cache, 30min stale
+  'Vary': 'Cookie, Authorization',
+} as const;
+
+const CACHE_HEADERS_FRESH = {
+  'Cache-Control': 'private, max-age=60, stale-while-revalidate=30', // 1min cache after update
+  'Vary': 'Cookie, Authorization',
 } as const;
 
 const UpdateProfileSchema = z.object({
@@ -166,7 +170,8 @@ export async function PATCH(req: NextRequest) {
     const profileWithUrl = await attachAvatarUrl(updated);
 
     const response = NextResponse.json({ profile: profileWithUrl });
-    Object.entries(CACHE_HEADERS_PRIVATE).forEach(([key, value]) => 
+    // Use shorter cache time after updates to ensure fresh data
+    Object.entries(CACHE_HEADERS_FRESH).forEach(([key, value]) => 
       response.headers.set(key, value)
     );
     return response;

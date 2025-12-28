@@ -141,7 +141,7 @@ export default function SuperlikesPage() {
                 </div>
               </div>
             ) : (
-              <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
+              <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
                 {validSuperlikeIds.map((listingId) => {
                   const listing = listingsById.get(listingId)!;
                   

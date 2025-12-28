@@ -4,7 +4,11 @@
 
 'use client';
 
-import { Settings } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   Select,
   SelectContent,
@@ -22,53 +26,61 @@ interface BookingSettingsCardProps {
 
 export function BookingSettingsCard({ settings, isSaving, onUpdate }: BookingSettingsCardProps) {
   return (
-    <section className="space-y-8">
-      <div className="border-b border-border/40 pb-2">
-        <h3 className="text-lg font-medium tracking-tight flex items-center gap-2">
-          <Settings className="w-5 h-5 text-muted-foreground" />
-          Booking Settings
-        </h3>
-      </div>
-      <div className="grid sm:grid-cols-2 gap-4">
-        <label className="flex items-center justify-between p-4 rounded-xl border border-border hover:bg-secondary/10 transition-colors cursor-pointer">
-          <span className="text-sm">Accept Bookings</span>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          className="px-4 py-2 rounded-full bg-sidebar hover:bg-sidebar-accent transition-colors text-sm font-medium text-sidebar-foreground"
+          title="Booking Preferences"
+        >
+          Preferences
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent 
+        align="end" 
+        className="w-[300px] p-5 space-y-4 bg-sidebar border-sidebar-border rounded-xl"
+      >
+        <label className="flex items-center gap-3 cursor-pointer group">
           <input
             type="checkbox"
             checked={settings?.bookingEnabled ?? true}
             onChange={(e) => onUpdate({ bookingEnabled: e.target.checked })}
             disabled={isSaving}
-            className="w-5 h-5 rounded accent-primary"
+            className="w-4 h-4 rounded accent-primary"
           />
+          <span className="text-sm text-sidebar-foreground group-hover:text-sidebar-accent-foreground transition-colors">Accept bookings</span>
         </label>
-        <label className="flex items-center justify-between p-4 rounded-xl border border-border hover:bg-secondary/10 transition-colors cursor-pointer">
-          <span className="text-sm">Auto-confirm Bookings</span>
+
+        <label className="flex items-center gap-3 cursor-pointer group">
           <input
             type="checkbox"
             checked={settings?.autoConfirm ?? false}
             onChange={(e) => onUpdate({ autoConfirm: e.target.checked })}
             disabled={isSaving}
-            className="w-5 h-5 rounded accent-primary"
+            className="w-4 h-4 rounded accent-primary"
           />
+          <span className="text-sm text-sidebar-foreground group-hover:text-sidebar-accent-foreground transition-colors">Auto-confirm</span>
         </label>
-        <label className="flex items-center justify-between p-4 rounded-xl border border-border hover:bg-secondary/10 transition-colors cursor-pointer">
-          <span className="text-sm">Allow Same-Day Bookings</span>
+
+        <label className="flex items-center gap-3 cursor-pointer group">
           <input
             type="checkbox"
             checked={settings?.allowSameDay ?? true}
             onChange={(e) => onUpdate({ allowSameDay: e.target.checked })}
             disabled={isSaving}
-            className="w-5 h-5 rounded accent-primary"
+            className="w-4 h-4 rounded accent-primary"
           />
+          <span className="text-sm text-sidebar-foreground group-hover:text-sidebar-accent-foreground transition-colors">Same-day bookings</span>
         </label>
-        <div className="flex items-center justify-between p-4 rounded-xl border border-border">
-          <span className="text-sm">Max Advance Days</span>
+
+        <div className="flex items-center gap-3 pt-2 border-t border-sidebar-border">
+          <span className="text-sm text-sidebar-foreground">Advance booking</span>
           <Select 
             value={String(settings?.maxAdvanceBookingDays ?? 30)} 
             onValueChange={(v) => onUpdate({ maxAdvanceBookingDays: parseInt(v) })}
             disabled={isSaving}
           >
-            <SelectTrigger className="w-[100px]">
-              <SelectValue placeholder="Days" />
+            <SelectTrigger className="w-[110px] h-9 bg-sidebar-accent border-sidebar-border text-sidebar-foreground">
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="7">7 days</SelectItem>
@@ -79,7 +91,7 @@ export function BookingSettingsCard({ settings, isSaving, onUpdate }: BookingSet
             </SelectContent>
           </Select>
         </div>
-      </div>
-    </section>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

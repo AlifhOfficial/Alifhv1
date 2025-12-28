@@ -50,7 +50,7 @@ export default async function UserDashboardLayout({ children }: { children: Reac
     <WebSocketProvider userId={user.id} autoConnect>
       <DashboardLayout enableRightPanel>
         <AppSidebar user={user} sections={navSections} />
-        <DashboardContent fullHeight>{children}</DashboardContent>
+        <DashboardContent>{children}</DashboardContent>
       </DashboardLayout>
     </WebSocketProvider>
   );

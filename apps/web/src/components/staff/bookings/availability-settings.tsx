@@ -48,7 +48,7 @@ export function AvailabilitySettings({
         </p>
         <button
           onClick={onInitialize}
-          className="px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-sm transition-colors"
+          className="px-5 py-2 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-colors"
         >
           Initialize Default Schedule
         </button>
@@ -58,11 +58,13 @@ export function AvailabilitySettings({
 
   return (
     <div className="space-y-6">
-      <BookingSettingsCard
-        settings={settings}
-        isSaving={savingSettings}
-        onUpdate={onUpdateSettings}
-      />
+      <div className="flex justify-end">
+        <BookingSettingsCard
+          settings={settings}
+          isSaving={savingSettings}
+          onUpdate={onUpdateSettings}
+        />
+      </div>
       <WeeklySchedule
         availability={availability}
         savingDay={savingDay}

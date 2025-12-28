@@ -48,7 +48,7 @@ export default async function StaffDashboardLayout({ children }: { children: Rea
     <WebSocketProvider userId={user.id} autoConnect>
       <DashboardLayout enableRightPanel>
         <AppSidebar user={user} sections={navSections} />
-        <DashboardContent fullHeight>{children}</DashboardContent>
+        <DashboardContent>{children}</DashboardContent>
       </DashboardLayout>
     </WebSocketProvider>
   );

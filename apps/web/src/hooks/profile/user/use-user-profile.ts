@@ -114,13 +114,14 @@ export function useUserProfile() {
   const sessionQuery = useSession() as unknown as { refetch?: (params?: { query?: { disableCookieCache?: boolean } }) => Promise<void> };
   const refetchSession = sessionQuery?.refetch;
 
-  // Fetch profile data
+  // Fetch profile data with proper caching
   const query = useQuery<UserProfile | null>({
     queryKey: ['user-profile'],
     queryFn: fetchUserProfile,
-    staleTime: 0, // Always refetch - avatars need instant updates
-    gcTime: 30000, // Keep in cache for 30s
-    refetchOnWindowFocus: true,
+    staleTime: 60 * 60 * 1000, // 1 hour cache - profiles rarely change
+    gcTime: 90 * 60 * 1000, // Keep in cache for 90 minutes
+    refetchOnWindowFocus: false, // Don't refetch on focus - expensive query
+    refetchOnMount: false, // Don't refetch on remount - use cache
     retry: false, // Don't retry on 401
   });
 
@@ -153,5 +154,23 @@ export function useUserProfile() {
     error: query.error?.message || mutation.error?.message || null,
     refresh: () => queryClient.refetchQueries({ queryKey: ['user-profile'] }),
     updateProfile: (updates: UserProfileUpdate) => mutation.mutateAsync(updates),
+    invalidateCache: () => queryClient.invalidateQueries({ queryKey: ['user-profile'] }),
   };
+}
+
+// ============================================================================
+// Utility Functions
+// ============================================================================
+
+/**
+ * Invalidate user profile cache globally
+ * Use this when profile is updated outside of the hook
+ */
+export function invalidateUserProfileCache() {
+  // This can be imported and used anywhere to invalidate the cache
+  // Useful for forms or components that update profile data
+  if (typeof window !== 'undefined') {
+    const queryClient = require('@tanstack/react-query').useQueryClient();
+    queryClient?.invalidateQueries({ queryKey: ['user-profile'] });
+  }
 }

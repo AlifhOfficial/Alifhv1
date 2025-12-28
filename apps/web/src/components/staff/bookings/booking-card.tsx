@@ -65,10 +65,10 @@ export function BookingCard({
   const hasEnded = scheduledEnd <= now;
 
   return (
-    <div className="rounded-xl border border-border overflow-hidden">
+    <div className="rounded-xl border border-border/40 overflow-hidden">
       {/* Booking Header */}
       <div 
-        className="p-4 cursor-pointer hover:bg-muted/30 transition-colors"
+        className="p-6 cursor-pointer hover:bg-secondary/50 transition-colors"
         onClick={onToggleExpand}
       >
         <div className="flex items-start justify-between gap-4">
@@ -111,7 +111,7 @@ export function BookingCard({
 
       {/* Expanded Details */}
       {isExpanded && (
-        <div className="border-t border-border/40 p-4 bg-muted/20">
+        <div className="border-t border-border/40 p-6 bg-muted/20">
           <div className="grid md:grid-cols-2 gap-4">
             {/* Contact Info */}
             <div className="space-y-2">
@@ -192,7 +192,7 @@ export function BookingCard({
                   <button
                     onClick={() => onAction('confirm')}
                     disabled={isActionLoading}
-                    className="px-5 py-2 rounded-full bg-green-500 hover:bg-green-600 text-white text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-5 py-2 rounded-full bg-green-500 hover:bg-green-600 text-white text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isActionLoading ? 'Confirming...' : 'Confirm'}
                   </button>
@@ -204,7 +204,7 @@ export function BookingCard({
                       }
                     }}
                     disabled={isActionLoading}
-                    className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-5 py-2 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Reject
                   </button>
@@ -218,7 +218,7 @@ export function BookingCard({
                     onAction('cancel', { reason: 'other', notes });
                   }}
                   disabled={isActionLoading}
-                  className="px-5 py-2 rounded-full bg-red-500/10 text-red-500 text-sm hover:bg-red-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-5 py-2 rounded-full bg-red-500/10 text-red-500 text-sm font-medium hover:bg-red-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isActionLoading ? 'Cancelling...' : 'Cancel Booking'}
                 </button>
@@ -229,7 +229,7 @@ export function BookingCard({
                   <button
                     onClick={() => onAction('complete')}
                     disabled={isActionLoading}
-                    className="px-5 py-2 rounded-full bg-green-500 hover:bg-green-600 text-white text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-5 py-2 rounded-full bg-green-500 hover:bg-green-600 text-white text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isActionLoading ? 'Completing...' : 'Mark Complete'}
                   </button>
@@ -239,7 +239,7 @@ export function BookingCard({
                         reason: 'Customer did not show up' 
                       })}
                       disabled={isActionLoading}
-                      className="px-5 py-2 rounded-full bg-yellow-500/10 text-yellow-500 text-sm hover:bg-yellow-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-5 py-2 rounded-full bg-yellow-500/10 text-yellow-500 text-sm font-medium hover:bg-yellow-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isActionLoading ? 'Reporting...' : 'Report No-Show'}
                     </button>

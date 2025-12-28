@@ -215,33 +215,43 @@ export function StaffBookingsView() {
             <button
               onClick={fetchBookings}
               disabled={isLoading}
-              className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-2 hover:bg-secondary/50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Refresh"
             >
-              {isLoading ? 'Refreshing...' : 'Refresh'}
+              <RefreshCw className="w-4 h-4 text-muted-foreground" />
             </button>
           )}
           {activeTab === 'availability' && (
             <button
               onClick={fetchAvailability}
               disabled={availabilityLoading}
-              className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-2 hover:bg-secondary/50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Refresh"
             >
-              {availabilityLoading ? 'Refreshing...' : 'Refresh'}
+              <RefreshCw className="w-4 h-4 text-muted-foreground" />
             </button>
           )}
         </div>
       }
     >
-      <div className="space-y-6">
+      <div className="space-y-16">
+        {/* Error */}
+        {error && (
+          <div className="flex items-start gap-2 p-4 rounded-xl bg-red-500/10 text-red-500 border border-red-500/20">
+            <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+            <p className="text-sm">{error}</p>
+          </div>
+        )}
+
         {/* Tab Navigation */}
-        <div className="flex gap-2 p-1.5 bg-secondary/30 rounded-full w-fit">
+        <div className="flex gap-2">
           <button
             onClick={() => setActiveTab('bookings')}
             className={cn(
-              "px-5 py-2 rounded-full text-sm transition-all",
+              "px-5 py-2 rounded-full text-sm font-medium transition-colors",
               activeTab === 'bookings'
-                ? "bg-blue-500 text-white"
-                : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                ? "bg-primary text-primary-foreground"
+                : "border border-border/40 hover:bg-secondary/50"
             )}
           >
             Bookings
@@ -249,23 +259,15 @@ export function StaffBookingsView() {
           <button
             onClick={() => setActiveTab('availability')}
             className={cn(
-              "px-5 py-2 rounded-full text-sm transition-all",
+              "px-5 py-2 rounded-full text-sm font-medium transition-colors",
               activeTab === 'availability'
-                ? "bg-blue-500 text-white"
-                : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                ? "bg-primary text-primary-foreground"
+                : "border border-border/40 hover:bg-secondary/50"
             )}
           >
             Availability
           </button>
         </div>
-
-        {/* Error */}
-        {error && (
-          <div className="flex items-start gap-2 p-4 rounded-xl bg-red-500/10 text-red-500 border border-red-500/20">
-            <AlertCircle className="w-4 h-4 mt-0.5" />
-            <p className="text-sm">{error}</p>
-          </div>
-        )}
 
         {/* Availability Settings Tab */}
         {activeTab === 'availability' && (

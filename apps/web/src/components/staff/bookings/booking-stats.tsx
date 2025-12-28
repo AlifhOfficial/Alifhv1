@@ -4,7 +4,6 @@
 
 'use client';
 
-import { Calendar, Clock, CheckCircle, Eye } from 'lucide-react';
 import type { BookingStats } from './types';
 
 interface BookingStatsCardsProps {
@@ -13,26 +12,22 @@ interface BookingStatsCardsProps {
 
 export function BookingStatsCards({ stats }: BookingStatsCardsProps) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border divide-x divide-border">
-      <div className="p-8 text-center">
-        <Clock className="w-5 h-5 text-yellow-500 mx-auto mb-3" />
-        <p className="text-xs text-muted-foreground mb-1">Pending</p>
-        <p className="text-xl font-semibold text-yellow-500">{stats.pendingBookings}</p>
+    <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border/40 divide-x divide-border/40">
+      <div className="p-8 flex flex-col gap-2">
+        <small className="text-muted-foreground">Pending</small>
+        <h2 className="text-yellow-500">{stats.pendingBookings}</h2>
       </div>
-      <div className="p-8 text-center">
-        <CheckCircle className="w-5 h-5 text-foreground mx-auto mb-3" />
-        <p className="text-xs text-muted-foreground mb-1">Confirmed</p>
-        <p className="text-xl font-semibold text-foreground">{stats.confirmedBookings}</p>
+      <div className="p-8 flex flex-col gap-2">
+        <small className="text-muted-foreground">Confirmed</small>
+        <h2 className="text-green-500">{stats.confirmedBookings}</h2>
       </div>
-      <div className="p-8 text-center">
-        <Calendar className="w-5 h-5 text-green-500 mx-auto mb-3" />
-        <p className="text-xs text-muted-foreground mb-1">Today</p>
-        <p className="text-xl font-semibold text-green-500">{stats.todayBookings}</p>
+      <div className="p-8 flex flex-col gap-2">
+        <small className="text-muted-foreground">Today</small>
+        <h2 className="text-blue-500">{stats.todayBookings}</h2>
       </div>
-      <div className="p-8 text-center">
-        <Eye className="w-5 h-5 text-blue-500 mx-auto mb-3" />
-        <p className="text-xs text-muted-foreground mb-1">Total</p>
-        <p className="text-xl font-semibold text-blue-500">{stats.totalBookings}</p>
+      <div className="p-8 flex flex-col gap-2">
+        <small className="text-muted-foreground">Total</small>
+        <h2 className="text-foreground">{stats.totalBookings}</h2>
       </div>
     </div>
   );

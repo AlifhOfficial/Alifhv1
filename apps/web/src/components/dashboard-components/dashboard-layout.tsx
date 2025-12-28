@@ -7,12 +7,14 @@
 
 import { type ReactNode, createContext, useContext, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { useTheme } from 'next-themes';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/dashboard-components/theme-toggle";
 import { handleSignOut } from '@/lib/auth/sign-out';
-import { Home, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 
 // ============================================================================
 // Right Panel Context (for partner 3-column layout)
@@ -125,6 +127,7 @@ interface DashboardContentProps {
 }
 
 export function DashboardContent({ children, header, fullHeight = false }: DashboardContentProps) {
+  const { resolvedTheme } = useTheme();
   const onSignOut = async () => {
     await handleSignOut();
   };
@@ -143,21 +146,18 @@ export function DashboardContent({ children, header, fullHeight = false }: Dashb
         )}
         
         {/* Right side actions */}
-        <div className="ml-auto flex items-center gap-1">
-          <Button variant="ghost" size="icon" asChild>
+        <div className="ml-auto flex items-center gap-2">
+          <Button variant="ghost" asChild className="h-8 px-3">
             <Link href="/">
-              <Home className="size-4" />
-              <span className="sr-only">Home</span>
+              Home
             </Link>
           </Button>
           <Button 
             variant="ghost" 
-            size="icon" 
             onClick={onSignOut}
-            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+            className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-3"
           >
-            <LogOut className="size-4" />
-            <span className="sr-only">Sign Out</span>
+            Sign Out
           </Button>
         </div>
       </header>

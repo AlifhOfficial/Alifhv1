@@ -67,7 +67,7 @@ export function BookingVerifyByCode({ onSuccess }: BookingVerifyByCodeProps) {
   }
 
   return (
-    <div className="rounded-xl border border-border p-6 space-y-4">
+    <div className="rounded-xl border border-border/40 p-6 space-y-4">
       <div className="flex items-center justify-between gap-3">
         <div className="text-sm font-medium">Verify booking by code</div>
         {message && (
@@ -101,7 +101,7 @@ export function BookingVerifyByCode({ onSuccess }: BookingVerifyByCodeProps) {
         <button
           onClick={submit}
           disabled={isSubmitting || code.trim().length === 0}
-          className="px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+          className="px-5 py-2 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
         >
           {isSubmitting ? 'Processing...' : 'Apply'}
         </button>

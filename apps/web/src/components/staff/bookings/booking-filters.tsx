@@ -28,10 +28,10 @@ export function BookingFilters({ selectedStatus, onStatusChange }: BookingFilter
             key={status}
             onClick={() => onStatusChange(status)}
             className={cn(
-              "px-5 py-2 rounded-full text-sm transition-colors",
+              "px-5 py-2 rounded-full text-sm font-medium transition-colors",
               selectedStatus === status
-                ? "bg-blue-500 hover:bg-blue-600 text-white"
-                : "border border-border hover:bg-secondary/10"
+                ? "bg-primary text-primary-foreground"
+                : "border border-border/40 hover:bg-secondary/50"
             )}
           >
             {status === 'all' ? 'All' : STATUS_LABELS[status]}
