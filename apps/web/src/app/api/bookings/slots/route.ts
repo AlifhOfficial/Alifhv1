@@ -88,6 +88,13 @@ export async function GET(req: NextRequest) {
           preparationInstructions: settings.preparationInstructions,
           directions: settings.directions,
           parkingInstructions: settings.parkingInstructions,
+          contactPersonName: settings.contactPersonName,
+          contactPersonPhone: settings.contactPersonPhone,
+          allowUserCancellation: settings.allowUserCancellation,
+          cancellationDeadlineHours: settings.cancellationDeadlineHours,
+          allowReschedule: settings.allowReschedule,
+          maxRescheduleCount: settings.maxRescheduleCount,
+          rescheduleDeadlineHours: settings.rescheduleDeadlineHours,
         } : null,
       });
     }

@@ -24,29 +24,40 @@ function isExtendedUser(user: unknown): user is ExtendedUser {
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const isApiRoute = pathname.startsWith('/api/');
 
   // Get session token from cookies - Better Auth stores session data in cookies
   const sessionToken = request.cookies.get("better-auth.session_token")?.value;
 
-  // Redirect to sign-in if no session token
+  // Redirect to sign-in if no session token (pages only, not API routes)
   if (!sessionToken) {
+    if (isApiRoute) {
+      // API routes handle their own 401 responses
+      return NextResponse.next();
+    }
     const signInUrl = new URL("/sign-in", request.url);
     signInUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(signInUrl);
   }
 
-  // Fetch session once for all protected routes (including user-dashboard)
+  // Fetch session once for all protected routes
   try {
     const session = await auth.api.getSession({
       headers: request.headers,
     });
 
     if (!session?.user) {
+      if (isApiRoute) {
+        return NextResponse.next();
+      }
       return NextResponse.redirect(new URL("/sign-in", request.url));
     }
 
     // Better Auth typing can be a union; only proceed once we confirm customSession fields exist.
     if (!isExtendedUser(session.user)) {
+      if (isApiRoute) {
+        return NextResponse.next();
+      }
       return NextResponse.redirect(new URL("/sign-in", request.url));
     }
 
@@ -56,6 +67,11 @@ export async function proxy(request: NextRequest) {
     // This eliminates redundant session fetches during the request lifecycle
     const response = NextResponse.next();
     response.headers.set(SESSION_HEADER_KEY, JSON.stringify(user));
+
+    // API routes don't need role-based redirects - they handle their own auth
+    if (isApiRoute) {
+      return response;
+    }
 
     // Role-based access control for specific dashboards
     const needsRoleCheck =

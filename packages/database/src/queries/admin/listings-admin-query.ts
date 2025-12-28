@@ -30,7 +30,7 @@ export interface GetAdminListingsOptions {
 }
 
 export async function getAdminListings(options: GetAdminListingsOptions = {}) {
-  const { status, moderationStatus, lifecycleStatus, type, sort = 'newest', limit = 500, offset = 0 } = options;
+  const { status, moderationStatus, lifecycleStatus, type, sort = 'newest', limit = 50, offset = 0 } = options;
   const now = new Date();
 
   const conditions: SQL[] = [];

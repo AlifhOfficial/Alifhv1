@@ -21,6 +21,7 @@ import {
   getStaffListingsBookings,
   getPartnerBookingStats,
   memoryCache,
+  type BookingStatus,
 } from '@alifh/database';
 
 export const runtime = 'nodejs';
@@ -60,7 +61,9 @@ export async function GET(req: NextRequest) {
     }
 
     // Parse status filter
-    const status = statusParam ? statusParam.split(',').filter(Boolean) : undefined;
+    const status = statusParam 
+      ? statusParam.split(',').filter(Boolean) as BookingStatus[] 
+      : undefined;
 
     // Fetch bookings - either for specific staff member or all partner bookings
     let bookingsData;

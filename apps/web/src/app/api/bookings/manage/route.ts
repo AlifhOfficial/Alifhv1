@@ -15,12 +15,14 @@ import {
   getStaffBookingStats,
   runBookingMaintenance,
   memoryCache,
+  type BookingStatus,
 } from '@alifh/database';
 
 export const runtime = 'nodejs';
 
 const BOOKING_MAINTENANCE_TTL_SECONDS = 300;
 const PARTNER_BOOKING_STATS_TTL_SECONDS = 15;
+const BOOKINGS_LIST_TTL_SECONDS = 5; // Short TTL for list freshness
 
 /**
  * GET /api/bookings/manage
@@ -49,29 +51,42 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
-    const status = searchParams.get('status')?.split(',');
+    const statusParam = searchParams.get('status')?.split(',');
+    const status = statusParam as BookingStatus[] | undefined;
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
     const includeStats = searchParams.get('stats') === 'true';
 
-    // Staff dashboard always shows bookings for the current user's listings only
-    // This endpoint is for personal staff view - use /api/bookings/partner-bookings for all partner bookings
-    const result = await getStaffListingsBookings(user.id, membership.partnerId, {
-      status,
-      limit,
-      offset,
-    });
-
-    // Staff always see only their own listings' booking stats
-    let stats: Awaited<ReturnType<typeof getStaffBookingStats>> | null = null;
-    if (includeStats) {
-      const statsKey = `bookingStats:staff:${user.id}:${membership.partnerId}`;
-      stats = memoryCache.get(statsKey);
-      if (!stats) {
-        stats = await getStaffBookingStats(user.id, membership.partnerId);
-        memoryCache.set(statsKey, stats, PARTNER_BOOKING_STATS_TTL_SECONDS);
-      }
-    }
+    // Run bookings and stats queries in parallel for better performance
+    const bookingsKey = `bookings:staff:${user.id}:${membership.partnerId}:${status?.join(',') || 'all'}:${limit}:${offset}`;
+    
+    const [result, stats] = await Promise.all([
+      // Bookings list (with short-lived cache)
+      (async () => {
+        let cachedBookings = memoryCache.get<Awaited<ReturnType<typeof getStaffListingsBookings>>>(bookingsKey);
+        if (!cachedBookings) {
+          cachedBookings = await getStaffListingsBookings(user.id, membership.partnerId, {
+            status,
+            limit,
+            offset,
+          });
+          memoryCache.set(bookingsKey, cachedBookings, BOOKINGS_LIST_TTL_SECONDS);
+        }
+        return cachedBookings;
+      })(),
+      // Stats (with caching)
+      includeStats
+        ? (async () => {
+            const statsKey = `bookingStats:staff:${user.id}:${membership.partnerId}`;
+            let cachedStats = memoryCache.get<Awaited<ReturnType<typeof getStaffBookingStats>>>(statsKey);
+            if (!cachedStats) {
+              cachedStats = await getStaffBookingStats(user.id, membership.partnerId);
+              memoryCache.set(statsKey, cachedStats, PARTNER_BOOKING_STATS_TTL_SECONDS);
+            }
+            return cachedStats;
+          })()
+        : Promise.resolve(null),
+    ]);
 
     return NextResponse.json({
       ...result,

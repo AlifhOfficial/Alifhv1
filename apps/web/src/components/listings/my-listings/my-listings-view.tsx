@@ -422,17 +422,16 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
     : '/user-dashboard/listings/new';
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Page Container */}
-      <div className="max-w-6xl mx-auto px-6 py-16 space-y-16">
+    <div className="min-h-screen bg-background pb-32">
+      <div className="max-w-6xl mx-auto px-8 py-16 space-y-16">
         {/* Header Section */}
-        <section className="space-y-8">
-          <div className="flex items-center justify-between">
+        <section className="space-y-6">
+          <div className="flex items-start justify-between">
             <div>
               <h1 className="text-2xl font-semibold tracking-tight">
                 {listingType === 'work' ? 'Work Listings' : 'My Listings'}
               </h1>
-              <p className="text-sm text-muted-foreground mt-2">
+              <p className="text-sm text-muted-foreground/70 mt-2">
                 {listingType === 'work' 
                   ? 'Manage listings for your partner/dealership' 
                   : 'Manage your personal car listings'}
@@ -442,9 +441,12 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
             <button 
               onClick={() => fetchData(true)} 
               disabled={isRefreshing}
-              className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-2 hover:bg-secondary/50 rounded-lg transition-colors disabled:opacity-50"
+              title="Refresh"
             >
-              {isRefreshing ? 'Refreshing...' : 'Refresh'}
+              <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
             </button>
           </div>
 
@@ -456,7 +458,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
             onDeepInventoryFilterChange={handleDeepInventoryFilterChange}
           />
 
-          <div className="flex flex-col gap-3 mt-6">
+          <div className="flex flex-col gap-4 mt-6">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_14rem_auto] sm:items-center">
               <div className="flex items-center gap-3">
                 <input
@@ -466,18 +468,18 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
                     if (e.key === 'Enter') applySearch();
                   }}
                   placeholder="Search make, model, year, VIN..."
-                  className="flex-1 h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors px-0 text-sm"
+                  className="flex-1 h-10 bg-transparent border-b border-border/40 focus:border-foreground outline-none transition-colors px-0 text-sm"
                 />
                 <button 
                   onClick={applySearch} 
-                  className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors"
+                  className="px-5 py-2 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium transition-colors"
                 >
                   Search
                 </button>
                 {(draftQuery || appliedQuery) && (
                   <button 
                     onClick={clearSearch} 
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-xs text-muted-foreground/70 hover:text-foreground transition-colors"
                   >
                     Clear
                   </button>
@@ -485,7 +487,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
               </div>
 
               <Select value={sort} onValueChange={(v) => handleSortChange(v as ListingsSort)}>
-                <SelectTrigger className="h-10 border-0 border-b border-border rounded-none bg-transparent">
+                <SelectTrigger className="h-10 border-0 border-b border-border/40 rounded-none bg-transparent">
                   <SelectValue placeholder="Sort" />
                 </SelectTrigger>
                 <SelectContent>
@@ -497,17 +499,17 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
               </Select>
 
               <Link href={newListingUrl}>
-                <button className="px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-sm transition-colors">
+                <button className="px-6 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium tracking-tight transition-colors">
                   New Listing
                 </button>
               </Link>
             </div>
 
             <div className="flex items-center justify-between">
-              <p className="text-xs text-muted-foreground">
-                {appliedQuery ? `Search: “${appliedQuery}”` : 'Tip: Use Active for clean inventory.'}
+              <p className="text-xs text-muted-foreground/70">
+                {appliedQuery ? `Search: "${appliedQuery}"` : 'Tip: Use Active for clean inventory.'}
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground/70">
                 Showing {meta?.count ?? listings.length} of {stats.all}
               </p>
             </div>
@@ -515,49 +517,52 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
         </section>
 
         {/* Listings Section */}
-        <section className="space-y-8">
-          <div className="border-b border-border/40 pb-2">
+        <section className="space-y-6">
+          <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
             <h3 className="text-lg font-medium tracking-tight">Your Listings</h3>
           </div>
 
           {/* Refreshing Indicator */}
           {isRefreshing && (
             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-foreground"></div>
               Refreshing...
             </div>
           )}
 
           {/* Error Message */}
           {error && (
-            <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+            <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
               <p className="text-sm text-red-500">{error}</p>
             </div>
           )}
 
           {/* Loading State - Only show on initial load */}
           {isLoading && listings.length === 0 && (
-            <div className="text-center py-16">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
-              <p className="text-sm text-muted-foreground">Loading listings...</p>
+            <div className="flex items-center justify-center py-16">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-foreground"></div>
             </div>
           )}
 
           {/* Empty State */}
           {!isLoading && listings.length === 0 && (
-            <div className="rounded-xl border border-border p-16 text-center">
-              <svg className="w-12 h-12 mx-auto text-muted-foreground/40 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
-              </svg>
-              <p className="text-sm text-muted-foreground mb-4">
-                {appliedQuery ? 'No listings found matching your search' : 'You haven\'t created any listings yet'}
-              </p>
-              <Link href={newListingUrl}>
-                <button className="px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-sm transition-colors">
-                  Create Your First Listing
-                </button>
-              </Link>
+            <div className="rounded-2xl border border-border/40 p-16 text-center">
+              <div className="flex flex-col items-center space-y-4">
+                <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                  <svg className="w-6 h-6 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                  </svg>
+                </div>
+                <p className="text-sm text-muted-foreground/70">
+                  {appliedQuery ? 'No listings found matching your search' : 'You haven\'t created any listings yet'}
+                </p>
+                <Link href={newListingUrl}>
+                  <button className="px-6 py-3 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium tracking-tight transition-colors mt-2">
+                    Create Your First Listing
+                  </button>
+                </Link>
+              </div>
             </div>
           )}
 
@@ -602,17 +607,17 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
             <button 
               onClick={closeConfirmModal}
               disabled={isConfirming}
-              className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors disabled:opacity-50"
+              className="px-6 py-3 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium tracking-tight transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               onClick={executeConfirmedAction}
               disabled={isConfirming}
-              className={`px-5 py-2 rounded-full text-white text-sm transition-colors disabled:opacity-50 ${
+              className={`px-6 py-3 rounded-full text-white text-sm font-medium tracking-tight transition-colors disabled:opacity-50 ${
                 confirmModal.variant === 'destructive' 
-                  ? 'bg-red-500 hover:bg-red-600' 
-                  : 'bg-blue-500 hover:bg-blue-600'
+                  ? 'bg-destructive hover:bg-destructive/90 text-destructive-foreground' 
+                  : 'bg-primary hover:bg-primary/90 text-primary-foreground'
               }`}
             >
               {isConfirming ? 'Processing...' : confirmModal.confirmLabel}

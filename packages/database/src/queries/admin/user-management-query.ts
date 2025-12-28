@@ -303,68 +303,61 @@ export const getAdminAllUsers = async (options?: {
   }));
 };
 
+// ============================================================================
+// User Selection Fields (shared)
+// ============================================================================
+
+const userWithProfileFields = {
+  // User fields
+  id: user.id,
+  name: user.name,
+  email: user.email,
+  image: user.image,
+  emailVerified: user.emailVerified,
+  phoneVerified: user.phoneVerified,
+  phoneVerifiedAt: user.phoneVerifiedAt,
+  role: user.role,
+  createdAt: user.createdAt,
+  updatedAt: user.updatedAt,
+  banned: user.banned,
+  banReason: user.banReason,
+  banExpires: user.banExpires,
+  // Profile fields
+  profileId: userProfile.id,
+  phone: userProfile.phone,
+  firstName: userProfile.firstName,
+  lastName: userProfile.lastName,
+  avatar: userProfile.avatar,
+  description: userProfile.description,
+  kycVerified: userProfile.kycVerified,
+  kycVerifiedAt: userProfile.kycVerifiedAt,
+  locationCity: userProfile.locationCity,
+  locationEmirate: userProfile.locationEmirate,
+  locationLat: userProfile.locationLat,
+  locationLng: userProfile.locationLng,
+  inventoryCount: userProfile.inventoryCount,
+  rating: userProfile.rating,
+  lastActiveAt: userProfile.lastActiveAt,
+  memberSince: userProfile.memberSince,
+  consignmentMode: userProfile.consignmentMode,
+  tags: userProfile.tags,
+  badges: userProfile.badges,
+};
+
 /**
- * Get user by email with complete information
+ * Build AdminUserData from raw query result
  */
-export const getAdminUserByEmail = async (email: string): Promise<AdminUserData | null> => {
-  const results = await db
-    .select({
-      // User fields
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      image: user.image,
-      emailVerified: user.emailVerified,
-      phoneVerified: user.phoneVerified,
-      phoneVerifiedAt: user.phoneVerifiedAt,
-      role: user.role,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      banned: user.banned,
-      banReason: user.banReason,
-      banExpires: user.banExpires,
-      
-      // Profile fields
-      profileId: userProfile.id,
-      phone: userProfile.phone,
-      firstName: userProfile.firstName,
-      lastName: userProfile.lastName,
-      avatar: userProfile.avatar,
-      description: userProfile.description,
-      kycVerified: userProfile.kycVerified,
-      kycVerifiedAt: userProfile.kycVerifiedAt,
-      locationCity: userProfile.locationCity,
-      locationEmirate: userProfile.locationEmirate,
-      locationLat: userProfile.locationLat,
-      locationLng: userProfile.locationLng,
-      inventoryCount: userProfile.inventoryCount,
-      rating: userProfile.rating,
-      lastActiveAt: userProfile.lastActiveAt,
-      memberSince: userProfile.memberSince,
-      consignmentMode: userProfile.consignmentMode,
-      tags: userProfile.tags,
-      badges: userProfile.badges,
-    })
-    .from(user)
-    .leftJoin(userProfile, eq(user.id, userProfile.userId))
-    .where(eq(user.email, email))
-    .limit(1);
-
-  if (results.length === 0) return null;
-
-  const userData = results[0];
-
-  // Fetch latest KYC record
-  const [kycData] = await db
-    .select()
-    .from(kycRecord)
-    .where(eq(kycRecord.userId, userData.id))
-    .orderBy(desc(kycRecord.createdAt))
-    .limit(1);
-
-  // Fetch partner memberships
-  const staffMemberships = await db
-    .select({
+async function buildAdminUserData(userData: typeof userWithProfileFields extends infer T ? { [K in keyof T]: any } : never): Promise<AdminUserData> {
+  // Fetch KYC and memberships in parallel
+  const [kycData, staffMemberships] = await Promise.all([
+    db.select()
+      .from(kycRecord)
+      .where(eq(kycRecord.userId, userData.id))
+      .orderBy(desc(kycRecord.createdAt))
+      .limit(1)
+      .then(r => r[0] ?? null),
+    
+    db.select({
       staffId: partnerStaff.id,
       userId: partnerStaff.userId,
       partnerId: partnerStaff.partnerId,
@@ -378,7 +371,8 @@ export const getAdminUserByEmail = async (email: string): Promise<AdminUserData 
     })
     .from(partnerStaff)
     .innerJoin(partner, eq(partnerStaff.partnerId, partner.id))
-    .where(eq(partnerStaff.userId, userData.id));
+    .where(eq(partnerStaff.userId, userData.id)),
+  ]);
 
   return {
     id: userData.id,
@@ -429,135 +423,51 @@ export const getAdminUserByEmail = async (email: string): Promise<AdminUserData 
     
     partnerMemberships: staffMemberships,
   };
+}
+
+/**
+ * Get user by ID with complete information
+ */
+export const getAdminUserById = async (userId: string): Promise<AdminUserData | null> => {
+  const [userData] = await db
+    .select(userWithProfileFields)
+    .from(user)
+    .leftJoin(userProfile, eq(user.id, userProfile.userId))
+    .where(eq(user.id, userId))
+    .limit(1);
+
+  if (!userData) return null;
+  return buildAdminUserData(userData);
+};
+
+/**
+ * Get user by email with complete information
+ */
+export const getAdminUserByEmail = async (email: string): Promise<AdminUserData | null> => {
+  const [userData] = await db
+    .select(userWithProfileFields)
+    .from(user)
+    .leftJoin(userProfile, eq(user.id, userProfile.userId))
+    .where(eq(user.email, email))
+    .limit(1);
+
+  if (!userData) return null;
+  return buildAdminUserData(userData);
 };
 
 /**
  * Get user by phone with complete information
  */
 export const getAdminUserByPhone = async (phone: string): Promise<AdminUserData | null> => {
-  // Phone is stored in userProfile, not user table
-  const results = await db
-    .select({
-      // User fields
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      image: user.image,
-      emailVerified: user.emailVerified,
-      phoneVerified: user.phoneVerified,
-      phoneVerifiedAt: user.phoneVerifiedAt,
-      role: user.role,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      banned: user.banned,
-      banReason: user.banReason,
-      banExpires: user.banExpires,
-      
-      // Profile fields
-      profileId: userProfile.id,
-      phone: userProfile.phone,
-      firstName: userProfile.firstName,
-      lastName: userProfile.lastName,
-      avatar: userProfile.avatar,
-      description: userProfile.description,
-      kycVerified: userProfile.kycVerified,
-      kycVerifiedAt: userProfile.kycVerifiedAt,
-      locationCity: userProfile.locationCity,
-      locationEmirate: userProfile.locationEmirate,
-      locationLat: userProfile.locationLat,
-      locationLng: userProfile.locationLng,
-      inventoryCount: userProfile.inventoryCount,
-      rating: userProfile.rating,
-      lastActiveAt: userProfile.lastActiveAt,
-      memberSince: userProfile.memberSince,
-      consignmentMode: userProfile.consignmentMode,
-      tags: userProfile.tags,
-      badges: userProfile.badges,
-    })
+  const [userData] = await db
+    .select(userWithProfileFields)
     .from(userProfile)
     .innerJoin(user, eq(userProfile.userId, user.id))
     .where(eq(userProfile.phone, phone))
     .limit(1);
 
-  if (results.length === 0) return null;
-
-  const userData = results[0];
-
-  // Fetch latest KYC record
-  const [kycData] = await db
-    .select()
-    .from(kycRecord)
-    .where(eq(kycRecord.userId, userData.id))
-    .orderBy(desc(kycRecord.createdAt))
-    .limit(1);
-
-  // Fetch partner memberships
-  const staffMemberships = await db
-    .select({
-      staffId: partnerStaff.id,
-      userId: partnerStaff.userId,
-      partnerId: partnerStaff.partnerId,
-      partnerName: partner.companyNameLegal,
-      partnerBrandName: partner.brandName,
-      staffRole: partnerStaff.role,
-      isOwner: partnerStaff.isOwner,
-      isPrimaryContact: partnerStaff.isPrimaryContact,
-      status: partnerStaff.status,
-      joinedAt: partnerStaff.joinedAt,
-    })
-    .from(partnerStaff)
-    .innerJoin(partner, eq(partnerStaff.partnerId, partner.id))
-    .where(eq(partnerStaff.userId, userData.id));
-
-  return {
-    id: userData.id,
-    name: userData.name,
-    email: userData.email,
-    image: userData.image,
-    emailVerified: userData.emailVerified,
-    phoneVerified: userData.phoneVerified,
-    phoneVerifiedAt: userData.phoneVerifiedAt,
-    role: userData.role,
-    createdAt: userData.createdAt,
-    updatedAt: userData.updatedAt,
-    banned: userData.banned,
-    banReason: userData.banReason,
-    banExpires: userData.banExpires,
-    
-    profile: userData.profileId ? {
-      id: userData.profileId,
-      phone: userData.phone,
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      avatar: userData.avatar,
-      description: userData.description,
-      kycVerified: userData.kycVerified ?? false,
-      kycVerifiedAt: userData.kycVerifiedAt,
-      locationCity: userData.locationCity,
-      locationEmirate: userData.locationEmirate,
-      locationLat: userData.locationLat,
-      locationLng: userData.locationLng,
-      inventoryCount: userData.inventoryCount ?? 0,
-      rating: userData.rating,
-      lastActiveAt: userData.lastActiveAt,
-      memberSince: userData.memberSince,
-      consignmentMode: userData.consignmentMode ?? false,
-      tags: (userData.tags as string[]) ?? [],
-      badges: (userData.badges as string[]) ?? [],
-    } : null,
-    
-    kyc: kycData ? {
-      id: kycData.id,
-      status: kycData.status,
-      type: kycData.type,
-      verifiedAt: kycData.verifiedAt,
-      verifiedBy: kycData.verifiedBy,
-      rejectionReason: kycData.rejectionReason,
-      createdAt: kycData.createdAt,
-    } : null,
-    
-    partnerMemberships: staffMemberships,
-  };
+  if (!userData) return null;
+  return buildAdminUserData(userData);
 };
 
 /**

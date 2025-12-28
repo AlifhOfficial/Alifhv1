@@ -36,7 +36,7 @@ import {
   LifeBuoy,
   Send,
 } from "lucide-react";
-import { useMemo, type ComponentType } from "react";
+import { useMemo, useState, useEffect, type ComponentType } from "react";
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
 import { BrandAvatar } from "@/components/partner/car-dealer/ui/brand-avatar";
 import { useUserProfile } from "@/hooks/profile";
@@ -145,7 +145,14 @@ const iconMap: Record<string, ComponentType<{ className?: string }>> = {
 export function AppSidebar({ user, items, sections, staffOverride }: AppSidebarProps) {
   const pathname = usePathname();
   
+  // Track hydration state to prevent mismatch
+  const [isHydrated, setIsHydrated] = useState(false);
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+  
   // Subscribe to profile for instant avatar sync after updates
+  // Only use after hydration to prevent server/client mismatch
   const { profile } = useUserProfile();
 
   // Convert flat items to sections if sections not provided
@@ -155,11 +162,14 @@ export function AppSidebar({ user, items, sections, staffOverride }: AppSidebarP
     return [];
   }, [items, sections]);
 
-  // Profile hook provides instant updates, fallback to server session data
-  const firstName = profile?.firstName ?? user.firstName;
-  const lastName = profile?.lastName ?? user.lastName;
-  const avatarUrl = profile?.avatarUrl ?? user.avatarUrl;
-  const useGeneratedAvatar = profile?.preferences?.useGeneratedAvatar ?? user.useGeneratedAvatar ?? true;
+  // Profile hook provides instant updates after hydration, fallback to server session data
+  // During SSR and initial hydration, always use server data to prevent mismatch
+  const firstName = isHydrated ? (profile?.firstName ?? user.firstName) : user.firstName;
+  const lastName = isHydrated ? (profile?.lastName ?? user.lastName) : user.lastName;
+  const avatarUrl = isHydrated ? (profile?.avatarUrl ?? user.avatarUrl) : user.avatarUrl;
+  const useGeneratedAvatar = isHydrated 
+    ? (profile?.preferences?.useGeneratedAvatar ?? user.useGeneratedAvatar ?? true)
+    : (user.useGeneratedAvatar ?? true);
 
   // Display name logic
   const displayName = useMemo(() => {

@@ -24,7 +24,7 @@ import { customSession } from "better-auth/plugins";
 import { db, memoryCache, CacheKeys, CacheTTL } from "@alifh/database";
 import * as schema from "@alifh/database";
 import { UserRole } from "@/types/auth";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { emailService } from "@/lib/email";
 import { ac, roles } from "@/lib/auth/permissions";
 import { AUTH_CONFIG } from "./config";
@@ -118,43 +118,61 @@ export const auth = betterAuth({
         };
       }
 
-      const userRecord = await db.query.user.findFirst({
-        where: eq(schema.user.id, user.id),
-        columns: {
-          id: true,
-          role: true,
-          banned: true,
-        },
-        with: {
-          profile: {
-            columns: {
-              avatar: true,
-              firstName: true,
-              lastName: true,
-              preferences: true,
-            },
+      // Run all queries in parallel for faster execution
+      const [userRecord, profileRecord, memberships] = await Promise.all([
+        // 1. Basic user data (PK lookup)
+        db.query.user.findFirst({
+          where: eq(schema.user.id, user.id),
+          columns: {
+            id: true,
+            role: true,
+            banned: true,
           },
-          partnerMemberships: {
-            where: eq(schema.partnerStaff.status, "active"),
-            with: {
-              partner: {
-                columns: {
-                  id: true,
-                  brandName: true,
-                  status: true,
-                  tier: true,
-                },
+        }),
+        // 2. Profile data (unique index lookup)
+        db.query.userProfile.findFirst({
+          where: eq(schema.userProfile.userId, user.id),
+          columns: {
+            avatar: true,
+            firstName: true,
+            lastName: true,
+            preferences: true,
+          },
+        }),
+        // 3. Partner memberships with partner info (indexed)
+        db.query.partnerStaff.findMany({
+          where: and(
+            eq(schema.partnerStaff.userId, user.id),
+            eq(schema.partnerStaff.status, "active")
+          ),
+          columns: {
+            id: true,
+            role: true,
+            permissions: true,
+          },
+          with: {
+            partner: {
+              columns: {
+                id: true,
+                brandName: true,
+                status: true,
+                tier: true,
               },
             },
           },
-        },
-      });
+        }) as unknown as Promise<Array<{
+          id: string;
+          role: string;
+          permissions: unknown;
+          partner: { id: string; brandName: string; status: string; tier: string | null };
+        }>>,
+      ]);
 
       if (!userRecord) {
         return { user, session };
       }
 
-      const activePartnerships = (userRecord.partnerMemberships || []).filter(
+      const activePartnerships = (memberships || []).filter(
         m => m.partner.status === 'active'
       );
 
@@ -169,11 +187,6 @@ export const auth = betterAuth({
         staffRole: m.role,
         permissions: m.permissions,
       }));
-
-      // Normalize profile shape in case Drizzle returns an array
-      const profileRecord = Array.isArray(userRecord.profile)
-        ? userRecord.profile[0]
-        : userRecord.profile;
 
       // Get avatar URL if avatar exists - use public URL (no signing needed)
       let avatarUrl: string | null = null;

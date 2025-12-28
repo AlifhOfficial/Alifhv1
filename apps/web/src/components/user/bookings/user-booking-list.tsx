@@ -30,29 +30,34 @@ export function UserBookingList({
 
   if (isLoading) {
     return (
-      <div className="text-center py-16">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
-        <p className="text-sm text-muted-foreground">Loading bookings...</p>
+      <div className="flex items-center justify-center py-16">
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-foreground"></div>
       </div>
     );
   }
 
   if (bookings.length === 0) {
     return (
-      <div className="rounded-xl border border-border p-16 text-center">
-        <Calendar className="w-12 h-12 mx-auto text-muted-foreground/40 mb-4" />
-        <h3 className="text-lg font-medium text-foreground mb-2">No bookings yet</h3>
-        <p className="text-sm text-muted-foreground mb-6">
-          {selectedStatus === 'all' 
-            ? "When you book test drives, they'll appear here."
-            : `No ${USER_BOOKING_STATUS_LABELS[selectedStatus]?.toLowerCase() || selectedStatus} bookings.`}
-        </p>
-        <Link
-          href="/listings"
-          className="px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-sm transition-colors inline-block"
-        >
-          Browse Listings
-        </Link>
+      <div className="rounded-2xl border border-border/40 p-16 text-center">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+            <Calendar className="w-6 h-6 text-muted-foreground" />
+          </div>
+          <div className="space-y-2">
+            <h3 className="font-medium">No bookings yet</h3>
+            <p className="text-sm text-muted-foreground/70">
+              {selectedStatus === 'all' 
+                ? "When you book test drives, they'll appear here."
+                : `No ${USER_BOOKING_STATUS_LABELS[selectedStatus]?.toLowerCase() || selectedStatus} bookings.`}
+            </p>
+          </div>
+          <Link
+            href="/listings"
+            className="px-6 py-3 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium tracking-tight transition-colors mt-2"
+          >
+            Browse Listings
+          </Link>
+        </div>
       </div>
     );
   }

@@ -12,22 +12,73 @@ import {
   booking, 
   bookingSlot,
   partnerAvailability,
-  type cancellationReasonEnum 
+  cancellationReasonEnum,
+  bookingSourceEnum,
 } from '../../schema/booking';
 import { carListing } from '../../schema/listing';
 import { partner } from '../../schema/partner';
 import { user } from '../../schema/auth';
-import { checkUserBookingRestrictions } from './booking-queries';
+import { checkUserBookingRestrictions, BOOKING_CONFIG, ACTIVE_BOOKING_STATUSES } from './booking-queries';
 import { getAvailableSlots, getPartnerBookingSettings } from './availability-queries';
+
+// ============================================================================
+// CONFIGURATION CONSTANTS
+// ============================================================================
+
+/**
+ * Booking mutation configuration
+ * These can be moved to environment variables for production tuning
+ */
+export const BOOKING_MUTATION_CONFIG = {
+  /** Default slot duration in minutes */
+  DEFAULT_SLOT_DURATION: 45,
+  /** Confirmation token length */
+  CONFIRMATION_TOKEN_LENGTH: 8,
+  /** Hours until pending booking expires */
+  PENDING_BOOKING_EXPIRY_HOURS: 1,
+  /** Default retention days for deleted bookings */
+  DEFAULT_RETENTION_DAYS: 7,
+  /** Characters used for confirmation tokens (no ambiguous chars like 0/O, 1/I) */
+  TOKEN_CHARS: 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789',
+} as const;
+
+// ============================================================================
+// TYPE DEFINITIONS
+// ============================================================================
+
+/** Cancellation reasons derived from the database enum */
+export type CancellationReason = (typeof cancellationReasonEnum.enumValues)[number];
+
+/** Booking source derived from the database enum */
+export type BookingSource = (typeof bookingSourceEnum.enumValues)[number];
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+/**
+ * Wrap a database mutation with error handling and logging
+ */
+async function withMutationErrorHandling<T>(
+  operation: string,
+  mutationFn: () => Promise<T>
+): Promise<T> {
+  try {
+    return await mutationFn();
+  } catch (error) {
+    console.error(`[BookingMutations] ${operation} failed:`, error);
+    throw error;
+  }
+}
 
 /**
  * Generate a random confirmation token
  */
 function generateConfirmationToken(): string {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const { TOKEN_CHARS, CONFIRMATION_TOKEN_LENGTH } = BOOKING_MUTATION_CONFIG;
   let token = '';
-  for (let i = 0; i < 8; i++) {
-    token += chars.charAt(Math.floor(Math.random() * chars.length));
+  for (let i = 0; i < CONFIRMATION_TOKEN_LENGTH; i++) {
+    token += TOKEN_CHARS.charAt(Math.floor(Math.random() * TOKEN_CHARS.length));
   }
   return token;
 }
@@ -44,7 +95,7 @@ export interface CreateBookingInput {
   notes?: string;
   specialRequests?: string;
   numberOfAttendees?: number;
-  source?: 'web' | 'mobile' | 'call' | 'walk_in';
+  source?: BookingSource;
 }
 
 /**
@@ -71,56 +122,58 @@ export async function checkInBookingAsStaff(
   partnerId: string,
   staffUserId: string
 ): Promise<StaffCheckInResult> {
-  const current = await db.query.booking.findFirst({
-    where: and(eq(booking.id, bookingId), eq(booking.partnerId, partnerId)),
-    columns: { id: true, status: true },
-  });
+  return withMutationErrorHandling('checkInBookingAsStaff', async () => {
+    const current = await db.query.booking.findFirst({
+      where: and(eq(booking.id, bookingId), eq(booking.partnerId, partnerId)),
+      columns: { id: true, status: true },
+    });
 
-  if (!current) {
-    return { success: false, error: 'Booking not found' };
-  }
+    if (!current) {
+      return { success: false, error: 'Booking not found' };
+    }
 
-  if (!['pending', 'confirmed'].includes(current.status)) {
-    return { success: false, error: `Booking cannot be updated in status: ${current.status}` };
-  }
+    if (!ACTIVE_BOOKING_STATUSES.includes(current.status as any)) {
+      return { success: false, error: `Booking cannot be updated in status: ${current.status}` };
+    }
 
-  const now = new Date();
-  const update: Record<string, unknown> = {
-    checkInTime: now,
-    updatedAt: now,
-  };
+    const now = new Date();
+    const update: Record<string, unknown> = {
+      checkInTime: now,
+      updatedAt: now,
+    };
 
-  if (current.status === 'pending') {
-    update.status = 'confirmed';
-    update.confirmedAt = now;
-    update.confirmedBy = staffUserId;
-  }
+    if (current.status === 'pending') {
+      update.status = 'confirmed';
+      update.confirmedAt = now;
+      update.confirmedBy = staffUserId;
+    }
 
-  const updated = await db
-    .update(booking)
-    .set(update)
-    .where(
-      and(
-        eq(booking.id, bookingId),
-        eq(booking.partnerId, partnerId),
-        inArray(booking.status, ['pending', 'confirmed'])
+    const updated = await db
+      .update(booking)
+      .set(update)
+      .where(
+        and(
+          eq(booking.id, bookingId),
+          eq(booking.partnerId, partnerId),
+          inArray(booking.status, ACTIVE_BOOKING_STATUSES)
+        )
       )
-    )
-    .returning({ id: booking.id });
+      .returning({ id: booking.id });
 
-  if (updated.length === 0) {
-    return { success: false, error: 'Failed to update booking' };
-  }
+    if (updated.length === 0) {
+      return { success: false, error: 'Failed to update booking' };
+    }
 
-  return { success: true, bookingId };
+    return { success: true, bookingId };
+  });
 }
 
 /**
  * Maintenance: expire pending bookings and delete stale cancelled/expired records.
  * This is run opportunistically from API routes to keep the DB tidy without requiring cron.
  */
-export async function runBookingMaintenance(options?: { retentionDays?: number }) {
-  const retentionDays = options?.retentionDays ?? 7;
+export async function runBookingMaintenance(options?: { retentionDays?: number }): Promise<void> {
+  const retentionDays = options?.retentionDays ?? BOOKING_MUTATION_CONFIG.DEFAULT_RETENTION_DAYS;
   const now = new Date();
   const cutoff = new Date(now.getTime() - retentionDays * 24 * 60 * 60 * 1000);
 
@@ -144,7 +197,7 @@ export async function runBookingMaintenance(options?: { retentionDays?: number }
       })
       .where(
         and(
-          inArray(booking.status, ['pending', 'confirmed']),
+          inArray(booking.status, ACTIVE_BOOKING_STATUSES),
           lt(booking.scheduledStartTime, now)
         )
       );
@@ -163,8 +216,9 @@ export async function runBookingMaintenance(options?: { retentionDays?: number }
         select 1 from booking b where b.slot_id = bs.id
       )
     `);
-  } catch {
-    // Best-effort: maintenance should never break user flows
+  } catch (error) {
+    // Log but don't throw - maintenance should never break user flows
+    console.error('[BookingMaintenance] Maintenance task failed:', error);
   }
 }
 
@@ -381,7 +435,7 @@ export async function createBooking(input: CreateBookingInput): Promise<BookingR
       listingId: input.listingId,
       startTime: input.scheduledStartTime,
       endTime: input.scheduledEndTime,
-      duration: 45,
+      duration: BOOKING_MUTATION_CONFIG.DEFAULT_SLOT_DURATION,
       status: 'booked',
       maxBookings: 1,
       currentBookings: 1,
@@ -406,7 +460,7 @@ export async function createBooking(input: CreateBookingInput): Promise<BookingR
       specialRequests: input.specialRequests,
       numberOfAttendees: input.numberOfAttendees ?? 1,
       confirmedAt: autoConfirm ? new Date() : null,
-      expiresAt: autoConfirm ? null : new Date(now.getTime() + 60 * 60 * 1000), // 1 hour to confirm
+      expiresAt: autoConfirm ? null : new Date(now.getTime() + BOOKING_MUTATION_CONFIG.PENDING_BOOKING_EXPIRY_HOURS * 60 * 60 * 1000),
     });
 
     // IMMEDIATE VERIFICATION: Check for any concurrent double-booking race condition
@@ -481,31 +535,33 @@ export async function confirmBooking(
   confirmedByUserId: string,
   partnerNotes?: string
 ): Promise<{ success: boolean; error?: string }> {
-  const bookingData = await db.query.booking.findFirst({
-    where: eq(booking.id, bookingId),
+  return withMutationErrorHandling('confirmBooking', async () => {
+    const bookingData = await db.query.booking.findFirst({
+      where: eq(booking.id, bookingId),
+    });
+
+    if (!bookingData) {
+      return { success: false, error: 'Booking not found' };
+    }
+
+    if (bookingData.status !== 'pending') {
+      return { success: false, error: 'Booking cannot be confirmed in its current status' };
+    }
+
+    await db
+      .update(booking)
+      .set({
+        status: 'confirmed',
+        confirmedBy: confirmedByUserId,
+        confirmedAt: new Date(),
+        partnerNotes,
+        expiresAt: null,
+        updatedAt: new Date(),
+      })
+      .where(eq(booking.id, bookingId));
+
+    return { success: true };
   });
-
-  if (!bookingData) {
-    return { success: false, error: 'Booking not found' };
-  }
-
-  if (bookingData.status !== 'pending') {
-    return { success: false, error: 'Booking cannot be confirmed in its current status' };
-  }
-
-  await db
-    .update(booking)
-    .set({
-      status: 'confirmed',
-      confirmedBy: confirmedByUserId,
-      confirmedAt: new Date(),
-      partnerNotes,
-      expiresAt: null,
-      updatedAt: new Date(),
-    })
-    .where(eq(booking.id, bookingId));
-
-  return { success: true };
 }
 
 /**
@@ -516,53 +572,46 @@ export async function rejectBooking(
   rejectedByUserId: string,
   rejectionReason: string
 ): Promise<{ success: boolean; error?: string }> {
-  const bookingData = await db.query.booking.findFirst({
-    where: eq(booking.id, bookingId),
+  return withMutationErrorHandling('rejectBooking', async () => {
+    const bookingData = await db.query.booking.findFirst({
+      where: eq(booking.id, bookingId),
+    });
+
+    if (!bookingData) {
+      return { success: false, error: 'Booking not found' };
+    }
+
+    if (bookingData.status !== 'pending') {
+      return { success: false, error: 'Booking cannot be rejected in its current status' };
+    }
+
+    await db
+      .update(booking)
+      .set({
+        status: 'rejected',
+        rejectionReason,
+        expiresAt: null,
+        updatedAt: new Date(),
+      })
+      .where(eq(booking.id, bookingId));
+
+    // Free up the slot
+    await db
+      .update(bookingSlot)
+      .set({
+        status: 'available',
+        currentBookings: 0,
+        updatedAt: new Date(),
+      })
+      .where(eq(bookingSlot.id, bookingData.slotId));
+
+    return { success: true };
   });
-
-  if (!bookingData) {
-    return { success: false, error: 'Booking not found' };
-  }
-
-  if (bookingData.status !== 'pending') {
-    return { success: false, error: 'Booking cannot be rejected in its current status' };
-  }
-
-  await db
-    .update(booking)
-    .set({
-      status: 'rejected',
-      rejectionReason,
-      expiresAt: null,
-      updatedAt: new Date(),
-    })
-    .where(eq(booking.id, bookingId));
-
-  // Free up the slot
-  await db
-    .update(bookingSlot)
-    .set({
-      status: 'available',
-      currentBookings: 0,
-      updatedAt: new Date(),
-    })
-    .where(eq(bookingSlot.id, bookingData.slotId));
-
-  return { success: true };
 }
 
 /**
  * Cancel a booking
  */
-export type CancellationReason = 
-  | 'schedule_conflict' 
-  | 'found_another_car' 
-  | 'price_issue' 
-  | 'location_issue' 
-  | 'changed_mind' 
-  | 'emergency' 
-  | 'other';
-
 export async function cancelBooking(
   bookingId: string,
   cancelledBy: 'user' | 'partner',
@@ -570,59 +619,61 @@ export async function cancelBooking(
   reason: CancellationReason,
   notes?: string
 ): Promise<{ success: boolean; error?: string }> {
-  const bookingData = await db.query.booking.findFirst({
-    where: eq(booking.id, bookingId),
-  });
+  return withMutationErrorHandling('cancelBooking', async () => {
+    const bookingData = await db.query.booking.findFirst({
+      where: eq(booking.id, bookingId),
+    });
 
-  if (!bookingData) {
-    return { success: false, error: 'Booking not found' };
-  }
-
-  if (!['pending', 'confirmed'].includes(bookingData.status)) {
-    return { success: false, error: 'Booking cannot be cancelled in its current status' };
-  }
-
-  // Check cancellation deadline for users
-  if (cancelledBy === 'user') {
-    const settings = await getPartnerBookingSettings(bookingData.partnerId);
-    if (settings && !settings.allowUserCancellation) {
-      return { success: false, error: 'This booking cannot be cancelled. Please contact the dealer.' };
+    if (!bookingData) {
+      return { success: false, error: 'Booking not found' };
     }
 
-    if (settings?.cancellationDeadlineHours) {
-      const hoursUntilBooking = (bookingData.scheduledStartTime.getTime() - Date.now()) / (1000 * 60 * 60);
-      if (hoursUntilBooking < settings.cancellationDeadlineHours) {
-        return { 
-          success: false, 
-          error: `Cancellations must be made at least ${settings.cancellationDeadlineHours} hours before the appointment` 
-        };
+    if (!ACTIVE_BOOKING_STATUSES.includes(bookingData.status as any)) {
+      return { success: false, error: 'Booking cannot be cancelled in its current status' };
+    }
+
+    // Check cancellation deadline for users
+    if (cancelledBy === 'user') {
+      const settings = await getPartnerBookingSettings(bookingData.partnerId);
+      if (settings && !settings.allowUserCancellation) {
+        return { success: false, error: 'This booking cannot be cancelled. Please contact the dealer.' };
+      }
+
+      if (settings?.cancellationDeadlineHours) {
+        const hoursUntilBooking = (bookingData.scheduledStartTime.getTime() - Date.now()) / (1000 * 60 * 60);
+        if (hoursUntilBooking < settings.cancellationDeadlineHours) {
+          return { 
+            success: false, 
+            error: `Cancellations must be made at least ${settings.cancellationDeadlineHours} hours before the appointment` 
+          };
+        }
       }
     }
-  }
 
-  await db
-    .update(booking)
-    .set({
-      status: 'cancelled',
-      cancelledAt: new Date(),
-      cancelledBy,
-      cancellationReason: reason,
-      cancellationNotes: notes,
-      updatedAt: new Date(),
-    })
-    .where(eq(booking.id, bookingId));
+    await db
+      .update(booking)
+      .set({
+        status: 'cancelled',
+        cancelledAt: new Date(),
+        cancelledBy,
+        cancellationReason: reason,
+        cancellationNotes: notes,
+        updatedAt: new Date(),
+      })
+      .where(eq(booking.id, bookingId));
 
-  // Free up the slot
-  await db
-    .update(bookingSlot)
-    .set({
-      status: 'available',
-      currentBookings: 0,
-      updatedAt: new Date(),
-    })
-    .where(eq(bookingSlot.id, bookingData.slotId));
+    // Free up the slot
+    await db
+      .update(bookingSlot)
+      .set({
+        status: 'available',
+        currentBookings: 0,
+        updatedAt: new Date(),
+      })
+      .where(eq(bookingSlot.id, bookingData.slotId));
 
-  return { success: true };
+    return { success: true };
+  });
 }
 
 /**
@@ -635,139 +686,141 @@ export async function rescheduleBooking(
   newStartTime: Date,
   newEndTime: Date
 ): Promise<{ success: boolean; error?: string }> {
-  const bookingData = await db.query.booking.findFirst({
-    where: eq(booking.id, bookingId),
-  });
+  return withMutationErrorHandling('rescheduleBooking', async () => {
+    const bookingData = await db.query.booking.findFirst({
+      where: eq(booking.id, bookingId),
+    });
 
-  if (!bookingData) {
-    return { success: false, error: 'Booking not found' };
-  }
-
-  if (!['pending', 'confirmed'].includes(bookingData.status)) {
-    return { success: false, error: 'Booking cannot be rescheduled in its current status' };
-  }
-
-  // Check reschedule limits
-  if (bookingData.rescheduleCount >= bookingData.maxRescheduleAllowed) {
-    return { success: false, error: 'Maximum number of reschedules reached' };
-  }
-
-  // Check reschedule deadline
-  const settings = await getPartnerBookingSettings(bookingData.partnerId);
-  if (settings?.rescheduleDeadlineHours) {
-    const hoursUntilBooking = (bookingData.scheduledStartTime.getTime() - Date.now()) / (1000 * 60 * 60);
-    if (hoursUntilBooking < settings.rescheduleDeadlineHours) {
-      return { 
-        success: false, 
-        error: `Rescheduling must be done at least ${settings.rescheduleDeadlineHours} hours before the appointment` 
-      };
+    if (!bookingData) {
+      return { success: false, error: 'Booking not found' };
     }
-  }
 
-  // Check if new slot is available
-  const slotDay = new Date(newStartTime);
-  slotDay.setUTCHours(0, 0, 0, 0);
-  const slots = await getAvailableSlots(bookingData.partnerId, slotDay);
-  const targetSlot = slots.find(
-    s => s.startTime.toISOString() === newStartTime.toISOString()
-  );
+    if (!ACTIVE_BOOKING_STATUSES.includes(bookingData.status as any)) {
+      return { success: false, error: 'Booking cannot be rescheduled in its current status' };
+    }
 
-  if (!targetSlot || !targetSlot.isAvailable) {
-    return { success: false, error: 'The new time slot is not available' };
-  }
+    // Check reschedule limits
+    if (bookingData.rescheduleCount >= bookingData.maxRescheduleAllowed) {
+      return { success: false, error: 'Maximum number of reschedules reached' };
+    }
 
-  // Hard protection against double-booking (exclude this booking)
-  const dayOfWeek = slotDay.getUTCDay();
-  const rule = await db.query.partnerAvailability.findFirst({
-    where: and(
-      eq(partnerAvailability.partnerId, bookingData.partnerId),
-      eq(partnerAvailability.dayOfWeek, dayOfWeek),
-      eq(partnerAvailability.isActive, true)
-    ),
-    columns: {
-      id: true,
-      maxConcurrentBookings: true,
-    },
-  });
+    // Check reschedule deadline
+    const settings = await getPartnerBookingSettings(bookingData.partnerId);
+    if (settings?.rescheduleDeadlineHours) {
+      const hoursUntilBooking = (bookingData.scheduledStartTime.getTime() - Date.now()) / (1000 * 60 * 60);
+      if (hoursUntilBooking < settings.rescheduleDeadlineHours) {
+        return { 
+          success: false, 
+          error: `Rescheduling must be done at least ${settings.rescheduleDeadlineHours} hours before the appointment` 
+        };
+      }
+    }
 
-  const maxConcurrentBookings = rule?.maxConcurrentBookings ?? 1;
+    // Check if new slot is available
+    const slotDay = new Date(newStartTime);
+    slotDay.setUTCHours(0, 0, 0, 0);
+    const slots = await getAvailableSlots(bookingData.partnerId, slotDay);
+    const targetSlot = slots.find(
+      s => s.startTime.toISOString() === newStartTime.toISOString()
+    );
 
-  const overlapCountResult = await db
-    .select({ count: sql<number>`count(*)::int` })
-    .from(booking)
-    .where(
-      and(
+    if (!targetSlot || !targetSlot.isAvailable) {
+      return { success: false, error: 'The new time slot is not available' };
+    }
+
+    // Hard protection against double-booking (exclude this booking)
+    const dayOfWeek = slotDay.getUTCDay();
+    const rule = await db.query.partnerAvailability.findFirst({
+      where: and(
+        eq(partnerAvailability.partnerId, bookingData.partnerId),
+        eq(partnerAvailability.dayOfWeek, dayOfWeek),
+        eq(partnerAvailability.isActive, true)
+      ),
+      columns: {
+        id: true,
+        maxConcurrentBookings: true,
+      },
+    });
+
+    const maxConcurrentBookings = rule?.maxConcurrentBookings ?? 1;
+
+    const overlapCountResult = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(booking)
+      .where(
+        and(
+          eq(booking.partnerId, bookingData.partnerId),
+          inArray(booking.status, ACTIVE_BOOKING_STATUSES),
+          ne(booking.id, bookingId),
+          lt(booking.scheduledStartTime, newEndTime),
+          gt(booking.scheduledEndTime, newStartTime)
+        )
+      );
+
+    const overlapCount = overlapCountResult[0]?.count ?? 0;
+    if (overlapCount >= maxConcurrentBookings) {
+      return { success: false, error: 'The new time slot is not available' };
+    }
+
+    const listingOverlap = await db.query.booking.findFirst({
+      where: and(
         eq(booking.partnerId, bookingData.partnerId),
-        inArray(booking.status, ['pending', 'confirmed']),
+        eq(booking.listingId, bookingData.listingId),
+        inArray(booking.status, ACTIVE_BOOKING_STATUSES),
         ne(booking.id, bookingId),
         lt(booking.scheduledStartTime, newEndTime),
         gt(booking.scheduledEndTime, newStartTime)
-      )
-    );
+      ),
+      columns: { id: true },
+    });
 
-  const overlapCount = overlapCountResult[0]?.count ?? 0;
-  if (overlapCount >= maxConcurrentBookings) {
-    return { success: false, error: 'The new time slot is not available' };
-  }
+    if (listingOverlap) {
+      return { success: false, error: 'This listing is already booked for that time' };
+    }
 
-  const listingOverlap = await db.query.booking.findFirst({
-    where: and(
-      eq(booking.partnerId, bookingData.partnerId),
-      eq(booking.listingId, bookingData.listingId),
-      inArray(booking.status, ['pending', 'confirmed']),
-      ne(booking.id, bookingId),
-      lt(booking.scheduledStartTime, newEndTime),
-      gt(booking.scheduledEndTime, newStartTime)
-    ),
-    columns: { id: true },
+    // Free up old slot
+    await db
+      .update(bookingSlot)
+      .set({
+        status: 'available',
+        currentBookings: 0,
+        updatedAt: new Date(),
+      })
+      .where(eq(bookingSlot.id, bookingData.slotId));
+
+    // Create new slot
+    const newSlotId = createId();
+    await db.insert(bookingSlot).values({
+      id: newSlotId,
+      partnerId: bookingData.partnerId,
+      listingId: bookingData.listingId,
+      startTime: newStartTime,
+      endTime: newEndTime,
+      duration: BOOKING_MUTATION_CONFIG.DEFAULT_SLOT_DURATION,
+      status: 'booked',
+      maxBookings: 1,
+      currentBookings: 1,
+    });
+
+    // Update booking
+    await db
+      .update(booking)
+      .set({
+        slotId: newSlotId,
+        scheduledDate: slotDay,
+        scheduledStartTime: newStartTime,
+        scheduledEndTime: newEndTime,
+        rescheduleCount: bookingData.rescheduleCount + 1,
+        lastRescheduledAt: new Date(),
+        originalSlotId: bookingData.originalSlotId || bookingData.slotId,
+        status: 'pending', // Reset to pending for re-confirmation
+        confirmedAt: null,
+        updatedAt: new Date(),
+      })
+      .where(eq(booking.id, bookingId));
+
+    return { success: true };
   });
-
-  if (listingOverlap) {
-    return { success: false, error: 'This listing is already booked for that time' };
-  }
-
-  // Free up old slot
-  await db
-    .update(bookingSlot)
-    .set({
-      status: 'available',
-      currentBookings: 0,
-      updatedAt: new Date(),
-    })
-    .where(eq(bookingSlot.id, bookingData.slotId));
-
-  // Create new slot
-  const newSlotId = createId();
-  await db.insert(bookingSlot).values({
-    id: newSlotId,
-    partnerId: bookingData.partnerId,
-    listingId: bookingData.listingId,
-    startTime: newStartTime,
-    endTime: newEndTime,
-    duration: 45,
-    status: 'booked',
-    maxBookings: 1,
-    currentBookings: 1,
-  });
-
-  // Update booking
-  await db
-    .update(booking)
-    .set({
-      slotId: newSlotId,
-      scheduledDate: slotDay,
-      scheduledStartTime: newStartTime,
-      scheduledEndTime: newEndTime,
-      rescheduleCount: bookingData.rescheduleCount + 1,
-      lastRescheduledAt: new Date(),
-      originalSlotId: bookingData.originalSlotId || bookingData.slotId,
-      status: 'pending', // Reset to pending for re-confirmation
-      confirmedAt: null,
-      updatedAt: new Date(),
-    })
-    .where(eq(booking.id, bookingId));
-
-  return { success: true };
 }
 
 /**
@@ -780,33 +833,35 @@ export async function completeBooking(
   checkOutTime?: Date,
   partnerNotes?: string
 ): Promise<{ success: boolean; error?: string }> {
-  const bookingData = await db.query.booking.findFirst({
-    where: eq(booking.id, bookingId),
+  return withMutationErrorHandling('completeBooking', async () => {
+    const bookingData = await db.query.booking.findFirst({
+      where: eq(booking.id, bookingId),
+    });
+
+    if (!bookingData) {
+      return { success: false, error: 'Booking not found' };
+    }
+
+    if (bookingData.status !== 'confirmed') {
+      return { success: false, error: 'Only confirmed bookings can be marked as complete' };
+    }
+
+    await db
+      .update(booking)
+      .set({
+        status: 'completed',
+        completedAt: new Date(),
+        checkInTime: checkInTime || bookingData.scheduledStartTime,
+        checkOutTime: checkOutTime || new Date(),
+        partnerNotes,
+        feedbackRequested: true,
+        feedbackRequestedAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(booking.id, bookingId));
+
+    return { success: true };
   });
-
-  if (!bookingData) {
-    return { success: false, error: 'Booking not found' };
-  }
-
-  if (bookingData.status !== 'confirmed') {
-    return { success: false, error: 'Only confirmed bookings can be marked as complete' };
-  }
-
-  await db
-    .update(booking)
-    .set({
-      status: 'completed',
-      completedAt: new Date(),
-      checkInTime: checkInTime || bookingData.scheduledStartTime,
-      checkOutTime: checkOutTime || new Date(),
-      partnerNotes,
-      feedbackRequested: true,
-      feedbackRequestedAt: new Date(),
-      updatedAt: new Date(),
-    })
-    .where(eq(booking.id, bookingId));
-
-  return { success: true };
 }
 
 /**
@@ -817,35 +872,37 @@ export async function reportNoShow(
   staffUserId: string,
   reason?: string
 ): Promise<{ success: boolean; error?: string }> {
-  const bookingData = await db.query.booking.findFirst({
-    where: eq(booking.id, bookingId),
+  return withMutationErrorHandling('reportNoShow', async () => {
+    const bookingData = await db.query.booking.findFirst({
+      where: eq(booking.id, bookingId),
+    });
+
+    if (!bookingData) {
+      return { success: false, error: 'Booking not found' };
+    }
+
+    if (bookingData.status !== 'confirmed') {
+      return { success: false, error: 'Only confirmed bookings can be marked as no-show' };
+    }
+
+    // Check if the booking time has passed
+    if (bookingData.scheduledEndTime > new Date()) {
+      return { success: false, error: 'Cannot report no-show before the scheduled time has passed' };
+    }
+
+    await db
+      .update(booking)
+      .set({
+        status: 'no_show',
+        noShowReported: true,
+        noShowReportedAt: new Date(),
+        noShowReason: reason,
+        updatedAt: new Date(),
+      })
+      .where(eq(booking.id, bookingId));
+
+    return { success: true };
   });
-
-  if (!bookingData) {
-    return { success: false, error: 'Booking not found' };
-  }
-
-  if (bookingData.status !== 'confirmed') {
-    return { success: false, error: 'Only confirmed bookings can be marked as no-show' };
-  }
-
-  // Check if the booking time has passed
-  if (bookingData.scheduledEndTime > new Date()) {
-    return { success: false, error: 'Cannot report no-show before the scheduled time has passed' };
-  }
-
-  await db
-    .update(booking)
-    .set({
-      status: 'no_show',
-      noShowReported: true,
-      noShowReportedAt: new Date(),
-      noShowReason: reason,
-      updatedAt: new Date(),
-    })
-    .where(eq(booking.id, bookingId));
-
-  return { success: true };
 }
 
 /**
@@ -870,34 +927,36 @@ export async function submitBookingFeedback(
   userId: string,
   feedback: BookingFeedback
 ): Promise<{ success: boolean; error?: string }> {
-  const bookingData = await db.query.booking.findFirst({
-    where: and(
-      eq(booking.id, bookingId),
-      eq(booking.userId, userId)
-    ),
+  return withMutationErrorHandling('submitBookingFeedback', async () => {
+    const bookingData = await db.query.booking.findFirst({
+      where: and(
+        eq(booking.id, bookingId),
+        eq(booking.userId, userId)
+      ),
+    });
+
+    if (!bookingData) {
+      return { success: false, error: 'Booking not found' };
+    }
+
+    if (bookingData.status !== 'completed') {
+      return { success: false, error: 'Feedback can only be submitted for completed bookings' };
+    }
+
+    if (bookingData.feedbackSubmitted) {
+      return { success: false, error: 'Feedback has already been submitted' };
+    }
+
+    await db
+      .update(booking)
+      .set({
+        feedback,
+        feedbackSubmitted: true,
+        feedbackSubmittedAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(booking.id, bookingId));
+
+    return { success: true };
   });
-
-  if (!bookingData) {
-    return { success: false, error: 'Booking not found' };
-  }
-
-  if (bookingData.status !== 'completed') {
-    return { success: false, error: 'Feedback can only be submitted for completed bookings' };
-  }
-
-  if (bookingData.feedbackSubmitted) {
-    return { success: false, error: 'Feedback has already been submitted' };
-  }
-
-  await db
-    .update(booking)
-    .set({
-      feedback,
-      feedbackSubmitted: true,
-      feedbackSubmittedAt: new Date(),
-      updatedAt: new Date(),
-    })
-    .where(eq(booking.id, bookingId));
-
-  return { success: true };
 }

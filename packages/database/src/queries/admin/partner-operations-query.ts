@@ -2,12 +2,12 @@
  * Admin Partner Operations Queries
  * 
  * Direct database operations for admin partner management
- * Similar structure to user operations
+ * Uses atomic PostgreSQL operations for concurrent safety
  * 
  * @module queries/admin/partner-operations-query
  */
 
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { db } from '../../dbclient';
 import { partner } from '../../schema/partner';
 
@@ -134,63 +134,39 @@ export async function unverifyPartner(partnerId: string) {
 }
 
 // ============================================================================
-// Tag Operations
+// Tag Operations (atomic - no race conditions)
 // ============================================================================
 
 /**
- * Add tag to partner
+ * Add tag to partner (atomic)
  */
 export async function addPartnerTag(partnerId: string, tag: string) {
-  const [partnerData] = await db
-    .select()
-    .from(partner)
-    .where(eq(partner.id, partnerId))
-    .limit(1);
-
-  if (!partnerData) {
-    throw new Error('Partner not found');
-  }
-
-  const currentTags = (partnerData.tags as string[]) || [];
-  if (currentTags.includes(tag)) {
-    return partnerData; // Already has this tag
-  }
-
-  const newTags = [...currentTags, tag];
-
   const [updated] = await db
     .update(partner)
     .set({
-      tags: newTags,
+      tags: sql`array_append(coalesce(${partner.tags}, '{}'), ${tag})`,
       updatedAt: new Date(),
     })
-    .where(eq(partner.id, partnerId))
+    .where(sql`${partner.id} = ${partnerId} AND NOT (${tag} = ANY(coalesce(${partner.tags}, '{}')))`)
     .returning();
+
+  // If no update (tag already exists), fetch current partner
+  if (!updated) {
+    const [partnerData] = await db.select().from(partner).where(eq(partner.id, partnerId)).limit(1);
+    return partnerData;
+  }
 
   return updated;
 }
 
 /**
- * Remove tag from partner
+ * Remove tag from partner (atomic)
  */
 export async function removePartnerTag(partnerId: string, tag: string) {
-  const [partnerData] = await db
-    .select()
-    .from(partner)
-    .where(eq(partner.id, partnerId))
-    .limit(1);
-
-  if (!partnerData) {
-    throw new Error('Partner not found');
-  }
-
-  const currentTags = (partnerData.tags as string[]) || [];
-  const newTags = currentTags.filter(t => t !== tag);
-
   const [updated] = await db
     .update(partner)
     .set({
-      tags: newTags,
+      tags: sql`array_remove(coalesce(${partner.tags}, '{}'), ${tag})`,
       updatedAt: new Date(),
     })
     .where(eq(partner.id, partnerId))
@@ -200,63 +176,39 @@ export async function removePartnerTag(partnerId: string, tag: string) {
 }
 
 // ============================================================================
-// Badge Operations
+// Badge Operations (atomic - no race conditions)
 // ============================================================================
 
 /**
- * Add badge to partner
+ * Add badge to partner (atomic)
  */
 export async function addPartnerBadge(partnerId: string, badge: string) {
-  const [partnerData] = await db
-    .select()
-    .from(partner)
-    .where(eq(partner.id, partnerId))
-    .limit(1);
-
-  if (!partnerData) {
-    throw new Error('Partner not found');
-  }
-
-  const currentBadges = (partnerData.badges as string[]) || [];
-  if (currentBadges.includes(badge)) {
-    return partnerData; // Already has this badge
-  }
-
-  const newBadges = [...currentBadges, badge];
-
   const [updated] = await db
     .update(partner)
     .set({
-      badges: newBadges,
+      badges: sql`array_append(coalesce(${partner.badges}, '{}'), ${badge})`,
       updatedAt: new Date(),
     })
-    .where(eq(partner.id, partnerId))
+    .where(sql`${partner.id} = ${partnerId} AND NOT (${badge} = ANY(coalesce(${partner.badges}, '{}')))`)
     .returning();
+
+  // If no update (badge already exists), fetch current partner
+  if (!updated) {
+    const [partnerData] = await db.select().from(partner).where(eq(partner.id, partnerId)).limit(1);
+    return partnerData;
+  }
 
   return updated;
 }
 
 /**
- * Remove badge from partner
+ * Remove badge from partner (atomic)
  */
 export async function removePartnerBadge(partnerId: string, badge: string) {
-  const [partnerData] = await db
-    .select()
-    .from(partner)
-    .where(eq(partner.id, partnerId))
-    .limit(1);
-
-  if (!partnerData) {
-    throw new Error('Partner not found');
-  }
-
-  const currentBadges = (partnerData.badges as string[]) || [];
-  const newBadges = currentBadges.filter(b => b !== badge);
-
   const [updated] = await db
     .update(partner)
     .set({
-      badges: newBadges,
+      badges: sql`array_remove(coalesce(${partner.badges}, '{}'), ${badge})`,
       updatedAt: new Date(),
     })
     .where(eq(partner.id, partnerId))

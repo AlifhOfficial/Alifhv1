@@ -1,6 +1,7 @@
 /**
  * Staff Bookings View Component
  * Main container for staff bookings management
+ * Following partner dashboard UI patterns
  */
 
 'use client';
@@ -9,8 +10,6 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   AlertCircle,
   RefreshCw,
-  Settings,
-  CalendarDays,
 } from 'lucide-react';
 import { cn } from '@/utils';
 import { DashboardPageLayout } from '@/components/layout';
@@ -237,37 +236,48 @@ export function StaffBookingsView() {
       <div className="space-y-16">
         {/* Error */}
         {error && (
-          <div className="flex items-start gap-2 p-4 rounded-xl bg-red-500/10 text-red-500 border border-red-500/20">
-            <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-            <p className="text-sm">{error}</p>
+          <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4">
+            <div className="flex gap-3">
+              <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+              <div className="text-sm space-y-1">
+                <p className="font-medium text-red-500">Something went wrong</p>
+                <p className="text-red-500/70">{error}</p>
+              </div>
+            </div>
           </div>
         )}
 
         {/* Tab Navigation */}
-        <div className="flex gap-2">
-          <button
-            onClick={() => setActiveTab('bookings')}
-            className={cn(
-              "px-5 py-2 rounded-full text-sm font-medium transition-colors",
-              activeTab === 'bookings'
-                ? "bg-primary text-primary-foreground"
-                : "border border-border/40 hover:bg-secondary/50"
-            )}
-          >
-            Bookings
-          </button>
-          <button
-            onClick={() => setActiveTab('availability')}
-            className={cn(
-              "px-5 py-2 rounded-full text-sm font-medium transition-colors",
-              activeTab === 'availability'
-                ? "bg-primary text-primary-foreground"
-                : "border border-border/40 hover:bg-secondary/50"
-            )}
-          >
-            Availability
-          </button>
-        </div>
+        <section className="space-y-6">
+          <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
+            <h3 className="text-lg font-medium tracking-tight">Manage</h3>
+          </div>
+          
+          <div className="flex gap-2">
+            <button
+              onClick={() => setActiveTab('bookings')}
+              className={cn(
+                "px-5 py-2 rounded-full text-sm font-medium transition-colors",
+                activeTab === 'bookings'
+                  ? "bg-primary text-primary-foreground"
+                  : "border border-border/40 text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+              )}
+            >
+              Bookings
+            </button>
+            <button
+              onClick={() => setActiveTab('availability')}
+              className={cn(
+                "px-5 py-2 rounded-full text-sm font-medium transition-colors",
+                activeTab === 'availability'
+                  ? "bg-primary text-primary-foreground"
+                  : "border border-border/40 text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+              )}
+            >
+              Availability
+            </button>
+          </div>
+        </section>
 
         {/* Availability Settings Tab */}
         {activeTab === 'availability' && (
@@ -285,7 +295,7 @@ export function StaffBookingsView() {
 
         {/* Bookings Tab */}
         {activeTab === 'bookings' && (
-          <>
+          <div className="space-y-12">
             <BookingVerifyByCode onSuccess={fetchBookings} />
             {stats && <BookingStatsCards stats={stats} />}
             <BookingFilters 
@@ -298,7 +308,7 @@ export function StaffBookingsView() {
               selectedStatus={selectedStatus}
               onAction={handleBookingAction}
             />
-          </>
+          </div>
         )}
       </div>
     </DashboardPageLayout>

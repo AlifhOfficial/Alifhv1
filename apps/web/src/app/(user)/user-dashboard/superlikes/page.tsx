@@ -2,9 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { Loader2, RefreshCw } from 'lucide-react';
+import { Loader2, RefreshCw, Star } from 'lucide-react';
 import { CarCard } from '@/components/inventory';
-import { DashboardPageLayout } from '@/components/layout';
 import { SuperlikeQuotaBadge } from '@/components/engagement';
 import { useFavoritesStatus } from '@/hooks/engagement';
 
@@ -97,47 +96,54 @@ export default function SuperlikesPage() {
   );
 
   return (
-    <DashboardPageLayout
-      title={
-        <div className="flex items-center gap-3">
-          <span>Superlikes</span>
-          <SuperlikeQuotaBadge quota={quota} />
+    <div className="max-w-6xl mx-auto px-4 py-12 space-y-16">
+        {/* Header */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="space-y-2">
+              <h1 className="text-2xl font-semibold tracking-tight">Superlikes</h1>
+              <p className="text-sm text-muted-foreground/70">
+                {validSuperlikeIds.length} item{validSuperlikeIds.length === 1 ? '' : 's'}
+              </p>
+            </div>
+            <SuperlikeQuotaBadge quota={quota} />
+          </div>
+          <button
+            onClick={() => refetch()}
+            disabled={isLoading}
+            className="p-2 rounded-full hover:bg-secondary/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Refresh superlikes"
+          >
+            <RefreshCw className={`h-5 w-5 ${isLoading ? 'animate-spin' : ''}`} />
+          </button>
         </div>
-      }
-      headerActions={
-        <button
-          onClick={() => refetch()}
-          disabled={isLoading}
-          className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg bg-muted hover:bg-muted/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          aria-label="Refresh superlikes"
-        >
-          <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-          <span>Refresh</span>
-        </button>
-      }
-    >
 
+        {/* Loading State */}
         {(isLoading || isLoadingListings) && (
-          <div className="flex items-center gap-2">
-            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-            <p>Loading your superlikes…</p>
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-6 w-6 animate-spin border-foreground" />
           </div>
         )}
-        {superlikeError && <p className="text-destructive">{superlikeError?.message || 'Failed to load superlikes'}</p>}
 
+        {/* Error State */}
+        {superlikeError && (
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
+            <p className="text-sm text-red-500">
+              {superlikeError?.message || 'Failed to load superlikes'}
+            </p>
+          </div>
+        )}
+
+        {/* Content */}
         {!isLoading && !isLoadingListings && !superlikeError && (
-          <section className="space-y-6">
-            <div className="flex items-center justify-between">
-              <small className="text-muted-foreground/70">{validSuperlikeIds.length} item{validSuperlikeIds.length === 1 ? '' : 's'}</small>
-            </div>
-
+          <>
             {validSuperlikeIds.length === 0 ? (
-              <div className="min-h-[400px] flex items-center justify-center">
-                <div className="text-center space-y-3">
-                  <svg className="w-16 h-16 mx-auto text-muted-foreground/40" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C10.34 2 9 3.34 9 5c0 1.66 1.34 3 3 3s3-1.34 3-3c0-1.66-1.34-3-3-3zM9 5c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1zm6 0c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1zm-3 3c-3.87 0-7 3.13-7 7v5c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-5c0-3.87-3.13-7-7-7z"/>
-                  </svg>
-                  <p className="text-muted-foreground">No superlikes yet</p>
+              <div className="flex items-center justify-center py-16">
+                <div className="text-center space-y-4">
+                  <div className="w-12 h-12 rounded-full bg-muted mx-auto flex items-center justify-center">
+                    <Star className="w-6 h-6 text-muted-foreground" />
+                  </div>
+                  <p className="text-sm text-muted-foreground/70">No superlikes yet</p>
                 </div>
               </div>
             ) : (
@@ -171,8 +177,8 @@ export default function SuperlikesPage() {
                 })}
               </div>
             )}
-          </section>
+          </>
         )}
-    </DashboardPageLayout>
+      </div>
   );
 }

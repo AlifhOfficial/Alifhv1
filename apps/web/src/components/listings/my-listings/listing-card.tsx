@@ -105,186 +105,191 @@ export function ListingCard({
     : 'bg-muted text-muted-foreground';
 
   return (
-    <div className="rounded-xl border border-border p-6 hover:bg-secondary/10 transition-colors">
-      <div className="flex gap-6">
-        {/* Thumbnail */}
-        <div className="w-48 h-32 bg-muted rounded-lg overflow-hidden flex-shrink-0">
-          {listing.thumbnail ? (
-            <img
-              src={listing.thumbnail}
-              alt={`${listing.year} ${listing.make} ${listing.model}`}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-              <span className="text-xs">No image</span>
-            </div>
-          )}
-        </div>
+    <div className="rounded-xl border border-border/40 p-6 bg-muted/20 hover:bg-secondary/50 transition-colors">
+      <div className="flex items-start justify-between gap-6">
+        {/* Main Content */}
+        <div className="flex items-start gap-4 flex-1 min-w-0">
+          {/* Thumbnail */}
+          <div className="w-32 h-24 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+            {listing.thumbnail ? (
+              <img
+                src={listing.thumbnail}
+                alt={`${listing.year} ${listing.make} ${listing.model}`}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-muted-foreground/70">
+                <span className="text-xs">No image</span>
+              </div>
+            )}
+          </div>
 
-        {/* Details */}
-        <div className="flex-1">
-          <div className="flex items-start justify-between">
+          {/* Details */}
+          <div className="flex-1 min-w-0 space-y-2">
             <div>
               <Link
                 href={`/listings/${listing.id}`}
-                className="text-lg font-medium hover:text-primary transition-colors"
+                className="font-medium hover:text-primary transition-colors line-clamp-1"
               >
                 {listing.year} {listing.make} {listing.model}
                 {listing.trim && ` ${listing.trim}`}
               </Link>
-              
-              {/* Status Badge */}
-              <div className="flex items-center gap-3 mt-2">
-                <div className="flex flex-col gap-1">
-                  <span
-                    className={`px-3 py-1 rounded-md text-xs font-medium w-fit ${badgeClassName}`}
-                  >
-                    {statusLabel}
-                  </span>
-
-                  {isSuspended && listing.suspensionReason && (
-                    <p className="text-xs text-red-600">
-                      Reason: {listing.suspensionReason}
-                    </p>
-                  )}
-
-                  {listing.moderationStatus === 'rejected' && listing.rejectionReason && (
-                    <p className="text-xs text-red-500">
-                      Reason: {listing.rejectionReason}
-                    </p>
-                  )}
-
-                  {expiresAt && (
-                    <p className={`text-xs ${isExpiringSoon ? 'text-red-500' : 'text-muted-foreground'}`}>
-                      Expires {expiresAt.toLocaleDateString()} at {expiresAt.toLocaleTimeString()}
-                      {msRemaining !== null && msRemaining > 0 ? ` (${Math.ceil(msRemaining / (24 * 60 * 60 * 1000))}d left)` : ''}
-                    </p>
-                  )}
-                </div>
-                
-                {/* Stats */}
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <Eye className="w-3.5 h-3.5" />
-                    {listing.viewCount}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Heart className="w-3.5 h-3.5" />
-                    {listing.favouriteCount}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Price */}
-            <div className="text-right">
-              <p className="text-base font-medium text-foreground">
-                {listing.price.toLocaleString()} AED
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                {listing.publishedAt 
-                  ? `Published ${new Date(listing.publishedAt).toLocaleDateString()}`
-                  : `Updated ${new Date(listing.updatedAt).toLocaleDateString()}`
-                }
+              <p className="text-sm text-muted-foreground/70 mt-1">
+                {listing.price?.toLocaleString() || '0'} AED
               </p>
             </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex flex-wrap gap-3 mt-4">
-            <Link href={`/listings/${listing.id}`}>
-              <button className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors">
-                View
-              </button>
-            </Link>
-            
-            {/* Suspended listings - show Relist option prominently */}
-            {isSuspended && (
-              <div className="flex items-center gap-3">
-                <Link href={newListingUrl}>
-                  <button className="px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-sm transition-colors">
-                    Relist Your Car
-                  </button>
-                </Link>
-                <span className="text-xs text-muted-foreground">
-                  Create a new listing to relist this vehicle
-                </span>
-              </div>
-            )}
-            
-            {/* Edit - only for non-suspended, non-deep-inventory items */}
-            {!isSuspended && !isDeepInventory && (
-              <Link href={editHref}>
-                <button className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors">
-                  Edit
-                </button>
-              </Link>
-            )}
-
-            {listing.lifecycleStatus === 'active' && (
-              <button 
-                onClick={() => onMarkSold(listing.id)}
-                className="px-5 py-2 rounded-full bg-green-500 hover:bg-green-600 text-white text-sm transition-colors"
-              >
-                Mark Sold
-              </button>
-            )}
-
-            {isExpiringSoon && (
-              <>
-                <button 
-                  onClick={() => onExtend(listing.id, 7)}
-                  className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors"
-                >
-                  Extend 1w
-                </button>
-                <button 
-                  onClick={() => onExtend(listing.id, 14)}
-                  className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors"
-                >
-                  Extend 2w
-                </button>
-              </>
-            )}
-
-            {canArchiveToggle && (
-              <button
-                onClick={() => onArchive(listing.id)}
-                className={`px-5 py-2 rounded-full border text-sm transition-colors ${
-                  deleteConfirm === listing.id 
-                    ? 'border-red-500 text-red-500' 
-                    : 'border-border hover:bg-secondary/10'
+            {/* Status & Info */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-medium w-fit ${
+                  listing.lifecycleStatus === 'deleted' ? 'bg-muted text-muted-foreground border border-border/40'
+                  : listing.lifecycleStatus === 'sold' ? 'bg-green-500/10 text-green-500'
+                  : listing.lifecycleStatus === 'expired' ? 'bg-yellow-500/10 text-yellow-500'
+                  : listing.lifecycleStatus === 'archived' && !isSuspended ? 'bg-muted text-muted-foreground border border-border/40'
+                  : isSuspended || isRejected ? 'bg-red-500/10 text-red-500'
+                  : listing.isPublic ? 'bg-green-500/10 text-green-500'
+                  : isInReview ? 'bg-yellow-500/10 text-yellow-500'
+                  : isDraft ? 'bg-muted text-muted-foreground border border-border/40'
+                  : 'bg-muted text-muted-foreground border border-border/40'
                 }`}
               >
-                {deleteConfirm === listing.id
-                  ? 'Confirm?'
-                  : listing.lifecycleStatus === 'archived'
-                  ? 'Unarchive'
-                  : 'Archive'}
-              </button>
+                {statusLabel}
+              </span>
+              
+              {/* Stats */}
+              <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/70">
+                <Eye className="w-3 h-3" />
+                {listing.viewCount}
+              </span>
+              <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/70">
+                <Heart className="w-3 h-3" />
+                {listing.favouriteCount}
+              </span>
+            </div>
+
+            {/* Additional Info - Warnings & Expiry */}
+            {(isSuspended && listing.suspensionReason) && (
+              <p className="text-xs text-red-500">
+                Suspended: {listing.suspensionReason}
+              </p>
             )}
-            
-            {/* Soft delete - only for non-deep-inventory items */}
-            {canDelete && !isDeepInventory && (
-              <button
-                onClick={() => onDelete(listing.id)}
-                className="px-5 py-2 rounded-full border border-red-500 text-red-500 hover:bg-red-500/10 text-sm transition-colors"
-              >
-                Delete
-              </button>
+
+            {(listing.moderationStatus === 'rejected' && listing.rejectionReason) && (
+              <p className="text-xs text-red-500">
+                Rejected: {listing.rejectionReason}
+              </p>
             )}
-            
-            {deleteConfirm === listing.id && (
-              <button
-                onClick={onCancelDelete}
-                className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors"
-              >
-                Cancel
-              </button>
+
+            {expiresAt && (
+              <p className={`text-xs ${isExpiringSoon ? 'text-yellow-500' : 'text-muted-foreground/70'}`}>
+                Expires {expiresAt.toLocaleDateString()}
+                {msRemaining !== null && msRemaining > 0 ? ` (${Math.ceil(msRemaining / (24 * 60 * 60 * 1000))}d left)` : ''}
+              </p>
             )}
           </div>
         </div>
+
+        {/* Price & Date - Right Side */}
+        <div className="text-right flex-shrink-0">
+          <p className="font-medium text-foreground whitespace-nowrap">
+            {listing.price.toLocaleString()} AED
+          </p>
+          <p className="text-xs text-muted-foreground/70 mt-1 whitespace-nowrap">
+            {listing.publishedAt 
+              ? `Published ${new Date(listing.publishedAt).toLocaleDateString()}`
+              : `Updated ${new Date(listing.updatedAt).toLocaleDateString()}`
+            }
+          </p>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-border/40">
+        <Link href={`/listings/${listing.id}`}>
+          <button className="px-4 py-2 rounded-full border border-border/40 hover:bg-secondary/50 text-xs font-medium tracking-tight transition-colors">
+            View
+          </button>
+        </Link>
+        
+        {/* Suspended listings - show Relist option prominently */}
+        {isSuspended && (
+          <Link href={newListingUrl}>
+            <button className="px-4 py-2 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-medium tracking-tight transition-colors">
+              Relist Your Car
+            </button>
+          </Link>
+        )}
+        
+        {/* Edit - only for non-suspended, non-deep-inventory items */}
+        {!isSuspended && !isDeepInventory && (
+          <Link href={editHref}>
+            <button className="px-4 py-2 rounded-full border border-border/40 hover:bg-secondary/50 text-xs font-medium tracking-tight transition-colors">
+              Edit
+            </button>
+          </Link>
+        )}
+
+        {listing.lifecycleStatus === 'active' && (
+          <button 
+            onClick={() => onMarkSold(listing.id)}
+            className="px-4 py-2 rounded-full bg-green-500 hover:bg-green-600 text-white text-xs font-medium tracking-tight transition-colors"
+          >
+            Mark Sold
+          </button>
+        )}
+
+        {isExpiringSoon && (
+          <>
+            <button 
+              onClick={() => onExtend(listing.id, 7)}
+              className="px-4 py-2 rounded-full border border-border/40 hover:bg-secondary/50 text-xs font-medium tracking-tight transition-colors"
+            >
+              Extend 1w
+            </button>
+            <button 
+              onClick={() => onExtend(listing.id, 14)}
+              className="px-4 py-2 rounded-full border border-border/40 hover:bg-secondary/50 text-xs font-medium tracking-tight transition-colors"
+            >
+              Extend 2w
+            </button>
+          </>
+        )}
+
+        {canArchiveToggle && (
+          <button
+            onClick={() => onArchive(listing.id)}
+            className={`px-4 py-2 rounded-full border text-xs font-medium tracking-tight transition-colors ${
+              deleteConfirm === listing.id 
+                ? 'border-yellow-500/40 text-yellow-500 bg-yellow-500/10' 
+                : 'border-border/40 hover:bg-secondary/50'
+            }`}
+          >
+            {deleteConfirm === listing.id
+              ? 'Confirm?'
+              : listing.lifecycleStatus === 'archived'
+              ? 'Unarchive'
+              : 'Archive'}
+          </button>
+        )}
+        
+        {/* Soft delete - only for non-deep-inventory items */}
+        {canDelete && !isDeepInventory && (
+          <button
+            onClick={() => onDelete(listing.id)}
+            className="px-4 py-2 rounded-full border border-red-500/40 text-red-500 hover:bg-red-500/10 text-xs font-medium tracking-tight transition-colors"
+          >
+            Delete
+          </button>
+        )}
+        
+        {deleteConfirm === listing.id && (
+          <button
+            onClick={onCancelDelete}
+            className="px-4 py-2 rounded-full border border-border/40 hover:bg-secondary/50 text-xs font-medium tracking-tight transition-colors"
+          >
+            Cancel
+          </button>
+        )}
       </div>
     </div>
   );

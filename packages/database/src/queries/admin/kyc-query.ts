@@ -196,85 +196,95 @@ export const getKycRequestsCount = async (status?: KycStatus): Promise<number> =
 
 /**
  * Approve a KYC request (admin action)
- * Also updates the user's profile kycVerified status
+ * Uses transaction for atomic update of both KYC record and user profile
  */
 export const approveKycRecord = async (
   id: string, 
   verifiedBy: string,
   expiresAt?: Date
 ): Promise<KycRecord | null> => {
-  const now = new Date();
-  
-  // First get the KYC record to find the user
-  const existingKyc = await getKycRecordById(id);
-  if (!existingKyc) return null;
-  
-  // Update the KYC record
-  const [result] = await db
-    .update(kycRecord)
-    .set({
-      status: 'approved',
-      verifiedBy,
-      verifiedAt: now,
-      expiresAt: expiresAt ?? null,
-      updatedAt: now,
-    })
-    .where(eq(kycRecord.id, id))
-    .returning();
+  return await db.transaction(async (tx) => {
+    const now = new Date();
     
-  if (!result) return null;
-  
-  // Update user profile's kycVerified flag
-  await db
-    .update(userProfile)
-    .set({
-      kycVerified: true,
-      updatedAt: now,
-    })
-    .where(eq(userProfile.userId, existingKyc.userId));
+    // Get KYC record within transaction
+    const [existingKyc] = await tx
+      .select()
+      .from(kycRecord)
+      .where(eq(kycRecord.id, id))
+      .limit(1);
+      
+    if (!existingKyc) return null;
     
-  return result;
+    // Update KYC record and user profile atomically
+    const [[result]] = await Promise.all([
+      tx.update(kycRecord)
+        .set({
+          status: 'approved',
+          verifiedBy,
+          verifiedAt: now,
+          expiresAt: expiresAt ?? null,
+          updatedAt: now,
+        })
+        .where(eq(kycRecord.id, id))
+        .returning(),
+        
+      tx.update(userProfile)
+        .set({
+          kycVerified: true,
+          kycVerifiedAt: now,
+          updatedAt: now,
+        })
+        .where(eq(userProfile.userId, existingKyc.userId)),
+    ]);
+    
+    return result ?? null;
+  });
 };
 
 /**
  * Reject a KYC request (admin action)
+ * Uses transaction for atomic update
  */
 export const rejectKycRecord = async (
   id: string,
   verifiedBy: string,
   rejectionReason: string
 ): Promise<KycRecord | null> => {
-  const now = new Date();
-  
-  // First get the KYC record to find the user
-  const existingKyc = await getKycRecordById(id);
-  if (!existingKyc) return null;
-  
-  // Update the KYC record
-  const [result] = await db
-    .update(kycRecord)
-    .set({
-      status: 'rejected',
-      verifiedBy,
-      verifiedAt: now,
-      rejectionReason,
-      updatedAt: now,
-    })
-    .where(eq(kycRecord.id, id))
-    .returning();
+  return await db.transaction(async (tx) => {
+    const now = new Date();
     
-  if (!result) return null;
-  
-  // Ensure user profile's kycVerified is false
-  await db
-    .update(userProfile)
-    .set({
-      kycVerified: false,
-      updatedAt: now,
-    })
-    .where(eq(userProfile.userId, existingKyc.userId));
+    // Get KYC record within transaction
+    const [existingKyc] = await tx
+      .select()
+      .from(kycRecord)
+      .where(eq(kycRecord.id, id))
+      .limit(1);
+      
+    if (!existingKyc) return null;
     
-  return result;
+    // Update KYC record and user profile atomically
+    const [[result]] = await Promise.all([
+      tx.update(kycRecord)
+        .set({
+          status: 'rejected',
+          verifiedBy,
+          verifiedAt: now,
+          rejectionReason,
+          updatedAt: now,
+        })
+        .where(eq(kycRecord.id, id))
+        .returning(),
+        
+      tx.update(userProfile)
+        .set({
+          kycVerified: false,
+          updatedAt: now,
+        })
+        .where(eq(userProfile.userId, existingKyc.userId)),
+    ]);
+    
+    return result ?? null;
+  });
 };
 
 /**

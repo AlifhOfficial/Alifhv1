@@ -2,9 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Loader2, RefreshCw } from 'lucide-react';
+import { Loader2, RefreshCw, Heart } from 'lucide-react';
 import { CarCard } from '@/components/inventory';
-import { DashboardPageLayout } from '@/components/layout';
 import { useFavoritesStatus } from '@/hooks/engagement';
 
 type ListingPayload = {
@@ -84,42 +83,51 @@ export default function FavoritesPage() {
   );
 
   return (
-    <DashboardPageLayout
-      title="Favorites"
-      headerActions={
-        <button
-          onClick={() => refetch()}
-          disabled={isLoading}
-          className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg bg-muted hover:bg-muted/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          aria-label="Refresh favorites"
-        >
-          <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-          <span>Refresh</span>
-        </button>
-      }
-    >
+    <div className="max-w-6xl mx-auto px-4 py-12 space-y-16">
+        {/* Header */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="space-y-2">
+            <h1 className="text-2xl font-semibold tracking-tight">Favorites</h1>
+            <p className="text-sm text-muted-foreground/70">
+              {validFavoriteIds.length} item{validFavoriteIds.length === 1 ? '' : 's'}
+            </p>
+          </div>
+          <button
+            onClick={() => refetch()}
+            disabled={isLoading}
+            className="p-2 rounded-full hover:bg-secondary/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Refresh favorites"
+          >
+            <RefreshCw className={`h-5 w-5 ${isLoading ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
 
+        {/* Loading State */}
         {(isLoading || isLoadingListings) && (
-          <div className="flex items-center gap-2">
-            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-            <p>Loading your favorites…</p>
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-6 w-6 animate-spin border-foreground" />
           </div>
         )}
-        {favError && <p className="text-destructive">{favError?.message || 'Failed to load favorites'}</p>}
 
+        {/* Error State */}
+        {favError && (
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
+            <p className="text-sm text-red-500">
+              {favError?.message || 'Failed to load favorites'}
+            </p>
+          </div>
+        )}
+
+        {/* Content */}
         {!isLoading && !isLoadingListings && !favError && (
-          <section className="space-y-6">
-            <div className="flex items-center justify-between">
-              <small className="text-muted-foreground/70">{validFavoriteIds.length} item{validFavoriteIds.length === 1 ? '' : 's'}</small>
-            </div>
-
+          <>
             {validFavoriteIds.length === 0 ? (
-              <div className="min-h-[400px] flex items-center justify-center">
-                <div className="text-center space-y-3">
-                  <svg className="w-16 h-16 mx-auto text-muted-foreground/40" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C10.34 2 9 3.34 9 5c0 1.66 1.34 3 3 3s3-1.34 3-3c0-1.66-1.34-3-3-3zM9 5c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1zm6 0c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1zm-3 3c-3.87 0-7 3.13-7 7v5c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-5c0-3.87-3.13-7-7-7z"/>
-                  </svg>
-                  <p className="text-muted-foreground">No favorites yet</p>
+              <div className="flex items-center justify-center py-16">
+                <div className="text-center space-y-4">
+                  <div className="w-12 h-12 rounded-full bg-muted mx-auto flex items-center justify-center">
+                    <Heart className="w-6 h-6 text-muted-foreground" />
+                  </div>
+                  <p className="text-sm text-muted-foreground/70">No favorites yet</p>
                 </div>
               </div>
             ) : (
@@ -153,8 +161,8 @@ export default function FavoritesPage() {
                 })}
               </div>
             )}
-          </section>
+          </>
         )}
-    </DashboardPageLayout>
+      </div>
   );
 }

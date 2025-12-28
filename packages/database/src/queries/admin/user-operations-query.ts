@@ -3,11 +3,12 @@
  * 
  * Direct database operations for admin user management
  * Simple, straightforward operations without hooks
+ * Uses atomic PostgreSQL operations for concurrent safety
  * 
  * @module queries/admin/user-operations-query
  */
 
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { db } from '../../dbclient';
 import { user } from '../../schema/auth';
 import { userProfile } from '../../schema/profile';
@@ -102,60 +103,35 @@ export async function updateUserTags(userId: string, tags: string[]) {
 }
 
 /**
- * Add tag to user
+ * Add tag to user (atomic - no race condition)
  */
 export async function addUserTag(userId: string, tag: string) {
-  // Get current profile
-  const [profile] = await db
-    .select()
-    .from(userProfile)
-    .where(eq(userProfile.userId, userId))
-    .limit(1);
-
-  if (!profile) {
-    throw new Error('User profile not found');
-  }
-
-  const currentTags = (profile.tags as string[]) || [];
-  if (currentTags.includes(tag)) {
-    return profile; // Already has this tag
-  }
-
-  const newTags = [...currentTags, tag];
-
   const [updated] = await db
     .update(userProfile)
     .set({
-      tags: newTags,
+      tags: sql`array_append(coalesce(${userProfile.tags}, '{}'), ${tag})`,
       updatedAt: new Date(),
     })
-    .where(eq(userProfile.userId, userId))
+    .where(sql`${userProfile.userId} = ${userId} AND NOT (${tag} = ANY(coalesce(${userProfile.tags}, '{}')))`)
     .returning();
+
+  // If no update (tag already exists), fetch current profile
+  if (!updated) {
+    const [profile] = await db.select().from(userProfile).where(eq(userProfile.userId, userId)).limit(1);
+    return profile;
+  }
 
   return updated;
 }
 
 /**
- * Remove tag from user
+ * Remove tag from user (atomic - no race condition)
  */
 export async function removeUserTag(userId: string, tag: string) {
-  const [profile] = await db
-    .select()
-    .from(userProfile)
-    .where(eq(userProfile.userId, userId))
-    .limit(1);
-
-  if (!profile) {
-    throw new Error('User profile not found');
-  }
-
-  const currentTags = (profile.tags as string[]) || [];
-  const newTags = currentTags.filter(t => t !== tag);
-
   const [updated] = await db
     .update(userProfile)
     .set({
-      tags: newTags,
+      tags: sql`array_remove(coalesce(${userProfile.tags}, '{}'), ${tag})`,
       updatedAt: new Date(),
     })
     .where(eq(userProfile.userId, userId))
@@ -169,59 +145,35 @@ export async function removeUserTag(userId: string, tag: string) {
 // ============================================================================
 
 /**
- * Add badge to user
+ * Add badge to user (atomic - no race condition)
  */
 export async function addUserBadge(userId: string, badge: string) {
-  const [profile] = await db
-    .select()
-    .from(userProfile)
-    .where(eq(userProfile.userId, userId))
-    .limit(1);
-
-  if (!profile) {
-    throw new Error('User profile not found');
-  }
-
-  const currentBadges = (profile.badges as string[]) || [];
-  if (currentBadges.includes(badge)) {
-    return profile;
-  }
-
-  const newBadges = [...currentBadges, badge];
-
   const [updated] = await db
     .update(userProfile)
     .set({
-      badges: newBadges,
+      badges: sql`array_append(coalesce(${userProfile.badges}, '{}'), ${badge})`,
       updatedAt: new Date(),
     })
-    .where(eq(userProfile.userId, userId))
+    .where(sql`${userProfile.userId} = ${userId} AND NOT (${badge} = ANY(coalesce(${userProfile.badges}, '{}')))`)
     .returning();
+
+  // If no update (badge already exists), fetch current profile
+  if (!updated) {
+    const [profile] = await db.select().from(userProfile).where(eq(userProfile.userId, userId)).limit(1);
+    return profile;
+  }
 
   return updated;
 }
 
 /**
- * Remove badge from user
+ * Remove badge from user (atomic - no race condition)
  */
 export async function removeUserBadge(userId: string, badge: string) {
-  const [profile] = await db
-    .select()
-    .from(userProfile)
-    .where(eq(userProfile.userId, userId))
-    .limit(1);
-
-  if (!profile) {
-    throw new Error('User profile not found');
-  }
-
-  const currentBadges = (profile.badges as string[]) || [];
-  const newBadges = currentBadges.filter(b => b !== badge);
-
   const [updated] = await db
     .update(userProfile)
     .set({
-      badges: newBadges,
+      badges: sql`array_remove(coalesce(${userProfile.badges}, '{}'), ${badge})`,
       updatedAt: new Date(),
     })
     .where(eq(userProfile.userId, userId))

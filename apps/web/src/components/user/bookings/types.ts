@@ -25,6 +25,22 @@ export interface UserBookingData {
   confirmationToken: string | null;
   feedbackRating: number | null;
   feedbackComment: string | null;
+  // Reschedule tracking
+  rescheduleCount: number;
+  lastRescheduledAt: string | null;
+  // Partner policies (from booking settings)
+  partnerSettings?: {
+    allowUserCancellation: boolean;
+    cancellationDeadlineHours: number;
+    allowReschedule: boolean;
+    maxRescheduleCount: number;
+    rescheduleDeadlineHours: number;
+    preparationInstructions: string | null;
+    directions: string | null;
+    parkingInstructions: string | null;
+    contactPersonName: string | null;
+    contactPersonPhone: string | null;
+  };
 }
 
 export const USER_BOOKING_STATUS_COLORS: Record<string, string> = {

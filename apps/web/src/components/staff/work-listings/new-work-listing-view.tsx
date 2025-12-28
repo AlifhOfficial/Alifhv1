@@ -60,31 +60,29 @@ export function NewWorkListingView({ userId, partnerId }: NewWorkListingViewProp
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b border-border/40 bg-background">
-        <div className="max-w-4xl mx-auto px-6 py-8">
+    <div className="min-h-screen bg-background pb-32">
+      <div className="max-w-4xl mx-auto px-8 py-16 space-y-8">
+        {/* Header */}
+        <div>
           <h1 className="text-2xl font-semibold tracking-tight">Add New Inventory</h1>
-          <p className="text-sm text-muted-foreground mt-2">
+          <p className="text-sm text-muted-foreground/70 mt-2">
             Create a new listing for your dealership
           </p>
         </div>
-      </div>
 
-      {/* Error Message */}
-      {error && (
-        <div className="max-w-4xl mx-auto px-6 mt-6">
-          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+        {/* Error Message */}
+        {error && (
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
             <p className="text-sm text-red-500">{error}</p>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Form */}
-      <ListingForm
-        onSubmit={handleSubmit}
-        onCancel={handleCancel}
-      />
+        {/* Form */}
+        <ListingForm
+          onSubmit={handleSubmit}
+          onCancel={handleCancel}
+        />
+      </div>
     </div>
   );
 }

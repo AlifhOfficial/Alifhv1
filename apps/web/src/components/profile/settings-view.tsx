@@ -85,30 +85,27 @@ export function SettingsView({ userName, userEmail }: SettingsViewProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-32">
-      <div className="max-w-3xl mx-auto px-6 py-16 space-y-16">
+    <div className="max-w-3xl mx-auto px-4 py-12 space-y-16">
 
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Settings</h1>
-          <p className="text-sm text-muted-foreground mt-2">
+          <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
+          <p className="text-sm text-muted-foreground/70 mt-2">
             Manage your preferences and account
           </p>
         </div>
 
         {/* Preferences */}
         <section className="space-y-6">
-          <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-            <h3 className="text-lg font-medium tracking-tight">Preferences</h3>
-          </div>
+          <h3 className="text-base font-medium tracking-tight">Preferences</h3>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {/* Consignment Mode */}
-            <div className="rounded-xl border border-border/40 p-6 flex items-start justify-between gap-6">
-              <div className="space-y-2 flex-1">
-                <p className="text-sm font-medium text-foreground">Consignment Mode</p>
-                <p className="text-sm text-muted-foreground max-w-md">
-                  Enable this to list vehicles on consignment. This changes how your listings are displayed.
+            <div className="rounded-xl border border-border/40 p-6 flex items-start justify-between gap-6 hover:bg-muted/10 transition-colors">
+              <div className="space-y-1.5 flex-1">
+                <p className="text-sm font-medium">Consignment Mode</p>
+                <p className="text-sm text-muted-foreground/70">
+                  Enable this to list vehicles on consignment
                 </p>
               </div>
               <button
@@ -118,25 +115,25 @@ export function SettingsView({ userName, userEmail }: SettingsViewProps) {
                 }}
                 disabled={saving}
                 className={cn(
-                  "relative h-7 w-12 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-foreground/20 disabled:opacity-50",
-                  form.consignmentMode ? "bg-foreground" : "bg-secondary"
+                  "relative h-7 w-12 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50",
+                  form.consignmentMode ? "bg-primary" : "bg-muted"
                 )}
               >
                 <span
                   className={cn(
-                    "absolute top-1 h-5 w-5 rounded-full bg-background shadow-sm transition-transform",
-                    form.consignmentMode ? "left-6" : "left-1"
+                    "absolute top-1 h-5 w-5 rounded-full shadow-sm transition-transform",
+                    form.consignmentMode ? "left-6 bg-white" : "left-1 bg-white"
                   )}
                 />
               </button>
             </div>
 
             {/* Show Phone */}
-            <div className="rounded-xl border border-border/40 p-6 flex items-start justify-between gap-6">
-              <div className="space-y-2 flex-1">
-                <p className="text-sm font-medium text-foreground">Show Phone Number</p>
-                <p className="text-sm text-muted-foreground max-w-md">
-                  Display your phone number on your public profile so buyers can contact you directly.
+            <div className="rounded-xl border border-border/40 p-6 flex items-start justify-between gap-6 hover:bg-muted/10 transition-colors">
+              <div className="space-y-1.5 flex-1">
+                <p className="text-sm font-medium">Show Phone Number</p>
+                <p className="text-sm text-muted-foreground/70">
+                  Display your phone on your public profile
                 </p>
               </div>
               <button
@@ -146,25 +143,25 @@ export function SettingsView({ userName, userEmail }: SettingsViewProps) {
                 }}
                 disabled={saving}
                 className={cn(
-                  "relative h-7 w-12 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-foreground/20 disabled:opacity-50",
-                  form.showPhone ? "bg-foreground" : "bg-secondary"
+                  "relative h-7 w-12 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50",
+                  form.showPhone ? "bg-primary" : "bg-muted"
                 )}
               >
                 <span
                   className={cn(
-                    "absolute top-1 h-5 w-5 rounded-full bg-background shadow-sm transition-transform",
-                    form.showPhone ? "left-6" : "left-1"
+                    "absolute top-1 h-5 w-5 rounded-full shadow-sm transition-transform",
+                    form.showPhone ? "left-6 bg-white" : "left-1 bg-white"
                   )}
                 />
               </button>
             </div>
 
             {/* Generated Avatar */}
-            <div className="rounded-xl border border-border/40 p-6 flex items-start justify-between gap-6">
-              <div className="space-y-2 flex-1">
-                <p className="text-sm font-medium text-foreground">Show Generated Avatar</p>
-                <p className="text-sm text-muted-foreground max-w-md">
-                  When you don't have a profile photo, show a fun robot avatar instead of your initials.
+            <div className="rounded-xl border border-border/40 p-6 flex items-start justify-between gap-6 hover:bg-muted/10 transition-colors">
+              <div className="space-y-1.5 flex-1">
+                <p className="text-sm font-medium">Generated Avatar</p>
+                <p className="text-sm text-muted-foreground/70">
+                  Show robot avatar when no profile photo is set
                 </p>
               </div>
               <button
@@ -174,14 +171,14 @@ export function SettingsView({ userName, userEmail }: SettingsViewProps) {
                 }}
                 disabled={saving}
                 className={cn(
-                  "relative h-7 w-12 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-foreground/20 disabled:opacity-50",
-                  form.useGeneratedAvatar ? "bg-foreground" : "bg-secondary"
+                  "relative h-7 w-12 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50",
+                  form.useGeneratedAvatar ? "bg-primary" : "bg-muted"
                 )}
               >
                 <span
                   className={cn(
-                    "absolute top-1 h-5 w-5 rounded-full bg-background shadow-sm transition-transform",
-                    form.useGeneratedAvatar ? "left-6" : "left-1"
+                    "absolute top-1 h-5 w-5 rounded-full shadow-sm transition-transform",
+                    form.useGeneratedAvatar ? "left-6 bg-white" : "left-1 bg-white"
                   )}
                 />
               </button>
@@ -189,45 +186,43 @@ export function SettingsView({ userName, userEmail }: SettingsViewProps) {
           </div>
         </section>
 
-        {/* Danger Zone */}
+        {/* Account Actions */}
         <section className="space-y-6">
-          <div className="flex items-baseline justify-between border-b border-destructive/20 pb-2">
-            <h3 className="text-lg font-medium tracking-tight text-destructive">Danger Zone</h3>
-          </div>
+          <h3 className="text-base font-medium tracking-tight">Account</h3>
 
-          <div className="rounded-xl border border-destructive/30 p-6 flex items-start justify-between gap-6">
-            <div className="space-y-2 flex-1">
-              <p className="text-sm font-medium text-foreground">Delete Account</p>
-              <p className="text-sm text-muted-foreground max-w-md">
-                Permanently delete your account and all associated data. This action cannot be undone.
-              </p>
+          <div className="rounded-xl border border-border/40 p-6">
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <p className="text-sm font-medium">Delete Account</p>
+                <p className="text-sm text-muted-foreground/70">
+                  This will permanently delete your account and all data after 6 months
+                </p>
+              </div>
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                className="px-5 py-2 rounded-full border border-border/40 text-sm font-medium tracking-tight hover:bg-muted/50 transition-colors"
+              >
+                Delete Account
+              </button>
             </div>
-            <button
-              onClick={() => setShowDeleteModal(true)}
-              className="px-5 py-2 rounded-full border border-destructive/30 text-sm font-medium text-destructive hover:bg-destructive/5 transition-colors flex-shrink-0"
-            >
-              Delete Account
-            </button>
           </div>
         </section>
 
-      </div>
-
-      {/* Delete Modal */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border/40 rounded-2xl p-8 max-w-md w-full shadow-2xl space-y-6 animate-in fade-in zoom-in-95 duration-200">
+        {/* Delete Modal */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4">
+            <div className="bg-card/95 backdrop-blur-sm border border-border/30 rounded-2xl p-8 max-w-md w-full shadow-2xl space-y-6">
             
             {/* Content */}
             <div className="space-y-3">
-              <h2 className="text-xl font-semibold">Delete Account</h2>
-              <p className="text-sm text-muted-foreground">
+              <h2 className="text-xl font-semibold tracking-tight">Delete Account?</h2>
+              <p className="text-sm text-muted-foreground/70 leading-relaxed">
                 This action cannot be undone. Your account will be permanently deleted after 6 months.
               </p>
             </div>
             
             <div className="space-y-3">
-              <label className="text-xs uppercase tracking-wider font-medium text-muted-foreground block">
+              <label className="text-xs font-medium text-muted-foreground block">
                 Type "DELETE" to confirm
               </label>
               <input
@@ -235,7 +230,7 @@ export function SettingsView({ userName, userEmail }: SettingsViewProps) {
                 value={deleteText}
                 onChange={(e) => setDeleteText(e.target.value)}
                 placeholder="DELETE"
-                className="w-full h-11 px-4 bg-secondary/20 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-destructive/20 focus:border-destructive/50 transition-all"
+                className="w-full h-11 px-4 bg-muted/20 border border-border/40 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all"
               />
             </div>
 
@@ -245,21 +240,21 @@ export function SettingsView({ userName, userEmail }: SettingsViewProps) {
                   setShowDeleteModal(false);
                   setDeleteText('');
                 }}
-                className="flex-1 px-6 py-3 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium transition-colors"
+                className="flex-1 px-6 py-2.5 rounded-full border border-border/40 hover:bg-muted/50 text-sm font-medium tracking-tight transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={deleteAccount}
                 disabled={deleteText !== 'DELETE'}
-                className="flex-1 px-6 py-3 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex-1 px-6 py-2.5 rounded-full bg-red-500 text-white hover:bg-red-600 text-sm font-medium tracking-tight disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-red-500/20"
               >
                 Delete Account
               </button>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+          </div>
+        )}
+      </div>
   );
 }

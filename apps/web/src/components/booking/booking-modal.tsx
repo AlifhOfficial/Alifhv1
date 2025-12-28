@@ -33,10 +33,7 @@ import {
   AlertCircle,
   ChevronLeft,
   ChevronRight,
-  Loader2,
-  User,
-  Phone,
-  Mail
+  Loader2
 } from 'lucide-react';
 import { cn } from '@/utils';
 
@@ -59,9 +56,6 @@ interface BookingSettings {
   minLeadTimeHours: number;
   maxLeadTimeDays: number;
   defaultSlotDuration: number;
-  preparationInstructions: string | null;
-  directions: string | null;
-  parkingInstructions: string | null;
 }
 
 interface BookingModalProps {
@@ -591,15 +585,6 @@ export function BookingModal({
                 />
               </div>
             </div>
-
-            {/* Preparation Instructions */}
-            {settings?.preparationInstructions && (
-              <div className="p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 rounded-lg">
-                <p className="text-xs text-amber-800 dark:text-amber-200">
-                  <strong>Important:</strong> {settings.preparationInstructions}
-                </p>
-              </div>
-            )}
 
             {!isAuthenticated ? (
               <Button onClick={onLoginRequired} className="w-full">

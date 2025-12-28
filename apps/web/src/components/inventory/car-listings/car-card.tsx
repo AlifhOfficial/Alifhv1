@@ -172,7 +172,7 @@ export function CarCard({
 
   return (
     <div className={cn(
-      "group relative flex flex-col overflow-hidden rounded-lg transition-all duration-300 w-full max-w-[400px]",
+      "group relative flex flex-col overflow-hidden rounded-lg transition-all duration-300 w-full",
       isBlackMember 
         ? "bg-black border border-zinc-800 hover:border-zinc-700 hover:shadow-xl" 
         : "bg-sidebar border border-sidebar-border hover:border-sidebar-border/80 hover:shadow-md",

@@ -153,26 +153,30 @@ export function UserBookingsView() {
   }
 
   return (
-    <DashboardPageLayout
-      title="My Bookings"
-      headerActions={
-        <button
-          onClick={fetchBookings}
-          disabled={isLoading}
-          className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isLoading ? 'Refreshing...' : 'Refresh'}
-        </button>
-      }
-    >
-      <div className="space-y-8">
-        {/* Filters Section */}
+    <div className="min-h-screen bg-background pb-32">
+      <div className="max-w-6xl mx-auto px-8 py-16 space-y-16">
+        {/* Header Section */}
         <section className="space-y-6">
-          <div className="border-b border-border/40 pb-2">
-            <h3 className="text-lg font-medium tracking-tight">Your Test Drives</h3>
-            <p className="text-sm text-muted-foreground mt-1">View and manage your booked test drives</p>
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight">My Bookings</h1>
+              <p className="text-sm text-muted-foreground/70 mt-2">
+                View and manage your booked test drives
+              </p>
+            </div>
+            
+            <button
+              onClick={fetchBookings}
+              disabled={isLoading}
+              className="p-2 hover:bg-secondary/50 rounded-lg transition-colors disabled:opacity-50"
+              title="Refresh"
+            >
+              <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </button>
           </div>
-          
+
           <UserBookingFilters 
             selectedStatus={selectedStatus} 
             onStatusChange={setSelectedStatus} 
@@ -181,9 +185,11 @@ export function UserBookingsView() {
 
         {/* Error Alert */}
         {error && (
-          <div className="flex items-start gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
-            <AlertCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
-            <p className="text-sm text-red-500">{error}</p>
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-red-500">{error}</p>
+            </div>
           </div>
         )}
 
@@ -196,6 +202,7 @@ export function UserBookingsView() {
           onOpenFeedback={(bookingId) => setFeedbackModal({ bookingId, isOpen: true })}
         />
 
+        {/* Modals */}
         <FeedbackModal
           isOpen={feedbackModal?.isOpen ?? false}
           rating={feedbackRating}
@@ -218,6 +225,6 @@ export function UserBookingsView() {
           onClose={handleCloseCancel}
         />
       </div>
-    </DashboardPageLayout>
+    </div>
   );
 }

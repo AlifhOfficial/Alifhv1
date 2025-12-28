@@ -48,14 +48,17 @@ export interface AvailabilityRule {
   maxConcurrentBookings: number;
   bufferTime: number | null;
   isActive: boolean;
+  excludeDates?: string[]; // ["2024-12-25", "2024-01-01"]
 }
 
 export interface BookingSettings {
+  // Core settings
   bookingEnabled: boolean;
-  maxAdvanceBookingDays: number;
-  minAdvanceBookingHours: number;
-  requireConfirmation: boolean;
   autoConfirm: boolean;
+  
+  // Lead time
+  minLeadTimeHours: number;
+  maxAdvanceBookingDays: number;
   allowSameDay: boolean;
 }
 

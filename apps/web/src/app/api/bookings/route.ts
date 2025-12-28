@@ -14,6 +14,8 @@ import {
   checkUserBookingRestrictions,
   runBookingMaintenance,
   memoryCache,
+  getPartnerBookingSettings,
+  type BookingStatus,
 } from '@alifh/database';
 
 export const runtime = 'nodejs';
@@ -39,7 +41,8 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
-    const status = searchParams.get('status')?.split(',');
+    const statusParam = searchParams.get('status')?.split(',');
+    const status = statusParam as BookingStatus[] | undefined;
     const upcoming = searchParams.get('upcoming') === 'true';
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
@@ -51,7 +54,37 @@ export async function GET(req: NextRequest) {
       upcoming,
     });
 
-    return NextResponse.json(result);
+    // Enrich bookings with partner settings for cancellation/reschedule policies
+    const partnerIds = [...new Set(result.bookings.map(b => b.partnerId))];
+    const settingsMap = new Map<string, Awaited<ReturnType<typeof getPartnerBookingSettings>>>();
+    
+    await Promise.all(
+      partnerIds.map(async (partnerId) => {
+        const settings = await getPartnerBookingSettings(partnerId);
+        settingsMap.set(partnerId, settings);
+      })
+    );
+
+    const enrichedBookings = result.bookings.map(booking => ({
+      ...booking,
+      partnerSettings: settingsMap.get(booking.partnerId) ? {
+        allowUserCancellation: settingsMap.get(booking.partnerId)!.allowUserCancellation,
+        cancellationDeadlineHours: settingsMap.get(booking.partnerId)!.cancellationDeadlineHours ?? 2,
+        allowReschedule: settingsMap.get(booking.partnerId)!.allowReschedule,
+        maxRescheduleCount: settingsMap.get(booking.partnerId)!.maxRescheduleCount,
+        rescheduleDeadlineHours: settingsMap.get(booking.partnerId)!.rescheduleDeadlineHours ?? 4,
+        preparationInstructions: settingsMap.get(booking.partnerId)!.preparationInstructions,
+        directions: settingsMap.get(booking.partnerId)!.directions,
+        parkingInstructions: settingsMap.get(booking.partnerId)!.parkingInstructions,
+        contactPersonName: settingsMap.get(booking.partnerId)!.contactPersonName,
+        contactPersonPhone: settingsMap.get(booking.partnerId)!.contactPersonPhone,
+      } : undefined,
+    }));
+
+    return NextResponse.json({
+      bookings: enrichedBookings,
+      total: result.total,
+    });
   } catch (error) {
     console.error('Error fetching user bookings:', error);
     return NextResponse.json(

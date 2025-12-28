@@ -94,57 +94,51 @@ export function EditListingView({ listing, userId, listingType = 'personal' }: E
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b border-border/40">
-        <div className="max-w-4xl mx-auto px-6 py-8">
+    <div className="min-h-screen bg-background pb-32">
+      <div className="max-w-4xl mx-auto px-8 py-16 space-y-8">
+        {/* Header */}
+        <div>
           <h1 className="text-2xl font-semibold tracking-tight">Edit Listing</h1>
-          <p className="text-sm text-muted-foreground mt-2">
+          <p className="text-sm text-muted-foreground/70 mt-2">
             {listing.year} {listing.make} {listing.model}
           </p>
         </div>
-      </div>
 
-      {listing.lifecycleStatus === 'archived' &&
-        (listing.specialNotes?.suspensionReason || (listing.specialNotes as any)?.moderation?.reason) && (
-          <div className="max-w-4xl mx-auto px-6 mt-6">
-            <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+        {listing.lifecycleStatus === 'archived' &&
+          (listing.specialNotes?.suspensionReason || (listing.specialNotes as any)?.moderation?.reason) && (
+            <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
               <p className="text-sm text-red-500">
                 Suspended: {listing.specialNotes?.suspensionReason || (listing.specialNotes as any)?.moderation?.reason}
               </p>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-muted-foreground/70 mt-2">
                 You can edit and resubmit this listing, but it will stay hidden until an admin unsuspends it.
               </p>
             </div>
-          </div>
-        )}
+          )}
 
-      {listing.moderationStatus === 'rejected' && (listing.rejectionReason || listing.specialNotes?.rejectionReason) && (
-        <div className="max-w-4xl mx-auto px-6 mt-6">
-          <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+        {listing.moderationStatus === 'rejected' && (listing.rejectionReason || listing.specialNotes?.rejectionReason) && (
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
             <p className="text-sm text-red-500">
               Rejected: {listing.rejectionReason || listing.specialNotes?.rejectionReason}
             </p>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Error Message */}
-      {error && (
-        <div className="max-w-4xl mx-auto px-6 mt-6">
-          <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+        {/* Error Message */}
+        {error && (
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
             <p className="text-sm text-red-500">{error}</p>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Form */}
-      <ListingForm
-        initialData={initialData}
-        isEditing
-        onSubmit={handleSubmit}
-        onCancel={handleCancel}
-      />
+        {/* Form */}
+        <ListingForm
+          initialData={initialData}
+          isEditing
+          onSubmit={handleSubmit}
+          onCancel={handleCancel}
+        />
+      </div>
     </div>
   );
 }
