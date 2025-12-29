@@ -26,21 +26,21 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useCreateConversation } from '@/hooks/messaging';
 import { useListingDetail, type SellerData } from '@/hooks/listings';
+import { useUser } from '@/hooks/auth/use-auth';
 
 // Re-export types for backwards compatibility
 export type { PartnerSellerData, UserSellerData, SellerData } from '@/hooks/listings';
 
 interface ListingDetailViewProps {
   listingId: string;
-  currentUserId?: string;
-  currentUserRole?: string;
 }
 
-export function ListingDetailView({ listingId, currentUserId, currentUserRole }: ListingDetailViewProps) {
+export function ListingDetailView({ listingId }: ListingDetailViewProps) {
   const router = useRouter();
   const [isStartingChat, setIsStartingChat] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const { createConversation } = useCreateConversation();
+  const { user } = useUser();
   
   // Fetch listing data via hook
   const { listing, sellerData, isLoading, error } = useListingDetail(listingId);
@@ -83,8 +83,8 @@ export function ListingDetailView({ listingId, currentUserId, currentUserRole }:
 
   // Access control for non-public listings
   if (!listing.isPublic) {
-    const isAdmin = currentUserRole === 'admin' || currentUserRole === 'super_admin';
-    const isOwner = currentUserId === listing.userId;
+    const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+    const isOwner = user?.id === listing.userId;
 
     if (!isAdmin && !isOwner) {
       return (
@@ -117,13 +117,13 @@ export function ListingDetailView({ listingId, currentUserId, currentUserRole }:
 
   const handleChatWithSeller = async () => {
     // Check if user is authenticated
-    if (!currentUserId) {
+    if (!user?.id) {
       router.push('/sign-in?redirectTo=' + encodeURIComponent(`/listings/${listing.id}`));
       return;
     }
 
     // Don't allow chatting with yourself
-    if (currentUserId === listing.userId) {
+    if (user.id === listing.userId) {
       return;
     }
 
@@ -196,7 +196,7 @@ export function ListingDetailView({ listingId, currentUserId, currentUserRole }:
                   <ContactSection
                     sellerData={sellerData}
                     listingId={listing.id}
-                    currentUserId={currentUserId}
+                    currentUserId={user?.id}
                     sellerUserId={listing.userId}
                     partnerId={listing.partnerId}
                     onStartChat={handleChatWithSeller}
@@ -255,7 +255,7 @@ export function ListingDetailView({ listingId, currentUserId, currentUserRole }:
           listingThumbnail={listing.thumbnail}
           partnerName={listing.partnerBrandName || 'Dealer'}
           partnerAddress={partnerAddress}
-          isAuthenticated={!!currentUserId}
+          isAuthenticated={!!user?.id}
           onLoginRequired={handleLoginRequired}
         />
       )}
