@@ -3,7 +3,7 @@
  * Combines Partner Application and Staff Invites in one place
  */
 
-import { UserRequestsHub } from '@/components/user-dashboard/user-requests-hub';
+import { UserRequestsHub } from '@/components/dashboards/user/user-requests-hub';
 
 export const dynamic = 'force-dynamic';
 
