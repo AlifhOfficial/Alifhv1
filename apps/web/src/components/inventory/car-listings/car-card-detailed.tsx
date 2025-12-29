@@ -39,7 +39,7 @@ const formatPrice = (amount: number) => {
     currency: 'AED',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(amount); // Price stored as full AED, not fils
+  }).format(amount);
 };
 
 const formatMileage = (km: number) => {
@@ -47,7 +47,6 @@ const formatMileage = (km: number) => {
 };
 
 const formatPriceShort = (amount: number) => {
-  // Price stored as full AED, not fils
   if (amount >= 1000000) {
     return `AED ${(amount / 1000000).toFixed(1)}M`;
   }
@@ -78,7 +77,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
   return (
     <div className="space-y-3">
       {/* Main Image */}
-      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-lg bg-muted/20">
+      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-muted/20">
         <Image
           src={allImages[currentIndex]}
           alt={title}
@@ -93,14 +92,14 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
           <>
             <button
               onClick={prev}
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center transition-colors shadow-sm"
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center transition-colors"
               aria-label="Previous image"
             >
               <ChevronLeft className="w-4 h-4 text-neutral-800" />
             </button>
             <button
               onClick={next}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center transition-colors shadow-sm"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center transition-colors"
               aria-label="Next image"
             >
               <ChevronRight className="w-4 h-4 text-neutral-800" />
@@ -109,7 +108,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
         )}
 
         {/* Image Counter */}
-        <div className="absolute bottom-3 right-3 px-2.5 py-1 bg-black/70 text-white text-xs font-medium rounded">
+        <div className="absolute bottom-3 right-3 px-2.5 py-1 bg-black/70 text-white text-xs font-medium tabular-nums rounded">
           {currentIndex + 1}/{allImages.length}
         </div>
       </div>
@@ -122,7 +121,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
               key={idx}
               onClick={() => setCurrentIndex(idx)}
               className={cn(
-                "relative w-16 h-12 flex-shrink-0 rounded overflow-hidden transition-all",
+                "relative w-16 h-12 flex-shrink-0 rounded-lg overflow-hidden transition-all",
                 idx === currentIndex 
                   ? "ring-2 ring-primary ring-offset-1" 
                   : "opacity-60 hover:opacity-100"
@@ -135,7 +134,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
       )}
 
       {/* Gallery Info */}
-      <p className="text-xs text-muted-foreground">
+      <p className="text-xs text-muted-foreground/70">
         Gallery ({allImages.length} photos)
         <span className="ml-3 text-primary hover:text-primary/80 cursor-pointer transition-colors">
           View all
@@ -147,9 +146,9 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
 
 function SpecRow({ label, value }: { label: string; value: string | number | null }) {
   return (
-    <div className="flex justify-between py-2 border-b border-border/40">
-      <span className="text-xs text-muted-foreground">{label}</span>
-      <span className="text-xs font-medium text-foreground">{value ?? 'N/A'}</span>
+    <div className="flex justify-between py-2.5 border-b border-border/40">
+      <span className="text-xs text-muted-foreground/70">{label}</span>
+      <span className="text-xs font-medium tracking-tight text-foreground">{value ?? 'N/A'}</span>
     </div>
   );
 }
@@ -160,64 +159,61 @@ function PricingInsights({ listing }: { listing: CarDetailedData }) {
   if (!hasAIInsights) return null;
 
   return (
-    <div className="space-y-4 pt-6 border-t border-border/40">
-      {/* Fair Value & Trend */}
+    <div className="space-y-4 p-4 bg-muted/30 rounded-2xl border border-border/40">
+      <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
+        AI Market Analysis
+      </p>
+
       <div className="grid grid-cols-2 gap-4">
         {listing.fairValue && (
-          <div className="space-y-1.5">
-            <h4 className="text-xs font-medium text-muted-foreground">Fair Value</h4>
-            <div className="p-3 bg-muted/30 rounded-lg">
-              <p className="text-lg font-bold text-foreground">{formatPriceShort(listing.fairValue)}</p>
-            </div>
+          <div className="space-y-1">
+            <p className="text-[10px] text-muted-foreground/70 uppercase tracking-wider">Fair Value</p>
+            <p className="text-lg font-bold tabular-nums text-foreground">{formatPriceShort(listing.fairValue)}</p>
           </div>
         )}
         
         {listing.priceTrend && (
-          <div className="space-y-1.5">
-            <h4 className="text-xs font-medium text-muted-foreground">Price Trend</h4>
-            <div className="p-3 bg-muted/30 rounded-lg flex items-center justify-center">
-              <span className={cn(
-                "text-sm font-semibold",
-                listing.priceTrend === 'up' && "text-emerald-500",
-                listing.priceTrend === 'down' && "text-red-500",
-                listing.priceTrend === 'stable' && "text-amber-500"
-              )}>
-                {listing.priceTrend === 'up' && '↑ Rising'}
-                {listing.priceTrend === 'down' && '↓ Falling'}
-                {listing.priceTrend === 'stable' && '→ Stable'}
-              </span>
-            </div>
+          <div className="space-y-1">
+            <p className="text-[10px] text-muted-foreground/70 uppercase tracking-wider">Trend</p>
+            <p className={cn(
+              "text-sm font-semibold tracking-tight",
+              listing.priceTrend === 'up' && "text-green-500",
+              listing.priceTrend === 'down' && "text-red-500",
+              listing.priceTrend === 'stable' && "text-yellow-500"
+            )}>
+              {listing.priceTrend === 'up' && '↑ Rising'}
+              {listing.priceTrend === 'down' && '↓ Falling'}
+              {listing.priceTrend === 'stable' && '→ Stable'}
+            </p>
           </div>
         )}
       </div>
 
-      {/* Estimated Range */}
       {(listing.estimateMin && listing.estimateMax) && (
-        <div className="p-4 bg-muted/20 rounded-lg border border-border/40 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">Estimated Value Range</span>
+        <div className="space-y-2">
+          <div className="flex justify-between items-center text-xs">
+            <span className="text-muted-foreground/70">Estimated Range</span>
             {listing.aiConfidenceScore && (
-              <span className="text-xs text-muted-foreground">
-                Confidence: <span className="font-medium text-foreground">{Math.round(listing.aiConfidenceScore * 100)}%</span>
+              <span className="text-muted-foreground/70">
+                {Math.round(listing.aiConfidenceScore * 100)}% confidence
               </span>
             )}
           </div>
-          <p className="text-base font-semibold text-foreground">
+          <p className="font-medium tabular-nums text-foreground">
             {formatPriceShort(listing.estimateMin)} - {formatPriceShort(listing.estimateMax)}
           </p>
           
           {/* Market Position Bar */}
-          <div className="space-y-1.5">
-            <div className="h-1.5 bg-gradient-to-r from-emerald-400/30 via-amber-400/30 to-red-400/30 rounded-full relative">
-              {/* Position Indicator */}
+          <div className="space-y-1">
+            <div className="h-1.5 bg-gradient-to-r from-green-400/30 via-yellow-400/30 to-red-400/30 rounded-full relative">
               <div 
-                className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-primary rounded-full shadow-sm"
+                className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-primary rounded-full"
                 style={{ 
                   left: `${Math.min(Math.max(((listing.price - listing.estimateMin) / (listing.estimateMax - listing.estimateMin)) * 100, 5), 95)}%` 
                 }}
               />
             </div>
-            <div className="flex justify-between text-[10px] text-muted-foreground">
+            <div className="flex justify-between text-[10px] text-muted-foreground/70">
               <span>Low</span>
               <span>Market</span>
               <span>High</span>
@@ -225,11 +221,6 @@ function PricingInsights({ listing }: { listing: CarDetailedData }) {
           </div>
         </div>
       )}
-
-      <div className="flex items-center gap-1.5">
-        <div className="w-1 h-1 bg-primary rounded-full" />
-        <span className="text-xs text-primary">AI Market Analysis</span>
-      </div>
     </div>
   );
 }
@@ -269,7 +260,6 @@ function TechnicalFeaturesList({ features }: { features: CarDetailedData['techni
     .filter(([key, value]) => value === true && featureLabels[key])
     .map(([key]) => featureLabels[key]);
 
-  // Add special values
   if (features.airbags && typeof features.airbags === 'number') {
     activeFeatures.push(`${features.airbags} Airbags`);
   }
@@ -283,13 +273,15 @@ function TechnicalFeaturesList({ features }: { features: CarDetailedData['techni
   if (activeFeatures.length === 0) return null;
 
   return (
-    <div className="space-y-3 pt-6 border-t border-border/40">
-      <h3 className="text-sm font-medium text-foreground">Technical Features</h3>
-      <div className="flex flex-wrap gap-2">
+    <div className="space-y-3">
+      <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
+        Technical Features
+      </p>
+      <div className="flex flex-wrap gap-1.5">
         {activeFeatures.map((feature, idx) => (
           <span 
             key={idx}
-            className="px-2.5 py-1 text-xs bg-muted/40 text-foreground rounded border border-border/40"
+            className="px-2.5 py-1 text-xs font-medium tracking-tight bg-muted text-muted-foreground rounded border border-border/40"
           >
             {feature}
           </span>
@@ -319,17 +311,49 @@ function SpecialNotesList({ notes }: { notes: CarDetailedData['specialNotes'] })
 
   if (items.length === 0) return null;
 
+  // Separate highlight items and other notes
+  const highlightLabels = ['Full Service History', 'Single Owner', 'Accident Free', 'Under Warranty'];
+  const highlights = items.filter(item => highlightLabels.includes(item));
+  const otherNotes = items.filter(item => !highlightLabels.includes(item));
+
   return (
-    <div className="space-y-3 pt-6 border-t border-border/40">
-      <h3 className="text-sm font-medium text-foreground">Special Notes</h3>
-      <ul className="space-y-2">
-        {items.map((item, idx) => (
-          <li key={idx} className="flex items-start gap-2 text-xs text-muted-foreground">
-            <div className="w-1 h-1 bg-foreground rounded-full mt-1.5 flex-shrink-0" />
-            <span className="leading-relaxed">{item}</span>
-          </li>
-        ))}
-      </ul>
+    <div className="space-y-3">
+      {/* Highlights with badges */}
+      {highlights.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
+            Highlights
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {highlights.map((item, idx) => (
+              <span 
+                key={idx}
+                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium tracking-tight bg-green-500/10 text-green-600 dark:text-green-400 rounded border border-green-500/20"
+              >
+                <CheckCircle2 className="w-3 h-3" />
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Other notes */}
+      {otherNotes.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
+            Additional Notes
+          </p>
+          <ul className="space-y-1.5">
+            {otherNotes.map((item, idx) => (
+              <li key={idx} className="flex items-start gap-2 text-xs text-muted-foreground">
+                <div className="w-1 h-1 bg-muted-foreground rounded-full mt-1.5 flex-shrink-0" />
+                <span className="leading-relaxed">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
@@ -405,11 +429,11 @@ export function CarCardDetailed({ listing, className }: CarCardDetailedProps) {
 
       {/* Tags */}
       {listing.tags.length > 0 && (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5">
           {listing.tags.map((tag, idx) => (
             <span 
               key={idx}
-              className="px-2 py-0.5 text-xs bg-muted/40 text-muted-foreground rounded border border-border/40"
+              className="px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider bg-muted text-muted-foreground rounded"
             >
               {tag}
             </span>
@@ -420,32 +444,34 @@ export function CarCardDetailed({ listing, className }: CarCardDetailedProps) {
       {/* Header Section */}
       <div className="flex items-start justify-between gap-4">
         {/* Left: Title, Price, Details */}
-        <div className="flex-1 space-y-4">
+        <div className="flex-1 space-y-3">
           {/* Title */}
-          <h1 className="text-xl font-semibold text-foreground tracking-tight">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">
             {carTitle}
           </h1>
           
           {/* Price */}
-          <p className="text-2xl font-bold text-foreground">
-            {formatPrice(listing.price)}
+          <div className="flex items-baseline gap-2">
+            <p className="text-2xl font-bold tabular-nums text-foreground">
+              {formatPrice(listing.price)}
+            </p>
             {listing.isNegotiable && (
-              <span className="ml-2 text-xs font-normal text-muted-foreground">Negotiable</span>
+              <span className="text-xs text-muted-foreground/70">Negotiable</span>
             )}
-          </p>
+          </div>
           
           {/* Quick Details */}
-          <div className="flex items-center gap-3 text-sm text-muted-foreground">
-            <span>{formatMileage(listing.mileage)} km</span>
-            <span>•</span>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span className="font-medium tabular-nums">{formatMileage(listing.mileage)} km</span>
+            <span className="text-muted-foreground/40">•</span>
             <span>{formatEnumValue(listing.specs)} Specs</span>
-            <span>•</span>
+            <span className="text-muted-foreground/40">•</span>
             <span>{listing.emirate}</span>
           </div>
 
           {/* Description */}
           {listing.description && (
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-sm text-muted-foreground/70 leading-relaxed">
               {listing.description}
             </p>
           )}
@@ -453,37 +479,29 @@ export function CarCardDetailed({ listing, className }: CarCardDetailedProps) {
           {/* VIN */}
           {listing.vin && (
             <div className="space-y-1">
-              <p className="text-xs font-medium text-primary">Vehicle Identification Number</p>
-              <p className="font-mono text-sm text-foreground">{listing.vin}</p>
+              <p className="text-[10px] text-muted-foreground/70 uppercase tracking-wider">VIN</p>
+              <p className="font-mono text-xs text-foreground">{listing.vin}</p>
             </div>
           )}
         </div>
 
         {/* Right: QI Score & Actions */}
-        <div className="flex items-center gap-2">
-          {/* QI Score */}
+        <div className="flex items-center gap-1.5 flex-shrink-0">
           {listing.qiScore && (
-            <div className={cn(
-              "px-2.5 py-1 text-xs font-medium rounded",
-              listing.isBlackMember 
-                ? "bg-black text-white border border-zinc-800" 
-                : "bg-foreground text-background"
-            )}>
+            <div className="px-2 py-1 text-[10px] font-bold tabular-nums bg-foreground text-background rounded">
               QI {Math.round(listing.qiScore)}
             </div>
           )}
           
-          {/* Black Member Badge */}
           {listing.isBlackMember && (
-            <div className="px-3 py-1.5 bg-black text-white text-xs font-bold tracking-widest border border-zinc-800">
+            <div className="px-2 py-1 text-[10px] font-bold tracking-widest bg-black text-white dark:bg-white dark:text-black rounded">
               BLK
             </div>
           )}
 
-          {/* Action Buttons */}
           <button 
             onClick={handleShare}
-            className="p-2.5 rounded-full bg-muted/40 hover:bg-muted/60 transition-colors"
+            className="p-2 rounded-full bg-muted/40 hover:bg-muted transition-colors"
             aria-label="Share"
           >
             <Share2 className="w-4 h-4 text-muted-foreground" />
@@ -493,10 +511,10 @@ export function CarCardDetailed({ listing, className }: CarCardDetailedProps) {
             onClick={handleFavoriteClick}
             disabled={favorite.isUpdating}
             className={cn(
-              "p-2.5 rounded-full transition-all",
+              "p-2 rounded-full transition-all",
               favorite.isFavorite 
                 ? "bg-rose-100 dark:bg-rose-900/20 text-rose-500" 
-                : "bg-muted/40 hover:bg-muted/60 text-muted-foreground"
+                : "bg-muted/40 hover:bg-muted text-muted-foreground"
             )}
             aria-label={favorite.isFavorite ? "Remove from favorites" : "Add to favorites"}
           >
@@ -510,10 +528,10 @@ export function CarCardDetailed({ listing, className }: CarCardDetailedProps) {
             onClick={handleSuperlikeClick}
             disabled={superlike.isUpdating}
             className={cn(
-              "p-2.5 rounded-full transition-all",
+              "p-2 rounded-full transition-all",
               superlike.isSuperliked 
                 ? "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-500" 
-                : "bg-muted/40 hover:bg-muted/60 text-muted-foreground"
+                : "bg-muted/40 hover:bg-muted text-muted-foreground"
             )}
             aria-label={superlike.isSuperliked ? "Remove superlike" : "Superlike"}
           >
@@ -528,10 +546,15 @@ export function CarCardDetailed({ listing, className }: CarCardDetailedProps) {
       {/* Pricing Insights */}
       <PricingInsights listing={listing} />
 
+      {/* Special Notes / Highlights */}
+      <SpecialNotesList notes={listing.specialNotes} />
+
       {/* Specifications */}
-      <div className="space-y-3 pt-6 border-t border-border/40">
-        <h3 className="text-sm font-medium text-foreground">Specifications</h3>
-        <div className="grid grid-cols-2 gap-x-8 gap-y-0">
+      <div className="space-y-3">
+        <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
+          Specifications
+        </p>
+        <div className="grid grid-cols-2 gap-x-6">
           <SpecRow label="Body Type" value={formatEnumValue(listing.bodyType)} />
           <SpecRow label="Transmission" value={formatEnumValue(listing.transmission)} />
           <SpecRow label="Engine Size" value={listing.engineSize} />
@@ -553,13 +576,15 @@ export function CarCardDetailed({ listing, className }: CarCardDetailedProps) {
 
       {/* Extras */}
       {listing.extras.length > 0 && (
-        <div className="space-y-3 pt-6 border-t border-border/40">
-          <h3 className="text-sm font-medium text-foreground">Extras</h3>
-          <div className="flex flex-wrap gap-2">
+        <div className="space-y-3">
+          <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
+            Extras
+          </p>
+          <div className="flex flex-wrap gap-1.5">
             {listing.extras.map((extra, idx) => (
               <span 
                 key={idx}
-                className="px-2.5 py-1 text-xs bg-muted/40 text-foreground rounded border border-border/40"
+                className="px-2.5 py-1 text-xs font-medium tracking-tight bg-muted text-muted-foreground rounded border border-border/40"
               >
                 {extra}
               </span>
@@ -571,33 +596,32 @@ export function CarCardDetailed({ listing, className }: CarCardDetailedProps) {
       {/* Technical Features */}
       <TechnicalFeaturesList features={listing.technicalFeatures} />
 
-      {/* Special Notes */}
-      <SpecialNotesList notes={listing.specialNotes} />
-
-      {/* Dealer Info - Simple Version */}
+      {/* Dealer Info */}
       {listing.partnerBrandName && (
-        <div className="space-y-3 pt-6 border-t border-border/40">
-          <h3 className="text-sm font-medium text-foreground">Seller Information</h3>
-          <div className="flex items-center gap-4 p-4 bg-muted/20 rounded-lg border border-border/40">
+        <div className="space-y-3">
+          <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
+            Seller Information
+          </p>
+          <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-2xl border border-border/40">
             <div className={cn(
-              "relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0",
-              listing.isBlackMember ? "bg-black ring-2 ring-zinc-800" : "bg-muted ring-2 ring-border/40"
+              "relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center",
+              listing.isBlackMember ? "bg-black text-white" : "bg-muted text-muted-foreground"
             )}>
-              <div className="w-full h-full flex items-center justify-center text-sm font-bold text-muted-foreground">
+              <span className="text-xs font-bold">
                 {listing.partnerBrandName.substring(0, 2).toUpperCase()}
-              </div>
+              </span>
             </div>
             
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <p className="text-sm font-semibold text-foreground truncate">
+              <div className="flex items-center gap-1.5">
+                <p className="text-sm font-semibold tracking-tight text-foreground truncate">
                   {listing.partnerBrandName}
                 </p>
                 {listing.partnerVerified && (
                   <CheckCircle2 className="w-4 h-4 text-blue-500 flex-shrink-0" />
                 )}
               </div>
-              <p className="text-xs text-muted-foreground mt-0.5 capitalize">
+              <p className="text-xs text-muted-foreground/70 mt-0.5 capitalize">
                 {listing.sellerType.replace(/_/g, ' ')} • {listing.emirate}
               </p>
             </div>
@@ -605,9 +629,9 @@ export function CarCardDetailed({ listing, className }: CarCardDetailedProps) {
             {listing.partnerId && (
               <Link 
                 href={`/partners/${listing.partnerId}`}
-                className="px-4 py-2 text-xs font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-1.5"
+                className="px-3 py-1.5 text-xs font-medium tracking-tight text-foreground border border-border/40 rounded-full hover:bg-secondary/50 transition-colors flex items-center gap-1"
               >
-                View Profile
+                View
                 <ExternalLink className="w-3 h-3" />
               </Link>
             )}
@@ -617,27 +641,24 @@ export function CarCardDetailed({ listing, className }: CarCardDetailedProps) {
 
       {/* Video */}
       {listing.videoUrl && (
-        <div className="space-y-3 pt-6 border-t border-border/40">
-          <h3 className="text-sm font-medium text-foreground">Video</h3>
-          <a 
-            href={listing.videoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 p-4 bg-muted/20 rounded-lg border border-border/40 hover:bg-muted/30 transition-colors group"
-          >
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-              <Play className="w-4 h-4 text-primary ml-0.5" />
-            </div>
-            <span className="text-sm text-foreground">Watch Video Tour</span>
-          </a>
-        </div>
+        <a 
+          href={listing.videoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-3 p-4 bg-muted/30 rounded-2xl border border-border/40 hover:bg-muted/50 transition-colors group"
+        >
+          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+            <Play className="w-4 h-4 text-primary ml-0.5" />
+          </div>
+          <span className="text-sm font-medium tracking-tight text-foreground">Watch Video</span>
+        </a>
       )}
 
       {/* Engagement Stats */}
-      <div className="flex items-center gap-6 pt-6 border-t border-border/40 text-xs text-muted-foreground">
-        <span>{listing.viewCount.toLocaleString()} views</span>
-        <span>{listing.favouriteCount.toLocaleString()} favorites</span>
-        <span>{listing.superlikeCount.toLocaleString()} superlikes</span>
+      <div className="flex items-center gap-4 pt-4 border-t border-border/40 text-xs text-muted-foreground/70">
+        <span className="tabular-nums">{listing.viewCount.toLocaleString()} views</span>
+        <span className="tabular-nums">{listing.favouriteCount.toLocaleString()} favorites</span>
+        <span className="tabular-nums">{listing.superlikeCount.toLocaleString()} superlikes</span>
       </div>
 
       {/* Dialogs */}

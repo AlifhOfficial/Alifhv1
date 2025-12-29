@@ -1,14 +1,13 @@
 /**
- * EMI Calculator Component
+ * EMI Calculator Component - Alifh Design System
  * 
- * Simple EMI (Equated Monthly Installment) calculator for the listing detail page.
- * Helps users estimate monthly payments for car financing.
+ * Clean, minimal EMI calculator following "Less is More" principle.
  */
 
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Calculator, ChevronDown, ChevronUp, Info } from 'lucide-react';
+import { Calculator, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/utils';
 
 interface EMICalculatorProps {
@@ -17,17 +16,16 @@ interface EMICalculatorProps {
   className?: string;
 }
 
-// Common UAE car loan configurations
 const DEFAULT_DOWN_PAYMENT_PERCENT = 20;
-const DEFAULT_INTEREST_RATE = 3.99; // Annual percentage
-const DEFAULT_TENURE_MONTHS = 60; // 5 years
+const DEFAULT_INTEREST_RATE = 3.99;
+const DEFAULT_TENURE_MONTHS = 60;
 
 const TENURE_OPTIONS = [
-  { months: 12, label: '1 year' },
-  { months: 24, label: '2 years' },
-  { months: 36, label: '3 years' },
-  { months: 48, label: '4 years' },
-  { months: 60, label: '5 years' },
+  { months: 12, label: '1y' },
+  { months: 24, label: '2y' },
+  { months: 36, label: '3y' },
+  { months: 48, label: '4y' },
+  { months: 60, label: '5y' },
 ];
 
 export function EMICalculator({ price, currency = 'AED', className }: EMICalculatorProps) {
@@ -39,9 +37,6 @@ export function EMICalculator({ price, currency = 'AED', className }: EMICalcula
   const calculations = useMemo(() => {
     const downPayment = (price * downPaymentPercent) / 100;
     const loanAmount = price - downPayment;
-    
-    // EMI formula: P * r * (1 + r)^n / ((1 + r)^n - 1)
-    // Where P = loan amount, r = monthly interest rate, n = number of months
     const monthlyRate = interestRate / 100 / 12;
     
     let emi: number;
@@ -75,7 +70,7 @@ export function EMICalculator({ price, currency = 'AED', className }: EMICalcula
 
   return (
     <div className={cn(
-      "p-5 bg-card border border-border/40 rounded-xl space-y-4",
+      "p-4 bg-card border border-border/40 rounded-2xl space-y-3",
       className
     )}>
       {/* Header */}
@@ -85,9 +80,9 @@ export function EMICalculator({ price, currency = 'AED', className }: EMICalcula
       >
         <div className="flex items-center gap-2">
           <Calculator className="w-4 h-4 text-muted-foreground" />
-          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
             EMI Calculator
-          </h4>
+          </p>
         </div>
         {isExpanded ? (
           <ChevronUp className="w-4 h-4 text-muted-foreground" />
@@ -98,21 +93,22 @@ export function EMICalculator({ price, currency = 'AED', className }: EMICalcula
 
       {/* Quick EMI Display */}
       <div className="flex items-baseline justify-between">
-        <span className="text-sm text-muted-foreground">Estimated Monthly</span>
-        <span className="text-xl font-bold text-foreground">
-          {formatAmount(calculations.emi)}<span className="text-sm font-normal text-muted-foreground">/mo</span>
+        <span className="text-xs text-muted-foreground/70">Estimated Monthly</span>
+        <span className="text-lg font-bold tabular-nums text-foreground">
+          {formatAmount(calculations.emi)}
+          <span className="text-xs font-normal text-muted-foreground/70">/mo</span>
         </span>
       </div>
 
       {/* Expanded Calculator */}
       {isExpanded && (
-        <div className="space-y-4 pt-4 border-t border-border/40">
-          {/* Down Payment Slider */}
+        <div className="space-y-4 pt-3 border-t border-border/40">
+          {/* Down Payment */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs text-muted-foreground">Down Payment</label>
-              <span className="text-sm font-medium text-foreground">
-                {downPaymentPercent}% ({formatAmount(calculations.downPayment)})
+              <span className="text-xs text-muted-foreground/70">Down Payment</span>
+              <span className="text-xs font-medium tabular-nums text-foreground">
+                {downPaymentPercent}%
               </span>
             </div>
             <input
@@ -122,24 +118,20 @@ export function EMICalculator({ price, currency = 'AED', className }: EMICalcula
               step="5"
               value={downPaymentPercent}
               onChange={(e) => setDownPaymentPercent(Number(e.target.value))}
-              className="w-full h-1.5 bg-muted rounded-full appearance-none cursor-pointer accent-primary"
+              className="w-full h-1 bg-muted rounded-full appearance-none cursor-pointer accent-primary"
             />
-            <div className="flex justify-between text-[10px] text-muted-foreground">
-              <span>0%</span>
-              <span>50%</span>
-            </div>
           </div>
 
           {/* Tenure Selection */}
           <div className="space-y-2">
-            <label className="text-xs text-muted-foreground">Loan Tenure</label>
+            <span className="text-xs text-muted-foreground/70">Tenure</span>
             <div className="grid grid-cols-5 gap-1">
               {TENURE_OPTIONS.map((option) => (
                 <button
                   key={option.months}
                   onClick={() => setTenureMonths(option.months)}
                   className={cn(
-                    "py-1.5 px-2 text-[10px] font-medium rounded transition-colors",
+                    "py-1.5 text-[10px] font-medium tracking-tight rounded transition-colors",
                     tenureMonths === option.months
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted/50 text-muted-foreground hover:bg-muted"
@@ -154,8 +146,10 @@ export function EMICalculator({ price, currency = 'AED', className }: EMICalcula
           {/* Interest Rate */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs text-muted-foreground">Interest Rate (p.a.)</label>
-              <span className="text-sm font-medium text-foreground">{interestRate}%</span>
+              <span className="text-xs text-muted-foreground/70">Interest Rate</span>
+              <span className="text-xs font-medium tabular-nums text-foreground">
+                {interestRate}%
+              </span>
             </div>
             <input
               type="range"
@@ -164,38 +158,30 @@ export function EMICalculator({ price, currency = 'AED', className }: EMICalcula
               step="0.25"
               value={interestRate}
               onChange={(e) => setInterestRate(Number(e.target.value))}
-              className="w-full h-1.5 bg-muted rounded-full appearance-none cursor-pointer accent-primary"
+              className="w-full h-1 bg-muted rounded-full appearance-none cursor-pointer accent-primary"
             />
-            <div className="flex justify-between text-[10px] text-muted-foreground">
-              <span>1%</span>
-              <span>10%</span>
-            </div>
           </div>
 
           {/* Summary */}
-          <div className="space-y-2 p-3 bg-muted/30 rounded-lg">
+          <div className="space-y-2 p-3 bg-muted/30 rounded-xl border border-border/40">
             <div className="flex justify-between text-xs">
-              <span className="text-muted-foreground">Loan Amount</span>
-              <span className="font-medium text-foreground">{formatAmount(calculations.loanAmount)}</span>
+              <span className="text-muted-foreground/70">Loan Amount</span>
+              <span className="font-medium tabular-nums text-foreground">{formatAmount(calculations.loanAmount)}</span>
             </div>
             <div className="flex justify-between text-xs">
-              <span className="text-muted-foreground">Total Interest</span>
-              <span className="font-medium text-foreground">{formatAmount(calculations.totalInterest)}</span>
+              <span className="text-muted-foreground/70">Total Interest</span>
+              <span className="font-medium tabular-nums text-foreground">{formatAmount(calculations.totalInterest)}</span>
             </div>
             <div className="flex justify-between text-xs pt-2 border-t border-border/40">
-              <span className="text-muted-foreground">Total Payment</span>
-              <span className="font-medium text-foreground">{formatAmount(calculations.totalPayment)}</span>
+              <span className="text-muted-foreground/70">Total Payment</span>
+              <span className="font-medium tabular-nums text-foreground">{formatAmount(calculations.totalPayment)}</span>
             </div>
           </div>
 
           {/* Disclaimer */}
-          <div className="flex items-start gap-2 text-[10px] text-muted-foreground">
-            <Info className="w-3 h-3 flex-shrink-0 mt-0.5" />
-            <p>
-              This is an estimate only. Actual EMI may vary based on your credit profile, 
-              bank rates, and other factors. Contact the seller for financing options.
-            </p>
-          </div>
+          <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
+            Estimate only. Actual EMI may vary based on your credit profile and bank rates.
+          </p>
         </div>
       )}
     </div>

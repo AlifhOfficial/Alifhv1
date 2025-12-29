@@ -1,13 +1,12 @@
 /**
- * Booking Section Component
+ * Booking Section Component - Alifh Design System
  * 
- * Test drive booking button for partner/dealer listings.
- * Only shown for listings with partnerId.
+ * Clean, minimal test drive booking following "Less is More" principle.
  */
 
 'use client';
 
-import { Calendar, Car } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { cn } from '@/utils';
 
 interface BookingSectionProps {
@@ -23,30 +22,24 @@ export function BookingSection({
 }: BookingSectionProps) {
   return (
     <div className={cn(
-      "p-5 bg-card border border-border/40 rounded-xl space-y-4",
+      "p-4 bg-card border border-border/40 rounded-2xl space-y-3",
       className
     )}>
-      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+      <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
         Test Drive
-      </h4>
+      </p>
 
-      <div className="space-y-3">
-        <button
-          onClick={onBookTestDrive}
-          className="w-full py-3 px-4 bg-emerald-500 text-white rounded-full text-sm font-medium hover:bg-emerald-600 transition-colors flex items-center justify-center gap-2"
-        >
-          <Calendar className="w-4 h-4" />
-          Book Test Drive
-        </button>
+      <button
+        onClick={onBookTestDrive}
+        className="w-full py-3 px-4 bg-green-500 text-white rounded-full text-sm font-medium tracking-tight hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
+      >
+        <Calendar className="w-4 h-4" />
+        Book Test Drive
+      </button>
 
-        <div className="flex items-start gap-2 p-3 bg-muted/30 rounded-lg">
-          <Car className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-          <p className="text-xs text-muted-foreground">
-            Schedule a test drive at <span className="font-medium text-foreground">{partnerName}</span> showroom. 
-            Free cancellation up to 24 hours before your appointment.
-          </p>
-        </div>
-      </div>
+      <p className="text-xs text-muted-foreground/70 text-center leading-relaxed">
+        At <span className="font-medium text-foreground">{partnerName}</span> • Free cancellation
+      </p>
     </div>
   );
 }

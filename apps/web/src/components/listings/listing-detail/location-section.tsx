@@ -1,15 +1,14 @@
 /**
- * Location Section Component
+ * Location Section Component - Alifh Design System
  * 
- * Displays seller location on the listing detail page sidebar.
- * Shows a static map preview and address for partner showrooms or user location.
+ * Clean, minimal location display following "Less is More" principle.
  */
 
 'use client';
 
-import { MapPin, Navigation, ExternalLink } from 'lucide-react';
+import { MapPin, ExternalLink, Navigation } from 'lucide-react';
 import { cn } from '@/utils';
-import type { SellerData } from './listing-detail-view';
+import type { SellerData } from '@/hooks/listings';
 
 interface LocationSectionProps {
   sellerData: SellerData;
@@ -61,11 +60,9 @@ export function LocationSection({ sellerData, className }: LocationSectionProps)
     return null;
   }
 
-  // Build location display string
   const locationParts = [locationData.city, locationData.emirate].filter(Boolean);
   const locationString = locationParts.join(', ');
 
-  // Google Maps URLs
   const mapsSearchUrl = hasCoordinates
     ? `https://www.google.com/maps/search/?api=1&query=${locationData.lat},${locationData.lng}`
     : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locationData.address || locationString)}`;
@@ -74,64 +71,33 @@ export function LocationSection({ sellerData, className }: LocationSectionProps)
     ? `https://www.google.com/maps/dir/?api=1&destination=${locationData.lat},${locationData.lng}`
     : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(locationData.address || locationString)}`;
 
-  // Static map image URL (using OpenStreetMap static tiles for free usage)
-  const staticMapUrl = hasCoordinates
-    ? `https://staticmap.openstreetmap.de/staticmap.php?center=${locationData.lat},${locationData.lng}&zoom=14&size=400x200&maptype=mapnik&markers=${locationData.lat},${locationData.lng},red-pushpin`
-    : null;
-
   return (
     <div className={cn(
-      "p-5 bg-card border border-border/40 rounded-xl space-y-4",
+      "p-4 bg-card border border-border/40 rounded-2xl space-y-3",
       className
     )}>
-      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+      <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
         Location
-      </h4>
-
-      {/* Map Preview */}
-      {staticMapUrl && (
-        <a
-          href={mapsSearchUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block relative aspect-[2/1] w-full rounded-lg overflow-hidden bg-muted/30 hover:opacity-90 transition-opacity"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={staticMapUrl}
-            alt={`Map showing ${locationData.name} location`}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center shadow-lg">
-              <MapPin className="w-4 h-4 text-white" />
-            </div>
-          </div>
-        </a>
-      )}
+      </p>
 
       {/* Address Display */}
-      <div className="space-y-2">
-        {sellerData.type === 'partner' && locationData.address && (
-          <div className="flex items-start gap-2">
-            <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-foreground">{locationData.address}</p>
-          </div>
-        )}
-        
-        {locationString && (
-          <p className={cn(
-            "text-sm",
-            sellerData.type === 'partner' && locationData.address
-              ? "text-muted-foreground pl-6"
-              : "text-foreground flex items-center gap-2"
-          )}>
-            {!(sellerData.type === 'partner' && locationData.address) && (
-              <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-            )}
-            {locationString}
-          </p>
-        )}
+      <div className="flex items-start gap-2">
+        <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+        <div className="space-y-0.5">
+          {sellerData.type === 'partner' && locationData.address && (
+            <p className="text-sm font-medium tracking-tight text-foreground">{locationData.address}</p>
+          )}
+          {locationString && (
+            <p className={cn(
+              "text-xs",
+              sellerData.type === 'partner' && locationData.address
+                ? "text-muted-foreground/70"
+                : "text-sm font-medium tracking-tight text-foreground"
+            )}>
+              {locationString}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Action Buttons */}
@@ -140,19 +106,19 @@ export function LocationSection({ sellerData, className }: LocationSectionProps)
           href={mapsSearchUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 py-2 px-3 text-xs font-medium text-foreground border border-border rounded-lg hover:bg-muted/30 transition-colors flex items-center justify-center gap-1.5"
+          className="flex-1 py-2 px-3 text-xs font-medium tracking-tight text-foreground border border-border/40 rounded-full hover:bg-secondary/50 transition-colors flex items-center justify-center gap-1.5"
         >
-          <ExternalLink className="w-3.5 h-3.5" />
-          View on Map
+          <ExternalLink className="w-3 h-3" />
+          View Map
         </a>
         <a
           href={directionsUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 py-2 px-3 text-xs font-medium text-foreground border border-border rounded-lg hover:bg-muted/30 transition-colors flex items-center justify-center gap-1.5"
+          className="flex-1 py-2 px-3 text-xs font-medium tracking-tight text-foreground border border-border/40 rounded-full hover:bg-secondary/50 transition-colors flex items-center justify-center gap-1.5"
         >
-          <Navigation className="w-3.5 h-3.5" />
-          Get Directions
+          <Navigation className="w-3 h-3" />
+          Directions
         </a>
       </div>
     </div>

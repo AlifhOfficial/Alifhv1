@@ -1,12 +1,12 @@
 /**
- * Listing Timestamp Component
+ * Listing Timestamp Component - Alifh Design System
  * 
- * Displays when the listing was posted/updated on the detail page sidebar.
+ * Clean, minimal timestamp display following "Less is More" principle.
  */
 
 'use client';
 
-import { Clock, RefreshCw } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { cn } from '@/utils';
 
 interface ListingTimestampProps {
@@ -16,7 +16,6 @@ interface ListingTimestampProps {
   className?: string;
 }
 
-// Ensure we have a Date object (handles JSON string dates from API)
 function toDate(date: Date | string): Date {
   return date instanceof Date ? date : new Date(date);
 }
@@ -31,24 +30,16 @@ function formatTimeAgo(date: Date): string {
   const diffMonths = Math.floor(diffDays / 30);
 
   if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
-  if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
-  if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
-  if (diffWeeks < 4) return `${diffWeeks} week${diffWeeks !== 1 ? 's' : ''} ago`;
-  if (diffMonths < 12) return `${diffMonths} month${diffMonths !== 1 ? 's' : ''} ago`;
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+  if (diffWeeks < 4) return `${diffWeeks}w ago`;
+  if (diffMonths < 12) return `${diffMonths}mo ago`;
   
   return date.toLocaleDateString('en-AE', { 
     day: 'numeric',
     month: 'short', 
     year: 'numeric' 
-  });
-}
-
-function formatDate(date: Date): string {
-  return date.toLocaleDateString('en-AE', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
   });
 }
 
@@ -60,32 +51,26 @@ export function ListingTimestamp({
 }: ListingTimestampProps) {
   const postedDate = toDate(publishedAt || createdAt);
   const updatedDateObj = updatedAt ? toDate(updatedAt) : null;
-  const wasUpdated = updatedDateObj && updatedDateObj.getTime() > postedDate.getTime() + 60000; // More than 1 minute after posting
+  const wasUpdated = updatedDateObj && updatedDateObj.getTime() > postedDate.getTime() + 60000;
 
   return (
     <div className={cn(
-      "p-4 bg-muted/20 border border-border/40 rounded-xl space-y-2",
+      "p-4 bg-muted/30 border border-border/40 rounded-2xl",
       className
     )}>
-      {/* Posted Date */}
-      <div className="flex items-center gap-2 text-sm">
+      <div className="flex items-center gap-2">
         <Clock className="w-4 h-4 text-muted-foreground" />
-        <span className="text-muted-foreground">Posted</span>
-        <span className="font-medium text-foreground">{formatTimeAgo(postedDate)}</span>
-      </div>
-
-      {/* Updated Date */}
-      {wasUpdated && updatedDateObj && (
-        <div className="flex items-center gap-2 text-xs text-muted-foreground pl-6">
-          <RefreshCw className="w-3 h-3" />
-          <span>Updated {formatTimeAgo(updatedDateObj)}</span>
+        <div className="flex items-baseline gap-2">
+          <span className="text-sm font-medium tracking-tight text-foreground">
+            {formatTimeAgo(postedDate)}
+          </span>
+          {wasUpdated && (
+            <span className="text-xs text-muted-foreground/70">
+              • Updated {formatTimeAgo(updatedDateObj)}
+            </span>
+          )}
         </div>
-      )}
-
-      {/* Exact Date on Hover */}
-      <p className="text-[10px] text-muted-foreground pl-6">
-        Listed on {formatDate(postedDate)}
-      </p>
+      </div>
     </div>
   );
 }

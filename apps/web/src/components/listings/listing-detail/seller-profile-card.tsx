@@ -1,5 +1,5 @@
 /**
- * Seller Profile Card Component
+ * Seller Profile Card Component - Alifh Design System
  * 
  * Displays partner or user seller information on the listing detail page sidebar.
  * Uses data from existing getDealerBaseProfile, calculatePartnerStats, and getUserProfileByUserId queries.
@@ -32,7 +32,7 @@ import { cn } from '@/utils';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 import { BrandHero } from '@/components/partner/car-dealer/ui/brand-hero';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
-import type { SellerData, PartnerSellerData, UserSellerData } from './listing-detail-view';
+import type { SellerData, PartnerSellerData, UserSellerData } from '@/hooks/listings';
 
 interface SellerProfileCardProps {
   sellerData: SellerData;
@@ -45,8 +45,8 @@ interface SellerProfileCardProps {
 
 function formatResponseTime(minutes: number): string {
   if (minutes < 60) return `${minutes} min`;
-  if (minutes < 1440) return `${Math.round(minutes / 60)} hours`;
-  return `${Math.round(minutes / 1440)} days`;
+  if (minutes < 1440) return `${Math.round(minutes / 60)}h`;
+  return `${Math.round(minutes / 1440)}d`;
 }
 
 // ============================================================================
@@ -67,48 +67,50 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
   const specialties = partner.specialties ?? [];
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Hero Image - Uses BrandHero component for R2 URL resolution */}
       {partner.heroImage && (
-        <div className="relative -mx-5 -mt-5 mb-4 rounded-t-2xl overflow-hidden">
+        <div className="relative -mx-4 -mt-4 mb-3 rounded-t-2xl overflow-hidden">
           <BrandHero 
             heroImageUrl={partner.heroImage} 
             brandName={partner.brandName}
             height="sm"
-            className="h-32"
+            className="h-28"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
         </div>
       )}
 
       {/* Header with Logo and Brand Info */}
-      <div className="flex items-start gap-4">
+      <div className="flex items-start gap-3">
         {/* Logo - Uses BrandAvatar component for R2 URL resolution */}
         <BrandAvatar 
           logoUrl={partner.logo}
           brandName={partner.brandName}
-          size="md"
-          className="rounded-xl shadow-sm"
+          size="sm"
+          className="rounded-lg flex-shrink-0"
         />
 
         {/* Brand Info */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-lg text-foreground truncate">{partner.brandName}</h3>
+          <div className="flex items-center gap-1.5">
+            <h3 className="text-sm font-semibold tracking-tight text-foreground truncate">
+              {partner.brandName}
+            </h3>
             {partner.isVerified && (
-              <BadgeCheck className="w-5 h-5 text-blue-500 flex-shrink-0" />
+              <BadgeCheck className="w-4 h-4 text-blue-500 flex-shrink-0" />
             )}
           </div>
           
           {location && (
-            <div className="flex items-center gap-1.5 mt-1 text-sm text-muted-foreground">
-              <MapPin className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-1 mt-0.5 text-xs text-muted-foreground/70">
+              <MapPin className="w-3 h-3" />
               <span className="truncate">{location}</span>
             </div>
           )}
 
           {partner.experienceYears && (
-            <p className="text-sm text-muted-foreground mt-0.5">
+            <p className="text-xs text-muted-foreground/70 mt-0.5">
               {partner.experienceYears}+ years in business
             </p>
           )}
@@ -121,34 +123,34 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
           href={partner.website}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors"
+          className="flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors"
         >
-          <Globe className="w-4 h-4" />
+          <Globe className="w-3 h-3" />
           <span className="truncate">{partner.website.replace(/^https?:\/\/(www\.)?/, '')}</span>
-          <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
+          <ExternalLink className="w-3 h-3 flex-shrink-0" />
         </Link>
       )}
 
-      {/* Badges */}
-      <div className="flex flex-wrap gap-2">
+      {/* Badges - Minimal, neutral design */}
+      <div className="flex flex-wrap gap-1.5">
         {partner.tier === 'black' && (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium bg-black text-white dark:bg-white dark:text-black rounded-full">
-            <Sparkles className="w-3 h-3" />
-            BLK Member
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold tracking-widest bg-black text-white dark:bg-white dark:text-black rounded">
+            <Sparkles className="w-2.5 h-2.5" />
+            BLK
           </span>
         )}
         {partner.isVerified && (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-full">
-            <Shield className="w-3 h-3" />
-            Alifh Certified
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground rounded border border-border/40">
+            <Shield className="w-2.5 h-2.5" />
+            Certified
           </span>
         )}
         {badges.slice(0, 2).map((badge, idx) => (
           <span
             key={idx}
-            className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 rounded-full"
+            className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground rounded border border-border/40"
           >
-            <Award className="w-3 h-3" />
+            <Award className="w-2.5 h-2.5" />
             {badge}
           </span>
         ))}
@@ -156,95 +158,95 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
 
       {/* About Section */}
       {partner.description && (
-        <div className="space-y-2">
-          <h4 className="text-sm font-semibold text-foreground">About</h4>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+        <div className="space-y-1.5">
+          <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">About</p>
+          <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
             {partner.description}
           </p>
         </div>
       )}
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/40">
+      <div className="grid grid-cols-2 gap-3 py-3 border-y border-border/40">
         {/* Rating */}
         {hasRating && (
-          <div className="space-y-1">
-            <div className="flex items-center gap-1.5">
-              <Star className="w-4 h-4 text-amber-500" />
-              <span className="text-xs text-muted-foreground">Rating</span>
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-1">
+              <Star className="w-3 h-3 text-amber-500" />
+              <span className="text-[10px] text-muted-foreground/70">Rating</span>
             </div>
-            <p className="text-lg font-semibold text-foreground">
+            <p className="text-sm font-bold tabular-nums text-foreground">
               {displayRating.toFixed(1)}
-              <span className="text-xs font-normal text-muted-foreground ml-1">({totalReviews})</span>
+              <span className="text-[10px] font-normal text-muted-foreground/70 ml-1">({totalReviews})</span>
             </p>
           </div>
         )}
 
         {/* Experience */}
         {partner.experienceYears && (
-          <div className="space-y-1">
-            <div className="flex items-center gap-1.5">
-              <Calendar className="w-4 h-4 text-blue-500" />
-              <span className="text-xs text-muted-foreground">Experience</span>
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-1">
+              <Calendar className="w-3 h-3 text-muted-foreground" />
+              <span className="text-[10px] text-muted-foreground/70">Experience</span>
             </div>
-            <p className="text-lg font-semibold text-foreground">{partner.experienceYears}+ yrs</p>
+            <p className="text-sm font-bold tabular-nums text-foreground">{partner.experienceYears}+ yrs</p>
           </div>
         )}
 
         {/* Inventory */}
         {stats && (
-          <div className="space-y-1">
-            <div className="flex items-center gap-1.5">
-              <Car className="w-4 h-4 text-purple-500" />
-              <span className="text-xs text-muted-foreground">Inventory</span>
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-1">
+              <Car className="w-3 h-3 text-muted-foreground" />
+              <span className="text-[10px] text-muted-foreground/70">Inventory</span>
             </div>
-            <p className="text-lg font-semibold text-foreground">{stats.inventoryCount}</p>
+            <p className="text-sm font-bold tabular-nums text-foreground">{stats.inventoryCount}</p>
           </div>
         )}
 
         {/* Total Sales */}
         {stats && stats.totalSales > 0 && (
-          <div className="space-y-1">
-            <div className="flex items-center gap-1.5">
-              <TrendingUp className="w-4 h-4 text-green-500" />
-              <span className="text-xs text-muted-foreground">Total Sales</span>
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-1">
+              <TrendingUp className="w-3 h-3 text-muted-foreground" />
+              <span className="text-[10px] text-muted-foreground/70">Sales</span>
             </div>
-            <p className="text-lg font-semibold text-foreground">{stats.totalSales.toLocaleString()}</p>
+            <p className="text-sm font-bold tabular-nums text-foreground">{stats.totalSales.toLocaleString()}</p>
           </div>
         )}
 
         {/* Response Time */}
         {stats?.responseTime && (
-          <div className="space-y-1">
-            <div className="flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-orange-500" />
-              <span className="text-xs text-muted-foreground">Response Time</span>
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-1">
+              <Clock className="w-3 h-3 text-muted-foreground" />
+              <span className="text-[10px] text-muted-foreground/70">Response</span>
             </div>
-            <p className="text-lg font-semibold text-foreground">{formatResponseTime(stats.responseTime)}</p>
+            <p className="text-sm font-bold tabular-nums text-foreground">{formatResponseTime(stats.responseTime)}</p>
           </div>
         )}
 
         {/* Response Rate */}
         {stats?.responseRate && (
-          <div className="space-y-1">
-            <div className="flex items-center gap-1.5">
-              <MessageCircle className="w-4 h-4 text-cyan-500" />
-              <span className="text-xs text-muted-foreground">Response Rate</span>
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-1">
+              <MessageCircle className="w-3 h-3 text-muted-foreground" />
+              <span className="text-[10px] text-muted-foreground/70">Rate</span>
             </div>
-            <p className="text-lg font-semibold text-foreground">{stats.responseRate}%</p>
+            <p className="text-sm font-bold tabular-nums text-foreground">{stats.responseRate}%</p>
           </div>
         )}
       </div>
 
       {/* Specialties */}
       {specialties.length > 0 && (
-        <div className="space-y-2 pt-4 border-t border-border/40">
-          <h4 className="text-sm font-semibold text-foreground">Specializes In</h4>
-          <div className="flex flex-wrap gap-2">
+        <div className="space-y-1.5">
+          <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">Specializes In</p>
+          <div className="flex flex-wrap gap-1.5">
             {specialties.map((specialty, idx) => (
               <span
                 key={idx}
-                className="px-3 py-1 text-xs font-medium bg-muted/60 text-muted-foreground rounded-full"
+                className="px-2 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground rounded border border-border/40"
               >
                 {specialty}
               </span>
@@ -253,13 +255,13 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
         </div>
       )}
 
-      {/* View Showroom Link */}
+      {/* View Showroom Link - Secondary button style */}
       <Link
         href={`/showrooms/${partner.id}`}
-        className="flex items-center justify-center gap-2 w-full py-2.5 text-sm font-medium text-primary border border-primary/30 rounded-lg hover:bg-primary/5 transition-colors"
+        className="flex items-center justify-center gap-1.5 w-full py-2 text-xs font-medium tracking-tight text-foreground border border-border/40 rounded-full hover:bg-secondary/50 transition-colors"
       >
         View Showroom
-        <ExternalLink className="w-4 h-4" />
+        <ExternalLink className="w-3 h-3" />
       </Link>
     </div>
   );
@@ -290,26 +292,26 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
   const phoneVerified = profile.phoneVerified ?? false;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Header with Name and Avatar */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-3">
         {/* User Info */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-lg text-foreground truncate">{name}</h3>
+          <div className="flex items-center gap-1.5">
+            <h3 className="text-sm font-semibold tracking-tight text-foreground truncate">{name}</h3>
             {kycVerified && (
-              <BadgeCheck className="w-5 h-5 text-blue-500 flex-shrink-0" />
+              <BadgeCheck className="w-4 h-4 text-blue-500 flex-shrink-0" />
             )}
           </div>
           
           {location && (
-            <div className="flex items-center gap-1.5 mt-1 text-sm text-muted-foreground">
-              <MapPin className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-1 mt-0.5 text-xs text-muted-foreground/70">
+              <MapPin className="w-3 h-3" />
               <span className="truncate">{location}</span>
             </div>
           )}
 
-          <p className="text-sm text-muted-foreground mt-0.5">
+          <p className="text-xs text-muted-foreground/70 mt-0.5">
             Member since {memberSinceYear}
           </p>
         </div>
@@ -318,43 +320,43 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
         <UserAvatar 
           src={avatar}
           name={name}
-          size="lg"
-          className="w-14 h-14"
+          size="md"
+          className="w-12 h-12 flex-shrink-0"
         />
       </div>
 
       {/* Badges */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5">
         {badges.map((badge, idx) => (
           <span
             key={idx}
             className={cn(
-              "inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full",
+              "inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded border border-border/40",
               badge.toLowerCase() === 'ace' 
-                ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
                 : badge.toLowerCase() === 'first'
-                ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
                 : "bg-muted text-muted-foreground"
             )}
           >
-            <Award className="w-3 h-3" />
+            <Award className="w-2.5 h-2.5" />
             {badge}
           </span>
         ))}
         {kycVerified && (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-full">
-            <Shield className="w-3 h-3" />
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground rounded border border-border/40">
+            <Shield className="w-2.5 h-2.5" />
             ID Verified
           </span>
         )}
         {emailVerified && (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 rounded">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground rounded border border-border/40">
             <BadgeCheck className="w-2.5 h-2.5" />
             Email
           </span>
         )}
         {phoneVerified && (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 rounded">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground rounded border border-border/40">
             <BadgeCheck className="w-2.5 h-2.5" />
             Phone
           </span>
@@ -363,43 +365,43 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
 
       {/* Description */}
       {profile?.description && (
-        <p className="text-sm text-muted-foreground leading-relaxed">
+        <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
           {profile.description}
         </p>
       )}
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/40">
+      <div className="grid grid-cols-2 gap-3 py-3 border-y border-border/40">
         {/* Inventory */}
-        <div className="space-y-1">
-          <div className="flex items-center gap-1.5">
-            <Car className="w-4 h-4 text-purple-500" />
-            <span className="text-xs text-muted-foreground">Inventory</span>
+        <div className="space-y-0.5">
+          <div className="flex items-center gap-1">
+            <Car className="w-3 h-3 text-muted-foreground" />
+            <span className="text-[10px] text-muted-foreground/70">Inventory</span>
           </div>
-          <p className="text-lg font-semibold text-foreground">{profile?.inventoryCount ?? 0}</p>
+          <p className="text-sm font-bold tabular-nums text-foreground">{profile?.inventoryCount ?? 0}</p>
         </div>
 
         {/* Response Time */}
         {profile?.avgResponseTime && (
-          <div className="space-y-1">
-            <div className="flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-orange-500" />
-              <span className="text-xs text-muted-foreground">Response Time</span>
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-1">
+              <Clock className="w-3 h-3 text-muted-foreground" />
+              <span className="text-[10px] text-muted-foreground/70">Response</span>
             </div>
-            <p className="text-lg font-semibold text-foreground">{formatResponseTime(profile.avgResponseTime)}</p>
+            <p className="text-sm font-bold tabular-nums text-foreground">{formatResponseTime(profile.avgResponseTime)}</p>
           </div>
         )}
 
         {/* Rating */}
         {hasRating && (
-          <div className="space-y-1">
-            <div className="flex items-center gap-1.5">
-              <Star className="w-4 h-4 text-amber-500" />
-              <span className="text-xs text-muted-foreground">Rating</span>
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-1">
+              <Star className="w-3 h-3 text-amber-500" />
+              <span className="text-[10px] text-muted-foreground/70">Rating</span>
             </div>
-            <p className="text-lg font-semibold text-foreground">
+            <p className="text-sm font-bold tabular-nums text-foreground">
               {profile!.platformRating!.toFixed(1)}
-              <span className="text-xs font-normal text-muted-foreground ml-1">({profile!.platformReviewCount})</span>
+              <span className="text-[10px] font-normal text-muted-foreground/70 ml-1">({profile!.platformReviewCount})</span>
             </p>
           </div>
         )}
@@ -407,13 +409,13 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
 
       {/* Tags */}
       {tags.length > 0 && (
-        <div className="space-y-2 pt-4 border-t border-border/40">
-          <h4 className="text-sm font-semibold text-foreground">Tags</h4>
-          <div className="flex flex-wrap gap-2">
+        <div className="space-y-1.5">
+          <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">Tags</p>
+          <div className="flex flex-wrap gap-1.5">
             {tags.map((tag, idx) => (
               <span
                 key={idx}
-                className="px-3 py-1 text-xs font-medium bg-muted/60 text-muted-foreground rounded-full"
+                className="px-2 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground rounded border border-border/40"
               >
                 {tag}
               </span>
@@ -432,12 +434,12 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
 export function SellerProfileCard({ sellerData, className }: SellerProfileCardProps) {
   return (
     <div className={cn(
-      "p-5 bg-card border border-border/40 rounded-xl overflow-hidden",
+      "p-4 bg-card border border-border/40 rounded-2xl overflow-hidden",
       className
     )}>
-      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-4">
+      <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70 mb-4">
         {sellerData.type === 'partner' ? 'Showroom' : 'Seller'}
-      </h4>
+      </p>
       
       {sellerData.type === 'partner' ? (
         <PartnerProfileCard sellerData={sellerData} />

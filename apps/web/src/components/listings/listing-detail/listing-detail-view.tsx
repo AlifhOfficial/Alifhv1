@@ -166,28 +166,28 @@ export function ListingDetailView({ listingId, currentUserId, currentUserRole }:
       <Navbar />
       
       <main className="pt-20">
-        {/* Breadcrumb */}
+        {/* Breadcrumb - Clean, minimal */}
         <div className="border-b border-border/40">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
             <Link 
               href="/listings" 
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors tracking-tight"
             >
               <ChevronLeft className="w-4 h-4" />
-              Back to Listings
+              <span>Listings</span>
             </Link>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             {/* Main Column - Car Details */}
             <div className="lg:col-span-2">
               <CarCardDetailed listing={listing} />
             </div>
 
-            {/* Sidebar */}
+            {/* Sidebar - Clean stacked cards */}
             <div className="lg:col-span-1">
               <div className="sticky top-24 space-y-4">
                 {/* 1. Seller Profile */}
@@ -195,15 +195,7 @@ export function ListingDetailView({ listingId, currentUserId, currentUserRole }:
                   <SellerProfileCard sellerData={sellerData} />
                 )}
 
-                {/* 2. Booking Section (Partner listings only) */}
-                {isDealerListing && (
-                  <BookingSection
-                    onBookTestDrive={() => setIsBookingModalOpen(true)}
-                    partnerName={listing.partnerBrandName || 'Dealer'}
-                  />
-                )}
-
-                {/* 3. Contact Section */}
+                {/* 2. Contact Section - Primary action */}
                 {hasSellerData && sellerData && (
                   <ContactSection
                     sellerData={sellerData}
@@ -213,6 +205,14 @@ export function ListingDetailView({ listingId, currentUserId, currentUserRole }:
                     partnerId={listing.partnerId}
                     onStartChat={handleChatWithSeller}
                     isStartingChat={isStartingChat}
+                  />
+                )}
+
+                {/* 3. Booking Section (Partner listings only) */}
+                {isDealerListing && (
+                  <BookingSection
+                    onBookTestDrive={() => setIsBookingModalOpen(true)}
+                    partnerName={listing.partnerBrandName || 'Dealer'}
                   />
                 )}
 
@@ -234,11 +234,11 @@ export function ListingDetailView({ listingId, currentUserId, currentUserRole }:
                   <LocationSection sellerData={sellerData} />
                 )}
 
-                {/* Safety Note */}
-                <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl flex items-start gap-3">
-                  <AlertTriangle className="w-4 h-4 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-yellow-600 dark:text-yellow-400">
-                    <strong>Safety Tip:</strong> Always meet in a public place and verify the vehicle before making any payment.
+                {/* Safety Note - Minimal, muted design following design system */}
+                <div className="p-4 bg-muted/30 border border-border/40 rounded-xl flex items-start gap-3">
+                  <AlertTriangle className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <span className="font-medium text-foreground">Safety Tip:</span> Meet in public places and verify the vehicle before payment.
                   </p>
                 </div>
               </div>
