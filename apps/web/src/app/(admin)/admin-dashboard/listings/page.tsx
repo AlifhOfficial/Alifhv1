@@ -3,7 +3,7 @@
  * View and manage all listings on the platform
  */
 
-import { DashboardDisplayArea } from "@/components/dashboard-components/display-area";
+import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
 import { requireRole } from "@/lib/auth/roles";
 import { AdminListingsView } from "@/components/admin/listings/admin-listings-view";
 

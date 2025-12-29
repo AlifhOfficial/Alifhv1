@@ -11,7 +11,7 @@
 
 'use client';
 
-import { Navbar } from '@/components/navbar';
+import { Navbar } from '@/components/shared/navbar';
 import { CarCardDetailed } from '@/components/inventory';
 import { BookingModal } from '@/components/booking';
 import { SellerProfileCard } from './seller-profile-card';

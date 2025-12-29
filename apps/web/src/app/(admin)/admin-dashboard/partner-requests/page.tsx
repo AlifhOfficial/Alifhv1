@@ -3,7 +3,7 @@
  * Review and approve/reject partner applications
  */
 
-import { DashboardDisplayArea } from "@/components/dashboard-components/display-area";
+import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
 import { PartnerRequestAdminList } from "@/components/partner";
 
 export const dynamic = "force-dynamic";

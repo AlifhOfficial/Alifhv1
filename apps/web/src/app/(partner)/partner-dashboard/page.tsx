@@ -1,4 +1,4 @@
-import { DashboardDisplayArea } from "@/components/dashboard-components/display-area";
+import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
 
 export const dynamic = "force-dynamic";
 

@@ -16,7 +16,7 @@ import {
   Settings,
   User as UserIcon,
 } from 'lucide-react';
-import { DashboardPageLayout } from '@/components/layout';
+import { DashboardPageLayout } from '@/components/shared/layout';
 import { PartnerApplicationStatus, UserBanNotice } from '@/components/user-dashboard';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { useUserProfile } from '@/hooks/profile';

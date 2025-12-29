@@ -7,7 +7,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { AlertCircle } from 'lucide-react';
-import { DashboardPageLayout } from '@/components/layout';
+import { DashboardPageLayout } from '@/components/shared/layout';
 import type { UserBookingData } from './types';
 import { UserBookingFilters } from './user-booking-filters';
 import { UserBookingList } from './user-booking-list';

@@ -6,7 +6,7 @@
 'use client';
 
 import { Suspense, useState, useEffect, useCallback, useRef } from 'react';
-import { Navbar } from '@/components/navbar';
+import { Navbar } from '@/components/shared/navbar';
 import { CarCard } from '@/components/inventory';
 import { CarListItem } from '@/components/inventory';
 import { LayoutGrid, List, SlidersHorizontal } from 'lucide-react';

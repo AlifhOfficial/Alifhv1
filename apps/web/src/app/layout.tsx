@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
-import { ThemeProvider } from '@/components/providers/theme-provider'
-import { QueryProvider } from '@/components/providers/query-provider'
+import { ThemeProvider } from '@/components/shared/providers/theme-provider'
+import { QueryProvider } from '@/components/shared/providers/query-provider'
 import { AuthProvider } from '@/providers/auth-provider'
 import { Toaster } from '@/components/ui'
 

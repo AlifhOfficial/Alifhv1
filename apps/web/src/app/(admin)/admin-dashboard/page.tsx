@@ -3,7 +3,7 @@
  * Main admin dashboard with statistics and overview
  */
 
-import { DashboardDisplayArea } from "@/components/dashboard-components/display-area";
+import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
 import { AdminDashboardStats } from "@/components/admin/admin-dashboard-stats";
 
 export const dynamic = "force-dynamic";

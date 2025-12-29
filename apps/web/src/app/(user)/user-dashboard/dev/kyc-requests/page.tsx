@@ -7,7 +7,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { CheckCircle, XCircle, Clock, Eye, FileText } from 'lucide-react';
-import { DashboardPageLayout } from '@/components/layout';
+import { DashboardPageLayout } from '@/components/shared/layout';
 import { useToast } from '@/hooks/use-toast';
 import { getSignedUrl } from '@/lib/storage';
 

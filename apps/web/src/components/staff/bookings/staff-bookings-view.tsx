@@ -12,7 +12,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { cn } from '@/utils';
-import { DashboardPageLayout } from '@/components/layout';
+import { DashboardPageLayout } from '@/components/shared/layout';
 import type { BookingData, BookingStats, AvailabilityRule, BookingSettings } from './types';
 import { BookingStatsCards } from './booking-stats';
 import { BookingFilters } from './booking-filters';

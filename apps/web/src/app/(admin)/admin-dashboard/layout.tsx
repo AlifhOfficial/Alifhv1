@@ -1,5 +1,5 @@
-import { DashboardLayout, DashboardContent } from "@/components/dashboard-components/dashboard-layout";
-import { AppSidebar } from "@/components/dashboard-components/app-sidebar";
+import { DashboardLayout, DashboardContent } from "@/components/shared/layout/dashboard-layout";
+import { AppSidebar } from "@/components/shared/layout/app-sidebar";
 import { requireRole } from "@/lib/auth/roles";
 import { WebSocketProvider } from "@/providers/websocket-provider";
 

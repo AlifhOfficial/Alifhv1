@@ -4,7 +4,7 @@
  */
 
 import { Suspense } from 'react';
-import { Navbar } from '@/components/navbar';
+import { Navbar } from '@/components/shared/navbar';
 
 export default function PublicLayout({
   children,

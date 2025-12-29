@@ -3,7 +3,7 @@
  * Manage active partners (suspend, tier, etc.)
  */
 
-import { DashboardDisplayArea } from "@/components/dashboard-components/display-area";
+import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
 import { AdminPartnersList } from "@/components/admin/partners";
 
 export const dynamic = "force-dynamic";

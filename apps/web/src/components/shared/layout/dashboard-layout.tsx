@@ -12,7 +12,7 @@ import { useTheme } from 'next-themes';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/dashboard-components/theme-toggle";
+import { ThemeToggle } from "@/components/shared/layout/theme-toggle";
 import { handleSignOut } from '@/lib/auth/sign-out';
 import { LogOut } from 'lucide-react';
 

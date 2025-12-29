@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AuthErrorModal } from "@/components/auth/feedback/auth-error-modal";
 import { getAuthErrorInfo, AuthErrorAction } from "@/lib/auth/errors";
-import { Navbar } from "@/components/navbar";
+import { Navbar } from "@/components/shared/navbar";
 
 export function AuthErrorView() {
   const router = useRouter();

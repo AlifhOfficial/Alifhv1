@@ -1,4 +1,4 @@
-import { DashboardDisplayArea } from "@/components/dashboard-components/display-area";
+import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
 import { requireAuth } from "@/lib/auth/roles";
 import { db } from "@alifh/database";
 import * as schema from "@alifh/database";
@@ -29,7 +29,7 @@ import {
   EngagementBarChart,
   QualityMetricsBarChart,
   OperationalRadialChart
-} from "@/components/dashboard-components/performance-charts";
+} from "@/components/shared/layout/performance-charts";
 
 export default async function PartnerPerformancePage() {
   const user = await requireAuth();

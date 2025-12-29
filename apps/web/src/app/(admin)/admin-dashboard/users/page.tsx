@@ -3,7 +3,7 @@
  * Manage user accounts and view user details
  */
 
-import { DashboardDisplayArea } from "@/components/dashboard-components/display-area";
+import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
 import { AdminUsersList } from "@/components/admin/users/admin-users-list";
 
 export const dynamic = "force-dynamic";

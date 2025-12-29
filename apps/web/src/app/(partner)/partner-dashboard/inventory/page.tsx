@@ -1,4 +1,4 @@
-import { DashboardDisplayArea } from "@/components/dashboard-components/display-area";
+import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
 import { PartnerInventoryClient } from "@/components/inventory";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { redirect } from "next/navigation";
