@@ -7,8 +7,7 @@
 
 import { Suspense, useState, useEffect, useCallback, useRef } from 'react';
 import { Navbar } from '@/components/shared/navbar';
-import { CarCard } from '@/components/inventory';
-import { CarListItem } from '@/components/inventory';
+import { CarCard, CarListItem, CarCardSkeleton, CarListItemSkeleton } from '@/components/inventory';
 import { LayoutGrid, List, SlidersHorizontal } from 'lucide-react';
 import {
   Sheet,
@@ -268,10 +267,21 @@ export default function InventoryPage() {
 
             {/* Loading State */}
             {isLoading && !error && (
-              <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                <p className="text-sm text-muted-foreground">Loading vehicles...</p>
-              </div>
+              <>
+                {viewMode === 'grid' ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                      <CarCardSkeleton key={i} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <CarListItemSkeleton key={i} />
+                    ))}
+                  </div>
+                )}
+              </>
             )}
 
             {/* Empty State */}
@@ -308,6 +318,7 @@ export default function InventoryPage() {
                         sellerName={listing.sellerName || undefined}
                         sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
                         isBlackMember={listing.isBlackMember || false}
+                        priority={index === 0}
                       />
                     ))}
                   </div>

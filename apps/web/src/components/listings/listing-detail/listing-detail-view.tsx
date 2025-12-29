@@ -19,6 +19,7 @@ import { ContactSection } from './contact-section';
 import { EMICalculator } from './emi-calculator';
 import { LocationSection } from './location-section';
 import { ListingTimestamp } from './listing-timestamp';
+import { ListingDetailSkeleton } from './listing-detail-skeleton';
 import { ChevronLeft, AlertTriangle, Loader2, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -50,11 +51,7 @@ export function ListingDetailView({ listingId, currentUserId, currentUserRole }:
       <div className="min-h-screen bg-background">
         <Navbar />
         <main className="pt-20">
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="flex items-center justify-center min-h-[400px]">
-              <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-            </div>
-          </div>
+          <ListingDetailSkeleton />
         </main>
       </div>
     );

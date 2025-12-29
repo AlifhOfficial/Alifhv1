@@ -12,6 +12,24 @@ const nextConfig = {
   
   transpilePackages: ['@alifh/shared', '@alifh/database'],
   serverExternalPackages: ['better-auth', '@node-rs/argon2', '@node-rs/bcrypt'],
+  
+  // Content Security Policy
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: process.env.NODE_ENV === 'development'
+              ? "script-src 'self' 'unsafe-eval' 'unsafe-inline';" // Development: allow HMR
+              : "script-src 'self' 'unsafe-inline';", // Production: no eval
+          },
+        ],
+      },
+    ];
+  },
+  
   images: {
     remotePatterns: [
       {

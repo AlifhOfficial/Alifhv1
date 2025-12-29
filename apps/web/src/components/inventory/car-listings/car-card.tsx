@@ -40,6 +40,7 @@ interface CarCardProps {
   sellerAvatarUrl?: string | null;
   isBlackMember?: boolean; // Black tier partner listing
   className?: string;
+  priority?: boolean; // LCP optimization
 }
 
 export function CarCard({
@@ -61,7 +62,8 @@ export function CarCard({
   sellerName,
   sellerAvatarUrl,
   isBlackMember = false,
-  className
+  className,
+  priority = false, // LCP optimization for first card
 }: CarCardProps) {
   // Format functions
   const formatPrice = (amount: number) => {
@@ -187,6 +189,7 @@ export function CarCard({
           src={displayImage}
           alt={`${year} ${make} ${model}`}
           fill
+          priority={priority}
           className="object-cover transition-transform duration-300 group-hover:scale-105"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
