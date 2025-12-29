@@ -288,12 +288,7 @@ export function CarCard({
                 {displaySellerName}
               </span>
               {(isBlackMember || partnerVerified) && (
-                <div className="relative inline-flex items-center justify-center w-4 h-4 flex-shrink-0" title="Verified">
-                  <svg viewBox="0 0 24 24" className="w-full h-full" fill="none">
-                    <circle cx="12" cy="12" r="10" className="fill-blue-500" />
-                    <path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
+                <CheckCircle2 className="w-4 h-4 text-blue-500 flex-shrink-0" aria-label="Verified" />
               )}
             </div>
           </div>

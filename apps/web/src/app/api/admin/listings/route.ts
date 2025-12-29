@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
     const type = searchParams.get('type') as 'user' | 'partner' | undefined;
     const sort = (searchParams.get('sort') || 'newest') as 'newest' | 'oldest' | 'updated';
     const includeStats = searchParams.get('includeStats') === '1' || searchParams.get('includeStats') === 'true';
-    const limit = Math.min(parseInt(searchParams.get('limit') || '200', 10) || 200, 500);
+    const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10) || 20, 100);
     const offset = Math.max(parseInt(searchParams.get('offset') || '0', 10) || 0, 0);
 
     const listings = await getAdminListings({

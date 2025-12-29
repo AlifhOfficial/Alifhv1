@@ -96,7 +96,13 @@ export function AdminListingsView() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Pagination
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
+  const limit = 20;
   
   // Filters
   const [activeTab, setActiveTab] = useState<AdminTab>('pending');
@@ -114,9 +120,11 @@ export function AdminListingsView() {
   const [deleteModal, setDeleteModal] = useState<{ open: boolean; listing: Listing | null }>({ open: false, listing: null });
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const fetchData = useCallback(async (isRefresh = false) => {
+  const fetchData = useCallback(async (isRefresh = false, loadMore = false) => {
     try {
-      if (isRefresh) {
+      if (loadMore) {
+        setIsLoadingMore(true);
+      } else if (isRefresh) {
         setIsRefreshing(true);
       } else {
         setIsLoading(true);
@@ -141,6 +149,8 @@ export function AdminListingsView() {
       }
       params.set('sort', sortOption);
       params.set('includeStats', '1');
+      params.set('limit', String(limit));
+      params.set('offset', String(loadMore ? offset : 0));
 
       const response = await fetch(`/api/admin/listings?${params}`, {
         credentials: 'include',
@@ -152,7 +162,18 @@ export function AdminListingsView() {
       }
 
       const data = await response.json();
-      setListings(data.data || []);
+      
+      if (loadMore) {
+        setListings(prev => [...prev, ...(data.data || [])]);
+      } else {
+        setListings(data.data || []);
+        setOffset(0);
+      }
+      
+      setHasMore(data.meta?.hasMore || false);
+      if (loadMore) {
+        setOffset(prev => prev + limit);
+      }
       
       // Parse stats as numbers (PostgreSQL bigint issue)
       if (data.stats) {
@@ -183,12 +204,20 @@ export function AdminListingsView() {
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
+      setIsLoadingMore(false);
     }
-  }, [activeTab, deepInventoryFilter, typeFilter, sortOption]);
+  }, [activeTab, deepInventoryFilter, typeFilter, sortOption, limit, offset]);
 
   useEffect(() => {
-    fetchData(false);
-  }, [fetchData]);
+    setOffset(0);
+    fetchData(false, false);
+  }, [activeTab, deepInventoryFilter, typeFilter, sortOption]);
+
+  const loadMore = () => {
+    if (!isLoadingMore && hasMore) {
+      fetchData(false, true);
+    }
+  };
 
   // Filter listings by search term (client-side)
   const filteredListings = useMemo(() => {
@@ -489,6 +518,26 @@ export function AdminListingsView() {
               onDelete={() => handleDeleteClick(listing)}
             />
           ))}
+          
+          {/* Load More Button */}
+          {hasMore && !searchTerm && (
+            <div className="flex justify-center pt-4">
+              <button
+                onClick={loadMore}
+                disabled={isLoadingMore}
+                className="px-6 py-3 rounded-full border border-border hover:bg-secondary/10 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoadingMore ? (
+                  <span className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-foreground" />
+                    Loading...
+                  </span>
+                ) : (
+                  `Load More (${limit} per page)`
+                )}
+              </button>
+            </div>
+          )}
         </div>
       )}
 
