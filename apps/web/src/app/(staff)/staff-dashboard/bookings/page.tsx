@@ -3,7 +3,7 @@
  * Shows bookings for listings posted by this staff member
  */
 
-import { StaffBookingsView } from '@/components/staff/bookings';
+import { StaffBookingsView } from '@/components/features/bookings/staff';
 
 export const dynamic = 'force-dynamic';
 

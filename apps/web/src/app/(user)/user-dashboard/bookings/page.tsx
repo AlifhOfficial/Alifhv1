@@ -1,4 +1,4 @@
-import { UserBookingsView } from '@/components/user/bookings';
+import { UserBookingsView } from '@/components/features/bookings/user';
 
 export const dynamic = 'force-dynamic';
 

@@ -5,7 +5,7 @@
 
 import { redirect } from 'next/navigation';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { PartnerBookingsClient } from '@/components/partner/bookings/partner-bookings-client';
+import { PartnerBookingsClient } from '@/components/features/bookings/partner/partner-bookings-client';
 
 export const runtime = 'nodejs';
 

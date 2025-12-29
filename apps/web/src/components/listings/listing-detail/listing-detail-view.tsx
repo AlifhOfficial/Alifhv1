@@ -13,7 +13,7 @@
 
 import { Navbar } from '@/components/shared/navbar';
 import { CarCardDetailed } from '@/components/inventory';
-import { BookingModal } from '@/components/booking';
+import { BookingModal } from '@/components/features/bookings/shared';
 import { SellerProfileCard } from './seller-profile-card';
 import { ContactSection } from './contact-section';
 import { BookingSection } from './booking-section';
