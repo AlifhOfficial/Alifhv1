@@ -2,12 +2,12 @@
  * API: Detailed Car Listing Endpoint
  * GET /api/listings/[id]/detailed
  * 
- * Purpose: Fetch comprehensive listing data for detailed view pages
+ * Purpose: Fetch comprehensive listing data with seller info for detailed view pages
  * Authentication: None required (public endpoint)
  * 
  * Features:
  * - Full specifications, features, and pricing insights
- * - Partner info with joined details
+ * - Seller data (partner profile + stats OR user profile)
  * - CDN-friendly caching (2min cache, 5min stale-while-revalidate)
  * 
  * Standards:
@@ -16,7 +16,14 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { memoryCache, CacheTTL, getListingDetailed } from "@alifh/database";
+import { 
+  memoryCache, 
+  CacheTTL, 
+  getListingDetailed, 
+  getDealerBaseProfile, 
+  getUserProfileByUserId 
+} from "@alifh/database";
+import { calculatePartnerStats } from "@alifh/database/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -43,6 +50,22 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
       );
     }
 
+    // Helper to fetch seller data based on listing type
+    async function fetchSellerData(listing: NonNullable<Awaited<ReturnType<typeof getListingDetailed>>>) {
+      if (listing.partnerId) {
+        // Partner listing - fetch dealer profile and stats in parallel
+        const [partnerProfile, partnerStats] = await Promise.all([
+          getDealerBaseProfile(listing.partnerId),
+          calculatePartnerStats(listing.partnerId),
+        ]);
+        return { type: 'partner' as const, partner: partnerProfile, partnerStats };
+      } else {
+        // User listing - single query gets profile + extended user info
+        const userProfile = await getUserProfileByUserId(listing.userId);
+        return { type: 'user' as const, userProfile };
+      }
+    }
+
     // In dev, bypass cache so new/updated listings reflect immediately.
     if (!isProd) {
       const listing = await getListingDetailed(id);
@@ -53,7 +76,10 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
         return NextResponse.json({ error: 'Listing not found' }, { status: 404 });
       }
 
-      const response = NextResponse.json(listing);
+      // Fetch seller data
+      const sellerData = await fetchSellerData(listing);
+
+      const response = NextResponse.json({ listing, sellerData });
       response.headers.set('Cache-Control', 'no-store');
       return response;
     }
@@ -83,10 +109,16 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Cache for 5 minutes
-    memoryCache.set(cacheKey, listing, CacheTTL.listingDetail);
+    // Fetch seller data
+    const sellerData = await fetchSellerData(listing);
 
-    return NextResponse.json(listing, { headers: CACHE_HEADERS });
+    // Build response with listing + seller data
+    const responseData = { listing, sellerData };
+
+    // Cache for 5 minutes
+    memoryCache.set(cacheKey, responseData, CacheTTL.listingDetail);
+
+    return NextResponse.json(responseData, { headers: CACHE_HEADERS });
   } catch (error) {
     console.error('[API] Error fetching detailed listing:', error);
     return NextResponse.json(

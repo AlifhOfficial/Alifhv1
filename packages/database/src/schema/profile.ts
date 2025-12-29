@@ -79,6 +79,8 @@ export const userProfile = pgTable('user_profile', {
   
   consignmentMode: boolean('consignment_mode').default(false).notNull(),
   
+  status: text('status').default('active').notNull(),
+  
   memberSince: timestamp('member_since').defaultNow().notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),

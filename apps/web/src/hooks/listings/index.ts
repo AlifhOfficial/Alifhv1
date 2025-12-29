@@ -24,6 +24,19 @@ export type {
   UsePartnerListingsOptions,
 } from './use-my-listings';
 
+// Detail hook
+export {
+  useListingDetail,
+} from './use-listing-detail';
+
+export type {
+  PartnerSellerData,
+  UserSellerData,
+  SellerData,
+  ListingDetailResponse,
+  UseListingDetailOptions,
+} from './use-listing-detail';
+
 // Mutation hooks
 export {
   useDeleteListing,
@@ -41,3 +54,4 @@ export type {
   MarkSoldResult,
   ArchiveResult,
 } from './use-listing-mutations';
+

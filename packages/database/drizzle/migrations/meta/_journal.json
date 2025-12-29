@@ -239,6 +239,13 @@
       "when": 1766648952594,
       "tag": "0033_ambiguous_tarantula",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1766993898867,
+      "tag": "0034_known_dragon_man",
+      "breakpoints": true
     }
   ]
 }

@@ -48,12 +48,11 @@ export function ContactSection({
     contactName = sellerData.partner.brandName;
   } else if (sellerData.type === 'user') {
     const profile = sellerData.userProfile;
-    const userBasic = sellerData.userBasic;
     const showPhone = profile?.privacySettings?.showPhone ?? true;
     
     if (showPhone && profile?.phone) {
       phoneNumber = profile.phone;
-      contactName = userBasic?.name ?? 
+      contactName = profile.userName ?? 
         [profile.firstName, profile.lastName].filter(Boolean).join(' ') ?? 
         'Seller';
     }

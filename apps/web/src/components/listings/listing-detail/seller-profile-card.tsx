@@ -271,24 +271,23 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
 
 function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
   const profile = sellerData.userProfile;
-  const userBasic = sellerData.userBasic;
   
-  if (!profile && !userBasic) return null;
+  if (!profile) return null;
 
-  // Combine data from profile and user basic info
-  const name = userBasic?.name ?? 
-    [profile?.firstName, profile?.lastName].filter(Boolean).join(' ') ?? 
+  // Use extended profile data (userName, userImage, userCreatedAt from user table)
+  const name = profile.userName ?? 
+    [profile.firstName, profile.lastName].filter(Boolean).join(' ') ?? 
     'Private Seller';
-  const avatar = profile?.avatar ?? userBasic?.image;
-  const memberSince = profile?.memberSince ?? userBasic?.createdAt ?? new Date();
+  const avatar = profile.avatar ?? profile.userImage;
+  const memberSince = profile.memberSince ?? profile.userCreatedAt ?? new Date();
   const memberSinceYear = new Date(memberSince).getFullYear();
-  const hasRating = profile?.platformRating !== null && profile?.platformRating !== undefined;
-  const location = [profile?.locationCity, profile?.locationEmirate].filter(Boolean).join(', ');
-  const badges = profile?.badges ?? [];
-  const tags = profile?.tags ?? [];
-  const kycVerified = profile?.kycVerified ?? false;
-  const emailVerified = profile?.emailVerified ?? userBasic?.emailVerified ?? false;
-  const phoneVerified = profile?.phoneVerified ?? userBasic?.phoneVerified ?? false;
+  const hasRating = profile.platformRating !== null && profile.platformRating !== undefined;
+  const location = [profile.locationCity, profile.locationEmirate].filter(Boolean).join(', ');
+  const badges = profile.badges ?? [];
+  const tags = profile.tags ?? [];
+  const kycVerified = profile.kycVerified ?? false;
+  const emailVerified = profile.emailVerified ?? false;
+  const phoneVerified = profile.phoneVerified ?? false;
 
   return (
     <div className="space-y-5">

@@ -625,47 +625,40 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                 className="hidden"
                 id="hero-upload"
                 onChange={(e) => uploadImage(e, 'heroImage')}
-                disabled={imageUploading || !editing}
+                disabled={imageUploading}
               />
               
               <div className="relative w-full h-64 group">
                 {form.heroImage ? (
                   <>
                     <img
-                      src={getPublicUrl(form.heroImage) || form.heroImage}
+                      src={profile?.heroImageUrl || getPublicUrl(form.heroImage) || form.heroImage}
                       alt="Hero"
                       className="w-full h-full object-cover"
                     />
-                    {editing && (
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <label
-                          htmlFor="hero-upload"
-                          className="px-5 py-2 rounded-full bg-blue-500 text-white text-sm font-medium cursor-pointer hover:bg-blue-600 transition-colors flex items-center gap-2"
-                        >
-                          <Upload className="w-4 h-4" />
-                          Change Image
-                        </label>
-                      </div>
-                    )}
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <label
+                        htmlFor="hero-upload"
+                        className="px-5 py-2 rounded-full bg-blue-500 text-white text-sm font-medium cursor-pointer hover:bg-blue-600 transition-colors flex items-center gap-2"
+                      >
+                        <Upload className="w-4 h-4" />
+                        Change Image
+                      </label>
+                    </div>
                   </>
                 ) : (
                   <label
                     htmlFor="hero-upload"
-                    className={cn(
-                      "flex flex-col items-center justify-center h-full gap-3",
-                      editing ? "cursor-pointer hover:bg-secondary/20 transition-colors" : "cursor-default"
-                    )}
+                    className="flex flex-col items-center justify-center h-full gap-3 cursor-pointer hover:bg-secondary/20 transition-colors"
                   >
                     <div className="flex flex-col items-center gap-2">
                       <Upload className="w-10 h-10 text-muted-foreground" />
                       <p className="text-sm font-medium text-foreground">
-                        {editing ? 'Click to upload hero image' : 'No hero image'}
+                        Click to upload hero image
                       </p>
-                      {editing && (
-                        <p className="text-xs text-muted-foreground">
-                          Recommended: 1920x600px
-                        </p>
-                      )}
+                      <p className="text-xs text-muted-foreground">
+                        Recommended: 1920x600px
+                      </p>
                     </div>
                   </label>
                 )}

@@ -19,11 +19,43 @@ import { partner } from '../../../schema/partner';
  * Returns all essential dealer info (30 fields)
  * Cached for 60s to reduce database load
  */
-export async function getDealerBaseProfile(partnerId: string) {
+export type DealerBaseProfile = {
+  id: string;
+  companyNameLegal: string;
+  brandName: string;
+  tradeLicense: string;
+  status: string;
+  tier: string;
+  email: string;
+  phone: string;
+  website: string | null;
+  address: string | null;
+  emirate: string | null;
+  city: string | null;
+  locationLat: number | null;
+  locationLng: number | null;
+  showroomCount: number;
+  logo: string | null;
+  heroImage: string | null;
+  description: string | null;
+  specialties: string[];
+  experienceYears: number | null;
+  foundedYear: number | null;
+  googleReviewUrl: string | null;
+  googleRating: number | null;
+  googleReviewCount: number | null;
+  platformRating: number | null;
+  platformReviewCount: number | null;
+  isVerified: boolean;
+  badges: string[];
+  tags: string[];
+};
+
+export async function getDealerBaseProfile(partnerId: string): Promise<DealerBaseProfile | null> {
   const cacheKey = CacheKeys.partnerMiniProfile(partnerId);
   
   // Check cache first
-  const cached = memoryCache.get(cacheKey);
+  const cached = memoryCache.get<DealerBaseProfile>(cacheKey);
   if (cached) {
     console.log(`[getDealerBaseProfile] Cache HIT for ${partnerId.slice(0, 8)}...`);
     return cached;
@@ -88,7 +120,7 @@ export async function getDealerBaseProfile(partnerId: string) {
   if (!result) return null;
 
   // Minimal normalization - only handle essential transformations
-  const normalized: typeof result = {
+  const normalized: DealerBaseProfile = {
     ...result,
     // String normalization - only if values exist
     website: result.website?.trim() || null,

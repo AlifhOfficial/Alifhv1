@@ -4,6 +4,9 @@
  * Main view for the public listing detail page.
  * Left side: Car details (images, specs, features)
  * Right side: Seller profile, booking, contact, timestamp, EMI calculator, location
+ * 
+ * Architecture: Component fetches its own data via useListingDetail hook
+ * Follows the pattern used across the app for data fetching
  */
 
 'use client';
@@ -17,106 +20,100 @@ import { BookingSection } from './booking-section';
 import { EMICalculator } from './emi-calculator';
 import { LocationSection } from './location-section';
 import { ListingTimestamp } from './listing-timestamp';
-import { ChevronLeft, AlertTriangle } from 'lucide-react';
+import { ChevronLeft, AlertTriangle, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useCreateConversation } from '@/hooks/messaging';
-import type { CarDetailedData } from '@alifh/database';
+import { useListingDetail, type SellerData } from '@/hooks/listings';
 
-// Types for seller data from existing queries
-export interface PartnerSellerData {
-  type: 'partner';
-  partner: {
-    id: string;
-    companyNameLegal: string;
-    brandName: string;
-    tradeLicense: string;
-    status: string;
-    tier: string;
-    email: string;
-    phone: string;
-    website: string | null;
-    address: string | null;
-    emirate: string | null;
-    city: string | null;
-    locationLat: number | null;
-    locationLng: number | null;
-    showroomCount: number;
-    logo: string | null;
-    heroImage: string | null;
-    description: string | null;
-    specialties: string[] | null;
-    experienceYears: number | null;
-    foundedYear: number | null;
-    googleReviewUrl: string | null;
-    googleRating: number | null;
-    googleReviewCount: number | null;
-    platformRating: number | null;
-    platformReviewCount: number | null;
-    isVerified: boolean;
-    badges: string[] | null;
-    tags: string[] | null;
-  } | null;
-  partnerStats?: {
-    inventoryCount: number;
-    totalSales: number;
-    responseTime: number | null;
-    responseRate: number | null;
-  };
-}
-
-export interface UserSellerData {
-  type: 'user';
-  userProfile: {
-    id: string;
-    userId: string;
-    phone: string | null;
-    firstName: string | null;
-    lastName: string | null;
-    avatar: string | null;
-    description: string | null;
-    kycVerified: boolean;
-    badges: string[] | null;
-    tags: string[] | null;
-    locationLat: number | null;
-    locationLng: number | null;
-    locationCity: string | null;
-    locationEmirate: string | null;
-    inventoryCount: number;
-    rating: number | null;
-    platformRating: number | null;
-    platformReviewCount: number;
-    avgResponseTime: number | null;
-    privacySettings: { showPhone?: boolean; showEmail?: boolean };
-    memberSince: Date;
-    emailVerified: boolean;
-    phoneVerified: boolean;
-  } | null;
-  userBasic: {
-    id: string;
-    name: string;
-    image: string | null;
-    emailVerified: boolean;
-    phoneVerified: boolean;
-    createdAt: Date;
-  } | null;
-}
-
-export type SellerData = PartnerSellerData | UserSellerData;
+// Re-export types for backwards compatibility
+export type { PartnerSellerData, UserSellerData, SellerData } from '@/hooks/listings';
 
 interface ListingDetailViewProps {
-  listing: CarDetailedData;
-  sellerData: SellerData;
+  listingId: string;
   currentUserId?: string;
+  currentUserRole?: string;
 }
 
-export function ListingDetailView({ listing, sellerData, currentUserId }: ListingDetailViewProps) {
+export function ListingDetailView({ listingId, currentUserId, currentUserRole }: ListingDetailViewProps) {
   const router = useRouter();
   const [isStartingChat, setIsStartingChat] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const { createConversation } = useCreateConversation();
   
+  // Fetch listing data via hook
+  const { listing, sellerData, isLoading, error } = useListingDetail(listingId);
+  
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <main className="pt-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex items-center justify-center min-h-[400px]">
+              <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Error or not found state
+  if (error || !listing) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <main className="pt-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
+              <h1 className="text-2xl font-semibold text-foreground mb-2">Listing Not Found</h1>
+              <p className="text-muted-foreground mb-6">This listing may have been removed or is no longer available.</p>
+              <Link 
+                href="/listings" 
+                className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Back to Listings
+              </Link>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Access control for non-public listings
+  if (!listing.isPublic) {
+    const isAdmin = currentUserRole === 'admin' || currentUserRole === 'super_admin';
+    const isOwner = currentUserId === listing.userId;
+
+    if (!isAdmin && !isOwner) {
+      return (
+        <div className="min-h-screen bg-background">
+          <Navbar />
+          <main className="pt-20">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
+                <h1 className="text-2xl font-semibold text-foreground mb-2">Listing Not Available</h1>
+                <p className="text-muted-foreground mb-6">This listing is not currently public.</p>
+                <Link 
+                  href="/listings" 
+                  className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Back to Listings
+                </Link>
+              </div>
+            </div>
+          </main>
+        </div>
+      );
+    }
+  }
+
   const carTitle = `${listing.year} ${listing.make} ${listing.model}${listing.trim ? ` ${listing.trim}` : ''}`;
 
   // Check if this listing is from a dealer (has partnerId) - only dealer listings can be booked
@@ -155,14 +152,14 @@ export function ListingDetailView({ listing, sellerData, currentUserId }: Listin
   };
 
   // Get partner address for booking modal
-  const partnerAddress = sellerData.type === 'partner' && sellerData.partner 
+  const partnerAddress = sellerData?.type === 'partner' && sellerData.partner 
     ? sellerData.partner.address 
     : null;
 
   // Check if we have valid seller data
-  const hasSellerData = sellerData.type === 'partner' 
-    ? !!sellerData.partner 
-    : !!(sellerData.userProfile || sellerData.userBasic);
+  const hasSellerData = sellerData 
+    ? (sellerData.type === 'partner' ? !!sellerData.partner : !!sellerData.userProfile)
+    : false;
 
   return (
     <div className="min-h-screen bg-background">
@@ -194,7 +191,7 @@ export function ListingDetailView({ listing, sellerData, currentUserId }: Listin
             <div className="lg:col-span-1">
               <div className="sticky top-24 space-y-4">
                 {/* 1. Seller Profile */}
-                {hasSellerData && (
+                {hasSellerData && sellerData && (
                   <SellerProfileCard sellerData={sellerData} />
                 )}
 
@@ -207,7 +204,7 @@ export function ListingDetailView({ listing, sellerData, currentUserId }: Listin
                 )}
 
                 {/* 3. Contact Section */}
-                {hasSellerData && (
+                {hasSellerData && sellerData && (
                   <ContactSection
                     sellerData={sellerData}
                     listingId={listing.id}
@@ -233,7 +230,7 @@ export function ListingDetailView({ listing, sellerData, currentUserId }: Listin
                 />
 
                 {/* 6. Location */}
-                {hasSellerData && (
+                {hasSellerData && sellerData && (
                   <LocationSection sellerData={sellerData} />
                 )}
 

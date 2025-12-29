@@ -38,8 +38,7 @@ export function LocationSection({ sellerData, className }: LocationSectionProps)
     };
   } else if (sellerData.type === 'user') {
     const profile = sellerData.userProfile;
-    const userBasic = sellerData.userBasic;
-    const name = userBasic?.name ?? 
+    const name = profile?.userName ?? 
       [profile?.firstName, profile?.lastName].filter(Boolean).join(' ') ?? 
       'Seller';
     

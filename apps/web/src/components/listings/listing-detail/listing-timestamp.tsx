@@ -10,10 +10,15 @@ import { Clock, RefreshCw } from 'lucide-react';
 import { cn } from '@/utils';
 
 interface ListingTimestampProps {
-  createdAt: Date;
-  updatedAt?: Date;
-  publishedAt?: Date | null;
+  createdAt: Date | string;
+  updatedAt?: Date | string;
+  publishedAt?: Date | string | null;
   className?: string;
+}
+
+// Ensure we have a Date object (handles JSON string dates from API)
+function toDate(date: Date | string): Date {
+  return date instanceof Date ? date : new Date(date);
 }
 
 function formatTimeAgo(date: Date): string {
@@ -53,8 +58,9 @@ export function ListingTimestamp({
   publishedAt,
   className 
 }: ListingTimestampProps) {
-  const postedDate = publishedAt || createdAt;
-  const wasUpdated = updatedAt && updatedAt.getTime() > postedDate.getTime() + 60000; // More than 1 minute after posting
+  const postedDate = toDate(publishedAt || createdAt);
+  const updatedDateObj = updatedAt ? toDate(updatedAt) : null;
+  const wasUpdated = updatedDateObj && updatedDateObj.getTime() > postedDate.getTime() + 60000; // More than 1 minute after posting
 
   return (
     <div className={cn(
@@ -69,10 +75,10 @@ export function ListingTimestamp({
       </div>
 
       {/* Updated Date */}
-      {wasUpdated && (
+      {wasUpdated && updatedDateObj && (
         <div className="flex items-center gap-2 text-xs text-muted-foreground pl-6">
           <RefreshCw className="w-3 h-3" />
-          <span>Updated {formatTimeAgo(updatedAt)}</span>
+          <span>Updated {formatTimeAgo(updatedDateObj)}</span>
         </div>
       )}
 
