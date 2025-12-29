@@ -3,10 +3,10 @@
  * Public-facing homepage with hero and key sections
  */
 
-import { HeroSection } from '@/components/home/hero-section';
-import { WhyUsSection } from '@/components/home/why-us-section';
-import { ClosingSection } from '@/components/home/closing-section';
-import { Footer } from '@/components/home/footer';
+import { HeroSection } from '@/components/pages/home/hero-section';
+import { WhyUsSection } from '@/components/pages/home/why-us-section';
+import { ClosingSection } from '@/components/pages/home/closing-section';
+import { Footer } from '@/components/pages/home/footer';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
