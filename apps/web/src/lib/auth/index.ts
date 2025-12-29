@@ -137,6 +137,7 @@ export const auth = betterAuth({
             firstName: true,
             lastName: true,
             preferences: true,
+            updatedAt: true, // Needed for avatar cache busting
           },
         }),
         // 3. Partner memberships with partner info (indexed)
@@ -189,12 +190,17 @@ export const auth = betterAuth({
       }));
 
       // Get avatar URL if avatar exists - use public URL (no signing needed)
+      // IMPORTANT: Include cache buster to ensure fresh images after upload
       let avatarUrl: string | null = null;
       const avatar = profileRecord?.avatar;
       if (avatar && !avatar.startsWith('http')) {
         const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
         if (publicUrl) {
-          avatarUrl = `${publicUrl.replace(/\/$/, '')}/${avatar}`;
+          // Use updatedAt timestamp for cache busting, or current time as fallback
+          const cacheBuster = profileRecord?.updatedAt 
+            ? new Date(profileRecord.updatedAt).getTime() 
+            : Date.now();
+          avatarUrl = `${publicUrl.replace(/\/$/, '')}/${avatar}?v=${cacheBuster}`;
         }
       } else if (avatar) {
         avatarUrl = avatar;

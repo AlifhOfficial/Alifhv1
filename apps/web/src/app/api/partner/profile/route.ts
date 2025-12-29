@@ -29,6 +29,44 @@ import {
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+/**
+ * Attaches cache-busted URLs for logo and hero image
+ * Similar to user avatar URL resolution
+ */
+function attachImageUrls(profile: any) {
+  const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+  if (!publicUrl) {
+    return { ...profile, logoUrl: null, heroImageUrl: null };
+  }
+  
+  // Use updatedAt for cache busting
+  const cacheBuster = profile.updatedAt 
+    ? new Date(profile.updatedAt).getTime() 
+    : Date.now();
+  
+  // Build logo URL with cache buster
+  let logoUrl: string | null = null;
+  if (profile.logo) {
+    if (profile.logo.startsWith('http')) {
+      logoUrl = profile.logo;
+    } else {
+      logoUrl = `${publicUrl.replace(/\/$/, '')}/${profile.logo}?v=${cacheBuster}`;
+    }
+  }
+  
+  // Build hero image URL with cache buster
+  let heroImageUrl: string | null = null;
+  if (profile.heroImage) {
+    if (profile.heroImage.startsWith('http')) {
+      heroImageUrl = profile.heroImage;
+    } else {
+      heroImageUrl = `${publicUrl.replace(/\/$/, '')}/${profile.heroImage}?v=${cacheBuster}`;
+    }
+  }
+  
+  return { ...profile, logoUrl, heroImageUrl };
+}
+
 // Validation schema for profile updates
 const PartnerProfileUpdateSchema = z.object({
   // Contact
@@ -116,7 +154,10 @@ export async function GET() {
       );
     }
     
-    return NextResponse.json({ profile });
+    // Attach cache-busted URLs for images
+    const profileWithUrls = attachImageUrls(profile);
+    
+    return NextResponse.json({ profile: profileWithUrls });
   } catch (error) {
     console.error('[partner/profile] GET error:', error);
     return NextResponse.json(
@@ -173,10 +214,13 @@ export async function PATCH(req: NextRequest) {
       );
     }
     
+    // Attach cache-busted URLs for images
+    const profileWithUrls = attachImageUrls(updatedProfile);
+    
     return NextResponse.json({
       success: true,
       message: 'Profile updated successfully',
-      profile: updatedProfile,
+      profile: profileWithUrls,
     });
   } catch (error) {
     console.error('[partner/profile] PATCH error:', error);

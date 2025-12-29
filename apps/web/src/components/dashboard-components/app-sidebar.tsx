@@ -166,7 +166,9 @@ export function AppSidebar({ user, items, sections, staffOverride }: AppSidebarP
   // During SSR and initial hydration, always use server data to prevent mismatch
   const firstName = isHydrated ? (profile?.firstName ?? user.firstName) : user.firstName;
   const lastName = isHydrated ? (profile?.lastName ?? user.lastName) : user.lastName;
-  const avatarUrl = isHydrated ? (profile?.avatarUrl ?? user.avatarUrl) : user.avatarUrl;
+  // Use profile.avatarUrl when profile is loaded (even if null), otherwise fall back to session
+  // Important: profile?.avatarUrl ?? user.avatarUrl would ignore null values from profile removal
+  const avatarUrl = isHydrated && profile ? profile.avatarUrl : user.avatarUrl;
   const useGeneratedAvatar = isHydrated 
     ? (profile?.preferences?.useGeneratedAvatar ?? user.useGeneratedAvatar ?? true)
     : (user.useGeneratedAvatar ?? true);

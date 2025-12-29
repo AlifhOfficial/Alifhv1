@@ -59,6 +59,9 @@ interface UserAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
    * Controlled by user in settings. Defaults to true (robot).
    */
   useGeneratedAvatar?: boolean;
+  
+  /** Updated timestamp for cache busting (Date, string, or timestamp) */
+  updatedAt?: Date | string | number | null;
 }
 
 const sizeClasses: Record<NonNullable<UserAvatarProps["size"]>, string> = {
@@ -93,17 +96,19 @@ const UserAvatar = React.forwardRef<HTMLDivElement, UserAvatarProps>(
     alt = "User avatar", 
     size = "md",
     useGeneratedAvatar = true,
+    updatedAt,
     ...props 
   }, ref) => {
     const [imageError, setImageError] = React.useState(false);
     const [generatedError, setGeneratedError] = React.useState(false);
 
-    // Resolve avatar URL: src or profileAvatar (no OAuth fallback)
+    // Resolve avatar URL: src or profileAvatar (no OAuth fallback) with cache busting
     const resolvedUrl = React.useMemo(() => {
       const avatarSource = directSrc || profileAvatar;
-      if (avatarSource) return getPublicUrl(avatarSource);
-      return null;
-    }, [directSrc, profileAvatar]);
+      if (!avatarSource) return null;
+      const cacheBuster = updatedAt ? new Date(updatedAt).getTime() : undefined;
+      return getPublicUrl(avatarSource, cacheBuster);
+    }, [directSrc, profileAvatar, updatedAt]);
 
     // Reset error states when inputs change
     React.useEffect(() => setImageError(false), [resolvedUrl]);

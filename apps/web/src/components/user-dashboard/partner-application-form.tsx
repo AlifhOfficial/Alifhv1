@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 import { usePartnerRequest, usePartnerRequestSubmit } from '@/hooks/partner';
 import { useUser } from '@/hooks/auth/use-auth';
 import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import { PartnerApplicationFeedbackModal } from './partner-application-feedback-modal';
 import {
   Select,

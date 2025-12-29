@@ -25,6 +25,8 @@ interface BrandAvatarProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   /** Additional CSS classes */
   className?: string;
+  /** Updated timestamp for cache busting (Date, string, or timestamp) */
+  updatedAt?: Date | string | number | null;
 }
 
 const sizeClasses = {
@@ -52,15 +54,17 @@ export function BrandAvatar({
   logoUrl, 
   brandName, 
   size = 'lg',
-  className = '' 
+  className = '',
+  updatedAt
 }: BrandAvatarProps) {
   const [hasError, setHasError] = React.useState(false);
 
-  // Resolve storage key to public URL
+  // Resolve storage key to public URL with cache busting
   const resolvedUrl = React.useMemo(() => {
     if (!logoUrl) return null;
-    return getPublicUrl(logoUrl);
-  }, [logoUrl]);
+    const cacheBuster = updatedAt ? new Date(updatedAt).getTime() : undefined;
+    return getPublicUrl(logoUrl, cacheBuster);
+  }, [logoUrl, updatedAt]);
 
   // Reset error state when URL changes
   React.useEffect(() => {

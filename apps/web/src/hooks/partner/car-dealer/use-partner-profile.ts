@@ -31,9 +31,15 @@ export interface PartnerProfile {
   locationLng: number | null;
   showroomCount: number;
   
-  // Branding & Media
+  // Branding & Media (storage keys)
   logo: string | null;
   heroImage: string | null;
+  // Cache-busted URLs (computed from storage keys + updatedAt)
+  logoUrl?: string | null;
+  heroImageUrl?: string | null;
+  
+  // Timestamps
+  updatedAt?: Date | string | null;
   
   // Business Information
   description: string | null;

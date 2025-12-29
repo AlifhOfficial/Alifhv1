@@ -1,6 +1,9 @@
 /**
- * Listing Detail View Component
- * Main view for the public listing detail page
+ * Listing Detail View Component - Redesigned
+ * 
+ * Main view for the public listing detail page.
+ * Left side: Car details (images, specs, features)
+ * Right side: Seller profile, booking, contact, timestamp, EMI calculator, location
  */
 
 'use client';
@@ -8,23 +11,111 @@
 import { Navbar } from '@/components/navbar';
 import { CarCardDetailed } from '@/components/inventory';
 import { BookingModal } from '@/components/booking';
-import { ChevronLeft } from 'lucide-react';
+import { SellerProfileCard } from './seller-profile-card';
+import { ContactSection } from './contact-section';
+import { BookingSection } from './booking-section';
+import { EMICalculator } from './emi-calculator';
+import { LocationSection } from './location-section';
+import { ListingTimestamp } from './listing-timestamp';
+import { ChevronLeft, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useCreateConversation } from '@/hooks/messaging';
 import type { CarDetailedData } from '@alifh/database';
 
+// Types for seller data from existing queries
+export interface PartnerSellerData {
+  type: 'partner';
+  partner: {
+    id: string;
+    companyNameLegal: string;
+    brandName: string;
+    tradeLicense: string;
+    status: string;
+    tier: string;
+    email: string;
+    phone: string;
+    website: string | null;
+    address: string | null;
+    emirate: string | null;
+    city: string | null;
+    locationLat: number | null;
+    locationLng: number | null;
+    showroomCount: number;
+    logo: string | null;
+    heroImage: string | null;
+    description: string | null;
+    specialties: string[] | null;
+    experienceYears: number | null;
+    foundedYear: number | null;
+    googleReviewUrl: string | null;
+    googleRating: number | null;
+    googleReviewCount: number | null;
+    platformRating: number | null;
+    platformReviewCount: number | null;
+    isVerified: boolean;
+    badges: string[] | null;
+    tags: string[] | null;
+  } | null;
+  partnerStats?: {
+    inventoryCount: number;
+    totalSales: number;
+    responseTime: number | null;
+    responseRate: number | null;
+  };
+}
+
+export interface UserSellerData {
+  type: 'user';
+  userProfile: {
+    id: string;
+    userId: string;
+    phone: string | null;
+    firstName: string | null;
+    lastName: string | null;
+    avatar: string | null;
+    description: string | null;
+    kycVerified: boolean;
+    badges: string[] | null;
+    tags: string[] | null;
+    locationLat: number | null;
+    locationLng: number | null;
+    locationCity: string | null;
+    locationEmirate: string | null;
+    inventoryCount: number;
+    rating: number | null;
+    platformRating: number | null;
+    platformReviewCount: number;
+    avgResponseTime: number | null;
+    privacySettings: { showPhone?: boolean; showEmail?: boolean };
+    memberSince: Date;
+    emailVerified: boolean;
+    phoneVerified: boolean;
+  } | null;
+  userBasic: {
+    id: string;
+    name: string;
+    image: string | null;
+    emailVerified: boolean;
+    phoneVerified: boolean;
+    createdAt: Date;
+  } | null;
+}
+
+export type SellerData = PartnerSellerData | UserSellerData;
+
 interface ListingDetailViewProps {
   listing: CarDetailedData;
+  sellerData: SellerData;
   currentUserId?: string;
 }
 
-export function ListingDetailView({ listing, currentUserId }: ListingDetailViewProps) {
+export function ListingDetailView({ listing, sellerData, currentUserId }: ListingDetailViewProps) {
   const router = useRouter();
   const [isStartingChat, setIsStartingChat] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-  const { createConversation, isCreating } = useCreateConversation();
+  const { createConversation } = useCreateConversation();
   
   const carTitle = `${listing.year} ${listing.make} ${listing.model}${listing.trim ? ` ${listing.trim}` : ''}`;
 
@@ -63,6 +154,16 @@ export function ListingDetailView({ listing, currentUserId }: ListingDetailViewP
     router.push('/sign-in?redirectTo=' + encodeURIComponent(`/listings/${listing.id}`));
   };
 
+  // Get partner address for booking modal
+  const partnerAddress = sellerData.type === 'partner' && sellerData.partner 
+    ? sellerData.partner.address 
+    : null;
+
+  // Check if we have valid seller data
+  const hasSellerData = sellerData.type === 'partner' 
+    ? !!sellerData.partner 
+    : !!(sellerData.userProfile || sellerData.userBasic);
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -89,122 +190,56 @@ export function ListingDetailView({ listing, currentUserId }: ListingDetailViewP
               <CarCardDetailed listing={listing} />
             </div>
 
-            {/* Sidebar - Contact & Actions */}
+            {/* Sidebar */}
             <div className="lg:col-span-1">
-              <div className="sticky top-24 space-y-6">
-                {/* Quick Contact Card */}
-                <div className="p-6 bg-card border border-border/40 rounded-xl space-y-4">
-                  <h3 className="text-sm font-semibold text-foreground">Interested in this {listing.make}?</h3>
-                  
-                  <div className="space-y-3">
-                    <button 
-                      onClick={handleChatWithSeller}
-                      disabled={isStartingChat || currentUserId === listing.userId}
-                      className="w-full py-3 px-4 bg-blue-500 text-white text-sm font-medium rounded-full hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                    >
-                      {isStartingChat ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-                          Starting Chat...
-                        </>
-                      ) : currentUserId === listing.userId ? (
-                        'Your Listing'
-                      ) : (
-                        'Chat with Seller'
-                      )}
-                    </button>
-                    
-                    {/* Only show booking button for dealer listings */}
-                    {isDealerListing && (
-                      <button 
-                        onClick={() => setIsBookingModalOpen(true)}
-                        className="w-full py-3 px-4 bg-green-500 text-white text-sm font-medium rounded-full hover:bg-green-600 transition-colors"
-                      >
-                        Book Test Drive
-                      </button>
-                    )}
-                    
-                    <button className="w-full py-3 px-4 text-foreground text-sm font-medium rounded-full hover:bg-secondary/10 transition-colors border border-border">
-                      Request Price Quote
-                    </button>
-                  </div>
+              <div className="sticky top-24 space-y-4">
+                {/* 1. Seller Profile */}
+                {hasSellerData && (
+                  <SellerProfileCard sellerData={sellerData} />
+                )}
 
-                  <p className="text-xs text-muted-foreground text-center pt-2">
-                    Typically responds within 24 hours
-                  </p>
-                </div>
+                {/* 2. Booking Section (Partner listings only) */}
+                {isDealerListing && (
+                  <BookingSection
+                    onBookTestDrive={() => setIsBookingModalOpen(true)}
+                    partnerName={listing.partnerBrandName || 'Dealer'}
+                  />
+                )}
 
-                {/* Price Summary */}
-                <div className="p-6 bg-muted/20 border border-border/40 rounded-xl space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Listed Price</span>
-                    <span className="text-lg font-bold text-blue-500">
-                      {new Intl.NumberFormat('en-AE', {
-                        style: 'currency',
-                        currency: listing.currency,
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 0,
-                      }).format(listing.price)}
-                    </span>
-                  </div>
-                  
-                  {listing.isNegotiable && (
-                    <p className="text-xs text-muted-foreground">
-                      Price is negotiable. Make an offer!
-                    </p>
-                  )}
+                {/* 3. Contact Section */}
+                {hasSellerData && (
+                  <ContactSection
+                    sellerData={sellerData}
+                    listingId={listing.id}
+                    currentUserId={currentUserId}
+                    sellerUserId={listing.userId}
+                    partnerId={listing.partnerId}
+                    onStartChat={handleChatWithSeller}
+                    isStartingChat={isStartingChat}
+                  />
+                )}
 
-                  {listing.fairValue && (
-                    <div className="pt-3 border-t border-border/40">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">Fair Market Value</span>
-                        <span className="text-sm font-medium text-foreground">
-                          {new Intl.NumberFormat('en-AE', {
-                            style: 'currency',
-                            currency: listing.currency,
-                            minimumFractionDigits: 0,
-                            maximumFractionDigits: 0,
-                          }).format(listing.fairValue / 100)}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                {/* 4. Listing Timestamp */}
+                <ListingTimestamp
+                  createdAt={listing.createdAt}
+                  updatedAt={listing.updatedAt}
+                  publishedAt={listing.publishedAt}
+                />
 
-                {/* Quick Facts */}
-                <div className="p-6 bg-card border border-border/40 rounded-xl space-y-4">
-                  <h3 className="text-sm font-semibold text-foreground">Quick Facts</h3>
-                  
-                  <div className="grid grid-cols-2 gap-3 text-xs">
-                    <div className="space-y-1">
-                      <p className="text-muted-foreground">Mileage</p>
-                      <p className="font-medium text-foreground">{listing.mileage.toLocaleString()} km</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-muted-foreground">Year</p>
-                      <p className="font-medium text-foreground">{listing.year}</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-muted-foreground">Transmission</p>
-                      <p className="font-medium text-foreground capitalize">{listing.transmission?.replace(/_/g, ' ') || 'N/A'}</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-muted-foreground">Fuel Type</p>
-                      <p className="font-medium text-foreground capitalize">{listing.fuelType?.replace(/_/g, ' ') || 'N/A'}</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-muted-foreground">Body Type</p>
-                      <p className="font-medium text-foreground capitalize">{listing.bodyType?.replace(/_/g, ' ') || 'N/A'}</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-muted-foreground">Specs</p>
-                      <p className="font-medium text-foreground uppercase">{listing.specs}</p>
-                    </div>
-                  </div>
-                </div>
+                {/* 5. EMI Calculator */}
+                <EMICalculator
+                  price={listing.price}
+                  currency={listing.currency}
+                />
+
+                {/* 6. Location */}
+                {hasSellerData && (
+                  <LocationSection sellerData={sellerData} />
+                )}
 
                 {/* Safety Note */}
-                <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
+                <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl flex items-start gap-3">
+                  <AlertTriangle className="w-4 h-4 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
                   <p className="text-xs text-yellow-600 dark:text-yellow-400">
                     <strong>Safety Tip:</strong> Always meet in a public place and verify the vehicle before making any payment.
                   </p>
@@ -224,7 +259,7 @@ export function ListingDetailView({ listing, currentUserId }: ListingDetailViewP
           listingTitle={carTitle}
           listingThumbnail={listing.thumbnail}
           partnerName={listing.partnerBrandName || 'Dealer'}
-          partnerAddress={null}
+          partnerAddress={partnerAddress}
           isAuthenticated={!!currentUserId}
           onLoginRequired={handleLoginRequired}
         />

@@ -41,6 +41,36 @@ const CACHE_HEADERS_NO_CACHE = {
   'Cache-Control': 'no-cache, no-store, must-revalidate',
 } as const;
 
+/**
+ * Attaches cache-busted URLs for logo and hero image
+ */
+function attachImageUrls(profile: any) {
+  const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+  if (!publicUrl) {
+    return { ...profile, logoUrl: null, heroImageUrl: null };
+  }
+  
+  const cacheBuster = profile.updatedAt 
+    ? new Date(profile.updatedAt).getTime() 
+    : Date.now();
+  
+  let logoUrl: string | null = null;
+  if (profile.logo) {
+    logoUrl = profile.logo.startsWith('http') 
+      ? profile.logo 
+      : `${publicUrl.replace(/\/$/, '')}/${profile.logo}?v=${cacheBuster}`;
+  }
+  
+  let heroImageUrl: string | null = null;
+  if (profile.heroImage) {
+    heroImageUrl = profile.heroImage.startsWith('http') 
+      ? profile.heroImage 
+      : `${publicUrl.replace(/\/$/, '')}/${profile.heroImage}?v=${cacheBuster}`;
+  }
+  
+  return { ...profile, logoUrl, heroImageUrl };
+}
+
 const UpdatePartnerProfileSchema = z.object({
   companyNameLegal: z.string().optional(),
   brandName: z.string().optional(),
@@ -84,7 +114,10 @@ export async function GET(
     const totalTime = performance.now() - start;
     console.log(`[partner dealer-profile] GET ${partnerId.slice(0, 8)}... - Query: ${queryTime.toFixed(2)}ms, Total: ${totalTime.toFixed(2)}ms`);
 
-    const response = NextResponse.json(profile);
+    // Attach cache-busted URLs for images
+    const profileWithUrls = attachImageUrls(profile);
+
+    const response = NextResponse.json(profileWithUrls);
     Object.entries(CACHE_HEADERS_PUBLIC).forEach(([key, value]) => 
       response.headers.set(key, value)
     );
@@ -147,7 +180,10 @@ export async function PATCH(
       );
     }
 
-    const response = NextResponse.json(updatedProfile);
+    // Attach cache-busted URLs for images
+    const profileWithUrls = attachImageUrls(updatedProfile);
+
+    const response = NextResponse.json(profileWithUrls);
     Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
       response.headers.set(key, value)
     );

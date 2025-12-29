@@ -14,6 +14,8 @@ interface BrandHeroProps {
   brandName: string;
   height?: 'sm' | 'md' | 'lg';
   className?: string;
+  /** Updated timestamp for cache busting (Date, string, or timestamp) */
+  updatedAt?: Date | string | number | null;
 }
 
 const heightClasses = {
@@ -26,15 +28,21 @@ export function BrandHero({
   heroImageUrl, 
   brandName,
   height = 'md',
-  className = ''
+  className = '',
+  updatedAt
 }: BrandHeroProps) {
   const [hasError, setHasError] = useState(false);
+  
+  // Resolve URL with cache busting
+  const resolvedUrl = heroImageUrl 
+    ? getPublicUrl(heroImageUrl, updatedAt ? new Date(updatedAt).getTime() : undefined) 
+    : null;
 
   return (
     <div className={`relative w-full overflow-hidden ${heightClasses[height]} ${className}`}>
-      {heroImageUrl && !hasError ? (
+      {resolvedUrl && !hasError ? (
         <img
-          src={getPublicUrl(heroImageUrl) || heroImageUrl}
+          src={resolvedUrl}
           alt={brandName}
           className="w-full h-full object-cover"
           onError={() => setHasError(true)}

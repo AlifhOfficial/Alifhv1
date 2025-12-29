@@ -26,17 +26,19 @@ const R2_PUBLIC_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
  * - Storage keys → converts to full public URL
  * 
  * @param key - Storage key or full URL
+ * @param cacheBuster - Optional cache buster (timestamp, version, etc.) to append as query param
  * @returns Full public URL or null
  * 
  * @example
  * getPublicUrl("avatars/user123.jpg") → "https://pub-xxx.r2.dev/avatars/user123.jpg"
+ * getPublicUrl("avatars/user123.jpg", Date.now()) → "https://pub-xxx.r2.dev/avatars/user123.jpg?v=1703..."
  * getPublicUrl("https://example.com/img.jpg") → "https://example.com/img.jpg"
  * getPublicUrl(null) → null
  */
-export function getPublicUrl(key: string | null | undefined): string | null {
+export function getPublicUrl(key: string | null | undefined, cacheBuster?: string | number): string | null {
   if (!key) return null;
   
-  // Already a full URL - return as-is
+  // Already a full URL - return as-is (don't add cache buster to external URLs)
   if (key.startsWith('http://') || key.startsWith('https://') || key.startsWith('/')) {
     return key;
   }
@@ -47,7 +49,14 @@ export function getPublicUrl(key: string | null | undefined): string | null {
     return null;
   }
   
-  return `${R2_PUBLIC_URL.replace(/\/$/, '')}/${key}`;
+  const baseUrl = `${R2_PUBLIC_URL.replace(/\/$/, '')}/${key}`;
+  
+  // Add cache buster if provided
+  if (cacheBuster !== undefined) {
+    return `${baseUrl}?v=${cacheBuster}`;
+  }
+  
+  return baseUrl;
 }
 
 // ============================================================================

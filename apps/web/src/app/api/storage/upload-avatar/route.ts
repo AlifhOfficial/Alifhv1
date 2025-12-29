@@ -38,12 +38,14 @@ export async function POST(req: NextRequest) {
   try {
     // Require authentication
     const user = await getSessionUser();
+    console.log("[upload-avatar] User:", user?.id);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const formData = await req.formData();
     const file = formData.get("file");
+    console.log("[upload-avatar] File received:", file instanceof File ? `${file.name} (${file.size} bytes)` : "none");
     
     if (!(file instanceof File)) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
@@ -78,21 +80,30 @@ export async function POST(req: NextRequest) {
       .webp({ quality: OUTPUT_QUALITY })
       .toBuffer();
 
-    // Use user ID as filename - ensures only one avatar per user in storage
-    const fileName = `${user.id}.webp`;
+    // Use full key with user ID - ensures only one avatar per user
+    // Using 'key' bypasses the unique ID generation in buildKey
+    // This enables true overwriting when user uploads a new avatar
+    const key = `avatars/${user.id}.webp`;
+    console.log("[upload-avatar] Uploading to key:", key, "Size:", processedBuffer.length);
 
+    // IMPORTANT: Short cache with must-revalidate ensures browsers check for updates
+    // Combined with ?v=timestamp cache busting on the URL, this guarantees fresh images
     const result = await uploadFile({
       data: processedBuffer,
       contentType: "image/webp",
-      directory: "avatars",
-      fileName,
-      cacheControl: "public, max-age=31536000", // 1 year cache (filename changes on new upload)
+      key, // Use key directly to bypass unique ID generation
+      cacheControl: "public, max-age=300, must-revalidate", // 5 min cache with revalidation
     });
+    
+    console.log("[upload-avatar] Upload result:", result);
 
+    // Include timestamp for cache busting - clients should use this in avatarUrl
+    const now = Date.now();
     return NextResponse.json({
       key: result.key,
       url: result.url,
       etag: result.etag,
+      updatedAt: now, // For cache busting query param
     });
   } catch (error) {
     console.error("[storage/upload-avatar] POST failed", error);

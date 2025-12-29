@@ -231,7 +231,21 @@ export function PartnerProfileComprehensiveForm({ partnerId }: PartnerProfileCom
     }
   };
   
-  // File upload helper - returns storage KEY
+  // Upload partner logo or hero image - uses optimized endpoint with WebP conversion
+  const uploadPartnerImage = async (file: File, type: 'logo' | 'hero'): Promise<string | null> => {
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('type', type);
+    fd.append('partnerId', partnerId);
+    
+    const res = await fetch('/api/storage/upload-partner-image', { method: 'POST', body: fd, credentials: 'include' });
+    if (!res.ok) return null;
+    
+    const data = await res.json();
+    return data.key;
+  };
+  
+  // Generic file upload helper for other files (gallery, videos, etc.)
   const uploadFile = async (file: File, directory: string): Promise<string | null> => {
     const fd = new FormData();
     fd.append('file', file);
@@ -241,10 +255,10 @@ export function PartnerProfileComprehensiveForm({ partnerId }: PartnerProfileCom
     if (!res.ok) return null;
     
     const data = await res.json();
-    return data.key; // Return storage key (not full URL)
+    return data.key;
   };
   
-  // Handle image upload
+  // Handle image upload - logo and heroImage use optimized endpoint, others use generic
   const handleImageUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
     field: 'logo' | 'heroImage' | 'coverImage' | 'showroomVideoThumbnail'
@@ -253,15 +267,24 @@ export function PartnerProfileComprehensiveForm({ partnerId }: PartnerProfileCom
     e.target.value = '';
     if (!file) return;
     
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+    if (!['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'].includes(file.type)) {
       toast({ title: 'Invalid file type', variant: 'destructive' });
       return;
     }
     
-    const key = await uploadFile(file, `partner-${field}s`);
+    let key: string | null = null;
+    
+    // Use optimized endpoint for logo and heroImage (compression, WebP, smart overwrite)
+    if (field === 'logo' || field === 'heroImage') {
+      key = await uploadPartnerImage(file, field === 'heroImage' ? 'hero' : 'logo');
+    } else {
+      // Use generic upload for other images
+      key = await uploadFile(file, `partner-${field}s`);
+    }
+    
     if (key) {
       updateField(field, key);
-      toast({ title: 'Image uploaded' });
+      toast({ title: 'Image uploaded & optimized' });
     } else {
       toast({ title: 'Upload failed', variant: 'destructive' });
     }

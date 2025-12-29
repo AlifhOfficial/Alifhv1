@@ -79,7 +79,9 @@ async function attachAvatarUrl(profile: any) {
     return { ...profile, avatarUrl: null };
   }
   
-  const avatarUrl = `${publicUrl.replace(/\/$/, '')}/${profile.avatar}`;
+  // Add cache-busting param based on updatedAt to ensure fresh image after upload
+  const cacheBuster = profile.updatedAt ? new Date(profile.updatedAt).getTime() : Date.now();
+  const avatarUrl = `${publicUrl.replace(/\/$/, '')}/${profile.avatar}?v=${cacheBuster}`;
   return { ...profile, avatarUrl };
 }
 
@@ -152,14 +154,12 @@ export async function PATCH(req: NextRequest) {
     }
 
     // Clean up old avatar from R2 when user removes their avatar
+    // Fire-and-forget: don't block response for cleanup
     // Note: When replacing, the new upload uses same key (avatars/{userId}.webp) so it overwrites
     if (oldAvatarKey && !oldAvatarKey.startsWith('http')) {
-      try {
-        await deleteFile(oldAvatarKey);
-      } catch (e) {
-        // Log but don't fail the request - avatar cleanup is non-critical
+      deleteFile(oldAvatarKey).catch(e => {
         console.warn('[user-profile] Failed to delete old avatar:', oldAvatarKey, e);
-      }
+      });
     }
 
     // Invalidate session cache so sidebar/navbar get fresh data

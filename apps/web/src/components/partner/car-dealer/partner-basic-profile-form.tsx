@@ -159,7 +159,8 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
     setEditing(false);
   };
 
-  // Image upload - immediately saves to profile
+  // Image upload - uses optimized endpoint with WebP conversion and compression
+  // Similar to user avatar upload pattern - uses partnerId as filename for smart overwriting
   const uploadImage = async (
     e: React.ChangeEvent<HTMLInputElement>,
     field: 'logo' | 'heroImage'
@@ -168,12 +169,12 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
     e.target.value = '';
     if (!file) return;
 
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-      toast({ title: 'Invalid file type', variant: 'destructive' });
+    if (!['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'].includes(file.type)) {
+      toast({ title: 'Invalid file type. Allowed: JPEG, PNG, WebP, HEIC', variant: 'destructive' });
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      toast({ title: 'Max 5MB', variant: 'destructive' });
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: 'Max 10MB', variant: 'destructive' });
       return;
     }
 
@@ -181,13 +182,19 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
     try {
       const fd = new FormData();
       fd.append('file', file);
-      fd.append('directory', `partner-${field}s`);
-      const res = await fetch('/api/storage/upload', { 
+      fd.append('type', field === 'heroImage' ? 'hero' : 'logo');
+      fd.append('partnerId', partnerId);
+      
+      // Use optimized partner image endpoint - handles compression, WebP conversion, and smart overwriting
+      const res = await fetch('/api/storage/upload-partner-image', { 
         method: 'POST', 
         body: fd, 
         credentials: 'include' 
       });
-      if (!res.ok) throw new Error('Upload failed');
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Upload failed');
+      }
       const data = await res.json();
       
       const storageKey = data.key;
@@ -199,10 +206,14 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       // Update local form state
       updateField({ [field]: storageKey });
       
-      toast({ title: `${field === 'logo' ? 'Logo' : 'Hero image'} uploaded` });
+      toast({ title: `${field === 'logo' ? 'Logo' : 'Hero image'} uploaded & optimized` });
     } catch (err) {
       console.error(`[PartnerProfile] Upload failed:`, err);
-      toast({ title: 'Upload failed', variant: 'destructive' });
+      toast({ 
+        title: 'Upload failed', 
+        description: err instanceof Error ? err.message : 'Unknown error',
+        variant: 'destructive' 
+      });
     } finally {
       setImageUploading(false);
     }
@@ -356,7 +367,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                 )}
               >
                 <BrandAvatar 
-                  logoUrl={form.logo} 
+                  logoUrl={profile.logoUrl || form.logo} 
                   brandName={profile.brandName} 
                   size="xl"
                   className="w-24 h-24 border border-border/40 shadow-sm"

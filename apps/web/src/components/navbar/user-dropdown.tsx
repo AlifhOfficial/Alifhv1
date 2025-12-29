@@ -80,7 +80,9 @@ export function ProfileMenu({
     // Profile hook provides instant updates, fallback to server session data
     const firstName = profile?.firstName ?? user.firstName?.trim() ?? user.name?.split(' ')[0] ?? 'User';
     const lastName = profile?.lastName ?? user.lastName?.trim() ?? '';
-    const avatarUrl = profile?.avatarUrl ?? user.avatarUrl;
+    // Use profile.avatarUrl when profile is loaded (even if null), otherwise fall back to session
+    // Important: profile?.avatarUrl ?? user.avatarUrl would ignore null values from profile removal
+    const avatarUrl = profile ? profile.avatarUrl : user.avatarUrl;
     const useGeneratedAvatar = profile?.preferences?.useGeneratedAvatar ?? user.useGeneratedAvatar ?? true;
 
     const displayName = firstName && lastName
