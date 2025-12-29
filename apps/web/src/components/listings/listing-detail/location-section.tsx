@@ -72,11 +72,8 @@ export function LocationSection({ sellerData, className }: LocationSectionProps)
     : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(locationData.address || locationString)}`;
 
   return (
-    <div className={cn(
-      "p-4 bg-card border border-border/40 rounded-2xl space-y-3",
-      className
-    )}>
-      <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
+    <div className={cn("space-y-4", className)}>
+      <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground">
         Location
       </p>
 
@@ -85,14 +82,13 @@ export function LocationSection({ sellerData, className }: LocationSectionProps)
         <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" />
         <div className="space-y-0.5">
           {sellerData.type === 'partner' && locationData.address && (
-            <p className="text-sm font-medium tracking-tight text-foreground">{locationData.address}</p>
+            <p className="text-sm font-medium text-foreground">{locationData.address}</p>
           )}
           {locationString && (
             <p className={cn(
-              "text-xs",
               sellerData.type === 'partner' && locationData.address
-                ? "text-muted-foreground/70"
-                : "text-sm font-medium tracking-tight text-foreground"
+                ? "text-sm text-muted-foreground"
+                : "text-sm font-medium text-foreground"
             )}>
               {locationString}
             </p>
@@ -106,18 +102,18 @@ export function LocationSection({ sellerData, className }: LocationSectionProps)
           href={mapsSearchUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 py-2 px-3 text-xs font-medium tracking-tight text-foreground border border-border/40 rounded-full hover:bg-secondary/50 transition-colors flex items-center justify-center gap-1.5"
+          className="flex-1 py-2.5 px-3 text-sm font-medium text-foreground border border-border rounded-full hover:bg-muted/50 transition-colors flex items-center justify-center gap-1.5"
         >
-          <ExternalLink className="w-3 h-3" />
+          <ExternalLink className="w-3.5 h-3.5" />
           View Map
         </a>
         <a
           href={directionsUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 py-2 px-3 text-xs font-medium tracking-tight text-foreground border border-border/40 rounded-full hover:bg-secondary/50 transition-colors flex items-center justify-center gap-1.5"
+          className="flex-1 py-2.5 px-3 text-sm font-medium text-foreground border border-border rounded-full hover:bg-muted/50 transition-colors flex items-center justify-center gap-1.5"
         >
-          <Navigation className="w-3 h-3" />
+          <Navigation className="w-3.5 h-3.5" />
           Directions
         </a>
       </div>

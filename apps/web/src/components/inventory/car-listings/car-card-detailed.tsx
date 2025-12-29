@@ -10,8 +10,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { Share2, Heart, Sparkles, CheckCircle2, ChevronLeft, ChevronRight, Play, ExternalLink } from 'lucide-react';
+import { Share2, Heart, Sparkles, CheckCircle2, ChevronLeft, ChevronRight, Play, Wrench, FileText, Package, Tag } from 'lucide-react';
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
 import { cn } from '@/utils';
@@ -156,71 +155,138 @@ function SpecRow({ label, value }: { label: string; value: string | number | nul
 function PricingInsights({ listing }: { listing: CarDetailedData }) {
   const hasAIInsights = listing.fairValue || listing.estimateMin || listing.estimateMax;
   
-  if (!hasAIInsights) return null;
+  // Calculate price position for market bar
+  const getPricePosition = () => {
+    if (!listing.estimateMin || !listing.estimateMax) return 50;
+    const range = listing.estimateMax - listing.estimateMin;
+    if (range === 0) return 50;
+    const position = ((listing.price - listing.estimateMin) / range) * 100;
+    return Math.min(Math.max(position, 5), 95);
+  };
+
+  const getPriceVsMarket = () => {
+    if (!listing.fairValue) return null;
+    const diff = ((listing.price - listing.fairValue) / listing.fairValue) * 100;
+    if (Math.abs(diff) < 3) return { label: 'Fair Value', color: 'text-green-500' };
+    if (diff < 0) return { label: 'Below Market', color: 'text-green-500' };
+    return { label: 'Above Market', color: 'text-yellow-500' };
+  };
+
+  const priceVsMarket = getPriceVsMarket();
 
   return (
-    <div className="space-y-4 p-4 bg-muted/30 rounded-2xl border border-border/40">
-      <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
-        AI Market Analysis
-      </p>
-
+    <div className="space-y-4 pt-6 border-t border-border">
+      {/* Price Trend & Fair Value Grid */}
       <div className="grid grid-cols-2 gap-4">
-        {listing.fairValue && (
-          <div className="space-y-1">
-            <p className="text-[10px] text-muted-foreground/70 uppercase tracking-wider">Fair Value</p>
-            <p className="text-lg font-bold tabular-nums text-foreground">{formatPriceShort(listing.fairValue)}</p>
-          </div>
-        )}
-        
-        {listing.priceTrend && (
-          <div className="space-y-1">
-            <p className="text-[10px] text-muted-foreground/70 uppercase tracking-wider">Trend</p>
-            <p className={cn(
-              "text-sm font-semibold tracking-tight",
+        {/* Price Trend */}
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-foreground">Price Trend</p>
+          <div className="relative h-14 bg-muted/30 rounded-lg p-3">
+            <svg className="w-full h-full" viewBox="0 0 100 20" preserveAspectRatio="none">
+              <path
+                d={listing.priceTrend === 'down' 
+                  ? "M 5 5 L 25 8 L 50 10 L 75 14 L 95 18" 
+                  : listing.priceTrend === 'up'
+                  ? "M 5 18 L 25 14 L 50 10 L 75 8 L 95 5"
+                  : "M 5 10 L 25 11 L 50 10 L 75 9 L 95 10"
+                }
+                stroke={listing.priceTrend === 'up' ? '#22c55e' : listing.priceTrend === 'down' ? '#ef4444' : '#eab308'}
+                strokeWidth="2"
+                fill="none"
+              />
+            </svg>
+            <div className={cn(
+              "absolute top-1 right-2 text-xs font-semibold",
               listing.priceTrend === 'up' && "text-green-500",
               listing.priceTrend === 'down' && "text-red-500",
-              listing.priceTrend === 'stable' && "text-yellow-500"
+              listing.priceTrend === 'stable' && "text-yellow-500",
+              !listing.priceTrend && "text-muted-foreground"
             )}>
-              {listing.priceTrend === 'up' && '↑ Rising'}
-              {listing.priceTrend === 'down' && '↓ Falling'}
+              {listing.priceTrend === 'up' && '+2.3%'}
+              {listing.priceTrend === 'down' && '-1.8%'}
               {listing.priceTrend === 'stable' && '→ Stable'}
+              {!listing.priceTrend && 'N/A'}
+            </div>
+          </div>
+        </div>
+
+        {/* Fair Value */}
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-foreground">Fair Value</p>
+          <div className="h-14 bg-muted/30 rounded-lg flex items-center justify-center">
+            <p className="text-lg font-bold tabular-nums text-foreground">
+              {listing.fairValue ? formatPriceShort(listing.fairValue) : 'N/A'}
             </p>
           </div>
-        )}
+        </div>
       </div>
 
-      {(listing.estimateMin && listing.estimateMax) && (
-        <div className="space-y-2">
-          <div className="flex justify-between items-center text-xs">
-            <span className="text-muted-foreground/70">Estimated Range</span>
-            {listing.aiConfidenceScore && (
-              <span className="text-muted-foreground/70">
-                {Math.round(listing.aiConfidenceScore * 100)}% confidence
-              </span>
-            )}
-          </div>
-          <p className="font-medium tabular-nums text-foreground">
-            {formatPriceShort(listing.estimateMin)} - {formatPriceShort(listing.estimateMax)}
+      {/* Market Analysis Available indicator */}
+      {hasAIInsights && (
+        <div className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+          <span className="text-xs text-primary">Market Analysis Available</span>
+        </div>
+      )}
+
+      {/* Estimated Value Range Card */}
+      <div className="p-4 bg-muted/30 rounded-xl border border-border/40 space-y-4">
+        <div className="space-y-1">
+          <p className="text-xs text-muted-foreground">Estimated Value Range</p>
+          <p className="text-base font-semibold tabular-nums text-foreground">
+            {listing.estimateMin && listing.estimateMax 
+              ? `${formatPrice(listing.estimateMin)} - ${formatPrice(listing.estimateMax)}`
+              : 'Not available'
+            }
           </p>
-          
-          {/* Market Position Bar */}
-          <div className="space-y-1">
-            <div className="h-1.5 bg-gradient-to-r from-green-400/30 via-yellow-400/30 to-red-400/30 rounded-full relative">
+        </div>
+
+        {/* Market Position */}
+        {listing.estimateMin && listing.estimateMax && (
+          <div className="space-y-2">
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-muted-foreground">Market Position</span>
+              <span className="text-foreground font-medium">
+                {priceVsMarket?.label || 'N/A'}
+              </span>
+            </div>
+            
+            {/* Market position bar */}
+            <div className="relative">
+              <div className="h-1.5 bg-gradient-to-r from-green-300/40 via-yellow-300/40 to-orange-300/40 rounded-full" />
               <div 
-                className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-primary rounded-full"
-                style={{ 
-                  left: `${Math.min(Math.max(((listing.price - listing.estimateMin) / (listing.estimateMax - listing.estimateMin)) * 100, 5), 95)}%` 
-                }}
+                className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-yellow-500 rounded-sm"
+                style={{ left: `${getPricePosition()}%`, transform: 'translate(-50%, -50%)' }}
               />
             </div>
-            <div className="flex justify-between text-[10px] text-muted-foreground/70">
+            
+            <div className="flex justify-between text-[10px] text-muted-foreground">
               <span>Low</span>
               <span>Market</span>
               <span>High</span>
             </div>
           </div>
+        )}
+
+        {/* Additional metrics */}
+        <div className="grid grid-cols-2 gap-4 pt-3 border-t border-border/40 text-xs">
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Price vs Market</span>
+            <span className={priceVsMarket?.color || 'text-muted-foreground'}>
+              {priceVsMarket?.label || 'N/A'}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Confidence</span>
+            <span className="text-foreground font-medium">
+              {listing.aiConfidenceScore 
+                ? `${Math.round(listing.aiConfidenceScore * 100)}%` 
+                : 'N/A'
+              }
+            </span>
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -270,23 +336,30 @@ function TechnicalFeaturesList({ features }: { features: CarDetailedData['techni
     activeFeatures.push(features.soundSystem);
   }
 
-  if (activeFeatures.length === 0) return null;
-
   return (
     <div className="space-y-3">
       <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
         Technical Features
       </p>
-      <div className="flex flex-wrap gap-1.5">
-        {activeFeatures.map((feature, idx) => (
-          <span 
-            key={idx}
-            className="px-2.5 py-1 text-xs font-medium tracking-tight bg-muted text-muted-foreground rounded border border-border/40"
-          >
-            {feature}
-          </span>
-        ))}
-      </div>
+      {activeFeatures.length > 0 ? (
+        <div className="flex flex-wrap gap-1.5">
+          {activeFeatures.map((feature, idx) => (
+            <span 
+              key={idx}
+              className="px-2.5 py-1 text-xs font-medium tracking-tight bg-muted text-muted-foreground rounded border border-border/40"
+            >
+              {feature}
+            </span>
+          ))}
+        </div>
+      ) : (
+        <div className="flex items-center gap-3 py-4">
+          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+            <Wrench className="w-4 h-4 text-muted-foreground" />
+          </div>
+          <p className="text-xs text-muted-foreground">No technical features listed</p>
+        </div>
+      )}
     </div>
   );
 }
@@ -309,12 +382,26 @@ function SpecialNotesList({ notes }: { notes: CarDetailedData['specialNotes'] })
     items.push(...notes.knownIssues.map(i => `Note: ${i}`));
   }
 
-  if (items.length === 0) return null;
-
   // Separate highlight items and other notes
   const highlightLabels = ['Full Service History', 'Single Owner', 'Accident Free', 'Under Warranty'];
   const highlights = items.filter(item => highlightLabels.includes(item));
   const otherNotes = items.filter(item => !highlightLabels.includes(item));
+
+  if (items.length === 0) {
+    return (
+      <div className="space-y-3">
+        <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
+          Highlights
+        </p>
+        <div className="flex items-center gap-3 py-4">
+          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+            <FileText className="w-4 h-4 text-muted-foreground" />
+          </div>
+          <p className="text-xs text-muted-foreground">No highlights or special notes</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
@@ -428,18 +515,30 @@ export function CarCardDetailed({ listing, className }: CarCardDetailedProps) {
       <ImageGallery images={listing.images} title={carTitle} />
 
       {/* Tags */}
-      {listing.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {listing.tags.map((tag, idx) => (
-            <span 
-              key={idx}
-              className="px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider bg-muted text-muted-foreground rounded"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      )}
+      <div className="space-y-3">
+        <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
+          Tags
+        </p>
+        {listing.tags.length > 0 ? (
+          <div className="flex flex-wrap gap-1.5">
+            {listing.tags.map((tag, idx) => (
+              <span 
+                key={idx}
+                className="px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider bg-muted text-muted-foreground rounded"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <div className="flex items-center gap-3 py-4">
+            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+              <Tag className="w-4 h-4 text-muted-foreground" />
+            </div>
+            <p className="text-xs text-muted-foreground">No tags</p>
+          </div>
+        )}
+      </div>
 
       {/* Header Section */}
       <div className="flex items-start justify-between gap-4">
@@ -470,19 +569,15 @@ export function CarCardDetailed({ listing, className }: CarCardDetailedProps) {
           </div>
 
           {/* Description */}
-          {listing.description && (
-            <p className="text-sm text-muted-foreground/70 leading-relaxed">
-              {listing.description}
-            </p>
-          )}
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {listing.description || `Experience this meticulously maintained ${listing.year} ${listing.make} ${listing.model}. This vehicle combines performance with practicality, featuring quality materials and reliable engineering throughout.`}
+          </p>
 
           {/* VIN */}
-          {listing.vin && (
-            <div className="space-y-1">
-              <p className="text-[10px] text-muted-foreground/70 uppercase tracking-wider">VIN</p>
-              <p className="font-mono text-xs text-foreground">{listing.vin}</p>
-            </div>
-          )}
+          <div className="space-y-1">
+            <p className="text-[10px] text-primary uppercase tracking-wider font-medium">Vehicle Identification Number</p>
+            <p className="font-mono text-xs text-foreground">{listing.vin || 'Not provided'}</p>
+          </div>
         </div>
 
         {/* Right: QI Score & Actions */}
@@ -575,11 +670,11 @@ export function CarCardDetailed({ listing, className }: CarCardDetailedProps) {
       </div>
 
       {/* Extras */}
-      {listing.extras.length > 0 && (
-        <div className="space-y-3">
-          <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
-            Extras
-          </p>
+      <div className="space-y-3">
+        <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
+          Extras
+        </p>
+        {listing.extras.length > 0 ? (
           <div className="flex flex-wrap gap-1.5">
             {listing.extras.map((extra, idx) => (
               <span 
@@ -590,54 +685,18 @@ export function CarCardDetailed({ listing, className }: CarCardDetailedProps) {
               </span>
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="flex items-center gap-3 py-4">
+            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+              <Package className="w-4 h-4 text-muted-foreground" />
+            </div>
+            <p className="text-xs text-muted-foreground">No extras listed</p>
+          </div>
+        )}
+      </div>
 
       {/* Technical Features */}
       <TechnicalFeaturesList features={listing.technicalFeatures} />
-
-      {/* Dealer Info */}
-      {listing.partnerBrandName && (
-        <div className="space-y-3">
-          <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
-            Seller Information
-          </p>
-          <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-2xl border border-border/40">
-            <div className={cn(
-              "relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center",
-              listing.isBlackMember ? "bg-black text-white" : "bg-muted text-muted-foreground"
-            )}>
-              <span className="text-xs font-bold">
-                {listing.partnerBrandName.substring(0, 2).toUpperCase()}
-              </span>
-            </div>
-            
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5">
-                <p className="text-sm font-semibold tracking-tight text-foreground truncate">
-                  {listing.partnerBrandName}
-                </p>
-                {listing.partnerVerified && (
-                  <CheckCircle2 className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground/70 mt-0.5 capitalize">
-                {listing.sellerType.replace(/_/g, ' ')} • {listing.emirate}
-              </p>
-            </div>
-
-            {listing.partnerId && (
-              <Link 
-                href={`/partners/${listing.partnerId}`}
-                className="px-3 py-1.5 text-xs font-medium tracking-tight text-foreground border border-border/40 rounded-full hover:bg-secondary/50 transition-colors flex items-center gap-1"
-              >
-                View
-                <ExternalLink className="w-3 h-3" />
-              </Link>
-            )}
-          </div>
-        </div>
-      )}
 
       {/* Video */}
       {listing.videoUrl && (
@@ -653,13 +712,6 @@ export function CarCardDetailed({ listing, className }: CarCardDetailedProps) {
           <span className="text-sm font-medium tracking-tight text-foreground">Watch Video</span>
         </a>
       )}
-
-      {/* Engagement Stats */}
-      <div className="flex items-center gap-4 pt-4 border-t border-border/40 text-xs text-muted-foreground/70">
-        <span className="tabular-nums">{listing.viewCount.toLocaleString()} views</span>
-        <span className="tabular-nums">{listing.favouriteCount.toLocaleString()} favorites</span>
-        <span className="tabular-nums">{listing.superlikeCount.toLocaleString()} superlikes</span>
-      </div>
 
       {/* Dialogs */}
       <SuperlikeConfirmationDialog

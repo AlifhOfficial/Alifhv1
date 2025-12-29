@@ -16,11 +16,10 @@ import { CarCardDetailed } from '@/components/inventory';
 import { BookingModal } from '@/components/features/bookings/shared';
 import { SellerProfileCard } from './seller-profile-card';
 import { ContactSection } from './contact-section';
-import { BookingSection } from './booking-section';
 import { EMICalculator } from './emi-calculator';
 import { LocationSection } from './location-section';
 import { ListingTimestamp } from './listing-timestamp';
-import { ChevronLeft, AlertTriangle, Loader2 } from 'lucide-react';
+import { ChevronLeft, AlertTriangle, Loader2, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -51,7 +50,7 @@ export function ListingDetailView({ listingId, currentUserId, currentUserRole }:
       <div className="min-h-screen bg-background">
         <Navbar />
         <main className="pt-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex items-center justify-center min-h-[400px]">
               <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
             </div>
@@ -67,7 +66,7 @@ export function ListingDetailView({ listingId, currentUserId, currentUserRole }:
       <div className="min-h-screen bg-background">
         <Navbar />
         <main className="pt-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
               <h1 className="text-2xl font-semibold text-foreground mb-2">Listing Not Found</h1>
               <p className="text-muted-foreground mb-6">This listing may have been removed or is no longer available.</p>
@@ -95,7 +94,7 @@ export function ListingDetailView({ listingId, currentUserId, currentUserRole }:
         <div className="min-h-screen bg-background">
           <Navbar />
           <main className="pt-20">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
               <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
                 <h1 className="text-2xl font-semibold text-foreground mb-2">Listing Not Available</h1>
                 <p className="text-muted-foreground mb-6">This listing is not currently public.</p>
@@ -168,7 +167,7 @@ export function ListingDetailView({ listingId, currentUserId, currentUserRole }:
       <main className="pt-20">
         {/* Breadcrumb - Clean, minimal */}
         <div className="border-b border-border/40">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
             <Link 
               href="/listings" 
               className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors tracking-tight"
@@ -180,22 +179,22 @@ export function ListingDetailView({ listingId, currentUserId, currentUserRole }:
         </div>
 
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-            {/* Main Column - Car Details */}
-            <div className="lg:col-span-2">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10">
+            {/* Main Column - Car Details (60%) */}
+            <div className="lg:col-span-3">
               <CarCardDetailed listing={listing} />
             </div>
 
-            {/* Sidebar - Clean stacked cards */}
-            <div className="lg:col-span-1">
-              <div className="sticky top-24 space-y-4">
+            {/* Sidebar - Clean stacked cards (40%) */}
+            <div className="lg:col-span-2">
+              <div className="sticky top-24 space-y-6">
                 {/* 1. Seller Profile */}
                 {hasSellerData && sellerData && (
                   <SellerProfileCard sellerData={sellerData} />
                 )}
 
-                {/* 2. Contact Section - Primary action */}
+                {/* 2. Actions Section - Contact + Booking combined */}
                 {hasSellerData && sellerData && (
                   <ContactSection
                     sellerData={sellerData}
@@ -205,40 +204,42 @@ export function ListingDetailView({ listingId, currentUserId, currentUserRole }:
                     partnerId={listing.partnerId}
                     onStartChat={handleChatWithSeller}
                     isStartingChat={isStartingChat}
-                  />
-                )}
-
-                {/* 3. Booking Section (Partner listings only) */}
-                {isDealerListing && (
-                  <BookingSection
+                    showBooking={isDealerListing}
                     onBookTestDrive={() => setIsBookingModalOpen(true)}
                     partnerName={listing.partnerBrandName || 'Dealer'}
                   />
                 )}
 
-                {/* 4. Listing Timestamp */}
+                {/* 3. Listing Timestamp */}
                 <ListingTimestamp
                   createdAt={listing.createdAt}
                   updatedAt={listing.updatedAt}
                   publishedAt={listing.publishedAt}
                 />
 
-                {/* 5. EMI Calculator */}
+                {/* 4. EMI Calculator */}
                 <EMICalculator
                   price={listing.price}
                   currency={listing.currency}
                 />
 
-                {/* 6. Location */}
+                {/* 5. Location */}
                 {hasSellerData && sellerData && (
                   <LocationSection sellerData={sellerData} />
                 )}
 
-                {/* Safety Note - Minimal, muted design following design system */}
-                <div className="p-4 bg-muted/30 border border-border/40 rounded-xl flex items-start gap-3">
-                  <AlertTriangle className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    <span className="font-medium text-foreground">Safety Tip:</span> Meet in public places and verify the vehicle before payment.
+                {/* Safety Note */}
+                <div className="py-4 border-t border-border flex items-start gap-3">
+                  {isDealerListing ? (
+                    <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                  ) : (
+                    <AlertTriangle className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" />
+                  )}
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {isDealerListing 
+                      ? 'We trust this dealer as a respected partner of Alifh.'
+                      : <><span className="font-medium text-foreground">Safety Tip:</span> Meet in public places and verify the vehicle before payment.</>
+                    }
                   </p>
                 </div>
               </div>
