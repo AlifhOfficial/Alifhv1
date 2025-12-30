@@ -9,6 +9,9 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/providers/auth-provider';
+import { queryKeys } from '@/lib/query-keys';
+import { CACHE_BEHAVIORS } from '@/lib/cache-config';
+import { invalidateUserData } from '@/lib/cache-patterns';
 
 // ============================================================================
 // Types

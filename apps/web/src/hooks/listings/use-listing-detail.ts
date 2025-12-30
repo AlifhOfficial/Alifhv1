@@ -13,6 +13,8 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/query-keys';
+import { CACHE_STALE_TIME } from '@/lib/cache-config';
 import type { CarDetailedData } from '@alifh/database';
 
 // ============================================================================

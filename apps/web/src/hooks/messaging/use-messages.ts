@@ -8,6 +8,8 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useWebSocket } from './use-websocket';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { queryKeys } from '@/lib/query-keys';
+import { CACHE_STALE_TIME } from '@/lib/cache-config';
 
 // ============================================================================
 // Types
@@ -94,11 +96,11 @@ export function useMessages(conversationId: string, userId?: string, options: Us
 
   // Query
   const query = useInfiniteQuery({
-    queryKey: ['messages', conversationId],
+    queryKey: queryKeys.messaging.messages(conversationId),
     queryFn: ({ pageParam }) => fetchMessages(conversationId, pageParam),
     getNextPageParam: (page) => page.nextCursor,
     initialPageParam: undefined as string | undefined,
-    staleTime: 5 * 60 * 1000,
+    staleTime: CACHE_STALE_TIME.LONG,
     enabled: !!conversationId && !!userId,
   });
 

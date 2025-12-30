@@ -8,6 +8,8 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/query-keys';
+import { CACHE_STALE_TIME } from '@/lib/cache-config';
 
 // ============================================================================
 // Types

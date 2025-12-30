@@ -8,6 +8,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useWebSocket } from './use-websocket';
 import { useEffect } from 'react';
+import { queryKeys } from '@/lib/query-keys';
+import { CACHE_STALE_TIME } from '@/lib/cache-config';
+import { invalidateQueries, updateCache } from '@/lib/cache-patterns';
 
 // ============================================================================
 // Types
@@ -106,9 +109,9 @@ export function useConversations(options: UseConversationsOptions = {}) {
   const { subscribe } = useWebSocket();
 
   const query = useQuery({
-    queryKey: ['conversations', options],
+    queryKey: queryKeys.messaging.conversations(options),
     queryFn: () => fetchConversations(options.scope),
-    staleTime: 5 * 60 * 1000,
+    staleTime: CACHE_STALE_TIME.LONG,
     enabled: !!options.userId,
   });
 
