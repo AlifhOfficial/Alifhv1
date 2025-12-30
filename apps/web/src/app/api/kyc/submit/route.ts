@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { createKycRecord } from "@alifh/database";
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_KYC } from '@/lib/rate-limit';
 
 export const runtime = "nodejs";
 
@@ -13,11 +14,20 @@ const KYCSubmitSchema = z.object({
   selfieUrl: z.string().url('Selfie URL must be a valid URL'),
 });
 
+const kycSubmitLimiter = createRateLimiter(RATE_LIMITS_KYC.SUBMIT);
+
 export async function POST(req: NextRequest) {
   try {
     const user = await getSessionUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limiting: 5 KYC submissions per day
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await kycSubmitLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const body = await req.json().catch(() => null);

@@ -10,6 +10,16 @@ import {
   getConversation,
   updateConversationSettings,
 } from '@alifh/database/server';
+import {
+  createRateLimiter,
+  getIdentifier,
+  rateLimitResponse,
+  RATE_LIMITS_GENERAL,
+  RATE_LIMITS_MESSAGING,
+} from '@/lib/rate-limit';
+
+const readLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
+const updateLimiter = createRateLimiter(RATE_LIMITS_MESSAGING.READ_RECEIPT);
 
 export const runtime = 'nodejs';
 
@@ -29,6 +39,13 @@ export async function GET(
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    // Rate limit by user
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await readLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const { id } = await params;
@@ -72,6 +89,13 @@ export async function PATCH(
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    // Rate limit by user
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await updateLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const { id } = await params;

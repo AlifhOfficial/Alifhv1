@@ -20,6 +20,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUser } from '@/lib/auth/session-context';
 import { updateUserProfileByUserId } from "@alifh/database";
+import {
+  createRateLimiter,
+  getIdentifier,
+  rateLimitResponse,
+} from '@/lib/rate-limit';
+
+// Very restrictive - 1 per day (prevent accidents/abuse)
+const deleteAccountLimiter = createRateLimiter({
+  windowSeconds: 24 * 60 * 60, // 1 day
+  maxRequests: 1,
+  keyPrefix: 'delete-account',
+  description: 'Account deletion requests',
+});
 
 export const runtime = "nodejs";
 
@@ -28,6 +41,13 @@ export async function POST(req: NextRequest) {
     const user = await getSessionUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limit by user
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await deleteAccountLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const deletionDate = new Date();

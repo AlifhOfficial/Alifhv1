@@ -17,12 +17,15 @@ import {
   memoryCache,
   type BookingStatus,
 } from '@alifh/database';
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_BOOKINGS } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
 const BOOKING_MAINTENANCE_TTL_SECONDS = 300;
 const PARTNER_BOOKING_STATS_TTL_SECONDS = 15;
 const BOOKINGS_LIST_TTL_SECONDS = 5; // Short TTL for list freshness
+
+const bookingManageLimiter = createRateLimiter(RATE_LIMITS_BOOKINGS.MANAGE);
 
 /**
  * GET /api/bookings/manage

@@ -9,6 +9,15 @@ import {
   rejectKycRecord,
   type KycStatus 
 } from "@alifh/database";
+import {
+  createRateLimiter,
+  getIdentifier,
+  rateLimitResponse,
+  RATE_LIMITS_ADMIN,
+} from '@/lib/rate-limit';
+
+const kycListLimiter = createRateLimiter(RATE_LIMITS_ADMIN.LIST);
+const kycActionLimiter = createRateLimiter(RATE_LIMITS_ADMIN.OPS);
 
 export const runtime = "nodejs";
 export const revalidate = 30; // Cache for 30s - admin data changes infrequently
@@ -25,6 +34,13 @@ export async function GET(req: NextRequest) {
     const currentUser = await getSessionUser();
     if (!currentUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limit by user
+    const identifier = getIdentifier(req, currentUser.id);
+    const rateLimitResult = await kycListLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const { searchParams } = new URL(req.url);
@@ -87,6 +103,13 @@ export async function PATCH(req: NextRequest) {
     const currentUser = await getSessionUser();
     if (!currentUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limit by user
+    const identifier = getIdentifier(req, currentUser.id);
+    const rateLimitResult = await kycActionLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const body = await req.json().catch(() => null);

@@ -24,6 +24,7 @@ import { z } from 'zod';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { sendOTP, generateOTP, isValidPhoneNumber } from "@/lib/otp-service";
 import { otpStore } from "@/lib/otp-store";
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_AUTH } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -31,11 +32,20 @@ const SendOTPSchema = z.object({
   phoneNumber: z.string().regex(/^\+[1-9]\d{1,14}$/, 'Phone number must be in E.164 format (e.g., +971501234567)'),
 });
 
+const otpLimiter = createRateLimiter(RATE_LIMITS_AUTH.PHONE_OTP);
+
 export async function POST(req: NextRequest) {
   try {
     const user = await getSessionUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limiting: 3 OTP requests per hour (SMS is expensive)
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await otpLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const body = await req.json().catch(() => null);

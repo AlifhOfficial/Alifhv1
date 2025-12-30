@@ -22,6 +22,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from 'zod';
 import { uploadFile } from "@/lib/storage";
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 
 export const runtime = "edge";
 
@@ -32,7 +33,15 @@ const FileUploadSchema = z.object({
   cacheControl: z.string().optional(),
 });
 
+const uploadLimiter = createRateLimiter(RATE_LIMITS_STORAGE.UPLOAD_GENERAL);
+
 export async function POST(req: NextRequest) {
+  // Rate limiting: 50 uploads per hour per IP
+  const identifier = getIdentifier(req);
+  const rateLimitResult = await uploadLimiter.check(identifier);
+  if (!rateLimitResult.success) {
+    return rateLimitResponse(rateLimitResult);
+  }
   try {
     const formData = await req.formData();
     const file = formData.get("file");

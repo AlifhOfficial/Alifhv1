@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { autoMatchConsignment } from '@/lib/consignment/auto-match';
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_CONSIGNMENT } from '@/lib/rate-limit';
+
+const consignmentMatchLimiter = createRateLimiter(RATE_LIMITS_CONSIGNMENT.MATCH);
 
 /**
  * POST /api/consignment/match
@@ -15,6 +18,12 @@ import { autoMatchConsignment } from '@/lib/consignment/auto-match';
  * @body { listingId: string }
  */
 export async function POST(req: NextRequest) {
+  // Rate limiting: 10 AI match requests per hour (expensive operation)
+  const identifier = getIdentifier(req);
+  const rateLimitResult = await consignmentMatchLimiter.check(identifier);
+  if (!rateLimitResult.success) {
+    return rateLimitResponse(rateLimitResult);
+  }
   try {
     const { listingId } = await req.json();
 

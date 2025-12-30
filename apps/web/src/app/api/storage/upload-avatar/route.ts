@@ -26,6 +26,7 @@ import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
 import { uploadFile } from "@/lib/storage";
 import { getSessionUser } from "@/lib/auth/session-context";
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 
 export const runtime = "nodejs"; // Sharp requires Node.js runtime
 
@@ -34,6 +35,8 @@ const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 const OUTPUT_SIZE = 512; // Max dimension
 const OUTPUT_QUALITY = 80; // WebP quality
 
+const avatarUploadLimiter = createRateLimiter(RATE_LIMITS_STORAGE.UPLOAD_AVATAR);
+
 export async function POST(req: NextRequest) {
   try {
     // Require authentication
@@ -41,6 +44,13 @@ export async function POST(req: NextRequest) {
     console.log("[upload-avatar] User:", user?.id);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limiting: 5 avatar uploads per hour
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await avatarUploadLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const formData = await req.formData();

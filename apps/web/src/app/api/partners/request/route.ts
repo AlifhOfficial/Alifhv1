@@ -31,6 +31,7 @@ import {
   getActivePartnerStaffMembershipByUserId,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_PARTNER } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -39,6 +40,8 @@ const CACHE_HEADERS_NO_CACHE = {
   'Cache-Control': 'no-store, no-cache, must-revalidate, private',
   'Pragma': 'no-cache',
 } as const;
+
+const partnerRequestLimiter = createRateLimiter(RATE_LIMITS_PARTNER.REQUEST_SUBMIT);
 
 // ============================================================================
 // Validation Schemas
@@ -67,6 +70,13 @@ export async function POST(req: NextRequest) {
         error: 'Please sign in to submit a partner application',
         requiresAuth: true 
       }, { status: 401 });
+    }
+
+    // Rate limiting: 3 partner applications per day
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await partnerRequestLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     // Parse and validate input

@@ -6,6 +6,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { getTotalUnreadCount } from '@alifh/database/server';
+import {
+  createRateLimiter,
+  getIdentifier,
+  rateLimitResponse,
+  RATE_LIMITS_GENERAL,
+} from '@/lib/rate-limit';
+
+const unreadLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
 
 export const runtime = 'nodejs';
 
@@ -22,6 +30,13 @@ export async function GET(req: NextRequest) {
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    // Rate limit by user
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await unreadLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const unreadCount = await getTotalUnreadCount(user.id);

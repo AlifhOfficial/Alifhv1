@@ -21,6 +21,14 @@ import {
   isTradeLicenseInUse,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
+import {
+  createRateLimiter,
+  getIdentifier,
+  rateLimitResponse,
+  RATE_LIMITS_PARTNER,
+} from '@/lib/rate-limit';
+
+const validateLimiter = createRateLimiter(RATE_LIMITS_PARTNER.REQUEST_SUBMIT);
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -51,6 +59,13 @@ export async function POST(req: NextRequest) {
         error: 'Unauthorized',
         requiresAuth: true 
       }, { status: 401 });
+    }
+
+    // Rate limit by user
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await validateLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     // Parse and validate input

@@ -31,8 +31,12 @@ import {
 import { memoryCache } from '@alifh/database';
 import { autoMatchConsignment } from '@/lib/consignment/auto-match';
 import { getClientIp } from '@/lib/utils/get-client-ip';
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_LISTINGS } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
+
+const listingUpdateLimiter = createRateLimiter(RATE_LIMITS_LISTINGS.UPDATE);
+const listingDeleteLimiter = createRateLimiter(RATE_LIMITS_LISTINGS.DELETE);
 
 async function canManagePartnerListing(
   user: { id: string; partnerMemberships?: any[] },
@@ -57,6 +61,13 @@ export async function PUT(
     const user = await getSessionUser();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Rate limiting: 20 listing updates per hour
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await listingUpdateLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const { id } = await params;

@@ -4,6 +4,14 @@ import {
   getPartnerConsignmentLeads,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
+import {
+  createRateLimiter,
+  getIdentifier,
+  rateLimitResponse,
+  RATE_LIMITS_GENERAL,
+} from '@/lib/rate-limit';
+
+const leadsLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
 
 /**
  * GET /api/partner/consignment/leads
@@ -24,6 +32,13 @@ export async function GET(req: NextRequest) {
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    // Rate limit by user
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await leadsLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const membership = await getActivePartnerStaffMembershipByUserId(user.id);

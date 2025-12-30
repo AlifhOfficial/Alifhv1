@@ -14,6 +14,14 @@ import {
   getBookingVerificationContextByConfirmationToken,
   reportNoShow,
 } from '@alifh/database';
+import {
+  createRateLimiter,
+  getIdentifier,
+  rateLimitResponse,
+  RATE_LIMITS_PARTNER,
+} from '@/lib/rate-limit';
+
+const verifyLimiter = createRateLimiter(RATE_LIMITS_PARTNER.STAFF_OPERATIONS);
 
 export const runtime = 'nodejs';
 
@@ -22,6 +30,13 @@ export async function POST(req: NextRequest) {
     const user = await getSessionUser();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Rate limit by user
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await verifyLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const membership = user.partnerMemberships?.[0];

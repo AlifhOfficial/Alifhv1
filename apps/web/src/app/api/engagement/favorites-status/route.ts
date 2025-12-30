@@ -26,6 +26,14 @@ import {
   getFavoriteStatusForListings,
   getSuperlikeQuotaForUser,
 } from '@alifh/database';
+import {
+  createRateLimiter,
+  getIdentifier,
+  rateLimitResponse,
+  RATE_LIMITS_GENERAL,
+} from '@/lib/rate-limit';
+
+const statusLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -56,6 +64,13 @@ export async function GET(req: NextRequest) {
         response.headers.set(key, value)
       );
       return response;
+    }
+
+    // Rate limit by user (only for authenticated users)
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await statusLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     // Fetch all data in parallel (single round trip)

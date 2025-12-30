@@ -6,6 +6,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { getConversationParticipantsWithProfiles } from '@alifh/database/server';
+import {
+  createRateLimiter,
+  getIdentifier,
+  rateLimitResponse,
+  RATE_LIMITS_GENERAL,
+} from '@/lib/rate-limit';
+
+const participantsLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
 
 export const runtime = 'nodejs';
 
@@ -25,6 +33,13 @@ export async function GET(
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    // Rate limit by user
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await participantsLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const { id } = await params;

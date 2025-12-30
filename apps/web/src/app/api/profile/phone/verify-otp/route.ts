@@ -26,6 +26,7 @@ import { getSessionUser } from '@/lib/auth/session-context';
 import { isValidOTP } from "@/lib/otp-service";
 import { otpStore } from "@/lib/otp-store";
 import { updateUserPhoneVerified } from "@alifh/database";
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_AUTH } from '@/lib/rate-limit';
 
 export const runtime = "nodejs";
 
@@ -33,11 +34,20 @@ const VerifyOTPSchema = z.object({
   otp: z.string().regex(/^\d{6}$/, 'OTP must be a 6-digit code'),
 });
 
+const otpVerifyLimiter = createRateLimiter(RATE_LIMITS_AUTH.OTP_VERIFY);
+
 export async function POST(req: NextRequest) {
   try {
     const sessionUser = await getSessionUser();
     if (!sessionUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limiting: 5 OTP verification attempts per 10 minutes
+    const identifier = getIdentifier(req, sessionUser.id);
+    const rateLimitResult = await otpVerifyLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const body = await req.json().catch(() => null);

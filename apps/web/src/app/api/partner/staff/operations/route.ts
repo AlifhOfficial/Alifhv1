@@ -12,9 +12,12 @@ import {
   removeStaffMember,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_PARTNER } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+const staffOperationsLimiter = createRateLimiter(RATE_LIMITS_PARTNER.STAFF_OPERATIONS);
 
 const updateStaffSchema = z.object({
   operation: z.literal('update'),
@@ -62,6 +65,13 @@ export async function POST(req: NextRequest) {
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    // Rate limiting: 30 staff operations per hour
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await staffOperationsLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     if (!user.hasPartnerAccess || !user.partnerMemberships?.[0]) {

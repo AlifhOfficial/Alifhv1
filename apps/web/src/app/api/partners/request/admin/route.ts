@@ -26,6 +26,15 @@ import {
   createPartnerFromRequest,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
+import {
+  createRateLimiter,
+  getIdentifier,
+  rateLimitResponse,
+  RATE_LIMITS_ADMIN,
+} from '@/lib/rate-limit';
+
+const listLimiter = createRateLimiter(RATE_LIMITS_ADMIN.LIST);
+const reviewLimiter = createRateLimiter(RATE_LIMITS_ADMIN.OPS);
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -78,6 +87,13 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ 
         error: 'Forbidden: Admin access required' 
       }, { status: 403 });
+    }
+
+    // Rate limit by user
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await listLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const { searchParams } = new URL(req.url);
@@ -138,6 +154,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ 
         error: 'Forbidden: Admin access required' 
       }, { status: 403 });
+    }
+
+    // Rate limit by user
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await reviewLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     // Parse and validate input

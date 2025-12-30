@@ -11,8 +11,12 @@ import {
   getUserConversations,
   getTotalUnreadCount,
 } from '@alifh/database/server';
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_MESSAGING } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
+
+const fetchConversationsLimiter = createRateLimiter(RATE_LIMITS_MESSAGING.FETCH_MESSAGES);
+const createConversationLimiter = createRateLimiter(RATE_LIMITS_MESSAGING.CREATE_CONVERSATION);
 
 // ============================================================================
 // GET /api/conversations
@@ -27,6 +31,13 @@ export async function GET(req: NextRequest) {
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    // Rate limiting: 60 fetch requests per minute
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await fetchConversationsLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const { searchParams } = new URL(req.url);
@@ -91,6 +102,13 @@ export async function POST(req: NextRequest) {
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    // Rate limiting: 10 conversation creations per hour
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await createConversationLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const body = await req.json();

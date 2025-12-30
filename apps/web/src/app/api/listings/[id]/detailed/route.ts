@@ -24,6 +24,14 @@ import {
   getUserProfileByUserId 
 } from "@alifh/database";
 import { calculatePartnerStats } from "@alifh/database/server";
+import {
+  createRateLimiter,
+  getIdentifier,
+  rateLimitResponse,
+  RATE_LIMITS_GENERAL,
+} from '@/lib/rate-limit';
+
+const detailedLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_PUBLIC);
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -39,6 +47,13 @@ interface RouteParams {
 
 export async function GET(req: NextRequest, { params }: RouteParams) {
   try {
+    // Rate limit by IP (public endpoint)
+    const identifier = getIdentifier(req);
+    const rateLimitResult = await detailedLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
+    }
+
     const isProd = process.env.NODE_ENV === 'production';
 
     const { id } = await params;

@@ -32,9 +32,12 @@ import {
   adminDeletePartner,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_ADMIN } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+const adminPartnerOpsLimiter = createRateLimiter(RATE_LIMITS_ADMIN.PARTNER_OPERATIONS);
 
 const CACHE_HEADERS_NO_CACHE = {
   'Cache-Control': 'no-store, no-cache, must-revalidate, private',
@@ -129,6 +132,13 @@ export async function POST(req: NextRequest) {
         { error: 'Admin access required' },
         { status: 403 }
       );
+    }
+
+    // Rate limiting: 100 admin partner ops per minute
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await adminPartnerOpsLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const body = await req.json();

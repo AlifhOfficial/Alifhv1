@@ -30,11 +30,14 @@ import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
 import { uploadFile } from "@/lib/storage";
 import { getSessionUser } from "@/lib/auth/session-context";
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 
 export const runtime = "nodejs"; // Sharp requires Node.js runtime
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"];
 const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+
+const partnerImageLimiter = createRateLimiter(RATE_LIMITS_STORAGE.UPLOAD_PARTNER);
 
 // Image configuration by type
 const IMAGE_CONFIG = {
@@ -62,6 +65,13 @@ export async function POST(req: NextRequest) {
     const user = await getSessionUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limiting: 10 partner image uploads per hour
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await partnerImageLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const formData = await req.formData();

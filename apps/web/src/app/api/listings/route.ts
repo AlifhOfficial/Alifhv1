@@ -26,14 +26,11 @@ import {
   type CreateCarListingInput,
 } from '@alifh/database';
 import { getClientIp } from '@/lib/utils/get-client-ip';
-import { listingCreateRateLimiter, getRateLimitHeaders } from '@/lib/api/rate-limit';
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_LISTINGS } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
-// Rate limit config for listing creation
-// Regular users: 5 per day (spam prevention)
-// Staff/Partners: No limit (legitimate business operations like inventory onboarding)
-const RATE_LIMIT_MAX_REQUESTS = 5;
+const listingCreateLimiter = createRateLimiter(RATE_LIMITS_LISTINGS.CREATE);
 
 export async function POST(req: NextRequest) {
   try {
@@ -50,21 +47,12 @@ export async function POST(req: NextRequest) {
       user.role === 'super_admin' || 
       (user.partnerMemberships && user.partnerMemberships.length > 0);
 
-    // Rate limit check - only for regular users
+    // Rate limit check - only for regular users (5 listings per day)
     if (!isStaffOrAdmin) {
-      const rateLimit = listingCreateRateLimiter(user.id);
-      if (!rateLimit.allowed) {
-        return NextResponse.json(
-          { 
-            error: 'Rate limit exceeded',
-            message: `You can create up to ${RATE_LIMIT_MAX_REQUESTS} listings per day. Try again tomorrow.`,
-            retryAfter: Math.ceil((rateLimit.resetAt - Date.now()) / 1000),
-          },
-          { 
-            status: 429,
-            headers: getRateLimitHeaders(rateLimit, RATE_LIMIT_MAX_REQUESTS),
-          }
-        );
+      const identifier = getIdentifier(req, user.id);
+      const rateLimitResult = await listingCreateLimiter.check(identifier);
+      if (!rateLimitResult.success) {
+        return rateLimitResponse(rateLimitResult);
       }
     }
 

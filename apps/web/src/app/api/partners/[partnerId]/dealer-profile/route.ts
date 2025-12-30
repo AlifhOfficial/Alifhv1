@@ -30,6 +30,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getDealerBaseProfile, updateDealerBaseProfile } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
+import {
+  createRateLimiter,
+  getIdentifier,
+  rateLimitResponse,
+  RATE_LIMITS_GENERAL,
+  RATE_LIMITS_PARTNER,
+} from '@/lib/rate-limit';
+
+const readLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_PUBLIC);
+const updateLimiter = createRateLimiter(RATE_LIMITS_PARTNER.PROFILE_UPDATE);
 
 export const revalidate = 60; // Cache for 60 seconds
 
@@ -98,6 +108,13 @@ export async function GET(
 ) {
   const start = performance.now();
   try {
+    // Rate limit by IP (public endpoint)
+    const identifier = getIdentifier(request);
+    const rateLimitResult = await readLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
+    }
+
     const { partnerId } = await params;
 
     const queryStart = performance.now();
@@ -143,6 +160,13 @@ export async function PATCH(
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    // Rate limit by user
+    const identifier = getIdentifier(request, user.id);
+    const rateLimitResult = await updateLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const { partnerId } = await params;

@@ -8,6 +8,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getStaffProfile, updateStaffProfile } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
+import {
+  createRateLimiter,
+  getIdentifier,
+  rateLimitResponse,
+  RATE_LIMITS_GENERAL,
+  RATE_LIMITS_PARTNER,
+} from '@/lib/rate-limit';
+
+const readLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
+const updateLimiter = createRateLimiter(RATE_LIMITS_PARTNER.PROFILE_UPDATE);
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -20,6 +30,13 @@ export async function GET(req: NextRequest) {
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    // Rate limit by user
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await readLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     if (!user.hasPartnerAccess || !user.partnerMemberships?.[0]) {
@@ -68,6 +85,13 @@ export async function PATCH(req: NextRequest) {
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    // Rate limit by user
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await updateLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     if (!user.hasPartnerAccess || !user.partnerMemberships?.[0]) {

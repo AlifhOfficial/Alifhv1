@@ -5,6 +5,16 @@ import {
   updatePartnerConsignmentPreference,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
+import {
+  createRateLimiter,
+  getIdentifier,
+  rateLimitResponse,
+  RATE_LIMITS_GENERAL,
+  RATE_LIMITS_CONSIGNMENT,
+} from '@/lib/rate-limit';
+
+const readLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
+const updateLimiter = createRateLimiter(RATE_LIMITS_CONSIGNMENT.MATCH);
 
 /**
  * GET /api/partner/consignment/preferences
@@ -19,6 +29,13 @@ export async function GET(_req: NextRequest) {
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    // Rate limit by user
+    const identifier = getIdentifier(_req, user.id);
+    const rateLimitResult = await readLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const membership = await getActivePartnerStaffMembershipByUserId(user.id);
@@ -54,6 +71,13 @@ export async function PUT(req: NextRequest) {
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    // Rate limit by user
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await updateLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const membership = await getActivePartnerStaffMembershipByUserId(user.id);

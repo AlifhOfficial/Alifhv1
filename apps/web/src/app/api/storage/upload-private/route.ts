@@ -25,6 +25,7 @@ import { z } from 'zod';
 import sharp from "sharp";
 import { uploadPrivateFile } from "@/lib/storage";
 import { auth } from "@/lib/auth";
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 
 export const runtime = "nodejs"; // Sharp requires Node.js runtime
 
@@ -34,6 +35,8 @@ const FileUploadSchema = z.object({
   contentType: z.string().optional(),
 });
 
+const privateUploadLimiter = createRateLimiter(RATE_LIMITS_STORAGE.UPLOAD_PRIVATE);
+
 export async function POST(req: NextRequest) {
   try {
     // Verify authentication
@@ -41,6 +44,13 @@ export async function POST(req: NextRequest) {
     
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limiting: 20 private file uploads per hour
+    const identifier = getIdentifier(req, session.user.id);
+    const rateLimitResult = await privateUploadLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const formData = await req.formData();

@@ -25,9 +25,12 @@ import {
   updatePartnerProfile,
   type PartnerProfileUpdate,
 } from '@alifh/database';
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_PARTNER } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+const partnerProfileUpdateLimiter = createRateLimiter(RATE_LIMITS_PARTNER.PROFILE_UPDATE);
 
 /**
  * Attaches cache-busted URLs for logo and hero image
@@ -176,6 +179,13 @@ export async function PATCH(req: NextRequest) {
     const sessionUser = await getSessionUser();
     if (!sessionUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Rate limiting: 10 profile updates per hour
+    const identifier = getIdentifier(req, sessionUser.id);
+    const rateLimitResult = await partnerProfileUpdateLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
     
     // Get current profile to verify access and get partnerId

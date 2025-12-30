@@ -28,16 +28,17 @@
  * - Returns 500 for server errors
  * - Max 100 IDs per request
  * - Sorted by createdAt DESC
- * - Rate limited: 200 requests/min per IP
+ * - Rate limited: 300 requests/min per IP
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { memoryCache, CacheKeys, CacheTTL, getListingCards } from "@alifh/database";
-import { getClientIp } from "@/lib/utils/get-client-ip";
-import { listingBrowseRateLimiter, getRateLimitHeaders } from "@/lib/api/rate-limit";
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_LISTINGS } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+const listingBrowseLimiter = createRateLimiter(RATE_LIMITS_LISTINGS.BROWSE);
 export const revalidate = 0; // No ISR caching - rely on memory cache only
 
 // CDN caching for public feed - reduces origin hits significantly
@@ -52,8 +53,6 @@ const NO_CACHE_HEADERS = {
   'Cache-Control': 'private, no-cache, no-store, must-revalidate',
 } as const;
 
-const RATE_LIMIT_MAX_REQUESTS = 200;
-
 // Only log in development or for cache misses in production
 const DEBUG_LOGGING = process.env.NODE_ENV !== 'production';
 
@@ -61,17 +60,11 @@ export async function GET(req: NextRequest) {
   try {
     const isProd = process.env.NODE_ENV === 'production';
 
-    // Rate limiting for public endpoint
-    const clientIp = getClientIp(req) || 'unknown';
-    const rateLimit = listingBrowseRateLimiter(clientIp);
-    if (!rateLimit.allowed) {
-      return NextResponse.json(
-        { error: 'Rate limit exceeded. Please try again later.' },
-        { 
-          status: 429,
-          headers: getRateLimitHeaders(rateLimit, RATE_LIMIT_MAX_REQUESTS),
-        }
-      );
+    // Rate limiting: 300 browse requests per minute
+    const identifier = getIdentifier(req);
+    const rateLimitResult = await listingBrowseLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const { searchParams } = new URL(req.url);
@@ -157,7 +150,6 @@ export async function GET(req: NextRequest) {
         response.headers.set(key, value)
       );
       response.headers.set('X-Cache', 'HIT');
-      response.headers.set('X-RateLimit-Remaining', String(rateLimit.remaining));
       return response;
     }
 
@@ -206,7 +198,6 @@ export async function GET(req: NextRequest) {
     );
     response.headers.set('X-Cache', 'MISS');
     response.headers.set('X-Query-Time', `${queryTime.toFixed(2)}ms`);
-    response.headers.set('X-RateLimit-Remaining', String(rateLimit.remaining));
     
     return response;
   } catch (error) {

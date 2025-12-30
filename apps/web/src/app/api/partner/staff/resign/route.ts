@@ -9,6 +9,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { removeStaffMember, getActivePartnerStaffMembershipByUserId, invalidateUserSession } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
+import {
+  createRateLimiter,
+  getIdentifier,
+  rateLimitResponse,
+} from '@/lib/rate-limit';
+
+// 3 resign attempts per day - prevent abuse
+const resignLimiter = createRateLimiter({
+  windowSeconds: 24 * 60 * 60,
+  maxRequests: 3,
+  keyPrefix: 'staff:resign',
+  description: 'Staff resignation',
+});
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -25,6 +38,13 @@ export async function POST(req: NextRequest) {
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    // Rate limit by user
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await resignLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     // Get user's active staff membership

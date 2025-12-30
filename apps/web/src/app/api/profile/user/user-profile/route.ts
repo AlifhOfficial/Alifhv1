@@ -26,9 +26,12 @@ import { z } from 'zod';
 import { getUserProfileByUserId, updateUserProfileByUserId, ensureUserProfile, invalidateUserSession } from "@alifh/database";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { deleteFile } from "@/lib/storage";
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_GENERAL } from '@/lib/rate-limit';
 
 export const runtime = "nodejs";
 export const dynamic = 'force-dynamic';
+
+const profileUpdateLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
 
 const CACHE_HEADERS_PRIVATE = {
   'Cache-Control': 'private, max-age=3600, stale-while-revalidate=1800', // 1hr cache, 30min stale
@@ -125,6 +128,13 @@ export async function PATCH(req: NextRequest) {
         response.headers.set(key, value)
       );
       return response;
+    }
+
+    // Rate limiting: 60 profile operations per minute
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await profileUpdateLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const payload = await req.json().catch(() => null);

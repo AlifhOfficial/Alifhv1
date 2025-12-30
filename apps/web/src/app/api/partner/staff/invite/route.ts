@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { sendStaffInvite } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_PARTNER } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -18,6 +19,8 @@ const inviteSchema = z.object({
   department: z.string().optional(),
 });
 
+const staffInviteLimiter = createRateLimiter(RATE_LIMITS_PARTNER.STAFF_INVITE);
+
 export async function POST(req: NextRequest) {
   try {
     const user = await getSessionUser();
@@ -26,6 +29,13 @@ export async function POST(req: NextRequest) {
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    // Rate limiting: 20 staff invites per hour
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await staffInviteLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     // Check if user is a partner

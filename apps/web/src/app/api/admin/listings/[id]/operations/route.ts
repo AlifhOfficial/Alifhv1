@@ -26,9 +26,12 @@ import {
   invalidateListingCaches,
 } from '@alifh/database';
 import { autoMatchConsignment } from '@/lib/consignment/auto-match';
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_ADMIN } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+const adminListingOpsLimiter = createRateLimiter(RATE_LIMITS_ADMIN.LISTING_OPERATIONS);
 
 const CACHE_HEADERS_NO_CACHE = {
   'Cache-Control': 'no-store, no-cache, must-revalidate, private',
@@ -82,6 +85,13 @@ export async function POST(
     
     if (sessionUser.role !== 'admin' && sessionUser.role !== 'super_admin') {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
+    }
+
+    // Rate limiting: 100 admin listing ops per minute
+    const identifier = getIdentifier(req, sessionUser.id);
+    const rateLimitResult = await adminListingOpsLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const { id } = await params;

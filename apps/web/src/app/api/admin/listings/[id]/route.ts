@@ -10,6 +10,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { getClientIp } from '@/lib/utils/get-client-ip';
 import { createAuditLogEntry, deleteListingAsAdmin, getListingModerationContext, invalidateListingCaches } from '@alifh/database';
+import {
+  createRateLimiter,
+  getIdentifier,
+  rateLimitResponse,
+  RATE_LIMITS_ADMIN,
+} from '@/lib/rate-limit';
+
+const adminDeleteLimiter = createRateLimiter(RATE_LIMITS_ADMIN.OPS);
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -27,6 +35,13 @@ export async function DELETE(
     
     if (sessionUser.role !== 'admin' && sessionUser.role !== 'super_admin') {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
+    }
+
+    // Rate limit by user
+    const identifier = getIdentifier(req, sessionUser.id);
+    const rateLimitResult = await adminDeleteLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const { id } = await params;

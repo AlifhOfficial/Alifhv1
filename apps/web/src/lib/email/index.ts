@@ -5,5 +5,4 @@
  */
 
 export * from './service';
-export * from './rate-limit';
 export * from './mock-service';
