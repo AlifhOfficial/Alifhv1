@@ -3,7 +3,7 @@ import './globals.css'
 import { ThemeProvider } from '@/components/shared/providers/theme-provider'
 import { QueryProvider } from '@/components/shared/providers/query-provider'
 import { AuthProvider } from '@/providers/auth-provider'
-import { Toaster } from '@/components/ui'
+import { Toaster } from 'sonner'
 
 export const viewport: Viewport = {
   themeColor: [
@@ -58,7 +58,7 @@ export default function RootLayout({
           <AuthProvider>
             <QueryProvider>
               {children}
-              <Toaster />
+              <Toaster richColors position="top-right" />
             </QueryProvider>
           </AuthProvider>
         </ThemeProvider>

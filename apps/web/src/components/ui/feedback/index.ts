@@ -1,4 +1,3 @@
 // Feedback Components
-export * from './toast';
-export * from './toaster';
+// Toast and Toaster removed - using Sonner instead (import { toast } from 'sonner')
 export * from './progress';
