@@ -49,16 +49,15 @@ const TAGS = [
 // ============================================================================
 
 interface ProfileViewProps {
-  userName?: string | null;
-  userEmail?: string | null;
+  // No props needed - uses useAuth() directly
 }
 
 // ============================================================================
 // Main Component
 // ============================================================================
 
-export function ProfileView({ userName, userEmail }: ProfileViewProps) {
-  const { session: sessionUser } = useAuth();
+export function ProfileView() {
+  const { session: user } = useAuth();
   const { profile, updateProfile, refresh } = useUserProfile();
   const { stats } = useUserStats();
   const { toast } = useToast();
@@ -289,11 +288,11 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
 
   const displayName = profile?.firstName && profile?.lastName
     ? `${profile.firstName} ${profile.lastName}`
-    : userName ?? 'User';
+    : user?.name ?? 'User';
 
   const initials = profile?.firstName && profile?.lastName
     ? `${profile.firstName[0]}${profile.lastName[0]}`.toUpperCase()
-    : userName?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() ?? 'U';
+    : user?.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() ?? 'U';
 
   const memberSinceYear = profile?.memberSince ? new Date(profile.memberSince).getFullYear() : null;
   
@@ -378,7 +377,7 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
                 )}
               </div>
               <div className="flex items-center gap-2">
-                <p className="text-sm text-foreground/70">{userEmail}</p>
+                <p className="text-sm text-foreground/70">{user?.email}</p>
                 <span className="text-sm text-foreground/70">•</span>
                 <span className="text-sm text-foreground/70">
                   Member since {memberSinceYear ?? '—'}
@@ -560,7 +559,7 @@ export function ProfileView({ userName, userEmail }: ProfileViewProps) {
                   )}
                 </label>
                 <input
-                  value={userEmail ?? ''}
+                  value={user?.email ?? ''}
                   disabled
                   className="w-full h-10 bg-transparent border-b border-border text-foreground/60 cursor-not-allowed outline-none"
                 />

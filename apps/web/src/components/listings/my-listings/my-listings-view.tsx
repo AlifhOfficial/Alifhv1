@@ -7,7 +7,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Inbox } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -546,22 +546,22 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
 
           {/* Empty State */}
           {!isLoading && listings.length === 0 && (
-            <div className="rounded-2xl border border-border/40 p-16 text-center">
-              <div className="flex flex-col items-center space-y-4">
-                <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-                  <svg className="w-6 h-6 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
-                  </svg>
+            <div className="bg-card rounded-2xl border border-border/40 py-32 px-16">
+              <div className="flex flex-col items-center text-center space-y-6">
+                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+                  <Inbox className="w-7 h-7 text-muted-foreground" />
                 </div>
-                <p className="text-sm text-muted-foreground/70">
-                  {appliedQuery ? 'No listings found matching your search' : 'You haven\'t created any listings yet'}
-                </p>
-                <Link href={newListingUrl}>
-                  <button className="px-6 py-3 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium tracking-tight transition-colors mt-2">
-                    Create Your First Listing
-                  </button>
-                </Link>
+                <div className="space-y-3">
+                  <h3 className="text-lg font-medium text-foreground">
+                    {appliedQuery ? 'No listings found' : 'No listings yet'}
+                  </h3>
+                  <p className="text-sm text-muted-foreground/70 max-w-md">
+                    {appliedQuery 
+                      ? 'Try adjusting your search or clearing filters' 
+                      : 'Your listings will appear here once you create them'
+                    }
+                  </p>
+                </div>
               </div>
             </div>
           )}

@@ -3,18 +3,13 @@
  * Shows listings associated with a partner (work listings)
  */
 
-import { redirect } from 'next/navigation';
-import { getSessionUser } from '@/lib/auth/session-context';
+'use client';
+
 import { MyListingsView } from '@/components/listings/my-listings';
+import { useAuth } from '@/providers/auth-provider';
 
-export const runtime = 'nodejs';
+export default function StaffWorkListingsPage() {
+  const { session } = useAuth();
 
-export default async function StaffWorkListingsPage() {
-  const user = await getSessionUser();
-  
-  if (!user) {
-    redirect('/');
-  }
-
-  return <MyListingsView userId={user.id} listingType="work" />;
+  return <MyListingsView userId={session?.id} listingType="work" />;
 }

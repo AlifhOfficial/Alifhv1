@@ -42,6 +42,10 @@ function getAuthClient() {
           }
         },
       },
+      session: {
+        refetchOnWindowFocus: false,
+        refetchInterval: false, // Disable automatic polling
+      },
       plugins: [
         magicLinkClient(),
         adminClient({
@@ -73,13 +77,19 @@ export const authClient = typeof window !== 'undefined' ? getAuthClient() : {} a
 export const signIn = authClient.signIn;
 export const signUp = authClient.signUp;
 export const signOut = authClient.signOut;
+
+/**
+ * DEPRECATED: Do not use useSession directly - it causes excessive polling.
+ * Use useAuth() from @/providers/auth-provider instead.
+ */
 export const useSession = authClient.useSession || (() => ({ data: null, isPending: false, error: null }));
 
 /**
- * Enhanced session hook with convenience properties
- * @returns {Object} Session data with user info, loading state, and authentication status
+ * DEPRECATED: Use useAuth() from @/providers/auth-provider instead.
+ * This function causes excessive session polling.
  */
 export function useAuthSession() {
+  console.warn('[DEPRECATED] useAuthSession causes polling. Use useAuth() from @/providers/auth-provider');
   const { data: session, isPending, error } = useSession();
   
   return {

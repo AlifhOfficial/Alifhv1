@@ -38,25 +38,19 @@ export function UserBookingList({
 
   if (bookings.length === 0) {
     return (
-      <div className="rounded-2xl border border-border/40 p-16 text-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-            <Calendar className="w-6 h-6 text-muted-foreground" />
+      <div className="bg-card rounded-2xl border border-border/40 py-32 px-16">
+        <div className="flex flex-col items-center text-center space-y-6">
+          <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+            <Calendar className="w-7 h-7 text-muted-foreground" />
           </div>
-          <div className="space-y-2">
-            <h3 className="font-medium">No bookings yet</h3>
-            <p className="text-sm text-muted-foreground/70">
+          <div className="space-y-3">
+            <h3 className="text-lg font-medium text-foreground">No bookings yet</h3>
+            <p className="text-sm text-muted-foreground/70 max-w-md">
               {selectedStatus === 'all' 
-                ? "When you book test drives, they'll appear here."
-                : `No ${USER_BOOKING_STATUS_LABELS[selectedStatus]?.toLowerCase() || selectedStatus} bookings.`}
+                ? "Your booked test drives will appear here"
+                : `No ${USER_BOOKING_STATUS_LABELS[selectedStatus]?.toLowerCase() || selectedStatus} bookings`}
             </p>
           </div>
-          <Link
-            href="/listings"
-            className="px-6 py-3 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium tracking-tight transition-colors mt-2"
-          >
-            Browse Listings
-          </Link>
         </div>
       </div>
     );

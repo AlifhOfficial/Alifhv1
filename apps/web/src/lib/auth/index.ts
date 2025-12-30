@@ -47,9 +47,7 @@ export const auth = betterAuth({
     expiresIn: AUTH_CONFIG.SESSION.EXPIRES_IN,
     updateAge: AUTH_CONFIG.SESSION.UPDATE_AGE,
     cookieCache: {
-      enabled: true,
-      maxAge: 3600, // 1 hour - longer cache to reduce API calls
-      strategy: "compact", // Compact strategy for best performance
+      enabled: false, // Disable - we use our own memory cache with proper invalidation
     },
   },
 
@@ -201,6 +199,10 @@ export const auth = betterAuth({
             ? new Date(profileRecord.updatedAt).getTime() 
             : Date.now();
           avatarUrl = `${publicUrl.replace(/\/$/, '')}/${avatar}?v=${cacheBuster}`;
+          
+          if (process.env.SESSION_DEBUG === 'true') {
+            console.log(`[customSession] Avatar URL: ${avatarUrl}`);
+          }
         }
       } else if (avatar) {
         avatarUrl = avatar;

@@ -3,9 +3,9 @@
  * Full team management with invite and operations
  */
 
-import { PartnerStaffManagement } from '@/components/partner/staff-management';
+'use client';
 
-export const dynamic = 'force-dynamic';
+import { PartnerStaffManagement } from '@/components/partner/staff-management';
 
 export default function PartnerStaffManagePage() {
   return <PartnerStaffManagement />;

@@ -11,9 +11,6 @@
 import { Suspense } from "react";
 import { AuthErrorView } from "@/components/auth/auth-error-view";
 
-// Disable static generation for this page (uses searchParams)
-export const dynamic = 'force-dynamic';
-
 export default function AuthErrorPage() {
   return (
     <Suspense fallback={

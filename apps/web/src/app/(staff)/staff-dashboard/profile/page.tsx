@@ -1,6 +1,6 @@
-import { StaffProfileForm } from "@/components/staff/staff-profile-form";
+'use client';
 
-export const dynamic = "force-dynamic";
+import { StaffProfileForm } from "@/components/staff/staff-profile-form";
 
 export default function StaffProfilePage() {
   return <StaffProfileForm />;

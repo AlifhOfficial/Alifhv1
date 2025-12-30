@@ -1,10 +1,10 @@
+"use client";
+
 import { DashboardLayout, DashboardContent } from "@/components/shared/layout/dashboard-layout";
 import { AppSidebar } from "@/components/shared/layout/app-sidebar";
-import { getSessionUser } from "@/lib/auth/session-context";
 import { WebSocketProvider } from "@/providers/websocket-provider";
+import { useAuth } from "@/providers/auth-provider";
 import { redirect } from "next/navigation";
-
-export const dynamic = "force-dynamic";
 
 const navSections = [
   {
@@ -42,9 +42,16 @@ const navSections = [
   },
 ];
 
-export default async function UserDashboardLayout({ children }: { children: React.ReactNode }) {
-  const user = await getSessionUser();
-  if (!user) redirect('/');
+export default function UserDashboardLayout({ children }: { children: React.ReactNode }) {
+  const { session: user, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
+  
+  if (!user) {
+    redirect('/');
+  }
 
   return (
     <WebSocketProvider userId={user.id} autoConnect>

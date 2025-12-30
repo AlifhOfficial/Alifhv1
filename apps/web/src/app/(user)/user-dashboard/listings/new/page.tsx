@@ -3,21 +3,13 @@
  * Authenticated users can create new car listings
  */
 
-import { redirect } from 'next/navigation';
-import { getSessionUser } from '@/lib/auth/session-context';
+'use client';
+
 import { NewListingView } from '@/components/listings/new-listing';
+import { useAuth } from '@/providers/auth-provider';
 
-export const metadata = {
-  title: 'List Your Car | Alifh',
-  description: 'Create a new car listing on Alifh marketplace',
-};
+export default function NewListingPage() {
+  const { session } = useAuth();
 
-export default async function NewListingPage() {
-  const user = await getSessionUser();
-
-  if (!user) {
-    redirect('/auth/sign-in?redirect=/listings/new');
-  }
-
-  return <NewListingView userId={user.id} />;
+  return <NewListingView userId={session?.id} />;
 }

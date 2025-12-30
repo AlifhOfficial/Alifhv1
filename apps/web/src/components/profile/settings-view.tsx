@@ -12,13 +12,10 @@ import { useUserProfile, type UserProfileUpdate } from '@/hooks/profile';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { useAuth } from '@/providers/auth-provider';
 
-interface SettingsViewProps {
-  userName?: string | null;
-  userEmail?: string | null;
-}
-
-export function SettingsView({ userName, userEmail }: SettingsViewProps) {
+export function SettingsView() {
+  const { session: user } = useAuth();
   const { profile, updateProfile, refresh } = useUserProfile();
   const { toast } = useToast();
 

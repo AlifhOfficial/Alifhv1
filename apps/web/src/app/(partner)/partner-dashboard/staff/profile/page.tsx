@@ -3,9 +3,9 @@
  * Edit work identity settings
  */
 
-import { StaffProfile } from '@/components/partner/staff-profile';
+'use client';
 
-export const dynamic = 'force-dynamic';
+import { StaffProfile } from '@/components/partner/staff-profile';
 
 export default function StaffProfilePage() {
   return (

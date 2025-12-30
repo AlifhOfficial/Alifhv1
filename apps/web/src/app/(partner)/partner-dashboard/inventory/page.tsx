@@ -1,16 +1,17 @@
+'use client';
+
 import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
 import { PartnerInventoryClient } from "@/components/inventory";
-import { getSessionUser } from "@/lib/auth/session-context";
+import { useAuth } from "@/providers/auth-provider";
 import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-export default async function PartnerInventoryPage() {
-  const user = await getSessionUser();
-  if (!user) redirect('/');
+export default function PartnerInventoryPage() {
+  const { session } = useAuth();
+  
+  if (!session) redirect('/');
 
   // Get the first partner membership (if any)
-  const membership = user.partnerMemberships?.[0];
+  const membership = (session as any).partnerMemberships?.[0];
 
   if (!membership?.partnerId) {
     return (

@@ -2,9 +2,9 @@
  * Partner Staff Management Page
  */
 
-import { StaffOverview } from '@/components/partner/staff-overview';
+'use client';
 
-export const dynamic = 'force-dynamic';
+import { StaffOverview } from '@/components/partner/staff-overview';
 
 export default function PartnerStaffPage() {
   return (

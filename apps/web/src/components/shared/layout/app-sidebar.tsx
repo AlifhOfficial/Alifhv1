@@ -39,7 +39,7 @@ import {
 import { useMemo, useState, useEffect, type ComponentType } from "react";
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
 import { BrandAvatar } from "@/components/partner/car-dealer/ui/brand-avatar";
-import { useUserProfile } from "@/hooks/profile";
+import { useAuth } from "@/providers/auth-provider";
 import {
   Sidebar,
   SidebarContent,
@@ -142,18 +142,18 @@ const iconMap: Record<string, ComponentType<{ className?: string }>> = {
 // Component
 // ============================================================================
 
-export function AppSidebar({ user, items, sections, staffOverride }: AppSidebarProps) {
+export function AppSidebar({ user: initialUser, items, sections, staffOverride }: AppSidebarProps) {
   const pathname = usePathname();
+  
+  // Use client-side session for reactive updates
+  const { session: clientUser } = useAuth();
+  const user = clientUser || initialUser;
   
   // Track hydration state to prevent mismatch
   const [isHydrated, setIsHydrated] = useState(false);
   useEffect(() => {
     setIsHydrated(true);
   }, []);
-  
-  // Subscribe to profile for instant avatar sync after updates
-  // Only use after hydration to prevent server/client mismatch
-  const { profile } = useUserProfile();
 
   // Convert flat items to sections if sections not provided
   const navSections: SidebarSection[] = useMemo(() => {
@@ -162,16 +162,11 @@ export function AppSidebar({ user, items, sections, staffOverride }: AppSidebarP
     return [];
   }, [items, sections]);
 
-  // Profile hook provides instant updates after hydration, fallback to server session data
-  // During SSR and initial hydration, always use server data to prevent mismatch
-  const firstName = isHydrated ? (profile?.firstName ?? user.firstName) : user.firstName;
-  const lastName = isHydrated ? (profile?.lastName ?? user.lastName) : user.lastName;
-  // Use profile.avatarUrl when profile is loaded (even if null), otherwise fall back to session
-  // Important: profile?.avatarUrl ?? user.avatarUrl would ignore null values from profile removal
-  const avatarUrl = isHydrated && profile ? profile.avatarUrl : user.avatarUrl;
-  const useGeneratedAvatar = isHydrated 
-    ? (profile?.preferences?.useGeneratedAvatar ?? user.useGeneratedAvatar ?? true)
-    : (user.useGeneratedAvatar ?? true);
+  // Use session data directly - it's refreshed when profile updates
+  const firstName = (user as any).firstName;
+  const lastName = (user as any).lastName;
+  const avatarUrl = (user as any).avatarUrl;
+  const useGeneratedAvatar = (user as any).useGeneratedAvatar ?? true;
 
   // Display name logic
   const displayName = useMemo(() => {

@@ -3,10 +3,10 @@
  * Shows bookings for listings posted by this staff member
  */
 
+'use client';
+
 import { StaffBookingsView } from '@/components/features/bookings/staff';
 
-export const dynamic = 'force-dynamic';
-
-export default async function StaffBookingsPage() {
+export default function StaffBookingsPage() {
   return <StaffBookingsView />;
 }

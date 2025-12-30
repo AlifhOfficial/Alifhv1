@@ -7,6 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { Inbox } from 'lucide-react';
 import { ConversationList } from './conversation-list';
 import { ChatWindow } from './chat-window';
 import { WebSocketStatus } from './websocket-status';
@@ -73,11 +74,11 @@ export function ChatContainer({ userId, inbox = 'personal', className }: ChatCon
             />
           ) : (
             <div className="min-h-[400px] flex items-center justify-center h-full w-full bg-background">
-              <div className="text-center space-y-3">
-                <svg className="w-16 h-16 mx-auto text-muted-foreground/40" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
-                </svg>
-                <p className="text-muted-foreground">Select a conversation</p>
+              <div className="text-center space-y-4">
+                <div className="w-16 h-16 mx-auto rounded-full bg-muted flex items-center justify-center">
+                  <Inbox className="w-7 h-7 text-muted-foreground" />
+                </div>
+                <p className="text-sm text-muted-foreground">Select a conversation</p>
               </div>
             </div>
           )}

@@ -12,7 +12,7 @@
 import { useAuth } from '@/providers/auth-provider';
 
 export function useUser() {
-  const { session: user, isLoading, error, isAuthenticated } = useAuth();
+  const { session: user, isLoading, error, isAuthenticated, refetch } = useAuth();
 
   return {
     user,
@@ -20,5 +20,6 @@ export function useUser() {
     isSignedIn: isAuthenticated,
     error,
     session: user ? { user } : null,
+    refetch,
   };
 }

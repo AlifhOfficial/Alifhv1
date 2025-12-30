@@ -3,52 +3,60 @@
  * Edit existing car listing
  */
 
+'use client';
+
 import { notFound, redirect } from 'next/navigation';
-import { getSessionUser } from '@/lib/auth/session-context';
-import { getListingDetailed } from '@alifh/database';
+import { useAuth } from '@/providers/auth-provider';
 import { EditListingView } from '@/components/listings/edit-listing';
-import { cache } from 'react';
+import { use, useEffect, useState } from 'react';
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-const getListingDetailedCached = cache((id: string) => getListingDetailed(id));
+export default function EditListingPage({ params }: PageProps) {
+  const { id } = use(params);
+  const { session, isLoading } = useAuth();
+  const [listing, setListing] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-export async function generateMetadata({ params }: PageProps) {
-  const { id } = await params;
-  const listing = await getListingDetailedCached(id);
-  
-  if (!listing) {
-    return { title: 'Listing Not Found | Alifh' };
+  useEffect(() => {
+    async function fetchListing() {
+      try {
+        const res = await fetch(`/api/listings/${id}/detailed`);
+        if (!res.ok) {
+          notFound();
+        }
+        const data = await res.json();
+        setListing(data);
+      } catch (error) {
+        notFound();
+      } finally {
+        setLoading(false);
+      }
+    }
+    if (id) fetchListing();
+  }, [id]);
+
+  if (isLoading || loading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
 
-  return {
-    title: `Edit ${listing.year} ${listing.make} ${listing.model} | Alifh`,
-  };
-}
-
-export default async function EditListingPage({ params }: PageProps) {
-  const { id } = await params;
-  const user = await getSessionUser();
-
-  if (!user) {
+  if (!session) {
     redirect(`/auth/sign-in?redirect=/listings/${id}/edit`);
   }
-
-  const listing = await getListingDetailedCached(id);
 
   if (!listing) {
     notFound();
   }
 
-  // Check ownership (or admin) - use listing data directly, no extra DB call
-  const isAdmin = user.role === 'admin' || user.role === 'super_admin';
-  const isOwner = listing.userId === user.id;
+  // Check ownership (or admin)
+  const isAdmin = (session as any).role === 'admin' || (session as any).role === 'super_admin';
+  const isOwner = listing.userId === session.id;
 
   if (!isOwner && !isAdmin) {
     redirect('/access-denied');
   }
 
-  return <EditListingView listing={listing} userId={user.id} />;
+  return <EditListingView listing={listing} userId={session.id} listingType="personal" />;
 }

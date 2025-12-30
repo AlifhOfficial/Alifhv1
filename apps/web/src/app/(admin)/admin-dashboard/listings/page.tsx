@@ -3,14 +3,12 @@
  * View and manage all listings on the platform
  */
 
+'use client';
+
 import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
-import { requireRole } from "@/lib/auth/roles";
 import { AdminListingsView } from "@/components/admin/listings/admin-listings-view";
 
-export const dynamic = "force-dynamic";
-
-export default async function AdminListingsPage() {
-  await requireRole("admin");
+export default function AdminListingsPage() {
 
   return (
     <DashboardDisplayArea>

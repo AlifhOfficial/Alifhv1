@@ -3,17 +3,12 @@
  * Manage user accounts and view user details
  */
 
+'use client';
+
 import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
 import { AdminUsersList } from "@/components/admin/users/admin-users-list";
 
-export const dynamic = "force-dynamic";
-
-export const metadata = {
-  title: "User Management - Admin",
-  description: "Manage user accounts and view user details",
-};
-
-export default async function AdminUsersPage() {
+export default function AdminUsersPage() {
   return (
     <DashboardDisplayArea>
       <div className="p-6 md:p-10">

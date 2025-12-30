@@ -8,7 +8,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useSession } from '@/lib/auth/client';
+import { useAuth } from '@/providers/auth-provider';
 
 // ============================================================================
 // Types
@@ -111,10 +111,9 @@ async function updateUserProfileAPI(updates: UserProfileUpdate): Promise<UserPro
 
 export function useUserProfile() {
   const queryClient = useQueryClient();
-  const sessionQuery = useSession() as unknown as { refetch?: (params?: { query?: { disableCookieCache?: boolean } }) => Promise<void> };
-  const refetchSession = sessionQuery?.refetch;
+  const { refetch: refetchSession, isAuthenticated } = useAuth();
 
-  // Fetch profile data with proper caching
+  // Fetch profile data with proper caching - ONLY when authenticated
   const query = useQuery<UserProfile | null>({
     queryKey: ['user-profile'],
     queryFn: fetchUserProfile,
@@ -123,6 +122,7 @@ export function useUserProfile() {
     refetchOnWindowFocus: false, // Don't refetch on focus - expensive query
     refetchOnMount: false, // Don't refetch on remount - use cache
     retry: false, // Don't retry on 401
+    enabled: isAuthenticated, // Only fetch when user is logged in
   });
 
   // Update profile mutation
@@ -134,7 +134,6 @@ export function useUserProfile() {
       queryClient.setQueryData(['user-profile'], updatedProfile);
       
       // Ensure session-backed UI (sidebar/navbar) reflects changes immediately.
-      // Better Auth cookie cache can otherwise keep stale avatar/preferences for up to maxAge.
       const touchesSession =
         'avatar' in variables ||
         'firstName' in variables ||
@@ -142,7 +141,7 @@ export function useUserProfile() {
         'preferences' in variables;
 
       if (touchesSession && refetchSession) {
-        await refetchSession({ query: { disableCookieCache: true } });
+        await refetchSession();
       }
     },
   });

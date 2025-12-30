@@ -10,18 +10,19 @@
  * For quick edits of basic info, see /basic
  */
 
+'use client';
+
 import { PartnerProfileComprehensiveForm } from "@/components/partner";
-import { getSessionUser } from "@/lib/auth/session-context";
+import { useAuth } from "@/providers/auth-provider";
 import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-export default async function PartnerProfileSettingsPage() {
-  const user = await getSessionUser();
-  if (!user) redirect('/');
+export default function PartnerProfileSettingsPage() {
+  const { session } = useAuth();
+  
+  if (!session) redirect('/');
 
   // Get the first active partner membership
-  const partnerId = user.partnerMemberships?.[0]?.partnerId;
+  const partnerId = (session as any).partnerMemberships?.[0]?.partnerId;
 
   if (!partnerId) {
     redirect("/access-denied");

@@ -1,8 +1,8 @@
+'use client';
+
 import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
 
-export const dynamic = "force-dynamic";
-
-export default async function PartnerDashboard() {
+export default function PartnerDashboard() {
   // Auth handled by layout
 
   return (

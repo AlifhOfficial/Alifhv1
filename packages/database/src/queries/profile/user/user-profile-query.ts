@@ -190,6 +190,16 @@ export const ensureUserProfile = async (userId: string): Promise<ExtendedUserPro
   const existing = await getUserProfileByUserId(userId);
   if (existing) return existing;
 
+  // Check if user exists before creating profile
+  const userExists = await db.query.user.findFirst({
+    where: eq(user.id, userId),
+    columns: { id: true },
+  });
+
+  if (!userExists) {
+    throw new Error(`Cannot create profile: user ${userId} does not exist in user table`);
+  }
+
   // Create new profile
   await db
     .insert(userProfile)

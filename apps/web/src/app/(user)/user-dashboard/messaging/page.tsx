@@ -1,14 +1,14 @@
-import { ChatContainer } from "@/components/messaging";
-import { getSessionUser } from "@/lib/auth/session-context";
-import { redirect } from "next/navigation";
+'use client';
 
-export default async function MessagingPage() {
-  const user = await getSessionUser();
-  if (!user) redirect('/sign-in');
+import { ChatContainer } from "@/components/messaging";
+import { useAuth } from "@/providers/auth-provider";
+
+export default function MessagingPage() {
+  const { session } = useAuth();
 
   return (
     <div className="h-[calc(100vh-3.5rem)] -m-4">
-      <ChatContainer userId={user.id} inbox="personal" />
+      <ChatContainer userId={session?.id} inbox="personal" />
     </div>
   );
 }

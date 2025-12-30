@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/providers/auth-provider';
 import { 
   Car, 
   Calendar, 
@@ -69,11 +70,8 @@ type Conversation = {
   unreadCount: number;
 };
 
-interface UserDashboardOverviewProps {
-  user: any;
-}
-
-export function UserDashboardOverview({ user }: UserDashboardOverviewProps) {
+export function UserDashboardOverview() {
+  const { session: user } = useAuth();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [bookings, setBookings] = useState<UpcomingBooking[]>([]);
   const [listings, setListings] = useState<RecentListing[]>([]);
@@ -226,17 +224,16 @@ export function UserDashboardOverview({ user }: UserDashboardOverviewProps) {
     });
   };
 
-  // Extract user info - prefer profile hook for instant sync, fall back to server data
-  const firstName = profile?.firstName || user?.profile?.firstName || user?.name?.split(' ')[0] || 'there';
-  const lastName = profile?.lastName || user?.profile?.lastName || user?.name?.split(' ')[1] || '';
+  // Extract user info from session (session already has firstName, lastName, etc from customSession)
+  const firstName = (user as any)?.firstName || user?.name?.split(' ')[0] || 'there';
+  const lastName = (user as any)?.lastName || user?.name?.split(' ')[1] || '';
   const fullName = firstName && lastName ? `${firstName} ${lastName}` : (user?.name || 'User');
-  // Use profile hook for instant sync of avatar/preferences
-  const avatarUrl = profile?.avatarUrl || user?.profile?.avatarUrl || user?.avatarUrl || null;
-  const useGeneratedAvatar = profile?.preferences?.useGeneratedAvatar ?? user?.useGeneratedAvatar ?? true;
-  const kycVerified = profile?.kycVerified || user?.profile?.kycVerified || false;
-  const locationEmirate = profile?.locationEmirate || user?.profile?.locationEmirate || null;
-  const locationCity = profile?.locationCity || user?.profile?.locationCity || null;
-  const memberSince = profile?.memberSince || user?.profile?.memberSince || user?.createdAt || null;
+  const avatarUrl = (user as any)?.avatarUrl || null;
+  const useGeneratedAvatar = (user as any)?.useGeneratedAvatar ?? true;
+  const kycVerified = false; // Not in session, only in profile
+  const locationEmirate = null; // Not in session, only in profile
+  const locationCity = null; // Not in session, only in profile
+  const memberSince = user?.createdAt || null;
 
   const initials = firstName && lastName
     ? `${firstName[0]}${lastName[0]}`.toUpperCase()

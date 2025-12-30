@@ -102,20 +102,32 @@
   * {
     @apply border-border;
   }
-  body {
-    @apply bg-background text-foreground;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  
+  /* Cross-platform font rendering */
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
   
-  /* Typography System - Alifh Design */
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    font-optical-sizing: auto;
+  }
+  
+  /* Typography System - Alifh Design (Cross-platform optimized) */
   h1 {
     @apply text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight;
     line-height: 1.1;
+    letter-spacing: -0.02em;
   }
   
   h2 {
     @apply text-lg sm:text-xl font-medium tracking-tight;
     line-height: 1.2;
+    letter-spacing: -0.01em;
   }
   
   h3 {
@@ -124,12 +136,14 @@
   }
   
   p {
-    @apply text-sm font-normal;
+    @apply text-sm;
+    font-weight: 450; /* Slightly heavier for Windows clarity */
     line-height: 1.6;
   }
   
   small, .text-meta {
-    @apply text-xs font-normal;
+    @apply text-xs;
+    font-weight: 450;
     opacity: 0.7;
   }
   

@@ -3,59 +3,62 @@
  * Edit a partner (work) listing owned by the staff user.
  */
 
+'use client';
+
 import { notFound, redirect } from 'next/navigation';
-import { getSessionUser } from '@/lib/auth/session-context';
-import { getListingDetailed } from '@alifh/database';
+import { useAuth } from '@/providers/auth-provider';
 import { EditListingView } from '@/components/listings/edit-listing';
-import { cache } from 'react';
+import { use, useEffect, useState } from 'react';
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export const runtime = 'nodejs';
+export default function StaffEditWorkListingPage({ params }: PageProps) {
+  const { id } = use(params);
+  const { session, isLoading } = useAuth();
+  const [listing, setListing] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-const getListingDetailedCached = cache((id: string) => getListingDetailed(id));
+  useEffect(() => {
+    async function fetchListing() {
+      try {
+        const res = await fetch(`/api/listings/${id}/detailed`);
+        if (!res.ok) {
+          notFound();
+        }
+        const data = await res.json();
+        setListing(data);
+      } catch (error) {
+        notFound();
+      } finally {
+        setLoading(false);
+      }
+    }
+    if (id) fetchListing();
+  }, [id]);
 
-export async function generateMetadata({ params }: PageProps) {
-  const { id } = await params;
-  const listing = await getListingDetailedCached(id);
-
-  if (!listing) {
-    return { title: 'Listing Not Found | Alifh' };
+  if (isLoading || loading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
 
-  return {
-    title: `Edit ${listing.year} ${listing.make} ${listing.model} | Alifh`,
-  };
-}
-
-export default async function StaffEditWorkListingPage({ params }: PageProps) {
-  const { id } = await params;
-  const user = await getSessionUser();
-
-  if (!user) {
+  if (!session) {
     redirect(`/auth/sign-in?redirect=/staff-dashboard/work-listings/${id}/edit`);
   }
 
-  const listing = await getListingDetailedCached(id);
-  if (!listing) {
-    notFound();
-  }
-
-  if (!listing.partnerId) {
+  if (!listing?.partnerId) {
     redirect('/access-denied?reason=not-work-listing');
   }
 
-  const isAdmin = user.role === 'admin' || user.role === 'super_admin';
-  const isOwner = listing.userId === user.id; // Use listing data directly, no extra DB call
+  const isAdmin = (session as any).role === 'admin' || (session as any).role === 'super_admin';
+  const isOwner = listing.userId === session.id;
 
-  const membership = user.partnerMemberships?.find((m) => m.partnerId === listing.partnerId);
+  const membership = (session as any).partnerMemberships?.find((m: any) => m.partnerId === listing.partnerId);
   const staffRole = membership?.staffRole;
 
   if (!isAdmin && !isOwner && (!membership || staffRole === 'viewer')) {
     redirect('/access-denied');
   }
 
-  return <EditListingView listing={listing} userId={user.id} listingType="work" />;
+  return <EditListingView listing={listing} userId={session.id} listingType="work" />;
 }

@@ -89,7 +89,7 @@ export function Navbar() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { theme, setTheme, resolvedTheme } = useTheme();
-  const { user, isLoading, isSignedIn: isAuthenticated } = useUser();
+  const { user, isLoading, isSignedIn: isAuthenticated, refetch: refetchAuth } = useUser();
 
   // Fix hydration by using mounted state
   useEffect(() => {
@@ -276,7 +276,7 @@ export function Navbar() {
                 >
                   <Link
                     href={item.href}
-                    className={`px-3 py-1.5 text-sm font-medium tracking-tight transition-colors rounded-md block ${
+                    className={`px-3 py-2 text-base font-medium tracking-tight transition-colors rounded-md block ${
                       pathname === item.href
                         ? "text-foreground"
                         : "text-muted-foreground hover:text-foreground"
@@ -375,6 +375,7 @@ export function Navbar() {
       <AuthManager
         currentModal={currentAuthModal}
         onModalChange={setCurrentAuthModal}
+        onSuccess={() => refetchAuth()}
         triggerEmailVerification={triggerEmailVerification}
         triggerGoogleOnboarding={triggerGoogleOnboarding}
       />

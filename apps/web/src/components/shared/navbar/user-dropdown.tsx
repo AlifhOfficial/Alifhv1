@@ -9,7 +9,6 @@ import { useEffect, useState } from "react";
 import { UserRole } from "@/types/auth";
 import { getUserPortalAccess } from "@/lib/auth/routing";
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
-import { useUserProfile } from "@/hooks/profile";
 
 interface UserData {
   id: string;
@@ -58,9 +57,6 @@ export function ProfileMenu({
 }: ProfileMenuProps) {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
-  
-  // Subscribe to profile for instant avatar sync after updates
-  const { profile } = useUserProfile();
 
   // Prevent hydration mismatch by only rendering user-specific content after mount
   useEffect(() => {
@@ -77,13 +73,11 @@ export function ProfileMenu({
   }
 
   if (user) {
-    // Profile hook provides instant updates, fallback to server session data
-    const firstName = profile?.firstName ?? user.firstName?.trim() ?? user.name?.split(' ')[0] ?? 'User';
-    const lastName = profile?.lastName ?? user.lastName?.trim() ?? '';
-    // Use profile.avatarUrl when profile is loaded (even if null), otherwise fall back to session
-    // Important: profile?.avatarUrl ?? user.avatarUrl would ignore null values from profile removal
-    const avatarUrl = profile ? profile.avatarUrl : user.avatarUrl;
-    const useGeneratedAvatar = profile?.preferences?.useGeneratedAvatar ?? user.useGeneratedAvatar ?? true;
+    // Use session data directly - it's refreshed when profile updates
+    const firstName = user.firstName?.trim() ?? user.name?.split(' ')[0] ?? 'User';
+    const lastName = user.lastName?.trim() ?? '';
+    const avatarUrl = user.avatarUrl;
+    const useGeneratedAvatar = user.useGeneratedAvatar ?? true;
 
     const displayName = firstName && lastName
       ? `${firstName} ${lastName}`
@@ -124,7 +118,7 @@ export function ProfileMenu({
     
     return (
       <div className="relative flex items-center gap-2.5" data-menu-container>
-        <span className="text-sm text-muted-foreground/70 hidden sm:inline">
+        <span className="text-sm font-medium text-foreground hidden sm:inline">
           {firstName}
         </span>
         

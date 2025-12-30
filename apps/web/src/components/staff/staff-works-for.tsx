@@ -12,6 +12,8 @@ import { useRouter } from 'next/navigation';
 import { Building2, Mail, Phone, MapPin, Globe, Star, Users, LogOut, AlertTriangle } from 'lucide-react';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/providers/auth-provider';
+import type { ExtendedUser } from '@/types/auth';
 
 interface PartnerProfile {
   id: string;
@@ -47,18 +49,17 @@ export function StaffWorksFor() {
   const [showResignModal, setShowResignModal] = useState(false);
   const [resignReason, setResignReason] = useState('');
 
-  const { data: partnerData, isLoading, error } = useQuery({
-    queryKey: ['staff', 'partner-profile'],
+  // Get session from AuthProvider (fetched ONCE, no polling)
+  const { session, isLoading: sessionLoading } = useAuth();
+  const user = session as ExtendedUser | null;
+  const membership = user?.partnerMemberships?.[0];
+
+  const { data: partnerData, isLoading: profileLoading, error } = useQuery({
+    queryKey: ['staff', 'partner-profile', membership?.partnerId],
     queryFn: async () => {
-      const userRes = await fetch('/api/auth/get-session');
-      if (!userRes.ok) throw new Error('Failed to get session');
-      const userSession = await userRes.json();
-      
-      if (!userSession.user?.partnerMemberships?.[0]) {
+      if (!membership) {
         throw new Error('No partner membership found');
       }
-      
-      const membership = userSession.user.partnerMemberships[0];
       
       const res = await fetch(`/api/partners/${membership.partnerId}/dealer-profile`);
       if (!res.ok) throw new Error(`Failed to fetch partner profile: ${res.status}`);
@@ -70,7 +71,10 @@ export function StaffWorksFor() {
         permissions: membership.permissions,
       };
     },
+    enabled: !!membership?.partnerId, // Only fetch when we have a membership
   });
+
+  const isLoading = sessionLoading || profileLoading;
 
   const resignMutation = useMutation({
     mutationFn: async (reason?: string) => {

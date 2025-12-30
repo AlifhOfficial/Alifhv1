@@ -1,9 +1,9 @@
+'use client';
+
 import { DashboardLayout, DashboardContent } from "@/components/shared/layout/dashboard-layout";
 import { AppSidebar } from "@/components/shared/layout/app-sidebar";
-import { requireRole } from "@/lib/auth/roles";
 import { WebSocketProvider } from "@/providers/websocket-provider";
-
-export const dynamic = "force-dynamic";
+import { useAuth } from "@/providers/auth-provider";
 
 const navSections = [
   {
@@ -41,13 +41,21 @@ const navSections = [
   },
 ];
 
-export default async function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
-  const user = await requireRole("admin");
+export default function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
+  const { session, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
+  
+  if (!session) {
+    return null;
+  }
 
   return (
-    <WebSocketProvider userId={user.id} autoConnect>
+    <WebSocketProvider userId={session.id} autoConnect>
       <DashboardLayout enableRightPanel>
-        <AppSidebar user={user} sections={navSections} />
+        <AppSidebar user={session as any} sections={navSections} />
         <DashboardContent>{children}</DashboardContent>
       </DashboardLayout>
     </WebSocketProvider>

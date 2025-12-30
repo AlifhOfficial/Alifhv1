@@ -1,7 +1,7 @@
+'use client';
+
 import { UserBookingsView } from '@/components/features/bookings/user';
 
-export const dynamic = 'force-dynamic';
-
-export default async function UserBookingsPage() {
+export default function UserBookingsPage() {
   return <UserBookingsView />;
 }

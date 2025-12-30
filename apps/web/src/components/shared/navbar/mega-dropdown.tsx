@@ -55,11 +55,11 @@ export function MegaDropdown({ activeDropdown, navItems, onClose, onMouseEnter, 
                       onClick={onClose}
                       className="block group"
                     >
-                      <div className="text-sm font-medium tracking-tight text-foreground/90 group-hover:text-foreground transition-colors">
+                      <div className="text-base font-medium tracking-tight text-foreground group-hover:text-foreground transition-colors">
                         {item.label}
                       </div>
                       {item.description && (
-                        <div className="text-xs text-muted-foreground/70 mt-1">
+                        <div className="text-sm text-muted-foreground/70 mt-1">
                           {item.description}
                         </div>
                       )}
