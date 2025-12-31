@@ -68,7 +68,9 @@ const formatEnumValue = (value: string | null): string => {
 
 function ImageGallery({ images, title }: { images: string[]; title: string }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const allImages = images.length > 0 ? images : ['/assets/cars/placeholder.avif'];
+  // Filter out empty or invalid image URLs
+  const validImages = images.filter(img => img && typeof img === 'string' && img.trim().length > 0);
+  const allImages = validImages.length > 0 ? validImages : ['/assets/cars/placeholder.avif'];
 
   const next = () => setCurrentIndex((i) => (i + 1) % allImages.length);
   const prev = () => setCurrentIndex((i) => (i - 1 + allImages.length) % allImages.length);

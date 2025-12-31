@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Loader2, RefreshCw, Heart } from 'lucide-react';
+import { Loader2, RefreshCw, Heart, Moon } from 'lucide-react';
 import { CarCard } from '@/components/inventory';
 import { useFavoritesStatus } from '@/hooks/engagement';
 
@@ -42,6 +42,7 @@ export default function FavoritesPage() {
   const { data: favoritesData, isLoading, error: favError, refetch } = useFavoritesStatus();
   const [listings, setListings] = useState<ListingPayload[]>([]);
   const [isLoadingListings, setIsLoadingListings] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const hasFetchedRef = useRef(false);
 
   const favoriteIds = useMemo(() => favoritesData?.favorites || [], [favoritesData?.favorites]);
@@ -82,6 +83,13 @@ export default function FavoritesPage() {
     [favoriteIds, listingsById]
   );
 
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    hasFetchedRef.current = false;
+    await refetch();
+    setTimeout(() => setIsRefreshing(false), 300);
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-12 space-y-16">
         {/* Header */}
@@ -93,12 +101,12 @@ export default function FavoritesPage() {
             </p>
           </div>
           <button
-            onClick={() => refetch()}
-            disabled={isLoading}
+            onClick={handleRefresh}
+            disabled={isRefreshing}
             className="p-2 rounded-full hover:bg-secondary/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Refresh favorites"
           >
-            <RefreshCw className={`h-5 w-5 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
           </button>
         </div>
 
@@ -122,12 +130,15 @@ export default function FavoritesPage() {
         {!isLoading && !isLoadingListings && !favError && (
           <>
             {validFavoriteIds.length === 0 ? (
-              <div className="flex items-center justify-center py-16">
-                <div className="text-center space-y-4">
-                  <div className="w-12 h-12 rounded-full bg-muted mx-auto flex items-center justify-center">
-                    <Heart className="w-6 h-6 text-muted-foreground" />
+              <div className="flex items-center justify-center py-24">
+                <div className="flex flex-col items-center text-center space-y-4 max-w-sm">
+                  <Moon className="w-16 h-16 text-muted-foreground/20" />
+                  <div className="space-y-2">
+                    <h2 className="text-lg font-medium text-muted-foreground">Such empty here</h2>
+                    <p className="text-sm text-muted-foreground/60">
+                      Heart some cars and they'll appear here
+                    </p>
                   </div>
-                  <p className="text-sm text-muted-foreground/70">No favorites yet</p>
                 </div>
               </div>
             ) : (

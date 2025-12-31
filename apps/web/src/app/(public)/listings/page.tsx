@@ -286,8 +286,11 @@ export default function InventoryPage() {
 
             {/* Empty State */}
             {!isLoading && !error && listings.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-sm text-muted-foreground">No listings available at the moment</p>
+              <div className="flex items-center justify-center py-32">
+                <div className="text-center space-y-1">
+                  <p className="text-base text-muted-foreground">No Results</p>
+                  <p className="text-xs text-muted-foreground/60">Try adjusting your filters</p>
+                </div>
               </div>
             )}
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { Loader2, RefreshCw, Star } from 'lucide-react';
+import { Loader2, RefreshCw, Star, Moon } from 'lucide-react';
 import { CarCard } from '@/components/inventory';
 import { SuperlikeQuotaBadge } from '@/components/engagement';
 import { useFavoritesStatus } from '@/hooks/engagement';
@@ -54,6 +54,7 @@ export default function SuperlikesPage() {
   const { data: statusData, isLoading, error: superlikeError, refetch } = useFavoritesStatus();
   const [listings, setListings] = useState<ListingPayload[]>([]);
   const [isLoadingListings, setIsLoadingListings] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const hasFetchedRef = useRef(false);
 
   const superlikeIds = useMemo(() => statusData?.superlikes || [], [statusData?.superlikes]);
@@ -95,27 +96,34 @@ export default function SuperlikesPage() {
     [superlikeIds, listingsById]
   );
 
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    hasFetchedRef.current = false;
+    await refetch();
+    setTimeout(() => setIsRefreshing(false), 300);
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-12 space-y-16">
         {/* Header */}
         <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="space-y-2">
-              <h1 className="text-2xl font-semibold tracking-tight">Superlikes</h1>
-              <p className="text-sm text-muted-foreground/70">
-                {validSuperlikeIds.length} item{validSuperlikeIds.length === 1 ? '' : 's'}
-              </p>
-            </div>
-            <SuperlikeQuotaBadge quota={quota} />
+          <div className="space-y-2">
+            <h1 className="text-2xl font-semibold tracking-tight">Superlikes</h1>
+            <p className="text-sm text-muted-foreground/70">
+              {validSuperlikeIds.length} item{validSuperlikeIds.length === 1 ? '' : 's'}
+            </p>
           </div>
-          <button
-            onClick={() => refetch()}
-            disabled={isLoading}
-            className="p-2 rounded-full hover:bg-secondary/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            aria-label="Refresh superlikes"
-          >
-            <RefreshCw className={`h-5 w-5 ${isLoading ? 'animate-spin' : ''}`} />
-          </button>
+          <div className="flex items-center gap-3">
+            <SuperlikeQuotaBadge quota={quota} />
+            <button
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className="p-2 rounded-full hover:bg-secondary/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Refresh superlikes"
+            >
+              <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
         </div>
 
         {/* Loading State */}
@@ -138,12 +146,15 @@ export default function SuperlikesPage() {
         {!isLoading && !isLoadingListings && !superlikeError && (
           <>
             {validSuperlikeIds.length === 0 ? (
-              <div className="flex items-center justify-center py-16">
-                <div className="text-center space-y-4">
-                  <div className="w-12 h-12 rounded-full bg-muted mx-auto flex items-center justify-center">
-                    <Star className="w-6 h-6 text-muted-foreground" />
+              <div className="flex items-center justify-center py-24">
+                <div className="flex flex-col items-center text-center space-y-4 max-w-sm">
+                  <Moon className="w-16 h-16 text-muted-foreground/20" />
+                  <div className="space-y-2">
+                    <h2 className="text-lg font-medium text-muted-foreground">Such empty here</h2>
+                    <p className="text-sm text-muted-foreground/60">
+                      Superlike some cars and they'll appear here
+                    </p>
                   </div>
-                  <p className="text-sm text-muted-foreground/70">No superlikes yet</p>
                 </div>
               </div>
             ) : (
