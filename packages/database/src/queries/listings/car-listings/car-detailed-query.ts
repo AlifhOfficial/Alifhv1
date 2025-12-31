@@ -58,6 +58,10 @@ export interface TechnicalFeatures {
  * Special notes structure matching schema
  */
 export interface SpecialNotes {
+  // Owner notes (array of strings, max 10)
+  ownerRemarks?: string[];
+  
+  // Legacy boolean tags (kept for backward compat)
   serviceHistory?: boolean;
   singleOwner?: boolean;
   accidentFree?: boolean;
@@ -76,6 +80,16 @@ export interface SpecialNotes {
   suspendedAt?: string;
   suspendedBy?: string;
   suspendedByName?: string;
+  
+  // AI moderation metadata (auto-populated by AI moderation service)
+  aiModeration?: {
+    decision: 'approve' | 'flag' | 'reject';
+    confidence: number;
+    flags: Array<{ code: string; severity: string; message: string }>;
+    reasoning: string;
+    processedAt: string;
+    model: string;
+  };
 }
 
 /**
@@ -108,6 +122,7 @@ export interface CarDetailedData {
   aiPriceMin: number | null;
   aiPriceMax: number | null;
   aiConfidenceScore: number | null;
+  aiReasoning: string | null;
   fairValue: number | null;
   estimateMin: number | null;
   estimateMax: number | null;
@@ -224,6 +239,7 @@ export async function getListingDetailed(listingId: string): Promise<CarDetailed
       aiPriceMin: carListing.aiPriceMin,
       aiPriceMax: carListing.aiPriceMax,
       aiConfidenceScore: carListing.aiConfidenceScore,
+      aiReasoning: carListing.aiReasoning,
       fairValue: carListing.fairValue,
       estimateMin: carListing.estimateMin,
       estimateMax: carListing.estimateMax,
@@ -346,6 +362,7 @@ export async function getListingDetailed(listingId: string): Promise<CarDetailed
     aiPriceMin: row.aiPriceMin,
     aiPriceMax: row.aiPriceMax,
     aiConfidenceScore: row.aiConfidenceScore,
+    aiReasoning: row.aiReasoning,
     fairValue: row.fairValue,
     estimateMin: row.estimateMin,
     estimateMax: row.estimateMax,

@@ -79,12 +79,46 @@ export default function ConsignmentLeadsPage() {
   const [activeTab, setActiveTab] = useState('all');
   const { toast } = useToast();
 
+  // Fetch leads when activeTab changes
   useEffect(() => {
-    fetchLeads();
-  }, [activeTab]);
+    let cancelled = false;
+    
+    const fetchLeads = async () => {
+      try {
+        setIsLoading(true);
+        const params = new URLSearchParams();
+        if (activeTab !== 'all') {
+          params.set('status', activeTab);
+        }
 
-  const fetchLeads = async () => {
+        const response = await fetch(`/api/partner/consignment/leads?${params}`);
+        if (!response.ok) throw new Error('Failed to fetch leads');
+
+        const data = await response.json();
+        if (cancelled) return;
+        
+        setLeads(data.leads);
+        setStats(data.stats);
+      } catch (error) {
+        console.error('Error fetching leads:', error);
+        if (!cancelled) {
+          toast({ title: 'Failed to load consignment leads', variant: 'destructive' });
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+    
+    fetchLeads();
+    return () => { cancelled = true; };
+  }, [activeTab]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Refetch function for manual refreshes
+  const refetchLeads = async () => {
     try {
+      setIsLoading(true);
       const params = new URLSearchParams();
       if (activeTab !== 'all') {
         params.set('status', activeTab);
@@ -115,7 +149,7 @@ export default function ConsignmentLeadsPage() {
       if (!response.ok) throw new Error('Failed to update lead');
 
       toast({ title: 'Lead updated successfully' });
-      fetchLeads();
+      refetchLeads();
     } catch (error) {
       console.error('Error updating lead:', error);
       toast({ title: 'Failed to update lead', variant: 'destructive' });

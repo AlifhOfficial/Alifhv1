@@ -24,7 +24,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
-import { uploadFile } from "@/lib/storage";
+import { uploadFile, deleteFile } from "@/lib/storage";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 
@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
     const file = formData.get("file");
+    const previousKey = formData.get("previousKey") as string | null; // Old avatar to delete
     console.log("[upload-avatar] File received:", file instanceof File ? `${file.name} (${file.size} bytes)` : "none");
     
     if (!(file instanceof File)) {
@@ -90,30 +91,37 @@ export async function POST(req: NextRequest) {
       .webp({ quality: OUTPUT_QUALITY })
       .toBuffer();
 
-    // Use full key with user ID - ensures only one avatar per user
-    // Using 'key' bypasses the unique ID generation in buildKey
-    // This enables true overwriting when user uploads a new avatar
-    const key = `avatars/${user.id}.webp`;
+    // Generate unique key with timestamp to bust CDN cache
+    // Each upload creates a NEW cache entry in Cloudflare R2 edge
+    // Old avatars will be deleted (if previousKey provided) or orphaned for cleanup
+    const timestamp = Date.now();
+    const key = `avatars/${user.id}-${timestamp}.webp`;
     console.log("[upload-avatar] Uploading to key:", key, "Size:", processedBuffer.length);
 
-    // IMPORTANT: Short cache with must-revalidate ensures browsers check for updates
-    // Combined with ?v=timestamp cache busting on the URL, this guarantees fresh images
+    // IMPORTANT: Long cache since each upload creates a unique path
+    // No need for must-revalidate since path changes on each upload
     const result = await uploadFile({
       data: processedBuffer,
       contentType: "image/webp",
-      key, // Use key directly to bypass unique ID generation
-      cacheControl: "public, max-age=300, must-revalidate", // 5 min cache with revalidation
+      key, // Unique key per upload
+      cacheControl: "public, max-age=31536000, immutable", // 1 year cache (immutable)
     });
     
     console.log("[upload-avatar] Upload result:", result);
 
-    // Include timestamp for cache busting - clients should use this in avatarUrl
-    const now = Date.now();
+    // Delete old avatar if provided (async, don't block response)
+    if (previousKey && previousKey.startsWith("avatars/")) {
+      deleteFile(previousKey).catch((err) => {
+        console.warn(`[upload-avatar] Failed to delete old avatar: ${previousKey}`, err);
+      });
+    }
+
+    // Return the new key - caller must save this to profile.avatar
     return NextResponse.json({
       key: result.key,
       url: result.url,
       etag: result.etag,
-      updatedAt: now, // For cache busting query param
+      updatedAt: timestamp,
     });
   } catch (error) {
     console.error("[storage/upload-avatar] POST failed", error);

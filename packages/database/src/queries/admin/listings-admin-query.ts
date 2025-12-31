@@ -137,6 +137,7 @@ export async function getAdminListings(options: GetAdminListingsOptions = {}) {
       userName: user.name,
       userEmail: user.email,
       partnerName: partner.brandName,
+      specialNotes: carListing.specialNotes,
     })
     .from(carListing)
     .leftJoin(user, eq(user.id, carListing.userId))

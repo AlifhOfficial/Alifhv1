@@ -54,6 +54,19 @@ interface Listing {
   rejectionReason?: string | null;
   emirate: string;
   mileage: number;
+  // AI moderation data
+  specialNotes?: {
+    aiModeration?: {
+      decision: 'approve' | 'flag' | 'reject';
+      confidence: number;
+      flags: Array<{ code: string; severity: string; message: string }>;
+      reasoning: string;
+      autoApproved?: boolean;
+      autoRejected?: boolean;
+      processedAt?: string;
+      model?: string;
+    };
+  };
 }
 
 interface AdminListingStats {

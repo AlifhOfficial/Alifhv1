@@ -13,6 +13,7 @@
     "test": "bun test"
   },
   "dependencies": {
+    "@alifh/ai": "workspace:*",
     "@alifh/database": "workspace:*",
     "@aws-sdk/client-s3": "3.954.0",
     "@aws-sdk/s3-request-presigner": "3.954.0",
@@ -41,6 +42,7 @@
     "boring-avatars": "2.0.4",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
+    "cmdk": "1.1.1",
     "date-fns": "4.1.0",
     "drizzle-orm": "0.45.1",
     "hugeicons-react": "0.3.0",

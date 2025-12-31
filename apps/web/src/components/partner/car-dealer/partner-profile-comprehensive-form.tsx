@@ -15,7 +15,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Camera, X, Plus, Play, Clock, Bell, MapPin, Building2, 
@@ -163,30 +163,40 @@ export function PartnerProfileComprehensiveForm({ partnerId }: PartnerProfileCom
   // Form state - mirrors profile but editable
   const [form, setForm] = useState<Partial<PartnerProfileData>>({});
   
-  // Fetch profile
-  const fetchProfile = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      // Always use comprehensive profile endpoint for the dashboard form
-      const url = '/api/partner/profile';
-      
-      const res = await fetch(url, { credentials: 'include' });
-      if (!res.ok) throw new Error('Failed to fetch');
-      
-      const data = await res.json();
-      const profileData = data.profile || data;
-      setProfile(profileData);
-      setForm(profileData);
-    } catch (err) {
-      toast({ title: 'Failed to load profile', variant: 'destructive' });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [partnerId, toast]);
-  
+  // Fetch profile - runs once on mount only
   useEffect(() => {
+    let cancelled = false;
+    
+    const fetchProfile = async () => {
+      try {
+        setIsLoading(true);
+        // Always use comprehensive profile endpoint for the dashboard form
+        const url = '/api/partner/profile';
+        
+        const res = await fetch(url, { credentials: 'include' });
+        if (!res.ok) throw new Error('Failed to fetch');
+        
+        const data = await res.json();
+        if (cancelled) return;
+        
+        const profileData = data.profile || data;
+        setProfile(profileData);
+        setForm(profileData);
+      } catch (err) {
+        if (!cancelled) {
+          toast({ title: 'Failed to load profile', variant: 'destructive' });
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+    
     fetchProfile();
-  }, [fetchProfile]);
+    
+    return () => { cancelled = true; };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   
   // Update form field
   const updateField = <K extends keyof PartnerProfileData>(key: K, value: PartnerProfileData[K]) => {
@@ -232,11 +242,15 @@ export function PartnerProfileComprehensiveForm({ partnerId }: PartnerProfileCom
   };
   
   // Upload partner logo or hero image - uses optimized endpoint with WebP conversion
-  const uploadPartnerImage = async (file: File, type: 'logo' | 'hero'): Promise<string | null> => {
+  // Passes previousKey to cleanup old image and bust CDN cache
+  const uploadPartnerImage = async (file: File, type: 'logo' | 'hero', previousKey?: string | null): Promise<string | null> => {
     const fd = new FormData();
     fd.append('file', file);
     fd.append('type', type);
     fd.append('partnerId', partnerId);
+    if (previousKey) {
+      fd.append('previousKey', previousKey);
+    }
     
     const res = await fetch('/api/storage/upload-partner-image', { method: 'POST', body: fd, credentials: 'include' });
     if (!res.ok) return null;
@@ -275,8 +289,10 @@ export function PartnerProfileComprehensiveForm({ partnerId }: PartnerProfileCom
     let key: string | null = null;
     
     // Use optimized endpoint for logo and heroImage (compression, WebP, smart overwrite)
+    // Pass current key as previousKey for cleanup and CDN cache busting
     if (field === 'logo' || field === 'heroImage') {
-      key = await uploadPartnerImage(file, field === 'heroImage' ? 'hero' : 'logo');
+      const previousKey = form[field];
+      key = await uploadPartnerImage(file, field === 'heroImage' ? 'hero' : 'logo', previousKey);
     } else {
       // Use generic upload for other images
       key = await uploadFile(file, `partner-${field}s`);

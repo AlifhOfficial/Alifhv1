@@ -107,6 +107,9 @@ export async function updateDealerBaseProfile(
       isVerified: partner.isVerified,
       badges: partner.badges,
       tags: partner.tags,
+      
+      // Timestamps (for cache-busting image URLs)
+      updatedAt: partner.updatedAt,
     });
 
   // Invalidate cache after update

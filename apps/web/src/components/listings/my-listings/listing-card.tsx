@@ -205,11 +205,14 @@ export function ListingCard({
 
       {/* Actions */}
       <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-border/40">
-        <Link href={`/listings/${listing.id}`}>
-          <button className="px-4 py-2 rounded-full border border-border/40 hover:bg-secondary/50 text-xs font-medium tracking-tight transition-colors">
-            View
-          </button>
-        </Link>
+        {/* View - only show for public listings (visible on marketplace) */}
+        {listing.isPublic && (
+          <Link href={`/listings/${listing.id}`}>
+            <button className="px-4 py-2 rounded-full border border-border/40 hover:bg-secondary/50 text-xs font-medium tracking-tight transition-colors">
+              View
+            </button>
+          </Link>
+        )}
         
         {/* Suspended listings - show Relist option prominently */}
         {isSuspended && (
@@ -229,7 +232,8 @@ export function ListingCard({
           </Link>
         )}
 
-        {listing.lifecycleStatus === 'active' && (
+        {/* Mark Sold - only show for public listings (makes sense only when car is listed) */}
+        {listing.isPublic && listing.lifecycleStatus === 'active' && (
           <button 
             onClick={() => onMarkSold(listing.id)}
             className="px-4 py-2 rounded-full bg-green-500 hover:bg-green-600 text-white text-xs font-medium tracking-tight transition-colors"

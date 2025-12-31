@@ -27,7 +27,7 @@ export interface CreateCarListingInput {
   year: number;
   price: number;
   mileage: number;
-  specs: string; // 'gcc' | 'american' | 'european' | 'japanese' | 'canadian' | 'other' (lowercase!)
+  specs: string; // 'gcc' | 'american' | 'european' | 'japanese' | 'chinese' | 'korean' | 'canadian' | 'other'
   steeringSide: string; // 'left' | 'right'
   emirate: string;
   
@@ -42,7 +42,7 @@ export interface CreateCarListingInput {
   bodyType?: string;
   fuelType?: string;
   transmission?: string;
-  engineSize?: string;
+  engineSize?: string; // Simplified: 'under_1.5L' | '1.5L_2.0L' | ... | 'electric'
   engineType?: string;
   cylinders?: number;
   powerRange?: string;
@@ -58,9 +58,9 @@ export interface CreateCarListingInput {
   lifecycleStatus?: ListingLifecycleStatus;
 
   // Export
-  exportStatus?: string; // 'imported' | 'local' | 'unknown'
+  exportStatus?: string; // 'local_only' | 'gcc' | 'international' | 'restricted'
   warrantyType?: string;
-  sellerType?: string; // 'dealer' | 'private' | 'partner'
+  sellerType?: string; // 'dealer' | 'private' - derived from postedByRole
   
   // Location
   city?: string;
@@ -72,10 +72,10 @@ export interface CreateCarListingInput {
   
   // Features & Notes
   technicalFeatures?: TechnicalFeatures;
-  extras?: string[];
-  specialNotes?: SpecialNotes;
-  badges?: string[];
-  tags?: string[];
+  extras?: string[];             // Vehicle features from predefined list
+  tags?: string[];               // Predefined tags (max 3)
+  specialNotes?: SpecialNotes;   // Owner remarks + moderation meta
+  badges?: string[];             // System-assigned badges
   
   // Partner (if listing is from partner)
   partnerId?: string;
@@ -124,7 +124,7 @@ export interface UpdateCarListingInput {
   // Export
   exportStatus?: string;
   warrantyType?: string;
-  sellerType?: string;
+  sellerType?: string; // 'dealer' | 'private'
   
   // Location
   emirate?: string;
@@ -137,10 +137,10 @@ export interface UpdateCarListingInput {
   
   // Features & Notes
   technicalFeatures?: TechnicalFeatures;
-  extras?: string[];
-  specialNotes?: SpecialNotes;
-  badges?: string[];
-  tags?: string[];
+  extras?: string[];             // Vehicle features from predefined list
+  tags?: string[];               // Predefined tags (max 3)
+  specialNotes?: SpecialNotes;   // Owner remarks + moderation meta
+  badges?: string[];             // System-assigned badges
 
   // Moderation/system fields (staff/admin controlled)
   submittedAt?: Date | null;

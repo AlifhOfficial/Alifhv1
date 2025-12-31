@@ -7,6 +7,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ListingForm } from '@/components/listings/listing-form';
+import type { ListingFormData } from '@/components/listings/listing-form/types';
 import type { CarDetailedData } from '@alifh/database';
 import type { ListingType } from '@/components/listings/my-listings/types';
 
@@ -26,54 +27,71 @@ export function EditListingView({ listing, userId, listingType = 'personal' }: E
       ? '/staff-dashboard/work-listings'
       : '/user-dashboard/listings/my-listings';
 
-  // Transform listing data to form format
-  const initialData = {
+  // Transform listing data to new form format
+  const initialData: Partial<ListingFormData> & { id: string } = {
+    id: listing.id,
+    vin: listing.vin || '',
     make: listing.make,
     model: listing.model,
     year: listing.year,
     trim: listing.trim || undefined,
-    vin: listing.vin || undefined,
     price: listing.price,
     currency: listing.currency,
     isNegotiable: listing.isNegotiable,
     mileage: listing.mileage,
-    specs: listing.specs,
-    steeringSide: listing.steeringSide,
-    bodyType: listing.bodyType || undefined,
-    fuelType: listing.fuelType || undefined,
-    transmission: listing.transmission || undefined,
-    engineSize: listing.engineSize || undefined,
-    engineType: listing.engineType || undefined,
+    specs: listing.specs as any,
+    steeringSide: listing.steeringSide as any,
+    bodyType: listing.bodyType as any || undefined,
+    fuelType: listing.fuelType as any || undefined,
+    transmission: listing.transmission as any || undefined,
+    engineSize: listing.engineSize as any || undefined,
+    engineType: listing.engineType as any || undefined,
     cylinders: listing.cylinders || undefined,
-    doors: listing.doors || undefined,
-    seatingCapacity: listing.seatingCapacity || undefined,
-    exteriorColor: listing.exteriorColor || undefined,
-    interiorColor: listing.interiorColor || undefined,
-    exportStatus: listing.exportStatus,
-    warrantyType: listing.warrantyType || undefined,
-    sellerType: listing.sellerType,
+    powerRange: listing.powerRange as any || undefined,
+    fuelEconomy: listing.fuelEconomy || undefined,
+    doors: listing.doors as any || undefined,
+    seatingCapacity: listing.seatingCapacity as any || undefined,
+    exteriorColor: listing.exteriorColor as any || undefined,
+    interiorColor: listing.interiorColor as any || undefined,
+    exportStatus: listing.exportStatus as any,
+    warrantyType: listing.warrantyType as any || undefined,
     emirate: listing.emirate,
     city: listing.city || undefined,
-    thumbnail: listing.thumbnail || undefined,
-    images: listing.images,
+    // Convert images from string[] to ListingImage[]
+    images: (listing.images || []).map((img, index) => ({
+      key: typeof img === 'string' ? img : (img as any).key || '',
+      order: index,
+    })),
     videoUrl: listing.videoUrl || undefined,
     description: listing.description || undefined,
+    extras: listing.extras || [],
+    tags: listing.tags || [],
+    technicalFeatures: listing.technicalFeatures || {},
+    ownerRemarks: listing.specialNotes?.ownerRemarks || [],
     partnerId: listing.partnerId || undefined,
   };
 
-  const handleSubmit = async (data: any, isDraft: boolean) => {
+  const handleSubmit = async (data: ListingFormData) => {
     try {
       setError(null);
+
+      // Transform images back to string[] for API
+      const apiData = {
+        ...data,
+        images: data.images.map(img => img.key),
+        // Map ownerRemarks back to specialNotes structure
+        specialNotes: {
+          ...listing.specialNotes,
+          ownerRemarks: data.ownerRemarks,
+        },
+      };
 
       const response = await fetch(`/api/listings/${listing.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...data,
-          status: isDraft ? 'draft' : 'published',
-        }),
+        body: JSON.stringify(apiData),
       });
 
       if (!response.ok) {
@@ -133,8 +151,8 @@ export function EditListingView({ listing, userId, listingType = 'personal' }: E
 
         {/* Form */}
         <ListingForm
+          mode="edit"
           initialData={initialData}
-          isEditing
           onSubmit={handleSubmit}
           onCancel={handleCancel}
         />

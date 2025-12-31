@@ -28,7 +28,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
-import { uploadFile } from "@/lib/storage";
+import { uploadFile, deleteFile } from "@/lib/storage";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 
@@ -78,6 +78,7 @@ export async function POST(req: NextRequest) {
     const file = formData.get("file");
     const imageType = formData.get("type") as string;
     const partnerId = formData.get("partnerId") as string;
+    const previousKey = formData.get("previousKey") as string | null; // Old image to delete
     
     // Validate required fields
     if (!(file instanceof File)) {
@@ -128,27 +129,34 @@ export async function POST(req: NextRequest) {
       .webp({ quality: config.quality })
       .toBuffer();
 
-    // Use full key with partnerId - ensures only one logo/hero per partner
-    // Using 'key' bypasses the unique ID generation in buildKey
-    // This enables true overwriting when partner uploads a new image
-    const key = `${config.directory}/${partnerId}.webp`;
+    // Generate unique key with timestamp to bust CDN cache
+    // This ensures each upload creates a NEW cache entry in Cloudflare R2 edge
+    // Old images will be orphaned but can be cleaned up via a scheduled job
+    const timestamp = Date.now();
+    const key = `${config.directory}/${partnerId}-${timestamp}.webp`;
 
-    // IMPORTANT: Short cache with must-revalidate ensures browsers check for updates
-    // Combined with ?v=timestamp cache busting on the URL, this guarantees fresh images
+    // IMPORTANT: Long cache since each upload creates a unique path
+    // No need for must-revalidate since path changes on each upload
     const result = await uploadFile({
       data: processedBuffer,
       contentType: "image/webp",
-      key, // Use key directly to bypass unique ID generation
-      cacheControl: "public, max-age=300, must-revalidate", // 5 min cache with revalidation
+      key, // Unique key per upload
+      cacheControl: "public, max-age=31536000, immutable", // 1 year cache (immutable)
     });
 
-    // Include timestamp for cache busting - clients should use this in URLs
-    const now = Date.now();
+    // Delete old image if provided (async, don't block response)
+    if (previousKey && previousKey.startsWith(config.directory)) {
+      deleteFile(previousKey).catch((err) => {
+        console.warn(`[upload-partner-image] Failed to delete old image: ${previousKey}`, err);
+      });
+    }
+
+    // Return the new key - caller must save this to partner.logo/heroImage
     return NextResponse.json({
       key: result.key,
       url: result.url,
       etag: result.etag,
-      updatedAt: now, // For cache busting query param
+      updatedAt: timestamp,
     });
   } catch (error) {
     console.error("[storage/upload-partner-image] POST failed", error);

@@ -5,7 +5,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Eye, Heart, User, Building2, Clock, Calendar, AlertTriangle } from 'lucide-react';
+import { Eye, Heart, User, Building2, Clock, Calendar, AlertTriangle, Sparkles, Bot } from 'lucide-react';
 
 interface Listing {
   id: string;
@@ -34,6 +34,19 @@ interface Listing {
   rejectionReason?: string | null;
   emirate: string;
   mileage: number;
+  // AI moderation data
+  specialNotes?: {
+    aiModeration?: {
+      decision: 'approve' | 'flag' | 'reject';
+      confidence: number;
+      flags: Array<{ code: string; severity: string; message: string }>;
+      reasoning: string;
+      autoApproved?: boolean;
+      autoRejected?: boolean;
+      processedAt?: string;
+      model?: string;
+    };
+  };
 }
 
 interface AdminListingCardProps {
@@ -74,6 +87,12 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
   
   // Deep inventory = any non-active lifecycle status
   const isDeepInventory = isArchived || isSold || isExpired || isDeleted || isSuspended;
+  
+  // AI moderation info
+  const aiModeration = listing.specialNotes?.aiModeration;
+  const isAIModerated = !!aiModeration;
+  const isAutoApproved = aiModeration?.autoApproved === true;
+  const isAutoRejected = aiModeration?.autoRejected === true;
 
   // Status label with clear priority hierarchy
   const getStatusLabel = (): { label: string; className: string } => {
@@ -133,6 +152,26 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
                 <span className={`px-3 py-1 rounded-md text-xs font-medium ${status.className}`}>
                   {status.label}
                 </span>
+
+                {/* AI Moderated Badge */}
+                {isAutoApproved && (
+                  <span className="px-3 py-1 rounded-md text-xs font-medium bg-emerald-500/10 text-emerald-500 flex items-center gap-1.5">
+                    <Bot className="w-3 h-3" />
+                    AI Auto-Approved
+                  </span>
+                )}
+                {isAutoRejected && (
+                  <span className="px-3 py-1 rounded-md text-xs font-medium bg-red-500/10 text-red-500 flex items-center gap-1.5">
+                    <Bot className="w-3 h-3" />
+                    AI Auto-Rejected
+                  </span>
+                )}
+                {isAIModerated && !isAutoApproved && !isAutoRejected && (
+                  <span className="px-3 py-1 rounded-md text-xs font-medium bg-purple-500/10 text-purple-500 flex items-center gap-1.5">
+                    <Sparkles className="w-3 h-3" />
+                    AI Reviewed
+                  </span>
+                )}
 
                 {/* Listing Type Badge */}
                 <span
@@ -208,7 +247,7 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
               )}
             </div>
           </div>
-
+          
           {/* Suspension/Rejection Reason */}
           {(isSuspended && listing.suspensionReason) && (
             <div className="flex items-start gap-2 p-3 border border-yellow-500/20 rounded-xl">
@@ -225,6 +264,40 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
               <div>
                 <p className="text-xs font-medium text-red-500">Rejection Reason</p>
                 <p className="text-xs text-muted-foreground mt-0.5">{listing.rejectionReason}</p>
+              </div>
+            </div>
+          )}
+          
+          {/* AI Moderation Details */}
+          {aiModeration && (
+            <div className="flex items-start gap-2 p-3 border border-purple-500/20 rounded-xl bg-purple-500/5">
+              <Bot className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-xs font-medium text-purple-500">AI Moderation</p>
+                  <span className="text-xs text-muted-foreground">
+                    {(aiModeration.confidence * 100).toFixed(0)}% confidence
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground">{aiModeration.reasoning}</p>
+                {aiModeration.flags && aiModeration.flags.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {aiModeration.flags.map((flag, i) => (
+                      <span 
+                        key={i} 
+                        className={`px-2 py-0.5 rounded text-xs ${
+                          flag.severity === 'high' 
+                            ? 'bg-red-500/10 text-red-500' 
+                            : flag.severity === 'medium'
+                            ? 'bg-yellow-500/10 text-yellow-500'
+                            : 'bg-blue-500/10 text-blue-500'
+                        }`}
+                      >
+                        {flag.code}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}

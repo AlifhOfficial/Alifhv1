@@ -8,6 +8,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ListingForm } from '@/components/listings/listing-form';
+import type { ListingFormData } from '@/components/listings/listing-form/types';
 
 interface NewWorkListingViewProps {
   userId: string;
@@ -15,12 +16,26 @@ interface NewWorkListingViewProps {
 }
 
 export function NewWorkListingView({ userId, partnerId }: NewWorkListingViewProps) {
+  void userId;
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (data: any, isDraft: boolean) => {
+  const handleSubmit = async (data: ListingFormData) => {
     try {
       setError(null);
+
+      // Transform images from ListingImage[] to string[]
+      const apiData = {
+        ...data,
+        images: data.images.map(img => img.key),
+        specialNotes: {
+          ownerRemarks: data.ownerRemarks,
+        },
+        partnerId, // Include partner ID for work listings
+        sellerType: 'dealer', // Mark as dealer listing
+        // Staff listings get auto-approved (status 'published' -> moderationStatus 'approved')
+        status: 'published',
+      };
 
       const response = await fetch('/api/listings', {
         method: 'POST',
@@ -28,12 +43,7 @@ export function NewWorkListingView({ userId, partnerId }: NewWorkListingViewProp
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({
-          ...data,
-          partnerId, // Include partner ID for work listings
-          sellerType: 'dealer', // Mark as dealer listing
-          status: isDraft ? 'draft' : 'published',
-        }),
+        body: JSON.stringify(apiData),
       });
 
       if (!response.ok) {
@@ -43,15 +53,48 @@ export function NewWorkListingView({ userId, partnerId }: NewWorkListingViewProp
         throw new Error(errorMessage);
       }
 
-      // Redirect to work listings page after creation
-      if (isDraft) {
-        router.push('/staff-dashboard/work-listings?tab=draft');
-      } else {
-        router.push('/staff-dashboard/work-listings');
-      }
+      // Staff listings are auto-approved, redirect to active listings
+      router.push('/staff-dashboard/work-listings?tab=active');
     } catch (err) {
       console.error('Error creating listing:', err);
       setError(err instanceof Error ? err.message : 'Failed to create listing');
+    }
+  };
+
+  const handleSaveDraft = async (data: Partial<ListingFormData>) => {
+    try {
+      setError(null);
+
+      const apiData = {
+        ...data,
+        images: (data.images || []).map(img => img.key),
+        specialNotes: {
+          ownerRemarks: data.ownerRemarks || [],
+        },
+        partnerId,
+        sellerType: 'dealer',
+        // Save as draft (not published yet)
+        status: 'draft',
+      };
+
+      const response = await fetch('/api/listings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(apiData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save draft');
+      }
+
+      router.push('/staff-dashboard/work-listings?tab=draft');
+    } catch (err) {
+      console.error('Error saving draft:', err);
+      setError(err instanceof Error ? err.message : 'Failed to save draft');
     }
   };
 
@@ -79,8 +122,12 @@ export function NewWorkListingView({ userId, partnerId }: NewWorkListingViewProp
 
         {/* Form */}
         <ListingForm
+          mode="create"
           onSubmit={handleSubmit}
+          onSaveDraft={handleSaveDraft}
           onCancel={handleCancel}
+          isStaff={true}
+          partnerId={partnerId}
         />
       </div>
     </div>

@@ -23,10 +23,17 @@ import {
   createCarListing,
   getActivePartnerStaffMembershipByUserIdAndPartnerId,
   memoryCache,
+  db,
+  carListing,
+  updateListingAIValuation,
+  updateListingAIModeration,
   type CreateCarListingInput,
 } from '@alifh/database';
+import { eq, and, ne } from 'drizzle-orm';
 import { getClientIp } from '@/lib/utils/get-client-ip';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_LISTINGS } from '@/lib/rate-limit';
+import { generateValuation, type ValuationInput } from '@alifh/ai/valuation';
+import { moderateListing, type ModerationInput } from '@alifh/ai/moderation';
 
 export const runtime = 'nodejs';
 
@@ -92,8 +99,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Validate specs enum
-    const validSpecs = ['gcc', 'american', 'european', 'japanese', 'canadian', 'other'];
+    // Validate specs enum (includes Chinese & Korean for UAE market)
+    const validSpecs = ['gcc', 'american', 'european', 'japanese', 'chinese', 'korean', 'canadian', 'other'];
     if (!validSpecs.includes(body.specs)) {
       return NextResponse.json(
         { 
@@ -122,6 +129,38 @@ export async function POST(req: NextRequest) {
         { error: 'Images must be an array' },
         { status: 400 }
       );
+    }
+
+    // Server-side VIN uniqueness check (safety net for unique constraint)
+    // Exclude soft-deleted listings - those VINs can be reused
+    if (body.vin) {
+      const formattedVIN = body.vin.toUpperCase().trim();
+      
+      // Check if VIN is used by an active (non-deleted) listing
+      const existingActive = await db
+        .select({ id: carListing.id })
+        .from(carListing)
+        .where(and(
+          eq(carListing.vin, formattedVIN),
+          ne(carListing.lifecycleStatus, 'deleted')
+        ))
+        .limit(1);
+      
+      if (existingActive.length > 0) {
+        return NextResponse.json(
+          { error: 'This VIN is already in use by another listing' },
+          { status: 409 }
+        );
+      }
+      
+      // Clear VIN from any soft-deleted listings to avoid unique constraint violation
+      await db
+        .update(carListing)
+        .set({ vin: null })
+        .where(and(
+          eq(carListing.vin, formattedVIN),
+          eq(carListing.lifecycleStatus, 'deleted')
+        ));
     }
 
     // Set thumbnail to first image if not explicitly provided
@@ -227,7 +266,7 @@ export async function POST(req: NextRequest) {
       // Export
       exportStatus: body.exportStatus || 'local_only',
       warrantyType: body.warrantyType || undefined,
-      sellerType: body.sellerType || 'private',
+      sellerType: postedByRole === 'staff' ? 'dealer' : 'private',
       
       // Location
       city: body.city || undefined,
@@ -239,14 +278,100 @@ export async function POST(req: NextRequest) {
       
       // Features & Notes
       technicalFeatures: body.technicalFeatures || undefined,
-      extras: body.extras || undefined,
-      specialNotes: body.specialNotes || undefined,
-      badges: body.badges || undefined,
-      tags: body.tags || undefined,
+      extras: body.extras || undefined,           // Vehicle features from predefined list
+      tags: body.tags || undefined,               // Predefined tags (max 3)
+      specialNotes: body.specialNotes || undefined, // Owner remarks + moderation
+      badges: body.badges || undefined,           // System-assigned badges
     };
 
     // Create listing
     const listingId = await createCarListing(input);
+
+    // Generate AI valuation asynchronously (don't block response)
+    // Only run for non-draft listings to save API calls
+    if (moderationStatus !== 'draft') {
+      // Pass only relevant data for valuation - lean input = better results
+      const valuationInput: ValuationInput = {
+        make: input.make,
+        model: input.model,
+        year: input.year,
+        trim: input.trim || null,
+        mileage: input.mileage,
+        specs: input.specs,
+        askingPrice: input.price,
+        emirate: input.emirate,
+        // Important specs only
+        bodyType: input.bodyType || null,
+        fuelType: input.fuelType || null,
+        transmission: input.transmission || null,
+        cylinders: input.cylinders || null,
+        warrantyType: input.warrantyType || null,
+        extras: input.extras || null,
+      };
+
+      // Fire and forget - don't await, let it run in background
+      generateValuation(valuationInput)
+        .then(async (result) => {
+          await updateListingAIValuation(listingId, {
+            fairValue: result.fairValue,
+            estimateMin: result.estimateMin,
+            estimateMax: result.estimateMax,
+            priceTrend: result.priceTrend,
+            qiScore: result.qiScore,
+            aiConfidenceScore: result.aiConfidenceScore,
+            reasoning: result.reasoning,
+          });
+          console.log(`[AI Valuation] Listing ${listingId}: QI=${result.qiScore}, Confidence=${result.aiConfidenceScore}`);
+        })
+        .catch((error) => {
+          console.error(`[AI Valuation] Failed for listing ${listingId}:`, error);
+        });
+    }
+
+    // AI Auto-Moderation for USER-posted listings only
+    // Staff/dealer listings skip moderation as they are already trusted
+    if (postedByRole === 'user' && moderationStatus === 'submitted') {
+      const moderationInput: ModerationInput = {
+        make: input.make,
+        model: input.model,
+        year: input.year,
+        trim: input.trim || null,
+        vin: input.vin || null,
+        price: input.price,
+        isNegotiable: input.isNegotiable,
+        mileage: input.mileage,
+        specs: input.specs,
+        bodyType: input.bodyType || null,
+        fuelType: input.fuelType || null,
+        transmission: input.transmission || null,
+        cylinders: input.cylinders || null,
+        warrantyType: input.warrantyType || null,
+        // TODO: Add condition, exteriorColor, interiorColor to CreateCarListingInput type
+        condition: null,
+        exteriorColor: null,
+        interiorColor: null,
+        description: input.description || null,
+        emirate: input.emirate,
+        city: input.city || null,
+        imageCount: input.images?.length || 0,
+        hasVideo: !!input.videoUrl,
+        extras: input.extras || null,
+        tags: input.tags || null,
+        // Extract ownerRemarks from SpecialNotes object
+        ownerRemarks: input.specialNotes?.ownerRemarks || null,
+      };
+
+      // Fire and forget - don't await, let it run in background
+      moderateListing(moderationInput)
+        .then(async (result) => {
+          await updateListingAIModeration(listingId, result);
+          console.log(`[AI Moderation] Listing ${listingId}: ${result.decision} (confidence: ${result.confidence})`);
+        })
+        .catch((error) => {
+          console.error(`[AI Moderation] Failed for listing ${listingId}:`, error);
+          // On failure, listing stays as 'submitted' for manual review
+        });
+    }
 
     void createAuditLogEntry({
       action: 'listing.create',

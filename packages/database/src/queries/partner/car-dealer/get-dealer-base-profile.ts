@@ -16,7 +16,7 @@ import { partner } from '../../../schema/partner';
 
 /**
  * Car Dealer Base Profile - For listing cards/profile preview
- * Returns all essential dealer info (30 fields)
+ * Returns all essential dealer info (30+ fields)
  * Cached for 60s to reduce database load
  */
 export type DealerBaseProfile = {
@@ -49,6 +49,7 @@ export type DealerBaseProfile = {
   isVerified: boolean;
   badges: string[];
   tags: string[];
+  updatedAt: Date | null; // Used for cache-busting image URLs
 };
 
 export async function getDealerBaseProfile(partnerId: string): Promise<DealerBaseProfile | null> {
@@ -109,6 +110,9 @@ export async function getDealerBaseProfile(partnerId: string): Promise<DealerBas
       isVerified: partner.isVerified,
       badges: partner.badges,
       tags: partner.tags,
+      
+      // Timestamps (for cache-busting image URLs)
+      updatedAt: partner.updatedAt,
     })
     .from(partner)
     .where(eq(partner.id, partnerId))

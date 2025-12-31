@@ -253,6 +253,13 @@
       "when": 1767026008004,
       "tag": "0035_curious_stellaris",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1767183612316,
+      "tag": "0036_wonderful_wendell_vaughn",
+      "breakpoints": true
     }
   ]
 }

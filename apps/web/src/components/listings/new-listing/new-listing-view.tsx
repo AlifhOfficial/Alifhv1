@@ -7,28 +7,39 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ListingForm } from '@/components/listings/listing-form';
+import type { ListingFormData } from '@/components/listings/listing-form/types';
 
 interface NewListingViewProps {
   userId: string;
 }
 
 export function NewListingView({ userId }: NewListingViewProps) {
+  void userId;
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (data: any, isDraft: boolean) => {
+  const handleSubmit = async (data: ListingFormData) => {
     try {
       setError(null);
+
+      // Transform images from ListingImage[] to string[] for API
+      const apiData = {
+        ...data,
+        images: data.images.map(img => img.key),
+        // Map ownerRemarks to specialNotes structure
+        specialNotes: {
+          ownerRemarks: data.ownerRemarks,
+        },
+        // Submit for review (user listings go to 'submitted', staff go to 'approved')
+        status: 'published',
+      };
 
       const response = await fetch('/api/listings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...data,
-          status: isDraft ? 'draft' : 'published',
-        }),
+        body: JSON.stringify(apiData),
       });
 
       if (!response.ok) {
@@ -40,18 +51,46 @@ export function NewListingView({ userId }: NewListingViewProps) {
 
       const result = await response.json();
       
-      // Redirect based on status
-      // Note: User-posted listings are queued for moderation when submitted
-      // regardless of what status was requested
-      if (isDraft) {
-        router.push('/user-dashboard/listings/my-listings?tab=draft');
-      } else {
-        // Submitted for review
-        router.push('/user-dashboard/listings/my-listings?tab=in_review');
-      }
+      // Redirect to my listings - submitted for review
+      router.push('/user-dashboard/listings/my-listings?tab=in_review');
     } catch (err) {
       console.error('Error creating listing:', err);
       setError(err instanceof Error ? err.message : 'Failed to create listing');
+    }
+  };
+
+  const handleSaveDraft = async (data: Partial<ListingFormData>) => {
+    try {
+      setError(null);
+
+      // Transform for API
+      const apiData = {
+        ...data,
+        images: (data.images || []).map(img => img.key),
+        specialNotes: {
+          ownerRemarks: data.ownerRemarks || [],
+        },
+        // Save as draft (not submitted for review)
+        status: 'draft',
+      };
+
+      const response = await fetch('/api/listings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(apiData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save draft');
+      }
+
+      router.push('/user-dashboard/listings/my-listings?tab=draft');
+    } catch (err) {
+      console.error('Error saving draft:', err);
+      setError(err instanceof Error ? err.message : 'Failed to save draft');
     }
   };
 
@@ -66,7 +105,7 @@ export function NewListingView({ userId }: NewListingViewProps) {
         <div className="max-w-4xl mx-auto px-6 py-8">
           <h1 className="text-2xl font-semibold tracking-tight">List Your Car</h1>
           <p className="text-sm text-muted-foreground mt-2">
-            Fill in the details to create your listing
+            Enter your VIN to auto-fill vehicle details
           </p>
         </div>
       </div>
@@ -81,10 +120,14 @@ export function NewListingView({ userId }: NewListingViewProps) {
       )}
 
       {/* Form */}
-      <ListingForm
-        onSubmit={handleSubmit}
-        onCancel={handleCancel}
-      />
+      <div className="py-8">
+        <ListingForm
+          mode="create"
+          onSubmit={handleSubmit}
+          onSaveDraft={handleSaveDraft}
+          onCancel={handleCancel}
+        />
+      </div>
     </div>
   );
 }

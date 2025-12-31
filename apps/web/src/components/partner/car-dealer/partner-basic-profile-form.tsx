@@ -184,6 +184,11 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       fd.append('file', file);
       fd.append('type', field === 'heroImage' ? 'hero' : 'logo');
       fd.append('partnerId', partnerId);
+      // Pass previous key for cleanup and CDN cache busting
+      const previousKey = form[field];
+      if (previousKey) {
+        fd.append('previousKey', previousKey);
+      }
       
       // Use optimized partner image endpoint - handles compression, WebP conversion, and smart overwriting
       const res = await fetch('/api/storage/upload-partner-image', { 

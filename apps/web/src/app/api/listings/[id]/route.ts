@@ -26,15 +26,20 @@ import {
   deleteCarListing,
   deleteCarListingByStaff,
   invalidateListingCaches,
+  updateListingAIModeration,
+  updateListingAIValuation,
   type UpdateCarListingInput,
 } from '@alifh/database';
-import { memoryCache } from '@alifh/database';
+import { memoryCache, getListingDetailed } from '@alifh/database';
 import { autoMatchConsignment } from '@/lib/consignment/auto-match';
 import { getClientIp } from '@/lib/utils/get-client-ip';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_LISTINGS } from '@/lib/rate-limit';
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_LISTINGS, RATE_LIMITS_GENERAL } from '@/lib/rate-limit';
+import { moderateListing, type ModerationInput } from '@alifh/ai/moderation';
+import { generateValuation, type ValuationInput } from '@alifh/ai/valuation';
 
 export const runtime = 'nodejs';
 
+const listingReadLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
 const listingUpdateLimiter = createRateLimiter(RATE_LIMITS_LISTINGS.UPDATE);
 const listingDeleteLimiter = createRateLimiter(RATE_LIMITS_LISTINGS.DELETE);
 
@@ -50,6 +55,61 @@ async function canManagePartnerListing(
 
   const dbMembership = await getActivePartnerStaffMembershipByUserIdAndPartnerId(user.id, partnerId);
   return !!dbMembership && dbMembership.role !== 'viewer';
+}
+
+/**
+ * GET /api/listings/[id]
+ * Fetch a listing for editing (owner/staff only, no public requirement)
+ */
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    // Auth check - must be logged in
+    const user = await getSessionUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Rate limit
+    const identifier = getIdentifier(req, user.id);
+    const rateLimitResult = await listingReadLimiter.check(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
+    }
+
+    const { id } = await params;
+
+    // Fetch full listing data (including non-public listings)
+    const listing = await getListingDetailed(id);
+    if (!listing) {
+      return NextResponse.json({ error: 'Listing not found' }, { status: 404 });
+    }
+
+    // Check ownership or staff permission
+    const isAdmin = user.role === 'admin' || user.role === 'super_admin';
+    const isOwner = listing.userId === user.id;
+    
+    // For partner listings, check if user is staff with permission
+    let canAccess = isAdmin || isOwner;
+    if (!canAccess && listing.partnerId) {
+      canAccess = await canManagePartnerListing(user, listing.partnerId);
+    }
+
+    if (!canAccess) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    }
+
+    // Return listing data (no public check - owner can edit drafts, rejected, etc.)
+    return NextResponse.json(listing);
+  } catch (error) {
+    console.error('[API] Error fetching listing:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
 }
 
 export async function PUT(
@@ -109,7 +169,7 @@ export async function PUT(
     }
 
     if (body.specs !== undefined) {
-      const validSpecs = ['gcc', 'american', 'european', 'japanese', 'canadian', 'other'];
+      const validSpecs = ['gcc', 'american', 'european', 'japanese', 'chinese', 'korean', 'canadian', 'other'];
       if (!validSpecs.includes(body.specs)) {
         return NextResponse.json(
           { 
@@ -283,9 +343,9 @@ export async function PUT(
     if (body.videoUrl !== undefined) updateData.videoUrl = body.videoUrl;
     if (body.technicalFeatures !== undefined) updateData.technicalFeatures = body.technicalFeatures;
     if (body.extras !== undefined) updateData.extras = body.extras;
+    if (body.tags !== undefined) updateData.tags = body.tags;
     if (body.specialNotes !== undefined) updateData.specialNotes = body.specialNotes;
     if (body.badges !== undefined) updateData.badges = body.badges;
-    if (body.tags !== undefined) updateData.tags = body.tags;
 
     // Moderation invariants are enforced in DB mutations:
     // - `posted_by_role = user` cannot become public without admin approval.
@@ -427,6 +487,137 @@ export async function PUT(
       autoMatchConsignment(id).catch((error) => {
         console.error('[Consignment] Background auto-match failed:', error);
       });
+    }
+
+    // AI Auto-Moderation for USER-posted listings
+    // Trigger when user edits ANY content field (not just status changes)
+    // This ensures legitimate edits get auto-approved instead of stuck in review
+    const contentFields = Object.keys(body).filter(k => 
+      !['moderationStatus', 'lifecycleStatus', 'status'].includes(k)
+    );
+    
+    const hasContentChanges = contentFields.length > 0;
+
+    const shouldRunAIModeration = 
+      updated?.postedByRole === 'user' &&
+      hasContentChanges;
+
+    console.log(`[AI Check] postedByRole=${updated?.postedByRole}, moderationStatus=${updated?.moderationStatus}, editedFields=${contentFields.length}, shouldRun=${shouldRunAIModeration}`);
+    
+    if (shouldRunAIModeration && updated) {
+      console.log(`[AI Moderation] Starting AI moderation for listing ${id}...`);
+      // Get full listing data for AI moderation
+      const fullListing = await getListingDetailed(id);
+      console.log(`[AI Moderation] Got full listing: ${!!fullListing}`);
+      if (fullListing) {
+        // Check if CORE valuation fields changed (price, mileage, specs, etc.)
+        const coreFieldsChanged = 
+          (body.price !== undefined && body.price !== fullListing.price) ||
+          (body.mileage !== undefined && body.mileage !== fullListing.mileage) ||
+          (body.specs !== undefined && body.specs !== fullListing.specs) ||
+          (body.bodyType !== undefined) ||
+          (body.fuelType !== undefined) ||
+          (body.transmission !== undefined) ||
+          (body.cylinders !== undefined) ||
+          (body.warrantyType !== undefined) ||
+          (body.extras !== undefined);
+
+        // AI Valuation - only re-run if core fields changed
+        if (coreFieldsChanged) {
+          const changes: any = {};
+          if (body.price !== undefined && body.price !== fullListing.price) {
+            changes.price = { from: fullListing.price, to: body.price };
+          }
+          if (body.mileage !== undefined && body.mileage !== fullListing.mileage) {
+            changes.mileage = { from: fullListing.mileage, to: body.mileage };
+          }
+          if (body.specs !== undefined && body.specs !== fullListing.specs) {
+            changes.specs = { from: fullListing.specs, to: body.specs };
+          }
+          // TODO: Track extras changes (added/removed)
+          
+          const valuationInput: ValuationInput = {
+            make: fullListing.make,
+            model: fullListing.model,
+            year: fullListing.year,
+            trim: fullListing.trim || null,
+            mileage: fullListing.mileage,
+            specs: fullListing.specs,
+            askingPrice: fullListing.price,
+            emirate: fullListing.emirate,
+            bodyType: fullListing.bodyType || null,
+            fuelType: fullListing.fuelType || null,
+            transmission: fullListing.transmission || null,
+            cylinders: fullListing.cylinders || null,
+            warrantyType: fullListing.warrantyType || null,
+            extras: fullListing.extras || null,
+            // Pass previous valuation context
+            previousValuation: fullListing.fairValue ? {
+              fairValue: fullListing.fairValue,
+              qiScore: fullListing.qiScore || 50,
+              aiConfidenceScore: fullListing.aiConfidenceScore || 0.5,
+              changes: Object.keys(changes).length > 0 ? changes : undefined,
+            } : undefined,
+          };
+
+          generateValuation(valuationInput)
+            .then(async (result) => {
+              await updateListingAIValuation(id, {
+                fairValue: result.fairValue,
+                estimateMin: result.estimateMin,
+                estimateMax: result.estimateMax,
+                priceTrend: result.priceTrend,
+                qiScore: result.qiScore,
+                aiConfidenceScore: result.aiConfidenceScore,
+                reasoning: result.reasoning,
+              });
+              console.log(`[AI Valuation] Listing ${id} (edit): QI=${result.qiScore}, Confidence=${result.aiConfidenceScore}, CoreFieldsChanged=true`);
+            })
+            .catch((error) => {
+              console.error(`[AI Valuation] Failed for listing ${id}:`, error);
+            });
+        } else {
+          console.log(`[AI Valuation] Skipped for listing ${id}: No core field changes (only description/images/etc)`);
+        }
+
+        // AI Moderation (fire and forget)
+        const moderationInput: ModerationInput = {
+          make: fullListing.make,
+          model: fullListing.model,
+          year: fullListing.year,
+          trim: fullListing.trim || null,
+          vin: fullListing.vin || null,
+          price: fullListing.price,
+          isNegotiable: fullListing.isNegotiable,
+          mileage: fullListing.mileage,
+          specs: fullListing.specs,
+          bodyType: fullListing.bodyType || null,
+          fuelType: fullListing.fuelType || null,
+          transmission: fullListing.transmission || null,
+          cylinders: fullListing.cylinders || null,
+          warrantyType: fullListing.warrantyType || null,
+          condition: null, // TODO: Add to CarDetailedData query
+          exteriorColor: null, // TODO: Add to CarDetailedData query
+          interiorColor: null, // TODO: Add to CarDetailedData query
+          description: fullListing.description || null,
+          emirate: fullListing.emirate,
+          city: fullListing.city || null,
+          imageCount: fullListing.images?.length || 0,
+          hasVideo: !!fullListing.videoUrl,
+          extras: fullListing.extras || null,
+          tags: fullListing.tags || null,
+          ownerRemarks: fullListing.specialNotes?.ownerRemarks || null,
+        };
+
+        moderateListing(moderationInput)
+          .then(async (result) => {
+            await updateListingAIModeration(id, result);
+            console.log(`[AI Moderation] Listing ${id} (resubmit): ${result.decision} (confidence: ${result.confidence})`);
+          })
+          .catch((error) => {
+            console.error(`[AI Moderation] Failed for listing ${id}:`, error);
+          });
+      }
     }
 
     return NextResponse.json({

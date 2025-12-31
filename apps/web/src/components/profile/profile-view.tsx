@@ -167,6 +167,10 @@ export function ProfileView() {
     try {
       const fd = new FormData();
       fd.append('file', file);
+      // Pass previous avatar key for cleanup and CDN cache busting
+      if (profile?.avatar) {
+        fd.append('previousKey', profile.avatar);
+      }
       // Use dedicated avatar endpoint - handles WebP conversion, compression, and cleanup
       const res = await fetch('/api/storage/upload-avatar', { method: 'POST', body: fd, credentials: 'include' });
       const data = await res.json();

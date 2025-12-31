@@ -11,6 +11,7 @@ import {
 } from 'drizzle-orm/pg-core';
 import { user } from './auth';
 import { partner } from './partner';
+import { ENGINE_SIZE_VALUES, SPECS_TYPE_VALUES } from './listing-constants';
 
 export const listingModerationStatusEnum = pgEnum('listing_moderation_status', [
   'draft',
@@ -28,15 +29,24 @@ export const listingLifecycleStatusEnum = pgEnum('listing_lifecycle_status', [
   'deleted',
 ]);
 
+/**
+ * Posted by role - determines seller type automatically:
+ * - 'user' = private seller
+ * - 'staff' = dealer (partner)
+ */
 export const listingPostedByRoleEnum = pgEnum('listing_posted_by_role', [
-  'user',
-  'staff',
+  'user',   // Private seller
+  'staff',  // Dealer (partner staff)
 ]);
 
+/**
+ * Seller type - derived from postedByRole but kept for backward compatibility
+ * - 'private' = user posting (postedByRole: 'user')
+ * - 'dealer' = staff posting (postedByRole: 'staff')
+ */
 export const sellerTypeEnum = pgEnum('seller_type', [
   'dealer',
   'private',
-  'consignment',
 ]);
 
 export const bodyTypeEnum = pgEnum('body_type', [
@@ -75,6 +85,8 @@ export const specsTypeEnum = pgEnum('specs_type', [
   'american',
   'european',
   'japanese',
+  'chinese',   // Added - trending in UAE
+  'korean',    // Added - trending in UAE
   'canadian',
   'other',
 ]);
@@ -91,51 +103,20 @@ export const exportStatusEnum = pgEnum('export_status', [
   'restricted',
 ]);
 
+/**
+ * Simplified engine size ranges
+ * Much easier for users to select and filter
+ */
 export const engineSizeEnum = pgEnum('engine_size', [
-  '1.0L',
-  '1.2L',
-  '1.3L',
-  '1.4L',
-  '1.5L',
-  '1.6L',
-  '1.8L',
-  '2.0L',
-  '2.2L',
-  '2.3L',
-  '2.4L',
-  '2.5L',
-  '2.7L',
-  '2.8L',
-  '2.9L',
-  '3.0L',
-  '3.2L',
-  '3.5L',
-  '3.6L',
-  '3.7L',
-  '3.8L',
-  '4.0L',
-  '4.2L',
-  '4.3L',
-  '4.4L',
-  '4.5L',
-  '4.6L',
-  '4.7L',
-  '5.0L',
-  '5.2L',
-  '5.5L',
-  '5.7L',
-  '5.9L',
-  '6.0L',
-  '6.2L',
-  '6.3L',
-  '6.4L',
-  '6.6L',
-  '6.7L',
-  '6.8L',
-  '7.0L',
-  '7.3L',
-  '8.0L',
-  'other',
+  'under_1.5L',
+  '1.5L_2.0L',
+  '2.0L_2.5L',
+  '2.5L_3.0L',
+  '3.0L_4.0L',
+  '4.0L_5.0L',
+  '5.0L_6.0L',
+  'over_6.0L',
+  'electric',
 ]);
 
 export const engineTypeEnum = pgEnum('engine_type', [
@@ -222,13 +203,26 @@ export const seatingCapacityEnum = pgEnum('seating_capacity', [
 export const carListing = pgTable('car_listing', {
   id: text('id').primaryKey(),
   vin: text('vin').unique(),
+  slug: text('slug').unique(), // URL-friendly identifier: toyota-camry-2024-abc123
   partnerId: text('partner_id').references(() => partner.id, { onDelete: 'cascade' }),
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   postedByStaffId: text('posted_by_staff_id'),
+  
+  /**
+   * Posted by role determines seller type:
+   * - 'user' = private seller
+   * - 'staff' = dealer (via partnerId)
+   */
   postedByRole: listingPostedByRoleEnum('posted_by_role').notNull(),
   moderationStatus: listingModerationStatusEnum('moderation_status').default('draft').notNull(),
   lifecycleStatus: listingLifecycleStatusEnum('lifecycle_status').default('active').notNull(),
-  sellerType: sellerTypeEnum('seller_type').default('dealer').notNull(),
+  
+  /**
+   * Seller type - derived from postedByRole:
+   * - 'private' when postedByRole is 'user'
+   * - 'dealer' when postedByRole is 'staff'
+   */
+  sellerType: sellerTypeEnum('seller_type').default('private').notNull(),
   isConsignment: boolean('is_consignment').default(false).notNull(),
   
   // Consignment Lead Flow
@@ -265,6 +259,7 @@ export const carListing = pgTable('car_listing', {
   aiConfidenceScore: doublePrecision('ai_confidence_score'),
   aiPriceUpdatedAt: timestamp('ai_price_updated_at'),
   aiModel: text('ai_model').default('v1'),
+  aiReasoning: text('ai_reasoning'), // AI valuation analysis/reasoning
   
   fairValue: integer('fair_value'),
   estimateMin: integer('estimate_min'),
@@ -310,16 +305,40 @@ export const carListing = pgTable('car_listing', {
     adjustableSuspension?: boolean;
     launchControl?: boolean;
   }>().default({}),
+  
+  /**
+   * Extras - Vehicle features/options selected from predefined list
+   * e.g., ['panoramicSunroof', 'leatherSeats', 'navigation']
+   */
   extras: jsonb('extras').$type<string[]>().default([]),
+  
+  /**
+   * Tags - Predefined badges user selects (MAX 3)
+   * e.g., ['serviceHistory', 'singleOwner', 'accidentFree']
+   * See LISTING_TAGS in listing-constants.ts
+   */
+  tags: jsonb('tags').$type<string[]>().default([]),
+  
+  /**
+   * Special Notes - Owner's personal remarks about the car (MAX 10 bullet points)
+   * Free-text entries like:
+   * - "Modified exhaust system"
+   * - "Always kept in garage"
+   * - "Minor scratch on rear bumper"
+   * 
+   * Also contains admin moderation fields for backward compatibility
+   */
   specialNotes: jsonb('special_notes').$type<{
+    // Owner notes (array of strings, max 10)
+    ownerRemarks?: string[];
+    
+    // Legacy boolean tags (kept for backward compat, use tags[] instead)
     serviceHistory?: boolean;
     singleOwner?: boolean;
     accidentFree?: boolean;
     underWarranty?: boolean;
     registeredUntil?: string;
-    customizations?: string[];
-    recentServices?: string[];
-    knownIssues?: string[];
+    
     // Admin moderation fields
     rejectionReason?: string;
     rejectedAt?: string;
@@ -330,10 +349,15 @@ export const carListing = pgTable('car_listing', {
     suspendedBy?: string;
     suspendedByName?: string;
   }>().default({}),
+  
   warrantyType: warrantyTypeEnum('warranty_type'),
   exportStatus: exportStatusEnum('export_status').default('local_only').notNull(),
+  
+  /**
+   * Badges - System-assigned badges (not user selectable)
+   * e.g., ['verified', 'featured', 'premium']
+   */
   badges: jsonb('badges').$type<string[]>().default([]),
-  tags: jsonb('tags').$type<string[]>().default([]),
   isBlackMember: boolean('is_black_member').default(false).notNull(),
   impressionCount: integer('impression_count').default(0).notNull(),
   viewCount: integer('view_count').default(0).notNull(),
@@ -344,7 +368,7 @@ export const carListing = pgTable('car_listing', {
   heatScore: integer('heat_score').default(0).notNull(),
   heatScoreUpdatedAt: timestamp('heat_score_updated_at'),
   
-  slug: text('slug').unique(),
+  // SEO fields (slug is defined at the top of the table)
   metaTitle: text('meta_title'),
   metaDescription: text('meta_description'),
   reservedAt: timestamp('reserved_at'),

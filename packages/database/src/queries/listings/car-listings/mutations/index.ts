@@ -72,3 +72,18 @@ export {
   markCarListingSold,
   expireAllExpiredListings,
 } from './lifecycle';
+
+// AI Valuation operations
+export {
+  updateListingAIValuation,
+  batchUpdateListingAIValuations,
+  type AIValuationUpdateInput,
+} from './ai-valuation';
+
+// AI Moderation operations
+export {
+  updateListingAIModeration,
+  shouldSkipAIModeration,
+  type AIModerationUpdateInput,
+  type AIModerationResult,
+} from './ai-moderation';

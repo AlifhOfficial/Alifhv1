@@ -1,6 +1,6 @@
 {
-  "id": "076746a7-feaa-4168-b9ec-33b544dd8683",
-  "prevId": "ec3b14da-0716-465b-8bcd-279d7b4fcdc0",
+  "id": "523af23c-074e-4cfe-aa67-2d9ae7cca7ad",
+  "prevId": "076746a7-feaa-4168-b9ec-33b544dd8683",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -2913,6 +2913,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "partner_id": {
           "name": "partner_id",
           "type": "text",
@@ -2960,7 +2966,7 @@
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
-          "default": "'dealer'"
+          "default": "'private'"
         },
         "is_consignment": {
           "name": "is_consignment",
@@ -3263,6 +3269,13 @@
           "notNull": false,
           "default": "'[]'::jsonb"
         },
+        "tags": {
+          "name": "tags",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'[]'::jsonb"
+        },
         "special_notes": {
           "name": "special_notes",
           "type": "jsonb",
@@ -3287,13 +3300,6 @@
         },
         "badges": {
           "name": "badges",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'[]'::jsonb"
-        },
-        "tags": {
-          "name": "tags",
           "type": "jsonb",
           "primaryKey": false,
           "notNull": false,
@@ -3344,12 +3350,6 @@
         "heat_score_updated_at": {
           "name": "heat_score_updated_at",
           "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "slug": {
-          "name": "slug",
-          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -7300,50 +7300,15 @@
       "name": "engine_size",
       "schema": "public",
       "values": [
-        "1.0L",
-        "1.2L",
-        "1.3L",
-        "1.4L",
-        "1.5L",
-        "1.6L",
-        "1.8L",
-        "2.0L",
-        "2.2L",
-        "2.3L",
-        "2.4L",
-        "2.5L",
-        "2.7L",
-        "2.8L",
-        "2.9L",
-        "3.0L",
-        "3.2L",
-        "3.5L",
-        "3.6L",
-        "3.7L",
-        "3.8L",
-        "4.0L",
-        "4.2L",
-        "4.3L",
-        "4.4L",
-        "4.5L",
-        "4.6L",
-        "4.7L",
-        "5.0L",
-        "5.2L",
-        "5.5L",
-        "5.7L",
-        "5.9L",
-        "6.0L",
-        "6.2L",
-        "6.3L",
-        "6.4L",
-        "6.6L",
-        "6.7L",
-        "6.8L",
-        "7.0L",
-        "7.3L",
-        "8.0L",
-        "other"
+        "under_1.5L",
+        "1.5L_2.0L",
+        "2.0L_2.5L",
+        "2.5L_3.0L",
+        "3.0L_4.0L",
+        "4.0L_5.0L",
+        "5.0L_6.0L",
+        "over_6.0L",
+        "electric"
       ]
     },
     "public.engine_type": {
@@ -7483,8 +7448,7 @@
       "schema": "public",
       "values": [
         "dealer",
-        "private",
-        "consignment"
+        "private"
       ]
     },
     "public.specs_type": {
@@ -7495,6 +7459,8 @@
         "american",
         "european",
         "japanese",
+        "chinese",
+        "korean",
         "canadian",
         "other"
       ]

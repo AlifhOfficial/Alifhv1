@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/layout/card';
 import { Button } from '@/components/ui/forms/button';
 import { Switch } from '@/components/ui/forms/switch';
@@ -51,15 +51,13 @@ export default function ConsignmentPreferencesPage() {
   const [newModel, setNewModel] = useState('');
   const { toast } = useToast();
 
-  useEffect(() => {
-    fetchPreferences();
-  }, []);
-
-  const fetchPreferences = async () => {
+  // Function to fetch preferences
+  const fetchPreferences = useCallback(async () => {
     try {
       const response = await fetch('/api/partner/consignment/preferences');
       if (!response.ok) throw new Error('Failed to fetch preferences');
       const data = await response.json();
+      
       setPreferences(data.preferences);
     } catch (error) {
       console.error('Error fetching preferences:', error);
@@ -67,7 +65,12 @@ export default function ConsignmentPreferencesPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [toast]);
+
+  // Fetch preferences on mount
+  useEffect(() => {
+    fetchPreferences();
+  }, [fetchPreferences]);
 
   const savePreferences = async () => {
     if (!preferences) return;
