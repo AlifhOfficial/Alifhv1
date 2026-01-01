@@ -40,6 +40,7 @@ export interface UpdateDealerBaseProfileData {
   
   // External Ratings
   googleReviewUrl?: string;
+  googlePlaceId?: string | null;
   
   // Trust & Tags
   badges?: string[];
@@ -96,6 +97,7 @@ export async function updateDealerBaseProfile(
       
       // External Ratings
       googleReviewUrl: partner.googleReviewUrl,
+      googlePlaceId: partner.googlePlaceId,
       googleRating: partner.googleRating,
       googleReviewCount: partner.googleReviewCount,
       

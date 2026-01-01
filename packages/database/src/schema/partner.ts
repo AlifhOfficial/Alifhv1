@@ -54,6 +54,8 @@ export const partner = pgTable('partner', {
   experienceYears: integer('experience_years'),
   foundedYear: integer('founded_year'),
   googleReviewUrl: text('google_review_url'),
+  googlePlaceId: text('google_place_id'), // Extracted from googleReviewUrl
+  googleReviewsSyncedAt: timestamp('google_reviews_synced_at'), // Last sync timestamp
   googleRating: doublePrecision('google_rating'),
   googleReviewCount: integer('google_review_count').default(0),
   platformRating: doublePrecision('platform_rating'),

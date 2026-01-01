@@ -51,6 +51,8 @@ export interface PartnerProfile {
   
   // External Ratings
   googleReviewUrl: string | null;
+  googlePlaceId: string | null;
+  googleReviewsSyncedAt: Date | string | null;
   googleRating: number | null;
   googleReviewCount: number;
   
@@ -92,9 +94,15 @@ export interface PartnerProfileUpdate {
 // API Functions
 // ============================================================================
 
-async function fetchPartnerProfile(partnerId: string): Promise<PartnerProfile> {
-  const res = await fetch(`/api/partners/${partnerId}/dealer-profile`, {
+async function fetchPartnerProfile(partnerId: string, fresh = false): Promise<PartnerProfile> {
+  const url = fresh 
+    ? `/api/partners/${partnerId}/dealer-profile?fresh=true`
+    : `/api/partners/${partnerId}/dealer-profile`;
+  
+  const res = await fetch(url, {
     credentials: 'include',
+    // Skip browser cache when fetching fresh
+    cache: fresh ? 'no-store' : 'default',
   });
 
   if (!res.ok) {
@@ -143,11 +151,20 @@ export function usePartnerProfile(partnerId: string | null | undefined) {
     },
   });
 
+  // Force refetch with fresh=true (bypasses server cache)
+  const refetchFresh = async () => {
+    if (!partnerId) return;
+    const freshData = await fetchPartnerProfile(partnerId, true);
+    queryClient.setQueryData(['partner-profile', partnerId], freshData);
+    return freshData;
+  };
+
   return {
     profile: query.data ?? null,
     isLoading: query.isLoading,
     error: query.error?.message ?? null,
     updateProfile: mutation.mutateAsync,
     isUpdating: mutation.isPending,
+    refetchFresh,
   };
 }

@@ -613,9 +613,8 @@ export function CarCardDetailed({ listing, className }: CarCardDetailedProps) {
 
       {/* Quick Notes / Owner Remarks */}
       {ownerRemarks.length > 0 && (
-        <div className="space-y-3">
-          <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70 flex items-center gap-2">
-            <MessageSquare className="w-3.5 h-3.5" />
+        <div className="space-y-3 pt-4">
+          <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
             Quick Notes
           </p>
           <ul className="space-y-2">

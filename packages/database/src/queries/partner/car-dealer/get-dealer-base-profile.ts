@@ -42,6 +42,8 @@ export type DealerBaseProfile = {
   experienceYears: number | null;
   foundedYear: number | null;
   googleReviewUrl: string | null;
+  googlePlaceId: string | null;
+  googleReviewsSyncedAt: Date | null;
   googleRating: number | null;
   googleReviewCount: number | null;
   platformRating: number | null;
@@ -52,14 +54,16 @@ export type DealerBaseProfile = {
   updatedAt: Date | null; // Used for cache-busting image URLs
 };
 
-export async function getDealerBaseProfile(partnerId: string): Promise<DealerBaseProfile | null> {
+export async function getDealerBaseProfile(partnerId: string, skipCache = false): Promise<DealerBaseProfile | null> {
   const cacheKey = CacheKeys.partnerMiniProfile(partnerId);
   
-  // Check cache first
-  const cached = memoryCache.get<DealerBaseProfile>(cacheKey);
-  if (cached) {
-    console.log(`[getDealerBaseProfile] Cache HIT for ${partnerId.slice(0, 8)}...`);
-    return cached;
+  // Check cache first (unless skip requested)
+  if (!skipCache) {
+    const cached = memoryCache.get<DealerBaseProfile>(cacheKey);
+    if (cached) {
+      console.log(`[getDealerBaseProfile] Cache HIT for ${partnerId.slice(0, 8)}...`);
+      return cached;
+    }
   }
 
   // Use select() for better performance - only fetches specified columns
@@ -99,6 +103,8 @@ export async function getDealerBaseProfile(partnerId: string): Promise<DealerBas
       
       // External Ratings
       googleReviewUrl: partner.googleReviewUrl,
+      googlePlaceId: partner.googlePlaceId,
+      googleReviewsSyncedAt: partner.googleReviewsSyncedAt,
       googleRating: partner.googleRating,
       googleReviewCount: partner.googleReviewCount,
       

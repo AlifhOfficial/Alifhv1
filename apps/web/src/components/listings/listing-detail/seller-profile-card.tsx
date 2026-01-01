@@ -8,6 +8,118 @@
  * - Uses getPublicUrl from @/utils for R2 storage key resolution
  * - Partner logos/heroes use BrandAvatar and BrandHero components
  * - User avatars use UserAvatar component
+ * 
+ * ============================================================================
+ * GOOGLE REVIEWS INTEGRATION - V1 (Minimal Approach)
+ * ============================================================================
+ * 
+ * Current State:
+ * - googleRating and googleReviewCount fields already exist in partner_car_dealer table
+ * - These are static values, manually entered
+ * 
+ * V1 Goal:
+ * - Auto-sync rating + review count every 15 days
+ * - No individual review display (just aggregate numbers)
+ * - Centralized approach (no partner burden)
+ * 
+ * IMPLEMENTATION: Google Places API
+ * 
+ * 1. SETUP (One-Time):
+ *    - Get Google Places API key from console.cloud.google.com
+ *    - Enable "Places API"
+ *    - Cost: $17/1000 requests - first $200/month FREE
+ *    - Store in .env: GOOGLE_PLACES_API_KEY
+ * 
+ * 2. DATABASE SCHEMA (Minimal):
+ *    - Add to partner_car_dealer table:
+ *      • google_place_id (text, nullable) - Google Place ID
+ *      • google_reviews_synced_at (timestamp, nullable) - Last sync time
+ *    
+ *    NOTE: googleRating and googleReviewCount already exist!
+ * 
+ * 3. HOW TO SET PLACE ID (Admin Task):
+ *    - During partner onboarding, ask: "Google Maps URL?" (optional)
+ *    - Partner pastes: https://maps.google.com/?cid=12345
+ *    - Extract place_id and store
+ *    - OR admin can batch-add via admin tool later
+ * 
+ * 4. SYNC CRON JOB (Every 15 Days):
+ *    - Endpoint: /api/cron/sync-google-reviews
+ *    - Vercel Cron: "0 0 1,16 * *" (runs 1st and 16th of each month)
+ *    
+ *    Logic:
+ *    ```javascript
+ *    // For each partner with google_place_id:
+ *    const response = await fetch(
+ *      `https://maps.googleapis.com/maps/api/place/details/json?` +
+ *      `place_id=${partner.googlePlaceId}&` +
+ *      `fields=rating,user_ratings_total&` +
+ *      `key=${process.env.GOOGLE_PLACES_API_KEY}`
+ *    );
+ *    
+ *    const { result } = await response.json();
+ *    
+ *    // Update partner table (only 2 fields!)
+ *    await db.update(partnerCarDealer)
+ *      .set({
+ *        googleRating: result.rating,
+ *        googleReviewCount: result.user_ratings_total,
+ *        googleReviewsSyncedAt: new Date()
+ *      })
+ *      .where(eq(partnerCarDealer.id, partner.id));
+ *    ```
+ * 
+ * 5. API ENDPOINTS (Minimal):
+ *    POST /api/admin/partners/[id]/set-place-id
+ *    - Admin sets Google Place ID
+ *    - Body: { placeId: "ChIJ..." }
+ *    
+ *    POST /api/cron/sync-google-reviews
+ *    - Runs every 15 days
+ *    - Syncs all partners with place_id
+ *    - 100ms delay between requests
+ * 
+ * 6. UI (Already Done!):
+ *    SellerProfileCard already displays:
+ *    - partner.googleRating
+ *    - partner.googleReviewCount
+ *    No changes needed!
+ * 
+ * 7. COST (15-Day Sync):
+ *    - 500 partners × 2 syncs/month = 1,000 requests/month
+ *    - Cost: $17 (but FREE within $200 credit)
+ *    - Even with 10,000 partners: $340/month = $140 after credit
+ * 
+ * 8. ERROR HANDLING:
+ *    - Invalid place_id: Log error, skip
+ *    - API quota exceeded: Pause, retry next day
+ *    - No data: Keep existing values
+ * 
+ * 9. MIGRATION:
+ *    Phase 1: Add google_place_id, google_reviews_synced_at columns
+ *    Phase 2: Create /api/cron/sync-google-reviews endpoint
+ *    Phase 3: Add admin tool to set place_id
+ *    Phase 4: Batch-add place_id for existing partners
+ *    Phase 5: Setup Vercel Cron (runs 1st & 16th)
+ *    Phase 6: Monitor logs for errors
+ * 
+ * SAMPLE API CALL:
+ * ```
+ * GET https://maps.googleapis.com/maps/api/place/details/json
+ *   ?place_id=ChIJN1t_tDeuEmsRUsoyG83frY4
+ *   &fields=rating,user_ratings_total
+ *   &key=YOUR_API_KEY
+ * 
+ * Response:
+ * {
+ *   "result": {
+ *     "rating": 4.5,
+ *     "user_ratings_total": 1234
+ *   }
+ * }
+ * ```
+ * 
+ * That's it! Just 2 numbers synced every 15 days.
  */
 
 'use client';

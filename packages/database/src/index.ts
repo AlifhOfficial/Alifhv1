@@ -8,6 +8,7 @@
 
 export * from './dbclient';
 export * from './schema';
+export * as googleReviews from './services/google-reviews';
 export * from './queries';
 export * from './caches';
 

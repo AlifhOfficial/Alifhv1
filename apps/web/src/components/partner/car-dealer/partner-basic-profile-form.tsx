@@ -9,6 +9,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense, lazy } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { usePartnerProfile } from '@/hooks/partner/car-dealer/use-partner-profile';
 import { usePartnerStats } from '@/hooks/partner/car-dealer/use-partner-stats';
@@ -37,7 +38,8 @@ interface PartnerBasicProfileFormProps {
 
 export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormProps) {
   const { toast } = useToast();
-  const { profile, isLoading, updateProfile, isUpdating } = usePartnerProfile(partnerId);
+  const queryClient = useQueryClient();
+  const { profile, isLoading, updateProfile, isUpdating, refetchFresh } = usePartnerProfile(partnerId);
   const { stats, isLoading: statsLoading } = usePartnerStats(partnerId);
 
   const [editing, setEditing] = useState(false);
@@ -68,7 +70,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
 
   // Initialize form from profile
   useEffect(() => {
-    if (profile && !initialized) {
+    if (profile && (!initialized || !editing)) {
       setForm({
         brandName: profile.brandName ?? '',
         website: profile.website ?? '',
@@ -89,7 +91,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       });
       setInitialized(true);
     }
-  }, [profile, initialized]);
+  }, [profile, initialized, editing]);
 
   // Update field
   const updateField = (updates: Partial<typeof form>) => {
@@ -100,6 +102,9 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
   const save = async () => {
     try {
       const payload: any = {};
+      
+      // Track if googleReviewUrl changed
+      const googleUrlChanged = form.googleReviewUrl?.trim() !== profile?.googleReviewUrl?.trim();
       
       // Only include fields that have values or are explicitly set
       if (form.brandName?.trim()) payload.brandName = form.brandName.trim();
@@ -116,7 +121,13 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       if (form.specialties?.length) payload.specialties = form.specialties;
       if (form.experienceYears !== null) payload.experienceYears = form.experienceYears;
       if (form.foundedYear !== null) payload.foundedYear = form.foundedYear;
-      if (form.googleReviewUrl?.trim()) payload.googleReviewUrl = form.googleReviewUrl.trim();
+      if (form.googleReviewUrl?.trim()) {
+        payload.googleReviewUrl = form.googleReviewUrl.trim();
+      }
+      // Always clear place_id when URL changes so it extracts a new one
+      if (googleUrlChanged) {
+        payload.googlePlaceId = null;
+      }
       if (form.tags?.length) payload.tags = form.tags;
 
       console.log('[PartnerProfile] Saving payload:', payload);
@@ -124,6 +135,46 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       await updateProfile(payload);
       toast({ title: 'Profile saved' });
       setEditing(false);
+      
+      // If Google URL is present and changed, trigger sync
+      const hasGoogleUrl = form.googleReviewUrl?.trim();
+      if (googleUrlChanged && hasGoogleUrl) {
+        toast({ 
+          title: 'Syncing Google reviews...', 
+          description: 'This may take a few seconds'
+        });
+        
+        try {
+          const syncRes = await fetch('/api/partner/google-reviews/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ partnerId }),
+            credentials: 'include',
+          });
+          
+          if (!syncRes.ok) {
+            const error = await syncRes.json();
+            throw new Error(error.error || 'Sync failed');
+          }
+          
+          const syncData = await syncRes.json();
+          toast({ 
+            title: 'Reviews synced!', 
+            description: `${syncData.rating?.toFixed(1)} stars (${syncData.reviewCount} reviews)`
+          });
+          
+          // Fetch fresh data bypassing all caches
+          await refetchFresh();
+          setInitialized(false); // Reset form to pick up new profile data
+        } catch (syncError) {
+          console.error('[PartnerProfile] Google sync failed:', syncError);
+          toast({ 
+            title: 'Review sync failed', 
+            description: syncError instanceof Error ? syncError.message : 'Please try again later',
+            variant: 'destructive'
+          });
+        }
+      }
     } catch (err) {
       console.error('[PartnerProfile] Save failed:', err);
       toast({ 
@@ -503,10 +554,10 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           <div className="p-6 md:p-8 flex flex-col gap-1">
             <small className="text-muted-foreground">Rating</small>
             <h2 className="text-foreground">
-              {profile.platformRating ? (
+              {profile.googleRating || profile.platformRating ? (
                 <span className="flex items-center gap-1.5">
                   <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                  {profile.platformRating.toFixed(1)}
+                  {(profile.googleRating || profile.platformRating)?.toFixed(1)}
                 </span>
               ) : '—'}
             </h2>
@@ -735,6 +786,100 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
             </div>
           </section>
           
+          {/* Google Reviews */}
+          <section className="space-y-6">
+            <div className="flex items-baseline justify-between pb-3">
+              <h2>Google Reviews</h2>
+              {form.googleReviewUrl?.trim() && !editing && (
+                <button
+                  onClick={async () => {
+                    toast({ title: 'Syncing reviews...', description: 'Please wait' });
+                    try {
+                      const res = await fetch('/api/partner/google-reviews/sync', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ partnerId }),
+                        credentials: 'include',
+                      });
+                      if (!res.ok) {
+                        const error = await res.json();
+                        throw new Error(error.error || 'Sync failed');
+                      }
+                      const data = await res.json();
+                      toast({
+                        title: 'Synced successfully!',
+                        description: `${data.rating?.toFixed(1)} ⭐ (${data.reviewCount} reviews)`
+                      });
+                      // Fetch fresh data bypassing all caches
+                      await refetchFresh();
+                      setInitialized(false);
+                    } catch (err) {
+                      toast({
+                        title: 'Sync failed',
+                        description: err instanceof Error ? err.message : 'Please try again',
+                        variant: 'destructive'
+                      });
+                    }
+                  }}
+                  className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                >
+                  Sync Now
+                </button>
+              )}
+            </div>
+            
+            <div className="rounded-xl border border-border bg-card p-6">
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground">Google Maps URL</label>
+                  <input
+                    value={form.googleReviewUrl}
+                    onChange={(e) => updateField({ googleReviewUrl: e.target.value })}
+                    disabled={!editing}
+                    placeholder="https://maps.google.com/?cid=123456789..."
+                    className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
+                  />
+                  {editing && (
+                    <p className="text-xs text-muted-foreground">
+                      Paste your Google Business Profile URL to automatically sync reviews
+                    </p>
+                  )}
+                </div>
+                
+                {/* Current ratings display */}
+                {(profile.googleRating || profile.googleReviewsSyncedAt) && (
+                  <div className="pt-4 border-t border-border">
+                    <div className="grid grid-cols-2 gap-4">
+                      {profile.googleRating && (
+                        <div className="space-y-1">
+                          <small className="text-muted-foreground">Google Rating</small>
+                          <div className="flex items-center gap-2">
+                            <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                            <span className="text-lg font-semibold text-foreground">
+                              {profile.googleRating.toFixed(1)}
+                            </span>
+                            <span className="text-sm text-muted-foreground">
+                              ({profile.googleReviewCount ?? 0} reviews)
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {profile.googleReviewsSyncedAt && (
+                        <div className="space-y-1">
+                          <small className="text-muted-foreground">Last Synced</small>
+                          <p className="text-sm text-foreground">
+                            {new Date(profile.googleReviewsSyncedAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+          
           {/* Business Details */}
           <section className="space-y-6">
             <div className="flex items-baseline justify-between pb-3">
@@ -766,18 +911,6 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                     onChange={(e) => updateField({ foundedYear: parseInt(e.target.value) || null })}
                     disabled={!editing}
                     placeholder={new Date().getFullYear().toString()}
-                    className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
-                  />
-                </div>
-                
-                <div className="md:col-span-2 space-y-2">
-                  <label className="text-sm font-medium text-foreground">Google Review URL</label>
-                  <input
-                    type="url"
-                    value={form.googleReviewUrl}
-                    onChange={(e) => updateField({ googleReviewUrl: e.target.value })}
-                    disabled={!editing}
-                    placeholder="https://g.page/..."
                     className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
                   />
                 </div>
