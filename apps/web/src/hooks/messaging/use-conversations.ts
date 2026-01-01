@@ -123,12 +123,12 @@ export function useConversations(options: UseConversationsOptions = {}) {
       if (msg.type === 'new_message' && msg.conversationId) {
         const newMsg = msg.message as { createdAt?: string; text?: string; senderId?: string } | undefined;
 
-        queryClient.setQueryData(['conversations', options], (old: ConversationsResponse | undefined) => {
+        queryClient.setQueryData(queryKeys.messaging.conversations(options), (old: ConversationsResponse | undefined) => {
           if (!old?.conversations) return old;
           
           const exists = old.conversations.some(c => c.id === msg.conversationId);
           if (!exists) {
-            queryClient.invalidateQueries({ queryKey: ['conversations'] });
+            queryClient.invalidateQueries({ queryKey: queryKeys.messaging.all });
             return old;
           }
 
@@ -177,9 +177,9 @@ export function useMarkAsRead() {
       if (markedRef.has(conversationId)) return;
       markedRef.add(conversationId);
 
-      await queryClient.cancelQueries({ queryKey: ['conversations'] });
+      await queryClient.cancelQueries({ queryKey: queryKeys.messaging.all });
 
-      queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
+      queryClient.setQueriesData({ queryKey: queryKeys.messaging.all, exact: false }, (old: unknown) => {
         const data = old as ConversationsResponse | undefined;
         if (!data?.conversations) return old;
         
@@ -195,11 +195,11 @@ export function useMarkAsRead() {
         };
       });
 
-      queryClient.setQueryData(['unread-count'], (old: number | undefined) => Math.max(0, (old || 0) - 1));
+      queryClient.setQueryData(queryKeys.messaging.unreadCount(), (old: number | undefined) => Math.max(0, (old || 0) - 1));
     },
 
     onError: () => {
-      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.messaging.all });
     },
 
     onSettled: (_, __, conversationId) => {
@@ -222,7 +222,7 @@ export function useCreateConversation() {
     mutationFn: createConversationAPI,
     onSuccess: () => {
       // Refetch conversations to show the newly created one
-      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.messaging.all });
     },
   });
 

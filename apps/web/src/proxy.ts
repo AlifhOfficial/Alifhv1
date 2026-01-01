@@ -63,6 +63,17 @@ export async function proxy(request: NextRequest) {
 
     const user = session.user;
 
+    // Check if user is banned - redirect to banned page
+    if (user.banned) {
+      if (isApiRoute) {
+        return NextResponse.json(
+          { error: 'Account banned', reason: 'Your account has been suspended' },
+          { status: 403 }
+        );
+      }
+      return NextResponse.redirect(new URL('/banned', request.url));
+    }
+
     // Store session in request headers for Server Components to reuse
     // This eliminates redundant session fetches during the request lifecycle
     const response = NextResponse.next();

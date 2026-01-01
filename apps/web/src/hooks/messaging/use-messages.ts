@@ -125,7 +125,7 @@ export function useMessages(conversationId: string, userId?: string, options: Us
       // New message
       if (msg.type === 'new_message' && msg.conversationId === conversationId) {
         const newMsg = msg.message as Message;
-        queryClient.setQueryData(['messages', conversationId], (old: { pages: MessagesPage[] } | undefined) => {
+        queryClient.setQueryData(queryKeys.messaging.messages(conversationId), (old: { pages: MessagesPage[] } | undefined) => {
           if (!old) return old;
           const first = old.pages[0];
           if (first.messages.some(m => m.id === newMsg.id)) return old;
@@ -204,8 +204,9 @@ export function useSendMessage() {
       postMessage(conversationId, text),
 
     onMutate: async ({ conversationId, senderId, text }) => {
-      await queryClient.cancelQueries({ queryKey: ['messages', conversationId] });
-      const previous = queryClient.getQueryData(['messages', conversationId]);
+      const queryKey = queryKeys.messaging.messages(conversationId);
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData(queryKey);
 
       // Optimistic message
       const tempMsg: Message = {
@@ -228,7 +229,7 @@ export function useSendMessage() {
         sender: { id: senderId, name: null, avatarUrl: null },
       };
 
-      queryClient.setQueryData(['messages', conversationId], (old: { pages: MessagesPage[] } | undefined) => {
+      queryClient.setQueryData(queryKey, (old: { pages: MessagesPage[] } | undefined) => {
         if (!old) return old;
         return {
           ...old,
@@ -239,12 +240,13 @@ export function useSendMessage() {
         };
       });
 
-      return { previous };
+      return { previous, queryKey };
     },
 
-    onSuccess: (data, { conversationId }) => {
+    onSuccess: (data, { conversationId }, ctx) => {
       // Replace temp with real
-      queryClient.setQueryData(['messages', conversationId], (old: { pages: MessagesPage[] } | undefined) => {
+      const queryKey = ctx?.queryKey || queryKeys.messaging.messages(conversationId);
+      queryClient.setQueryData(queryKey, (old: { pages: MessagesPage[] } | undefined) => {
         if (!old) return old;
         const filtered = old.pages[0].messages.filter(m => !m.id.startsWith('temp-') && m.id !== data.message.id);
         return {
@@ -254,7 +256,7 @@ export function useSendMessage() {
       });
 
       // Update conversation preview
-      queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
+      queryClient.setQueriesData({ queryKey: queryKeys.messaging.all, exact: false }, (old: unknown) => {
         const data2 = old as { conversations?: Array<{ id: string; lastMessageAt?: unknown; lastMessagePreview?: string }> };
         if (!data2?.conversations) return old;
         return {
@@ -269,7 +271,8 @@ export function useSendMessage() {
     },
 
     onError: (_err, { conversationId }, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(['messages', conversationId], ctx.previous);
+      const queryKey = ctx?.queryKey || queryKeys.messaging.messages(conversationId);
+      if (ctx?.previous) queryClient.setQueryData(queryKey, ctx.previous);
     },
   });
 

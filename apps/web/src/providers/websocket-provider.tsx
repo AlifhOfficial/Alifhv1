@@ -13,7 +13,8 @@ import React, { createContext, useContext, useEffect, useRef, useState, useCallb
 
 export type WSMessageType = 
   | 'connected' | 'ping' | 'pong' 
-  | 'new_message' | 'read_receipt' | 'typing' | 'presence';
+  | 'new_message' | 'read_receipt' | 'typing' | 'presence'
+  | 'account_banned';
 
 export interface WSMessage {
   type: WSMessageType;
@@ -24,6 +25,8 @@ export interface WSMessage {
   isOnline?: boolean;
   lastSeenAt?: string;
   lastReadAt?: string;
+  reason?: string;
+  expiresAt?: string | null;
 }
 
 type MessageHandler = (msg: WSMessage) => void;
@@ -137,6 +140,20 @@ export function WebSocketProvider({ children, userId, autoConnect = true }: Prop
     const interval = setInterval(() => send({ type: 'ping' }), 45000);
     return () => clearInterval(interval);
   }, [isConnected, send]);
+
+  // Global handler for account_banned - redirect user immediately
+  useEffect(() => {
+    const unsubscribe = subscribe((msg) => {
+      if (msg.type === 'account_banned') {
+        // Clear any local storage/session data
+        if (typeof window !== 'undefined') {
+          // Redirect to banned page
+          window.location.href = '/banned';
+        }
+      }
+    });
+    return unsubscribe;
+  }, [subscribe]);
 
   return (
     <WSContext.Provider value={{ isConnected, send, subscribe }}>

@@ -145,6 +145,28 @@ export const AUTH_ERROR_MAP: Record<string, AuthErrorInfo> = {
     actionLabel: "Contact Support",
   },
 
+  // Better Auth denyList error codes
+  user_blocked: {
+    title: "Account Suspended",
+    message: "Your account has been suspended. Please contact support for more information.",
+    action: "CONTACT_SUPPORT",
+    actionLabel: "Contact Support",
+  },
+
+  blocked: {
+    title: "Account Suspended",
+    message: "Your account has been suspended due to a policy violation.",
+    action: "CONTACT_SUPPORT",
+    actionLabel: "Contact Support",
+  },
+
+  forbidden: {
+    title: "Access Denied",
+    message: "You are not allowed to access this resource. Your account may have been suspended.",
+    action: "CONTACT_SUPPORT",
+    actionLabel: "Contact Support",
+  },
+
   too_many_requests: {
     title: "Too Many Attempts",
     message: "You've made too many attempts. Please wait a few minutes and try again.",

@@ -10,15 +10,17 @@
 
 import { eq, sql } from 'drizzle-orm';
 import { db } from '../../dbclient';
-import { user } from '../../schema/auth';
+import { user, session } from '../../schema/auth';
 import { userProfile } from '../../schema/profile';
+import { invalidateUserSession } from '../../caches/auth-cache';
 
 // ============================================================================
 // Ban/Unban Operations
 // ============================================================================
 
 /**
- * Ban a user
+ * Ban a user and revoke all their sessions
+ * This ensures immediate logout on their side
  */
 export async function banUser(input: {
   userId: string;
@@ -26,6 +28,7 @@ export async function banUser(input: {
   expiresAt?: Date | null;
   bannedBy: string; // admin user id
 }) {
+  // Update user ban status
   const [updated] = await db
     .update(user)
     .set({
@@ -36,6 +39,12 @@ export async function banUser(input: {
     })
     .where(eq(user.id, input.userId))
     .returning();
+
+  // Delete all sessions for this user (force logout)
+  await db.delete(session).where(eq(session.userId, input.userId));
+  
+  // Invalidate session cache
+  invalidateUserSession(input.userId);
 
   return updated;
 }
@@ -104,8 +113,10 @@ export async function updateUserTags(userId: string, tags: string[]) {
 
 /**
  * Add tag to user (atomic - no race condition)
+ * Creates profile if it doesn't exist
  */
 export async function addUserTag(userId: string, tag: string) {
+  // First, try to update existing profile
   const [updated] = await db
     .update(userProfile)
     .set({
@@ -115,13 +126,31 @@ export async function addUserTag(userId: string, tag: string) {
     .where(sql`${userProfile.userId} = ${userId} AND NOT (${tag} = ANY(coalesce(${userProfile.tags}, '{}')))`)
     .returning();
 
-  // If no update (tag already exists), fetch current profile
-  if (!updated) {
-    const [profile] = await db.select().from(userProfile).where(eq(userProfile.userId, userId)).limit(1);
-    return profile;
+  if (updated) {
+    return updated;
   }
 
-  return updated;
+  // Check if profile exists (tag might already exist)
+  const [existingProfile] = await db.select().from(userProfile).where(eq(userProfile.userId, userId)).limit(1);
+  
+  if (existingProfile) {
+    // Profile exists, tag was already there
+    return existingProfile;
+  }
+
+  // Profile doesn't exist, create it with the tag
+  const [newProfile] = await db
+    .insert(userProfile)
+    .values({
+      id: crypto.randomUUID(),
+      userId,
+      tags: [tag],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+    .returning();
+
+  return newProfile;
 }
 
 /**
@@ -137,6 +166,12 @@ export async function removeUserTag(userId: string, tag: string) {
     .where(eq(userProfile.userId, userId))
     .returning();
 
+  // If no update, profile might not exist - return null (no-op)
+  if (!updated) {
+    const [existingProfile] = await db.select().from(userProfile).where(eq(userProfile.userId, userId)).limit(1);
+    return existingProfile || null;
+  }
+
   return updated;
 }
 
@@ -146,8 +181,10 @@ export async function removeUserTag(userId: string, tag: string) {
 
 /**
  * Add badge to user (atomic - no race condition)
+ * Creates profile if it doesn't exist
  */
 export async function addUserBadge(userId: string, badge: string) {
+  // First, try to update existing profile
   const [updated] = await db
     .update(userProfile)
     .set({
@@ -157,13 +194,31 @@ export async function addUserBadge(userId: string, badge: string) {
     .where(sql`${userProfile.userId} = ${userId} AND NOT (${badge} = ANY(coalesce(${userProfile.badges}, '{}')))`)
     .returning();
 
-  // If no update (badge already exists), fetch current profile
-  if (!updated) {
-    const [profile] = await db.select().from(userProfile).where(eq(userProfile.userId, userId)).limit(1);
-    return profile;
+  if (updated) {
+    return updated;
   }
 
-  return updated;
+  // Check if profile exists (badge might already exist)
+  const [existingProfile] = await db.select().from(userProfile).where(eq(userProfile.userId, userId)).limit(1);
+  
+  if (existingProfile) {
+    // Profile exists, badge was already there
+    return existingProfile;
+  }
+
+  // Profile doesn't exist, create it with the badge
+  const [newProfile] = await db
+    .insert(userProfile)
+    .values({
+      id: crypto.randomUUID(),
+      userId,
+      badges: [badge],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+    .returning();
+
+  return newProfile;
 }
 
 /**
@@ -178,6 +233,12 @@ export async function removeUserBadge(userId: string, badge: string) {
     })
     .where(eq(userProfile.userId, userId))
     .returning();
+
+  // If no update, profile might not exist - return null (no-op)
+  if (!updated) {
+    const [existingProfile] = await db.select().from(userProfile).where(eq(userProfile.userId, userId)).limit(1);
+    return existingProfile || null;
+  }
 
   return updated;
 }

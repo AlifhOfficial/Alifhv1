@@ -139,6 +139,23 @@ export async function POST(req: NextRequest) {
           expiresAt: validated.expiresAt ? new Date(validated.expiresAt) : null,
           bannedBy: user.id,
         });
+        
+        // Notify banned user via WebSocket for immediate client-side effect
+        const wsBroadcastUrl = process.env.WS_BROADCAST_URL || 'http://localhost:3001/broadcast';
+        fetch(wsBroadcastUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            channel: `user:${validated.userId}`,
+            message: {
+              type: 'account_banned',
+              reason: validated.reason,
+              expiresAt: validated.expiresAt || null,
+            },
+          }),
+        }).catch(() => {
+          // Silently fail - WebSocket is optional
+        });
         break;
 
       case 'unban':
@@ -214,8 +231,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Log the actual error for debugging
+    console.error('[Admin User Operations] Error:', error);
+
     return NextResponse.json(
-      { error: 'Operation failed' },
+      { 
+        error: 'Operation failed',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }

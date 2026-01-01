@@ -93,6 +93,7 @@ export function CarCard({
   const [showSuperlikeConfirm, setShowSuperlikeConfirm] = useState(false);
   const [showSuperlikeLimit, setShowSuperlikeLimit] = useState(false);
   const [showSparkles, setShowSparkles] = useState(false);
+  const [showHearts, setShowHearts] = useState(false);
   const [heartScale, setHeartScale] = useState(false);
 
   // Close superlike dialogs when auth dialog appears
@@ -156,6 +157,14 @@ export function CarCard({
       // Directly trigger the auth flow
       favorite.toggle();
       return;
+    }
+
+    // Show hearts effect if adding to favorites (not removing)
+    if (!favorite.isFavorite) {
+      setShowHearts(true);
+      setTimeout(() => {
+        setShowHearts(false);
+      }, 2000);
     }
 
     // Trigger heart scale animation
@@ -448,6 +457,47 @@ export function CarCard({
               }}
             >
               ✨
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Falling Hearts Effect */}
+      {showHearts && (
+        <div className="fixed inset-0 pointer-events-none overflow-hidden z-[9999]">
+          <style jsx>{`
+            @keyframes fall {
+              0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 0;
+              }
+              10% {
+                opacity: 1;
+              }
+              90% {
+                opacity: 1;
+              }
+              100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+              }
+            }
+            .heart-fall {
+              position: absolute;
+              animation: fall 2s ease-in forwards;
+              font-size: 24px;
+            }
+          `}</style>
+          {[...Array(40)].map((_, i) => (
+            <div
+              key={i}
+              className="heart-fall"
+              style={{
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 0.6}s`,
+              }}
+            >
+              ❤️
             </div>
           ))}
         </div>

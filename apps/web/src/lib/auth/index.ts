@@ -86,6 +86,13 @@ export const auth = betterAuth({
         admin: roles.admin,
         user: roles.user,
       },
+      // Block banned users from signing in
+      async impersonationAllowed({ adminUser, targetUser }) {
+        // Only super_admin can impersonate, and cannot impersonate other admins
+        if (adminUser.role !== 'super_admin') return false;
+        if (targetUser.role === 'admin' || targetUser.role === 'super_admin') return false;
+        return true;
+      },
     }),
     customSession(async ({ user, session }) => {
       const cacheKey = CacheKeys.userSession(user.id);
@@ -252,6 +259,27 @@ export const auth = betterAuth({
     accountLinking: {
       enabled: true,
       trustedProviders: ["google"],
+    },
+  },
+
+  // Block banned users from signing in
+  denyList: {
+    async check({ userId }) {
+      if (!userId) return false;
+      
+      const userRecord = await db.query.user.findFirst({
+        where: eq(schema.user.id, userId),
+        columns: { banned: true, banReason: true },
+      });
+      
+      if (userRecord?.banned) {
+        return {
+          blocked: true,
+          message: userRecord.banReason || "Your account has been suspended.",
+        };
+      }
+      
+      return false;
     },
   },
 

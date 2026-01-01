@@ -52,6 +52,14 @@ export const signInWithEmail = async (
 
     // Special handling for unverified email
     if (result.error?.status === 403) {
+      // Check if it's a banned user error
+      const errorMessage = result.error?.message?.toLowerCase() || '';
+      if (errorMessage.includes('banned') || errorMessage.includes('suspended') || errorMessage.includes('blocked')) {
+        return { 
+          success: false, 
+          error: "Your account has been suspended. Please contact support for more information." 
+        };
+      }
       return { 
         success: false, 
         error: "Please verify your email before signing in. Check your inbox." 
