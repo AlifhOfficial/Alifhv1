@@ -13,10 +13,16 @@ export default function PublicLayout({
 }) {
   return (
     <>
-      <Suspense fallback={<div className="h-16" />}>
+      <Suspense fallback={<NavbarSkeleton />}>
         <Navbar />
       </Suspense>
       {children}
     </>
+  );
+}
+
+function NavbarSkeleton() {
+  return (
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border h-14 sm:h-16" />
   );
 }
