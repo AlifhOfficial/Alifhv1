@@ -10,7 +10,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { ChevronDown, Check } from 'lucide-react';
+import { ChevronDown, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Collapsible,
@@ -44,6 +44,7 @@ export function FilterSidebar({
         <h2 className="text-lg font-semibold tracking-tight">Filters</h2>
         {activeFilterCount > 0 && (
           <button
+            type="button"
             onClick={onClearFilters}
             className="text-xs text-muted-foreground/60 hover:text-foreground transition-colors"
           >
@@ -219,6 +220,7 @@ function MultiSelectFilter({
         
         return (
           <button
+            type="button"
             key={option.value}
             onClick={() => toggleOption(option.value)}
             className={cn(
@@ -234,7 +236,7 @@ function MultiSelectFilter({
             </span>
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground/50 tabular-nums">{option.count}</span>
-              {isSelected && <Check className="h-3.5 w-3.5 text-foreground" />}
+              {isSelected && <CheckCircle2 className="h-3.5 w-3.5 text-foreground" />}
             </div>
           </button>
         );
@@ -242,6 +244,7 @@ function MultiSelectFilter({
       
       {hasMore && (
         <button
+          type="button"
           onClick={() => setShowAll(!showAll)}
           className="text-xs text-muted-foreground/50 hover:text-foreground py-2 px-2.5 text-left transition-colors mt-1"
         >
@@ -316,6 +319,7 @@ function RangeFilter({
             
             return (
               <button
+                type="button"
                 key={preset.label}
                 onClick={() => handlePresetClick(preset)}
                 className={cn(
@@ -374,6 +378,7 @@ function RangeFilter({
               : null}
           </span>
           <button
+            type="button"
             onClick={() => {
               onChange(undefined, undefined);
               setLocalMin('');

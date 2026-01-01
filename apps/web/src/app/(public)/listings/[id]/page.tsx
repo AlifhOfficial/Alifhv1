@@ -11,6 +11,7 @@
 import { ListingDetailView } from '@/components/listings/listing-detail';
 import { use } from 'react';
 
+
 interface PageProps {
   params: Promise<{ id: string }>;
 }

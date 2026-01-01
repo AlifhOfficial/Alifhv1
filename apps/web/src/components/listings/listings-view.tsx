@@ -11,7 +11,7 @@ import { SearchBar } from '@/components/search/search-bar';
 import { FilterSidebar } from '@/components/search/filter-sidebar';
 import { AdvancedFilters } from '@/components/search/advanced-filters';
 import { useSearch } from '@/hooks/use-search';
-import { LayoutGrid, List, SlidersHorizontal, X, ChevronDown, Search, PanelLeftClose, PanelLeft } from 'lucide-react';
+import { LayoutGrid, List, SlidersHorizontal, X, ChevronDown, Search, PanelLeftClose, PanelLeft, CheckCircle2 } from 'lucide-react';
 import {
   Collapsible,
   CollapsibleContent,
@@ -32,9 +32,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { SORT_OPTIONS } from '@/lib/search-utils';
+import { cn } from '@/lib/utils';
 
-export function InventoryPageClient() {
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+export function ListingsView() {
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list'); // Default to list for desktop
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -57,9 +58,9 @@ export function InventoryPageClient() {
   const activeChips = getActiveFilterChips(params);
 
   return (
-    <div className="min-h-screen bg-background pt-20">
+    <div className="min-h-screen bg-background pt-16 sm:pt-20">
       {/* Main Content */}
-      <div className="max-w-[1400px] mx-auto px-8">
+      <div className="max-w-[1400px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         <div className="flex gap-0">
           {/* Collapsible Sidebar - Fixed position */}
           <Collapsible open={sidebarOpen} onOpenChange={setSidebarOpen} className="hidden lg:block">
@@ -78,11 +79,11 @@ export function InventoryPageClient() {
           </Collapsible>
 
           {/* Cards */}
-          <main className={sidebarOpen ? "flex-1 min-w-0 pl-8 border-l border-border/40" : "flex-1 min-w-0"}>
+          <main className={sidebarOpen ? "flex-1 min-w-0 lg:pl-8 lg:border-l lg:border-border/40" : "flex-1 min-w-0"}>
             {/* Sticky Search Header */}
-            <div className="sticky top-16 z-30 bg-background pt-6 pb-6">
+            <div className="sticky top-14 sm:top-16 z-30 bg-background pt-3 sm:pt-4 md:pt-6 pb-3 sm:pb-4 md:pb-6">
               {/* Search Row - Minimal */}
-              <div className="flex items-center gap-6">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6">
                 {/* Sidebar Toggle (Desktop) */}
                 <button
                   onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -104,31 +105,31 @@ export function InventoryPageClient() {
                       )}
                     </button>
                   </SheetTrigger>
-                  <SheetContent side="left" className="w-80 p-6 bg-sidebar text-sidebar-foreground border-sidebar-border">
-                    <SheetHeader className="pb-6">
-                      <SheetTitle className="text-base font-semibold tracking-tight">Filters</SheetTitle>
-                    </SheetHeader>
-                    <FilterSidebar
-                      params={params}
-                      facets={facets}
-                      isLoading={isLoading}
-                      onFilterChange={(filters) => {
-                        setFilters(filters);
-                        setMobileFiltersOpen(false);
-                      }}
-                      onClearFilters={clearFilters}
-                      activeFilterCount={activeFilterCount}
-                    />
+                  <SheetContent side="bottom" className="h-[85vh] p-4 sm:p-6 bg-background text-foreground border-border">
+                    <SheetTitle className="sr-only">Filters</SheetTitle>
+                    <div className="overflow-y-auto h-full pb-4">
+                      <FilterSidebar
+                        params={params}
+                        facets={facets}
+                        isLoading={isLoading}
+                        onFilterChange={(filters) => {
+                          setFilters(filters);
+                          setMobileFiltersOpen(false);
+                        }}
+                        onClearFilters={clearFilters}
+                        activeFilterCount={activeFilterCount}
+                      />
+                    </div>
                   </SheetContent>
                 </Sheet>
 
-                {/* Results count */}
-                <span className="text-sm text-muted-foreground tabular-nums">
+                {/* Results count - hidden on mobile, shows on larger screens */}
+                <span className="hidden sm:inline-block text-sm text-muted-foreground tabular-nums">
                   {isLoading ? '...' : `${meta?.total ?? 0} cars`}
                 </span>
 
-                {/* Search Bar - Expanded */}
-                <div className="flex-1">
+                {/* Search Bar - Full width on mobile */}
+                <div className="w-full sm:flex-1 order-last sm:order-none">
                   <SearchBar
                     size="sm"
                     placeholder="Search make, model, year..."
@@ -137,13 +138,29 @@ export function InventoryPageClient() {
                   />
                 </div>
 
+                {/* Negotiable Toggle */}
+                <button
+                  type="button"
+                  onClick={() => setFilters({ isNegotiable: params.isNegotiable ? undefined : true })}
+                  className={cn(
+                    'flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg transition-colors',
+                    params.isNegotiable
+                      ? 'bg-foreground text-background'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+                  )}
+                >
+                  {params.isNegotiable && <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
+                  <span className="whitespace-nowrap">Negotiable</span>
+                </button>
+
                 {/* Sort Dropdown */}
                 <div className="relative">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="flex items-center gap-2 px-3 py-2 text-sm text-sidebar-foreground hover:text-sidebar-foreground transition-colors">
-                        <span>{SORT_OPTIONS.find(s => s.value === params.sortBy)?.label || 'Sort'}</span>
-                        <ChevronDown className="h-3.5 w-3.5" />
+                      <button className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-sidebar-foreground hover:text-sidebar-foreground transition-colors">
+                        <span className="hidden sm:inline">{SORT_OPTIONS.find(s => s.value === params.sortBy)?.label || 'Sort'}</span>
+                        <span className="sm:hidden">Sort</span>
+                        <ChevronDown className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48 bg-sidebar border-sidebar-border text-sidebar-foreground">
@@ -160,8 +177,8 @@ export function InventoryPageClient() {
                   </DropdownMenu>
                 </div>
 
-                {/* View Toggle */}
-                <div className="hidden sm:flex items-center gap-1">
+                {/* View Toggle - Desktop only, switches between grid and list */}
+                <div className="hidden md:flex items-center gap-1">
                   <button
                     onClick={() => setViewMode('grid')}
                     className={`p-1.5 transition-colors ${viewMode === 'grid' ? 'text-foreground' : 'text-muted-foreground/50 hover:text-foreground'}`}
@@ -176,31 +193,33 @@ export function InventoryPageClient() {
                   </button>
                 </div>
 
-                {/* Advanced Filters */}
-                <AdvancedFilters
-                  params={params}
-                  facets={facets}
-                  onFilterChange={setFilters}
-                />
+                {/* Advanced Filters - moves to the right on mobile */}
+                <div className="md:contents ml-auto md:ml-0">
+                  <AdvancedFilters
+                    params={params}
+                    facets={facets}
+                    onFilterChange={setFilters}
+                  />
+                </div>
               </div>
 
               {/* Active Chips */}
               {activeChips.length > 0 && (
-                <div className="mt-4">
-                  <div className="flex flex-wrap items-center gap-2">
+                <div className="mt-3 sm:mt-4">
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                     {activeChips.map((chip) => (
                       <button
                         key={chip.key}
                         onClick={() => setFilters({ [chip.key]: undefined })}
-                        className="group flex items-center gap-1.5 px-3 py-1 text-xs bg-secondary/50 hover:bg-secondary rounded-full transition-colors"
+                        className="group flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs bg-secondary/50 hover:bg-secondary rounded-full transition-colors"
                       >
                         <span>{chip.label}</span>
-                        <X className="h-3 w-3 text-muted-foreground group-hover:text-foreground transition-colors" />
+                        <X className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-muted-foreground group-hover:text-foreground transition-colors" />
                       </button>
                     ))}
                     <button
                       onClick={clearFilters}
-                      className="px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                      className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs text-muted-foreground hover:text-foreground transition-colors"
                     >
                       Clear all
                     </button>
@@ -223,16 +242,31 @@ export function InventoryPageClient() {
 
             {/* Loading */}
             {isLoading && !error && (
-              <div className={viewMode === 'grid' 
-                ? "grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5"
-                : "space-y-3"
-              }>
-                {Array.from({ length: viewMode === 'grid' ? 8 : 6 }).map((_, i) => (
-                  viewMode === 'grid' 
-                    ? <CarCardSkeleton key={i} />
-                    : <CarListItemSkeleton key={i} />
-                ))}
-              </div>
+              <>
+                {/* Mobile: always grid */}
+                <div className="md:hidden grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <CarCardSkeleton key={i} />
+                  ))}
+                </div>
+                
+                {/* Desktop: respects viewMode */}
+                <div className="hidden md:block">
+                  {viewMode === 'grid' ? (
+                    <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5">
+                      {Array.from({ length: 8 }).map((_, i) => (
+                        <CarCardSkeleton key={i} />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {Array.from({ length: 6 }).map((_, i) => (
+                        <CarListItemSkeleton key={i} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </>
             )}
 
             {/* Empty */}
@@ -252,63 +286,95 @@ export function InventoryPageClient() {
             {/* Results */}
             {!isLoading && !error && listings.length > 0 && (
               <>
-                <div className={viewMode === 'grid' 
-                  ? "grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5"
-                  : "space-y-3"
-                }>
+                {/* Mobile: always grid */}
+                <div className="md:hidden grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   {listings.map((listing, index) => (
-                    viewMode === 'grid' ? (
-                      <CarCard
-                        key={listing.id}
-                        id={listing.id}
-                        make={listing.make}
-                        model={listing.model}
-                        year={listing.year}
-                        trim={listing.trim}
-                        price={listing.price}
-                        mileage={listing.mileage}
-                        emirate={listing.emirate}
-                        specs={listing.specs}
-                        thumbnail={listing.thumbnail}
-                        images={listing.images}
-                        qiScore={listing.qiScore}
-                        partnerName={listing.partnerName || undefined}
-                        partnerLogo={listing.partnerLogo || undefined}
-                        partnerVerified={listing.partnerVerified || undefined}
-                        sellerName={listing.sellerName || undefined}
-                        sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
-                        isBlackMember={listing.isBlackMember || false}
-                        priority={index < 4}
-                      />
-                    ) : (
-                      <CarListItem
-                        key={listing.id}
-                        id={listing.id}
-                        make={listing.make}
-                        model={listing.model}
-                        year={listing.year}
-                        trim={listing.trim}
-                        price={listing.price}
-                        mileage={listing.mileage}
-                        emirate={listing.emirate}
-                        specs={listing.specs}
-                        thumbnail={listing.thumbnail}
-                        images={listing.images}
-                        qiScore={listing.qiScore}
-                        partnerName={listing.partnerName || undefined}
-                        partnerLogo={listing.partnerLogo || undefined}
-                        partnerVerified={listing.partnerVerified || undefined}
-                        sellerName={listing.sellerName || undefined}
-                        sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
-                        isBlackMember={listing.isBlackMember || false}
-                      />
-                    )
+                    <CarCard
+                      key={listing.id}
+                      id={listing.id}
+                      make={listing.make}
+                      model={listing.model}
+                      year={listing.year}
+                      trim={listing.trim}
+                      price={listing.price}
+                      mileage={listing.mileage}
+                      emirate={listing.emirate}
+                      specs={listing.specs}
+                      thumbnail={listing.thumbnail}
+                      images={listing.images}
+                      qiScore={listing.qiScore}
+                      partnerName={listing.partnerName || undefined}
+                      partnerLogo={listing.partnerLogo || undefined}
+                      partnerVerified={listing.partnerVerified || undefined}
+                      sellerName={listing.sellerName || undefined}
+                      sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
+                      isBlackMember={listing.isBlackMember || false}
+                      priority={index < 4}
+                    />
                   ))}
                 </div>
 
+                {/* Desktop: respects viewMode */}
+                <div className="hidden md:block">
+                  {viewMode === 'grid' ? (
+                    <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5">
+                      {listings.map((listing, index) => (
+                        <CarCard
+                          key={listing.id}
+                          id={listing.id}
+                          make={listing.make}
+                          model={listing.model}
+                          year={listing.year}
+                          trim={listing.trim}
+                          price={listing.price}
+                          mileage={listing.mileage}
+                          emirate={listing.emirate}
+                          specs={listing.specs}
+                          thumbnail={listing.thumbnail}
+                          images={listing.images}
+                          qiScore={listing.qiScore}
+                          partnerName={listing.partnerName || undefined}
+                          partnerLogo={listing.partnerLogo || undefined}
+                          partnerVerified={listing.partnerVerified || undefined}
+                          sellerName={listing.sellerName || undefined}
+                          sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
+                          isBlackMember={listing.isBlackMember || false}
+                          priority={index < 4}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {listings.map((listing) => (
+                        <CarListItem
+                          key={listing.id}
+                          id={listing.id}
+                          make={listing.make}
+                          model={listing.model}
+                          year={listing.year}
+                          trim={listing.trim}
+                          price={listing.price}
+                          mileage={listing.mileage}
+                          emirate={listing.emirate}
+                          specs={listing.specs}
+                          thumbnail={listing.thumbnail}
+                          images={listing.images}
+                          qiScore={listing.qiScore}
+                          partnerName={listing.partnerName || undefined}
+                          partnerLogo={listing.partnerLogo || undefined}
+                          partnerVerified={listing.partnerVerified || undefined}
+                          sellerName={listing.sellerName || undefined}
+                          sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
+                          isBlackMember={listing.isBlackMember || false}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 {meta?.hasMore && (
-                  <div className="flex justify-center pt-8">
-                    <Button variant="outline" onClick={loadMore} disabled={isFetching}>
+                  <div className="flex justify-center pt-4 sm:pt-6 md:pt-8">
+                    <Button variant="outline" size="sm" onClick={loadMore} disabled={isFetching} className="text-xs sm:text-sm">
                       {isFetching ? 'Loading...' : `Load more (${listings.length}/${meta.total})`}
                     </Button>
                   </div>

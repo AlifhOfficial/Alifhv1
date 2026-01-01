@@ -16,7 +16,7 @@
  */
 
 import { useState } from 'react';
-import { Check, ChevronDown, SlidersHorizontal } from 'lucide-react';
+import { CheckCircle2, ChevronDown, SlidersHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Sheet,
@@ -122,22 +122,16 @@ export function AdvancedFilters({
   children,
 }: AdvancedFiltersProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [localFilters, setLocalFilters] = useState<Partial<SearchParams>>({});
 
-  const mergedParams = { ...params, ...localFilters };
-  const advancedCount = countAdvancedFilters(mergedParams);
+  const advancedCount = countAdvancedFilters(params);
 
-  const handleLocalChange = (filters: Partial<SearchParams>) => {
-    setLocalFilters(prev => ({ ...prev, ...filters }));
+  const handleFilterChange = (filters: Partial<SearchParams>) => {
+    onFilterChange(filters);
   };
 
-  const handleApply = () => {
-    onFilterChange(localFilters);
-    setLocalFilters({});
-    setIsOpen(false);
-  };
-
-  const handleReset = () => {
+  const handleReset = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
     onFilterChange({
       bodyType: undefined,
       fuelType: undefined,
@@ -146,21 +140,21 @@ export function AdvancedFilters({
       exteriorColor: undefined,
       interiorColor: undefined,
       sellerType: undefined,
-      partnerVerified: undefined,
-      isNegotiable: undefined,
     });
-    setLocalFilters({});
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
   };
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         {children || (
-          <button className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/50 rounded-lg transition-colors">
-            <SlidersHorizontal className="h-4 w-4" />
-            <span className="hidden sm:inline">More</span>
+          <button type="button" className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm transition-colors text-blue-600 font-medium hover:text-blue-700">
+            <span>Advanced Filters</span>
             {advancedCount > 0 && (
-              <span className="w-5 h-5 text-xs font-medium bg-foreground text-background rounded-full flex items-center justify-center">
+              <span className="w-4 h-4 sm:w-5 sm:h-5 text-[10px] sm:text-xs font-medium bg-foreground text-background rounded-full flex items-center justify-center">
                 {advancedCount}
               </span>
             )}
@@ -184,8 +178,8 @@ export function AdvancedFilters({
               label: b.label,
               count: facets?.bodyType.find(f => f.value === b.value)?.count ?? 0,
             }))}
-            selected={mergedParams.bodyType ?? []}
-            onChange={(bodyType) => handleLocalChange({ bodyType: bodyType as any })}
+            selected={params.bodyType ?? []}
+            onChange={(bodyType) => handleFilterChange({ bodyType: bodyType as any })}
           />
 
           {/* Fuel Type */}
@@ -196,8 +190,8 @@ export function AdvancedFilters({
               label: f.label,
               count: facets?.fuelType.find(x => x.value === f.value)?.count ?? 0,
             }))}
-            selected={mergedParams.fuelType ?? []}
-            onChange={(fuelType) => handleLocalChange({ fuelType: fuelType as any })}
+            selected={params.fuelType ?? []}
+            onChange={(fuelType) => handleFilterChange({ fuelType: fuelType as any })}
           />
 
           {/* Transmission */}
@@ -208,8 +202,8 @@ export function AdvancedFilters({
               label: t.label,
               count: facets?.transmission.find(x => x.value === t.value)?.count ?? 0,
             }))}
-            selected={mergedParams.transmission ?? []}
-            onChange={(transmission) => handleLocalChange({ transmission: transmission as any })}
+            selected={params.transmission ?? []}
+            onChange={(transmission) => handleFilterChange({ transmission: transmission as any })}
           />
 
           {/* Engine Size */}
@@ -220,8 +214,8 @@ export function AdvancedFilters({
               label: e.label,
               count: facets?.engineSize.find(x => x.value === e.value)?.count ?? 0,
             }))}
-            selected={mergedParams.engineSize ?? []}
-            onChange={(engineSize) => handleLocalChange({ engineSize: engineSize as any })}
+            selected={params.engineSize ?? []}
+            onChange={(engineSize) => handleFilterChange({ engineSize: engineSize as any })}
           />
 
           {/* Exterior Color */}
@@ -233,8 +227,8 @@ export function AdvancedFilters({
               count: facets?.exteriorColor.find(x => x.value === c.value)?.count ?? 0,
               hex: c.hex,
             }))}
-            selected={mergedParams.exteriorColor ?? []}
-            onChange={(exteriorColor) => handleLocalChange({ exteriorColor: exteriorColor as any })}
+            selected={params.exteriorColor ?? []}
+            onChange={(exteriorColor) => handleFilterChange({ exteriorColor: exteriorColor as any })}
             showColors
           />
 
@@ -247,8 +241,8 @@ export function AdvancedFilters({
               count: facets?.interiorColor.find(x => x.value === c.value)?.count ?? 0,
               hex: c.hex,
             }))}
-            selected={mergedParams.interiorColor ?? []}
-            onChange={(interiorColor) => handleLocalChange({ interiorColor: interiorColor as any })}
+            selected={params.interiorColor ?? []}
+            onChange={(interiorColor) => handleFilterChange({ interiorColor: interiorColor as any })}
             showColors
           />
 
@@ -267,60 +261,30 @@ export function AdvancedFilters({
                 count: facets?.sellerType.find(x => x.value === 'private')?.count ?? 0 
               },
             ]}
-            selected={mergedParams.sellerType ? [mergedParams.sellerType] : []}
-            onChange={(sellerType) => handleLocalChange({ 
+            selected={params.sellerType ? [params.sellerType] : []}
+            onChange={(sellerType) => handleFilterChange({ 
               sellerType: sellerType[0] as 'dealer' | 'private' | undefined 
             })}
             singleSelect
           />
-
-          {/* Other Options */}
-          <Collapsible asChild defaultOpen className="group/collapsible">
-            <div>
-              <CollapsibleTrigger asChild>
-                <button className="flex w-full items-center justify-between py-2 text-sm hover:bg-sidebar-accent/50 rounded-lg px-2 -mx-2 transition-colors">
-                  <span className="font-semibold tracking-tight">Other Options</span>
-                  <ChevronDown className="h-4 w-4 text-sidebar-foreground/60 transition-transform group-data-[state=closed]/collapsible:-rotate-90" />
-                </button>
-              </CollapsibleTrigger>
-              
-              <CollapsibleContent>
-                <div className="pt-3 space-y-1">
-                  <ToggleOption
-                    label="Verified Partner"
-                    checked={mergedParams.partnerVerified === true}
-                    onChange={(checked) => handleLocalChange({ 
-                      partnerVerified: checked ? true : undefined 
-                    })}
-                  />
-                  
-                  <ToggleOption
-                    label="Negotiable Price"
-                    checked={mergedParams.isNegotiable === true}
-                    onChange={(checked) => handleLocalChange({ 
-                      isNegotiable: checked ? true : undefined 
-                    })}
-                  />
-                </div>
-              </CollapsibleContent>
-            </div>
-          </Collapsible>
         </div>
 
         {/* Fixed Footer */}
         <div className="flex-shrink-0 p-6 bg-sidebar border-t border-sidebar-border/50">
           <div className="flex gap-3">
             <button
-              onClick={handleReset}
+              type="button"
+              onClick={(e) => handleReset(e)}
               className="flex-1 px-4 py-2.5 text-sm font-medium text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-full border border-sidebar-border/50 transition-colors"
             >
               Reset
             </button>
             <button
-              onClick={handleApply}
+              type="button"
+              onClick={handleClose}
               className="flex-1 px-4 py-2.5 text-sm font-medium bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90 rounded-full transition-colors"
             >
-              Apply Filters
+              Close
             </button>
           </div>
         </div>
@@ -382,7 +346,7 @@ function FilterGroup({
     <Collapsible asChild defaultOpen className="group/collapsible">
       <div>
         <CollapsibleTrigger asChild>
-          <button className="flex w-full items-center justify-between py-2 text-sm hover:bg-sidebar-accent/50 rounded-lg px-2 -mx-2 transition-colors">
+          <button type="button" className="flex w-full items-center justify-between py-2 text-sm hover:bg-sidebar-accent/50 rounded-lg px-2 -mx-2 transition-colors">
             <span className="font-semibold tracking-tight">{title}</span>
             <div className="flex items-center gap-2">
               {selected.length > 0 && (
@@ -404,6 +368,7 @@ function FilterGroup({
                   const isSelected = selected.includes(option.value);
                   return (
                     <button
+                      type="button"
                       key={option.value}
                       onClick={() => toggleOption(option.value)}
                       className={cn(
@@ -416,7 +381,7 @@ function FilterGroup({
                       title={`${option.label} (${option.count})`}
                     >
                       {isSelected && (
-                        <Check className={cn(
+                        <CheckCircle2 className={cn(
                           'h-4 w-4',
                           option.value === 'white' || option.value === 'beige' || option.value === 'yellow' || option.value === 'gold'
                             ? 'text-sidebar-foreground'
@@ -434,6 +399,7 @@ function FilterGroup({
                   const isSelected = selected.includes(option.value);
                   return (
                     <button
+                      type="button"
                       key={option.value}
                       onClick={() => toggleOption(option.value)}
                       className={cn(
@@ -452,7 +418,7 @@ function FilterGroup({
                           {option.count}
                         </span>
                         {isSelected && (
-                          <Check className="h-4 w-4 text-sidebar-foreground" />
+                          <CheckCircle2 className="h-4 w-4 text-sidebar-foreground" />
                         )}
                       </div>
                     </button>
@@ -463,6 +429,7 @@ function FilterGroup({
 
             {hasMore && (
               <button
+                type="button"
                 onClick={() => setExpanded(true)}
                 className="text-xs text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors mt-2 px-3"
               >
@@ -489,6 +456,7 @@ interface ToggleOptionProps {
 function ToggleOption({ label, checked, onChange }: ToggleOptionProps) {
   return (
     <button
+      type="button"
       onClick={() => onChange(!checked)}
       className={cn(
         'flex items-center justify-between w-full px-3 py-2.5 rounded-lg transition-colors',
@@ -504,7 +472,7 @@ function ToggleOption({ label, checked, onChange }: ToggleOptionProps) {
           ? 'bg-sidebar-foreground border-sidebar-foreground'
           : 'border-sidebar-border bg-transparent'
       )}>
-        {checked && <Check className="h-3.5 w-3.5 text-sidebar" />}
+        {checked && <CheckCircle2 className="h-3.5 w-3.5 text-sidebar" />}
       </div>
     </button>
   );
@@ -523,7 +491,5 @@ function countAdvancedFilters(params: SearchParams): number {
   if (params.exteriorColor?.length) count++;
   if (params.interiorColor?.length) count++;
   if (params.sellerType) count++;
-  if (params.partnerVerified !== undefined) count++;
-  if (params.isNegotiable !== undefined) count++;
   return count;
 }

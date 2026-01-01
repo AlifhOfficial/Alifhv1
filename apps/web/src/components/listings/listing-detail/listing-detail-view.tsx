@@ -162,22 +162,37 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
       <Navbar />
       
       <main className="pt-20">
-        {/* Breadcrumb - Clean, minimal */}
-        <div className="border-b border-border/40">
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Breadcrumb - Integrated into page flow */}
+          <nav className="flex items-center gap-2 text-sm font-medium tracking-tight py-5 sm:py-6 mb-4 sm:mb-6">
             <Link 
               href="/listings" 
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors tracking-tight"
+              className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              <ChevronLeft className="w-4 h-4" />
-              <span>Listings</span>
+              All Cars
             </Link>
-          </div>
-        </div>
+            <span className="text-muted-foreground/40">/</span>
+            <Link 
+              href={`/listings?make=${encodeURIComponent(listing.make)}`}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {listing.make}
+            </Link>
+            <span className="text-muted-foreground/40">/</span>
+            <Link 
+              href={`/listings?make=${encodeURIComponent(listing.make)}&model=${encodeURIComponent(listing.model)}`}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {listing.model}
+            </Link>
+            <span className="text-muted-foreground/40">/</span>
+            <span className="text-foreground truncate max-w-[200px] sm:max-w-none">
+              {listing.year} {listing.make} {listing.model}{listing.trim ? ` ${listing.trim}` : ''}
+            </span>
+          </nav>
 
-        {/* Main Content */}
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10">
+          {/* Main Content */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10 pb-6 lg:pb-8">
             {/* Main Column - Car Details (60%) */}
             <div className="lg:col-span-3">
               <CarCardDetailed listing={listing} />

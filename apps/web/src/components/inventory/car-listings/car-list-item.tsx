@@ -75,8 +75,34 @@ export function CarListItem({
     return km.toString();
   };
 
+  const formatEmirate = (emirate: string) => {
+    const emirateMap: Record<string, string> = {
+      'dubai': 'Dubai',
+      'abu_dhabi': 'Abu Dhabi',
+      'sharjah': 'Sharjah',
+      'ajman': 'Ajman',
+      'ras_al_khaimah': 'Ras Al Khaimah',
+      'fujairah': 'Fujairah',
+      'umm_al_quwain': 'Umm Al Quwain',
+    };
+    return emirateMap[emirate.toLowerCase()] || emirate;
+  };
+
+  const formatSpecs = (specs: string) => {
+    const specsMap: Record<string, string> = {
+      'gcc': 'GCC',
+      'us': 'US',
+      'european': 'European',
+      'japanese': 'Japanese',
+      'canadian': 'Canadian',
+      'american': 'American',
+    };
+    return specsMap[specs.toLowerCase()] || specs;
+  };
+
   const displayImage = thumbnail || images?.[0] || '/assets/cars/car1.avif';
-  const displaySpecs = specs || 'GCC';
+  const displaySpecs = formatSpecs(specs || 'GCC');
+  const displayEmirate = formatEmirate(emirate);
   const displaySellerName = partnerName || sellerName || 'Private Seller';
   const isPartnerListing = Boolean(partnerLogo || partnerName);
   
@@ -131,7 +157,7 @@ export function CarListItem({
       className
     )}>
       {/* Image Section */}
-      <div className="p-3 w-full lg:w-80 flex-shrink-0">
+      <div className="p-2 sm:p-3 w-full lg:w-80 flex-shrink-0">
         <Link href={`/listings/${id}`} className={cn(
           "relative aspect-[4/3] w-full overflow-hidden rounded-lg block",
           isBlackMember ? "bg-zinc-900" : "bg-muted/20"
@@ -141,7 +167,7 @@ export function CarListItem({
             alt={`${year} ${make} ${model}`}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
-            sizes="256px"
+            sizes="(max-width: 1024px) 100vw, 320px"
           />
         
           {/* Black badge - exception, can be on image */}
@@ -154,12 +180,12 @@ export function CarListItem({
       </div>
 
       {/* Content Section */}
-      <div className="flex flex-1 flex-col px-4 lg:px-6 py-4 lg:py-5 min-w-0 min-h-0">
+      <div className="flex flex-1 flex-col px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 min-w-0 min-h-0">
         {/* Top Section - Title and Price */}
-        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-2 lg:gap-6 mb-3">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-1 sm:gap-2 lg:gap-6 mb-2 sm:mb-3">
           <Link href={`/listings/${id}`} className="group/title flex-1 min-w-0">
             <h3 className={cn(
-              "text-base lg:text-lg font-medium transition-colors line-clamp-1",
+              "text-sm sm:text-base lg:text-lg font-medium transition-colors line-clamp-1",
               isBlackMember
                 ? "text-white group-hover/title:text-zinc-200"
                 : "text-sidebar-foreground group-hover/title:text-primary"
@@ -168,7 +194,7 @@ export function CarListItem({
             </h3>
           </Link>
           <p className={cn(
-            "text-base lg:text-xl font-semibold whitespace-nowrap",
+            "text-lg sm:text-base lg:text-xl font-semibold whitespace-nowrap",
             isBlackMember ? "text-blue-400" : "text-blue-600"
           )}>
             {formatPrice(price)}
@@ -176,7 +202,7 @@ export function CarListItem({
         </div>
 
         {/* Stats Row */}
-        <div className="flex flex-wrap items-center gap-2 lg:gap-3 text-xs lg:text-sm mb-3 lg:mb-auto lg:pb-4">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 lg:gap-3 text-[10px] sm:text-xs lg:text-sm mb-2 sm:mb-3 lg:mb-auto lg:pb-4">
           <span className={cn(
             "font-medium",
             isBlackMember ? "text-zinc-300" : "text-sidebar-foreground/80"
@@ -199,39 +225,24 @@ export function CarListItem({
             "font-medium",
             isBlackMember ? "text-zinc-300" : "text-sidebar-foreground/80"
           )}>
-            {emirate}
+            {displayEmirate}
           </span>
-          {qiScore && (
-            <>
-              <span className={cn(
-                isBlackMember ? "text-zinc-600" : "text-sidebar-foreground/30"
-              )}>•</span>
-              <span className={cn(
-                "px-2 py-1 text-[10px] font-medium rounded",
-                isBlackMember 
-                  ? "bg-zinc-800 text-zinc-300 border border-zinc-700" 
-                  : "bg-sidebar-accent text-sidebar-foreground/80 border border-sidebar-border"
-              )}>
-                QI {Math.round(qiScore)}
-              </span>
-            </>
-          )}
         </div>
 
         {/* Bottom Section - Dealer and Actions */}
         <div className={cn(
-          "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 pt-3 lg:pt-4 border-t mt-auto",
+          "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 pt-2 sm:pt-3 lg:pt-4 border-t mt-auto",
           isBlackMember ? "border-zinc-800" : "border-sidebar-border"
         )}>
           {/* Left - Dealer */}
-          <div className="flex items-center gap-2.5 lg:gap-3 min-w-0 flex-1">
+          <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-3 min-w-0 flex-1">
             {isPartnerListing ? (
               <BrandAvatar
                 logoUrl={partnerLogo}
                 brandName={displaySellerName}
                 size="xs"
                 className={cn(
-                  'w-8 h-8 lg:w-9 lg:h-9 flex-shrink-0',
+                  'w-6 h-6 sm:w-8 sm:h-8 lg:w-9 lg:h-9 flex-shrink-0',
                   isBlackMember ? 'bg-zinc-800 border-zinc-700' : 'bg-sidebar-accent border-sidebar-border'
                 )}
               />
@@ -241,42 +252,42 @@ export function CarListItem({
                 name={displaySellerName}
                 size="sm"
                 className={cn(
-                  'w-8 h-8 lg:w-9 lg:h-9 flex-shrink-0',
+                  'w-6 h-6 sm:w-8 sm:h-8 lg:w-9 lg:h-9 flex-shrink-0',
                   isBlackMember ? 'bg-zinc-800 border-zinc-700 text-zinc-400' : 'bg-sidebar-accent border-sidebar-border text-sidebar-foreground/70'
                 )}
               />
             )}
-            <div className="flex items-center gap-1.5 lg:gap-2 min-w-0">
+            <div className="flex items-center gap-1 sm:gap-1.5 lg:gap-2 min-w-0">
               <span className={cn(
-                "text-sm lg:text-base font-semibold truncate",
+                "text-xs sm:text-sm lg:text-base font-semibold truncate",
                 isBlackMember ? "text-zinc-200" : "text-sidebar-foreground"
               )}>
                 {displaySellerName}
               </span>
               {(isBlackMember || partnerVerified) && (
-                <CheckCircle2 className="w-4 h-4 text-blue-500 flex-shrink-0" aria-label="Verified" />
+                <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" aria-label="Verified" />
               )}
             </div>
           </div>
 
           {/* Right - Actions */}
-          <div className="flex items-center gap-1 flex-shrink-0 self-end sm:self-auto">
+          <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0 self-end sm:self-auto">
             <button 
               className={cn(
-                "rounded-full p-2 transition-colors",
+                "rounded-full p-1.5 sm:p-2 transition-colors",
                 isBlackMember
                   ? "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
                   : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
               )}
               aria-label="Share"
             >
-              <Share2 className="h-4 w-4" />
+              <Share2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </button>
             
             {/* Favorite Button */}
             <button 
               className={cn(
-                "relative rounded-full p-2 transition-all active:scale-95",
+                "relative rounded-full p-1.5 sm:p-2 transition-all active:scale-95",
                 favorite.isUpdating && "opacity-50 cursor-not-allowed",
                 favorite.isFavorite
                   ? isBlackMember
@@ -297,7 +308,7 @@ export function CarListItem({
             >
               <Heart
                 className={cn(
-                  "h-4 w-4 transition-transform duration-300",
+                  "h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform duration-300",
                   heartScale && "scale-150"
                 )}
                 strokeWidth={favorite.isFavorite ? 2.5 : 2}
@@ -308,7 +319,7 @@ export function CarListItem({
             {/* Superlike Button */}
             <button
               className={cn(
-                "relative rounded-full p-2 transition-all active:scale-95",
+                "relative rounded-full p-1.5 sm:p-2 transition-all active:scale-95",
                 superlike.isUpdating && "opacity-50 cursor-not-allowed",
                 superlike.isSuperliked
                   ? isBlackMember
@@ -328,7 +339,7 @@ export function CarListItem({
               }}
             >
               <Sparkles
-                className="h-4 w-4"
+                className="h-3.5 w-3.5 sm:h-4 sm:w-4"
                 strokeWidth={superlike.isSuperliked ? 2.5 : 2}
                 fill={superlike.isSuperliked ? "currentColor" : "none"}
               />

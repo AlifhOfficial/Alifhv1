@@ -82,8 +82,34 @@ export function CarCard({
     return km.toString();
   };
 
+  const formatEmirate = (emirate: string) => {
+    const emirateMap: Record<string, string> = {
+      'dubai': 'Dubai',
+      'abu_dhabi': 'Abu Dhabi',
+      'sharjah': 'Sharjah',
+      'ajman': 'Ajman',
+      'ras_al_khaimah': 'Ras Al Khaimah',
+      'fujairah': 'Fujairah',
+      'umm_al_quwain': 'Umm Al Quwain',
+    };
+    return emirateMap[emirate.toLowerCase()] || emirate;
+  };
+
+  const formatSpecs = (specs: string) => {
+    const specsMap: Record<string, string> = {
+      'gcc': 'GCC',
+      'us': 'US',
+      'european': 'European',
+      'japanese': 'Japanese',
+      'canadian': 'Canadian',
+      'american': 'American',
+    };
+    return specsMap[specs.toLowerCase()] || specs;
+  };
+
   const displayImage = thumbnail || images?.[0] || '/assets/cars/car1.avif';
-  const displaySpecs = specs || 'GCC';
+  const displaySpecs = formatSpecs(specs || 'GCC');
+  const displayEmirate = formatEmirate(emirate);
   const { user, isSignedIn } = useUser();
   
   // Separate hooks for favorites and superlikes - completely independent
@@ -212,11 +238,11 @@ export function CarCard({
       </Link>
 
       {/* Content Section */}
-      <div className="flex flex-1 flex-col p-4 space-y-3">
+      <div className="flex flex-1 flex-col p-3 sm:p-4 space-y-2 sm:space-y-3">
         {/* Title */}
         <Link href={`/listings/${id}`} className="group/title">
           <h3 className={cn(
-            "text-sm font-medium line-clamp-1 transition-colors",
+            "text-xs sm:text-sm font-medium line-clamp-1 transition-colors",
             isBlackMember
               ? "text-white group-hover/title:text-zinc-200"
               : "text-sidebar-foreground group-hover/title:text-primary"
@@ -227,14 +253,14 @@ export function CarCard({
 
         {/* Price */}
         <p className={cn(
-          "text-xl font-bold -mt-0.5",
+          "text-lg sm:text-xl font-bold -mt-0.5",
           isBlackMember ? "text-blue-400" : "text-blue-600"
         )}>
           {formatPrice(price)}
         </p>
 
         {/* Stats Row */}
-        <div className="flex items-center gap-2.5 text-xs">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 text-[10px] sm:text-xs">
           <span className={cn(
             "font-medium",
             isBlackMember ? "text-zinc-300" : "text-sidebar-foreground/80"
@@ -254,27 +280,27 @@ export function CarCard({
             isBlackMember ? "text-zinc-600" : "text-sidebar-foreground/30"
           )}>•</span>
           <span className={cn(
-            "font-medium",
+            "font-medium truncate",
             isBlackMember ? "text-zinc-300" : "text-sidebar-foreground/80"
           )}>
-            {emirate}
+            {displayEmirate}
           </span>
         </div>
 
         {/* Bottom Section */}
         <div className={cn(
-          "flex items-center justify-between pt-3 mt-auto border-t",
+          "flex items-center justify-between pt-2 sm:pt-3 mt-auto border-t",
           isBlackMember ? "border-zinc-800" : "border-sidebar-border"
         )}>
           {/* Left - Dealer */}
-          <div className="flex items-center gap-2.5 min-w-0 flex-1">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 flex-1">
             {isPartnerListing ? (
               <BrandAvatar
                 logoUrl={partnerLogo}
                 brandName={displaySellerName}
                 size="xs"
                 className={cn(
-                  'w-8 h-8 flex-shrink-0',
+                  'w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0',
                   isBlackMember ? 'bg-zinc-800 border-zinc-700' : 'bg-sidebar-accent border-sidebar-border'
                 )}
               />
@@ -284,52 +310,42 @@ export function CarCard({
                 name={displaySellerName}
                 size="sm"
                 className={cn(
-                  'w-8 h-8 flex-shrink-0',
+                  'w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0',
                   isBlackMember ? 'bg-zinc-800 border-zinc-700 text-zinc-400' : 'bg-sidebar-accent border-sidebar-border text-sidebar-foreground/70'
                 )}
               />
             )}
-            <div className="flex items-center gap-1.5 min-w-0">
+            <div className="flex items-center gap-1 sm:gap-1.5 min-w-0">
               <span className={cn(
-                "text-sm font-semibold truncate",
+                "text-xs sm:text-sm font-semibold truncate",
                 isBlackMember ? "text-zinc-200" : "text-sidebar-foreground"
               )}>
                 {displaySellerName}
               </span>
               {(isBlackMember || partnerVerified) && (
-                <CheckCircle2 className="w-4 h-4 text-blue-500 flex-shrink-0" aria-label="Verified" />
+                <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" aria-label="Verified" />
               )}
             </div>
           </div>
 
-          {/* Right - QI + Actions */}
-          <div className="flex items-center gap-1 flex-shrink-0">
-            {qiScore && (
-              <span className={cn(
-                "px-2 py-1 text-[10px] font-medium rounded mr-0.5",
-                isBlackMember 
-                  ? "bg-zinc-800 text-zinc-300 border border-zinc-700" 
-                  : "bg-sidebar-accent text-sidebar-foreground/80 border border-sidebar-border"
-              )}>
-                QI {Math.round(qiScore)}
-              </span>
-            )}
+          {/* Right - Actions */}
+          <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
             <button 
               className={cn(
-                "rounded-full p-2 transition-colors",
+                "rounded-full p-1.5 sm:p-2 transition-colors",
                 isBlackMember
                   ? "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
                   : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
               )}
               aria-label="Share"
             >
-              <Share2 className="h-4 w-4" />
+              <Share2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </button>
             
             {/* Favorite Button */}
             <button 
               className={cn(
-                "relative rounded-full p-2 transition-all active:scale-95",
+                "relative rounded-full p-1.5 sm:p-2 transition-all active:scale-95",
                 favorite.isUpdating && "opacity-50 cursor-not-allowed",
                 favorite.isFavorite
                   ? isBlackMember
@@ -350,7 +366,7 @@ export function CarCard({
             >
               <Heart
                 className={cn(
-                  "h-4 w-4 transition-transform duration-300",
+                  "h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform duration-300",
                   heartScale && "scale-150"
                 )}
                 strokeWidth={favorite.isFavorite ? 2.5 : 2}
@@ -361,7 +377,7 @@ export function CarCard({
             {/* Superlike Button */}
             <button
               className={cn(
-                "relative rounded-full p-2 transition-all active:scale-95",
+                "relative rounded-full p-1.5 sm:p-2 transition-all active:scale-95",
                 superlike.isUpdating && "opacity-50 cursor-not-allowed",
                 superlike.isSuperliked
                   ? isBlackMember
@@ -381,7 +397,7 @@ export function CarCard({
               }}
             >
               <Sparkles
-                className="h-4 w-4"
+                className="h-3.5 w-3.5 sm:h-4 sm:w-4"
                 strokeWidth={superlike.isSuperliked ? 2.5 : 2}
                 fill={superlike.isSuperliked ? "currentColor" : "none"}
               />
