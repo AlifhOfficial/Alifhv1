@@ -569,7 +569,7 @@ export async function PUT(
                 priceTrend: result.priceTrend,
                 qiScore: result.qiScore,
                 aiConfidenceScore: result.aiConfidenceScore,
-                reasoning: result.reasoning,
+                valueFactors: result.valueFactors,
               });
               console.log(`[AI Valuation] Listing ${id} (edit): QI=${result.qiScore}, Confidence=${result.aiConfidenceScore}, CoreFieldsChanged=true`);
             })

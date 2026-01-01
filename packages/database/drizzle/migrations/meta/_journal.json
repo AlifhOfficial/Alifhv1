@@ -267,6 +267,13 @@
       "when": 1767255640101,
       "tag": "0037_worthless_professor_monster",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1767309326005,
+      "tag": "0038_zippy_expediter",
+      "breakpoints": true
     }
   ]
 }

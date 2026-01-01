@@ -319,7 +319,7 @@ export async function POST(req: NextRequest) {
             priceTrend: result.priceTrend,
             qiScore: result.qiScore,
             aiConfidenceScore: result.aiConfidenceScore,
-            reasoning: result.reasoning,
+            valueFactors: result.valueFactors,
           });
           console.log(`[AI Valuation] Listing ${listingId}: QI=${result.qiScore}, Confidence=${result.aiConfidenceScore}`);
         })

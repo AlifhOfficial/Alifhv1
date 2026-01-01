@@ -158,29 +158,17 @@ function SpecRow({ label, value }: { label: string; value: string | number | nul
 }
 
 function PricingInsights({ listing }: { listing: CarDetailedData }) {
-  const getPricePosition = () => {
-    if (!listing.estimateMin || !listing.estimateMax) return 50;
-    const range = listing.estimateMax - listing.estimateMin;
-    if (range === 0) return 50;
-    const position = ((listing.price - listing.estimateMin) / range) * 100;
-    return Math.min(Math.max(position, 5), 95);
-  };
-
-  const getPriceVsMarket = () => {
-    if (!listing.fairValue) return null;
-    const diff = ((listing.price - listing.fairValue) / listing.fairValue) * 100;
-    if (Math.abs(diff) < 3) return { label: 'Fair Value', color: 'text-green-500' };
-    if (diff < 0) return { label: 'Below Market', color: 'text-green-500' };
-    return { label: 'Above Market', color: 'text-yellow-500' };
-  };
-
-  const priceVsMarket = getPriceVsMarket();
+  const valueFactors = listing.aiValueFactors;
+  const hasValueFactors = valueFactors && (
+    (valueFactors.positives && valueFactors.positives.length > 0) ||
+    (valueFactors.considerations && valueFactors.considerations.length > 0)
+  );
 
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
-          AI Pricing Insights
+          AI Market Insights
         </p>
       </div>
 
@@ -217,7 +205,7 @@ function PricingInsights({ listing }: { listing: CarDetailedData }) {
         </div>
 
         <div className="space-y-2">
-          <p className="text-xs text-muted-foreground">Fair Value</p>
+          <p className="text-xs text-muted-foreground">Estimated Value</p>
           <div className="h-14 bg-muted/30 rounded-lg flex items-center justify-center">
             <p className="text-lg font-bold tabular-nums text-foreground">
               {listing.fairValue ? formatPriceShort(listing.fairValue) : '—'}
@@ -226,10 +214,10 @@ function PricingInsights({ listing }: { listing: CarDetailedData }) {
         </div>
       </div>
 
-      {/* Estimated Value Range */}
-      <div className="p-4 bg-muted/30 rounded-xl border border-border/40 space-y-4">
+      {/* Value Range */}
+      <div className="p-4 bg-muted/30 rounded-xl border border-border/40 space-y-3">
         <div className="space-y-1">
-          <p className="text-xs text-muted-foreground">Estimated Value Range</p>
+          <p className="text-xs text-muted-foreground">Market Range</p>
           <p className="text-base font-semibold tabular-nums text-foreground">
             {listing.estimateMin && listing.estimateMax 
               ? `${formatPrice(listing.estimateMin)} - ${formatPrice(listing.estimateMax)}`
@@ -238,32 +226,7 @@ function PricingInsights({ listing }: { listing: CarDetailedData }) {
           </p>
         </div>
 
-        <div className="space-y-2">
-          <div className="flex justify-between items-center text-xs">
-            <span className="text-muted-foreground">Market Position</span>
-            <span className={priceVsMarket?.color || 'text-muted-foreground'}>
-              {priceVsMarket?.label || '—'}
-            </span>
-          </div>
-          
-          <div className="relative">
-            <div className="h-1.5 bg-gradient-to-r from-green-300/40 via-yellow-300/40 to-orange-300/40 rounded-full" />
-            {listing.estimateMin && listing.estimateMax && (
-              <div 
-                className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-yellow-500 rounded-sm"
-                style={{ left: `${getPricePosition()}%`, transform: 'translate(-50%, -50%)' }}
-              />
-            )}
-          </div>
-          
-          <div className="flex justify-between text-[10px] text-muted-foreground">
-            <span>Low</span>
-            <span>Market</span>
-            <span>High</span>
-          </div>
-        </div>
-
-        <div className="flex justify-between pt-3 border-t border-border/40 text-xs">
+        <div className="flex justify-between pt-2 border-t border-border/40 text-xs">
           <span className="text-muted-foreground">AI Confidence</span>
           <span className="text-foreground font-medium">
             {listing.aiConfidenceScore ? `${Math.round(listing.aiConfidenceScore * 100)}%` : '—'}
@@ -271,16 +234,45 @@ function PricingInsights({ listing }: { listing: CarDetailedData }) {
         </div>
       </div>
 
-      {/* AI Analysis / Reasoning */}
-      {listing.aiReasoning && (
-        <div className="p-4 bg-muted/20 rounded-xl border border-border/30 space-y-2">
+      {/* Value Factors - Neutral, non-judgmental */}
+      {hasValueFactors && (
+        <div className="p-4 bg-muted/20 rounded-xl border border-border/30 space-y-3">
           <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70 flex items-center gap-1.5">
             <Sparkles className="w-3 h-3" />
-            AI Analysis
+            Value Factors
           </p>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            {listing.aiReasoning}
-          </p>
+          
+          {/* Positives */}
+          {valueFactors.positives && valueFactors.positives.length > 0 && (
+            <div className="space-y-1.5">
+              {valueFactors.positives.map((factor, idx) => (
+                <div key={idx} className="flex items-start gap-2 text-sm">
+                  <span className="text-green-500 mt-0.5">✓</span>
+                  <span className="text-foreground/80">{factor}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {/* Considerations (neutral, not negatives) */}
+          {valueFactors.considerations && valueFactors.considerations.length > 0 && (
+            <div className="space-y-1.5 pt-2 border-t border-border/20">
+              <p className="text-[10px] text-muted-foreground/60 uppercase tracking-wider">Consider</p>
+              {valueFactors.considerations.map((factor, idx) => (
+                <div key={idx} className="flex items-start gap-2 text-sm">
+                  <span className="text-muted-foreground mt-0.5">•</span>
+                  <span className="text-muted-foreground">{factor}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {/* Market Context */}
+          {valueFactors.marketContext && (
+            <p className="text-xs text-muted-foreground/70 pt-2 border-t border-border/20">
+              {valueFactors.marketContext}
+            </p>
+          )}
         </div>
       )}
     </div>
@@ -408,12 +400,6 @@ export function CarCardDetailed({ listing, kycVerified, className }: CarCardDeta
 
           {/* Actions */}
           <div className="flex items-center gap-1.5 flex-shrink-0">
-            {listing.qiScore && (
-              <div className="px-2 py-1 text-[10px] font-bold tabular-nums bg-foreground text-background rounded">
-                QI {Math.round(listing.qiScore)}
-              </div>
-            )}
-            
             {listing.isBlackMember && (
               <div className="px-2 py-1 text-[10px] font-bold tracking-widest bg-black text-white dark:bg-white dark:text-black rounded">
                 BLK
@@ -422,7 +408,7 @@ export function CarCardDetailed({ listing, kycVerified, className }: CarCardDeta
 
             <button 
               onClick={handleShare}
-              className="p-2 rounded-full bg-muted/40 hover:bg-muted transition-colors"
+              className="p-2 hover:opacity-70 transition-opacity"
               aria-label="Share"
             >
               <Share2 className="w-4 h-4 text-muted-foreground" />
@@ -431,16 +417,15 @@ export function CarCardDetailed({ listing, kycVerified, className }: CarCardDeta
             <button 
               onClick={handleFavoriteClick}
               disabled={favorite.isUpdating}
-              className={cn(
-                "p-2 rounded-full transition-all",
-                favorite.isFavorite 
-                  ? "bg-rose-100 dark:bg-rose-900/20 text-rose-500" 
-                  : "bg-muted/40 hover:bg-muted text-muted-foreground"
-              )}
+              className="p-2 hover:opacity-70 transition-opacity"
               aria-label={favorite.isFavorite ? "Remove from favorites" : "Add to favorites"}
             >
               <Heart 
-                className={cn("w-4 h-4 transition-transform", heartScale && "scale-125")}
+                className={cn(
+                  "w-4 h-4 transition-transform",
+                  heartScale && "scale-125",
+                  favorite.isFavorite ? "text-rose-500" : "text-muted-foreground"
+                )}
                 fill={favorite.isFavorite ? "currentColor" : "none"}
               />
             </button>
@@ -448,16 +433,14 @@ export function CarCardDetailed({ listing, kycVerified, className }: CarCardDeta
             <button 
               onClick={handleSuperlikeClick}
               disabled={superlike.isUpdating}
-              className={cn(
-                "p-2 rounded-full transition-all",
-                superlike.isSuperliked 
-                  ? "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-500" 
-                  : "bg-muted/40 hover:bg-muted text-muted-foreground"
-              )}
+              className="p-2 hover:opacity-70 transition-opacity"
               aria-label={superlike.isSuperliked ? "Remove superlike" : "Superlike"}
             >
               <Sparkles 
-                className="w-4 h-4"
+                className={cn(
+                  "w-4 h-4",
+                  superlike.isSuperliked ? "text-yellow-500" : "text-muted-foreground"
+                )}
                 fill={superlike.isSuperliked ? "currentColor" : "none"}
               />
             </button>

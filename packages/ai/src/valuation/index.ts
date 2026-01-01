@@ -73,9 +73,12 @@ export interface ValuationResult {
   qiScore: number; // 0-100 quality index
   aiConfidenceScore: number; // 0-1 confidence
   
-  // Analysis details
-  pricePosition: 'below' | 'fair' | 'above';
-  reasoning?: string;
+  // Neutral value factors (non-judgmental)
+  valueFactors: {
+    positives: string[];       // e.g., ["GCC specs", "Full service history"]
+    considerations: string[];  // Neutral framing, e.g., ["Higher mileage for year"]
+    marketContext?: string;    // Brief market note without judgment
+  };
 }
 
 // ============================================================================
@@ -112,19 +115,17 @@ CONFIDENCE SCORE (0-1) - Based on data provided:
 - 0.5-0.69: Missing important specs
 - Below 0.5: Insufficient data
 
-REASONING (150-200 words): Provide a detailed analysis covering:
-1. VALUE ASSESSMENT: How the asking price compares to market value and why
-2. KEY FACTORS: Major positives and negatives affecting value (mileage, specs, age, brand reputation)
-3. MARKET CONTEXT: Current demand for this make/model in UAE, depreciation trends
-4. RECOMMENDATION: Whether this is a good buy, fair deal, or overpriced
+VALUE FACTORS (neutral, non-judgmental language):
+- positives: Array of 2-4 value-adding factors (e.g., "GCC specs", "Low mileage", "Full service history")
+- considerations: Array of 1-3 neutral factors to consider (NOT negatives! e.g., "Higher mileage for year", "No warranty")
+- marketContext: One brief sentence about market demand (optional, neutral tone)
 
-FOR RE-VALUATIONS: If previous valuation data is provided, mention what changed and how it affects value.
-Example: "Price increased from AED 85k to 90k (+6%), which now exceeds market value by 8%"
-
-Write in clear, professional language suitable for car buyers.
+IMPORTANT: Use neutral, factual language. Never say "overpriced", "bad deal", "avoid", etc.
+Good: "Higher mileage for model year" | Bad: "Excessively high mileage is concerning"
+Good: "No active warranty" | Bad: "Lack of warranty reduces value significantly"
 
 Return ONLY valid JSON:
-{"fairValue":number,"estimateMin":number,"estimateMax":number,"priceTrend":"up"|"down"|"stable","qiScore":number,"aiConfidenceScore":number,"pricePosition":"below"|"fair"|"above","reasoning":"string"}`;
+{"fairValue":number,"estimateMin":number,"estimateMax":number,"priceTrend":"up"|"down"|"stable","qiScore":number,"aiConfidenceScore":number,"valueFactors":{"positives":["string"],"considerations":["string"],"marketContext":"string"}}`;
 
 // ============================================================================
 // VALUATION SERVICE
@@ -254,6 +255,9 @@ function validateResult(result: ValuationResult, input: ValuationInput): Valuati
     throw new Error('Invalid aiConfidenceScore');
   }
   
+  // Ensure valueFactors is valid
+  const valueFactors = result.valueFactors || { positives: [], considerations: [] };
+  
   // Ensure logical price range
   const sanitized: ValuationResult = {
     fairValue: Math.round(result.fairValue),
@@ -262,8 +266,11 @@ function validateResult(result: ValuationResult, input: ValuationInput): Valuati
     priceTrend: ['up', 'down', 'stable'].includes(result.priceTrend) ? result.priceTrend : 'stable',
     qiScore: Math.round(result.qiScore),
     aiConfidenceScore: Math.round(result.aiConfidenceScore * 100) / 100,
-    pricePosition: ['below', 'fair', 'above'].includes(result.pricePosition) ? result.pricePosition : 'fair',
-    reasoning: result.reasoning?.slice(0, 1500), // Allow up to 1500 chars for detailed reasoning
+    valueFactors: {
+      positives: Array.isArray(valueFactors.positives) ? valueFactors.positives.slice(0, 5) : [],
+      considerations: Array.isArray(valueFactors.considerations) ? valueFactors.considerations.slice(0, 4) : [],
+      marketContext: valueFactors.marketContext?.slice(0, 200),
+    },
   };
   
   // Ensure min < fair < max

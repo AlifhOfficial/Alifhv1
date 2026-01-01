@@ -252,20 +252,20 @@ export const carListing = pgTable('car_listing', {
   currency: text('currency').default('AED').notNull(),
   isNegotiable: boolean('is_negotiable').default(true).notNull(),
   
-  // AI Pricing Insights
-  aiEstimatedPrice: integer('ai_estimated_price'),
-  aiPriceMin: integer('ai_price_min'),
-  aiPriceMax: integer('ai_price_max'),
-  aiConfidenceScore: doublePrecision('ai_confidence_score'),
-  aiPriceUpdatedAt: timestamp('ai_price_updated_at'),
-  aiModel: text('ai_model').default('v1'),
-  aiReasoning: text('ai_reasoning'), // AI valuation analysis/reasoning
-  
+  // AI Valuation (neutral, non-judgmental)
   fairValue: integer('fair_value'),
   estimateMin: integer('estimate_min'),
   estimateMax: integer('estimate_max'),
-  priceTrend: text('price_trend'),
-  qiScore: doublePrecision('qi_score'),
+  priceTrend: text('price_trend'), // 'up' | 'down' | 'stable'
+  qiScore: doublePrecision('qi_score'), // 0-100 quality index
+  aiConfidenceScore: doublePrecision('ai_confidence_score'), // 0-1
+  aiValueFactors: jsonb('ai_value_factors').$type<{
+    positives?: string[];      // e.g., ["GCC specs", "Full service history"]
+    considerations?: string[]; // Neutral framing, e.g., ["Higher mileage for year"]
+    marketContext?: string;    // Brief market note without judgment
+  }>(),
+  aiModel: text('ai_model').default('v1'),
+  aiUpdatedAt: timestamp('ai_updated_at'),
   emirate: text('emirate').notNull(),
   city: text('city'),
   partnerBrandName: text('partner_brand_name'),

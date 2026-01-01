@@ -18,7 +18,11 @@ export interface AIValuationUpdateInput {
   priceTrend: 'up' | 'down' | 'stable';
   qiScore: number;
   aiConfidenceScore: number;
-  reasoning?: string;
+  valueFactors?: {
+    positives?: string[];
+    considerations?: string[];
+    marketContext?: string;
+  };
 }
 
 /**
@@ -39,8 +43,8 @@ export async function updateListingAIValuation(
         priceTrend: valuation.priceTrend,
         qiScore: valuation.qiScore,
         aiConfidenceScore: valuation.aiConfidenceScore,
-        aiReasoning: valuation.reasoning || null,
-        aiPriceUpdatedAt: new Date(),
+        aiValueFactors: valuation.valueFactors || null,
+        aiUpdatedAt: new Date(),
       })
       .where(eq(carListing.id, listingId))
       .returning({ id: carListing.id });

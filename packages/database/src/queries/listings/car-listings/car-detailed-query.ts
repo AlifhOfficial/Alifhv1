@@ -119,19 +119,20 @@ export interface CarDetailedData {
   currency: string;
   isNegotiable: boolean;
   
-  // AI Pricing Insights
-  aiEstimatedPrice: number | null;
-  aiPriceMin: number | null;
-  aiPriceMax: number | null;
-  aiConfidenceScore: number | null;
-  aiReasoning: string | null;
+  // AI Valuation (neutral, non-judgmental)
   fairValue: number | null;
   estimateMin: number | null;
   estimateMax: number | null;
   priceTrend: string | null;
-  
-  // Quality & Engagement
   qiScore: number | null;
+  aiConfidenceScore: number | null;
+  aiValueFactors: {
+    positives?: string[];
+    considerations?: string[];
+    marketContext?: string;
+  } | null;
+  
+  // Engagement
   viewCount: number;
   favouriteCount: number;
   superlikeCount: number;
@@ -240,19 +241,16 @@ export async function getListingDetailed(listingId: string): Promise<CarDetailed
       currency: carListing.currency,
       isNegotiable: carListing.isNegotiable,
       
-      // AI Pricing Insights
-      aiEstimatedPrice: carListing.aiEstimatedPrice,
-      aiPriceMin: carListing.aiPriceMin,
-      aiPriceMax: carListing.aiPriceMax,
-      aiConfidenceScore: carListing.aiConfidenceScore,
-      aiReasoning: carListing.aiReasoning,
+      // AI Valuation
       fairValue: carListing.fairValue,
       estimateMin: carListing.estimateMin,
       estimateMax: carListing.estimateMax,
       priceTrend: carListing.priceTrend,
-      
-      // Quality & Engagement
       qiScore: carListing.qiScore,
+      aiConfidenceScore: carListing.aiConfidenceScore,
+      aiValueFactors: carListing.aiValueFactors,
+      
+      // Engagement
       viewCount: carListing.viewCount,
       favouriteCount: carListing.favouriteCount,
       superlikeCount: carListing.superlikeCount,
@@ -369,19 +367,16 @@ export async function getListingDetailed(listingId: string): Promise<CarDetailed
     currency: row.currency,
     isNegotiable: row.isNegotiable,
     
-    // AI Pricing Insights
-    aiEstimatedPrice: row.aiEstimatedPrice,
-    aiPriceMin: row.aiPriceMin,
-    aiPriceMax: row.aiPriceMax,
-    aiConfidenceScore: row.aiConfidenceScore,
-    aiReasoning: row.aiReasoning,
+    // AI Valuation
     fairValue: row.fairValue,
     estimateMin: row.estimateMin,
     estimateMax: row.estimateMax,
     priceTrend: row.priceTrend,
-    
-    // Quality & Engagement
     qiScore: row.qiScore,
+    aiConfidenceScore: row.aiConfidenceScore,
+    aiValueFactors: row.aiValueFactors,
+    
+    // Engagement
     viewCount: row.viewCount,
     favouriteCount: row.favouriteCount,
     superlikeCount: row.superlikeCount,
