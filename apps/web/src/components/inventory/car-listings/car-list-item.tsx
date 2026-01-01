@@ -34,6 +34,7 @@ interface CarListItemProps {
   partnerVerified?: boolean;
   sellerName?: string | null;
   sellerAvatarUrl?: string | null;
+  kycVerified?: boolean; // User/Seller KYC verification status
   isBlackMember?: boolean;
   className?: string;
 }
@@ -56,6 +57,7 @@ export function CarListItem({
   partnerVerified,
   sellerName,
   sellerAvatarUrl,
+  kycVerified,
   isBlackMember = false,
   className
 }: CarListItemProps) {
@@ -264,7 +266,7 @@ export function CarListItem({
               )}>
                 {displaySellerName}
               </span>
-              {(isBlackMember || partnerVerified) && (
+              {(isBlackMember || partnerVerified || kycVerified) && (
                 <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" aria-label="Verified" />
               )}
             </div>

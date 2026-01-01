@@ -467,19 +467,19 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') applySearch();
                   }}
-                  placeholder="Search make, model, year, VIN..."
-                  className="flex-1 h-10 bg-transparent border-b border-border/40 focus:border-foreground outline-none transition-colors px-0 text-sm"
+                  placeholder="Search make, model, VIN..."
+                  className="flex-1 h-11 bg-transparent border-b border-border/40 focus:border-foreground outline-none transition-colors px-0 text-base"
                 />
                 <button 
                   onClick={applySearch} 
-                  className="px-5 py-2 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium transition-colors"
+                  className="px-5 py-2.5 rounded-full border border-border/40 hover:bg-secondary/50 text-base font-medium transition-colors"
                 >
                   Search
                 </button>
                 {(draftQuery || appliedQuery) && (
                   <button 
                     onClick={clearSearch} 
-                    className="text-xs text-muted-foreground/70 hover:text-foreground transition-colors"
+                    className="text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
                   >
                     Clear
                   </button>
@@ -506,10 +506,10 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
             </div>
 
             <div className="flex items-center justify-between">
-              <p className="text-xs text-muted-foreground/70">
+              <p className="text-sm text-muted-foreground/70">
                 {appliedQuery ? `Search: "${appliedQuery}"` : 'Tip: Use Active for clean inventory.'}
               </p>
-              <p className="text-xs text-muted-foreground/70">
+              <p className="text-sm text-muted-foreground/70">
                 Showing {meta?.count ?? listings.length} of {stats.all}
               </p>
             </div>
@@ -518,14 +518,14 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
 
         {/* Listings Section */}
         <section className="space-y-6">
-          <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-            <h3 className="text-lg font-medium tracking-tight">Your Listings</h3>
+          <div className="flex items-baseline justify-between border-b border-border/40 pb-3">
+            <h3 className="text-xl font-medium tracking-tight">Your Listings</h3>
           </div>
 
           {/* Refreshing Indicator */}
           {isRefreshing && (
-            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-foreground"></div>
+            <div className="flex items-center justify-center gap-2 text-base text-muted-foreground">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-foreground"></div>
               Refreshing...
             </div>
           )}
@@ -533,7 +533,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
           {/* Error Message */}
           {error && (
             <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
-              <p className="text-sm text-red-500">{error}</p>
+              <p className="text-base text-red-500">{error}</p>
             </div>
           )}
 
@@ -548,14 +548,14 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
           {!isLoading && listings.length === 0 && (
             <div className="bg-card rounded-2xl border border-border/40 py-32 px-16">
               <div className="flex flex-col items-center text-center space-y-6">
-                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-                  <Inbox className="w-7 h-7 text-muted-foreground" />
+                <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center">
+                  <Inbox className="w-9 h-9 text-muted-foreground" />
                 </div>
                 <div className="space-y-3">
-                  <h3 className="text-lg font-medium text-foreground">
+                  <h3 className="text-xl font-medium text-foreground">
                     {appliedQuery ? 'No listings found' : 'No listings yet'}
                   </h3>
-                  <p className="text-sm text-muted-foreground/70 max-w-md">
+                  <p className="text-base text-muted-foreground/70 max-w-md">
                     {appliedQuery 
                       ? 'Try adjusting your search or clearing filters' 
                       : 'Your listings will appear here once you create them'
@@ -607,14 +607,14 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
             <button 
               onClick={closeConfirmModal}
               disabled={isConfirming}
-              className="px-6 py-3 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium tracking-tight transition-colors disabled:opacity-50"
+              className="px-6 py-3 rounded-full border border-border/40 hover:bg-secondary/50 text-base font-medium tracking-tight transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               onClick={executeConfirmedAction}
               disabled={isConfirming}
-              className={`px-6 py-3 rounded-full text-white text-sm font-medium tracking-tight transition-colors disabled:opacity-50 ${
+              className={`px-6 py-3 rounded-full text-white text-base font-medium tracking-tight transition-colors disabled:opacity-50 ${
                 confirmModal.variant === 'destructive' 
                   ? 'bg-destructive hover:bg-destructive/90 text-destructive-foreground' 
                   : 'bg-primary hover:bg-primary/90 text-primary-foreground'

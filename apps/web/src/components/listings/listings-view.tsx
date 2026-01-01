@@ -132,7 +132,7 @@ export function ListingsView() {
                 <div className="w-full sm:flex-1 order-last sm:order-none">
                   <SearchBar
                     size="sm"
-                    placeholder="Search make, model, year..."
+                    placeholder="Search make, model or dealer..."
                     redirectOnSearch={false}
                     onSearch={setQuery}
                   />
@@ -308,6 +308,7 @@ export function ListingsView() {
                       partnerVerified={listing.partnerVerified || undefined}
                       sellerName={listing.sellerName || undefined}
                       sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
+                      kycVerified={listing.sellerKycVerified || undefined}
                       isBlackMember={listing.isBlackMember || false}
                       priority={index < 4}
                     />
@@ -338,6 +339,7 @@ export function ListingsView() {
                           partnerVerified={listing.partnerVerified || undefined}
                           sellerName={listing.sellerName || undefined}
                           sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
+                          kycVerified={listing.sellerKycVerified || undefined}
                           isBlackMember={listing.isBlackMember || false}
                           priority={index < 4}
                         />
@@ -365,6 +367,7 @@ export function ListingsView() {
                           partnerVerified={listing.partnerVerified || undefined}
                           sellerName={listing.sellerName || undefined}
                           sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
+                          kycVerified={listing.sellerKycVerified || undefined}
                           isBlackMember={listing.isBlackMember || false}
                         />
                       ))}

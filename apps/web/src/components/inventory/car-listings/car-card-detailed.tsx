@@ -36,6 +36,7 @@ import type { CarDetailedData } from '@alifh/database';
 
 interface CarCardDetailedProps {
   listing: CarDetailedData;
+  kycVerified?: boolean; // User/Seller KYC verification status
   className?: string;
 }
 
@@ -290,7 +291,7 @@ function PricingInsights({ listing }: { listing: CarDetailedData }) {
 // Main Component
 // ============================================================================
 
-export function CarCardDetailed({ listing, className }: CarCardDetailedProps) {
+export function CarCardDetailed({ listing, kycVerified, className }: CarCardDetailedProps) {
   const { isSignedIn } = useUser();
   const favorite = useFavorite(listing.id);
   const superlike = useSuperlike(listing.id);
@@ -644,22 +645,6 @@ export function CarCardDetailed({ listing, className }: CarCardDetailedProps) {
           </div>
           <span className="text-sm font-medium tracking-tight text-foreground">Watch Video</span>
         </a>
-      )}
-
-      {/* Partner Info */}
-      {listing.partnerId && listing.partnerBrandName && (
-        <div className="flex items-center justify-between py-4 border-t border-border/40">
-          <div className="space-y-0.5">
-            <span className="text-[10px] text-muted-foreground/70 uppercase tracking-wider">Listed by</span>
-            <p className="text-sm font-medium text-foreground">{listing.partnerBrandName}</p>
-          </div>
-          {listing.partnerVerified && (
-            <span className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-medium bg-green-500/10 text-green-600 dark:text-green-400 rounded">
-              <CheckCircle2 className="w-3 h-3" />
-              Verified
-            </span>
-          )}
-        </div>
       )}
 
       {/* Dialogs */}

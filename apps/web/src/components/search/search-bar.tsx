@@ -14,7 +14,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, X, Loader2 } from 'lucide-react';
+import { Search, X, Loader2, CircleDot, Factory } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useQuickSearch } from '@/hooks/use-search';
 import { useDebounce } from '@/hooks/use-debounce';
@@ -35,7 +35,7 @@ interface SearchBarProps {
 }
 
 export function SearchBar({
-  placeholder = 'Search cars...',
+  placeholder = 'Search by make, model or dealer...',
   size = 'md',
   className,
   autoFocus = false,
@@ -60,19 +60,17 @@ export function SearchBar({
   const showDropdown = isFocused && (suggestions.length > 0 || (isLoading && debouncedQuery.length >= 2));
 
   // Handle search submission
-  const handleSearch = useCallback((searchQuery: string, make?: string, model?: string) => {
+  const handleSearch = useCallback((searchQuery: string, make?: string, model?: string, partnerId?: string) => {
     if (onSearch) {
       onSearch(searchQuery);
     }
     
     if (redirectOnSearch) {
       const params = new URLSearchParams();
-      if (make && model) {
-        params.set('make', make);
-        params.set('model', model);
-      } else if (make) {
-        params.set('make', make);
-      } else if (searchQuery) {
+      if (partnerId) params.set('partnerId', partnerId);
+      if (make) params.set('make', make);
+      if (model) params.set('model', model);
+      if (!make && !model && !partnerId && searchQuery) {
         params.set('q', searchQuery);
       }
       
@@ -86,7 +84,9 @@ export function SearchBar({
 
   // Handle suggestion click
   const handleSuggestionClick = useCallback((suggestion: typeof suggestions[0]) => {
-    if (suggestion.type === 'make_model') {
+    if (suggestion.type === 'partner') {
+      handleSearch(suggestion.text, undefined, undefined, suggestion.partnerId);
+    } else if (suggestion.type === 'make_model') {
       handleSearch(suggestion.text, suggestion.make, suggestion.model);
     } else if (suggestion.type === 'make') {
       handleSearch(suggestion.text, suggestion.make);
@@ -153,13 +153,25 @@ export function SearchBar({
   const sizeClasses = {
     sm: 'h-9 text-sm',
     md: 'h-10 text-sm',
-    lg: 'h-11 text-sm',
+    lg: 'h-12 text-base',
   };
 
   const iconSizes = {
     sm: 'h-4 w-4',
     md: 'h-4 w-4',
-    lg: 'h-4 w-4',
+    lg: 'h-5 w-5',
+  };
+
+  // Get icon for suggestion type
+  const getSuggestionIcon = (type: string) => {
+    switch (type) {
+      case 'partner':
+        return <Factory className="h-4 w-4 text-muted-foreground/70" />;
+      case 'make':
+      case 'make_model':
+      default:
+        return <CircleDot className="h-4 w-4 text-muted-foreground/50" />;
+    }
   };
 
   return (
@@ -167,13 +179,14 @@ export function SearchBar({
       {/* Input */}
       <div className={cn(
         'relative flex items-center',
-        'bg-transparent border border-border/40 rounded-lg',
-        'transition-colors duration-150',
-        isFocused && 'border-foreground/30',
+        'bg-muted/30 border border-border/50 rounded-xl',
+        'transition-all duration-200',
+        isFocused && 'bg-background border-primary/40 shadow-sm ring-2 ring-primary/10',
         sizeClasses[size]
       )}>
         <Search className={cn(
-          'absolute left-3 text-muted-foreground/60',
+          'absolute left-3.5 transition-colors',
+          isFocused ? 'text-primary' : 'text-muted-foreground/50',
           iconSizes[size]
         )} />
         
@@ -187,9 +200,10 @@ export function SearchBar({
           placeholder={placeholder}
           autoFocus={autoFocus}
           className={cn(
-            'w-full h-full bg-transparent pl-10 pr-10',
-            'placeholder:text-muted-foreground/50',
-            'focus:outline-none'
+            'w-full h-full bg-transparent pl-11 pr-10',
+            'placeholder:text-muted-foreground/40',
+            'focus:outline-none',
+            'font-medium tracking-tight'
           )}
           aria-label="Search cars"
           aria-expanded={showDropdown}
@@ -202,7 +216,10 @@ export function SearchBar({
         {query && (
           <button
             onClick={() => setQuery('')}
-            className="absolute right-3 text-muted-foreground hover:text-foreground transition-colors"
+            className={cn(
+              "absolute right-3 p-1 rounded-full transition-all",
+              "text-muted-foreground/50 hover:text-foreground hover:bg-muted"
+            )}
             aria-label="Clear search"
           >
             {isLoading ? (
@@ -218,19 +235,19 @@ export function SearchBar({
       {showDropdown && (
         <div 
           className={cn(
-            'absolute top-full left-0 right-0 z-50 mt-1',
-            'bg-popover border border-border/40 rounded-lg shadow-lg',
-            'overflow-hidden animate-in fade-in-0 slide-in-from-top-1 duration-100'
+            'absolute top-full left-0 right-0 z-50 mt-2',
+            'bg-popover/95 backdrop-blur-xl border border-border/50 rounded-xl shadow-xl',
+            'overflow-hidden animate-in fade-in-0 slide-in-from-top-2 duration-150'
           )}
           role="listbox"
         >
           {isLoading && suggestions.length === 0 ? (
-            <div className="flex items-center justify-center py-6 text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              <span className="text-sm">Searching...</span>
+            <div className="flex items-center justify-center py-8 text-muted-foreground">
+              <Loader2 className="h-5 w-5 animate-spin mr-3" />
+              <span className="text-sm font-medium">Searching...</span>
             </div>
           ) : (
-            <ul className="py-1">
+            <ul className="py-2">
               {suggestions.map((suggestion, index) => (
                 <li
                   key={`${suggestion.type}-${suggestion.text}`}
@@ -238,28 +255,28 @@ export function SearchBar({
                   aria-selected={selectedIndex === index}
                   onClick={() => handleSuggestionClick(suggestion)}
                   className={cn(
-                    'flex items-center justify-between px-4 py-2.5 cursor-pointer',
-                    'transition-colors duration-75',
+                    'flex items-center justify-between px-4 py-3 cursor-pointer',
+                    'transition-colors duration-100',
                     selectedIndex === index 
-                      ? 'bg-muted' 
+                      ? 'bg-primary/10' 
                       : 'hover:bg-muted/50'
                   )}
                 >
                   <div className="flex items-center gap-3">
-                    <Search className="h-3.5 w-3.5 text-muted-foreground/60" />
-                    <div>
-                      <span className="text-sm text-foreground">
+                    {getSuggestionIcon(suggestion.type)}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-foreground">
                         {suggestion.text}
                       </span>
-                      {suggestion.type === 'make' && (
-                        <span className="ml-2 text-xs text-muted-foreground/70">
-                          Brand
+                      {suggestion.type === 'partner' && (
+                        <span className="px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground bg-muted rounded">
+                          Dealer
                         </span>
                       )}
                     </div>
                   </div>
-                  <span className="text-xs text-muted-foreground/70">
-                    {suggestion.count}
+                  <span className="text-xs font-medium text-muted-foreground/60 tabular-nums">
+                    {suggestion.count} {suggestion.count === 1 ? 'car' : 'cars'}
                   </span>
                 </li>
               ))}
@@ -272,13 +289,13 @@ export function SearchBar({
               onClick={() => handleSearch(query.trim())}
               className={cn(
                 'w-full flex items-center justify-center gap-2',
-                'px-4 py-2.5 border-t border-border/40',
-                'text-sm text-muted-foreground hover:text-foreground hover:bg-muted/30',
+                'px-4 py-3 border-t border-border/30',
+                'text-sm font-medium text-muted-foreground hover:text-primary hover:bg-primary/5',
                 'transition-colors'
               )}
             >
-              <Search className="h-3.5 w-3.5" />
-              Search for "{query.trim()}"
+              <Search className="h-4 w-4" />
+              Search all for "{query.trim()}"
             </button>
           )}
         </div>

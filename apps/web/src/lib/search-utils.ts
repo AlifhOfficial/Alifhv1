@@ -112,6 +112,7 @@ export interface SearchResultItem {
   partnerVerified: boolean | null;
   sellerName: string | null;
   sellerAvatarUrl: string | null;
+  sellerKycVerified: boolean | null;
   relevanceScore?: number;
 }
 

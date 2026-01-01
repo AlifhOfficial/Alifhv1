@@ -472,6 +472,7 @@ export async function searchListings(params: SearchParams): Promise<SearchRespon
           partnerVerified: sql<boolean | null>`coalesce(${carListing.partnerVerified}, ${partner.isVerified})`,
           sellerName: user.name,
           sellerAvatarUrl: userProfile.avatar,
+          sellerKycVerified: userProfile.kycVerified,
         })
         .from(carListing)
         .leftJoin(user, eq(user.id, carListing.userId))
@@ -518,13 +519,15 @@ export async function searchListings(params: SearchParams): Promise<SearchRespon
 
 /**
  * Quick search for auto-suggest (header search)
- * Returns make/model suggestions based on partial input
+ * Returns make/model/partner suggestions based on partial input
  */
 export async function quickSearch(query: string, limit = 10): Promise<Array<{
-  type: 'make' | 'model' | 'make_model';
+  type: 'make' | 'model' | 'make_model' | 'partner';
   text: string;
   make?: string;
   model?: string;
+  partnerId?: string;
+  partnerName?: string;
   count: number;
 }>> {
   if (!query?.trim() || query.length < 2) {
@@ -535,7 +538,53 @@ export async function quickSearch(query: string, limit = 10): Promise<Array<{
   const now = new Date();
   const conditions = buildPublicBaseConditions(now);
 
-  // Search for matching makes and models
+  const suggestions: Array<{
+    type: 'make' | 'model' | 'make_model' | 'partner';
+    text: string;
+    make?: string;
+    model?: string;
+    partnerId?: string;
+    partnerName?: string;
+    count: number;
+  }> = [];
+  // Partner/Dealer search - search by brand name
+  const partnerResults = await db
+    .select({
+      partnerId: carListing.partnerId,
+      partnerName: sql<string>`coalesce(${carListing.partnerBrandName}, ${partner.brandName})`,
+      count: count(),
+    })
+    .from(carListing)
+    .leftJoin(partner, eq(carListing.partnerId, partner.id))
+    .where(
+      and(
+        ...conditions,
+        isNotNull(carListing.partnerId),
+        or(
+          ilike(carListing.partnerBrandName, `%${searchTerm}%`),
+          ilike(partner.brandName, `%${searchTerm}%`)
+        )
+      )
+    )
+    .groupBy(carListing.partnerId, carListing.partnerBrandName, partner.brandName)
+    .orderBy(desc(count()))
+    .limit(5);
+
+  const seenPartners = new Set<string>();
+  for (const r of partnerResults) {
+    if (r.partnerId && r.partnerName && !seenPartners.has(r.partnerId)) {
+      seenPartners.add(r.partnerId);
+      suggestions.push({
+        type: 'partner',
+        text: r.partnerName,
+        partnerId: r.partnerId,
+        partnerName: r.partnerName,
+        count: Number(r.count),
+      });
+    }
+  }
+
+  // Standard make/model search
   const results = await db
     .select({
       make: carListing.make,
@@ -555,16 +604,7 @@ export async function quickSearch(query: string, limit = 10): Promise<Array<{
     )
     .groupBy(carListing.make, carListing.model)
     .orderBy(desc(count()))
-    .limit(limit * 2); // Get more to filter
-
-  // Dedupe and categorize results
-  const suggestions: Array<{
-    type: 'make' | 'model' | 'make_model';
-    text: string;
-    make?: string;
-    model?: string;
-    count: number;
-  }> = [];
+    .limit(limit * 2);
 
   const seenMakes = new Set<string>();
   const seenMakeModels = new Set<string>();

@@ -99,15 +99,15 @@ export function ListingsTabs({
               <button
                 key={t.key}
                 onClick={() => onTabChange(t.key)}
-                className={`px-4 py-3 border-b transition-colors whitespace-nowrap text-sm ${
+                className={`px-5 py-4 border-b-2 transition-colors whitespace-nowrap text-base ${
                   activeTab === t.key
-                    ? 'border-blue-500 text-foreground'
+                    ? 'border-blue-500 text-foreground font-medium'
                     : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {t.label}
                 <span
-                  className={`ml-2 px-2 py-0.5 text-xs rounded-md ${
+                  className={`ml-2 px-2.5 py-1 text-sm rounded-md ${
                     t.badgeClassName ?? 'bg-muted text-muted-foreground'
                   }`}
                 >
@@ -121,14 +121,14 @@ export function ListingsTabs({
         {deepInventoryTotal > 0 && (
           <button
             onClick={() => onTabChange('deep_inventory')}
-            className={`flex items-center gap-2 px-4 py-3 border-b transition-colors whitespace-nowrap text-sm ${
+            className={`flex items-center gap-2 px-5 py-4 border-b-2 transition-colors whitespace-nowrap text-base ${
               isDeepInventoryActive
-                ? 'border-blue-500 text-foreground'
+                ? 'border-blue-500 text-foreground font-medium'
                 : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             Deep Inventory
-            <span className="px-2 py-0.5 text-xs rounded-md bg-muted text-muted-foreground">
+            <span className="px-2.5 py-1 text-sm rounded-md bg-muted text-muted-foreground">
               {deepInventoryTotal}
             </span>
           </button>
@@ -137,15 +137,15 @@ export function ListingsTabs({
 
       {/* Deep Inventory Filters - Show when deep inventory tab is active */}
       {isDeepInventoryActive && (
-        <div className="flex gap-2 px-4 py-3 bg-secondary/10 border-t border-border/20">
-          <span className="text-xs text-muted-foreground mr-2 self-center">Filter:</span>
+        <div className="flex gap-2 px-4 py-4 bg-secondary/10 border-t border-border/20">
+          <span className="text-sm text-muted-foreground mr-2 self-center">Filter:</span>
           {deepFilters
             .filter((f) => f.count > 0 || f.key === 'all')
             .map((f) => (
               <button
                 key={f.key}
                 onClick={() => onDeepInventoryFilterChange(f.key)}
-                className={`px-5 py-2 text-sm rounded-full transition-colors ${
+                className={`px-5 py-2.5 text-base rounded-full transition-colors ${
                   deepInventoryFilter === f.key
                     ? 'bg-blue-500 hover:bg-blue-600 text-white'
                     : 'border border-border hover:bg-secondary/10'

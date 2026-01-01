@@ -36,6 +36,7 @@ type ListingPayload = {
   isBlackMember: boolean | null;
   sellerName?: string | null;
   sellerAvatarUrl?: string | null;
+  sellerKycVerified?: boolean | null;
 };
 
 type SuperlikesResponse = {
@@ -182,6 +183,7 @@ export default function SuperlikesPage() {
                       partnerVerified={listing.partnerVerified ?? undefined}
                       sellerName={listing.sellerName ?? undefined}
                       sellerAvatarUrl={listing.sellerAvatarUrl ?? undefined}
+                      kycVerified={listing.sellerKycVerified ?? undefined}
                       isBlackMember={listing.isBlackMember ?? undefined}
                     />
                   );

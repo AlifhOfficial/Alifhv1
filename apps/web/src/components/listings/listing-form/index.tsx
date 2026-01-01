@@ -305,6 +305,18 @@ interface DecodedVehiclePreviewProps {
 function DecodedVehiclePreview({ data, isVisible }: DecodedVehiclePreviewProps) {
   if (!isVisible || !data.make) return null;
   
+  // Collect all decoded fields to display
+  const decodedFields = [
+    { label: 'Trim', value: data.trim },
+    { label: 'Body Type', value: data.bodyType },
+    { label: 'Doors', value: data.doors },
+    { label: 'Fuel Type', value: data.fuelType },
+    { label: 'Transmission', value: data.transmission },
+    { label: 'Engine Size', value: data.engineSize },
+    { label: 'Engine Type', value: data.engineType },
+    { label: 'Cylinders', value: data.cylinders },
+  ].filter(f => f.value);
+  
   return (
     <div className="mt-8 p-6 bg-muted/30 border border-border/40 rounded-xl">
       <div className="flex items-center gap-2 mb-4">
@@ -318,32 +330,16 @@ function DecodedVehiclePreview({ data, isVisible }: DecodedVehiclePreviewProps) 
         {data.year} {data.make} {data.model || '(select model)'}
       </h3>
       
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        {data.trim && (
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground/70">Trim</p>
-            <p className="text-sm">{data.trim}</p>
-          </div>
-        )}
-        {data.bodyType && (
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground/70">Body Type</p>
-            <p className="text-sm capitalize">{data.bodyType}</p>
-          </div>
-        )}
-        {data.fuelType && (
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground/70">Fuel</p>
-            <p className="text-sm capitalize">{data.fuelType}</p>
-          </div>
-        )}
-        {data.transmission && (
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground/70">Transmission</p>
-            <p className="text-sm capitalize">{data.transmission}</p>
-          </div>
-        )}
-      </div>
+      {decodedFields.length > 0 && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {decodedFields.map(({ label, value }) => (
+            <div key={label} className="space-y-1">
+              <p className="text-xs text-muted-foreground/70">{label}</p>
+              <p className="text-sm capitalize">{value}</p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

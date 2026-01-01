@@ -234,10 +234,12 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
  */
 interface QuickSearchResult {
   suggestions: Array<{
-    type: 'make' | 'model' | 'make_model';
+    type: 'make' | 'model' | 'make_model' | 'partner';
     text: string;
     make?: string;
     model?: string;
+    partnerId?: string;
+    partnerName?: string;
     count: number;
   }>;
   isLoading: boolean;

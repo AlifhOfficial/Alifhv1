@@ -25,6 +25,7 @@ type ListingPayload = {
   isBlackMember: boolean | null;
   sellerName?: string | null;
   sellerAvatarUrl?: string | null;
+  sellerKycVerified?: boolean | null;
 };
 
 type FavoritesResponse = {
@@ -166,6 +167,7 @@ export default function FavoritesPage() {
                       partnerVerified={listing.partnerVerified ?? undefined}
                       sellerName={listing.sellerName ?? undefined}
                       sellerAvatarUrl={listing.sellerAvatarUrl ?? undefined}
+                      kycVerified={listing.sellerKycVerified ?? undefined}
                       isBlackMember={listing.isBlackMember ?? undefined}
                     />
                   );

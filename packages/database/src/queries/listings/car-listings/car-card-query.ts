@@ -58,6 +58,7 @@ export interface CarCardData {
   partnerVerified: boolean | null;
   sellerName: string | null;
   sellerAvatarUrl: string | null;
+  sellerKycVerified: boolean | null;
 }
 
 /**
@@ -179,6 +180,7 @@ async function getListingCardsInternal(
         partnerVerified: sql<boolean | null>`coalesce(${carListing.partnerVerified}, ${partner.isVerified})`,
         sellerName: user.name,
         sellerAvatarUrl: userProfile.avatar,
+        sellerKycVerified: userProfile.kycVerified,
       })
       .from(carListing)
       .leftJoin(user, eq(user.id, carListing.userId))
@@ -225,6 +227,7 @@ async function getListingCardsInternal(
       partnerVerified: sql<boolean | null>`coalesce(${carListing.partnerVerified}, ${partner.isVerified})`,
       sellerName: user.name,
       sellerAvatarUrl: userProfile.avatar,
+      sellerKycVerified: userProfile.kycVerified,
     })
     .from(carListing)
     .leftJoin(user, eq(user.id, carListing.userId))

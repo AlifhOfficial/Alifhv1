@@ -108,9 +108,9 @@ export function ListingCard({
     <div className="rounded-xl border border-border/40 p-6 bg-muted/20 hover:bg-secondary/50 transition-colors">
       <div className="flex items-start justify-between gap-6">
         {/* Main Content */}
-        <div className="flex items-start gap-4 flex-1 min-w-0">
+        <div className="flex items-start gap-5 flex-1 min-w-0">
           {/* Thumbnail */}
-          <div className="w-32 h-24 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+          <div className="w-36 h-28 bg-muted rounded-lg overflow-hidden flex-shrink-0">
             {listing.thumbnail ? (
               <img
                 src={listing.thumbnail}
@@ -119,29 +119,29 @@ export function ListingCard({
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-muted-foreground/70">
-                <span className="text-xs">No image</span>
+                <span className="text-sm">No image</span>
               </div>
             )}
           </div>
 
           {/* Details */}
-          <div className="flex-1 min-w-0 space-y-2">
+          <div className="flex-1 min-w-0 space-y-3">
             <div>
               <Link
                 href={`/listings/${listing.id}`}
-                className="font-medium hover:text-primary transition-colors line-clamp-1"
+                className="text-lg font-medium hover:text-primary transition-colors line-clamp-1"
               >
                 {listing.year} {listing.make} {listing.model}
                 {listing.trim && ` ${listing.trim}`}
               </Link>
-              <p className="text-sm text-muted-foreground/70 mt-1">
+              <p className="text-base text-muted-foreground/70 mt-1">
                 {listing.price?.toLocaleString() || '0'} AED
               </p>
             </div>
             {/* Status & Info */}
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-4 flex-wrap">
               <span
-                className={`px-3 py-1 rounded-full text-xs font-medium w-fit ${
+                className={`px-3 py-1.5 rounded-full text-sm font-medium w-fit ${
                   listing.lifecycleStatus === 'deleted' ? 'bg-muted text-muted-foreground border border-border/40'
                   : listing.lifecycleStatus === 'sold' ? 'bg-green-500/10 text-green-500'
                   : listing.lifecycleStatus === 'expired' ? 'bg-yellow-500/10 text-yellow-500'
@@ -157,31 +157,31 @@ export function ListingCard({
               </span>
               
               {/* Stats */}
-              <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/70">
-                <Eye className="w-3 h-3" />
+              <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground/70">
+                <Eye className="w-4 h-4" />
                 {listing.viewCount}
               </span>
-              <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/70">
-                <Heart className="w-3 h-3" />
+              <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground/70">
+                <Heart className="w-4 h-4" />
                 {listing.favouriteCount}
               </span>
             </div>
 
             {/* Additional Info - Warnings & Expiry */}
             {(isSuspended && listing.suspensionReason) && (
-              <p className="text-xs text-red-500">
+              <p className="text-sm text-red-500">
                 Suspended: {listing.suspensionReason}
               </p>
             )}
 
             {(listing.moderationStatus === 'rejected' && listing.rejectionReason) && (
-              <p className="text-xs text-red-500">
+              <p className="text-sm text-red-500">
                 Rejected: {listing.rejectionReason}
               </p>
             )}
 
             {expiresAt && (
-              <p className={`text-xs ${isExpiringSoon ? 'text-yellow-500' : 'text-muted-foreground/70'}`}>
+              <p className={`text-sm ${isExpiringSoon ? 'text-yellow-500' : 'text-muted-foreground/70'}`}>
                 Expires {expiresAt.toLocaleDateString()}
                 {msRemaining !== null && msRemaining > 0 ? ` (${Math.ceil(msRemaining / (24 * 60 * 60 * 1000))}d left)` : ''}
               </p>
@@ -191,10 +191,10 @@ export function ListingCard({
 
         {/* Price & Date - Right Side */}
         <div className="text-right flex-shrink-0">
-          <p className="font-medium text-foreground whitespace-nowrap">
+          <p className="text-lg font-medium text-foreground whitespace-nowrap">
             {listing.price.toLocaleString()} AED
           </p>
-          <p className="text-xs text-muted-foreground/70 mt-1 whitespace-nowrap">
+          <p className="text-sm text-muted-foreground/70 mt-1 whitespace-nowrap">
             {listing.publishedAt 
               ? `Published ${new Date(listing.publishedAt).toLocaleDateString()}`
               : `Updated ${new Date(listing.updatedAt).toLocaleDateString()}`
@@ -204,11 +204,11 @@ export function ListingCard({
       </div>
 
       {/* Actions */}
-      <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-border/40">
+      <div className="flex flex-wrap gap-2 mt-5 pt-5 border-t border-border/40">
         {/* View - only show for public listings (visible on marketplace) */}
         {listing.isPublic && (
           <Link href={`/listings/${listing.id}`}>
-            <button className="px-4 py-2 rounded-full border border-border/40 hover:bg-secondary/50 text-xs font-medium tracking-tight transition-colors">
+            <button className="px-5 py-2.5 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium tracking-tight transition-colors">
               View
             </button>
           </Link>
@@ -217,7 +217,7 @@ export function ListingCard({
         {/* Suspended listings - show Relist option prominently */}
         {isSuspended && (
           <Link href={newListingUrl}>
-            <button className="px-4 py-2 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-medium tracking-tight transition-colors">
+            <button className="px-5 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium tracking-tight transition-colors">
               Relist Your Car
             </button>
           </Link>
@@ -226,7 +226,7 @@ export function ListingCard({
         {/* Edit - only for non-suspended, non-deep-inventory items */}
         {!isSuspended && !isDeepInventory && (
           <Link href={editHref}>
-            <button className="px-4 py-2 rounded-full border border-border/40 hover:bg-secondary/50 text-xs font-medium tracking-tight transition-colors">
+            <button className="px-5 py-2.5 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium tracking-tight transition-colors">
               Edit
             </button>
           </Link>
@@ -236,7 +236,7 @@ export function ListingCard({
         {listing.isPublic && listing.lifecycleStatus === 'active' && (
           <button 
             onClick={() => onMarkSold(listing.id)}
-            className="px-4 py-2 rounded-full bg-green-500 hover:bg-green-600 text-white text-xs font-medium tracking-tight transition-colors"
+            className="px-5 py-2.5 rounded-full bg-green-500 hover:bg-green-600 text-white text-sm font-medium tracking-tight transition-colors"
           >
             Mark Sold
           </button>
@@ -246,13 +246,13 @@ export function ListingCard({
           <>
             <button 
               onClick={() => onExtend(listing.id, 7)}
-              className="px-4 py-2 rounded-full border border-border/40 hover:bg-secondary/50 text-xs font-medium tracking-tight transition-colors"
+              className="px-5 py-2.5 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium tracking-tight transition-colors"
             >
               Extend 1w
             </button>
             <button 
               onClick={() => onExtend(listing.id, 14)}
-              className="px-4 py-2 rounded-full border border-border/40 hover:bg-secondary/50 text-xs font-medium tracking-tight transition-colors"
+              className="px-5 py-2.5 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium tracking-tight transition-colors"
             >
               Extend 2w
             </button>
@@ -262,7 +262,7 @@ export function ListingCard({
         {canArchiveToggle && (
           <button
             onClick={() => onArchive(listing.id)}
-            className={`px-4 py-2 rounded-full border text-xs font-medium tracking-tight transition-colors ${
+            className={`px-5 py-2.5 rounded-full border text-sm font-medium tracking-tight transition-colors ${
               deleteConfirm === listing.id 
                 ? 'border-yellow-500/40 text-yellow-500 bg-yellow-500/10' 
                 : 'border-border/40 hover:bg-secondary/50'
@@ -280,7 +280,7 @@ export function ListingCard({
         {canDelete && !isDeepInventory && (
           <button
             onClick={() => onDelete(listing.id)}
-            className="px-4 py-2 rounded-full border border-red-500/40 text-red-500 hover:bg-red-500/10 text-xs font-medium tracking-tight transition-colors"
+            className="px-5 py-2.5 rounded-full border border-red-500/40 text-red-500 hover:bg-red-500/10 text-sm font-medium tracking-tight transition-colors"
           >
             Delete
           </button>
@@ -289,7 +289,7 @@ export function ListingCard({
         {deleteConfirm === listing.id && (
           <button
             onClick={onCancelDelete}
-            className="px-4 py-2 rounded-full border border-border/40 hover:bg-secondary/50 text-xs font-medium tracking-tight transition-colors"
+            className="px-5 py-2.5 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium tracking-tight transition-colors"
           >
             Cancel
           </button>

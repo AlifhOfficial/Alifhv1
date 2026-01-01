@@ -10,6 +10,8 @@
 import { eq, sql } from 'drizzle-orm';
 import { db } from '../../../dbclient';
 import { carListing } from '../../../schema/listing';
+import { user } from '../../../schema/auth';
+import { userProfile } from '../../../schema/profile';
 import { isPublicSql } from './sql-fragments';
 
 function isMissingColumnError(err: unknown, columnName: string): boolean {
@@ -184,6 +186,10 @@ export interface CarDetailedData {
   partnerVerified: boolean;
   isBlackMember: boolean;
   
+  // Seller info
+  sellerName: string | null;
+  sellerKycVerified: boolean;
+  
   // Timestamps
   createdAt: Date;
   updatedAt: Date;
@@ -301,6 +307,10 @@ export async function getListingDetailed(listingId: string): Promise<CarDetailed
       partnerVerified: carListing.partnerVerified,
       isBlackMember: carListing.isBlackMember,
       
+      // Seller info
+      sellerName: user.name,
+      sellerKycVerified: userProfile.kycVerified,
+      
       // Timestamps
       createdAt: carListing.createdAt,
       updatedAt: carListing.updatedAt,
@@ -317,6 +327,8 @@ export async function getListingDetailed(listingId: string): Promise<CarDetailed
       deletedAt: carListing.deletedAt,
     })
     .from(carListing)
+    .leftJoin(user, eq(user.id, carListing.userId))
+    .leftJoin(userProfile, eq(userProfile.userId, user.id))
     .where(eq(carListing.id, listingId))
     .limit(1);
   };
@@ -423,6 +435,10 @@ export async function getListingDetailed(listingId: string): Promise<CarDetailed
     partnerBrandName: row.partnerBrandName,
     partnerVerified: row.partnerVerified ?? false,
     isBlackMember: row.isBlackMember,
+    
+    // Seller info
+    sellerName: row.sellerName,
+    sellerKycVerified: row.sellerKycVerified ?? false,
     
     // Timestamps
     createdAt: row.createdAt,

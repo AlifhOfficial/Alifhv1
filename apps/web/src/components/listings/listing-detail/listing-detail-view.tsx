@@ -195,7 +195,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10 pb-6 lg:pb-8">
             {/* Main Column - Car Details (60%) */}
             <div className="lg:col-span-3">
-              <CarCardDetailed listing={listing} />
+              <CarCardDetailed listing={listing} kycVerified={listing.sellerKycVerified} />
             </div>
 
             {/* Sidebar - Clean stacked cards (40%) */}
