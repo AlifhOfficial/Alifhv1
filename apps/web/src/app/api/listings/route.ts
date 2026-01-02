@@ -28,8 +28,8 @@ import {
   updateListingAIValuation,
   updateListingAIModeration,
   type CreateCarListingInput,
+  eq, and, ne,
 } from '@alifh/database';
-import { eq, and, ne } from 'drizzle-orm';
 import { getClientIp } from '@/lib/utils/get-client-ip';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_LISTINGS } from '@/lib/rate-limit';
 import { generateValuation, type ValuationInput } from '@alifh/ai/valuation';

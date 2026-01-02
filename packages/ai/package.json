@@ -22,16 +22,11 @@
   },
   "scripts": {
     "build": "echo 'using source files directly'",
-    "lint": "eslint src/**/*.ts",
-    "format": "prettier --write src/**/*.ts"
+    "lint": "bun x eslint src/**/*.ts",
+    "format": "bun x prettier --write src/**/*.ts"
   },
   "dependencies": {
     "openai": "6.15.0"
   },
-  "devDependencies": {
-    "@types/node": "^20.0.0",
-    "eslint": "^8.0.0",
-    "prettier": "^3.0.0",
-    "typescript": "^5.3.3"
-  }
+  "devDependencies": {}
 }

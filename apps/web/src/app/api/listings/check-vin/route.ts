@@ -8,8 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db, carListing } from '@alifh/database';
-import { eq, and, ne, or } from 'drizzle-orm';
+import { db, carListing, eq, and, ne, or } from '@alifh/database';
 import { decodeVIN, isValidVINFormat, formatVIN } from '@/lib/vin-decoder';
 
 export const runtime = 'nodejs';

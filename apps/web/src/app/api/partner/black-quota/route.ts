@@ -13,8 +13,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { db, partner as partnerTable } from '@alifh/database';
-import { eq } from 'drizzle-orm';
+import { db, partner as partnerTable, eq } from '@alifh/database';
 
 export const runtime = 'nodejs';
 

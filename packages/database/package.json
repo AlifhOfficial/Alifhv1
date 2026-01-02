@@ -18,23 +18,21 @@
   },
   "scripts": {
     "build": "echo 'using source files directly'",
-    "generate": "drizzle-kit generate",
+    "generate": "bun x drizzle-kit generate",
     "migrate": "bun ./src/migrate.ts",
-    "db:push": "drizzle-kit push",
-    "studio": "drizzle-kit studio"
+    "db:push": "bun x drizzle-kit push",
+    "studio": "bun x drizzle-kit studio",
+    "lint": "bun x eslint src/**/*.ts",
+    "format": "bun x prettier --write src/**/*.ts"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.0.2",
-    "@paralleldrive/cuid2": "^3.0.4",
-    "drizzle-orm": "^0.45.1",
-    "pg": "^8.10.0"
+    "@neondatabase/serverless": "1.0.2",
+    "@paralleldrive/cuid2": "3.0.4",
+    "drizzle-orm": "0.45.1",
+    "pg": "8.16.0"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "dotenv": "^17.2.3",
-    "drizzle-kit": "0.31.8",
-    "eslint": "^8.0.0",
-    "prettier": "^3.0.0",
-    "typescript": "^5.3.3"
+    "dotenv": "17.2.3",
+    "drizzle-kit": "0.31.8"
   }
 }

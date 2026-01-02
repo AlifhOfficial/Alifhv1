@@ -1,5 +1,4 @@
-import { db, carListing, userProfile, partnerConsignmentPreference, consignmentLead, user } from '@alifh/database';
-import { eq, and, sql } from 'drizzle-orm';
+import { db, carListing, userProfile, partnerConsignmentPreference, consignmentLead, user, eq, and, sql } from '@alifh/database';
 import { notifyNewConsignmentLead } from './notifications';
 
 /**

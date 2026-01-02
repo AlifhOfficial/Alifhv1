@@ -15,7 +15,8 @@
       "cache": false
     },
     "@alifh/ai#build": {
-      "outputs": ["dist/**"]
+      "outputs": [],
+      "cache": false
     },
     "test": {
       "outputs": [],

@@ -6,6 +6,22 @@
  * @module @alifh/database
  */
 
+// Re-export drizzle-orm utilities so consumers don't need direct dependency
+export { 
+  eq, and, or, ne, gt, gte, lt, lte, 
+  like, ilike, notLike, notIlike,
+  inArray, notInArray,
+  isNull, isNotNull,
+  between, notBetween,
+  sql, 
+  desc, asc,
+  exists, notExists,
+  count, sum, avg, min, max,
+} from 'drizzle-orm';
+
+// Re-export cuid2 for ID generation
+export { createId } from '@paralleldrive/cuid2';
+
 export * from './dbclient';
 export * from './schema';
 export * as googleReviews from './services/google-reviews';
