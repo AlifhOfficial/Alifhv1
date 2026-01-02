@@ -217,7 +217,7 @@ export async function updateCarListing(
   // User-posted listings: any edit while public triggers re-moderation (V1: hide on edit).
   if (current.postedByRole === 'user' && isCurrentlyPublic && hasContentEdits(input)) {
     updateData.moderationStatus = 'pending_review';
-    updateData.submittedAt = now;
+    // Don't update submittedAt - keep original submission date so listing doesn't appear as new
     updateData.lastModeratedAt = now;
     updateData.needsRemoderation = true;
   }
@@ -325,7 +325,7 @@ export async function updateCarListingByStaff(
   // User-posted listings: any edit while public triggers re-moderation (V1: hide on edit).
   if (current.postedByRole === 'user' && isCurrentlyPublic && hasContentEdits(input)) {
     updateData.moderationStatus = 'pending_review';
-    updateData.submittedAt = now;
+    // Don't update submittedAt - keep original submission date so listing doesn't appear as new
     updateData.lastModeratedAt = now;
     updateData.needsRemoderation = true;
   }
