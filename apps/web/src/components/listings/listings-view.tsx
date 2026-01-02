@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CarCard, CarListItem, CarCardSkeleton, CarListItemSkeleton } from '@/components/inventory';
 import { SearchBar } from '@/components/search/search-bar';
 import { FilterSidebar } from '@/components/search/filter-sidebar';
@@ -41,9 +41,28 @@ import { SORT_OPTIONS } from '@/lib/search-utils';
 import { cn } from '@/lib/utils';
 
 export function ListingsView() {
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list'); // Default to list for desktop
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid'); // Default to grid
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  // Force grid view on screens smaller than lg (1024px)
+  // List view is only available on desktop/large tablets
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(min-width: 1024px)');
+    
+    const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
+      if (!e.matches && viewMode === 'list') {
+        setViewMode('grid');
+      }
+    };
+    
+    // Check on mount
+    handleChange(mediaQuery);
+    
+    // Listen for changes
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, [viewMode]);
 
   const {
     listings,
@@ -66,7 +85,7 @@ export function ListingsView() {
   return (
     <div className="min-h-screen bg-background pt-16 sm:pt-20">
       {/* Main Content */}
-      <div className="max-w-[1400px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex gap-0">
           {/* Collapsible Sidebar - Fixed position */}
           <Collapsible open={sidebarOpen} onOpenChange={setSidebarOpen} className="hidden lg:block">
@@ -219,8 +238,8 @@ export function ListingsView() {
                   </DropdownMenu>
                 </div>
 
-                {/* View Toggle - Desktop only, switches between grid and list */}
-                <div className="hidden md:flex items-center gap-1">
+                {/* View Toggle - Desktop/iPad only (lg+), switches between grid and list */}
+                <div className="hidden lg:flex items-center gap-1">
                   <button
                     onClick={() => setViewMode('grid')}
                     className={`p-1.5 transition-colors ${viewMode === 'grid' ? 'text-foreground' : 'text-muted-foreground/50 hover:text-foreground'}`}
@@ -285,15 +304,15 @@ export function ListingsView() {
             {/* Loading */}
             {isLoading && !error && (
               <>
-                {/* Mobile: always grid */}
-                <div className="md:hidden grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                {/* Mobile/Tablet: always grid */}
+                <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                   {Array.from({ length: 8 }).map((_, i) => (
                     <CarCardSkeleton key={i} />
                   ))}
                 </div>
                 
-                {/* Desktop: respects viewMode */}
-                <div className="hidden md:block">
+                {/* Desktop (lg+): respects viewMode */}
+                <div className="hidden lg:block">
                   {viewMode === 'grid' ? (
                     <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5">
                       {Array.from({ length: 8 }).map((_, i) => (
@@ -328,8 +347,8 @@ export function ListingsView() {
             {/* Results */}
             {!isLoading && !error && listings.length > 0 && (
               <>
-                {/* Mobile: always grid */}
-                <div className="md:hidden grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                {/* Mobile/Tablet: always grid */}
+                <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                   {listings.map((listing, index) => (
                     <CarCard
                       key={listing.id}
@@ -358,8 +377,8 @@ export function ListingsView() {
                   ))}
                 </div>
 
-                {/* Desktop: respects viewMode */}
-                <div className="hidden md:block">
+                {/* Desktop (lg+): respects viewMode */}
+                <div className="hidden lg:block">
                   {viewMode === 'grid' ? (
                     <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5">
                       {listings.map((listing, index) => (

@@ -154,22 +154,22 @@ export function CarListItem({
 
   return (
     <div className={cn(
-      "group relative overflow-hidden rounded-lg transition-all duration-300 flex flex-col lg:flex-row w-full",
+      "group relative overflow-hidden rounded-xl transition-all duration-300 flex flex-col lg:flex-row w-full",
       isBlkListing 
-        ? "bg-black border border-zinc-800 hover:border-zinc-700 hover:shadow-2xl hover:shadow-zinc-900/50" 
+        ? "bg-black/80 backdrop-blur-2xl border border-white/10 hover:border-white/20 hover:shadow-2xl hover:shadow-black/50" 
         : "bg-sidebar border border-sidebar-border hover:border-sidebar-border/80 hover:shadow-md",
       className
     )}>
       {/* Subtle top accent for BLK listings */}
       {isBlkListing && (
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-zinc-700 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
       )}
 
       {/* Image Section */}
       <div className="p-2 sm:p-3 w-full lg:w-80 flex-shrink-0">
         <Link href={`/listings/${id}`} className={cn(
           "relative aspect-[4/3] w-full overflow-hidden rounded-lg block",
-          isBlkListing ? "bg-zinc-900" : "bg-muted/20"
+          isBlkListing ? "bg-white/5" : "bg-muted/20"
         )}>
           <Image
             src={displayImage}
@@ -185,18 +185,24 @@ export function CarListItem({
       <div className="flex flex-1 flex-col px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 min-w-0 min-h-0">
         {/* Top Section - Title and Price */}
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-1 sm:gap-2 lg:gap-6 mb-2 sm:mb-3">
-          <Link href={`/listings/${id}`} className="group/title flex-1 min-w-0">
+          <Link href={`/listings/${id}`} className="group/title flex-1 min-w-0 space-y-1">
             <h3 className={cn(
-              "text-sm sm:text-base lg:text-lg font-medium transition-colors line-clamp-1",
+              "text-[15px] sm:text-base lg:text-lg font-medium transition-colors line-clamp-1",
               isBlkListing 
                 ? "text-white group-hover/title:text-zinc-200" 
                 : "text-sidebar-foreground group-hover/title:text-primary"
             )}>
-              {year} {make} {model}{trim ? ` ${trim}` : ''}
+              {make} {model}
             </h3>
+            <p className={cn(
+              "text-xs sm:text-sm font-medium line-clamp-1 min-h-[1rem]",
+              isBlkListing ? "text-white/60" : "text-muted-foreground"
+            )}>
+              {trim || '\u00A0'}
+            </p>
           </Link>
           <p className={cn(
-            "text-lg sm:text-base lg:text-xl font-semibold whitespace-nowrap",
+            "text-base sm:text-lg font-semibold whitespace-nowrap",
             isBlkListing ? "text-white" : "text-blue-600"
           )}>
             {formatPrice(price)}
@@ -204,24 +210,34 @@ export function CarListItem({
         </div>
 
         {/* Stats Row */}
-        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 lg:gap-3 text-[10px] sm:text-xs lg:text-sm mb-2 sm:mb-3 lg:mb-auto lg:pb-4">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 lg:gap-3 text-xs sm:text-sm lg:text-[15px] mb-1 sm:mb-1.5">
           <span className={cn(
-            "font-medium",
-            isBlkListing ? "text-zinc-300" : "text-sidebar-foreground/80"
+            "font-semibold",
+            isBlkListing ? "text-white/70" : "text-sidebar-foreground/80"
+          )}>
+            {year}
+          </span>
+          <span className={isBlkListing ? "text-white/20" : "text-sidebar-foreground/40"}>•</span>
+          <span className={cn(
+            "font-semibold",
+            isBlkListing ? "text-white/70" : "text-sidebar-foreground/80"
           )}>
             {formatMileage(mileage)} km
           </span>
-          <span className={isBlkListing ? "text-zinc-600" : "text-sidebar-foreground/30"}>•</span>
+          <span className={isBlkListing ? "text-white/20" : "text-sidebar-foreground/40"}>•</span>
           <span className={cn(
-            "font-medium",
-            isBlkListing ? "text-zinc-300" : "text-sidebar-foreground/80"
+            "font-semibold",
+            isBlkListing ? "text-white/70" : "text-sidebar-foreground/80"
           )}>
             {displaySpecs}
           </span>
-          <span className={isBlkListing ? "text-zinc-600" : "text-sidebar-foreground/30"}>•</span>
+        </div>
+
+        {/* Location Row */}
+        <div className="mb-2 sm:mb-3 lg:mb-auto lg:pb-4">
           <span className={cn(
-            "font-medium",
-            isBlkListing ? "text-zinc-300" : "text-sidebar-foreground/80"
+            "text-xs sm:text-sm font-medium",
+            isBlkListing ? "text-white/50" : "text-muted-foreground"
           )}>
             {displayEmirate}
           </span>
@@ -230,7 +246,7 @@ export function CarListItem({
         {/* Bottom Section - Dealer and Actions */}
         <div className={cn(
           "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 pt-2 sm:pt-3 lg:pt-4 border-t mt-auto",
-          isBlkListing ? "border-zinc-800" : "border-sidebar-border"
+          isBlkListing ? "border-white/10" : "border-sidebar-border"
         )}>
           {/* Left - Dealer */}
           <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-3 min-w-0 flex-1">
@@ -241,7 +257,7 @@ export function CarListItem({
                 size="xs"
                 className={cn(
                   "w-6 h-6 sm:w-8 sm:h-8 lg:w-9 lg:h-9 flex-shrink-0",
-                  isBlkListing ? "bg-zinc-800 border-zinc-700" : "bg-sidebar-accent border-sidebar-border"
+                  isBlkListing ? "bg-white/10 border-white/20" : "bg-sidebar-accent border-sidebar-border"
                 )}
               />
             ) : (
@@ -251,20 +267,20 @@ export function CarListItem({
                 size="sm"
                 className={cn(
                   "w-6 h-6 sm:w-8 sm:h-8 lg:w-9 lg:h-9 flex-shrink-0",
-                  isBlkListing ? "bg-zinc-800 border-zinc-700 text-zinc-400" : "bg-sidebar-accent border-sidebar-border text-sidebar-foreground/70"
+                  isBlkListing ? "bg-white/10 border-white/20 text-white/60" : "bg-sidebar-accent border-sidebar-border text-sidebar-foreground/70"
                 )}
               />
             )}
             <div className="flex items-center gap-1 sm:gap-1.5 lg:gap-2 min-w-0">
               <span className={cn(
-                "text-xs sm:text-sm lg:text-base truncate",
-                isBlackTierPartner ? "font-bold" : "font-semibold",
-                isBlkListing ? "text-zinc-200" : "text-sidebar-foreground"
+                "text-xs sm:text-sm truncate",
+                isBlackTierPartner ? "font-semibold" : "font-medium",
+                isBlkListing ? "text-white/70" : "text-sidebar-foreground/80"
               )}>
                 {displaySellerName}
               </span>
               {(partnerVerified || kycVerified) && (
-                <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" aria-label="Verified" />
+                <CheckCircle2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] lg:w-5 lg:h-5 text-blue-500 flex-shrink-0" aria-label="Verified" />
               )}
             </div>
           </div>
@@ -275,12 +291,12 @@ export function CarListItem({
               className={cn(
                 "rounded-full p-1.5 sm:p-2 transition-colors",
                 isBlkListing 
-                  ? "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800" 
+                  ? "text-white/40 hover:text-white/80 hover:bg-white/10" 
                   : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
               )}
               aria-label="Share"
             >
-              <Share2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
             
             {/* Favorite Button */}
@@ -290,10 +306,10 @@ export function CarListItem({
                 favorite.isUpdating && "opacity-50 cursor-not-allowed",
                 favorite.isFavorite
                   ? isBlkListing 
-                    ? "text-rose-400 hover:bg-zinc-800" 
+                    ? "text-rose-400 hover:bg-white/10" 
                     : "text-rose-500 hover:bg-sidebar-accent"
                   : isBlkListing 
-                    ? "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800" 
+                    ? "text-white/40 hover:text-white/80 hover:bg-white/10" 
                     : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
               )}
               aria-label={favorite.isFavorite ? "Remove favorite" : "Add to favorites"}
@@ -307,7 +323,7 @@ export function CarListItem({
             >
               <Heart
                 className={cn(
-                  "h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform duration-300",
+                  "h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300",
                   heartScale && "scale-150"
                 )}
                 strokeWidth={favorite.isFavorite ? 2.5 : 2}
@@ -322,10 +338,10 @@ export function CarListItem({
                 superlike.isUpdating && "opacity-50 cursor-not-allowed",
                 superlike.isSuperliked
                   ? isBlkListing 
-                    ? "text-yellow-400 hover:bg-zinc-800" 
+                    ? "text-yellow-400 hover:bg-white/10" 
                     : "text-yellow-500 hover:bg-sidebar-accent"
                   : isBlkListing 
-                    ? "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800" 
+                    ? "text-white/40 hover:text-white/80 hover:bg-white/10" 
                     : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
               )}
               aria-label={superlike.isSuperliked ? "Remove superlike" : "Superlike"}
@@ -338,7 +354,7 @@ export function CarListItem({
               }}
             >
               <Sparkles
-                className="h-3.5 w-3.5 sm:h-4 sm:w-4"
+                className="h-4 w-4 sm:h-5 sm:w-5"
                 strokeWidth={superlike.isSuperliked ? 2.5 : 2}
                 fill={superlike.isSuperliked ? "currentColor" : "none"}
               />

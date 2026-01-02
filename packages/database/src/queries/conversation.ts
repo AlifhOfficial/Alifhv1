@@ -74,10 +74,10 @@ export async function createOrGetConversation(params: {
   otherUserId: string;
   listingId?: string;
   partnerId?: string;
-  type?: 'inquiry'; // V1: Only inquiry type supported
+  type?: 'direct' | 'inquiry' | 'negotiation' | 'booking' | 'consignment' | 'support' | 'system';
   subject?: string;
 }): Promise<string> {
-  const { initiatedBy, otherUserId, listingId, type = 'inquiry', subject } = params;
+  const { initiatedBy, otherUserId, listingId, subject } = params;
 
   // Derive partnerId from listing when present (partner listings should resolve to partner identity)
   let derivedPartnerId: string | undefined = params.partnerId;
@@ -88,6 +88,18 @@ export async function createOrGetConversation(params: {
       .where(eq(carListing.id, listingId))
       .limit(1);
     derivedPartnerId = listing[0]?.partnerId ?? undefined;
+  }
+
+  // Auto-detect conversation type if not specified
+  let conversationType = params.type;
+  if (!conversationType) {
+    if (listingId) {
+      conversationType = 'inquiry'; // Listing-based = inquiry
+    } else if (derivedPartnerId) {
+      conversationType = 'inquiry'; // Partner-based = inquiry
+    } else {
+      conversationType = 'direct'; // User-to-user = direct
+    }
   }
 
   // Check if conversation already exists
@@ -118,6 +130,28 @@ export async function createOrGetConversation(params: {
       }
       return existingQuery[0].id;
     }
+  } else {
+    // For direct messages (no listing), check if conversation exists between these two users
+    const existingDirectQuery = await db
+      .select({ id: conversation.id })
+      .from(conversation)
+      .innerJoin(
+        conversationParticipant,
+        eq(conversationParticipant.conversationId, conversation.id)
+      )
+      .where(
+        and(
+          eq(conversation.type, 'direct'),
+          isNull(conversation.listingId),
+          inArray(conversationParticipant.userId, [initiatedBy, otherUserId])
+        )
+      )
+      .groupBy(conversation.id)
+      .having(sql`count(distinct ${conversationParticipant.userId}) = 2`);
+
+    if (existingDirectQuery.length > 0) {
+      return existingDirectQuery[0].id;
+    }
   }
 
   // Create new conversation
@@ -129,7 +163,7 @@ export async function createOrGetConversation(params: {
   try {
     await db.insert(conversation).values({
       id: conversationId,
-      type,
+      type: conversationType,
       status: 'active',
       initiatedBy,
       listingId: listingId || null,

@@ -106,11 +106,16 @@ export function useMessages(conversationId: string, userId?: string, options: Us
 
   // Watch presence for other user
   useEffect(() => {
-    if (!options.otherUserId || !isConnected || watchingRef.current) return;
-    watchingRef.current = true;
-    send({ type: 'watch_user', targetUserId: options.otherUserId });
+    if (!options.otherUserId || !isConnected) return;
+    
+    // Only send watch if not already watching this user
+    if (!watchingRef.current) {
+      watchingRef.current = true;
+      send({ type: 'watch_user', targetUserId: options.otherUserId });
+    }
+    
     return () => {
-      if (watchingRef.current) {
+      if (watchingRef.current && options.otherUserId) {
         send({ type: 'unwatch_user', targetUserId: options.otherUserId });
         watchingRef.current = false;
       }

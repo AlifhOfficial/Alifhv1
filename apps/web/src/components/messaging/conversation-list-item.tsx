@@ -94,20 +94,20 @@ export function ConversationListItem({
           <div className="flex items-center justify-between mb-1 overflow-hidden">
             <h3
               className={cn(
-                'font-medium truncate',
+                'text-[15px] font-semibold tracking-tight truncate',
                 unreadCount > 0 ? 'text-foreground' : 'text-foreground/90'
               )}
             >
               {displayName}
             </h3>
-            <small className="text-muted-foreground/70 ml-2 flex-shrink-0">
+            <small className="text-xs text-muted-foreground/70 ml-2 flex-shrink-0 font-medium">
               {lastMessageDate ? formatDistanceToNow(lastMessageDate, { addSuffix: true }) : ''}
             </small>
           </div>
 
           {/* Listing Context (only for non-nested items) */}
           {showListingContext && (
-            <small className="text-muted-foreground/70 mb-0.5 truncate block">
+            <small className="text-xs text-muted-foreground/70 mb-0.5 truncate block">
               Re: {listing.title}
             </small>
           )}
@@ -115,16 +115,16 @@ export function ConversationListItem({
           <div className="flex items-center justify-between overflow-hidden">
             <p
               className={cn(
-                'truncate pr-2 min-w-0 flex-1',
+                'text-[15px] truncate pr-2 min-w-0 flex-1',
                 unreadCount > 0
-                  ? 'text-foreground/80 font-medium'
+                  ? 'text-foreground/80 font-semibold'
                   : 'text-muted-foreground'
               )}
             >
               {lastMessagePreview || 'No messages yet'}
             </p>
             {unreadCount > 0 && (
-              <small className="flex-shrink-0 px-2 py-0.5 font-medium bg-blue-500 text-white rounded-full min-w-[18px] text-center">
+              <small className="text-xs flex-shrink-0 px-2 py-0.5 font-semibold bg-blue-500 text-white rounded-full min-w-[18px] text-center">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </small>
             )}

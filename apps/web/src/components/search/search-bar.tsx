@@ -199,11 +199,11 @@ export function SearchBar({
   const getSuggestionIcon = (type: string) => {
     switch (type) {
       case 'partner':
-        return <Factory className="h-4 w-4 text-muted-foreground/70" />;
+        return <Factory className="h-4 w-4 text-muted-foreground/80" />;
       case 'make':
       case 'make_model':
       default:
-        return <CircleDot className="h-4 w-4 text-muted-foreground/50" />;
+        return <CircleDot className="h-4 w-4 text-muted-foreground/60" />;
     }
   };
 
@@ -234,9 +234,9 @@ export function SearchBar({
           autoFocus={autoFocus}
           className={cn(
             'w-full h-full bg-transparent pl-11 pr-10',
-            'placeholder:text-muted-foreground/40',
+            'placeholder:text-muted-foreground/50',
             'focus:outline-none',
-            'font-medium tracking-tight'
+            'font-semibold tracking-tight'
           )}
           aria-label="Search cars"
           aria-expanded={showDropdown}
@@ -277,7 +277,7 @@ export function SearchBar({
           {isLoading && suggestions.length === 0 ? (
             <div className="flex items-center justify-center py-8 text-muted-foreground">
               <Loader2 className="h-5 w-5 animate-spin mr-3" />
-              <span className="text-sm font-medium">Searching...</span>
+              <span className="text-sm font-semibold">Searching...</span>
             </div>
           ) : (
             <ul className="py-2">
@@ -298,17 +298,17 @@ export function SearchBar({
                   <div className="flex items-center gap-3">
                     {getSuggestionIcon(suggestion.type)}
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-foreground">
+                      <span className="text-[15px] font-semibold text-foreground">
                         {suggestion.text}
                       </span>
                       {suggestion.type === 'partner' && (
-                        <span className="px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground bg-muted rounded">
+                        <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70 bg-muted rounded">
                           Dealer
                         </span>
                       )}
                     </div>
                   </div>
-                  <span className="text-xs font-medium text-muted-foreground/60 tabular-nums">
+                  <span className="text-sm font-semibold text-muted-foreground/70 tabular-nums">
                     {suggestion.count} {suggestion.count === 1 ? 'car' : 'cars'}
                   </span>
                 </li>
@@ -323,7 +323,7 @@ export function SearchBar({
               className={cn(
                 'w-full flex items-center justify-center gap-2',
                 'px-4 py-3 border-t border-border/30',
-                'text-sm font-medium text-muted-foreground hover:text-primary hover:bg-primary/5',
+                'text-sm font-semibold text-muted-foreground/70 hover:text-primary hover:bg-primary/5',
                 'transition-colors'
               )}
             >

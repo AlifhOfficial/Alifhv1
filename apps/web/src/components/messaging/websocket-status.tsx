@@ -18,7 +18,7 @@ export function WebSocketStatus({ showText = false, className }: WebSocketStatus
   return (
     <div className={cn('flex items-center gap-2', isConnected ? 'text-green-600' : 'text-muted-foreground', className)}>
       <div className={cn('h-2 w-2 rounded-full', isConnected ? 'bg-green-600' : 'bg-muted-foreground')} />
-      {showText && <small className="font-medium">{isConnected ? 'Connected' : 'Offline'}</small>}
+      {showText && <small className="text-xs font-semibold">{isConnected ? 'Connected' : 'Offline'}</small>}
     </div>
   );
 }

@@ -38,6 +38,11 @@ export function ChatContainer({ userId, inbox = 'personal', className }: ChatCon
 
   const selected = conversations.find(c => c.id === selectedId);
 
+  const handleClose = () => {
+    setSelectedId(undefined);
+    setShowMobile(false);
+  };
+
   return (
     <div className={cn('flex h-full min-h-0 flex-col overflow-hidden', className)}>
       {/* Status */}
@@ -63,6 +68,7 @@ export function ChatContainer({ userId, inbox = 'personal', className }: ChatCon
         <div className={cn('flex-1 min-w-0 hidden lg:flex', showMobile && 'flex')}>
           {selected ? (
             <ChatWindow
+              key={selected.id}
               conversationId={selected.id}
               userId={userId}
               conversationType={selected.type}
@@ -70,7 +76,7 @@ export function ChatContainer({ userId, inbox = 'personal', className }: ChatCon
               listing={selected.listing || undefined}
               partner={selected.partner || undefined}
               inbox={inbox}
-              onBack={() => setShowMobile(false)}
+              onBack={handleClose}
             />
           ) : (
             <div className="min-h-[400px] flex items-center justify-center h-full w-full bg-background">
@@ -78,7 +84,7 @@ export function ChatContainer({ userId, inbox = 'personal', className }: ChatCon
                 <div className="w-16 h-16 mx-auto rounded-full bg-muted flex items-center justify-center">
                   <Inbox className="w-7 h-7 text-muted-foreground" />
                 </div>
-                <p className="text-sm text-muted-foreground">Select a conversation</p>
+                <p className="text-[15px] text-muted-foreground">Select a conversation</p>
               </div>
             </div>
           )}

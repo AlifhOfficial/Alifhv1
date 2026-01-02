@@ -38,7 +38,7 @@ export function MessageBubble({
   if (isSystemMessage) {
     return (
       <div className="flex justify-center py-3">
-        <small className="text-muted-foreground/70 px-4 py-2 bg-secondary/30 rounded-full">
+        <small className="text-xs text-muted-foreground/70 px-4 py-2 bg-secondary/30 rounded-full">
           {text}
         </small>
       </div>
@@ -68,7 +68,7 @@ export function MessageBubble({
       <div className={cn('flex flex-col max-w-[80%] md:max-w-[65%] min-w-0', isOwn ? 'items-end' : 'items-start')}>
         {/* Sender Name (only for received messages with avatar) */}
         {!isOwn && showAvatar && (
-          <small className="text-muted-foreground/70 mb-1 px-2">
+          <small className="text-xs text-muted-foreground/70 mb-1 px-2 font-medium">
             {sender.name || 'User'}
           </small>
         )}
@@ -96,7 +96,7 @@ export function MessageBubble({
 
             {/* Text */}
             {text && (
-              <p className="text-sm leading-relaxed whitespace-pre-wrap">
+              <p className="text-[15px] leading-relaxed whitespace-pre-wrap">
                 {text}
               </p>
             )}
@@ -104,7 +104,7 @@ export function MessageBubble({
             {/* Edited indicator */}
             {isEdited && (
               <small className={cn(
-                'opacity-70 mt-1 block',
+                'text-xs opacity-70 mt-1 block',
                 isOwn ? 'text-primary-foreground/70' : 'text-muted-foreground'
               )}>
                 (edited)
@@ -115,7 +115,7 @@ export function MessageBubble({
           {/* Hover Timestamp - Shows on hover */}
           <small 
             className={cn(
-              'absolute top-1/2 -translate-y-1/2 text-muted-foreground/70',
+              'absolute top-1/2 -translate-y-1/2 text-xs text-muted-foreground/70',
               'opacity-0 group-hover:opacity-100 transition-opacity duration-200',
               'pointer-events-none whitespace-nowrap z-10',
               isOwn ? '-left-2 -translate-x-full' : '-right-2 translate-x-full'
@@ -135,7 +135,7 @@ export function MessageBubble({
         {/* Seen indicator */}
         {showSeen && isOwn && (
           <div className="mt-1 flex items-center justify-end gap-1.5 px-2">
-            <small className="text-muted-foreground/70">Seen</small>
+            <small className="text-xs text-muted-foreground/70">Seen</small>
             <UserAvatar
               src={otherUserAvatar}
               name={otherUserName || 'User'}

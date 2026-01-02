@@ -39,19 +39,30 @@ const navItems: NavItem[] = [
     href: "/listings",
     submenu: [
       {
-        title: "Browse",
+        title: "Explore Listings",
         items: [
-          { label: "All Vehicles", href: "/listings", description: "View all listings" },
-          { label: "New Arrivals", href: "/listings?sortBy=createdAt", description: "Latest additions" },
-          { label: "Featured", href: "/listings?isFeatured=true", description: "Handpicked vehicles" },
+          { label: "All Vehicles", href: "/listings" },
+          { label: "Black Collection", href: "/listings?black=true" },
+          { label: "Ace Members", href: "/listings?blackTier=true" },
+          { label: "New Arrivals", href: "/listings?sort=newest" },
         ],
       },
       {
-        title: "Categories",
+        title: "Shop by Type",
         items: [
-          { label: "Luxury", href: "/listings?bodyType=luxury" },
-          { label: "Sports", href: "/listings?bodyType=sports" },
+          { label: "Sedans", href: "/listings?bodyType=sedan" },
           { label: "SUVs", href: "/listings?bodyType=suv" },
+          { label: "Trucks", href: "/listings?bodyType=truck" },
+          { label: "Coupes", href: "/listings?bodyType=coupe" },
+          { label: "Negotiable", href: "/listings?negotiable=true" },
+        ],
+      },
+      {
+        title: "More from Listings",
+        items: [
+          { label: "Under AED 50k", href: "/listings?priceMax=50000" },
+          { label: "Under AED 100k", href: "/listings?priceMax=100000" },
+          { label: "Low Mileage", href: "/listings?mileageMax=50000" },
         ],
       },
     ],
@@ -276,7 +287,7 @@ export function Navbar() {
                 >
                   <Link
                     href={item.href}
-                    className={`px-3 py-2 text-sm font-medium tracking-tight transition-colors rounded-md block ${
+                    className={`px-4 py-2 text-sm font-semibold tracking-tight transition-colors rounded-md block ${
                       pathname === item.href
                         ? "text-foreground"
                         : "text-muted-foreground hover:text-foreground"

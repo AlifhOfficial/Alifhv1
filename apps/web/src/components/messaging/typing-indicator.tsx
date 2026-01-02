@@ -13,7 +13,7 @@ interface TypingIndicatorProps {
 
 export function TypingIndicator({ className }: TypingIndicatorProps) {
   return (
-    <small className={cn('text-muted-foreground/70 italic', className)}>
+    <small className={cn('text-xs text-muted-foreground/70 italic', className)}>
       typing...
     </small>
   );

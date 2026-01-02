@@ -100,15 +100,12 @@ export function ConversationList({
       return { directConversations: [], partnerGroups: [], userGroups: groups };
     }
 
-    // Personal inbox: group by partner
-    const direct: Conversation[] = [];
+    // Personal inbox: group by partner OR by user (for multiple convos with same person)
     const partnerMap = new Map<string, { partner: ConversationPartner; conversations: Conversation[] }>();
+    const userMap = new Map<string, { user: ConversationParticipant; conversations: Conversation[] }>();
 
     for (const conv of filteredConversations) {
-      // Direct/P2P conversations have type 'direct' OR no partnerId
-      if (conv.type === 'direct' || !conv.partnerId || !conv.partner) {
-        direct.push(conv);
-      } else {
+      if (conv.partnerId && conv.partner) {
         // Partner conversation - group by partnerId
         const existing = partnerMap.get(conv.partnerId);
         if (existing) {
@@ -119,24 +116,49 @@ export function ConversationList({
             conversations: [conv],
           });
         }
+      } else if (conv.otherParticipant) {
+        // User conversation - group by other user ID
+        const userId = conv.otherParticipant.id;
+        const existing = userMap.get(userId);
+        if (existing) {
+          existing.conversations.push(conv);
+        } else {
+          userMap.set(userId, {
+            user: conv.otherParticipant,
+            conversations: [conv],
+          });
+        }
       }
     }
 
     // Sort partner groups by most recent message
-    const groups = Array.from(partnerMap.values()).sort((a, b) => {
+    const partnerGroups = Array.from(partnerMap.values()).sort((a, b) => {
+      const aLatest = Math.max(...a.conversations.map(c => new Date(c.lastMessageAt).getTime()));
+      const bLatest = Math.max(...b.conversations.map(c => new Date(c.lastMessageAt).getTime()));
+      return bLatest - aLatest;
+    });
+
+    // Sort user groups by most recent message
+    const userGroups = Array.from(userMap.values()).sort((a, b) => {
       const aLatest = Math.max(...a.conversations.map(c => new Date(c.lastMessageAt).getTime()));
       const bLatest = Math.max(...b.conversations.map(c => new Date(c.lastMessageAt).getTime()));
       return bLatest - aLatest;
     });
 
     // Sort conversations within each group by most recent
-    groups.forEach(group => {
+    partnerGroups.forEach(group => {
       group.conversations.sort((a, b) => 
         new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
       );
     });
 
-    return { directConversations: direct, partnerGroups: groups, userGroups: [] };
+    userGroups.forEach(group => {
+      group.conversations.sort((a, b) => 
+        new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
+      );
+    });
+
+    return { directConversations: [], partnerGroups, userGroups };
   }, [filteredConversations, inbox]);
 
   // Combine for sorting: interleave based on most recent activity
@@ -158,14 +180,14 @@ export function ConversationList({
 
     // Personal inbox
     type ListItem = 
-      | { type: 'direct'; conversation: Conversation }
+      | { type: 'user-group'; user: ConversationParticipant; conversations: Conversation[] }
       | { type: 'partner-group'; partner: ConversationPartner; conversations: Conversation[] };
 
     const items: ListItem[] = [];
 
-    // Add direct conversations
-    for (const conv of directConversations) {
-      items.push({ type: 'direct', conversation: conv });
+    // Add user groups
+    for (const group of userGroups) {
+      items.push({ type: 'user-group', ...group });
     }
 
     // Add partner groups
@@ -175,26 +197,22 @@ export function ConversationList({
 
     // Sort by most recent activity
     items.sort((a, b) => {
-      const aTime = a.type === 'direct'
-        ? new Date(a.conversation.lastMessageAt).getTime()
-        : Math.max(...a.conversations.map(c => new Date(c.lastMessageAt).getTime()));
-      const bTime = b.type === 'direct'
-        ? new Date(b.conversation.lastMessageAt).getTime()
-        : Math.max(...b.conversations.map(c => new Date(c.lastMessageAt).getTime()));
+      const aTime = Math.max(...a.conversations.map(c => new Date(c.lastMessageAt).getTime()));
+      const bTime = Math.max(...b.conversations.map(c => new Date(c.lastMessageAt).getTime()));
       return bTime - aTime;
     });
 
     return { type: 'grouped' as const, items };
-  }, [inbox, userGroups, directConversations, partnerGroups]);
+  }, [inbox, userGroups, partnerGroups]);
 
   return (
     <div className={cn('flex flex-col h-full min-h-0 bg-background border-r border-border', className)}>
       {/* Header */}
       <div className="p-5 border-b border-border bg-background/80 backdrop-blur-sm flex-shrink-0">
         <div className="flex items-center justify-between mb-4">
-          <h2>Messages</h2>
+          <h2 className="text-lg font-bold tracking-tight">Messages</h2>
           {totalUnread > 0 && (
-            <small className="bg-blue-500 text-white font-medium px-2 py-0.5 rounded-full min-w-[18px] text-center">
+            <small className="text-xs bg-blue-500 text-white font-semibold px-2 py-0.5 rounded-full min-w-[18px] text-center">
               {totalUnread > 99 ? '99+' : totalUnread}
             </small>
           )}
@@ -208,7 +226,7 @@ export function ConversationList({
             placeholder="Search conversations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-3 py-3 border border-border bg-muted text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 rounded-xl transition-all duration-200"
+            className="w-full pl-10 pr-3 py-3 text-[15px] border border-border bg-muted text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 rounded-xl transition-all duration-200"
           />
         </div>
       </div>
@@ -225,7 +243,7 @@ export function ConversationList({
               <div className="w-16 h-16 mx-auto rounded-full bg-muted flex items-center justify-center">
                 <Inbox className="w-7 h-7 text-muted-foreground" />
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-[15px] text-muted-foreground">
                 {searchQuery ? 'No conversations found' : 'No messages yet'}
               </p>
             </div>
@@ -244,16 +262,16 @@ export function ConversationList({
             ))}
           </div>
         ) : (
-          // Personal inbox: grouped by partner + direct chats
+          // Personal inbox: grouped by user + partner
           <div className="px-2 py-2 space-y-1">
             {sortedItems.items.map((item) =>
-              item.type === 'direct' ? (
-                <ConversationListItem
-                  key={item.conversation.id}
-                  conversation={item.conversation}
-                  inbox={inbox}
-                  isActive={item.conversation.id === activeConversationId}
-                  onClick={() => onSelectConversation(item.conversation.id)}
+              item.type === 'user-group' ? (
+                <UserConversationGroup
+                  key={item.user.id}
+                  user={item.user}
+                  conversations={item.conversations}
+                  activeConversationId={activeConversationId}
+                  onSelectConversation={onSelectConversation}
                 />
               ) : (
                 <PartnerConversationGroup

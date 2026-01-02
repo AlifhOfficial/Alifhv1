@@ -281,6 +281,13 @@
       "when": 1767312578363,
       "tag": "0039_slippery_maximus",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1767323771728,
+      "tag": "0040_luxuriant_cyclops",
+      "breakpoints": true
     }
   ]
 }

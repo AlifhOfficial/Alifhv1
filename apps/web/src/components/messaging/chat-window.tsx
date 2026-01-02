@@ -154,22 +154,22 @@ export function ChatWindow({
         </div>
 
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold tracking-tight truncate text-foreground">{displayName}</h3>
+          <h3 className="text-[15px] font-bold tracking-tight truncate text-foreground">{displayName}</h3>
           <div className="flex items-center gap-1.5 mt-0.5">
             {isOtherOnline ? (
               <>
                 <Moon className="w-3 h-3 text-rose-500 fill-rose-500" />
-                <small className="text-rose-600 dark:text-rose-400 font-medium">Active now</small>
+                <small className="text-xs text-rose-600 dark:text-rose-400 font-semibold">Active now</small>
               </>
             ) : lastActiveAt ? (
               <>
                 <Moon className="w-3 h-3 text-purple-500 fill-purple-500" />
-                <small className="text-muted-foreground/70 font-medium">Last seen {formatLastSeen(lastActiveAt)}</small>
+                <small className="text-xs text-muted-foreground/70 font-medium">Last seen {formatLastSeen(lastActiveAt)}</small>
               </>
             ) : (
               <>
                 <Cloud className="w-3 h-3 text-slate-500 fill-slate-400" />
-                <small className="text-muted-foreground/70 font-medium">Away</small>
+                <small className="text-xs text-muted-foreground/70 font-medium">Away</small>
               </>
             )}
           </div>
@@ -210,9 +210,9 @@ export function ChatWindow({
             <div className="w-10 h-10 rounded-lg flex-shrink-0 bg-muted" />
           )}
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium tracking-tight truncate">{listing.title}</p>
+            <p className="text-[15px] font-semibold tracking-tight truncate">{listing.title}</p>
           </div>
-          <small className="text-muted-foreground/70">→</small>
+          <small className="text-xs text-muted-foreground/70">→</small>
         </Link>
       )}
 
@@ -233,7 +233,7 @@ export function ChatWindow({
               <svg className="w-16 h-16 mx-auto text-muted-foreground/40" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
               </svg>
-              <p className="text-muted-foreground">No messages yet</p>
+              <p className="text-[15px] text-muted-foreground">No messages yet</p>
             </div>
           </div>
         ) : (
@@ -242,7 +242,7 @@ export function ChatWindow({
               <div key="typing" className="flex items-start gap-2.5 mb-1.5 px-2">
                 <div className="w-8 flex-shrink-0" />
                 <div className="flex items-center gap-2 px-4 py-2 bg-muted rounded-2xl rounded-tl-sm">
-                  <small className="text-muted-foreground italic">typing...</small>
+                  <small className="text-xs text-muted-foreground italic">typing...</small>
                 </div>
               </div>
             )}
@@ -258,7 +258,7 @@ export function ChatWindow({
               if (!nextDate || !isSameDay(nextDate, messageDate)) {
                 elements.push(
                   <div key={`date-${message.id}`} className="flex justify-center py-3">
-                    <small className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-muted-foreground/70">
+                    <small className="text-xs inline-flex items-center rounded-full bg-muted px-3 py-1 text-muted-foreground/70">
                       {format(messageDate, 'EEE, MMM d')}
                     </small>
                   </div>

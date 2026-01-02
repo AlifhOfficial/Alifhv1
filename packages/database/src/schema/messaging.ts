@@ -22,10 +22,15 @@ export const messageMediaTypeEnum = pgEnum('message_media_type', [
   'location',   // Shared location
 ]);
 
-// V1: Single conversation type - all conversations are inquiries
-// Future types (V2+): direct, negotiation, booking, consignment, support, system
+// Conversation types
 export const conversationTypeEnum = pgEnum('conversation_type', [
-  'inquiry',          // V1: All user-to-partner conversations
+  'direct',           // User-to-user direct messages
+  'inquiry',          // User-to-partner listing inquiries
+  'negotiation',      // Price/term negotiations
+  'booking',          // Booking-related conversations
+  'consignment',      // Consignment discussions
+  'support',          // Support conversations
+  'system',           // System-generated conversations
 ]);
 
 export const conversationStatusEnum = pgEnum('conversation_status', [

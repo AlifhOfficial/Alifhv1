@@ -206,8 +206,8 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
                   )}
                 </div>
                 <div className="flex flex-col min-w-0 flex-1 gap-0.5">
-                  <span className="truncate font-semibold text-sm tracking-tight">{displayName}</span>
-                  <span className="truncate text-xs text-sidebar-foreground/70">
+                  <span className="truncate font-bold text-[15px] tracking-tight">{displayName}</span>
+                  <span className="truncate text-sm text-sidebar-foreground/70">
                     {isStaffMode ? staffOverride?.workEmail : user.email}
                   </span>
                 </div>
@@ -232,7 +232,7 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
                   <Collapsible asChild defaultOpen className="group/collapsible">
                     <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
-                        <SidebarMenuButton tooltip={section.collapsible.label} className="font-medium">
+                        <SidebarMenuButton tooltip={section.collapsible.label} className="font-semibold">
                           {CollapsibleIcon && <CollapsibleIcon className="size-4" />}
                           <span className="tracking-tight">{section.collapsible.label}</span>
                           <ChevronDown className="ml-auto size-4 transition-transform duration-200 group-data-[state=closed]/collapsible:-rotate-90" />
@@ -266,7 +266,7 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
           return (
             <SidebarGroup key={sectionKey}>
               {section.title && (
-                <SidebarGroupLabel className="text-xs uppercase tracking-wider font-medium text-sidebar-foreground/70">
+                <SidebarGroupLabel className="text-xs uppercase tracking-wider font-semibold text-sidebar-foreground/70">
                   {section.title}
                 </SidebarGroupLabel>
               )}
@@ -282,7 +282,7 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
                           asChild 
                           isActive={isActive}
                           tooltip={item.label}
-                          className="font-medium"
+                          className="font-semibold"
                         >
                           <Link href={item.href}>
                             {Icon && <Icon className="size-4" />}
@@ -306,7 +306,7 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
             <SidebarMenuButton asChild tooltip="Support">
               <Link href="/support">
                 <LifeBuoy className="size-4" />
-                <span className="font-medium tracking-tight">Support</span>
+                <span className="font-semibold tracking-tight">Support</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -314,7 +314,7 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
             <SidebarMenuButton asChild tooltip="Feedback">
               <Link href="/feedback">
                 <Send className="size-4" />
-                <span className="font-medium tracking-tight">Feedback</span>
+                <span className="font-semibold tracking-tight">Feedback</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

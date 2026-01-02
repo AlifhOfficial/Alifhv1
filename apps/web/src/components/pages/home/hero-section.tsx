@@ -10,7 +10,7 @@ import Link from 'next/link';
 
 export function HeroSection() {
   return (
-    <section className="pt-28 pb-20 px-4">
+    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-[1400px] mx-auto">
         
         {/* Brand & Tagline */}

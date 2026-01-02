@@ -226,7 +226,7 @@ export function CarCard({
 
       {/* Image Section */}
       <Link href={`/listings/${id}`} className={cn(
-        "relative aspect-[4/3] w-full overflow-hidden block",
+        "relative aspect-[4/3] sm:aspect-[3/2] lg:aspect-[16/10] w-full overflow-hidden block",
         isBlkListing ? "bg-zinc-900" : "bg-muted/20"
       )}>
         <Image
@@ -241,44 +241,58 @@ export function CarCard({
 
       {/* Content Section */}
       <div className="flex flex-1 flex-col p-3 sm:p-4 space-y-2 sm:space-y-3">
-        {/* Title */}
-        <Link href={`/listings/${id}`} className="group/title">
-          <h3 className={cn(
-            "text-xs sm:text-sm font-medium line-clamp-1 transition-colors",
-            isBlkListing 
-              ? "text-white group-hover/title:text-zinc-200" 
-              : "text-sidebar-foreground group-hover/title:text-primary"
+        {/* Title with Year */}
+        <Link href={`/listings/${id}`} className="group/title space-y-1">
+          <div className="flex items-start justify-between gap-2">
+            <h3 className={cn(
+              "text-sm sm:text-[15px] font-semibold line-clamp-1 transition-colors flex-1",
+              isBlkListing 
+                ? "text-white group-hover/title:text-zinc-200" 
+                : "text-sidebar-foreground group-hover/title:text-primary"
+            )}>
+              {make} {model}
+            </h3>
+            <span className={cn(
+              "text-xs font-medium flex-shrink-0",
+              isBlkListing ? "text-zinc-400" : "text-muted-foreground"
+            )}>
+              {year}
+            </span>
+          </div>
+          <p className={cn(
+            "text-xs font-medium line-clamp-1 min-h-[1rem]",
+            isBlkListing ? "text-zinc-400" : "text-muted-foreground"
           )}>
-            {year} {make} {model}{trim ? ` ${trim}` : ''}
-          </h3>
+            {trim || '\u00A0'}
+          </p>
         </Link>
 
         {/* Price */}
         <p className={cn(
-          "text-lg sm:text-xl font-bold -mt-0.5",
+          "text-base sm:text-lg font-semibold -mt-0.5",
           isBlkListing ? "text-white" : "text-blue-600"
         )}>
           {formatPrice(price)}
         </p>
 
         {/* Stats Row */}
-        <div className="flex items-center gap-1.5 sm:gap-2.5 text-[10px] sm:text-xs">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 text-xs sm:text-sm">
           <span className={cn(
-            "font-medium",
+            "font-semibold",
             isBlkListing ? "text-zinc-300" : "text-sidebar-foreground/80"
           )}>
             {formatMileage(mileage)} km
           </span>
-          <span className={isBlkListing ? "text-zinc-600" : "text-sidebar-foreground/30"}>•</span>
+          <span className={isBlkListing ? "text-zinc-600" : "text-sidebar-foreground/40"}>•</span>
           <span className={cn(
-            "font-medium",
+            "font-semibold",
             isBlkListing ? "text-zinc-300" : "text-sidebar-foreground/80"
           )}>
             {displaySpecs}
           </span>
-          <span className={isBlkListing ? "text-zinc-600" : "text-sidebar-foreground/30"}>•</span>
+          <span className={isBlkListing ? "text-zinc-600" : "text-sidebar-foreground/40"}>•</span>
           <span className={cn(
-            "font-medium truncate",
+            "font-semibold truncate",
             isBlkListing ? "text-zinc-300" : "text-sidebar-foreground/80"
           )}>
             {displayEmirate}
@@ -316,13 +330,13 @@ export function CarCard({
             <div className="flex items-center gap-1 sm:gap-1.5 min-w-0">
               <span className={cn(
                 "text-xs sm:text-sm truncate",
-                isBlackTierPartner ? "font-bold" : "font-semibold",
-                isBlkListing ? "text-zinc-200" : "text-sidebar-foreground"
+                isBlackTierPartner ? "font-semibold" : "font-medium",
+                isBlkListing ? "text-zinc-300" : "text-sidebar-foreground/80"
               )}>
                 {displaySellerName}
               </span>
               {(partnerVerified || kycVerified) && (
-                <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" aria-label="Verified" />
+                <CheckCircle2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-blue-500 flex-shrink-0" aria-label="Verified" />
               )}
             </div>
           </div>
@@ -338,7 +352,7 @@ export function CarCard({
               )}
               aria-label="Share"
             >
-              <Share2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
             
             {/* Favorite Button */}
@@ -365,7 +379,7 @@ export function CarCard({
             >
               <Heart
                 className={cn(
-                  "h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform duration-300",
+                  "h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300",
                   heartScale && "scale-150"
                 )}
                 strokeWidth={favorite.isFavorite ? 2.5 : 2}
@@ -396,7 +410,7 @@ export function CarCard({
               }}
             >
               <Sparkles
-                className="h-3.5 w-3.5 sm:h-4 sm:w-4"
+                className="h-4 w-4 sm:h-5 sm:w-5"
                 strokeWidth={superlike.isSuperliked ? 2.5 : 2}
                 fill={superlike.isSuperliked ? "currentColor" : "none"}
               />

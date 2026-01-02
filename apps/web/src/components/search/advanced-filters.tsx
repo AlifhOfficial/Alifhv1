@@ -24,6 +24,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  SheetOverlay,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import {
@@ -151,22 +152,22 @@ export function AdvancedFilters({
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         {children || (
-          <button type="button" className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm transition-colors text-blue-600 font-medium hover:text-blue-700 whitespace-nowrap">
+          <button type="button" className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-sm sm:text-[15px] transition-colors text-blue-600 font-semibold hover:text-blue-700 whitespace-nowrap">
             <span className="hidden sm:inline">Advanced Filters</span>
             <span className="sm:hidden">Filters</span>
             {advancedCount > 0 && (
-              <span className="w-4 h-4 sm:w-5 sm:h-5 text-[10px] sm:text-xs font-medium bg-foreground text-background rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="w-4 h-4 sm:w-5 sm:h-5 text-[10px] sm:text-xs font-semibold bg-foreground text-background rounded-full flex items-center justify-center flex-shrink-0">
                 {advancedCount}
               </span>
             )}
           </button>
         )}
       </SheetTrigger>
-      
-      <SheetContent side="right" className="w-80 sm:w-[400px] p-0 flex flex-col bg-sidebar text-sidebar-foreground border-sidebar-border">
+            <SheetOverlay className="backdrop-blur-md bg-background/30" />
+            <SheetContent side="right" className="w-80 sm:w-[400px] p-0 flex flex-col bg-sidebar text-sidebar-foreground border-sidebar-border">
         {/* Fixed Header */}
         <SheetHeader className="flex-shrink-0 p-6 pb-4 border-b border-sidebar-border/50">
-          <SheetTitle className="text-lg font-semibold tracking-tight">More Filters</SheetTitle>
+          <SheetTitle className="text-xl font-bold tracking-tight">More Filters</SheetTitle>
         </SheetHeader>
 
         {/* Scrollable Content */}
@@ -276,14 +277,14 @@ export function AdvancedFilters({
             <button
               type="button"
               onClick={(e) => handleReset(e)}
-              className="flex-1 px-4 py-2.5 text-sm font-medium text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-full border border-sidebar-border/50 transition-colors"
+              className="flex-1 px-4 py-2.5 text-[15px] font-semibold text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-full border border-sidebar-border/50 transition-colors"
             >
               Reset
             </button>
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 px-4 py-2.5 text-sm font-medium bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90 rounded-full transition-colors"
+              className="flex-1 px-4 py-2.5 text-[15px] font-semibold bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90 rounded-full transition-colors"
             >
               Close
             </button>
@@ -347,11 +348,11 @@ function FilterGroup({
     <Collapsible asChild defaultOpen className="group/collapsible">
       <div>
         <CollapsibleTrigger asChild>
-          <button type="button" className="flex w-full items-center justify-between py-2 text-sm hover:bg-sidebar-accent/50 rounded-lg px-2 -mx-2 transition-colors">
-            <span className="font-semibold tracking-tight">{title}</span>
+          <button type="button" className="flex w-full items-center justify-between py-2 text-[15px] hover:bg-sidebar-accent/50 rounded-lg px-2 -mx-2 transition-colors">
+            <span className="font-bold tracking-tight">{title}</span>
             <div className="flex items-center gap-2">
               {selected.length > 0 && (
-                <span className="w-5 h-5 text-xs font-medium bg-sidebar-accent text-sidebar-foreground rounded-full flex items-center justify-center">
+                <span className="w-5 h-5 text-xs font-semibold bg-sidebar-accent text-sidebar-foreground rounded-full flex items-center justify-center">
                   {selected.length}
                 </span>
               )}
@@ -405,17 +406,17 @@ function FilterGroup({
                       onClick={() => toggleOption(option.value)}
                       className={cn(
                         'flex items-center justify-between w-full px-3 py-2 rounded-lg transition-colors',
-                        'text-sm text-left',
+                        'text-[15px] text-left',
                         isSelected
                           ? 'bg-sidebar-accent text-sidebar-foreground'
-                          : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50'
+                          : 'text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent/50'
                       )}
                     >
-                      <span className={isSelected ? 'font-medium tracking-tight' : 'tracking-tight'}>
+                      <span className={isSelected ? 'font-semibold tracking-tight' : 'font-medium tracking-tight'}>
                         {option.label}
                       </span>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-sidebar-foreground/50 tabular-nums">
+                        <span className="text-sm text-sidebar-foreground/60 tabular-nums font-medium">
                           {option.count}
                         </span>
                         {isSelected && (
@@ -432,7 +433,7 @@ function FilterGroup({
               <button
                 type="button"
                 onClick={() => setExpanded(true)}
-                className="text-xs text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors mt-2 px-3"
+                className="text-sm text-sidebar-foreground/60 hover:text-sidebar-foreground font-semibold transition-colors mt-2 px-3"
               >
                 Show {availableOptions.length - 6} more
               </button>
@@ -463,10 +464,10 @@ function ToggleOption({ label, checked, onChange }: ToggleOptionProps) {
         'flex items-center justify-between w-full px-3 py-2.5 rounded-lg transition-colors',
         checked 
           ? 'bg-sidebar-accent text-sidebar-foreground' 
-          : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50'
+          : 'text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent/50'
       )}
     >
-      <span className="text-sm font-medium tracking-tight">{label}</span>
+      <span className="text-[15px] font-semibold tracking-tight">{label}</span>
       <div className={cn(
         'w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors',
         checked

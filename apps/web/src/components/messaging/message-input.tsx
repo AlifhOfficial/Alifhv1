@@ -218,7 +218,7 @@ export function MessageInput({
       </div>
 
       {/* Hint */}
-      <small className="text-muted-foreground/70 mt-2 px-1 block">
+      <small className="text-xs text-muted-foreground/70 mt-2 px-1 block">
         Press Enter to send, Shift + Enter for new line
       </small>
     </div>
