@@ -120,3 +120,4 @@ web-build/
 
 # Turbo
 .turbo
+.vercel

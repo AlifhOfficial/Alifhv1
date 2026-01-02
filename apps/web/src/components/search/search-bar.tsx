@@ -12,13 +12,26 @@
  * @module components/search/search-bar
  */
 
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, X, Loader2, CircleDot, Factory } from 'lucide-react';
+import { Search, X, Loader2, CircleDot, Factory, FileKey2, Car } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { searchParamsToUrl, type SearchParams } from '@/lib/search-utils';
 import { useQuickSearch } from '@/hooks/use-search';
 import { useDebounce } from '@/hooks/use-debounce';
+
+// VIN validation - 17 alphanumeric chars, no I, O, Q
+const VIN_REGEX = /^[A-HJ-NPR-Z0-9]{17}$/i;
+const VIN_PARTIAL_REGEX = /^[A-HJ-NPR-Z0-9]{8,17}$/i;
+
+function isValidVin(value: string): boolean {
+  return VIN_REGEX.test(value.replace(/\s/g, ''));
+}
+
+function isPartialVin(value: string): boolean {
+  const cleaned = value.replace(/\s/g, '');
+  return VIN_PARTIAL_REGEX.test(cleaned) && cleaned.length >= 10;
+}
 
 interface SearchBarProps {
   /** Placeholder text */
@@ -36,7 +49,7 @@ interface SearchBarProps {
 }
 
 export function SearchBar({
-  placeholder = 'Search by make, model or dealer...',
+  placeholder = 'Search by make, model, dealer or VIN...',
   size = 'md',
   className,
   autoFocus = false,
@@ -50,15 +63,87 @@ export function SearchBar({
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [vinLookup, setVinLookup] = useState<{
+    loading: boolean;
+    listing: { id: string; slug?: string; make: string; model: string; year: number } | null;
+    vin: string;
+  } | null>(null);
   
   // Debounce query for API calls
   const debouncedQuery = useDebounce(query, 200);
   
   // Get suggestions
-  const { suggestions, isLoading } = useQuickSearch(debouncedQuery, isFocused);
+  const { suggestions: apiSuggestions, isLoading } = useQuickSearch(debouncedQuery, isFocused);
   
-  // Show dropdown when focused and has suggestions
-  const showDropdown = isFocused && (suggestions.length > 0 || (isLoading && debouncedQuery.length >= 2));
+  // VIN lookup effect - check if a listing exists with this VIN
+  useEffect(() => {
+    const trimmedQuery = query.trim().replace(/\s/g, '');
+    
+    if (isValidVin(trimmedQuery)) {
+      setVinLookup({ loading: true, listing: null, vin: trimmedQuery.toUpperCase() });
+      
+      fetch(`/api/listings/check-vin?vin=${encodeURIComponent(trimmedQuery)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.existingListing && data.existingListing.lifecycleStatus !== 'deleted') {
+            setVinLookup({
+              loading: false,
+              listing: data.existingListing,
+              vin: trimmedQuery.toUpperCase(),
+            });
+          } else {
+            setVinLookup({
+              loading: false,
+              listing: null,
+              vin: trimmedQuery.toUpperCase(),
+            });
+          }
+        })
+        .catch(() => {
+          setVinLookup({ loading: false, listing: null, vin: trimmedQuery.toUpperCase() });
+        });
+    } else {
+      setVinLookup(null);
+    }
+  }, [query]);
+  
+  // Build combined suggestions with VIN result at top
+  const suggestions = useMemo(() => {
+    // If we have a VIN lookup result (loading or complete)
+    if (vinLookup) {
+      const vinSuggestion = vinLookup.listing
+        ? {
+            type: 'vin_listing' as const,
+            text: `${vinLookup.listing.year} ${vinLookup.listing.make} ${vinLookup.listing.model}`,
+            vin: vinLookup.vin,
+            listingId: vinLookup.listing.id,
+            listingSlug: vinLookup.listing.slug,
+            count: 1,
+          }
+        : {
+            type: 'vin_decode' as const,
+            text: vinLookup.vin,
+            count: 0,
+          };
+      
+      return [vinSuggestion, ...apiSuggestions];
+    }
+    
+    // Check for partial VIN
+    const trimmedQuery = query.trim().replace(/\s/g, '');
+    if (isPartialVin(trimmedQuery) && !isValidVin(trimmedQuery)) {
+      return [{
+        type: 'vin_partial' as const,
+        text: trimmedQuery.toUpperCase(),
+        count: 0,
+      }, ...apiSuggestions];
+    }
+    
+    return apiSuggestions;
+  }, [query, apiSuggestions, vinLookup]);
+  
+  // Show dropdown when focused and has suggestions or VIN is loading
+  const showDropdown = isFocused && (suggestions.length > 0 || (isLoading && debouncedQuery.length >= 2) || (vinLookup?.loading));
 
   // Handle search submission
   const handleSearch = useCallback((searchQuery: string, make?: string, model?: string, partnerId?: string, partnerName?: string) => {
@@ -117,7 +202,20 @@ export function SearchBar({
 
   // Handle suggestion click
   const handleSuggestionClick = useCallback((suggestion: typeof suggestions[0]) => {
-    if (suggestion.type === 'partner') {
+    if (suggestion.type === 'vin_listing') {
+      // Go directly to the listing
+      const slug = suggestion.listingSlug || suggestion.listingId;
+      router.push(`/listings/${slug}`);
+      setQuery('');
+      setIsFocused(false);
+      inputRef.current?.blur();
+    } else if (suggestion.type === 'vin_decode' || suggestion.type === 'vin_partial') {
+      // Redirect to VIN decoder
+      router.push(`/tools/vin-decoder?vin=${encodeURIComponent(suggestion.text)}`);
+      setQuery('');
+      setIsFocused(false);
+      inputRef.current?.blur();
+    } else if (suggestion.type === 'partner') {
       handleSearch(suggestion.text, undefined, undefined, suggestion.partnerId, suggestion.partnerName);
     } else if (suggestion.type === 'make_model') {
       handleSearch(suggestion.text, suggestion.make, suggestion.model);
@@ -126,7 +224,7 @@ export function SearchBar({
     } else {
       handleSearch(suggestion.text);
     }
-  }, [handleSearch]);
+  }, [handleSearch, router]);
 
   // Handle keyboard navigation
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -198,6 +296,11 @@ export function SearchBar({
   // Get icon for suggestion type
   const getSuggestionIcon = (type: string) => {
     switch (type) {
+      case 'vin_listing':
+        return <Car className="h-4 w-4 text-green-500" />;
+      case 'vin_decode':
+      case 'vin_partial':
+        return <FileKey2 className="h-4 w-4 text-blue-500" />;
       case 'partner':
         return <Factory className="h-4 w-4 text-muted-foreground/80" />;
       case 'make':
@@ -297,20 +400,39 @@ export function SearchBar({
                 >
                   <div className="flex items-center gap-3">
                     {getSuggestionIcon(suggestion.type)}
-                    <div className="flex items-center gap-2">
-                      <span className="text-[15px] font-semibold text-foreground">
-                        {suggestion.text}
-                      </span>
-                      {suggestion.type === 'partner' && (
-                        <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70 bg-muted rounded">
-                          Dealer
+                    <div className="flex flex-col gap-0.5">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[15px] font-semibold text-foreground">
+                          {suggestion.text}
+                        </span>
+                        {suggestion.type === 'vin_listing' && (
+                          <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-green-600 bg-green-500/10 rounded">
+                            View Car
+                          </span>
+                        )}
+                        {(suggestion.type === 'vin_decode' || suggestion.type === 'vin_partial') && (
+                          <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-blue-600 bg-blue-500/10 rounded">
+                            Decode VIN
+                          </span>
+                        )}
+                        {suggestion.type === 'partner' && (
+                          <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70 bg-muted rounded">
+                            Dealer
+                          </span>
+                        )}
+                      </div>
+                      {suggestion.type === 'vin_listing' && suggestion.vin && (
+                        <span className="text-[11px] text-muted-foreground/60 font-mono">
+                          VIN: {suggestion.vin}
                         </span>
                       )}
                     </div>
                   </div>
-                  <span className="text-sm font-semibold text-muted-foreground/70 tabular-nums">
-                    {suggestion.count} {suggestion.count === 1 ? 'car' : 'cars'}
-                  </span>
+                  {!['vin_listing', 'vin_decode', 'vin_partial'].includes(suggestion.type) && (
+                    <span className="text-sm font-semibold text-muted-foreground/70 tabular-nums">
+                      {suggestion.count} {suggestion.count === 1 ? 'car' : 'cars'}
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>

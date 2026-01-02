@@ -31,6 +31,9 @@ export function MegaDropdown({ activeDropdown, navItems, onClose, onMouseEnter, 
   const activeItem = navItems.find(item => item.label === activeDropdown);
   if (!activeItem?.submenu) return null;
 
+  // Sort submenu sections by number of items (most to least)
+  const sortedSubmenu = [...activeItem.submenu].sort((a, b) => b.items.length - a.items.length);
+
   return (
     <>
       {/* Glassmorphic overlay backdrop */}
@@ -51,39 +54,28 @@ export function MegaDropdown({ activeDropdown, navItems, onClose, onMouseEnter, 
       >
         <div className="bg-background/95 backdrop-blur-xl border-b border-border/30">
           <div className="max-w-5xl mx-auto px-8 py-12">
-            <div className="grid grid-cols-3 gap-x-16">
-              {activeItem.submenu.map((section, sectionIndex) => {
-                // First column = large products, others = medium utility links
-                const isProductColumn = sectionIndex === 0;
-                
-                return (
-                  <div key={section.title}>
-                    <h3 className="text-sm font-medium text-muted-foreground/60 mb-5">
-                      {section.title}
-                    </h3>
-                    <nav className={isProductColumn ? 'space-y-1.5' : 'space-y-3'}>
-                      {section.items.map((item) => (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          onClick={onClose}
-                          className="block group"
-                        >
-                          <span className={`
-                            ${isProductColumn 
-                              ? 'text-2xl font-bold tracking-tight' 
-                              : 'text-[15px] font-semibold'
-                            }
-                            text-foreground group-hover:text-primary transition-colors duration-150
-                          `}>
-                            {item.label}
-                          </span>
-                        </Link>
-                      ))}
-                    </nav>
-                  </div>
-                );
-              })}
+            <div className="grid grid-cols-3 gap-x-12">
+              {sortedSubmenu.map((section) => (
+                <div key={section.title}>
+                  <h3 className="text-sm font-medium text-muted-foreground/60 mb-5">
+                    {section.title}
+                  </h3>
+                  <nav className="space-y-3">
+                    {section.items.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={onClose}
+                        className="block group"
+                      >
+                        <span className="text-[15px] font-semibold text-foreground group-hover:text-primary transition-colors duration-150">
+                          {item.label}
+                        </span>
+                      </Link>
+                    ))}
+                  </nav>
+                </div>
+              ))}
             </div>
           </div>
         </div>

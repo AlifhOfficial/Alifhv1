@@ -10,7 +10,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "bun test"
+    "test": "bun test",
+    "vercel-build": "bun run build"
   },
   "dependencies": {
     "@alifh/ai": "workspace:*",

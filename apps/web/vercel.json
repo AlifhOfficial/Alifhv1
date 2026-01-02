@@ -1,4 +1,7 @@
 {
+  "regions": ["dxb1"],
+  "buildCommand": "bun run build",
+  "installCommand": "bun install",
   "crons": [
     {
       "path": "/api/cron/expire-listings",
