@@ -18,6 +18,10 @@ interface ListingCardProps {
   onMarkSold: (id: string) => void;
   onExtend: (id: string, days: 7 | 14) => void;
   onCancelDelete: () => void;
+  // BLK toggle props (work listings only)
+  onToggleBlk?: (listingId: string, currentlyBlk: boolean) => void;
+  isTogglingBlk?: boolean;
+  canPromoteToBlk?: boolean;
 }
 
 export function ListingCard({
@@ -30,6 +34,9 @@ export function ListingCard({
   onMarkSold,
   onExtend,
   onCancelDelete,
+  onToggleBlk,
+  isTogglingBlk,
+  canPromoteToBlk,
 }: ListingCardProps) {
   const editHref =
     listingType === 'work'
@@ -140,6 +147,12 @@ export function ListingCard({
             </div>
             {/* Status & Info */}
             <div className="flex items-center gap-4 flex-wrap">
+              {/* BLK Badge */}
+              {listing.isBlkListing && (
+                <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-zinc-800 text-zinc-100 tracking-wider">
+                  BLK
+                </span>
+              )}
               <span
                 className={`px-3 py-1.5 rounded-full text-sm font-medium w-fit ${
                   listing.lifecycleStatus === 'deleted' ? 'bg-muted text-muted-foreground border border-border/40'
@@ -240,6 +253,27 @@ export function ListingCard({
           >
             Mark Sold
           </button>
+        )}
+        
+        {/* BLK Toggle Button - Only for active work listings */}
+        {onToggleBlk && listing.lifecycleStatus === 'active' && (
+          listing.isBlkListing ? (
+            <button
+              onClick={() => onToggleBlk(listing.id, true)}
+              disabled={isTogglingBlk}
+              className="px-5 py-2.5 rounded-full bg-zinc-800 text-zinc-100 text-sm font-medium transition-colors hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isTogglingBlk ? 'Updating...' : 'Remove BLK'}
+            </button>
+          ) : canPromoteToBlk && (
+            <button
+              onClick={() => onToggleBlk(listing.id, false)}
+              disabled={isTogglingBlk}
+              className="px-5 py-2.5 rounded-full border border-zinc-500/50 text-zinc-400 text-sm font-medium transition-colors hover:bg-zinc-800 hover:text-zinc-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isTogglingBlk ? 'Updating...' : 'Promote to BLK'}
+            </button>
+          )
         )}
 
         {isExpiringSoon && (

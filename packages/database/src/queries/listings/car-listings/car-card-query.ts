@@ -14,7 +14,7 @@ import { carListing } from '../../../schema/listing';
 import { user } from '../../../schema/auth';
 import { userProfile } from '../../../schema/profile';
 import { partner } from '../../../schema/partner';
-import { isPublicSql, isBlackMemberSql } from './sql-fragments';
+import { isPublicSql, isBlkListingSql } from './sql-fragments';
 
 export interface CarCardFilters {
   ids?: string[];
@@ -48,7 +48,7 @@ export interface CarCardData {
   specs: string | null;
   thumbnail: string | null;
   qiScore: number | null;
-  isBlackMember: boolean | null;
+  isBlkListing: boolean | null;
   postedByRole: 'user' | 'staff' | null;
   moderationStatus: 'draft' | 'submitted' | 'pending_review' | 'approved' | 'rejected' | null;
   lifecycleStatus: 'active' | 'archived' | 'sold' | 'expired' | 'deleted' | null;
@@ -170,7 +170,7 @@ async function getListingCardsInternal(
         specs: carListing.specs,
         thumbnail: carListing.thumbnail,
         qiScore: carListing.qiScore,
-        isBlackMember: isBlackMemberSql(partner),
+        isBlkListing: isBlkListingSql(),
         postedByRole: carListing.postedByRole,
         moderationStatus: carListing.moderationStatus,
         lifecycleStatus: carListing.lifecycleStatus,
@@ -217,7 +217,7 @@ async function getListingCardsInternal(
       specs: carListing.specs,
       thumbnail: carListing.thumbnail,
       qiScore: carListing.qiScore,
-      isBlackMember: isBlackMemberSql(partner),
+      isBlkListing: isBlkListingSql(),
       postedByRole: carListing.postedByRole,
       moderationStatus: carListing.moderationStatus,
       lifecycleStatus: carListing.lifecycleStatus,

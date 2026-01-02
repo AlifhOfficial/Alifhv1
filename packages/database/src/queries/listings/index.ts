@@ -7,3 +7,4 @@
  */
 
 export * from './car-listings';
+export * from './black-listings-query';

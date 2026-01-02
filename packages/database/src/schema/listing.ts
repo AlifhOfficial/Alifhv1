@@ -358,7 +358,7 @@ export const carListing = pgTable('car_listing', {
    * e.g., ['verified', 'featured', 'premium']
    */
   badges: jsonb('badges').$type<string[]>().default([]),
-  isBlackMember: boolean('is_black_member').default(false).notNull(),
+  isBlkListing: boolean('is_black_member').default(false).notNull(),
   impressionCount: integer('impression_count').default(0).notNull(),
   viewCount: integer('view_count').default(0).notNull(),
   favouriteCount: integer('favourite_count').default(0).notNull(),

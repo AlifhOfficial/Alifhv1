@@ -13,6 +13,7 @@ export interface ListingData {
   moderationStatus: 'draft' | 'submitted' | 'pending_review' | 'approved' | 'rejected';
   lifecycleStatus: 'active' | 'archived' | 'sold' | 'expired' | 'deleted';
   isPublic: boolean;
+  isBlkListing?: boolean;
   rejectionReason?: string | null;
   suspensionReason?: string | null;
   suspendedAt?: string | null;

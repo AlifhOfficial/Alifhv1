@@ -16,7 +16,7 @@ import { carListing } from '../../../schema/listing';
 import { user } from '../../../schema/auth';
 import { userProfile } from '../../../schema/profile';
 import { partner } from '../../../schema/partner';
-import { isPublicSql, isBlackMemberSql } from './sql-fragments';
+import { isPublicSql, isBlkListingSql } from './sql-fragments';
 import type { 
   SearchParams, 
   SearchResponse, 
@@ -465,11 +465,12 @@ export async function searchListings(params: SearchParams): Promise<SearchRespon
           thumbnail: carListing.thumbnail,
           images: carListing.images,
           qiScore: carListing.qiScore,
-          isBlackMember: isBlackMemberSql(partner),
+          isBlkListing: isBlkListingSql(),
           sellerType: carListing.sellerType,
           partnerName: sql<string | null>`coalesce(${carListing.partnerBrandName}, ${partner.brandName})`,
           partnerLogo: partner.logo,
           partnerVerified: sql<boolean | null>`coalesce(${carListing.partnerVerified}, ${partner.isVerified})`,
+          isBlackTierPartner: sql<boolean | null>`${partner.tier} = 'black'`,
           sellerName: user.name,
           sellerAvatarUrl: userProfile.avatar,
           sellerKycVerified: userProfile.kycVerified,

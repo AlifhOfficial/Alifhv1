@@ -16,6 +16,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, X, Loader2, CircleDot, Factory } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { searchParamsToUrl, type SearchParams } from '@/lib/search-utils';
 import { useQuickSearch } from '@/hooks/use-search';
 import { useDebounce } from '@/hooks/use-debounce';
 
@@ -29,7 +30,7 @@ interface SearchBarProps {
   /** Auto-focus on mount */
   autoFocus?: boolean;
   /** Callback when search is submitted */
-  onSearch?: (query: string) => void;
+  onSearch?: (filters: Partial<SearchParams>) => void;
   /** Redirect to listings page on search */
   redirectOnSearch?: boolean;
 }
@@ -61,20 +62,46 @@ export function SearchBar({
 
   // Handle search submission
   const handleSearch = useCallback((searchQuery: string, make?: string, model?: string, partnerId?: string) => {
+    // Build filters object for callback
+    const filters: Partial<SearchParams> = {};
+    if (partnerId && partnerId.trim()) {
+      filters.partnerId = partnerId.trim();
+    } else if (make && make.trim()) {
+      filters.make = [make.trim()];
+      if (model && model.trim()) {
+        filters.model = [model.trim()];
+      }
+    } else if (searchQuery && searchQuery.trim()) {
+      filters.q = searchQuery.trim();
+    }
+    
     if (onSearch) {
-      onSearch(searchQuery);
+      onSearch(filters);
     }
     
     if (redirectOnSearch) {
-      const params = new URLSearchParams();
-      if (partnerId) params.set('partnerId', partnerId);
-      if (make) params.set('make', make);
-      if (model) params.set('model', model);
-      if (!make && !model && !partnerId && searchQuery) {
-        params.set('q', searchQuery);
+      // Build proper SearchParams object
+      const searchParams: SearchParams = {};
+      
+      // Partner ID takes priority
+      if (partnerId && partnerId.trim()) {
+        searchParams.partnerId = partnerId.trim();
+      } 
+      // Make and model filters
+      else if (make && make.trim()) {
+        searchParams.make = [make.trim()];
+        if (model && model.trim()) {
+          searchParams.model = [model.trim()];
+        }
+      }
+      // Fallback to text search
+      else if (searchQuery && searchQuery.trim()) {
+        searchParams.q = searchQuery.trim();
       }
       
-      router.push(`/listings${params.toString() ? `?${params.toString()}` : ''}`);
+      // Use utility function to convert to URL params
+      const urlParams = searchParamsToUrl(searchParams);
+      router.push(`/listings${urlParams.toString() ? `?${urlParams.toString()}` : ''}`);
     }
     
     setQuery('');

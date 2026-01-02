@@ -216,7 +216,7 @@ function generateDescription(make: string, model: string, year: number, exterior
 function generateListing(
   index: number,
   partnerId: string,
-  isBlackMember: boolean,
+  isBlkListing: boolean,
   userId: string | null,
   reservedByUserId: string | null,
   soldToUserId: string | null,
@@ -480,7 +480,7 @@ function generateListing(
     // Badges & Tags
     badges: listingBadges,
     tags: listingTags,
-    isBlackMember,
+    isBlkListing,
     
     // Engagement
     viewCount,
@@ -565,11 +565,11 @@ async function seedListings() {
     for (let i = 0; i < totalListings; i++) {
       // Distribute listings across partner tiers
       let selectedPartner;
-      let isBlackMember = false;
+      let isBlkListing = false;
       
       if (blackPartners.length > 0 && getRandomBoolean(0.15)) {
         selectedPartner = getRandomItem(blackPartners);
-        isBlackMember = true;
+        isBlkListing = true;
       } else if (platinumPartners.length > 0 && getRandomBoolean(0.3)) {
         selectedPartner = getRandomItem(platinumPartners);
       } else if (goldPartners.length > 0 && getRandomBoolean(0.3)) {
@@ -592,7 +592,7 @@ async function seedListings() {
       const listing = generateListing(
         i,
         selectedPartner.id,
-        isBlackMember,
+        isBlkListing,
         listingUserId,
         reservedByUserId,
         soldToUserId,
@@ -667,7 +667,7 @@ async function seedListings() {
     console.log(`   • Sold: ${listings.filter(l => l.lifecycleStatus === 'sold').length}`);
     console.log(`   • Archived: ${listings.filter(l => l.lifecycleStatus === 'archived').length}`);
     console.log(`   • Rejected: ${listings.filter(l => l.moderationStatus === 'rejected').length}`);
-    console.log(`\n   Black member listings: ${listings.filter(l => l.isBlackMember).length}`);
+    console.log(`\n   BLK listings: ${listings.filter(l => l.isBlkListing).length}`);
     console.log(`   Private listings: ${listings.filter(l => l.sellerType === 'private').length}`);
     console.log(`   Consignment: ${listings.filter(l => l.isConsignment).length}`);
     console.log(`\n   Price history entries: ${priceHistoryEntries.length}`);

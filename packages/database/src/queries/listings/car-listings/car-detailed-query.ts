@@ -185,7 +185,7 @@ export interface CarDetailedData {
   partnerId: string | null;
   partnerBrandName: string | null;
   partnerVerified: boolean;
-  isBlackMember: boolean;
+  isBlkListing: boolean;
   
   // Seller info
   sellerName: string | null;
@@ -303,7 +303,7 @@ export async function getListingDetailed(listingId: string): Promise<CarDetailed
       partnerId: carListing.partnerId,
       partnerBrandName: carListing.partnerBrandName,
       partnerVerified: carListing.partnerVerified,
-      isBlackMember: carListing.isBlackMember,
+      isBlkListing: carListing.isBlkListing,
       
       // Seller info
       sellerName: user.name,
@@ -429,7 +429,7 @@ export async function getListingDetailed(listingId: string): Promise<CarDetailed
     partnerId: row.partnerId,
     partnerBrandName: row.partnerBrandName,
     partnerVerified: row.partnerVerified ?? false,
-    isBlackMember: row.isBlackMember,
+    isBlkListing: row.isBlkListing,
     
     // Seller info
     sellerName: row.sellerName,

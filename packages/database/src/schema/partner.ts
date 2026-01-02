@@ -124,6 +124,11 @@ export const partner = pgTable('partner', {
   nextAuditAt: timestamp('next_audit_at'),
   complianceScore: integer('compliance_score'),
   
+  // Black Listings Quota
+  // Black tier: max 5 active black listings, Other tiers: max 1
+  blackListingQuota: integer('black_listing_quota').default(1).notNull(),
+  activeBlackListingsCount: integer('active_black_listings_count').default(0).notNull(),
+  
   // Analytics Cache (updated via background jobs)
   activeListingsCount: integer('active_listings_count').default(0).notNull(),
   totalInventoryValue: integer('total_inventory_value').default(0).notNull(),

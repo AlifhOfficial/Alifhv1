@@ -212,6 +212,7 @@ export interface ListingSummary {
   moderationStatus: ListingModerationStatus;
   lifecycleStatus: ListingLifecycleStatus;
   isPublic: boolean;
+  isBlkListing: boolean;
   rejectionReason: string | null;
   suspensionReason: string | null;
   suspendedAt: string | null;

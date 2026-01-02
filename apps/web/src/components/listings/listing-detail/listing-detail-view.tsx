@@ -158,13 +158,13 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
     : false;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <Navbar />
       
       <main className="pt-20">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
           {/* Breadcrumb - Integrated into page flow */}
-          <nav className="flex items-center gap-2 text-sm font-medium tracking-tight py-5 sm:py-6 mb-4 sm:mb-6">
+          <nav className="flex items-center gap-2 text-sm font-medium tracking-tight py-5 sm:py-6 mb-4 sm:mb-6 overflow-x-auto scrollbar-hide">
             <Link 
               href="/listings" 
               className="text-muted-foreground hover:text-foreground transition-colors"
@@ -194,13 +194,13 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
           {/* Main Content */}
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10 pb-6 lg:pb-8">
             {/* Main Column - Car Details (60%) */}
-            <div className="lg:col-span-3">
+            <div className="lg:col-span-3 min-w-0">
               <CarCardDetailed listing={listing} kycVerified={listing.sellerKycVerified} />
             </div>
 
             {/* Sidebar - Clean stacked cards (40%) */}
-            <div className="lg:col-span-2">
-              <div className="sticky top-24 space-y-6">
+            <div className="lg:col-span-2 min-w-0">
+              <div className="lg:sticky lg:top-24 space-y-6">
                 {/* 1. Seller Profile */}
                 {hasSellerData && sellerData && (
                   <SellerProfileCard sellerData={sellerData} />

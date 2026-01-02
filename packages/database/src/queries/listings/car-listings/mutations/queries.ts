@@ -146,6 +146,7 @@ function getListingSummaryFields(now: Date) {
     moderationStatus: carListing.moderationStatus,
     lifecycleStatus: carListing.lifecycleStatus,
     isPublic: isPublicSql(now),
+    isBlkListing: carListing.isBlkListing,
     rejectionReason: carListing.rejectionReason,
     suspensionReason: suspensionReasonSql(),
     suspendedAt: suspendedAtSql(),

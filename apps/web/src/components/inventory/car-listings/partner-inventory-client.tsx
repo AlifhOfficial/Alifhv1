@@ -8,7 +8,7 @@
 
 import { CarCard } from "./car-card";
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
-import { Users, CheckCircle2, Clock, Archive, ShoppingCart, AlertCircle, XCircle, User, RefreshCw } from "lucide-react";
+import { Users, CheckCircle2, Clock, Archive, ShoppingCart, AlertCircle, XCircle, User, RefreshCw, Crown, Star } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import {
@@ -43,6 +43,7 @@ interface ListingData {
   images?: string[];
   qiScore?: number;
   isPublic: boolean;
+  isBlkListing: boolean;
   moderationStatus: string;
   lifecycleStatus: string;
   postedByUserId?: string;
@@ -56,6 +57,14 @@ interface ListingData {
   };
   createdAt: string;
   updatedAt: string;
+}
+
+interface BlackQuotaData {
+  partnerId: string;
+  tier: string;
+  blackListingQuota: number;
+  activeBlackListingsCount: number;
+  hasAvailableSlots: boolean;
 }
 
 interface ListingStats {
@@ -107,6 +116,9 @@ export function PartnerInventoryClient({
   const hasFetchedRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
   
+  // Black listing quota state (read-only display for partners)
+  const [blackQuota, setBlackQuota] = useState<BlackQuotaData | null>(null);
+  
   // Reassign modal state
   const [reassignModal, setReassignModal] = useState<{
     open: boolean;
@@ -136,8 +148,8 @@ export function PartnerInventoryClient({
       }
       setError(null);
 
-      // Fetch listings and team data in parallel
-      const [listingsResponse, teamResponse] = await Promise.all([
+      // Fetch listings, team data, and black quota in parallel
+      const [listingsResponse, teamResponse, blackQuotaResponse] = await Promise.all([
         fetch(
           `/api/listings/my-listings?listingType=work&partnerId=${partnerId}&includeStats=1`,
           {
@@ -148,6 +160,12 @@ export function PartnerInventoryClient({
           }
         ),
         fetch('/api/partner/staff', {
+          method: 'GET',
+          credentials: 'include',
+          cache: 'no-store',
+          signal: abortRef.current.signal,
+        }),
+        fetch('/api/partner/black-quota', {
           method: 'GET',
           credentials: 'include',
           cache: 'no-store',
@@ -190,6 +208,14 @@ export function PartnerInventoryClient({
             avatar: m.userAvatar, // Use personal avatar for internal ops
           }));
         setTeamMembers(members);
+      }
+
+      // Process black quota if available
+      if (blackQuotaResponse.ok) {
+        const quotaData = await blackQuotaResponse.json();
+        if (quotaData.success && quotaData.data) {
+          setBlackQuota(quotaData.data);
+        }
       }
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') return;
@@ -242,8 +268,6 @@ export function PartnerInventoryClient({
       setIsReassigning(false);
     }
   };
-
-
 
   // Create a Map for O(1) team member lookups
   const teamMemberMap = useMemo(() => {
@@ -459,63 +483,81 @@ export function PartnerInventoryClient({
 
         {/* Status Tabs */}
         {stats && (
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setSelectedStatusTab('active')}
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
-                selectedStatusTab === 'active'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'border border-border/40 hover:bg-secondary/50'
-              }`}
-            >
-              Active ({stats.active})
-            </button>
-            {stats.sold > 0 && (
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            {/* Left: Status Tabs */}
+            <div className="flex flex-wrap gap-2">
               <button
-                onClick={() => setSelectedStatusTab('sold')}
+                onClick={() => setSelectedStatusTab('active')}
                 className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
-                  selectedStatusTab === 'sold'
+                  selectedStatusTab === 'active'
                     ? 'bg-primary text-primary-foreground'
                     : 'border border-border/40 hover:bg-secondary/50'
                 }`}
               >
-                Sold ({stats.sold})
+                Active ({stats.active})
               </button>
-            )}
-            {stats.archived > 0 && (
+              {stats.sold > 0 && (
+                <button
+                  onClick={() => setSelectedStatusTab('sold')}
+                  className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
+                    selectedStatusTab === 'sold'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'border border-border/40 hover:bg-secondary/50'
+                  }`}
+                >
+                  Sold ({stats.sold})
+                </button>
+              )}
+              {stats.archived > 0 && (
+                <button
+                  onClick={() => setSelectedStatusTab('archived')}
+                  className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
+                    selectedStatusTab === 'archived'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'border border-border/40 hover:bg-secondary/50'
+                  }`}
+                >
+                  Archived ({stats.archived})
+                </button>
+              )}
+              {stats.expired > 0 && (
+                <button
+                  onClick={() => setSelectedStatusTab('expired')}
+                  className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
+                    selectedStatusTab === 'expired'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'border border-border/40 hover:bg-secondary/50'
+                  }`}
+                >
+                  Expired ({stats.expired})
+                </button>
+              )}
               <button
-                onClick={() => setSelectedStatusTab('archived')}
+                onClick={() => setSelectedStatusTab('all')}
                 className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
-                  selectedStatusTab === 'archived'
+                  selectedStatusTab === 'all'
                     ? 'bg-primary text-primary-foreground'
                     : 'border border-border/40 hover:bg-secondary/50'
                 }`}
               >
-                Archived ({stats.archived})
+                All ({stats.all})
               </button>
+            </div>
+            
+            {/* Right: BLK Quota Badge */}
+            {blackQuota && (
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-800/50 border border-zinc-700/50">
+                <span className="text-xs font-bold text-zinc-300 tracking-wider">BLK</span>
+                <span className="text-sm font-semibold text-zinc-100">
+                  {blackQuota.activeBlackListingsCount}/{blackQuota.blackListingQuota}
+                </span>
+                <span className="text-xs text-zinc-400">
+                  {blackQuota.hasAvailableSlots 
+                    ? `${blackQuota.blackListingQuota - blackQuota.activeBlackListingsCount} left`
+                    : 'full'}
+                </span>
+              </div>
             )}
-            {stats.expired > 0 && (
-              <button
-                onClick={() => setSelectedStatusTab('expired')}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
-                  selectedStatusTab === 'expired'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'border border-border/40 hover:bg-secondary/50'
-                }`}
-              >
-                Expired ({stats.expired})
-              </button>
-            )}
-            <button
-              onClick={() => setSelectedStatusTab('all')}
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
-                selectedStatusTab === 'all'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'border border-border/40 hover:bg-secondary/50'
-              }`}
-            >
-              All ({stats.all})
-            </button>
           </div>
         )}
 
@@ -617,9 +659,15 @@ export function PartnerInventoryClient({
               const StatusIcon = statusBadge.icon;
               
               return (
-              <div key={listing.id} className="rounded-xl border border-border/40 p-6 hover:bg-secondary/50 transition-colors relative">
-                {/* Status Badge - Top Right */}
-                <div className="absolute top-4 right-4">
+              <div key={listing.id} className={`rounded-xl border p-6 hover:bg-secondary/50 transition-colors relative ${listing.isBlkListing ? 'border-zinc-500/50 bg-zinc-500/5' : 'border-border/40'}`}>
+                {/* Status Badge and BLK Badge - Top Right */}
+                <div className="absolute top-4 right-4 flex items-center gap-2">
+                  {listing.isBlkListing && (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-zinc-800 text-zinc-100">
+                      <Crown className="w-3 h-3" />
+                      BLK
+                    </span>
+                  )}
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${statusBadge.className}`}>
                     <StatusIcon className="w-3 h-3" />
                     {statusBadge.label}

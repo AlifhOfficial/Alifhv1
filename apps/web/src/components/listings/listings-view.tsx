@@ -134,7 +134,7 @@ export function ListingsView() {
                     size="sm"
                     placeholder="Search make, model or dealer..."
                     redirectOnSearch={false}
-                    onSearch={setQuery}
+                    onSearch={setFilters}
                   />
                 </div>
 
@@ -303,13 +303,14 @@ export function ListingsView() {
                       thumbnail={listing.thumbnail}
                       images={listing.images}
                       qiScore={listing.qiScore}
+                      isBlkListing={listing.isBlkListing}
                       partnerName={listing.partnerName || undefined}
                       partnerLogo={listing.partnerLogo || undefined}
                       partnerVerified={listing.partnerVerified || undefined}
+                      isBlackTierPartner={listing.isBlackTierPartner || undefined}
                       sellerName={listing.sellerName || undefined}
                       sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
                       kycVerified={listing.sellerKycVerified || undefined}
-                      isBlackMember={listing.isBlackMember || false}
                       priority={index < 4}
                     />
                   ))}
@@ -334,13 +335,14 @@ export function ListingsView() {
                           thumbnail={listing.thumbnail}
                           images={listing.images}
                           qiScore={listing.qiScore}
+                          isBlkListing={listing.isBlkListing}
                           partnerName={listing.partnerName || undefined}
                           partnerLogo={listing.partnerLogo || undefined}
                           partnerVerified={listing.partnerVerified || undefined}
+                          isBlackTierPartner={listing.isBlackTierPartner || undefined}
                           sellerName={listing.sellerName || undefined}
                           sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
                           kycVerified={listing.sellerKycVerified || undefined}
-                          isBlackMember={listing.isBlackMember || false}
                           priority={index < 4}
                         />
                       ))}
@@ -362,13 +364,14 @@ export function ListingsView() {
                           thumbnail={listing.thumbnail}
                           images={listing.images}
                           qiScore={listing.qiScore}
+                          isBlkListing={listing.isBlkListing}
                           partnerName={listing.partnerName || undefined}
                           partnerLogo={listing.partnerLogo || undefined}
                           partnerVerified={listing.partnerVerified || undefined}
+                          isBlackTierPartner={listing.isBlackTierPartner || undefined}
                           sellerName={listing.sellerName || undefined}
                           sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
                           kycVerified={listing.sellerKycVerified || undefined}
-                          isBlackMember={listing.isBlackMember || false}
                         />
                       ))}
                     </div>

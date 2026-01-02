@@ -97,12 +97,12 @@ export function LocationSection({ sellerData, className }: LocationSectionProps)
       </div>
 
       {/* Action Buttons */}
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <a
           href={mapsSearchUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 py-2.5 px-3 text-sm font-medium text-foreground border border-border rounded-full hover:bg-muted/50 transition-colors flex items-center justify-center gap-1.5"
+          className="flex-1 min-w-[120px] py-2.5 px-3 text-sm font-medium text-foreground border border-border rounded-full hover:bg-muted/50 transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap"
         >
           <ExternalLink className="w-3.5 h-3.5" />
           View Map
@@ -111,7 +111,7 @@ export function LocationSection({ sellerData, className }: LocationSectionProps)
           href={directionsUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 py-2.5 px-3 text-sm font-medium text-foreground border border-border rounded-full hover:bg-muted/50 transition-colors flex items-center justify-center gap-1.5"
+          className="flex-1 min-w-[120px] py-2.5 px-3 text-sm font-medium text-foreground border border-border rounded-full hover:bg-muted/50 transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap"
         >
           <Navigation className="w-3.5 h-3.5" />
           Directions

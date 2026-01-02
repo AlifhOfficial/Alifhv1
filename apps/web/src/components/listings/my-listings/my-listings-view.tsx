@@ -30,6 +30,14 @@ import { ListingCard } from './listing-card';
 // Confirmation modal types
 type ConfirmAction = 'delete' | 'markSold' | 'archive' | 'unarchive' | 'extend' | null;
 
+interface BlackQuotaData {
+  partnerId: string;
+  tier: string;
+  blackListingQuota: number;
+  activeBlackListingsCount: number;
+  hasAvailableSlots: boolean;
+}
+
 interface ConfirmModalState {
   isOpen: boolean;
   action: ConfirmAction;
@@ -111,6 +119,10 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
     variant: 'default',
   });
   const [isConfirming, setIsConfirming] = useState(false);
+  
+  // BLK listings quota state (only for work listings)
+  const [blackQuota, setBlackQuota] = useState<BlackQuotaData | null>(null);
+  const [togglingBlkId, setTogglingBlkId] = useState<string | null>(null);
 
   // Sync with URL params when they change
   useEffect(() => {
@@ -234,6 +246,25 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
           parsedStats.expired + 
           parsedStats.deleted;
         setStats({ ...parsedStats, deepInventory: deepInventoryTotal });
+      }
+      
+      // Fetch BLK quota for work listings only
+      if (listingType === 'work') {
+        try {
+          const quotaResponse = await fetch('/api/partner/black-quota', {
+            credentials: 'include',
+            signal: abortRef.current.signal,
+          });
+          if (quotaResponse.ok) {
+            const quotaData = await quotaResponse.json();
+            if (quotaData.data) {
+              setBlackQuota(quotaData.data);
+            }
+          }
+        } catch (quotaErr) {
+          // Silently fail for quota fetch - not critical
+          console.error('[MyListingsView] Failed to fetch BLK quota:', quotaErr);
+        }
       }
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') return;
@@ -416,6 +447,47 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
       extendDays: days,
     });
   };
+  
+  // Handle toggling BLK status for a listing (work listings only)
+  const handleToggleBlkStatus = async (listingId: string, currentlyBlk: boolean) => {
+    if (listingType !== 'work') return;
+    
+    setTogglingBlkId(listingId);
+    try {
+      const response = await fetch(`/api/listings/${listingId}/black-status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ isBlkListing: !currentlyBlk }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to update BLK status');
+      }
+      
+      const result = await response.json();
+      
+      // Update local state immediately for better UX
+      setListings(prev => prev.map(l => 
+        l.id === listingId ? { ...l, isBlkListing: !currentlyBlk } : l
+      ));
+      
+      // Update quota from response
+      if (result.data?.quota) {
+        setBlackQuota(prev => prev ? {
+          ...prev,
+          activeBlackListingsCount: result.data.quota.current,
+          hasAvailableSlots: result.data.quota.current < prev.blackListingQuota,
+        } : null);
+      }
+    } catch (err) {
+      console.error('[MyListingsView] Failed to toggle BLK status:', err);
+      setError(err instanceof Error ? err.message : 'Failed to update BLK status');
+    } finally {
+      setTogglingBlkId(null);
+    }
+  };
 
   const newListingUrl = listingType === 'work' 
     ? '/staff-dashboard/work-listings/new' 
@@ -438,16 +510,25 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
               </p>
             </div>
             
-            <button 
-              onClick={() => fetchData(true)} 
-              disabled={isRefreshing}
-              className="p-2 hover:bg-secondary/50 rounded-lg transition-colors disabled:opacity-50"
-              title="Refresh"
-            >
-              <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-            </button>
+            <div className="flex items-center gap-4">
+              {/* BLK Quota - inline in header */}
+              {listingType === 'work' && blackQuota && (
+                <span className="text-sm text-muted-foreground">
+                  BLK {blackQuota.activeBlackListingsCount}/{blackQuota.blackListingQuota}
+                </span>
+              )}
+              
+              <button 
+                onClick={() => fetchData(true)} 
+                disabled={isRefreshing}
+                className="p-2 hover:bg-secondary/50 rounded-lg transition-colors disabled:opacity-50"
+                title="Refresh"
+              >
+                <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           <ListingsTabs 
@@ -580,6 +661,10 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
                   onMarkSold={handleMarkSold}
                   onExtend={handleExtend}
                   onCancelDelete={() => setDeleteConfirm(null)}
+                  // BLK toggle props (work listings only)
+                  onToggleBlk={listingType === 'work' ? handleToggleBlkStatus : undefined}
+                  isTogglingBlk={togglingBlkId === listing.id}
+                  canPromoteToBlk={listingType === 'work' && blackQuota?.hasAvailableSlots === true}
                 />
               ))}
             </div>

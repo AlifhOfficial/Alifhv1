@@ -29,13 +29,14 @@ interface CarListItemProps {
   thumbnail?: string | null;
   images?: string[];
   qiScore?: number | null;
+  isBlkListing?: boolean; // Black listing flag
   partnerName?: string;
   partnerLogo?: string | null;
   partnerVerified?: boolean;
+  isBlackTierPartner?: boolean; // Partner is black tier member
   sellerName?: string | null;
   sellerAvatarUrl?: string | null;
   kycVerified?: boolean; // User/Seller KYC verification status
-  isBlackMember?: boolean;
   className?: string;
 }
 
@@ -52,13 +53,14 @@ export function CarListItem({
   thumbnail,
   images,
   qiScore,
+  isBlkListing,
   partnerName,
   partnerLogo,
   partnerVerified,
+  isBlackTierPartner,
   sellerName,
   sellerAvatarUrl,
   kycVerified,
-  isBlackMember = false,
   className
 }: CarListItemProps) {
   const formatPrice = (amount: number) => {
@@ -153,16 +155,21 @@ export function CarListItem({
   return (
     <div className={cn(
       "group relative overflow-hidden rounded-lg transition-all duration-300 flex flex-col lg:flex-row w-full",
-      isBlackMember 
-        ? "bg-black border border-zinc-800 hover:border-zinc-700 hover:shadow-xl" 
+      isBlkListing 
+        ? "bg-black border border-zinc-800 hover:border-zinc-700 hover:shadow-2xl hover:shadow-zinc-900/50" 
         : "bg-sidebar border border-sidebar-border hover:border-sidebar-border/80 hover:shadow-md",
       className
     )}>
+      {/* Subtle top accent for BLK listings */}
+      {isBlkListing && (
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-zinc-700 to-transparent" />
+      )}
+
       {/* Image Section */}
       <div className="p-2 sm:p-3 w-full lg:w-80 flex-shrink-0">
         <Link href={`/listings/${id}`} className={cn(
           "relative aspect-[4/3] w-full overflow-hidden rounded-lg block",
-          isBlackMember ? "bg-zinc-900" : "bg-muted/20"
+          isBlkListing ? "bg-zinc-900" : "bg-muted/20"
         )}>
           <Image
             src={displayImage}
@@ -171,13 +178,6 @@ export function CarListItem({
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 1024px) 100vw, 320px"
           />
-        
-          {/* Black badge - exception, can be on image */}
-          {isBlackMember && (
-            <div className="absolute top-2 right-2 px-2.5 py-1 bg-black/90 backdrop-blur-sm border border-zinc-700 rounded">
-              <span className="text-[10px] font-bold text-white tracking-widest">BLK</span>
-            </div>
-          )}
         </Link>
       </div>
 
@@ -188,8 +188,8 @@ export function CarListItem({
           <Link href={`/listings/${id}`} className="group/title flex-1 min-w-0">
             <h3 className={cn(
               "text-sm sm:text-base lg:text-lg font-medium transition-colors line-clamp-1",
-              isBlackMember
-                ? "text-white group-hover/title:text-zinc-200"
+              isBlkListing 
+                ? "text-white group-hover/title:text-zinc-200" 
                 : "text-sidebar-foreground group-hover/title:text-primary"
             )}>
               {year} {make} {model}{trim ? ` ${trim}` : ''}
@@ -197,7 +197,7 @@ export function CarListItem({
           </Link>
           <p className={cn(
             "text-lg sm:text-base lg:text-xl font-semibold whitespace-nowrap",
-            isBlackMember ? "text-blue-400" : "text-blue-600"
+            isBlkListing ? "text-white" : "text-blue-600"
           )}>
             {formatPrice(price)}
           </p>
@@ -207,25 +207,21 @@ export function CarListItem({
         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 lg:gap-3 text-[10px] sm:text-xs lg:text-sm mb-2 sm:mb-3 lg:mb-auto lg:pb-4">
           <span className={cn(
             "font-medium",
-            isBlackMember ? "text-zinc-300" : "text-sidebar-foreground/80"
+            isBlkListing ? "text-zinc-300" : "text-sidebar-foreground/80"
           )}>
             {formatMileage(mileage)} km
           </span>
-          <span className={cn(
-            isBlackMember ? "text-zinc-600" : "text-sidebar-foreground/30"
-          )}>•</span>
+          <span className={isBlkListing ? "text-zinc-600" : "text-sidebar-foreground/30"}>•</span>
           <span className={cn(
             "font-medium",
-            isBlackMember ? "text-zinc-300" : "text-sidebar-foreground/80"
+            isBlkListing ? "text-zinc-300" : "text-sidebar-foreground/80"
           )}>
             {displaySpecs}
           </span>
-          <span className={cn(
-            isBlackMember ? "text-zinc-600" : "text-sidebar-foreground/30"
-          )}>•</span>
+          <span className={isBlkListing ? "text-zinc-600" : "text-sidebar-foreground/30"}>•</span>
           <span className={cn(
             "font-medium",
-            isBlackMember ? "text-zinc-300" : "text-sidebar-foreground/80"
+            isBlkListing ? "text-zinc-300" : "text-sidebar-foreground/80"
           )}>
             {displayEmirate}
           </span>
@@ -234,7 +230,7 @@ export function CarListItem({
         {/* Bottom Section - Dealer and Actions */}
         <div className={cn(
           "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 pt-2 sm:pt-3 lg:pt-4 border-t mt-auto",
-          isBlackMember ? "border-zinc-800" : "border-sidebar-border"
+          isBlkListing ? "border-zinc-800" : "border-sidebar-border"
         )}>
           {/* Left - Dealer */}
           <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-3 min-w-0 flex-1">
@@ -244,8 +240,8 @@ export function CarListItem({
                 brandName={displaySellerName}
                 size="xs"
                 className={cn(
-                  'w-6 h-6 sm:w-8 sm:h-8 lg:w-9 lg:h-9 flex-shrink-0',
-                  isBlackMember ? 'bg-zinc-800 border-zinc-700' : 'bg-sidebar-accent border-sidebar-border'
+                  "w-6 h-6 sm:w-8 sm:h-8 lg:w-9 lg:h-9 flex-shrink-0",
+                  isBlkListing ? "bg-zinc-800 border-zinc-700" : "bg-sidebar-accent border-sidebar-border"
                 )}
               />
             ) : (
@@ -254,19 +250,20 @@ export function CarListItem({
                 name={displaySellerName}
                 size="sm"
                 className={cn(
-                  'w-6 h-6 sm:w-8 sm:h-8 lg:w-9 lg:h-9 flex-shrink-0',
-                  isBlackMember ? 'bg-zinc-800 border-zinc-700 text-zinc-400' : 'bg-sidebar-accent border-sidebar-border text-sidebar-foreground/70'
+                  "w-6 h-6 sm:w-8 sm:h-8 lg:w-9 lg:h-9 flex-shrink-0",
+                  isBlkListing ? "bg-zinc-800 border-zinc-700 text-zinc-400" : "bg-sidebar-accent border-sidebar-border text-sidebar-foreground/70"
                 )}
               />
             )}
             <div className="flex items-center gap-1 sm:gap-1.5 lg:gap-2 min-w-0">
               <span className={cn(
-                "text-xs sm:text-sm lg:text-base font-semibold truncate",
-                isBlackMember ? "text-zinc-200" : "text-sidebar-foreground"
+                "text-xs sm:text-sm lg:text-base truncate",
+                isBlackTierPartner ? "font-bold" : "font-semibold",
+                isBlkListing ? "text-zinc-200" : "text-sidebar-foreground"
               )}>
                 {displaySellerName}
               </span>
-              {(isBlackMember || partnerVerified || kycVerified) && (
+              {(partnerVerified || kycVerified) && (
                 <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" aria-label="Verified" />
               )}
             </div>
@@ -277,8 +274,8 @@ export function CarListItem({
             <button 
               className={cn(
                 "rounded-full p-1.5 sm:p-2 transition-colors",
-                isBlackMember
-                  ? "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
+                isBlkListing 
+                  ? "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800" 
                   : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
               )}
               aria-label="Share"
@@ -292,11 +289,11 @@ export function CarListItem({
                 "relative rounded-full p-1.5 sm:p-2 transition-all active:scale-95",
                 favorite.isUpdating && "opacity-50 cursor-not-allowed",
                 favorite.isFavorite
-                  ? isBlackMember
-                    ? "text-rose-400 hover:bg-zinc-800"
+                  ? isBlkListing 
+                    ? "text-rose-400 hover:bg-zinc-800" 
                     : "text-rose-500 hover:bg-sidebar-accent"
-                  : isBlackMember
-                    ? "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
+                  : isBlkListing 
+                    ? "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800" 
                     : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
               )}
               aria-label={favorite.isFavorite ? "Remove favorite" : "Add to favorites"}
@@ -324,11 +321,11 @@ export function CarListItem({
                 "relative rounded-full p-1.5 sm:p-2 transition-all active:scale-95",
                 superlike.isUpdating && "opacity-50 cursor-not-allowed",
                 superlike.isSuperliked
-                  ? isBlackMember
-                    ? "text-yellow-400 hover:bg-zinc-800"
+                  ? isBlkListing 
+                    ? "text-yellow-400 hover:bg-zinc-800" 
                     : "text-yellow-500 hover:bg-sidebar-accent"
-                  : isBlackMember
-                    ? "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
+                  : isBlkListing 
+                    ? "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800" 
                     : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
               )}
               aria-label={superlike.isSuperliked ? "Remove superlike" : "Superlike"}

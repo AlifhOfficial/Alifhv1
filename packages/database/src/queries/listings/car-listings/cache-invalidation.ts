@@ -97,7 +97,7 @@ export function smartInvalidateListing(
 ): void {
   const criticalFields = [
     'moderationStatus', 'lifecycleStatus', 'expiresAt', 'publishedAt', 'price', 'images', 'thumbnail', 'qiScore',
-    'isFeatured', 'isBlackMember', 'make', 'model', 'year'
+    'isFeatured', 'isBlkListing', 'make', 'model', 'year'
   ];
   
   const hasCriticalChanges = changedFields.some(field => criticalFields.includes(field));

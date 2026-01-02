@@ -202,13 +202,14 @@ export interface SearchResultItem {
   thumbnail: string | null;
   images: string[];
   qiScore: number | null;
-  isBlackMember: boolean;
+  isBlkListing: boolean;
   
   // Seller info
   sellerType: 'dealer' | 'private';
   partnerName: string | null;
   partnerLogo: string | null;
   partnerVerified: boolean | null;
+  isBlackTierPartner: boolean | null;
   sellerName: string | null;
   sellerAvatarUrl: string | null;
   sellerKycVerified: boolean | null;

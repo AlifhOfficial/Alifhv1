@@ -197,7 +197,10 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
         {/* Brand Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="text-base font-semibold tracking-tight text-foreground truncate">
+            <h3 className={cn(
+              "text-base tracking-tight text-foreground truncate",
+              partner.tier === 'black' ? "font-bold" : "font-semibold"
+            )}>
               {partner.brandName}
             </h3>
             {partner.isVerified && (
@@ -243,23 +246,19 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
       )}
 
       {/* Badges - Minimal, neutral design */}
-      <div className="flex flex-wrap gap-2">
-        {partner.tier === 'black' && (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold tracking-widest bg-black text-white dark:bg-white dark:text-black rounded-md">
-            <Sparkles className="w-3 h-3" />
-            BLK
-          </span>
-        )}
-        {badges.slice(0, 3).map((badge, idx) => (
-          <span
-            key={idx}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium bg-muted text-muted-foreground rounded-md"
-          >
-            <Award className="w-3 h-3" />
-            {badge}
-          </span>
-        ))}
-      </div>
+      {badges.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {badges.slice(0, 3).map((badge, idx) => (
+            <span
+              key={idx}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium bg-muted text-muted-foreground rounded-md"
+            >
+              <Award className="w-3 h-3" />
+              {badge}
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* About Section */}
       {partner.description && (

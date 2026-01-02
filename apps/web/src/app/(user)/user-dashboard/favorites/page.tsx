@@ -22,7 +22,7 @@ type ListingPayload = {
   partnerName: string | null;
   partnerLogo?: string | null;
   partnerVerified: boolean | null;
-  isBlackMember: boolean | null;
+  isBlkListing: boolean | null;
   sellerName?: string | null;
   sellerAvatarUrl?: string | null;
   sellerKycVerified?: boolean | null;
@@ -162,13 +162,13 @@ export default function FavoritesPage() {
                       thumbnail={listing.thumbnail ?? undefined}
                       images={listing.images ?? undefined}
                       qiScore={listing.qiScore ?? undefined}
+                      isBlkListing={listing.isBlkListing ?? undefined}
                       partnerName={listing.partnerName ?? undefined}
                       partnerLogo={listing.partnerLogo ?? undefined}
                       partnerVerified={listing.partnerVerified ?? undefined}
                       sellerName={listing.sellerName ?? undefined}
                       sellerAvatarUrl={listing.sellerAvatarUrl ?? undefined}
                       kycVerified={listing.sellerKycVerified ?? undefined}
-                      isBlackMember={listing.isBlackMember ?? undefined}
                     />
                   );
                 })}

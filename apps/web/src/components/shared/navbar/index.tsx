@@ -57,8 +57,8 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    label: "Showcase",
-    href: "/showcase",
+    label: "Black",
+    href: "/black",
   },
   {
     label: "Partners",

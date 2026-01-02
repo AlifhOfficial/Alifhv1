@@ -91,13 +91,13 @@ export function ContactSection({
   return (
     <div className={cn("space-y-4", className)}>
       {/* Primary Actions - Row of buttons */}
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         {/* Chat Button - Primary */}
         <button
           onClick={handleChatClick}
           disabled={isStartingChat || isOwnListing}
           className={cn(
-            "flex-1 py-3 px-4 rounded-full text-sm font-medium transition-colors flex items-center justify-center gap-2",
+            "flex-1 min-w-[100px] py-3 px-4 rounded-full text-sm font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap",
             isOwnListing
               ? "bg-muted text-muted-foreground cursor-not-allowed"
               : "bg-primary text-primary-foreground hover:bg-primary/90"
@@ -117,7 +117,7 @@ export function ContactSection({
         {phoneNumber && (
           <a
             href={`tel:${phoneNumber}`}
-            className="flex-1 py-3 px-4 border border-border rounded-full text-sm font-medium text-foreground hover:bg-muted/50 transition-colors flex items-center justify-center gap-2"
+            className="flex-1 min-w-[100px] py-3 px-4 border border-border rounded-full text-sm font-medium text-foreground hover:bg-muted/50 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
           >
             <Phone className="w-4 h-4" />
             Call
@@ -128,7 +128,7 @@ export function ContactSection({
         {showBooking && onBookTestDrive && (
           <button
             onClick={onBookTestDrive}
-            className="flex-1 py-3 px-4 bg-green-500 text-white rounded-full text-sm font-medium hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
+            className="flex-1 min-w-[100px] py-3 px-4 bg-green-500 text-white rounded-full text-sm font-medium hover:bg-green-600 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
           >
             <Calendar className="w-4 h-4" />
             Book

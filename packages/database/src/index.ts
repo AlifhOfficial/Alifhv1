@@ -39,6 +39,7 @@ export * from './queries/booking/booking-mutations';
 // Explicit listings + consignment query exports (required for proper bundling)
 export * from './queries/listings/car-listings/car-listing-context-query';
 export * from './queries/listings/car-listings/search-query';
+export * from './queries/listings/black-listings-query';
 export * from './queries/consignment/partner-consignment-preferences-query';
 export * from './queries/consignment/partner-consignment-leads-query';
 

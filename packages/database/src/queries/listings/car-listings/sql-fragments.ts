@@ -65,14 +65,12 @@ export function suspendedAtSql(): SQL<string | null> {
 }
 
 /**
- * SQL expression for checking if user is a black member.
- * Combines listing-level flag with partner tier.
+ * SQL expression for checking if a listing is a black listing.
+ * Only checks the listing-level flag - partner tier does NOT auto-grant black status.
+ * Black listings are quota-controlled: black tier partners get 5, others get 1.
  * 
- * @param partnerTable - Partner table reference
  * @returns SQL boolean expression
  */
-export function isBlackMemberSql(partnerTable: { tier: any }): SQL<boolean> {
-  return sql<boolean>`
-    (${carListing.isBlackMember} OR coalesce(${partnerTable.tier} = 'black', false))
-  `;
+export function isBlkListingSql(): SQL<boolean> {
+  return sql<boolean>`${carListing.isBlkListing}`;
 }

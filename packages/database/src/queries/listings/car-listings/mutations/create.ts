@@ -126,7 +126,7 @@ export async function createCarListing(input: CreateCarListingInput): Promise<st
     partnerId: input.partnerId ?? null,
     partnerBrandName: null, // Will be denormalized later
     partnerVerified: false,
-    isBlackMember: false,
+    isBlkListing: false,
     
     // Moderation timestamps
     lastEditedAt: now,

@@ -127,7 +127,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
 
       {/* Thumbnails */}
       {allImages.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin min-w-0">
           {allImages.map((img, idx) => (
             <button
               key={idx}
@@ -173,7 +173,7 @@ function PricingInsights({ listing }: { listing: CarDetailedData }) {
       </div>
 
       {/* Price Trend & Fair Value Grid */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
           <p className="text-xs text-muted-foreground">Price Trend</p>
           <div className="relative h-14 bg-muted/30 rounded-lg p-3">
@@ -382,14 +382,14 @@ export function CarCardDetailed({ listing, kycVerified, className }: CarCardDeta
       <div className="space-y-4">
         {/* Title & Actions Row */}
         <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 space-y-1">
-            <h1 className="text-xl font-semibold tracking-tight text-foreground">
+          <div className="flex-1 min-w-0 space-y-1">
+            <h1 className="text-lg sm:text-xl font-semibold tracking-tight text-foreground break-words">
               {carTitle}
             </h1>
             
             {/* Price */}
-            <div className="flex items-baseline gap-2">
-              <p className="text-2xl font-bold tabular-nums text-foreground">
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <p className="text-xl sm:text-2xl font-bold tabular-nums text-foreground">
                 {formatPrice(listing.price)}
               </p>
               {listing.isNegotiable && (
@@ -400,7 +400,7 @@ export function CarCardDetailed({ listing, kycVerified, className }: CarCardDeta
 
           {/* Actions */}
           <div className="flex items-center gap-1.5 flex-shrink-0">
-            {listing.isBlackMember && (
+            {listing.isBlkListing && (
               <div className="px-2 py-1 text-[10px] font-bold tracking-widest bg-black text-white dark:bg-white dark:text-black rounded">
                 BLK
               </div>
@@ -489,7 +489,7 @@ export function CarCardDetailed({ listing, kycVerified, className }: CarCardDeta
           Specifications
         </p>
         
-        <div className="grid grid-cols-2 gap-x-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8">
           {/* Left Column */}
           <div className="space-y-0">
             <div className="flex justify-between py-3 border-b border-border/30">
