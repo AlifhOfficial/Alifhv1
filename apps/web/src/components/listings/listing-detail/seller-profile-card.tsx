@@ -223,12 +223,14 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
         </div>
 
         {/* Logo - Uses BrandAvatar component for R2 URL resolution */}
-        <BrandAvatar 
-          logoUrl={partner.logo}
-          brandName={partner.brandName}
-          size="md"
-          className="rounded-none flex-shrink-0 w-16 h-16"
-        />
+        <Link href={`/listings?partnerId=${partner.id}`} className="flex-shrink-0">
+          <BrandAvatar 
+            logoUrl={partner.logo}
+            brandName={partner.brandName}
+            size="md"
+            className="rounded-none w-16 h-16 transition-opacity hover:opacity-80 cursor-pointer"
+          />
+        </Link>
       </div>
 
       {/* Website Link */}

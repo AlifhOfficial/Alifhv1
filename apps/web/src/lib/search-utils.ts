@@ -56,10 +56,13 @@ export interface SearchParams {
   seatingCapacity?: string[];
   isNegotiable?: boolean;
   underWarranty?: boolean;
+  isBlkListing?: boolean;
   tags?: string[];
   sellerType?: 'dealer' | 'private';
   partnerId?: string;
+  partnerName?: string;
   partnerVerified?: boolean;
+  isBlackTierPartner?: boolean;
   limit?: number;
   offset?: number;
   cursor?: string;
@@ -165,10 +168,13 @@ export function searchParamsToUrl(params: SearchParams): URLSearchParams {
   
   if (params.isNegotiable !== undefined) urlParams.set('negotiable', String(params.isNegotiable));
   if (params.underWarranty !== undefined) urlParams.set('warranty', String(params.underWarranty));
+  if (params.isBlkListing !== undefined) urlParams.set('black', String(params.isBlkListing));
   if (params.partnerVerified !== undefined) urlParams.set('verified', String(params.partnerVerified));
+  if (params.isBlackTierPartner !== undefined) urlParams.set('blackTier', String(params.isBlackTierPartner));
   
   if (params.sellerType) urlParams.set('seller', params.sellerType);
   if (params.partnerId) urlParams.set('partnerId', params.partnerId);
+  if (params.partnerName) urlParams.set('partnerName', params.partnerName);
   
   if (params.limit) urlParams.set('limit', String(params.limit));
   if (params.offset) urlParams.set('offset', String(params.offset));
@@ -223,10 +229,13 @@ export function urlToSearchParams(urlParams: URLSearchParams): SearchParams {
     
     isNegotiable: parseBoolean('negotiable'),
     underWarranty: parseBoolean('warranty'),
+    isBlkListing: parseBoolean('black'),
     partnerVerified: parseBoolean('verified'),
+    isBlackTierPartner: parseBoolean('blackTier'),
     
     sellerType: urlParams.get('seller') as SearchParams['sellerType'],
     partnerId: urlParams.get('partnerId') || undefined,
+    partnerName: urlParams.get('partnerName') || undefined,
     
     limit: parseNumber('limit'),
     offset: parseNumber('offset'),
@@ -258,7 +267,9 @@ export function countActiveFilters(params: SearchParams): number {
   if (params.tags?.length) count++;
   if (params.isNegotiable !== undefined) count++;
   if (params.underWarranty !== undefined) count++;
+  if (params.isBlkListing !== undefined) count++;
   if (params.partnerVerified !== undefined) count++;
+  if (params.isBlackTierPartner !== undefined) count++;
   
   return count;
 }

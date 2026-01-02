@@ -11,7 +11,7 @@ import { SearchBar } from '@/components/search/search-bar';
 import { FilterSidebar } from '@/components/search/filter-sidebar';
 import { AdvancedFilters } from '@/components/search/advanced-filters';
 import { useSearch } from '@/hooks/use-search';
-import { LayoutGrid, List, SlidersHorizontal, X, ChevronDown, Search, PanelLeftClose, PanelLeft, CheckCircle2 } from 'lucide-react';
+import { LayoutGrid, List, SlidersHorizontal, X, ChevronDown, Search, PanelLeftClose, PanelLeft, CheckCircle2, Info } from 'lucide-react';
 import {
   Collapsible,
   CollapsibleContent,
@@ -30,6 +30,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { SORT_OPTIONS } from '@/lib/search-utils';
 import { cn } from '@/lib/utils';
@@ -138,20 +144,56 @@ export function ListingsView() {
                   />
                 </div>
 
-                {/* Negotiable Toggle */}
-                <button
-                  type="button"
-                  onClick={() => setFilters({ isNegotiable: params.isNegotiable ? undefined : true })}
-                  className={cn(
-                    'flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg transition-colors',
-                    params.isNegotiable
-                      ? 'bg-foreground text-background'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
-                  )}
-                >
-                  {params.isNegotiable && <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
-                  <span className="whitespace-nowrap">Negotiable</span>
-                </button>
+                {/* Featured Listings Toggle */}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={() => setFilters({ isBlkListing: params.isBlkListing ? undefined : true })}
+                        className={cn(
+                          'flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg transition-colors whitespace-nowrap',
+                          params.isBlkListing
+                            ? 'bg-foreground text-background'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+                        )}
+                      >
+                        {params.isBlkListing && <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />}
+                        <span>Black</span>
+                        <Info className="h-3 w-3 sm:h-3.5 sm:w-3.5 opacity-50 flex-shrink-0" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-xs">
+                      <p className="text-xs">Top quality listings with verified details</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                {/* Black Dealers Toggle */}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={() => setFilters({ isBlackTierPartner: params.isBlackTierPartner ? undefined : true })}
+                        className={cn(
+                          'flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg transition-colors whitespace-nowrap',
+                          params.isBlackTierPartner
+                            ? 'bg-foreground text-background'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+                        )}
+                      >
+                        {params.isBlackTierPartner && <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />}
+                        <span className="hidden sm:inline">Ace Members</span>
+                        <span className="sm:hidden">Ace</span>
+                        <Info className="h-3 w-3 sm:h-3.5 sm:w-3.5 opacity-50 flex-shrink-0" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-xs">
+                      <p className="text-xs">Top-rated dealers with verified track records</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
 
                 {/* Sort Dropdown */}
                 <div className="relative">
@@ -440,6 +482,9 @@ function getActiveFilterChips(params: any): Array<{ key: string; label: string }
   }
   if (params.sellerType) {
     chips.push({ key: 'sellerType', label: params.sellerType === 'dealer' ? 'Dealers' : 'Private' });
+  }
+  if (params.partnerId && params.partnerName) {
+    chips.push({ key: 'partnerId', label: params.partnerName });
   }
 
   return chips;

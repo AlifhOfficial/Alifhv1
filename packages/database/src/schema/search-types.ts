@@ -68,6 +68,7 @@ export interface AdvancedFilterParams {
   // Boolean features
   isNegotiable?: boolean;
   underWarranty?: boolean;
+  isBlkListing?: boolean;
   
   // Tags (max 3 per listing)
   tags?: string[];
@@ -78,6 +79,7 @@ export interface AdvancedFilterParams {
   // Partner specific
   partnerId?: string;
   partnerVerified?: boolean;
+  isBlackTierPartner?: boolean;
 }
 
 /**
@@ -303,7 +305,9 @@ export function searchParamsToUrl(params: SearchParams): URLSearchParams {
   // Booleans
   if (params.isNegotiable !== undefined) urlParams.set('negotiable', String(params.isNegotiable));
   if (params.underWarranty !== undefined) urlParams.set('warranty', String(params.underWarranty));
+  if (params.isBlkListing !== undefined) urlParams.set('black', String(params.isBlkListing));
   if (params.partnerVerified !== undefined) urlParams.set('verified', String(params.partnerVerified));
+  if (params.isBlackTierPartner !== undefined) urlParams.set('blackTier', String(params.isBlackTierPartner));
   
   // Seller
   if (params.sellerType) urlParams.set('seller', params.sellerType);
@@ -363,7 +367,9 @@ export function urlToSearchParams(urlParams: URLSearchParams): SearchParams {
     
     isNegotiable: parseBoolean('negotiable'),
     underWarranty: parseBoolean('warranty'),
+    isBlkListing: parseBoolean('black'),
     partnerVerified: parseBoolean('verified'),
+    isBlackTierPartner: parseBoolean('blackTier'),
     
     sellerType: urlParams.get('seller') as SearchParams['sellerType'],
     partnerId: urlParams.get('partnerId') || undefined,
@@ -399,7 +405,9 @@ export function countActiveFilters(params: SearchParams): number {
   if (params.tags?.length) count++;
   if (params.isNegotiable !== undefined) count++;
   if (params.underWarranty !== undefined) count++;
+  if (params.isBlkListing !== undefined) count++;
   if (params.partnerVerified !== undefined) count++;
+  if (params.isBlackTierPartner !== undefined) count++;
   
   return count;
 }

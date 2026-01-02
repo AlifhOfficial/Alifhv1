@@ -174,9 +174,32 @@ function buildSearchConditions(params: SearchParams, now: Date): SQL[] {
     conditions.push(eq(carListing.partnerVerified, true));
   }
 
+  // Black tier partner filter
+  if (params.isBlackTierPartner === true) {
+    conditions.push(
+      isNotNull(carListing.partnerId),
+      sql`EXISTS (
+        SELECT 1 FROM ${partner}
+        WHERE ${partner.id} = ${carListing.partnerId}
+        AND ${partner.tier} = 'black'
+      )`
+    );
+  }
+
   // Negotiable
   if (params.isNegotiable !== undefined) {
     conditions.push(eq(carListing.isNegotiable, params.isNegotiable));
+  }
+
+  // Black listing filter
+  if (params.isBlkListing !== undefined) {
+    if (params.isBlkListing) {
+      // Only show black listings
+      conditions.push(eq(carListing.isBlkListing, true));
+    } else {
+      // Exclude black listings
+      conditions.push(eq(carListing.isBlkListing, false));
+    }
   }
 
   // Tags (JSONB contains check)

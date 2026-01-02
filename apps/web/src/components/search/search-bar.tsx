@@ -61,11 +61,14 @@ export function SearchBar({
   const showDropdown = isFocused && (suggestions.length > 0 || (isLoading && debouncedQuery.length >= 2));
 
   // Handle search submission
-  const handleSearch = useCallback((searchQuery: string, make?: string, model?: string, partnerId?: string) => {
+  const handleSearch = useCallback((searchQuery: string, make?: string, model?: string, partnerId?: string, partnerName?: string) => {
     // Build filters object for callback
     const filters: Partial<SearchParams> = {};
     if (partnerId && partnerId.trim()) {
       filters.partnerId = partnerId.trim();
+      if (partnerName && partnerName.trim()) {
+        filters.partnerName = partnerName.trim();
+      }
     } else if (make && make.trim()) {
       filters.make = [make.trim()];
       if (model && model.trim()) {
@@ -86,6 +89,9 @@ export function SearchBar({
       // Partner ID takes priority
       if (partnerId && partnerId.trim()) {
         searchParams.partnerId = partnerId.trim();
+        if (partnerName && partnerName.trim()) {
+          searchParams.partnerName = partnerName.trim();
+        }
       } 
       // Make and model filters
       else if (make && make.trim()) {
@@ -112,7 +118,7 @@ export function SearchBar({
   // Handle suggestion click
   const handleSuggestionClick = useCallback((suggestion: typeof suggestions[0]) => {
     if (suggestion.type === 'partner') {
-      handleSearch(suggestion.text, undefined, undefined, suggestion.partnerId);
+      handleSearch(suggestion.text, undefined, undefined, suggestion.partnerId, suggestion.partnerName);
     } else if (suggestion.type === 'make_model') {
       handleSearch(suggestion.text, suggestion.make, suggestion.model);
     } else if (suggestion.type === 'make') {

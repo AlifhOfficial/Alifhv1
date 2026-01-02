@@ -103,6 +103,23 @@ export function FilterSidebar({
         />
       </FilterSection>
 
+      {/* Negotiable Toggle */}
+      <FilterSection title="Negotiable">
+        <button
+          type="button"
+          onClick={() => onFilterChange({ isNegotiable: params.isNegotiable ? undefined : true })}
+          className={cn(
+            'flex items-center justify-between w-full px-3 py-2 text-sm rounded-lg transition-colors',
+            params.isNegotiable
+              ? 'bg-foreground text-background'
+              : 'bg-muted/30 text-muted-foreground hover:bg-muted/50'
+          )}
+        >
+          <span>Negotiable prices only</span>
+          {params.isNegotiable && <CheckCircle2 className="h-4 w-4" />}
+        </button>
+      </FilterSection>
+
       {/* Mileage */}
       <FilterSection title="Mileage (km)">
         <RangeFilter

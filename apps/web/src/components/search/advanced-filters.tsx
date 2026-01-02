@@ -151,10 +151,11 @@ export function AdvancedFilters({
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         {children || (
-          <button type="button" className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm transition-colors text-blue-600 font-medium hover:text-blue-700">
-            <span>Advanced Filters</span>
+          <button type="button" className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm transition-colors text-blue-600 font-medium hover:text-blue-700 whitespace-nowrap">
+            <span className="hidden sm:inline">Advanced Filters</span>
+            <span className="sm:hidden">Filters</span>
             {advancedCount > 0 && (
-              <span className="w-4 h-4 sm:w-5 sm:h-5 text-[10px] sm:text-xs font-medium bg-foreground text-background rounded-full flex items-center justify-center">
+              <span className="w-4 h-4 sm:w-5 sm:h-5 text-[10px] sm:text-xs font-medium bg-foreground text-background rounded-full flex items-center justify-center flex-shrink-0">
                 {advancedCount}
               </span>
             )}
