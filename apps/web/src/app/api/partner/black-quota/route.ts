@@ -17,7 +17,7 @@ import { db, partner as partnerTable, eq } from '@alifh/database';
 
 export const runtime = 'nodejs';
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     // Auth check
     const user = await getSessionUser();
@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
       
       // Use the corrected quota
       partnerData.blackListingQuota = expectedQuota;
-      console.log(`[API] Auto-fixed blackListingQuota for partner ${partnerId}: ${expectedQuota}`);
+      console.warn(`[API] Auto-fixed blackListingQuota for partner ${partnerId}: ${expectedQuota}`);
     }
 
     return NextResponse.json({

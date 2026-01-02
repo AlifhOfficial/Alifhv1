@@ -7,7 +7,7 @@
  * @module utils/storage
  */
 
-import { createId } from "@alifh/database";
+import { createId } from "@paralleldrive/cuid2";
 import type { StorageData, UploadFileParams } from "@/lib/storage/types";
 
 // ============================================================================

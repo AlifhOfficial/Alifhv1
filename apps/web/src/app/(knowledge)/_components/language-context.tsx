@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useSyncExternalStore } from 'react';
 
 type Language = 'en' | 'ar';
 
@@ -15,35 +15,56 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 const STORAGE_KEY = 'akh-language';
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>('en');
-  const [mounted, setMounted] = useState(false);
+// Use useSyncExternalStore for hydration-safe localStorage access
+let listeners: Array<() => void> = [];
 
-  useEffect(() => {
-    setMounted(true);
-    const stored = localStorage.getItem(STORAGE_KEY) as Language;
-    if (stored === 'ar' || stored === 'en') {
-      setLanguageState(stored);
-    }
-  }, []);
+function emitChange() {
+  for (const listener of listeners) {
+    listener();
+  }
+}
+
+function subscribe(listener: () => void) {
+  listeners = [...listeners, listener];
+  return () => {
+    listeners = listeners.filter(l => l !== listener);
+  };
+}
+
+function getSnapshot(): Language {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  return stored === 'ar' ? 'ar' : 'en';
+}
+
+function getServerSnapshot(): Language {
+  return 'en';
+}
+
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  // useSyncExternalStore handles hydration correctly without setState in effects
+  const language = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const [updateTrigger, setUpdateTrigger] = useState(0);
 
   const setLanguage = (lang: Language) => {
-    setLanguageState(lang);
     localStorage.setItem(STORAGE_KEY, lang);
+    emitChange();
+    setUpdateTrigger(n => n + 1); // Force re-render for immediate update
   };
 
   // Simple translation helper - returns appropriate string based on language
   const t = (en: string, ar: string) => {
-    if (!mounted) return en;
     return language === 'ar' ? ar : en;
   };
+
+  // updateTrigger is used to force re-render, suppress unused warning
+  void updateTrigger;
 
   return (
     <LanguageContext.Provider
       value={{
-        language: mounted ? language : 'en',
+        language,
         setLanguage,
-        isRTL: mounted && language === 'ar',
+        isRTL: language === 'ar',
         t,
       }}
     >

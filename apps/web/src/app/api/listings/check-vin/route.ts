@@ -8,7 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db, carListing, eq, and, ne, or } from '@alifh/database';
+import { db, carListing, eq, and, ne } from '@alifh/database';
 import { decodeVIN, isValidVINFormat, formatVIN } from '@/lib/vin-decoder';
 
 export const runtime = 'nodejs';

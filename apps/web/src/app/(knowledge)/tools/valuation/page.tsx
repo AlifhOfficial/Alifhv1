@@ -38,7 +38,6 @@ import { Button } from '@/components/ui/forms/button';
 // Import constants
 import {
   CAR_MAKES,
-  CAR_MODELS,
   BODY_TYPES,
   FUEL_TYPES,
   TRANSMISSION_TYPES,
@@ -202,7 +201,7 @@ export default function ValuationPage() {
       } else {
         setVinError('Could not decode VIN. Please enter details manually.');
       }
-    } catch (err) {
+    } catch {
       setVinError('Failed to decode VIN. Please try again or enter details manually.');
     } finally {
       setVinLoading(false);
@@ -306,7 +305,7 @@ export default function ValuationPage() {
           <h1 className="text-2xl font-semibold tracking-tight">Car Valuation</h1>
         </div>
         <p className="text-sm text-muted-foreground/70 leading-relaxed max-w-xl">
-          Get an AI-powered estimate of your car's market value in UAE. 
+          Get an AI-powered estimate of your car&apos;s market value in UAE. 
           Enter your vehicle details below or use VIN for quick autofill.
         </p>
         <div className="flex gap-4 text-xs text-muted-foreground/50">

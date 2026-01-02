@@ -69,7 +69,7 @@ export default function LegalPage() {
               Guides coming soon
             </p>
             <p className="text-xs text-muted-foreground/40 mt-2">
-              We're working on comprehensive legal and finance guides
+              We&apos;re working on comprehensive legal and finance guides
             </p>
           </div>
         )}

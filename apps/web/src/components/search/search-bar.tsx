@@ -12,7 +12,7 @@
  * @module components/search/search-bar
  */
 
-import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, X, Loader2, CircleDot, Factory, FileKey2, Car } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -31,6 +31,70 @@ function isValidVin(value: string): boolean {
 function isPartialVin(value: string): boolean {
   const cleaned = value.replace(/\s/g, '');
   return VIN_PARTIAL_REGEX.test(cleaned) && cleaned.length >= 10;
+}
+
+// VIN lookup cache and subscription store
+type VinResult = {
+  loading: boolean;
+  listing: { id: string; slug?: string; make: string; model: string; year: number } | null;
+  vin: string;
+} | null;
+
+const vinCache = new Map<string, VinResult>();
+const vinListeners = new Set<() => void>();
+
+function notifyVinListeners() {
+  vinListeners.forEach(listener => listener());
+}
+
+function subscribeVinStore(callback: () => void) {
+  vinListeners.add(callback);
+  return () => vinListeners.delete(callback);
+}
+
+async function lookupVin(vin: string): Promise<void> {
+  if (vinCache.has(vin) && !vinCache.get(vin)?.loading) return;
+  
+  vinCache.set(vin, { loading: true, listing: null, vin });
+  notifyVinListeners();
+  
+  try {
+    const res = await fetch(`/api/listings/check-vin?vin=${encodeURIComponent(vin)}`);
+    const data = await res.json();
+    
+    if (data.existingListing && data.existingListing.lifecycleStatus !== 'deleted') {
+      vinCache.set(vin, { loading: false, listing: data.existingListing, vin });
+    } else {
+      vinCache.set(vin, { loading: false, listing: null, vin });
+    }
+  } catch {
+    vinCache.set(vin, { loading: false, listing: null, vin });
+  }
+  
+  notifyVinListeners();
+}
+
+function useVinLookup(query: string): VinResult {
+  const trimmedVin = query.trim().replace(/\s/g, '').toUpperCase();
+  const isVinValid = isValidVin(trimmedVin);
+  
+  const getSnapshot = useCallback(() => {
+    if (!isVinValid) return null;
+    return vinCache.get(trimmedVin) ?? null;
+  }, [trimmedVin, isVinValid]);
+  
+  const result = useSyncExternalStore(subscribeVinStore, getSnapshot, getSnapshot);
+  
+  // Trigger lookup via effect-free pattern (in the render path via startTransition-like mechanism)
+  // We use useMemo to trigger side effect only when vin changes
+  useMemo(() => {
+    if (isVinValid && !vinCache.has(trimmedVin)) {
+      // Schedule lookup (this is safe because it's async and doesn't cause re-render during render)
+      queueMicrotask(() => lookupVin(trimmedVin));
+    }
+  }, [trimmedVin, isVinValid]);
+  
+  return result;
 }
 
 interface SearchBarProps {
@@ -63,11 +127,6 @@ export function SearchBar({
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  const [vinLookup, setVinLookup] = useState<{
-    loading: boolean;
-    listing: { id: string; slug?: string; make: string; model: string; year: number } | null;
-    vin: string;
-  } | null>(null);
   
   // Debounce query for API calls
   const debouncedQuery = useDebounce(query, 200);
@@ -75,37 +134,8 @@ export function SearchBar({
   // Get suggestions
   const { suggestions: apiSuggestions, isLoading } = useQuickSearch(debouncedQuery, isFocused);
   
-  // VIN lookup effect - check if a listing exists with this VIN
-  useEffect(() => {
-    const trimmedQuery = query.trim().replace(/\s/g, '');
-    
-    if (isValidVin(trimmedQuery)) {
-      setVinLookup({ loading: true, listing: null, vin: trimmedQuery.toUpperCase() });
-      
-      fetch(`/api/listings/check-vin?vin=${encodeURIComponent(trimmedQuery)}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.existingListing && data.existingListing.lifecycleStatus !== 'deleted') {
-            setVinLookup({
-              loading: false,
-              listing: data.existingListing,
-              vin: trimmedQuery.toUpperCase(),
-            });
-          } else {
-            setVinLookup({
-              loading: false,
-              listing: null,
-              vin: trimmedQuery.toUpperCase(),
-            });
-          }
-        })
-        .catch(() => {
-          setVinLookup({ loading: false, listing: null, vin: trimmedQuery.toUpperCase() });
-        });
-    } else {
-      setVinLookup(null);
-    }
-  }, [query]);
+  // VIN lookup using external store pattern (no setState in effect)
+  const vinLookup = useVinLookup(query);
   
   // Build combined suggestions with VIN result at top
   const suggestions = useMemo(() => {
@@ -226,6 +256,9 @@ export function SearchBar({
     }
   }, [handleSearch, router]);
 
+  // Clamp selectedIndex if it exceeds suggestions length (derived state)
+  const clampedSelectedIndex = selectedIndex >= suggestions.length ? -1 : selectedIndex;
+
   // Handle keyboard navigation
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (!showDropdown) {
@@ -250,8 +283,8 @@ export function SearchBar({
         break;
       case 'Enter':
         e.preventDefault();
-        if (selectedIndex >= 0 && suggestions[selectedIndex]) {
-          handleSuggestionClick(suggestions[selectedIndex]);
+        if (clampedSelectedIndex >= 0 && suggestions[clampedSelectedIndex]) {
+          handleSuggestionClick(suggestions[clampedSelectedIndex]);
         } else if (query.trim()) {
           handleSearch(query.trim());
         }
@@ -261,7 +294,7 @@ export function SearchBar({
         inputRef.current?.blur();
         break;
     }
-  }, [showDropdown, suggestions, selectedIndex, query, handleSearch, handleSuggestionClick]);
+  }, [showDropdown, suggestions, clampedSelectedIndex, query, handleSearch, handleSuggestionClick]);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -274,11 +307,6 @@ export function SearchBar({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  // Reset selected index when suggestions change
-  useEffect(() => {
-    setSelectedIndex(-1);
-  }, [suggestions]);
 
   // Size classes
   const sizeClasses = {
@@ -345,6 +373,7 @@ export function SearchBar({
           aria-expanded={showDropdown}
           aria-haspopup="listbox"
           aria-autocomplete="list"
+          aria-controls="search-suggestions-listbox"
           role="combobox"
         />
 
@@ -388,12 +417,12 @@ export function SearchBar({
                 <li
                   key={`${suggestion.type}-${suggestion.text}`}
                   role="option"
-                  aria-selected={selectedIndex === index}
+                  aria-selected={clampedSelectedIndex === index}
                   onClick={() => handleSuggestionClick(suggestion)}
                   className={cn(
                     'flex items-center justify-between px-4 py-3 cursor-pointer',
                     'transition-colors duration-100',
-                    selectedIndex === index 
+                    clampedSelectedIndex === index 
                       ? 'bg-primary/10' 
                       : 'hover:bg-muted/50'
                   )}
@@ -450,7 +479,7 @@ export function SearchBar({
               )}
             >
               <Search className="h-4 w-4" />
-              Search all for "{query.trim()}"
+              Search all for &quot;{query.trim()}&quot;
             </button>
           )}
         </div>

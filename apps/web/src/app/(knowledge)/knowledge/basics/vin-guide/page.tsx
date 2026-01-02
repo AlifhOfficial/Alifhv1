@@ -58,7 +58,7 @@ export default function VINGuidePage() {
         
         <p className="text-sm text-muted-foreground/70 leading-relaxed">
           A <strong className="text-foreground">Vehicle Identification Number (VIN)</strong> is a unique 17-character 
-          code assigned to every vehicle manufactured since 1981. Think of it as your car's fingerprint—no two vehicles 
+          code assigned to every vehicle manufactured since 1981. Think of it as your car&apos;s fingerprint—no two vehicles 
           share the same VIN.
         </p>
 
@@ -180,7 +180,7 @@ export default function VINGuidePage() {
               </span>
             </div>
             <p className="text-xs text-muted-foreground/60">
-              Dashboard VIN doesn't match door jamb or documents
+              Dashboard VIN doesn&apos;t match door jamb or documents
             </p>
           </div>
           

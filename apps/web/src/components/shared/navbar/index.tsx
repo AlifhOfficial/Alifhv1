@@ -11,12 +11,12 @@
 
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Moon, Sun, Menu, X, User } from "lucide-react";
+import { Moon, Sun, Menu, X } from "lucide-react";
 import { MegaDropdown } from "./mega-dropdown";
 import { MobileMenu } from "./mobile-menu";
 import { ProfileMenu } from "./user-dropdown";
@@ -125,6 +125,27 @@ const navItems: NavItem[] = [
   },
 ];
 
+// External store for mounted state (avoids setState in effect)
+const mountedStore = {
+  value: false,
+  listeners: new Set<() => void>(),
+  subscribe(callback: () => void) {
+    this.listeners.add(callback);
+    return () => this.listeners.delete(callback);
+  },
+  getSnapshot() {
+    return mountedStore.value;
+  },
+  getServerSnapshot() {
+    return false;
+  },
+};
+
+// Mark as mounted on client (runs once at module load)
+if (typeof window !== 'undefined') {
+  mountedStore.value = true;
+}
+
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -133,19 +154,23 @@ export function Navbar() {
   const [currentAuthModal, setCurrentAuthModal] = useState<AuthModalType>(null);
   const [triggerEmailVerification, setTriggerEmailVerification] = useState(false);
   const [triggerGoogleOnboarding, setTriggerGoogleOnboarding] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const hasHandledVerifiedRef = useRef(false);
+  const hasHandledGoogleRef = useRef(false);
+  const hasHandledAuthParamRef = useRef(false);
   
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { theme, setTheme, resolvedTheme } = useTheme();
-  const { user, isLoading, isSignedIn: isAuthenticated, refetch: refetchAuth } = useUser();
+  const { user, isSignedIn: isAuthenticated, refetch: refetchAuth } = useUser();
 
-  // Fix hydration by using mounted state
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  // Use external store for mounted state (no setState in effect)
+  const mounted = useSyncExternalStore(
+    mountedStore.subscribe.bind(mountedStore),
+    mountedStore.getSnapshot,
+    mountedStore.getServerSnapshot
+  );
 
   const isDark = mounted && resolvedTheme === "dark";
 
@@ -194,12 +219,7 @@ export function Navbar() {
     await handleSignOut();
   }, []);
 
-  // Auth handlers
-  const handleAuthClose = useCallback(() => {
-    setCurrentAuthModal(null);
-  }, []);
-
-  // If user is authenticated, close any open auth modals
+  // Close auth modal when user becomes authenticated (using rAF to avoid sync setState in effect)
   useEffect(() => {
     const closableModals: AuthModalType[] = [
       "signin",
@@ -209,57 +229,78 @@ export function Navbar() {
       "email-sent",
       "feedback",
     ];
-
-    if (isAuthenticated && currentAuthModal && closableModals.includes(currentAuthModal)) {
-      setCurrentAuthModal(null);
+    
+    if (!isAuthenticated || !currentAuthModal || !closableModals.includes(currentAuthModal)) {
+      return;
     }
+    
+    // Use requestAnimationFrame to defer the state update
+    const rafId = requestAnimationFrame(() => {
+      setCurrentAuthModal(null);
+    });
+    
+    return () => cancelAnimationFrame(rafId);
   }, [isAuthenticated, currentAuthModal]);
 
   // Detect verification redirect (?verified=true) and trigger welcome flow
   useEffect(() => {
     if (!searchParams) return;
     
+    let rafId: number;
+    
     // Handle email verification redirect
-    if (searchParams.get("verified") === "true") {
-      setTriggerEmailVerification(true);
+    if (searchParams.get("verified") === "true" && !hasHandledVerifiedRef.current) {
+      hasHandledVerifiedRef.current = true;
+      rafId = requestAnimationFrame(() => {
+        setTriggerEmailVerification(true);
+      });
 
       const params = new URLSearchParams(searchParams.toString());
       params.delete("verified");
       const queryString = params.toString();
       router.replace(`${pathname}${queryString ? `?${queryString}` : ""}`, { scroll: false });
-      return;
+      return () => cancelAnimationFrame(rafId);
     }
 
     // Handle Google OAuth redirect
-    if (searchParams.get("google") === "new" && isAuthenticated) {
-      setTriggerGoogleOnboarding(true);
+    if (searchParams.get("google") === "new" && isAuthenticated && !hasHandledGoogleRef.current) {
+      hasHandledGoogleRef.current = true;
+      rafId = requestAnimationFrame(() => {
+        setTriggerGoogleOnboarding(true);
+      });
 
       const params = new URLSearchParams(searchParams.toString());
       params.delete("google");
       const queryString = params.toString();
       router.replace(`${pathname}${queryString ? `?${queryString}` : ""}`, { scroll: false });
-      return;
+      return () => cancelAnimationFrame(rafId);
     }
 
     // Handle auth modal triggers from error page (?auth=signin or ?auth=signup)
     const authParam = searchParams.get("auth");
-    if (authParam === "signin" || authParam === "signup") {
-      setCurrentAuthModal(authParam);
+    if ((authParam === "signin" || authParam === "signup") && !hasHandledAuthParamRef.current) {
+      hasHandledAuthParamRef.current = true;
+      rafId = requestAnimationFrame(() => {
+        setCurrentAuthModal(authParam);
+      });
 
       const params = new URLSearchParams(searchParams.toString());
       params.delete("auth");
       const queryString = params.toString();
       router.replace(`${pathname}${queryString ? `?${queryString}` : ""}`, { scroll: false });
+      return () => cancelAnimationFrame(rafId);
     }
   }, [searchParams, pathname, router, isAuthenticated]);
 
   // Reset trigger after it fires so subsequent verifications can retrigger flow
   useEffect(() => {
     if (triggerEmailVerification) {
+      // Reset the handled ref so future verifications can trigger
+      hasHandledVerifiedRef.current = false;
       const timeoutId = window.setTimeout(() => {
         // Defer reset to the next tick so AuthManager can react to the change
         // This avoids races where the flag flips back before the effect runs
-        setTriggerEmailVerification(false);
+        requestAnimationFrame(() => setTriggerEmailVerification(false));
       }, 200);
       return () => window.clearTimeout(timeoutId);
     }
@@ -267,7 +308,10 @@ export function Navbar() {
 
   useEffect(() => {
     if (triggerGoogleOnboarding) {
-      const timeoutId = window.setTimeout(() => setTriggerGoogleOnboarding(false), 0);
+      hasHandledGoogleRef.current = false;
+      const timeoutId = window.setTimeout(() => {
+        requestAnimationFrame(() => setTriggerGoogleOnboarding(false));
+      }, 0);
       return () => window.clearTimeout(timeoutId);
     }
   }, [triggerGoogleOnboarding]);

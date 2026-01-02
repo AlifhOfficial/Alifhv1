@@ -70,7 +70,7 @@ export default function BuyingPage() {
               Guides coming soon
             </p>
             <p className="text-xs text-muted-foreground/40 mt-2">
-              We're working on comprehensive buying and selling guides
+              We&apos;re working on comprehensive buying and selling guides
             </p>
           </div>
         )}

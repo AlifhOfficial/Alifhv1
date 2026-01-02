@@ -24,7 +24,7 @@ import {
   createAuditLogEntry,
   invalidateListingCaches,
   getActivePartnerStaffMembershipByUserIdAndPartnerId,
-  eq, and, sql,
+  eq, sql,
 } from '@alifh/database';
 import { getClientIp } from '@/lib/utils/get-client-ip';
 

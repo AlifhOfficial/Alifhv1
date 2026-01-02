@@ -69,7 +69,7 @@ export default function MaintenancePage() {
               Guides coming soon
             </p>
             <p className="text-xs text-muted-foreground/40 mt-2">
-              We're working on comprehensive maintenance guides
+              We&apos;re working on comprehensive maintenance guides
             </p>
           </div>
         )}

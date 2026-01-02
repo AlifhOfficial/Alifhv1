@@ -5,7 +5,7 @@
 
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowRight, Scale, Search, Share2, CheckCircle2, Sparkles, Car, FileKey2 } from 'lucide-react';
+import { ArrowRight, Scale, Share2, CheckCircle2, Sparkles, Car, FileKey2 } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'How to Compare Cars - Side-by-Side Comparison Guide | Alifh',
@@ -119,7 +119,7 @@ export default function CompareGuidePage() {
           <span className="text-base">💡</span>
           <p className="text-muted-foreground/70">
             <strong className="text-blue-500">Tip:</strong> VIN search also works in the main search bar. 
-            Type a VIN anywhere and we'll find the car for you.
+            Type a VIN anywhere and we&apos;ll find the car for you.
           </p>
         </div>
       </section>
@@ -188,8 +188,8 @@ export default function CompareGuidePage() {
         <div className="flex gap-3 px-4 py-3 bg-muted/15 border border-border/40 rounded-lg text-xs">
           <span className="text-base">⚖️</span>
           <p className="text-muted-foreground/70">
-            <strong className="text-foreground">Note:</strong> Highlights are neutral and factual. They don't 
-            indicate a "winner"—just differences worth noting. Always verify details during inspection.
+            <strong className="text-foreground">Note:</strong> Highlights are neutral and factual. They don&apos;t 
+            indicate a &quot;winner&quot;—just differences worth noting. Always verify details during inspection.
           </p>
         </div>
       </section>

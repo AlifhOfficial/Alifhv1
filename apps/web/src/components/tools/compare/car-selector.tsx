@@ -262,7 +262,7 @@ export function CarSelector() {
 
               {results.length === 0 && query.trim() && !isSearching && !vinResult && !isVinSearching && (
                 <div className="p-8 text-center text-sm text-muted-foreground">
-                  No cars found for "{query}"
+                  No cars found for &quot;{query}&quot;
                 </div>
               )}
 

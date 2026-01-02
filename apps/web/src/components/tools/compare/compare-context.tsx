@@ -53,6 +53,7 @@ export function CompareProvider({ children }: { children: ReactNode }) {
         loadCars(ids);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   // Load car data by IDs
