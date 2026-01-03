@@ -229,8 +229,17 @@ class MemoryCache {
   }
 }
 
-// Singleton instance
-export const memoryCache = new MemoryCache();
+// Singleton instance that survives hot reloads in development
+// Use globalThis to persist across module re-evaluations
+const globalForCache = globalThis as unknown as { 
+  memoryCache: MemoryCache | undefined 
+};
+
+export const memoryCache = globalForCache.memoryCache ?? new MemoryCache();
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForCache.memoryCache = memoryCache;
+}
 
 /**
  * Cache Keys

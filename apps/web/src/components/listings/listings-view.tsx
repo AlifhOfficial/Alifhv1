@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { CarCard, CarListItem, CarCardSkeleton, CarListItemSkeleton } from '@/components/inventory';
 import { SearchBar } from '@/components/search/search-bar';
 import { FilterSidebar } from '@/components/search/filter-sidebar';
@@ -15,12 +15,10 @@ import { LayoutGrid, List, SlidersHorizontal, X, ChevronDown, Search, PanelLeftC
 import {
   Collapsible,
   CollapsibleContent,
-  CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import {
   Sheet,
   SheetContent,
-  SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
@@ -37,10 +35,15 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
-import { SORT_OPTIONS } from '@/lib/search-utils';
+import { SORT_OPTIONS, type SearchParams } from '@/lib/search-utils';
 import { cn } from '@/lib/utils';
 
-export function ListingsView() {
+interface ListingsViewProps {
+  /** When true, removes top padding for embedding in dashboards */
+  embedded?: boolean;
+}
+
+export function ListingsView({ embedded = false }: ListingsViewProps) {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid'); // Default to grid
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -73,40 +76,77 @@ export function ListingsView() {
     isLoading,
     isFetching,
     error,
-    setQuery,
     setFilters,
     clearFilters,
     setSort,
     loadMore,
   } = useSearch({ defaultLimit: 30 });
 
-  const activeChips = getActiveFilterChips(params);
+  // Memoize active chips to avoid recalculation on every render
+  const activeChips = useMemo(
+    () => getActiveFilterChips(params, listings),
+    [params, listings]
+  );
+
+  // Memoize chip removal handler to avoid recreating on each render
+  const handleChipRemove = useCallback((chipKey: string) => {
+    // Handle compound filters that need multiple params cleared
+    if (chipKey === 'partnerId') {
+      setFilters({ partnerId: undefined, partnerName: undefined });
+    } else if (chipKey === 'priceMin') {
+      setFilters({ priceMin: undefined, priceMax: undefined });
+    } else if (chipKey === 'yearMin') {
+      setFilters({ yearMin: undefined, yearMax: undefined });
+    } else {
+      setFilters({ [chipKey]: undefined });
+    }
+  }, [setFilters]);
 
   return (
-    <div className="min-h-screen bg-background pt-16 sm:pt-20">
-      {/* Main Content */}
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex gap-0">
-          {/* Collapsible Sidebar - Fixed position */}
-          <Collapsible open={sidebarOpen} onOpenChange={setSidebarOpen} className="hidden lg:block">
-            <CollapsibleContent className="w-64 flex-shrink-0">
-              <div className="fixed top-24 w-64 max-h-[calc(100vh-6rem)] overflow-y-auto pr-6 pb-8">
-                <FilterSidebar
-                  params={params}
-                  facets={facets}
-                  isLoading={isLoading}
-                  onFilterChange={setFilters}
-                  onClearFilters={clearFilters}
-                  activeFilterCount={activeFilterCount}
-                />
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
+    <TooltipProvider>
+      <div className={cn("min-h-screen bg-background", !embedded && "pt-16 sm:pt-20")}>
+        {/* Main Content */}
+        <div className={cn("mx-auto px-4 sm:px-6 lg:px-8", !embedded && "max-w-[1400px]")}>
+          <div className="flex gap-0">
+            {/* Sidebar - Different rendering for embedded vs public */}
+            {embedded ? (
+              /* Embedded: Simple sticky sidebar without animation */
+              sidebarOpen && (
+                <aside className="hidden lg:block w-64 flex-shrink-0 self-start sticky top-4">
+                  <div className="w-64 max-h-[calc(100vh-2rem)] overflow-y-auto pr-6 pb-8">
+                    <FilterSidebar
+                      params={params}
+                      facets={facets}
+                      isLoading={isLoading}
+                      onFilterChange={setFilters}
+                      onClearFilters={clearFilters}
+                      activeFilterCount={activeFilterCount}
+                    />
+                  </div>
+                </aside>
+              )
+            ) : (
+              /* Public: Collapsible sidebar with fixed position */
+              <Collapsible open={sidebarOpen} onOpenChange={setSidebarOpen} className="hidden lg:block">
+                <CollapsibleContent className="w-64 flex-shrink-0">
+                  <div className="w-64 max-h-[calc(100vh-6rem)] overflow-y-auto pr-6 pb-8 fixed top-24">
+                    <FilterSidebar
+                      params={params}
+                      facets={facets}
+                      isLoading={isLoading}
+                      onFilterChange={setFilters}
+                      onClearFilters={clearFilters}
+                      activeFilterCount={activeFilterCount}
+                    />
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            )}
 
           {/* Cards */}
           <main className={sidebarOpen ? "flex-1 min-w-0 lg:pl-8 lg:border-l lg:border-border/40" : "flex-1 min-w-0"}>
             {/* Sticky Search Header */}
-            <div className="sticky top-14 sm:top-16 z-30 bg-background pt-3 sm:pt-4 md:pt-6 pb-3 sm:pb-4 md:pb-6">
+            <div className={cn("sticky z-30 bg-background pt-3 sm:pt-4 md:pt-6 pb-3 sm:pb-4 md:pb-6", embedded ? "top-0" : "top-14 sm:top-16")}>
               {/* Search Row - Minimal */}
               <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6">
                 {/* Sidebar Toggle (Desktop) */}
@@ -149,12 +189,12 @@ export function ListingsView() {
                 </Sheet>
 
                 {/* Results count - hidden on mobile, shows on larger screens */}
-                <span className="hidden sm:inline-block text-sm text-muted-foreground tabular-nums">
+                <span className="hidden sm:inline-block text-sm text-muted-foreground tabular-nums whitespace-nowrap">
                   {isLoading ? '...' : `${meta?.total ?? 0} cars`}
                 </span>
 
-                {/* Search Bar - Full width on mobile */}
-                <div className="w-full sm:flex-1 order-last sm:order-none">
+                {/* Search Bar - Full width on mobile, flexible on desktop */}
+                <div className="w-full sm:w-auto sm:flex-1 sm:min-w-[200px] sm:max-w-md order-last sm:order-none">
                   <SearchBar
                     size="sm"
                     placeholder="Search make, model or dealer..."
@@ -163,56 +203,29 @@ export function ListingsView() {
                   />
                 </div>
 
-                {/* Featured Listings Toggle */}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        type="button"
-                        onClick={() => setFilters({ isBlkListing: params.isBlkListing ? undefined : true })}
-                        className={cn(
-                          'flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg transition-colors whitespace-nowrap',
-                          params.isBlkListing
-                            ? 'bg-foreground text-background'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
-                        )}
-                      >
-                        {params.isBlkListing && <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />}
-                        <span>Black</span>
-                        <Info className="h-3 w-3 sm:h-3.5 sm:w-3.5 opacity-50 flex-shrink-0" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-xs">
-                      <p className="text-xs">Top quality listings with verified details</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-
-                {/* Black Dealers Toggle */}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        type="button"
-                        onClick={() => setFilters({ isBlackTierPartner: params.isBlackTierPartner ? undefined : true })}
-                        className={cn(
-                          'flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg transition-colors whitespace-nowrap',
-                          params.isBlackTierPartner
-                            ? 'bg-foreground text-background'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
-                        )}
-                      >
-                        {params.isBlackTierPartner && <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />}
-                        <span className="hidden sm:inline">Ace Members</span>
-                        <span className="sm:hidden">Ace</span>
-                        <Info className="h-3 w-3 sm:h-3.5 sm:w-3.5 opacity-50 flex-shrink-0" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-xs">
-                      <p className="text-xs">Top-rated dealers with verified track records</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                {/* Popular Dropdown - Premium filters */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">
+                      <span>Popular</span>
+                      <ChevronDown className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48 bg-sidebar border-sidebar-border text-sidebar-foreground">
+                    <DropdownMenuItem
+                      onClick={() => setFilters({ isBlkListing: params.isBlkListing ? undefined : true })}
+                      className={`text-sm font-medium cursor-pointer ${params.isBlkListing ? 'bg-sidebar-accent text-sidebar-foreground' : 'hover:bg-sidebar-accent/50'}`}
+                    >
+                      Black Listings
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setFilters({ isBlackTierPartner: params.isBlackTierPartner ? undefined : true })}
+                      className={`text-sm font-medium cursor-pointer ${params.isBlackTierPartner ? 'bg-sidebar-accent text-sidebar-foreground' : 'hover:bg-sidebar-accent/50'}`}
+                    >
+                      Ace Members
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
 
                 {/* Sort Dropdown */}
                 <div className="relative">
@@ -271,7 +284,7 @@ export function ListingsView() {
                     {activeChips.map((chip) => (
                       <button
                         key={chip.key}
-                        onClick={() => setFilters({ [chip.key]: undefined })}
+                        onClick={() => handleChipRemove(chip.key)}
                         className="group flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs bg-secondary/50 hover:bg-secondary rounded-full transition-colors"
                       >
                         <span>{chip.label}</span>
@@ -306,7 +319,7 @@ export function ListingsView() {
               <>
                 {/* Mobile/Tablet: always grid */}
                 <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-                  {Array.from({ length: 8 }).map((_, i) => (
+                  {Array.from({ length: 6 }).map((_, i) => (
                     <CarCardSkeleton key={i} />
                   ))}
                 </div>
@@ -315,13 +328,13 @@ export function ListingsView() {
                 <div className="hidden lg:block">
                   {viewMode === 'grid' ? (
                     <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5">
-                      {Array.from({ length: 8 }).map((_, i) => (
+                      {Array.from({ length: 6 }).map((_, i) => (
                         <CarCardSkeleton key={i} />
                       ))}
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {Array.from({ length: 6 }).map((_, i) => (
+                      {Array.from({ length: 4 }).map((_, i) => (
                         <CarListItemSkeleton key={i} />
                       ))}
                     </div>
@@ -452,13 +465,19 @@ export function ListingsView() {
         </div>
       </div>
     </div>
+    </TooltipProvider>
   );
 }
 
 /**
  * Generate active filter chips for display
+ * @param params - Current search params
+ * @param listings - Optional listings data to derive partner name when not in params
  */
-function getActiveFilterChips(params: any): Array<{ key: string; label: string }> {
+function getActiveFilterChips(
+  params: SearchParams, 
+  listings?: Array<{ partnerName?: string | null }>
+): Array<{ key: string; label: string }> {
   const chips: Array<{ key: string; label: string }> = [];
 
   if (params.q) {
@@ -502,8 +521,11 @@ function getActiveFilterChips(params: any): Array<{ key: string; label: string }
   if (params.sellerType) {
     chips.push({ key: 'sellerType', label: params.sellerType === 'dealer' ? 'Dealers' : 'Private' });
   }
-  if (params.partnerId && params.partnerName) {
-    chips.push({ key: 'partnerId', label: params.partnerName });
+  if (params.partnerId) {
+    // Try to get partner name: 1) from URL params, 2) from listings data, 3) fallback
+    const partnerNameFromListings = listings?.find(l => l.partnerName)?.partnerName;
+    const label = params.partnerName || partnerNameFromListings || 'Partner';
+    chips.push({ key: 'partnerId', label });
   }
 
   return chips;

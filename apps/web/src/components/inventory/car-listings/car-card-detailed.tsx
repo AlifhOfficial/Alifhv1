@@ -8,7 +8,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { 
   Share2, 
@@ -19,8 +19,6 @@ import {
   ChevronRight, 
   Play, 
   MapPin,
-  Package,
-  MessageSquare,
 } from 'lucide-react';
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
@@ -41,21 +39,21 @@ interface CarCardDetailedProps {
 }
 
 // ============================================================================
-// Utility Functions
+// Utility Functions (Module-level to avoid recreation on every render)
 // ============================================================================
 
-const formatPrice = (amount: number) => {
-  return new Intl.NumberFormat('en-AE', {
-    style: 'currency',
-    currency: 'AED',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
-};
+const priceFormatter = new Intl.NumberFormat('en-AE', {
+  style: 'currency',
+  currency: 'AED',
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
 
-const formatMileage = (km: number) => {
-  return new Intl.NumberFormat('en-US').format(km);
-};
+const mileageFormatter = new Intl.NumberFormat('en-US');
+
+const formatPrice = (amount: number) => priceFormatter.format(amount);
+
+const formatMileage = (km: number) => mileageFormatter.format(km);
 
 const formatPriceShort = (amount: number) => {
   if (amount >= 1000000) {
@@ -148,14 +146,6 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
   );
 }
 
-function SpecRow({ label, value }: { label: string; value: string | number | null }) {
-  return (
-    <div className="flex flex-col gap-0.5 py-2">
-      <span className="text-[10px] text-muted-foreground/60 uppercase tracking-wider">{label}</span>
-      <span className="text-sm font-medium tracking-tight text-foreground">{value || '—'}</span>
-    </div>
-  );
-}
 
 function PricingInsights({ listing }: { listing: CarDetailedData }) {
   const valueFactors = listing.aiValueFactors;
@@ -283,7 +273,7 @@ function PricingInsights({ listing }: { listing: CarDetailedData }) {
 // Main Component
 // ============================================================================
 
-export function CarCardDetailed({ listing, kycVerified, className }: CarCardDetailedProps) {
+export function CarCardDetailed({ listing, kycVerified: _kycVerified, className }: CarCardDetailedProps) {
   const { isSignedIn } = useUser();
   const favorite = useFavorite(listing.id);
   const superlike = useSuperlike(listing.id);
@@ -292,20 +282,35 @@ export function CarCardDetailed({ listing, kycVerified, className }: CarCardDeta
   const [showSuperlikeLimit, setShowSuperlikeLimit] = useState(false);
   const [heartScale, setHeartScale] = useState(false);
 
+  // Timer refs for cleanup
+  const timersRef = useRef<NodeJS.Timeout[]>([]);
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      timersRef.current.forEach(clearTimeout);
+    };
+  }, []);
+
   const carTitle = `${listing.year} ${listing.make} ${listing.model}${listing.trim ? ` ${listing.trim}` : ''}`;
 
-  // Get owner remarks from specialNotes
-  const ownerRemarks: string[] = listing.specialNotes?.ownerRemarks || [];
+  // Memoize derived data to avoid recalculation on every render
+  const ownerRemarks = useMemo(() => 
+    listing.specialNotes?.ownerRemarks || [], 
+    [listing.specialNotes?.ownerRemarks]
+  );
   
-  // Combine all highlights: tags + legacy booleans
-  const allHighlights: string[] = [...listing.tags];
-  if (listing.specialNotes?.serviceHistory) allHighlights.push('Full Service History');
-  if (listing.specialNotes?.singleOwner) allHighlights.push('Single Owner');
-  if (listing.specialNotes?.accidentFree) allHighlights.push('Accident Free');
-  if (listing.specialNotes?.underWarranty) allHighlights.push('Under Warranty');
+  const allHighlights = useMemo(() => {
+    const highlights: string[] = [...listing.tags];
+    if (listing.specialNotes?.serviceHistory) highlights.push('Full Service History');
+    if (listing.specialNotes?.singleOwner) highlights.push('Single Owner');
+    if (listing.specialNotes?.accidentFree) highlights.push('Accident Free');
+    if (listing.specialNotes?.underWarranty) highlights.push('Under Warranty');
+    return highlights;
+  }, [listing.tags, listing.specialNotes]);
 
-  // Handlers
-  const handleShare = async () => {
+  // Handlers with useCallback to prevent recreation on every render
+  const handleShare = useCallback(async () => {
     const url = `${window.location.origin}/listings/${listing.slug || listing.id}`;
     const text = `${carTitle} - ${formatPrice(listing.price)}\n${formatMileage(listing.mileage)} km • ${formatEnumValue(listing.specs)} Specs • ${listing.emirate}`;
 
@@ -320,19 +325,20 @@ export function CarCardDetailed({ listing, kycVerified, className }: CarCardDeta
         console.error('Share error:', error);
       }
     }
-  };
+  }, [listing.slug, listing.id, listing.price, listing.mileage, listing.specs, listing.emirate, carTitle]);
 
-  const handleFavoriteClick = () => {
+  const handleFavoriteClick = useCallback(() => {
     if (!isSignedIn) {
       favorite.toggle();
       return;
     }
     setHeartScale(true);
     favorite.toggle();
-    setTimeout(() => setHeartScale(false), 400);
-  };
+    const timer = setTimeout(() => setHeartScale(false), 400);
+    timersRef.current.push(timer);
+  }, [isSignedIn, favorite]);
 
-  const handleSuperlikeClick = () => {
+  const handleSuperlikeClick = useCallback(() => {
     if (!isSignedIn) {
       superlike.toggle();
       return;
@@ -341,17 +347,23 @@ export function CarCardDetailed({ listing, kycVerified, className }: CarCardDeta
       superlike.toggle();
       return;
     }
-    if (!superlike.quota || superlike.quota.remaining <= 0) {
+    // If quota isn't loaded yet, show confirmation (API will validate)
+    if (!superlike.quota) {
+      setShowSuperlikeConfirm(true);
+      return;
+    }
+    // Check if user has superlikes remaining
+    if (superlike.quota.remaining <= 0) {
       setShowSuperlikeLimit(true);
       return;
     }
     setShowSuperlikeConfirm(true);
-  };
+  }, [isSignedIn, superlike]);
 
-  const confirmSuperlike = () => {
+  const confirmSuperlike = useCallback(() => {
     superlike.toggle();
     setShowSuperlikeConfirm(false);
-  };
+  }, [superlike]);
 
   return (
     <div className={cn("space-y-8", className)}>
@@ -479,9 +491,6 @@ export function CarCardDetailed({ listing, kycVerified, className }: CarCardDeta
           </p>
         </div>
       )}
-
-      {/* AI Pricing Insights */}
-      <PricingInsights listing={listing} />
 
       {/* Specifications - Two Column with Label/Value rows */}
       <div className="space-y-4">
@@ -630,6 +639,16 @@ export function CarCardDetailed({ listing, kycVerified, className }: CarCardDeta
         </a>
       )}
 
+      {/* AI Pricing Insights - Experimental */}
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground pt-4 border-t border-border/40">
+          <span className="text-red-500">⚠</span>{' '}
+          <span className="font-medium text-red-500">Experimental:</span>{' '}
+          Strictly do not rely on this. AI-generated insights are for reference only.
+        </p>
+        <PricingInsights listing={listing} />
+      </div>
+
       {/* Dialogs */}
       <SuperlikeConfirmationDialog
         isOpen={showSuperlikeConfirm}
@@ -646,12 +665,17 @@ export function CarCardDetailed({ listing, kycVerified, className }: CarCardDeta
       />
       
       <AuthRequiredDialog
-        isOpen={favorite.authRequired || superlike.authRequired}
-        onClose={() => {
-          if (favorite.authRequired) favorite.toggle();
-          if (superlike.authRequired) superlike.toggle();
-        }}
-        feature={favorite.authRequired ? 'favorites' : 'superlikes'}
+        isOpen={favorite.authRequired}
+        onClose={favorite.dismissAuth}
+        message={favorite.authMessage}
+        feature="favorites"
+      />
+      
+      <AuthRequiredDialog
+        isOpen={superlike.authRequired}
+        onClose={superlike.dismissAuth}
+        message={superlike.authMessage}
+        feature="superlikes"
       />
     </div>
   );

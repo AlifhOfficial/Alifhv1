@@ -85,12 +85,11 @@ function useVinLookup(query: string): VinResult {
   
   const result = useSyncExternalStore(subscribeVinStore, getSnapshot, getSnapshot);
   
-  // Trigger lookup via effect-free pattern (in the render path via startTransition-like mechanism)
-  // We use useMemo to trigger side effect only when vin changes
-  useMemo(() => {
+  // Trigger VIN lookup when a valid VIN is detected and not already cached
+  // Using useEffect is the correct pattern for side effects
+  useEffect(() => {
     if (isVinValid && !vinCache.has(trimmedVin)) {
-      // Schedule lookup (this is safe because it's async and doesn't cause re-render during render)
-      queueMicrotask(() => lookupVin(trimmedVin));
+      lookupVin(trimmedVin);
     }
   }, [trimmedVin, isVinValid]);
   

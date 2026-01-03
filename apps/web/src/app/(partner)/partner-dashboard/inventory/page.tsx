@@ -1,7 +1,7 @@
 'use client';
 
 import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
-import { PartnerInventoryClient } from "@/components/inventory";
+import { DealerInventory } from "@/components/inventory";
 import { useAuth } from "@/providers/auth-provider";
 import { redirect } from "next/navigation";
 
@@ -30,7 +30,7 @@ export default function PartnerInventoryPage() {
     <DashboardDisplayArea
      
     >
-      <PartnerInventoryClient
+      <DealerInventory
         partnerId={membership.partnerId}
         partnerName={membership.partnerName || "Partner"}
         partnerVerified={false}

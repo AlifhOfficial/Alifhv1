@@ -45,6 +45,24 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
+// Extracted outside handler to avoid recreation on each request
+type ListingResult = NonNullable<Awaited<ReturnType<typeof getListingDetailed>>>;
+
+async function fetchSellerData(listing: ListingResult) {
+  if (listing.partnerId) {
+    // Partner listing - fetch dealer profile and stats in parallel
+    const [partnerProfile, partnerStats] = await Promise.all([
+      getDealerBaseProfile(listing.partnerId),
+      calculatePartnerStats(listing.partnerId),
+    ]);
+    return { type: 'partner' as const, partner: partnerProfile, partnerStats };
+  } else {
+    // User listing - single query gets profile + extended user info
+    const userProfile = await getUserProfileByUserId(listing.userId);
+    return { type: 'user' as const, userProfile };
+  }
+}
+
 export async function GET(req: NextRequest, { params }: RouteParams) {
   try {
     // Rate limit by IP (public endpoint)
@@ -63,22 +81,6 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
         { error: 'Listing ID is required' },
         { status: 400 }
       );
-    }
-
-    // Helper to fetch seller data based on listing type
-    async function fetchSellerData(listing: NonNullable<Awaited<ReturnType<typeof getListingDetailed>>>) {
-      if (listing.partnerId) {
-        // Partner listing - fetch dealer profile and stats in parallel
-        const [partnerProfile, partnerStats] = await Promise.all([
-          getDealerBaseProfile(listing.partnerId),
-          calculatePartnerStats(listing.partnerId),
-        ]);
-        return { type: 'partner' as const, partner: partnerProfile, partnerStats };
-      } else {
-        // User listing - single query gets profile + extended user info
-        const userProfile = await getUserProfileByUserId(listing.userId);
-        return { type: 'user' as const, userProfile };
-      }
     }
 
     // In dev, bypass cache so new/updated listings reflect immediately.

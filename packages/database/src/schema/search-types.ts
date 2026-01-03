@@ -164,17 +164,20 @@ export interface SearchFacets {
 
 /**
  * Search API Response
+ * 
+ * Note: `facets` and `meta.total` are optional when using skipFacets/skipTotalCount options
  */
 export interface SearchResponse {
   /** Search results */
   data: SearchResultItem[];
   
-  /** Faceted counts */
-  facets: SearchFacets;
+  /** Faceted counts (undefined if skipFacets=true) */
+  facets?: SearchFacets;
   
   /** Pagination meta */
   meta: {
-    total: number;
+    /** Total count (undefined if skipTotalCount=true) */
+    total?: number;
     limit: number;
     offset: number;
     hasMore: boolean;

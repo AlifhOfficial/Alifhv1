@@ -15,6 +15,7 @@ import { user } from '../../../schema/auth';
 import { userProfile } from '../../../schema/profile';
 import { partner } from '../../../schema/partner';
 import { isPublicSql, isBlkListingSql } from './sql-fragments';
+import { isMissingColumnError } from './error-utils';
 
 export interface CarCardFilters {
   ids?: string[];
@@ -62,17 +63,71 @@ export interface CarCardData {
 }
 
 /**
+ * Build the common select fields for car card queries
+ * Extracted to avoid duplication between query paths
+ */
+function buildCardSelectFields(now: Date) {
+  return {
+    id: carListing.id,
+    make: carListing.make,
+    model: carListing.model,
+    year: carListing.year,
+    trim: carListing.trim,
+    price: carListing.price,
+    mileage: carListing.mileage,
+    emirate: carListing.emirate,
+    specs: carListing.specs,
+    thumbnail: carListing.thumbnail,
+    qiScore: carListing.qiScore,
+    isBlkListing: isBlkListingSql(),
+    postedByRole: carListing.postedByRole,
+    moderationStatus: carListing.moderationStatus,
+    lifecycleStatus: carListing.lifecycleStatus,
+    isPublic: isPublicSql(now),
+    partnerName: sql<string | null>`coalesce(${carListing.partnerBrandName}, ${partner.brandName})`,
+    partnerLogo: partner.logo,
+    partnerVerified: sql<boolean | null>`coalesce(${carListing.partnerVerified}, ${partner.isVerified})`,
+    sellerName: user.name,
+    sellerAvatarUrl: userProfile.avatar,
+    sellerKycVerified: userProfile.kycVerified,
+  } as const;
+}
+
+/**
+ * Build public visibility conditions (approved, active, not expired)
+ * Returns conditions array instead of mutating external array
+ */
+function buildPublicConditions(now: Date, includeExpiryCheck: boolean): SQL[] {
+  const conditions: SQL[] = [
+    eq(carListing.moderationStatus, 'approved'),
+    eq(carListing.lifecycleStatus, 'active'),
+    eq(carListing.needsRemoderation, false),
+  ];
+  
+  if (includeExpiryCheck) {
+    conditions.push(and(isNotNull(carListing.expiresAt), gt(carListing.expiresAt, now))!);
+  }
+  
+  return conditions;
+}
+
+/**
+ * Deduplicate listings by ID (handles potential DB anomalies)
+ */
+function deduplicateById<T extends { id: string }>(listings: T[]): T[] {
+  const seen = new Set<string>();
+  return listings.filter(listing => {
+    if (seen.has(listing.id)) return false;
+    seen.add(listing.id);
+    return true;
+  });
+}
+
+/**
  * Get listing cards with 2-step optimization
  * Step 1: Fetch IDs only (fast, index-driven)
  * Step 2: Batch fetch full details for those IDs
  */
-function isMissingColumnError(err: unknown, columnName: string): boolean {
-  const anyErr = err as any;
-  const code = anyErr?.code ?? anyErr?.cause?.code;
-  const message = String(anyErr?.message ?? anyErr?.cause?.message ?? '');
-  return code === '42703' && message.includes(columnName);
-}
-
 async function getListingCardsInternal(
   filters: CarCardFilters,
   options?: { ignoreExpiryFilter?: boolean }
@@ -87,12 +142,10 @@ async function getListingCardsInternal(
     limit = 20,
     offset = 0,
   } = filters;
+  
   const now = new Date();
   const ignoreExpiryFilter = options?.ignoreExpiryFilter === true;
-  const prefersPublishedOrder = visibility === 'public' || status === 'published' || status === 'public';
-  const orderByNewest = prefersPublishedOrder
-    ? [sql`${carListing.publishedAt} desc nulls last`, desc(carListing.createdAt)]
-    : [desc(carListing.createdAt)];
+  const selectFields = buildCardSelectFields(now);
 
   // Build WHERE conditions
   const whereConditions: SQL[] = [];
@@ -105,154 +158,118 @@ async function getListingCardsInternal(
     whereConditions.push(eq(carListing.partnerId, partnerId));
   }
 
-  const publicWhere = () => {
-    whereConditions.push(eq(carListing.moderationStatus, 'approved'));
-    whereConditions.push(eq(carListing.lifecycleStatus, 'active'));
-    whereConditions.push(eq(carListing.needsRemoderation, false));
-    if (!ignoreExpiryFilter) {
-      whereConditions.push(and(isNotNull(carListing.expiresAt), gt(carListing.expiresAt, now)));
-    }
-  };
-
   // Preferred explicit filters
-  if (moderationStatus) whereConditions.push(eq(carListing.moderationStatus, moderationStatus));
-  if (lifecycleStatus) whereConditions.push(eq(carListing.lifecycleStatus, lifecycleStatus));
+  if (moderationStatus) {
+    whereConditions.push(eq(carListing.moderationStatus, moderationStatus));
+  }
+  if (lifecycleStatus) {
+    whereConditions.push(eq(carListing.lifecycleStatus, lifecycleStatus));
+  }
+
+  // Determine if we need public visibility conditions
+  const needsPublicConditions = 
+    visibility === 'public' || 
+    status === 'published' || 
+    status === 'public';
 
   // Legacy overall status filter (maps to new dimensions)
   if (status) {
-    if (status === 'published' || status === 'public') {
-      publicWhere();
-    } else if (status === 'draft') {
-      whereConditions.push(eq(carListing.moderationStatus, 'draft'));
-    } else if (status === 'pending') {
-      whereConditions.push(
-        or(eq(carListing.moderationStatus, 'submitted'), eq(carListing.moderationStatus, 'pending_review'))
-      );
-    } else if (status === 'rejected') {
-      whereConditions.push(eq(carListing.moderationStatus, 'rejected'));
-    } else if (['archived', 'sold', 'expired', 'deleted'].includes(status)) {
-      whereConditions.push(eq(carListing.lifecycleStatus, status as any));
-    } else if (status !== 'all') {
-      // Fall back to visibility rules if an unknown status is passed.
-      if (visibility === 'public') publicWhere();
+    switch (status) {
+      case 'published':
+      case 'public':
+        whereConditions.push(...buildPublicConditions(now, !ignoreExpiryFilter));
+        break;
+      case 'draft':
+        whereConditions.push(eq(carListing.moderationStatus, 'draft'));
+        break;
+      case 'pending':
+        whereConditions.push(
+          or(eq(carListing.moderationStatus, 'submitted'), eq(carListing.moderationStatus, 'pending_review'))!
+        );
+        break;
+      case 'rejected':
+        whereConditions.push(eq(carListing.moderationStatus, 'rejected'));
+        break;
+      case 'archived':
+      case 'sold':
+      case 'expired':
+      case 'deleted':
+        whereConditions.push(eq(carListing.lifecycleStatus, status as any));
+        break;
+      case 'all':
+        // No additional conditions
+        break;
+      default:
+        // Unknown status - apply visibility rules
+        if (visibility === 'public') {
+          whereConditions.push(...buildPublicConditions(now, !ignoreExpiryFilter));
+        }
     }
   } else if (visibility === 'public') {
-    publicWhere();
+    whereConditions.push(...buildPublicConditions(now, !ignoreExpiryFilter));
   }
 
-  // Use 2-step pattern for better performance unless fetching specific IDs
-  if (!ids?.length) {
-    // STEP 1: Get IDs only with filtering and pagination
-    const listingIds = await db
-      .select({ id: carListing.id })
-      .from(carListing)
-      .where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
-      .orderBy(...orderByNewest)
-      .limit(limit)
-      .offset(offset);
+  const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
-    if (listingIds.length === 0) {
-      return [];
-    }
-
-    // STEP 2: Batch fetch full details for those specific IDs
-    const idsToFetch = listingIds.map(l => l.id);
+  // FAST PATH: Fetching by specific IDs (favorites/superlikes)
+  // Skip pagination/sorting - we want exactly those IDs
+  if (ids?.length) {
     const listings = await db
-      .select({
-        id: carListing.id,
-        make: carListing.make,
-        model: carListing.model,
-        year: carListing.year,
-        trim: carListing.trim,
-        price: carListing.price,
-        mileage: carListing.mileage,
-        emirate: carListing.emirate,
-        specs: carListing.specs,
-        thumbnail: carListing.thumbnail,
-        qiScore: carListing.qiScore,
-        isBlkListing: isBlkListingSql(),
-        postedByRole: carListing.postedByRole,
-        moderationStatus: carListing.moderationStatus,
-        lifecycleStatus: carListing.lifecycleStatus,
-        isPublic: isPublicSql(now),
-        partnerName: sql<string | null>`coalesce(${carListing.partnerBrandName}, ${partner.brandName})`,
-        partnerLogo: partner.logo,
-        partnerVerified: sql<boolean | null>`coalesce(${carListing.partnerVerified}, ${partner.isVerified})`,
-        sellerName: user.name,
-        sellerAvatarUrl: userProfile.avatar,
-        sellerKycVerified: userProfile.kycVerified,
-      })
+      .select(selectFields)
       .from(carListing)
       .leftJoin(user, eq(user.id, carListing.userId))
       .leftJoin(userProfile, eq(userProfile.userId, user.id))
       .leftJoin(partner, eq(partner.id, carListing.partnerId))
-      .where(inArray(carListing.id, idsToFetch));
+      .where(whereClause);
 
-    // Restore original sort order from step 1
-    const idOrder = new Map(idsToFetch.map((id, idx) => [id, idx]));
-    listings.sort((a, b) => (idOrder.get(a.id) ?? 0) - (idOrder.get(b.id) ?? 0));
+    // Preserve original ID order from input
+    const idOrder = new Map(ids.map((id, idx) => [id, idx]));
+    listings.sort((a, b) => (idOrder.get(a.id) ?? Infinity) - (idOrder.get(b.id) ?? Infinity));
 
-    // Deduplicate by ID in case of any database anomalies
-    const seen = new Set<string>();
-    const uniqueListings = listings.filter(listing => {
-      if (seen.has(listing.id)) return false;
-      seen.add(listing.id);
-      return true;
-    });
-
-    return uniqueListings;
+    return deduplicateById(listings);
   }
 
-  // Single query when fetching by specific IDs (favorites/superlikes)
-  const listings = await db
-    .select({
-      id: carListing.id,
-      make: carListing.make,
-      model: carListing.model,
-      year: carListing.year,
-      trim: carListing.trim,
-      price: carListing.price,
-      mileage: carListing.mileage,
-      emirate: carListing.emirate,
-      specs: carListing.specs,
-      thumbnail: carListing.thumbnail,
-      qiScore: carListing.qiScore,
-      isBlkListing: isBlkListingSql(),
-      postedByRole: carListing.postedByRole,
-      moderationStatus: carListing.moderationStatus,
-      lifecycleStatus: carListing.lifecycleStatus,
-      isPublic: isPublicSql(now),
-      partnerName: sql<string | null>`coalesce(${carListing.partnerBrandName}, ${partner.brandName})`,
-      partnerLogo: partner.logo,
-      partnerVerified: sql<boolean | null>`coalesce(${carListing.partnerVerified}, ${partner.isVerified})`,
-      sellerName: user.name,
-      sellerAvatarUrl: userProfile.avatar,
-      sellerKycVerified: userProfile.kycVerified,
-    })
+  // 2-STEP PATTERN: Browse/search with pagination
+  const prefersPublishedOrder = needsPublicConditions;
+  const orderByNewest = prefersPublishedOrder
+    ? [sql`${carListing.publishedAt} desc nulls last`, desc(carListing.createdAt)]
+    : [desc(carListing.createdAt)];
+
+  // STEP 1: Get IDs only with filtering and pagination (fast, index-driven)
+  const listingIds = await db
+    .select({ id: carListing.id })
     .from(carListing)
-    .leftJoin(user, eq(user.id, carListing.userId))
-    .leftJoin(userProfile, eq(userProfile.userId, user.id))
-    .leftJoin(partner, eq(partner.id, carListing.partnerId))
-    .where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
+    .where(whereClause)
     .orderBy(...orderByNewest)
     .limit(limit)
     .offset(offset);
 
-  // Deduplicate by ID in case of any database anomalies
-  const seen = new Set<string>();
-  const uniqueListings = listings.filter(listing => {
-    if (seen.has(listing.id)) return false;
-    seen.add(listing.id);
-    return true;
-  });
+  if (listingIds.length === 0) {
+    return [];
+  }
 
-  return uniqueListings;
+  // STEP 2: Batch fetch full details for those specific IDs
+  const idsToFetch = listingIds.map(l => l.id);
+  const listings = await db
+    .select(selectFields)
+    .from(carListing)
+    .leftJoin(user, eq(user.id, carListing.userId))
+    .leftJoin(userProfile, eq(userProfile.userId, user.id))
+    .leftJoin(partner, eq(partner.id, carListing.partnerId))
+    .where(inArray(carListing.id, idsToFetch));
+
+  // Restore original sort order from step 1
+  const idOrder = new Map(idsToFetch.map((id, idx) => [id, idx]));
+  listings.sort((a, b) => (idOrder.get(a.id) ?? 0) - (idOrder.get(b.id) ?? 0));
+
+  return deduplicateById(listings);
 }
 
 export async function getListingCards(filters: CarCardFilters): Promise<CarCardData[]> {
   try {
     return await getListingCardsInternal(filters);
   } catch (err) {
+    // Graceful degradation for missing expires_at column (schema migration)
     if ((filters.status === 'published' || filters.visibility === 'public') && isMissingColumnError(err, 'expires_at')) {
       return await getListingCardsInternal(filters, { ignoreExpiryFilter: true });
     }

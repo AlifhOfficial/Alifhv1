@@ -6,11 +6,12 @@
 
 'use client';
 
-import { CarCard } from "./car-card";
+import Image from "next/image";
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
-import { Users, CheckCircle2, Clock, Archive, ShoppingCart, AlertCircle, XCircle, User, RefreshCw, Crown, Star } from "lucide-react";
+import { CheckCircle2, Clock, Archive, ShoppingCart, AlertCircle, XCircle, User, RefreshCw, Crown } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
+import { cn } from "@/utils";
 import {
   Select,
   SelectContent,
@@ -22,10 +23,10 @@ import {
 // Status tab types
 type StatusTab = 'active' | 'sold' | 'archived' | 'expired' | 'all';
 
-interface PartnerInventoryClientProps {
+interface DealerInventoryProps {
   partnerId: string;
-  partnerName: string;
-  partnerVerified: boolean;
+  partnerName?: string; // Reserved for future use
+  partnerVerified?: boolean; // Reserved for future use
   userRole?: string; // owner | admin | staff
 }
 
@@ -67,6 +68,19 @@ interface BlackQuotaData {
   hasAvailableSlots: boolean;
 }
 
+// API response type for staff members
+interface StaffApiResponse {
+  id: string;
+  userId: string;
+  status: 'active' | 'left';
+  role?: string;
+  isOwner?: boolean;
+  displayName?: string;
+  userName?: string;
+  userEmail?: string;
+  userAvatar?: string | null;
+}
+
 interface ListingStats {
   all: number;
   active: number;
@@ -98,12 +112,12 @@ interface TeamMember {
   avatar: string | null;
 }
 
-export function PartnerInventoryClient({ 
+export function DealerInventory({ 
   partnerId, 
-  partnerName, 
-  partnerVerified,
+  partnerName: _partnerName, 
+  partnerVerified: _partnerVerified,
   userRole 
-}: PartnerInventoryClientProps) {
+}: DealerInventoryProps) {
   const [listings, setListings] = useState<ListingData[]>([]);
   const [stats, setStats] = useState<ListingStats | null>(null);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
@@ -188,18 +202,18 @@ export function PartnerInventoryClient({
       // Process team data if available
       if (teamResponse.ok) {
         const teamData = await teamResponse.json();
-        const allStaff = teamData.data || [];
+        const allStaff: StaffApiResponse[] = teamData.data || [];
         
         // Find and store owner's userId (check both isOwner flag and role)
-        const owner = allStaff.find((m: any) => m.isOwner || m.role === 'owner');
+        const owner = allStaff.find((m) => m.isOwner || m.role === 'owner');
         if (owner) {
           setOwnerUserId(owner.userId);
         }
         
         // Filter out owners - they shouldn't appear in staff inventory
         const members = allStaff
-          .filter((m: any) => !m.isOwner && m.role !== 'owner')
-          .map((m: any) => ({
+          .filter((m) => !m.isOwner && m.role !== 'owner')
+          .map((m) => ({
             id: m.id,
             userId: m.userId, // Use actual userId, not staff record id
             status: m.status,
@@ -221,7 +235,7 @@ export function PartnerInventoryClient({
       if (err instanceof Error && err.name === 'AbortError') return;
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch listings';
       setError(errorMessage);
-      console.error('[PartnerInventoryClient] Error:', err);
+      console.error('[DealerInventory] Error:', err);
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -358,8 +372,6 @@ export function PartnerInventoryClient({
     return filtered;
   }, [listings, selectedStaffFilter, selectedStatusTab]);
 
-  const publicListings = useMemo(() => filteredListings.filter((l) => l.isPublic), [filteredListings]);
-
   // Get status badge props based on listing status
   const getStatusBadge = (listing: ListingData) => {
     // Lifecycle status takes priority
@@ -410,7 +422,7 @@ export function PartnerInventoryClient({
             className="p-2 rounded-full hover:bg-secondary/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Refresh"
           >
-            <RefreshCw className="w-4 h-4" />
+            <RefreshCw className={cn("w-4 h-4", isRefreshing && "animate-spin")} />
           </button>
         </div>
 
@@ -676,12 +688,14 @@ export function PartnerInventoryClient({
                 
                 <div className="flex gap-6">
                   {/* Thumbnail */}
-                  <div className="w-48 h-32 bg-muted rounded-xl overflow-hidden flex-shrink-0">
+                  <div className="relative w-48 h-32 bg-muted rounded-xl overflow-hidden flex-shrink-0">
                     {listing.thumbnail ? (
-                      <img
+                      <Image
                         src={listing.thumbnail}
                         alt={`${listing.year} ${listing.make} ${listing.model}`}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
+                        sizes="192px"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-muted-foreground">
@@ -766,7 +780,7 @@ export function PartnerInventoryClient({
           </div>
           <h3 className="text-xl font-semibold text-foreground mb-2">No listings yet</h3>
           <p className="text-sm text-muted-foreground max-w-md text-center">
-            Your staff members haven't created any listings yet. Staff can create listings from the Work Listings dashboard.
+            Your staff members haven&apos;t created any listings yet. Staff can create listings from the Work Listings dashboard.
           </p>
         </div>
       )}

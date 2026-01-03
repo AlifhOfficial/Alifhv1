@@ -423,6 +423,24 @@ export const carListing = pgTable('car_listing', {
   index('car_listing_publishedAt_idx').on(table.publishedAt.desc()),
   index('car_listing_lifecycleStatus_expiresAt_idx').on(table.lifecycleStatus, table.expiresAt),
   index('car_listing_moderationStatus_lifecycleStatus_expiresAt_idx').on(table.moderationStatus, table.lifecycleStatus, table.expiresAt),
+  
+  // Public search base conditions index (moderation_status, lifecycle_status, needs_remoderation, expires_at)
+  // Covers: WHERE approved AND active AND NOT needs_remoderation AND expires_at > NOW()
+  index('car_listing_public_search_base_idx').on(
+    table.moderationStatus, 
+    table.lifecycleStatus, 
+    table.needsRemoderation, 
+    table.expiresAt
+  ),
+  
+  // Public search with publishedAt sorting (most common sort)
+  index('car_listing_public_search_publishedAt_idx').on(
+    table.moderationStatus, 
+    table.lifecycleStatus, 
+    table.needsRemoderation, 
+    table.publishedAt.desc()
+  ),
+  
   index('car_listing_make_idx').on(table.make),
   index('car_listing_model_idx').on(table.model),
   index('car_listing_year_idx').on(table.year),

@@ -242,6 +242,69 @@ export async function getListingsByPartnerId(
 }
 
 /**
+ * Build the stats select fields (shared between user and partner stats)
+ */
+function buildStatsSelectFields(now: Date) {
+  return {
+    all: sql<number>`count(*)`,
+    active: sql<number>`count(*) filter (where ${carListing.lifecycleStatus} = 'active')`,
+    public: sql<number>`
+      count(*) filter (
+        where ${carListing.moderationStatus} = 'approved'
+          and ${carListing.lifecycleStatus} = 'active'
+          and ${carListing.expiresAt} is not null
+          and ${carListing.expiresAt} > ${now}
+      )
+    `,
+    inReview: sql<number>`
+      count(*) filter (
+        where ${carListing.lifecycleStatus} = 'active'
+          and (${carListing.moderationStatus} = 'submitted' or ${carListing.moderationStatus} = 'pending_review')
+      )
+    `,
+    draft: sql<number>`count(*) filter (where ${carListing.moderationStatus} = 'draft')`,
+    rejected: sql<number>`count(*) filter (where ${carListing.moderationStatus} = 'rejected')`,
+    suspended: sql<number>`
+      count(*) filter (
+        where ${carListing.lifecycleStatus} = 'archived'
+          and coalesce(
+            ${carListing.specialNotes} ->> 'suspensionReason',
+            ${carListing.specialNotes} -> 'moderation' ->> 'reason'
+          ) is not null
+      )
+    `,
+    archived: sql<number>`
+      count(*) filter (
+        where ${carListing.lifecycleStatus} = 'archived'
+          and ${carListing.moderationStatus} <> 'rejected'
+          and coalesce(
+            ${carListing.specialNotes} ->> 'suspensionReason',
+            ${carListing.specialNotes} -> 'moderation' ->> 'reason'
+          ) is null
+      )
+    `,
+    sold: sql<number>`count(*) filter (where ${carListing.lifecycleStatus} = 'sold')`,
+    expired: sql<number>`count(*) filter (where ${carListing.lifecycleStatus} = 'expired')`,
+    deleted: sql<number>`count(*) filter (where ${carListing.lifecycleStatus} = 'deleted')`,
+  } as const;
+}
+
+/** Default stats when no data */
+const DEFAULT_STATS: ListingStats = {
+  all: 0,
+  active: 0,
+  public: 0,
+  inReview: 0,
+  draft: 0,
+  rejected: 0,
+  archived: 0,
+  suspended: 0,
+  sold: 0,
+  expired: 0,
+  deleted: 0,
+};
+
+/**
  * Get listing statistics for a user
  */
 export async function getListingStatsByUserId(
@@ -251,71 +314,16 @@ export async function getListingStatsByUserId(
   const now = new Date();
   const listingType = options?.listingType;
 
-  const whereBase = [eq(carListing.userId, userId)];
-  if (listingType === 'personal') whereBase.push(isNull(carListing.partnerId));
-  if (listingType === 'work') whereBase.push(isNotNull(carListing.partnerId));
+  const whereConditions = [eq(carListing.userId, userId)];
+  if (listingType === 'personal') whereConditions.push(isNull(carListing.partnerId));
+  if (listingType === 'work') whereConditions.push(isNotNull(carListing.partnerId));
 
   const [stats] = await db
-    .select({
-      all: sql<number>`count(*)`,
-      active: sql<number>`count(*) filter (where ${carListing.lifecycleStatus} = 'active')`,
-      public: sql<number>`
-        count(*) filter (
-          where ${carListing.moderationStatus} = 'approved'
-            and ${carListing.lifecycleStatus} = 'active'
-            and ${carListing.expiresAt} is not null
-            and ${carListing.expiresAt} > ${now}
-        )
-      `,
-      inReview: sql<number>`
-        count(*) filter (
-          where ${carListing.lifecycleStatus} = 'active'
-            and (${carListing.moderationStatus} = 'submitted' or ${carListing.moderationStatus} = 'pending_review')
-        )
-      `,
-      draft: sql<number>`count(*) filter (where ${carListing.moderationStatus} = 'draft')`,
-      rejected: sql<number>`count(*) filter (where ${carListing.moderationStatus} = 'rejected')`,
-      suspended: sql<number>`
-        count(*) filter (
-          where ${carListing.lifecycleStatus} = 'archived'
-            and coalesce(
-              ${carListing.specialNotes} ->> 'suspensionReason',
-              ${carListing.specialNotes} -> 'moderation' ->> 'reason'
-            ) is not null
-        )
-      `,
-      archived: sql<number>`
-        count(*) filter (
-          where ${carListing.lifecycleStatus} = 'archived'
-            and ${carListing.moderationStatus} <> 'rejected'
-            and coalesce(
-              ${carListing.specialNotes} ->> 'suspensionReason',
-              ${carListing.specialNotes} -> 'moderation' ->> 'reason'
-            ) is null
-        )
-      `,
-      sold: sql<number>`count(*) filter (where ${carListing.lifecycleStatus} = 'sold')`,
-      expired: sql<number>`count(*) filter (where ${carListing.lifecycleStatus} = 'expired')`,
-      deleted: sql<number>`count(*) filter (where ${carListing.lifecycleStatus} = 'deleted')`,
-    })
+    .select(buildStatsSelectFields(now))
     .from(carListing)
-    .where(and(...whereBase));
+    .where(and(...whereConditions));
 
-  return (
-    stats ?? {
-      all: 0,
-      active: 0,
-      public: 0,
-      inReview: 0,
-      draft: 0,
-      rejected: 0,
-      archived: 0,
-      suspended: 0,
-      sold: 0,
-      expired: 0,
-      deleted: 0,
-    }
-  );
+  return stats ?? DEFAULT_STATS;
 }
 
 /**
@@ -325,64 +333,9 @@ export async function getListingStatsByPartnerId(partnerId: string): Promise<Lis
   const now = new Date();
 
   const [stats] = await db
-    .select({
-      all: sql<number>`count(*)`,
-      active: sql<number>`count(*) filter (where ${carListing.lifecycleStatus} = 'active')`,
-      public: sql<number>`
-        count(*) filter (
-          where ${carListing.moderationStatus} = 'approved'
-            and ${carListing.lifecycleStatus} = 'active'
-            and ${carListing.expiresAt} is not null
-            and ${carListing.expiresAt} > ${now}
-        )
-      `,
-      inReview: sql<number>`
-        count(*) filter (
-          where ${carListing.lifecycleStatus} = 'active'
-            and (${carListing.moderationStatus} = 'submitted' or ${carListing.moderationStatus} = 'pending_review')
-        )
-      `,
-      draft: sql<number>`count(*) filter (where ${carListing.moderationStatus} = 'draft')`,
-      rejected: sql<number>`count(*) filter (where ${carListing.moderationStatus} = 'rejected')`,
-      suspended: sql<number>`
-        count(*) filter (
-          where ${carListing.lifecycleStatus} = 'archived'
-            and coalesce(
-              ${carListing.specialNotes} ->> 'suspensionReason',
-              ${carListing.specialNotes} -> 'moderation' ->> 'reason'
-            ) is not null
-        )
-      `,
-      archived: sql<number>`
-        count(*) filter (
-          where ${carListing.lifecycleStatus} = 'archived'
-            and ${carListing.moderationStatus} <> 'rejected'
-            and coalesce(
-              ${carListing.specialNotes} ->> 'suspensionReason',
-              ${carListing.specialNotes} -> 'moderation' ->> 'reason'
-            ) is null
-        )
-      `,
-      sold: sql<number>`count(*) filter (where ${carListing.lifecycleStatus} = 'sold')`,
-      expired: sql<number>`count(*) filter (where ${carListing.lifecycleStatus} = 'expired')`,
-      deleted: sql<number>`count(*) filter (where ${carListing.lifecycleStatus} = 'deleted')`,
-    })
+    .select(buildStatsSelectFields(now))
     .from(carListing)
     .where(eq(carListing.partnerId, partnerId));
 
-  return (
-    stats ?? {
-      all: 0,
-      active: 0,
-      public: 0,
-      inReview: 0,
-      draft: 0,
-      rejected: 0,
-      archived: 0,
-      suspended: 0,
-      sold: 0,
-      expired: 0,
-      deleted: 0,
-    }
-  );
+  return stats ?? DEFAULT_STATS;
 }

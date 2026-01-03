@@ -16,7 +16,7 @@
  * - Returns 500 for server errors
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import {
   createAuditLogEntry,
@@ -133,8 +133,9 @@ export async function POST(req: NextRequest) {
 
     // Server-side VIN uniqueness check (safety net for unique constraint)
     // Exclude soft-deleted listings - those VINs can be reused
+    let formattedVIN: string | undefined;
     if (body.vin) {
-      const formattedVIN = body.vin.toUpperCase().trim();
+      formattedVIN = body.vin.toUpperCase().trim();
       
       // Check if VIN is used by an active (non-deleted) listing
       const existingActive = await db
@@ -153,7 +154,8 @@ export async function POST(req: NextRequest) {
         );
       }
       
-      // Clear VIN from any soft-deleted listings to avoid unique constraint violation
+      // Clear VIN from soft-deleted listings to avoid unique constraint violation
+      // This runs only when we're about to create with this VIN
       await db
         .update(carListing)
         .set({ vin: null })
@@ -287,7 +289,7 @@ export async function POST(req: NextRequest) {
     // Create listing
     const listingId = await createCarListing(input);
 
-    // Generate AI valuation asynchronously (don't block response)
+    // Generate AI valuation asynchronously using after() to ensure completion
     // Only run for non-draft listings to save API calls
     if (moderationStatus !== 'draft') {
       // Pass only relevant data for valuation - lean input = better results
@@ -309,9 +311,10 @@ export async function POST(req: NextRequest) {
         extras: input.extras || null,
       };
 
-      // Fire and forget - don't await, let it run in background
-      generateValuation(valuationInput)
-        .then(async (result) => {
+      // Use after() to ensure AI valuation completes after response is sent
+      after(async () => {
+        try {
+          const result = await generateValuation(valuationInput);
           await updateListingAIValuation(listingId, {
             fairValue: result.fairValue,
             estimateMin: result.estimateMin,
@@ -322,10 +325,10 @@ export async function POST(req: NextRequest) {
             valueFactors: result.valueFactors,
           });
           console.log(`[AI Valuation] Listing ${listingId}: QI=${result.qiScore}, Confidence=${result.aiConfidenceScore}`);
-        })
-        .catch((error) => {
+        } catch (error) {
           console.error(`[AI Valuation] Failed for listing ${listingId}:`, error);
-        });
+        }
+      });
     }
 
     // AI Auto-Moderation for USER-posted listings only
@@ -361,16 +364,17 @@ export async function POST(req: NextRequest) {
         ownerRemarks: input.specialNotes?.ownerRemarks || null,
       };
 
-      // Fire and forget - don't await, let it run in background
-      moderateListing(moderationInput)
-        .then(async (result) => {
+      // Use after() to ensure AI moderation completes after response is sent
+      after(async () => {
+        try {
+          const result = await moderateListing(moderationInput);
           await updateListingAIModeration(listingId, result);
           console.log(`[AI Moderation] Listing ${listingId}: ${result.decision} (confidence: ${result.confidence})`);
-        })
-        .catch((error) => {
+        } catch (error) {
           console.error(`[AI Moderation] Failed for listing ${listingId}:`, error);
           // On failure, listing stays as 'submitted' for manual review
-        });
+        }
+      });
     }
 
     void createAuditLogEntry({

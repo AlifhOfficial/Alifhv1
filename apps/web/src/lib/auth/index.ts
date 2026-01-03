@@ -46,7 +46,8 @@ export const auth = betterAuth({
     expiresIn: AUTH_CONFIG.SESSION.EXPIRES_IN,
     updateAge: AUTH_CONFIG.SESSION.UPDATE_AGE,
     cookieCache: {
-      enabled: false, // Disable - we use our own memory cache with proper invalidation
+      enabled: true,
+      maxAge: 5 * 60, // 5 minutes - matches our memory cache TTL
     },
   },
 
@@ -110,7 +111,8 @@ export const auth = betterAuth({
       }>(cacheKey);
 
       if (cached) {
-        if (process.env.SESSION_DEBUG === 'true') {
+        // Always log cache hits in dev for debugging
+        if (process.env.NODE_ENV === 'development') {
           console.log(`[customSession] Cache HIT for user ${user.id.slice(0, 8)}... (saved DB query)`);
         }
         return {
@@ -233,7 +235,8 @@ export const auth = betterAuth({
       
       memoryCache.set(cacheKey, sessionData, CacheTTL.userSession);
       
-      if (process.env.SESSION_DEBUG === 'true') {
+      // Always log cache misses in dev for debugging
+      if (process.env.NODE_ENV === 'development') {
         console.log(`[customSession] Cache MISS for user ${user.id.slice(0, 8)}... - loaded from DB (${activePartnerships.length} memberships)`);
       }
 
@@ -291,9 +294,9 @@ export const auth = betterAuth({
   trustedOrigins: [
     process.env.NEXTAUTH_URL || "http://localhost:3000",
     process.env.NEXT_PUBLIC_NETWORK_URL || "",
-    "http://192.168.1.14:3000",
-    "http://192.168.1.14:8081",
-    "exp://192.168.1.14:8081",
+    "http://192.168.1.103:3000",
+    "http://192.168.1.103:8081",
+    "exp://192.168.1.103:8081",
   ].filter(Boolean),
 });
 

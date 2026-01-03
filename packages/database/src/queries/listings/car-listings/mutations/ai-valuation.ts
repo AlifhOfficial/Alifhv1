@@ -58,20 +58,26 @@ export async function updateListingAIValuation(
 
 /**
  * Batch update multiple listings with AI valuation data
- * Useful for backfilling existing listings
+ * Uses controlled parallelism (5 at a time) to balance speed vs DB load
  */
 export async function batchUpdateListingAIValuations(
-  updates: Array<{ listingId: string; valuation: AIValuationUpdateInput }>
+  updates: Array<{ listingId: string; valuation: AIValuationUpdateInput }>,
+  options?: { batchSize?: number }
 ): Promise<{ succeeded: number; failed: number }> {
+  const batchSize = options?.batchSize ?? 5;
   let succeeded = 0;
   let failed = 0;
   
-  for (const { listingId, valuation } of updates) {
-    const success = await updateListingAIValuation(listingId, valuation);
-    if (success) {
-      succeeded++;
-    } else {
-      failed++;
+  // Process in parallel batches
+  for (let i = 0; i < updates.length; i += batchSize) {
+    const batch = updates.slice(i, i + batchSize);
+    const results = await Promise.all(
+      batch.map(({ listingId, valuation }) => updateListingAIValuation(listingId, valuation))
+    );
+    
+    for (const success of results) {
+      if (success) succeeded++;
+      else failed++;
     }
   }
   

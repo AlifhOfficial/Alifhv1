@@ -74,7 +74,7 @@ import {
 const STEP_CONFIG = {
   vin: {
     title: "Vehicle Information",
-    subtitle: "Enter VIN to auto-fill vehicle details",
+    subtitle: "Enter your 17-character VIN to auto-fill details",
   },
   details: {
     title: "Specifications",
@@ -85,6 +85,9 @@ const STEP_CONFIG = {
     subtitle: "Set price and add photos",
   },
 } as const;
+
+// VIN limitation notice
+const VIN_NOTICE = "Note: Not all VINs are supported yet, especially Japanese-made vehicles (data sourced from NHTSA).";
 
 // ============================================================================
 // COMBOBOX COMPONENT - Minimal Design
@@ -120,17 +123,17 @@ function Combobox({
           aria-expanded={open}
           disabled={disabled}
           className={cn(
-            "w-full h-10 flex items-center justify-between px-0 bg-transparent border-b border-border text-sm",
-            "transition-colors focus:outline-none focus:border-foreground",
-            !value && "text-muted-foreground/50",
-            disabled && "opacity-50 cursor-not-allowed"
+            "w-full h-10 flex items-center justify-between px-3 bg-background border border-border/40 rounded-lg text-sm",
+            "transition-colors focus:outline-none focus:ring-1 focus:ring-ring hover:bg-secondary/30",
+            value ? "text-foreground font-medium" : "text-muted-foreground",
+            disabled && "opacity-50 cursor-not-allowed hover:bg-background"
           )}
         >
-          <span className="flex items-center gap-2 truncate">
+          <span className="flex items-center gap-2.5 truncate">
             {selected?.icon}
             {selected?.label || placeholder}
           </span>
-          <ChevronsUpDown className="w-4 h-4 text-muted-foreground" />
+          <ChevronsUpDown className="w-4 h-4 text-muted-foreground/80" />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
@@ -238,9 +241,9 @@ function VINInput({ value, onChange, onDecode, disabled, excludeListingId }: VIN
   };
   
   return (
-    <div className="space-y-3">
-      <div className="space-y-2">
-        <label className="text-xs text-muted-foreground/70">
+    <div className="space-y-4">
+      <div className="space-y-2.5">
+        <label className="text-xs font-medium text-muted-foreground/70 uppercase tracking-wider">
           Vehicle Identification Number
         </label>
         <div className="relative">
@@ -251,17 +254,18 @@ function VINInput({ value, onChange, onDecode, disabled, excludeListingId }: VIN
             disabled={disabled}
             placeholder="Enter 17-character VIN"
             className={cn(
-              "w-full h-10 bg-transparent border-b text-sm font-mono tracking-wider uppercase",
-              "transition-colors focus:outline-none px-0",
-              status === 'available' && "border-green-500 text-foreground",
-              status === 'taken' && "border-red-500",
-              status === 'error' && "border-yellow-500",
-              (status === 'idle' || status === 'checking') && "border-border focus:border-foreground",
-              disabled && "opacity-50 cursor-not-allowed"
+              "w-full h-11 bg-background border rounded-lg text-sm font-mono tracking-widest uppercase px-4",
+              "transition-colors focus:outline-none focus:ring-1 focus:ring-ring",
+              status === 'available' && "border-green-500/50 bg-green-500/5",
+              status === 'taken' && "border-destructive/50 bg-destructive/5",
+              status === 'error' && "border-yellow-500/50 bg-yellow-500/5",
+              (status === 'idle' || status === 'checking') && "border-border/40 hover:bg-secondary/30",
+              disabled && "opacity-50 cursor-not-allowed",
+              "placeholder:text-muted-foreground/70 placeholder:tracking-normal placeholder:font-sans"
             )}
           />
           
-          <div className="absolute right-0 top-1/2 -translate-y-1/2">
+          <div className="absolute right-4 top-1/2 -translate-y-1/2">
             {isChecking ? (
               <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />
             ) : status === 'available' ? (
@@ -274,16 +278,16 @@ function VINInput({ value, onChange, onDecode, disabled, excludeListingId }: VIN
       </div>
       
       {/* Character count */}
-      <p className="text-xs text-muted-foreground/50">
+      <p className="text-xs text-muted-foreground/70 tabular-nums">
         {value.length}/17 characters
       </p>
       
       {/* Status message */}
       {message && (
         <p className={cn(
-          "text-sm",
+          "text-sm font-medium",
           status === 'available' && "text-green-600",
-          status === 'taken' && "text-red-500",
+          status === 'taken' && "text-destructive",
           status === 'error' && "text-yellow-600"
         )}>
           {message}
@@ -318,10 +322,12 @@ function DecodedVehiclePreview({ data, isVisible }: DecodedVehiclePreviewProps) 
   ].filter(f => f.value);
   
   return (
-    <div className="mt-8 p-6 bg-muted/30 border border-border/40 rounded-xl">
-      <div className="flex items-center gap-2 mb-4">
-        <CheckCircle2 className="w-4 h-4 text-green-500" />
-        <span className="text-sm font-medium">
+    <div className="mt-6 p-4 sm:p-6 bg-card border border-border/40 rounded-2xl">
+      <div className="flex items-center gap-2.5 mb-4">
+        <div className="w-6 h-6 rounded-full bg-green-500/10 flex items-center justify-center">
+          <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
+        </div>
+        <span className="text-sm font-medium tracking-tight">
           {data.model ? 'Vehicle Identified' : 'Partial match - select model below'}
         </span>
       </div>
@@ -331,11 +337,11 @@ function DecodedVehiclePreview({ data, isVisible }: DecodedVehiclePreviewProps) 
       </h3>
       
       {decodedFields.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
           {decodedFields.map(({ label, value }) => (
             <div key={label} className="space-y-1">
               <p className="text-xs text-muted-foreground/70">{label}</p>
-              <p className="text-sm capitalize">{value}</p>
+              <p className="text-sm font-medium capitalize">{value}</p>
             </div>
           ))}
         </div>
@@ -358,11 +364,11 @@ interface FormFieldProps {
 function FormField({ label, required, error, children }: FormFieldProps) {
   return (
     <div className="space-y-2">
-      <label className="text-xs text-muted-foreground/70">
-        {label} {required && <span className="text-red-500">*</span>}
+      <label className="text-xs font-medium text-muted-foreground/70 uppercase tracking-wider">
+        {label} {required && <span className="text-destructive">*</span>}
       </label>
       {children}
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {error && <p className="text-xs text-destructive mt-1">{error}</p>}
     </div>
   );
 }
@@ -434,7 +440,12 @@ function VINStep({ data, updateField, errors, excludeListingId }: StepProps) {
   }, [updateField]);
   
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      {/* VIN Limitation Notice */}
+      <div className="p-3 sm:p-4 bg-muted/50 border border-border/40 rounded-lg">
+        <p className="text-xs text-muted-foreground">{VIN_NOTICE}</p>
+      </div>
+      
       {/* VIN Input */}
       <VINInput
         value={data.vin || ''}
@@ -450,9 +461,9 @@ function VINStep({ data, updateField, errors, excludeListingId }: StepProps) {
       <DecodedVehiclePreview data={data} isVisible={vinDecoded} />
       
       {/* Divider */}
-      <div className="flex items-center gap-4 pt-4">
+      <div className="flex items-center gap-4 pt-6">
         <div className="flex-1 h-px bg-border/40" />
-        <span className="text-xs text-muted-foreground/50">
+        <span className="text-xs font-medium text-muted-foreground/70">
           {vinDecoded ? "Verify details" : "Or enter manually"}
         </span>
         <div className="flex-1 h-px bg-border/40" />
@@ -492,7 +503,7 @@ function VINStep({ data, updateField, errors, excludeListingId }: StepProps) {
             placeholder="e.g. 2024"
             min={1990}
             max={new Date().getFullYear() + 1}
-            className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors px-0 text-sm placeholder:text-muted-foreground/30"
+            className="w-full h-10 bg-background border border-border/40 rounded-lg focus:outline-none focus:ring-1 focus:ring-ring hover:bg-secondary/30 transition-colors px-3 text-sm font-medium placeholder:text-muted-foreground"
           />
         </FormField>
         
@@ -502,7 +513,7 @@ function VINStep({ data, updateField, errors, excludeListingId }: StepProps) {
             value={data.trim || ''}
             onChange={(e) => updateField('trim', e.target.value)}
             placeholder="e.g. Sport, Limited, GT"
-            className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors px-0 text-sm placeholder:text-muted-foreground/30"
+            className="w-full h-10 bg-background border border-border/40 rounded-lg focus:outline-none focus:ring-1 focus:ring-ring hover:bg-secondary/30 transition-colors px-3 text-sm font-medium placeholder:text-muted-foreground"
           />
         </FormField>
       </div>
@@ -557,8 +568,8 @@ function DetailsStep({ data, updateField, errors }: StepProps) {
     <div className="space-y-12">
       {/* Required Specs */}
       <section className="space-y-6">
-        <div className="border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">Specifications</h3>
+        <div className="border-b border-border/40 pb-3">
+          <h3 className="text-base font-medium tracking-tight">Specifications</h3>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -569,7 +580,7 @@ function DetailsStep({ data, updateField, errors }: StepProps) {
               onChange={(e) => updateField('mileage', parseInt(e.target.value) || 0)}
               placeholder="e.g. 50,000"
               min={0}
-              className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors px-0 text-sm placeholder:text-muted-foreground/30"
+              className="w-full h-10 bg-background border border-border/40 rounded-lg focus:outline-none focus:ring-1 focus:ring-ring hover:bg-secondary/30 transition-colors px-3 text-sm font-medium placeholder:text-muted-foreground"
             />
           </FormField>
           
@@ -597,8 +608,8 @@ function DetailsStep({ data, updateField, errors }: StepProps) {
       
       {/* Appearance */}
       <section className="space-y-6">
-        <div className="border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">Appearance</h3>
+        <div className="border-b border-border/40 pb-3">
+          <h3 className="text-base font-medium tracking-tight">Appearance</h3>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -651,8 +662,8 @@ function DetailsStep({ data, updateField, errors }: StepProps) {
       
       {/* Engine & Performance */}
       <section className="space-y-6">
-        <div className="border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">Engine & Performance</h3>
+        <div className="border-b border-border/40 pb-3">
+          <h3 className="text-base font-medium tracking-tight">Engine & Performance</h3>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -691,7 +702,7 @@ function DetailsStep({ data, updateField, errors }: StepProps) {
               placeholder="e.g. 4, 6, 8"
               min={0}
               max={16}
-              className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors px-0 text-sm placeholder:text-muted-foreground/30"
+              className="w-full h-10 bg-background border border-border/40 rounded-lg focus:outline-none focus:ring-1 focus:ring-ring hover:bg-secondary/30 transition-colors px-3 text-sm font-medium placeholder:text-muted-foreground"
             />
           </FormField>
           
@@ -740,7 +751,7 @@ function DetailsStep({ data, updateField, errors }: StepProps) {
               value={data.torque || ''}
               onChange={(e) => updateField('torque', e.target.value)}
               placeholder="e.g. 350 Nm"
-              className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors px-0 text-sm placeholder:text-muted-foreground/30"
+              className="w-full h-10 bg-background border border-border/40 rounded-lg focus:outline-none focus:ring-1 focus:ring-ring hover:bg-secondary/30 transition-colors px-3 text-sm font-medium placeholder:text-muted-foreground"
             />
           </FormField>
           
@@ -750,7 +761,7 @@ function DetailsStep({ data, updateField, errors }: StepProps) {
               value={data.fuelEconomy || ''}
               onChange={(e) => updateField('fuelEconomy', e.target.value)}
               placeholder="e.g. 8.5 L/100km"
-              className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors px-0 text-sm placeholder:text-muted-foreground/30"
+              className="w-full h-10 bg-background border border-border/40 rounded-lg focus:outline-none focus:ring-1 focus:ring-ring hover:bg-secondary/30 transition-colors px-3 text-sm font-medium placeholder:text-muted-foreground"
             />
           </FormField>
         </div>
@@ -758,8 +769,8 @@ function DetailsStep({ data, updateField, errors }: StepProps) {
       
       {/* Warranty & Status */}
       <section className="space-y-6">
-        <div className="border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">Warranty & Status</h3>
+        <div className="border-b border-border/40 pb-3">
+          <h3 className="text-base font-medium tracking-tight">Warranty & Status</h3>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -796,9 +807,9 @@ function DetailsStep({ data, updateField, errors }: StepProps) {
       
       {/* Tags */}
       <section className="space-y-6">
-        <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">Highlights</h3>
-          <span className="text-xs text-muted-foreground/70">
+        <div className="flex items-baseline justify-between border-b border-border/40 pb-3">
+          <h3 className="text-base font-medium tracking-tight">Highlights</h3>
+          <span className="text-xs text-muted-foreground/70 tabular-nums">
             {(data.tags || []).length}/{MAX_LISTING_TAGS}
           </span>
         </div>
@@ -819,11 +830,11 @@ function DetailsStep({ data, updateField, errors }: StepProps) {
                   isSelected
                     ? "bg-foreground text-background border-foreground"
                     : isDisabled
-                    ? "bg-muted text-muted-foreground/30 border-border/40 cursor-not-allowed"
-                    : "bg-transparent text-muted-foreground border-border/40 hover:border-foreground hover:text-foreground"
+                    ? "bg-muted/30 text-muted-foreground/30 border-border/30 cursor-not-allowed"
+                    : "bg-transparent text-muted-foreground border-border/40 hover:bg-secondary/50 hover:text-foreground"
                 )}
               >
-                <span className="mr-1">{tag.icon}</span>
+                <span className="mr-1.5">{tag.icon}</span>
                 {tag.label}
               </button>
             );
@@ -833,8 +844,8 @@ function DetailsStep({ data, updateField, errors }: StepProps) {
       
       {/* Extras */}
       <section className="space-y-6">
-        <div className="border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">Features</h3>
+        <div className="border-b border-border/40 pb-3">
+          <h3 className="text-base font-medium tracking-tight">Features</h3>
         </div>
         
         <div className="flex flex-wrap gap-2">
@@ -847,13 +858,13 @@ function DetailsStep({ data, updateField, errors }: StepProps) {
                 type="button"
                 onClick={() => toggleExtra(extra.value)}
                 className={cn(
-                  "px-3 py-1.5 rounded-full text-xs transition-colors border",
+                  "px-3 py-1.5 rounded-full text-xs font-medium transition-colors border",
                   isSelected
-                    ? "bg-muted text-foreground border-foreground/20"
-                    : "bg-transparent text-muted-foreground/70 border-border/40 hover:text-foreground hover:border-border"
+                    ? "bg-muted text-foreground border-border"
+                    : "bg-transparent text-muted-foreground/70 border-border/40 hover:bg-secondary/50 hover:text-foreground"
                 )}
               >
-                {isSelected && <CheckCircle2 className="w-3 h-3 inline mr-1" />}
+                {isSelected && <CheckCircle2 className="w-3.5 h-3.5 inline mr-1.5" />}
                 {extra.label}
               </button>
             );
@@ -896,14 +907,14 @@ function PublishStep({ data, updateField, errors }: StepProps) {
     <div className="space-y-12">
       {/* Pricing */}
       <section className="space-y-6">
-        <div className="border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">Pricing</h3>
+        <div className="border-b border-border/40 pb-3">
+          <h3 className="text-base font-medium tracking-tight">Pricing</h3>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <FormField label="Price (AED)" required error={errors.price}>
             <div className="relative">
-              <span className="absolute left-0 top-1/2 -translate-y-1/2 text-xs text-muted-foreground/70">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">
                 AED
               </span>
               <input
@@ -912,20 +923,20 @@ function PublishStep({ data, updateField, errors }: StepProps) {
                 onChange={(e) => updateField('price', parseInt(e.target.value) || 0)}
                 placeholder="0"
                 min={1000}
-                className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors pl-10 pr-0 text-sm font-semibold tabular-nums placeholder:text-muted-foreground/30"
+                className="w-full h-11 bg-background border border-border/40 rounded-lg focus:outline-none focus:ring-1 focus:ring-ring hover:bg-secondary/30 transition-colors pl-14 pr-4 text-lg font-bold tabular-nums placeholder:text-muted-foreground"
               />
             </div>
           </FormField>
           
-          <div className="flex items-end">
-            <label className="flex items-center gap-3 cursor-pointer">
+          <div className="flex items-end pb-2">
+            <label className="flex items-center gap-3 cursor-pointer group">
               <input
                 type="checkbox"
                 checked={data.isNegotiable ?? true}
                 onChange={(e) => updateField('isNegotiable', e.target.checked)}
-                className="w-4 h-4 rounded border-border accent-foreground"
+                className="w-4 h-4 rounded border-border/60 accent-primary cursor-pointer"
               />
-              <span className="text-sm text-muted-foreground">Price is negotiable</span>
+              <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">Price is negotiable</span>
             </label>
           </div>
         </div>
@@ -933,8 +944,8 @@ function PublishStep({ data, updateField, errors }: StepProps) {
       
       {/* Location */}
       <section className="space-y-6">
-        <div className="border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">Location</h3>
+        <div className="border-b border-border/40 pb-3">
+          <h3 className="text-base font-medium tracking-tight">Location</h3>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -953,7 +964,7 @@ function PublishStep({ data, updateField, errors }: StepProps) {
               value={data.city || ''}
               onChange={(e) => updateField('city', e.target.value)}
               placeholder="e.g. Dubai Marina"
-              className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors px-0 text-sm placeholder:text-muted-foreground/30"
+              className="w-full h-10 bg-background border border-border/40 rounded-lg focus:outline-none focus:ring-1 focus:ring-ring hover:bg-secondary/30 transition-colors px-3 text-sm font-medium placeholder:text-muted-foreground"
             />
           </FormField>
         </div>
@@ -961,9 +972,9 @@ function PublishStep({ data, updateField, errors }: StepProps) {
       
       {/* Photos */}
       <section className="space-y-6">
-        <div className="border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">
-            Photos <span className="text-red-500">*</span>
+        <div className="border-b border-border/40 pb-3">
+          <h3 className="text-base font-medium tracking-tight">
+            Photos <span className="text-destructive">*</span>
           </h3>
           <p className="text-xs text-muted-foreground/70 mt-1">
             Add up to 20 photos. First photo will be the cover.
@@ -987,15 +998,15 @@ function PublishStep({ data, updateField, errors }: StepProps) {
             value={data.videoUrl || ''}
             onChange={(e) => updateField('videoUrl', e.target.value)}
             placeholder="https://youtube.com/watch?v=..."
-            className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors px-0 text-sm placeholder:text-muted-foreground/30"
+            className="w-full h-10 bg-background border border-border/40 rounded-lg focus:outline-none focus:ring-1 focus:ring-ring hover:bg-secondary/30 transition-colors px-3 text-sm font-medium placeholder:text-muted-foreground"
           />
         </FormField>
       </section>
       
       {/* Description */}
       <section className="space-y-6">
-        <div className="border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">Description</h3>
+        <div className="border-b border-border/40 pb-3">
+          <h3 className="text-base font-medium tracking-tight">Description</h3>
         </div>
         
         <Textarea
@@ -1003,31 +1014,31 @@ function PublishStep({ data, updateField, errors }: StepProps) {
           onChange={(e) => updateField('description', e.target.value)}
           placeholder="Describe your vehicle, its condition, history, and any other details..."
           rows={4}
-          className="w-full px-0 py-2 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors text-sm resize-none placeholder:text-muted-foreground/30"
+          className="w-full p-3 bg-background border border-border/40 rounded-lg focus:outline-none focus:ring-1 focus:ring-ring hover:bg-secondary/30 transition-colors text-sm font-medium resize-none placeholder:text-muted-foreground"
         />
       </section>
       
       {/* Owner Remarks */}
       <section className="space-y-6">
-        <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">Quick Notes</h3>
-          <span className="text-xs text-muted-foreground/70">{ownerRemarks.length}/10</span>
+        <div className="flex items-baseline justify-between border-b border-border/40 pb-3">
+          <h3 className="text-base font-medium tracking-tight">Quick Notes</h3>
+          <span className="text-xs text-muted-foreground/70 tabular-nums">{ownerRemarks.length}/10</span>
         </div>
         
         {ownerRemarks.length > 0 && (
-          <div className="space-y-2">
+          <div className="space-y-1">
             {ownerRemarks.map((remark, index) => (
               <div 
                 key={index}
-                className="flex items-center justify-between gap-3 py-2 border-b border-border/40"
+                className="flex items-center justify-between gap-3 py-2.5 border-b border-border/40 group"
               >
-                <span className="text-sm">{remark}</span>
+                <span className="text-sm font-medium">{remark}</span>
                 <button
                   type="button"
                   onClick={() => removeRemark(index)}
-                  className="p-1 text-muted-foreground/50 hover:text-foreground transition-colors"
+                  className="p-1.5 text-muted-foreground/40 hover:text-foreground hover:bg-muted/30 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
                 >
-                  <X className="w-3 h-3" />
+                  <X className="w-3.5 h-3.5" />
                 </button>
               </div>
             ))}
@@ -1043,15 +1054,15 @@ function PublishStep({ data, updateField, errors }: StepProps) {
               onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addRemark())}
               placeholder="e.g. Recently serviced, New tires..."
               maxLength={200}
-              className="flex-1 h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors px-0 text-sm placeholder:text-muted-foreground/30"
+              className="flex-1 h-10 bg-background border border-border/40 rounded-lg focus:outline-none focus:ring-1 focus:ring-ring hover:bg-secondary/30 transition-colors px-3 text-sm font-medium placeholder:text-muted-foreground"
             />
             <button
               type="button"
               onClick={addRemark}
               disabled={!newRemark.trim()}
-              className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground disabled:opacity-30 transition-colors"
+              className="px-3 h-10 bg-background border border-border/40 rounded-lg text-muted-foreground hover:bg-secondary/50 hover:text-foreground disabled:opacity-30 transition-colors flex items-center justify-center"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-5 h-5" />
             </button>
           </div>
         )}
@@ -1171,24 +1182,24 @@ export function ListingForm({
   };
   
   return (
-    <div className="max-w-4xl mx-auto px-6 py-16 space-y-16">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-16 space-y-12 sm:space-y-16">
       {/* Header */}
-      <section className="flex items-start justify-between gap-8">
+      <section className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 sm:gap-8">
         <div className="flex items-start gap-3">
           {onCancel && (
             <button
               onClick={onCancel}
               disabled={isSubmitting}
-              className="p-2 hover:bg-secondary/50 rounded-lg transition-colors mt-0.5"
+              className="p-2.5 hover:bg-muted/50 rounded-xl transition-all duration-200 mt-0.5"
             >
               <ArrowLeft className="w-4 h-4 text-muted-foreground" />
             </button>
           )}
-          <div className="space-y-2">
-            <h1 className="text-2xl font-semibold tracking-tight">
+          <div className="space-y-1">
+            <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
               {mode === 'edit' ? 'Edit Listing' : 'New Listing'}
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground/70">
               {stepConfig.subtitle}
             </p>
           </div>
@@ -1203,12 +1214,12 @@ export function ListingForm({
               disabled={index > currentStepIndex}
               className={cn(
                 "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-colors",
-                index === currentStepIndex && "bg-foreground text-background",
-                index < currentStepIndex && "bg-muted text-foreground cursor-pointer hover:bg-muted/80",
-                index > currentStepIndex && "text-muted-foreground/50"
+                index === currentStepIndex && "bg-primary text-primary-foreground",
+                index < currentStepIndex && "bg-muted text-foreground cursor-pointer hover:bg-secondary",
+                index > currentStepIndex && "text-muted-foreground/40"
               )}
             >
-              <span>{index + 1}</span>
+              <span className="w-5 h-5 flex items-center justify-center rounded-full bg-current/10 text-current">{index + 1}</span>
               <span className="hidden sm:inline">{step.label}</span>
             </button>
           ))}
@@ -1234,11 +1245,14 @@ export function ListingForm({
         
         {/* Error Summary */}
         {Object.keys(errors).length > 0 && (
-          <div className="mt-8 p-4 bg-red-500/5 border border-red-500/10 rounded-xl">
-            <p className="text-sm font-medium text-red-500 mb-2">Please fix the following:</p>
-            <ul className="text-sm text-red-500/80 space-y-1">
+          <div className="mt-8 p-4 bg-destructive/5 border border-destructive/20 rounded-lg">
+            <p className="text-sm font-medium text-destructive mb-2">Please fix the following:</p>
+            <ul className="text-xs text-destructive/90 space-y-1">
               {Object.entries(errors).map(([field, error]) => (
-                <li key={field}>• {error}</li>
+                <li key={field} className="flex items-start gap-2">
+                  <span className="text-destructive">•</span>
+                  <span>{error}</span>
+                </li>
               ))}
             </ul>
           </div>
@@ -1246,14 +1260,14 @@ export function ListingForm({
       </section>
 
       {/* Navigation */}
-      <section className="flex items-center justify-between pt-8 border-t border-border/40">
+      <section className="flex items-center justify-between pt-6 border-t border-border/40">
         <div className="flex gap-3">
           {currentStepIndex > 0 && (
             <button
               type="button"
               onClick={handleBack}
               disabled={isSubmitting}
-              className="px-5 py-2 rounded-full border border-border/40 text-sm font-medium hover:bg-secondary/50 transition-colors flex items-center gap-2"
+              className="px-4 py-2 rounded-full border border-border/40 text-sm font-medium text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors flex items-center gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
               Back
@@ -1267,7 +1281,7 @@ export function ListingForm({
               type="button"
               onClick={handleSaveDraft}
               disabled={isSubmitting}
-              className="px-5 py-2 rounded-full border border-border/40 text-sm font-medium hover:bg-secondary/50 transition-colors"
+              className="px-4 py-2 rounded-full border border-border/40 text-sm font-medium text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors"
             >
               Save Draft
             </button>
@@ -1278,7 +1292,7 @@ export function ListingForm({
               type="button"
               onClick={handleNext}
               disabled={isSubmitting}
-              className="px-6 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors flex items-center gap-2"
+              className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors flex items-center gap-2"
             >
               Continue
               <ArrowRight className="w-4 h-4" />
@@ -1288,7 +1302,7 @@ export function ListingForm({
               type="button"
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="px-6 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors flex items-center gap-2"
+              className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>

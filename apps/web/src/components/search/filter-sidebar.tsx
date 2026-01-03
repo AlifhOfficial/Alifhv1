@@ -10,7 +10,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { ChevronDown, CheckCircle2, X, Search } from 'lucide-react';
+import { ChevronDown, CheckCircle2, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Collapsible,
@@ -168,7 +168,7 @@ export function FilterSidebar({
         <MultiSelectFilter
           options={facets?.specs ?? []}
           selected={params.specs ?? []}
-          onChange={(specs) => onFilterChange({ specs: specs as any })}
+          onChange={(specs) => onFilterChange({ specs: specs as SearchParams['specs'] })}
           placeholder="Any specs"
           isLoading={isLoading}
         />
@@ -420,7 +420,7 @@ function MultiSelectFilter({
   options,
   selected,
   onChange,
-  placeholder,
+  placeholder: _placeholder, // Reserved for future search functionality
   isLoading,
   maxVisible = 6,
 }: MultiSelectFilterProps) {
@@ -518,34 +518,36 @@ function RangeFilter({
   singleValue = false,
   presets,
 }: RangeFilterProps) {
-  const [localMin, setLocalMin] = useState(minValue?.toString() ?? '');
-  const [localMax, setLocalMax] = useState(maxValue?.toString() ?? '');
+  // Use controlled inputs - derive display value from props
+  // For typing experience, we allow empty string to clear
+  const displayMin = minValue?.toString() ?? '';
+  const displayMax = maxValue?.toString() ?? '';
 
-  const handleMinChange = (value: string) => {
-    setLocalMin(value);
+  const handleMinChange = useCallback((value: string) => {
     const num = parseInt(value, 10);
     if (!value) {
       onChange(undefined, maxValue);
     } else if (!isNaN(num)) {
       onChange(num, maxValue);
     }
-  };
+  }, [onChange, maxValue]);
 
-  const handleMaxChange = (value: string) => {
-    setLocalMax(value);
+  const handleMaxChange = useCallback((value: string) => {
     const num = parseInt(value, 10);
     if (!value) {
       onChange(minValue, undefined);
     } else if (!isNaN(num)) {
       onChange(minValue, num);
     }
-  };
+  }, [onChange, minValue]);
 
-  const handlePresetClick = (preset: { min?: number; max?: number }) => {
+  const handlePresetClick = useCallback((preset: { min?: number; max?: number }) => {
     onChange(preset.min, preset.max);
-    setLocalMin(preset.min?.toString() ?? '');
-    setLocalMax(preset.max?.toString() ?? '');
-  };
+  }, [onChange]);
+
+  const handleClear = useCallback(() => {
+    onChange(undefined, undefined);
+  }, [onChange]);
 
   return (
     <div className="space-y-4">
@@ -582,7 +584,7 @@ function RangeFilter({
           <>
             <Input
               type="number"
-              value={localMin}
+              value={displayMin}
               onChange={(e) => handleMinChange(e.target.value)}
               placeholder="Min"
               min={rangeMin}
@@ -595,9 +597,9 @@ function RangeFilter({
         )}
         <Input
           type="number"
-          value={localMax}
+          value={displayMax}
           onChange={(e) => handleMaxChange(e.target.value)}
-          placeholder={singleValue ? 'Max' : 'Max'}
+          placeholder="Max"
           min={rangeMin}
           max={rangeMax}
           step={step}
@@ -619,11 +621,7 @@ function RangeFilter({
           </span>
           <button
             type="button"
-            onClick={() => {
-              onChange(undefined, undefined);
-              setLocalMin('');
-              setLocalMax('');
-            }}
+            onClick={handleClear}
             className="text-muted-foreground/60 hover:text-foreground transition-colors font-semibold"
           >
             Clear

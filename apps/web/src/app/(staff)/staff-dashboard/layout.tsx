@@ -10,6 +10,7 @@ const navSections = [
   {
     items: [
       { label: "Overview", href: "/staff-dashboard", icon: "layout-dashboard" },
+      { label: "Global Inventory", href: "/staff-dashboard/inventory", icon: "package" },
     ]
   },
   {

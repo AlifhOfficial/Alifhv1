@@ -288,6 +288,13 @@
       "when": 1767323771728,
       "tag": "0040_luxuriant_cyclops",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1767466778176,
+      "tag": "0041_nebulous_frog_thor",
+      "breakpoints": true
     }
   ]
 }

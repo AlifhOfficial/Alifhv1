@@ -74,14 +74,17 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL('/banned', request.url));
     }
 
-    // Store session in request headers for Server Components to reuse
+    // Clone request headers and add session data for Server Components to reuse
     // This eliminates redundant session fetches during the request lifecycle
-    const response = NextResponse.next();
-    response.headers.set(SESSION_HEADER_KEY, JSON.stringify(user));
+    // IMPORTANT: Use NextResponse.next({ request: { headers } }) to make headers available upstream
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set(SESSION_HEADER_KEY, JSON.stringify(user));
 
     // API routes don't need role-based redirects - they handle their own auth
     if (isApiRoute) {
-      return response;
+      return NextResponse.next({
+        request: { headers: requestHeaders },
+      });
     }
 
     // Role-based access control for specific dashboards
@@ -124,7 +127,10 @@ export async function proxy(request: NextRequest) {
       }
     }
 
-    return response;
+    // Return response with session header passed to downstream handlers
+    return NextResponse.next({
+      request: { headers: requestHeaders },
+    });
   } catch (error) {
     console.error("[Proxy] Error checking session:", error);
     return NextResponse.redirect(new URL("/sign-in", request.url));

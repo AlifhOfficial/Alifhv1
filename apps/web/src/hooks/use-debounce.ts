@@ -9,7 +9,7 @@
  * @module hooks/use-debounce
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 /**
  * Debounce a value by the specified delay
@@ -57,29 +57,33 @@ export function useDebounce<T>(value: T, delay = 300): T {
  * 
  * <input onChange={(e) => debouncedSearch(e.target.value)} />
  */
-export function useDebouncedCallback<T extends (...args: any[]) => any>(
+export function useDebouncedCallback<T extends (...args: unknown[]) => unknown>(
   callback: T,
   delay = 300
 ): (...args: Parameters<T>) => void {
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const callbackRef = useRef(callback);
+  
+  // Keep callback ref up to date via effect
+  useEffect(() => {
+    callbackRef.current = callback;
+  });
 
   useEffect(() => {
     return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
     };
-  }, [timeoutId]);
+  }, []);
 
-  return (...args: Parameters<T>) => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
+  return useCallback((...args: Parameters<T>) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
     }
 
-    const newTimeoutId = setTimeout(() => {
-      callback(...args);
+    timeoutRef.current = setTimeout(() => {
+      callbackRef.current(...args);
     }, delay);
-
-    setTimeoutId(newTimeoutId);
-  };
+  }, [delay]);
 }

@@ -1,0 +1,2 @@
+CREATE INDEX "car_listing_public_search_base_idx" ON "car_listing" USING btree ("moderation_status","lifecycle_status","needs_remoderation","expires_at");--> statement-breakpoint
+CREATE INDEX "car_listing_public_search_publishedAt_idx" ON "car_listing" USING btree ("moderation_status","lifecycle_status","needs_remoderation","published_at" DESC NULLS LAST);

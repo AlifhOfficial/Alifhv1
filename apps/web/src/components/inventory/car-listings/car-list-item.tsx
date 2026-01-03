@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { Share2, Heart, Sparkles, CheckCircle2 } from 'lucide-react';
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { cn } from '@/utils';
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
 import { SuperlikeLimitDialog } from '@/components/engagement/favorites/superlike-limit-dialog';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
@@ -119,6 +119,31 @@ export function CarListItem({
   const [showSparkles, setShowSparkles] = useState(false);
   const [heartScale, setHeartScale] = useState(false);
 
+  // Timer refs for cleanup
+  const timersRef = useRef<NodeJS.Timeout[]>([]);
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      timersRef.current.forEach(clearTimeout);
+    };
+  }, []);
+
+  const handleShare = useCallback(async () => {
+    const url = `${window.location.origin}/listings/${id}`;
+    const title = `${year} ${make} ${model}${trim ? ` ${trim}` : ''}`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, url });
+      } catch {
+        // User cancelled or share failed silently
+      }
+    } else {
+      await navigator.clipboard.writeText(url);
+    }
+  }, [id, year, make, model, trim]);
+
   const handleSuperlikeClick = () => {
     if (superlike.isSuperliked) {
       superlike.toggle();
@@ -140,14 +165,16 @@ export function CarListItem({
 
   const confirmSuperlike = async () => {
     setShowSparkles(true);
-    setTimeout(() => superlike.toggle(), 100);
-    setTimeout(() => setShowSparkles(false), 2000);
+    const timer1 = setTimeout(() => superlike.toggle(), 100);
+    const timer2 = setTimeout(() => setShowSparkles(false), 2000);
+    timersRef.current.push(timer1, timer2);
   };
 
   const handleFavoriteClick = () => {
     setHeartScale(true);
     favorite.toggle();
-    setTimeout(() => setHeartScale(false), 400);
+    const timer = setTimeout(() => setHeartScale(false), 400);
+    timersRef.current.push(timer);
   };
 
   const carTitle = `${year} ${make} ${model}${trim ? ` ${trim}` : ''}`;
@@ -295,6 +322,11 @@ export function CarListItem({
                   : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
               )}
               aria-label="Share"
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                handleShare();
+              }}
             >
               <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
@@ -382,41 +414,27 @@ export function CarListItem({
       {/* Falling Sparkles Effect */}
       {showSparkles && (
         <div className="fixed inset-0 pointer-events-none overflow-hidden z-[9999]">
-          <style jsx>{`
-            @keyframes fall {
-              0% {
-                transform: translateY(-100px) rotate(0deg);
-                opacity: 0;
-              }
-              10% {
-                opacity: 1;
-              }
-              90% {
-                opacity: 1;
-              }
-              100% {
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0;
-              }
-            }
-            .sparkle-fall {
-              position: absolute;
-              animation: fall 2s ease-in forwards;
-              font-size: 24px;
-            }
-          `}</style>
-          {[...Array(40)].map((_, i) => (
-            <div
-              key={i}
-              className="sparkle-fall"
-              style={{
-                left: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 0.6}s`,
-              }}
-            >
-              ✨
-            </div>
-          ))}
+          {Array.from({ length: 30 }, (_, i) => {
+            const left = (i * 3.33) + Math.random() * 2;
+            const delay = (i % 5) * 0.1;
+            const duration = 1.5 + (i % 3) * 0.3;
+            const size = 16 + (i % 4) * 4;
+            
+            return (
+              <span
+                key={i}
+                className="absolute animate-sparkle-fall"
+                style={{
+                  left: `${left}%`,
+                  animationDelay: `${delay}s`,
+                  animationDuration: `${duration}s`,
+                  fontSize: `${size}px`,
+                }}
+              >
+                {i % 3 === 0 ? '⭐' : i % 3 === 1 ? '✨' : '💫'}
+              </span>
+            );
+          })}
         </div>
       )}
     </div>

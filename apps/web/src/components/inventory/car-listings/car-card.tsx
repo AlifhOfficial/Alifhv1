@@ -11,12 +11,65 @@ import { Share2, Heart, CheckCircle2, Sparkles } from 'lucide-react';
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
 import { cn } from '@/utils';
-import { useState, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
 import { SuperlikeLimitDialog } from '@/components/engagement/favorites/superlike-limit-dialog';
 import { AuthRequiredDialog } from '@/components/auth/auth-required-dialog';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
+
+// ============================================================================
+// FORMAT UTILITIES (Module-level to avoid recreation on every render)
+// ============================================================================
+
+const priceFormatter = new Intl.NumberFormat('en-AE', {
+  style: 'currency',
+  currency: 'AED',
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
+function formatPrice(amount: number): string {
+  return priceFormatter.format(amount);
+}
+
+function formatMileage(km: number): string {
+  if (km >= 1000) {
+    return `${(km / 1000).toFixed(0)}k`;
+  }
+  return km.toString();
+}
+
+const EMIRATE_MAP: Record<string, string> = {
+  'dubai': 'Dubai',
+  'abu_dhabi': 'Abu Dhabi',
+  'sharjah': 'Sharjah',
+  'ajman': 'Ajman',
+  'ras_al_khaimah': 'Ras Al Khaimah',
+  'fujairah': 'Fujairah',
+  'umm_al_quwain': 'Umm Al Quwain',
+};
+
+function formatEmirate(emirate: string): string {
+  return EMIRATE_MAP[emirate.toLowerCase()] || emirate;
+}
+
+const SPECS_MAP: Record<string, string> = {
+  'gcc': 'GCC',
+  'us': 'US',
+  'european': 'European',
+  'japanese': 'Japanese',
+  'canadian': 'Canadian',
+  'american': 'American',
+};
+
+function formatSpecs(specs: string): string {
+  return SPECS_MAP[specs.toLowerCase()] || specs;
+}
+
+// ============================================================================
+// COMPONENT
+// ============================================================================
 
 interface CarCardProps {
   id: string;
@@ -30,7 +83,7 @@ interface CarCardProps {
   specs?: string | null;
   thumbnail?: string | null;
   images?: string[];
-  viewCount?: number;
+  viewCount?: number; // Reserved for future use
   qiScore?: number | null;
   isBlkListing?: boolean; // Black listing flag
   // Partner/Dealer info
@@ -57,7 +110,7 @@ export function CarCard({
   specs = 'GCC',
   thumbnail,
   images,
-  qiScore,
+  qiScore: _qiScore, // Reserved for future use
   isBlkListing,
   partnerName,
   partnerLogo,
@@ -69,73 +122,57 @@ export function CarCard({
   className,
   priority = false, // LCP optimization for first card
 }: CarCardProps) {
-  // Format functions
-  const formatPrice = (amount: number) => {
-    return new Intl.NumberFormat('en-AE', {
-      style: 'currency',
-      currency: 'AED',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount); // Price stored as full AED, not fils
-  };
-
-  const formatMileage = (km: number) => {
-    if (km >= 1000) {
-      return `${(km / 1000).toFixed(0)}k`;
-    }
-    return km.toString();
-  };
-
-  const formatEmirate = (emirate: string) => {
-    const emirateMap: Record<string, string> = {
-      'dubai': 'Dubai',
-      'abu_dhabi': 'Abu Dhabi',
-      'sharjah': 'Sharjah',
-      'ajman': 'Ajman',
-      'ras_al_khaimah': 'Ras Al Khaimah',
-      'fujairah': 'Fujairah',
-      'umm_al_quwain': 'Umm Al Quwain',
-    };
-    return emirateMap[emirate.toLowerCase()] || emirate;
-  };
-
-  const formatSpecs = (specs: string) => {
-    const specsMap: Record<string, string> = {
-      'gcc': 'GCC',
-      'us': 'US',
-      'european': 'European',
-      'japanese': 'Japanese',
-      'canadian': 'Canadian',
-      'american': 'American',
-    };
-    return specsMap[specs.toLowerCase()] || specs;
-  };
-
+  // Derived display values
   const displayImage = thumbnail || images?.[0] || '/assets/cars/car1.avif';
   const displaySpecs = formatSpecs(specs || 'GCC');
   const displayEmirate = formatEmirate(emirate);
-  const { user, isSignedIn } = useUser();
+  const displaySellerName = partnerName || sellerName || 'Private Seller';
+  const isPartnerListing = Boolean(partnerLogo || partnerName);
+  const carTitle = `${year} ${make} ${model}${trim ? ` ${trim}` : ''}`;
+  
+  const { isSignedIn } = useUser();
   
   // Separate hooks for favorites and superlikes - completely independent
   const favorite = useFavorite(id);
   const superlike = useSuperlike(id);
 
-  const [showSuperlikeConfirm, setShowSuperlikeConfirm] = useState(false);
-  const [showSuperlikeLimit, setShowSuperlikeLimit] = useState(false);
+  const [showSuperlikeConfirmRaw, setShowSuperlikeConfirm] = useState(false);
+  const [showSuperlikeLimitRaw, setShowSuperlikeLimit] = useState(false);
   const [showSparkles, setShowSparkles] = useState(false);
   const [showHearts, setShowHearts] = useState(false);
   const [heartScale, setHeartScale] = useState(false);
 
-  // Close superlike dialogs when auth dialog appears
-  // Close superlike dialogs when auth is required
-  useEffect(() => {
-    if (favorite.authRequired || superlike.authRequired) {
-      setShowSuperlikeConfirm(false);
-      setShowSuperlikeLimit(false);
-    }
-  }, [favorite.authRequired, superlike.authRequired]);
+  // Timer refs for cleanup
+  const timersRef = useRef<NodeJS.Timeout[]>([]);
 
-  const handleSuperlikeClick = () => {
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      timersRef.current.forEach(clearTimeout);
+    };
+  }, []);
+
+  const handleShare = useCallback(async () => {
+    const url = `${window.location.origin}/listings/${id}`;
+    const title = carTitle;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, url });
+      } catch {
+        // User cancelled or share failed silently
+      }
+    } else {
+      await navigator.clipboard.writeText(url);
+    }
+  }, [id, carTitle]);
+
+  // Derive dialog visibility - close dialogs when auth is required
+  const authDialogOpen = favorite.authRequired || superlike.authRequired;
+  const showSuperlikeConfirm = showSuperlikeConfirmRaw && !authDialogOpen;
+  const showSuperlikeLimit = showSuperlikeLimitRaw && !authDialogOpen;
+
+  const handleSuperlikeClick = useCallback(() => {
     // Check if user is authenticated first
     if (!isSignedIn) {
       // Directly trigger the auth flow by calling toggle
@@ -164,24 +201,26 @@ export function CarCard({
 
     // Show confirmation dialog
     setShowSuperlikeConfirm(true);
-  };
+  }, [isSignedIn, superlike]);
 
-  const confirmSuperlike = async () => {
+  const confirmSuperlike = useCallback(() => {
     // Show sparkles effect
     setShowSparkles(true);
     
     // Trigger the toggle after a brief delay
-    setTimeout(() => {
+    const timer1 = setTimeout(() => {
       superlike.toggle();
     }, 100);
+    timersRef.current.push(timer1);
     
     // Hide sparkles after animation
-    setTimeout(() => {
+    const timer2 = setTimeout(() => {
       setShowSparkles(false);
     }, 2000);
-  };
+    timersRef.current.push(timer2);
+  }, [superlike]);
 
-  const handleFavoriteClick = () => {
+  const handleFavoriteClick = useCallback(() => {
     // Check if user is authenticated first
     if (!isSignedIn) {
       // Directly trigger the auth flow
@@ -192,9 +231,10 @@ export function CarCard({
     // Show hearts effect if adding to favorites (not removing)
     if (!favorite.isFavorite) {
       setShowHearts(true);
-      setTimeout(() => {
+      const timer1 = setTimeout(() => {
         setShowHearts(false);
       }, 2000);
+      timersRef.current.push(timer1);
     }
 
     // Trigger heart scale animation
@@ -202,14 +242,11 @@ export function CarCard({
     favorite.toggle();
     
     // Reset animation after it completes
-    setTimeout(() => {
+    const timer2 = setTimeout(() => {
       setHeartScale(false);
     }, 400);
-  };
-
-  const carTitle = `${year} ${make} ${model}${trim ? ` ${trim}` : ''}`;
-  const displaySellerName = partnerName || sellerName || 'Private Seller';
-  const isPartnerListing = Boolean(partnerLogo || partnerName);
+    timersRef.current.push(timer2);
+  }, [isSignedIn, favorite]);
 
   return (
     <div className={cn(
@@ -351,6 +388,11 @@ export function CarCard({
                   : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
               )}
               aria-label="Share"
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                handleShare();
+              }}
             >
               <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
@@ -453,82 +495,54 @@ export function CarCard({
       {/* Falling Sparkles Effect */}
       {showSparkles && (
         <div className="fixed inset-0 pointer-events-none overflow-hidden z-[9999]">
-          <style jsx>{`
-            @keyframes fall {
-              0% {
-                transform: translateY(-100px) rotate(0deg);
-                opacity: 0;
-              }
-              10% {
-                opacity: 1;
-              }
-              90% {
-                opacity: 1;
-              }
-              100% {
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0;
-              }
-            }
-            .sparkle-fall {
-              position: absolute;
-              animation: fall 2s ease-in forwards;
-              font-size: 24px;
-            }
-          `}</style>
-          {[...Array(40)].map((_, i) => (
-            <div
-              key={i}
-              className="sparkle-fall"
-              style={{
-                left: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 0.6}s`,
-              }}
-            >
-              ✨
-            </div>
-          ))}
+          {Array.from({ length: 30 }, (_, i) => {
+            const left = (i * 3.33) + Math.random() * 2;
+            const delay = (i % 5) * 0.1;
+            const duration = 1.5 + (i % 3) * 0.3;
+            const size = 16 + (i % 4) * 4;
+            
+            return (
+              <span
+                key={i}
+                className="absolute animate-sparkle-fall"
+                style={{
+                  left: `${left}%`,
+                  animationDelay: `${delay}s`,
+                  animationDuration: `${duration}s`,
+                  fontSize: `${size}px`,
+                }}
+              >
+                {i % 3 === 0 ? '⭐' : i % 3 === 1 ? '✨' : '💫'}
+              </span>
+            );
+          })}
         </div>
       )}
 
       {/* Falling Hearts Effect */}
       {showHearts && (
         <div className="fixed inset-0 pointer-events-none overflow-hidden z-[9999]">
-          <style jsx>{`
-            @keyframes fall {
-              0% {
-                transform: translateY(-100px) rotate(0deg);
-                opacity: 0;
-              }
-              10% {
-                opacity: 1;
-              }
-              90% {
-                opacity: 1;
-              }
-              100% {
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0;
-              }
-            }
-            .heart-fall {
-              position: absolute;
-              animation: fall 2s ease-in forwards;
-              font-size: 24px;
-            }
-          `}</style>
-          {[...Array(40)].map((_, i) => (
-            <div
-              key={i}
-              className="heart-fall"
-              style={{
-                left: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 0.6}s`,
-              }}
-            >
-              ❤️
-            </div>
-          ))}
+          {Array.from({ length: 30 }, (_, i) => {
+            const left = (i * 3.33) + Math.random() * 2;
+            const delay = (i % 5) * 0.1;
+            const duration = 1.5 + (i % 3) * 0.3;
+            const size = 16 + (i % 4) * 4;
+            
+            return (
+              <span
+                key={i}
+                className="absolute animate-sparkle-fall"
+                style={{
+                  left: `${left}%`,
+                  animationDelay: `${delay}s`,
+                  animationDuration: `${duration}s`,
+                  fontSize: `${size}px`,
+                }}
+              >
+                {i % 3 === 0 ? '❤️' : i % 3 === 1 ? '💕' : '💖'}
+              </span>
+            );
+          })}
         </div>
       )}
     </div>

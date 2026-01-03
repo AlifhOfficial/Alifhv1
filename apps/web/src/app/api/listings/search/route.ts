@@ -14,7 +14,12 @@
  * 
  * Cache Strategy:
  * - CDN: 30s (lower than browse for fresher facets)
- * - Memory: 15s for search results, 60s for facets
+ * - Memory: 15s for search results, 60s for facets (cached separately)
+ * 
+ * Performance Optimizations:
+ * - Facets cached separately with longer TTL (60s vs 15s for results)
+ * - Total count skipped when facets are cache hits (uses hasMore instead)
+ * - Search results and facets combined from separate cache entries
  * 
  * @module api/listings/search
  */
@@ -22,11 +27,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { 
   memoryCache, 
-  CacheKeys, 
   searchListings,
+  getSearchFacets,
   urlToSearchParams,
   type SearchParams,
   type SearchResponse,
+  type SearchFacets,
 } from "@alifh/database";
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_LISTINGS } from "@/lib/rate-limit";
 
@@ -40,9 +46,9 @@ const searchLimiter = createRateLimiter({
   maxRequests: 100, // Lower than browse due to facet computation
 });
 
-// Cache TTLs
-const SEARCH_CACHE_TTL = 15_000; // 15 seconds for search results
-const FACET_CACHE_TTL = 60_000; // 60 seconds for facets (computed less frequently)
+// Cache TTLs (in seconds for memoryCache.set())
+const SEARCH_CACHE_TTL = 15; // 15 seconds for search results
+const FACET_CACHE_TTL = 60; // 60 seconds for facets (change less frequently)
 
 // CDN cache headers - shorter TTL for search
 const CDN_CACHE_HEADERS = {
@@ -52,7 +58,7 @@ const CDN_CACHE_HEADERS = {
 /**
  * Generate cache key from search params
  */
-function generateCacheKey(params: SearchParams): string {
+function generateCacheKey(params: SearchParams, prefix: string = 'search'): string {
   // Sort keys for consistent cache key
   const sorted = Object.entries(params)
     .filter(([_, v]) => v !== undefined && v !== null && v !== '')
@@ -63,7 +69,7 @@ function generateCacheKey(params: SearchParams): string {
     })
     .join('|');
   
-  return `search:${sorted || 'default'}`;
+  return `${prefix}:${sorted || 'default'}`;
 }
 
 export async function GET(req: NextRequest) {
@@ -89,17 +95,25 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Check cache (skip in dev for faster iteration)
     const isProd = process.env.NODE_ENV === 'production';
-    const cacheKey = generateCacheKey(params);
+    const searchCacheKey = generateCacheKey(params, 'search');
+    const facetCacheKey = generateCacheKey(params, 'facets');
 
+    // Check for cached search results
+    let cachedSearch: SearchResponse | null = null;
+    let cachedFacets: SearchFacets | null = null;
+    
     if (isProd) {
-      const cached = memoryCache.get<SearchResponse>(cacheKey);
-      if (cached) {
+      cachedSearch = memoryCache.get<SearchResponse>(searchCacheKey);
+      cachedFacets = memoryCache.get<SearchFacets>(facetCacheKey);
+      
+      // Full cache hit - return immediately
+      if (cachedSearch && cachedFacets) {
         const response = NextResponse.json({
-          ...cached,
+          ...cachedSearch,
+          facets: cachedFacets,
           meta: {
-            ...cached.meta,
+            ...cachedSearch.meta,
             cached: true,
             cacheAge: Date.now() - startTime,
           },
@@ -111,15 +125,40 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // Execute search
-    const result = await searchListings(params);
+    // Determine what we need to fetch
+    const needsSearch = !cachedSearch;
+    const needsFacets = !cachedFacets;
 
-    // Cache result in production
+    // Execute queries in parallel (only what's needed)
+    const [searchResult, facets] = await Promise.all([
+      needsSearch 
+        ? searchListings(params, { 
+            skipFacets: !needsFacets, // Skip if we have cached facets
+            skipTotalCount: !!cachedFacets, // Skip count if facets cached (use hasMore)
+          })
+        : Promise.resolve(cachedSearch!),
+      needsFacets 
+        ? getSearchFacets(params)
+        : Promise.resolve(cachedFacets!),
+    ]);
+
+    // Cache results separately in production
     if (isProd) {
-      memoryCache.set(cacheKey, result, SEARCH_CACHE_TTL);
+      if (needsSearch) {
+        memoryCache.set(searchCacheKey, searchResult, SEARCH_CACHE_TTL);
+      }
+      if (needsFacets) {
+        memoryCache.set(facetCacheKey, facets, FACET_CACHE_TTL);
+      }
     }
 
-    const response = NextResponse.json(result);
+    // Combine results
+    const finalResult: SearchResponse = {
+      ...searchResult,
+      facets,
+    };
+
+    const response = NextResponse.json(finalResult);
     
     if (isProd) {
       Object.entries(CDN_CACHE_HEADERS).forEach(([key, value]) =>

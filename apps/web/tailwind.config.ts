@@ -61,10 +61,29 @@ const config: Config = {
   		},
   		animation: {
   			sparkle: 'sparkle 2s ease-in-out infinite',
+  			'sparkle-fall': 'sparkle-fall 2s ease-out forwards',
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out'
   		},
   		keyframes: {
+  			'sparkle-fall': {
+  				'0%': {
+  					transform: 'translateY(-20px) rotate(0deg) scale(0)',
+  					opacity: '0'
+  				},
+  				'10%': {
+  					transform: 'translateY(0) rotate(30deg) scale(1)',
+  					opacity: '1'
+  				},
+  				'50%': {
+  					transform: 'translateY(50vh) rotate(180deg) scale(1)',
+  					opacity: '1'
+  				},
+  				'100%': {
+  					transform: 'translateY(100vh) rotate(360deg) scale(0.5)',
+  					opacity: '0'
+  				}
+  			},
   			'accordion-down': {
   				from: {
   					height: '0'

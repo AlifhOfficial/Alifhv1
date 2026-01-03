@@ -1,23 +1,17 @@
 /**
  * Inventory/Listings Page - Alifh Design System
  * Clean compact layout
+ * Note: Navbar is rendered by the public layout wrapper
  */
 
 import { Suspense } from 'react';
 import { ListingsView } from '@/components/listings/listings-view';
-import { Navbar } from '@/components/shared/navbar';
 
 export default function InventoryPage() {
   return (
-    <>
-      <Suspense fallback={<div className="h-16" />}>
-        <Navbar />
-      </Suspense>
-      
-      <Suspense fallback={<PageSkeleton />}>
-        <ListingsView />
-      </Suspense>
-    </>
+    <Suspense fallback={<PageSkeleton />}>
+      <ListingsView />
+    </Suspense>
   );
 }
 

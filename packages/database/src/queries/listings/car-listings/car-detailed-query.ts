@@ -7,19 +7,13 @@
  * @module queries/listings/car-detailed-query
  */
 
-import { eq, sql } from 'drizzle-orm';
+import { eq, sql, or, SQL } from 'drizzle-orm';
 import { db } from '../../../dbclient';
 import { carListing } from '../../../schema/listing';
 import { user } from '../../../schema/auth';
 import { userProfile } from '../../../schema/profile';
 import { isPublicSql } from './sql-fragments';
-
-function isMissingColumnError(err: unknown, columnName: string): boolean {
-  const anyErr = err as any;
-  const code = anyErr?.code ?? anyErr?.cause?.code;
-  const message = String(anyErr?.message ?? anyErr?.cause?.message ?? '');
-  return code === '42703' && message.includes(columnName);
-}
+import { isMissingColumnError } from './error-utils';
 
 /**
  * Technical features structure matching schema
@@ -60,10 +54,7 @@ export interface TechnicalFeatures {
  * Special notes structure matching schema
  */
 export interface SpecialNotes {
-  // Owner notes (array of strings, max 10)
   ownerRemarks?: string[];
-  
-  // Legacy boolean tags (kept for backward compat)
   serviceHistory?: boolean;
   singleOwner?: boolean;
   accidentFree?: boolean;
@@ -72,8 +63,6 @@ export interface SpecialNotes {
   customizations?: string[];
   recentServices?: string[];
   knownIssues?: string[];
-
-  // Admin moderation fields (optional; present for rejected/suspended listings)
   rejectionReason?: string;
   rejectedAt?: string;
   rejectedBy?: string;
@@ -82,8 +71,6 @@ export interface SpecialNotes {
   suspendedAt?: string;
   suspendedBy?: string;
   suspendedByName?: string;
-  
-  // AI moderation metadata (auto-populated by AI moderation service)
   aiModeration?: {
     decision: 'approve' | 'flag' | 'reject';
     confidence: number;
@@ -98,28 +85,19 @@ export interface SpecialNotes {
  * Detailed car listing data structure
  */
 export interface CarDetailedData {
-  // Core identification
   id: string;
   vin: string | null;
   slug: string | null;
-  
-  // Owner/Seller
   userId: string;
   postedByRole: 'user' | 'staff';
-  
-  // Basic info
   make: string;
   model: string;
   year: number;
   trim: string | null;
   description: string | null;
-  
-  // Pricing
   price: number;
   currency: string;
   isNegotiable: boolean;
-  
-  // AI Valuation (neutral, non-judgmental)
   fairValue: number | null;
   estimateMin: number | null;
   estimateMax: number | null;
@@ -131,14 +109,10 @@ export interface CarDetailedData {
     considerations?: string[];
     marketContext?: string;
   } | null;
-  
-  // Engagement
   viewCount: number;
   favouriteCount: number;
   superlikeCount: number;
   heatScore: number;
-  
-  // Specifications
   bodyType: string | null;
   fuelType: string | null;
   transmission: string | null;
@@ -155,8 +129,6 @@ export interface CarDetailedData {
   exteriorColor: string | null;
   interiorColor: string | null;
   mileage: number;
-  
-  // Moderation & Lifecycle
   moderationStatus: 'draft' | 'submitted' | 'pending_review' | 'approved' | 'rejected';
   lifecycleStatus: 'active' | 'archived' | 'sold' | 'expired' | 'deleted';
   isPublic: boolean;
@@ -164,34 +136,22 @@ export interface CarDetailedData {
   warrantyType: string | null;
   sellerType: string;
   rejectionReason: string | null;
-  
-  // Location
   emirate: string;
   city: string | null;
-  
-  // Media
   thumbnail: string | null;
   images: string[];
   videoUrl: string | null;
-  
-  // Features & Notes
   technicalFeatures: TechnicalFeatures;
   extras: string[];
   specialNotes: SpecialNotes;
   badges: string[];
   tags: string[];
-  
-  // Partner info (denormalized)
   partnerId: string | null;
   partnerBrandName: string | null;
   partnerVerified: boolean;
   isBlkListing: boolean;
-  
-  // Seller info
   sellerName: string | null;
   sellerKycVerified: boolean;
-  
-  // Timestamps
   createdAt: Date;
   updatedAt: Date;
   lastEditedAt: Date;
@@ -214,259 +174,146 @@ export interface CarDetailedData {
 }
 
 /**
- * Get detailed listing data by ID
- * Includes full specifications and features
+ * Build select fields for detailed query
+ * Extracted to avoid duplication and allow expiry toggle
  */
-export async function getListingDetailed(listingId: string): Promise<CarDetailedData | null> {
-  const run = async (includeExpiry: boolean) => {
-    return db.select({
-      // Core identification
-      id: carListing.id,
-      vin: carListing.vin,
-      slug: carListing.slug,
-      
-      // Owner/Seller
-      userId: carListing.userId,
-      postedByRole: carListing.postedByRole,
-      
-      // Basic info
-      make: carListing.make,
-      model: carListing.model,
-      year: carListing.year,
-      trim: carListing.trim,
-      description: carListing.description,
-      
-      // Pricing
-      price: carListing.price,
-      currency: carListing.currency,
-      isNegotiable: carListing.isNegotiable,
-      
-      // AI Valuation
-      fairValue: carListing.fairValue,
-      estimateMin: carListing.estimateMin,
-      estimateMax: carListing.estimateMax,
-      priceTrend: carListing.priceTrend,
-      qiScore: carListing.qiScore,
-      aiConfidenceScore: carListing.aiConfidenceScore,
-      aiValueFactors: carListing.aiValueFactors,
-      
-      // Engagement
-      viewCount: carListing.viewCount,
-      favouriteCount: carListing.favouriteCount,
-      superlikeCount: carListing.superlikeCount,
-      heatScore: carListing.heatScore,
-      
-      // Specifications
-      bodyType: carListing.bodyType,
-      fuelType: carListing.fuelType,
-      transmission: carListing.transmission,
-      specs: carListing.specs,
-      steeringSide: carListing.steeringSide,
-      engineSize: carListing.engineSize,
-      engineType: carListing.engineType,
-      cylinders: carListing.cylinders,
-      powerRange: carListing.powerRange,
-      torque: carListing.torque,
-      fuelEconomy: carListing.fuelEconomy,
-      doors: carListing.doors,
-      seatingCapacity: carListing.seatingCapacity,
-      exteriorColor: carListing.exteriorColor,
-      interiorColor: carListing.interiorColor,
-      mileage: carListing.mileage,
-      
-      // Moderation & Lifecycle
-      moderationStatus: carListing.moderationStatus,
-      lifecycleStatus: carListing.lifecycleStatus,
-      isPublic: isPublicSql(),
-      exportStatus: carListing.exportStatus,
-      warrantyType: carListing.warrantyType,
-      sellerType: carListing.sellerType,
-      rejectionReason: carListing.rejectionReason,
-      
-      // Location
-      emirate: carListing.emirate,
-      city: carListing.city,
-      
-      // Media
-      thumbnail: carListing.thumbnail,
-      images: carListing.images,
-      videoUrl: carListing.videoUrl,
-      
-      // Features & Notes
-      technicalFeatures: carListing.technicalFeatures,
-      extras: carListing.extras,
-      specialNotes: carListing.specialNotes,
-      badges: carListing.badges,
-      tags: carListing.tags,
-      
-      // Partner info (denormalized)
-      partnerId: carListing.partnerId,
-      partnerBrandName: carListing.partnerBrandName,
-      partnerVerified: carListing.partnerVerified,
-      isBlkListing: carListing.isBlkListing,
-      
-      // Seller info
-      sellerName: user.name,
-      sellerKycVerified: userProfile.kycVerified,
-      
-      // Timestamps
-      createdAt: carListing.createdAt,
-      updatedAt: carListing.updatedAt,
-      lastEditedAt: carListing.lastEditedAt,
-      submittedAt: carListing.submittedAt,
-      approvedAt: carListing.approvedAt,
-      lastModeratedAt: carListing.lastModeratedAt,
-      needsRemoderation: carListing.needsRemoderation,
-      publishedAt: carListing.publishedAt,
-      expiresAt: includeExpiry ? carListing.expiresAt : sql<null>`null`,
-      extensionCount: includeExpiry ? carListing.extensionCount : sql<number>`0`,
-      extensionHistory: includeExpiry ? carListing.extensionHistory : sql<any>`'[]'::jsonb`,
-      lastExtendedAt: includeExpiry ? carListing.lastExtendedAt : sql<null>`null`,
-      deletedAt: carListing.deletedAt,
-    })
-    .from(carListing)
-    .leftJoin(user, eq(user.id, carListing.userId))
-    .leftJoin(userProfile, eq(userProfile.userId, user.id))
-    .where(eq(carListing.id, listingId))
-    .limit(1);
-  };
-
-  let result: any[] = [];
-  try {
-    result = await run(true);
-  } catch (err) {
-    if (!isMissingColumnError(err, 'expires_at')) throw err;
-    result = await run(false);
-  }
-
-  if (result.length === 0) {
-    return null;
-  }
-
-  const row = result[0];
-
+function buildDetailedSelectFields(includeExpiry: boolean) {
   return {
-    // Core identification
-    id: row.id,
-    vin: row.vin,
-    slug: row.slug,
-    
-    // Owner/Seller
-    userId: row.userId,
-    postedByRole: row.postedByRole,
-    
-    // Basic info
-    make: row.make,
-    model: row.model,
-    year: row.year,
-    trim: row.trim,
-    description: row.description,
-    
-    // Pricing
-    price: row.price,
-    currency: row.currency,
-    isNegotiable: row.isNegotiable,
-    
-    // AI Valuation
-    fairValue: row.fairValue,
-    estimateMin: row.estimateMin,
-    estimateMax: row.estimateMax,
-    priceTrend: row.priceTrend,
-    qiScore: row.qiScore,
-    aiConfidenceScore: row.aiConfidenceScore,
-    aiValueFactors: row.aiValueFactors,
-    
-    // Engagement
-    viewCount: row.viewCount,
-    favouriteCount: row.favouriteCount,
-    superlikeCount: row.superlikeCount,
-    heatScore: row.heatScore,
-    
-    // Specifications
-    bodyType: row.bodyType,
-    fuelType: row.fuelType,
-    transmission: row.transmission,
-    specs: row.specs,
-    steeringSide: row.steeringSide,
-    engineSize: row.engineSize,
-    engineType: row.engineType,
-    cylinders: row.cylinders,
-    powerRange: row.powerRange,
-    torque: row.torque,
-    fuelEconomy: row.fuelEconomy,
-    doors: row.doors,
-    seatingCapacity: row.seatingCapacity,
-    exteriorColor: row.exteriorColor,
-    interiorColor: row.interiorColor,
-    mileage: row.mileage,
-    
-    // Moderation & Lifecycle
-    moderationStatus: row.moderationStatus,
-    lifecycleStatus: row.lifecycleStatus,
-    isPublic: row.isPublic,
-    exportStatus: row.exportStatus,
-    warrantyType: row.warrantyType,
-    sellerType: row.sellerType,
-    rejectionReason: row.rejectionReason,
-    
-    // Location
-    emirate: row.emirate,
-    city: row.city,
-    
-    // Media
-    thumbnail: row.thumbnail,
+    id: carListing.id,
+    vin: carListing.vin,
+    slug: carListing.slug,
+    userId: carListing.userId,
+    postedByRole: carListing.postedByRole,
+    make: carListing.make,
+    model: carListing.model,
+    year: carListing.year,
+    trim: carListing.trim,
+    description: carListing.description,
+    price: carListing.price,
+    currency: carListing.currency,
+    isNegotiable: carListing.isNegotiable,
+    fairValue: carListing.fairValue,
+    estimateMin: carListing.estimateMin,
+    estimateMax: carListing.estimateMax,
+    priceTrend: carListing.priceTrend,
+    qiScore: carListing.qiScore,
+    aiConfidenceScore: carListing.aiConfidenceScore,
+    aiValueFactors: carListing.aiValueFactors,
+    viewCount: carListing.viewCount,
+    favouriteCount: carListing.favouriteCount,
+    superlikeCount: carListing.superlikeCount,
+    heatScore: carListing.heatScore,
+    bodyType: carListing.bodyType,
+    fuelType: carListing.fuelType,
+    transmission: carListing.transmission,
+    specs: carListing.specs,
+    steeringSide: carListing.steeringSide,
+    engineSize: carListing.engineSize,
+    engineType: carListing.engineType,
+    cylinders: carListing.cylinders,
+    powerRange: carListing.powerRange,
+    torque: carListing.torque,
+    fuelEconomy: carListing.fuelEconomy,
+    doors: carListing.doors,
+    seatingCapacity: carListing.seatingCapacity,
+    exteriorColor: carListing.exteriorColor,
+    interiorColor: carListing.interiorColor,
+    mileage: carListing.mileage,
+    moderationStatus: carListing.moderationStatus,
+    lifecycleStatus: carListing.lifecycleStatus,
+    isPublic: isPublicSql(),
+    exportStatus: carListing.exportStatus,
+    warrantyType: carListing.warrantyType,
+    sellerType: carListing.sellerType,
+    rejectionReason: carListing.rejectionReason,
+    emirate: carListing.emirate,
+    city: carListing.city,
+    thumbnail: carListing.thumbnail,
+    images: carListing.images,
+    videoUrl: carListing.videoUrl,
+    technicalFeatures: carListing.technicalFeatures,
+    extras: carListing.extras,
+    specialNotes: carListing.specialNotes,
+    badges: carListing.badges,
+    tags: carListing.tags,
+    partnerId: carListing.partnerId,
+    partnerBrandName: carListing.partnerBrandName,
+    partnerVerified: carListing.partnerVerified,
+    isBlkListing: carListing.isBlkListing,
+    sellerName: user.name,
+    sellerKycVerified: userProfile.kycVerified,
+    createdAt: carListing.createdAt,
+    updatedAt: carListing.updatedAt,
+    lastEditedAt: carListing.lastEditedAt,
+    submittedAt: carListing.submittedAt,
+    approvedAt: carListing.approvedAt,
+    lastModeratedAt: carListing.lastModeratedAt,
+    needsRemoderation: carListing.needsRemoderation,
+    publishedAt: carListing.publishedAt,
+    expiresAt: includeExpiry ? carListing.expiresAt : sql<null>`null`,
+    extensionCount: includeExpiry ? carListing.extensionCount : sql<number>`0`,
+    extensionHistory: includeExpiry ? carListing.extensionHistory : sql<any>`'[]'::jsonb`,
+    lastExtendedAt: includeExpiry ? carListing.lastExtendedAt : sql<null>`null`,
+    deletedAt: carListing.deletedAt,
+  } as const;
+}
+
+/**
+ * Transform database row to CarDetailedData with defaults
+ */
+function transformToDetailedData(row: any): CarDetailedData {
+  return {
+    ...row,
+    // Apply defaults for nullable fields
     images: row.images ?? [],
-    videoUrl: row.videoUrl,
-    
-    // Features & Notes
-    technicalFeatures: (row.technicalFeatures ?? {}) as TechnicalFeatures,
-    extras: (row.extras ?? []) as string[],
-    specialNotes: (row.specialNotes ?? {}) as SpecialNotes,
-    badges: (row.badges ?? []) as string[],
-    tags: (row.tags ?? []) as string[],
-    
-    // Partner info (denormalized)
-    partnerId: row.partnerId,
-    partnerBrandName: row.partnerBrandName,
+    technicalFeatures: row.technicalFeatures ?? {},
+    extras: row.extras ?? [],
+    specialNotes: row.specialNotes ?? {},
+    badges: row.badges ?? [],
+    tags: row.tags ?? [],
     partnerVerified: row.partnerVerified ?? false,
-    isBlkListing: row.isBlkListing,
-    
-    // Seller info
-    sellerName: row.sellerName,
     sellerKycVerified: row.sellerKycVerified ?? false,
-    
-    // Timestamps
-    createdAt: row.createdAt,
-    updatedAt: row.updatedAt,
-    lastEditedAt: row.lastEditedAt,
-    submittedAt: row.submittedAt,
-    approvedAt: row.approvedAt,
-    lastModeratedAt: row.lastModeratedAt,
     needsRemoderation: row.needsRemoderation ?? false,
-    publishedAt: row.publishedAt,
-    expiresAt: row.expiresAt,
     extensionCount: row.extensionCount ?? 0,
-    extensionHistory: (row.extensionHistory ?? []) as any,
-    lastExtendedAt: row.lastExtendedAt,
-    deletedAt: row.deletedAt,
+    extensionHistory: row.extensionHistory ?? [],
   };
 }
 
 /**
- * Get detailed listing data by slug
- * Useful for SEO-friendly URLs
+ * Execute detailed listing query with where clause
+ * Handles expiry column graceful degradation
  */
-export async function getListingDetailedBySlug(slug: string): Promise<CarDetailedData | null> {
-  // First get the ID from the slug
-  const idResult = await db
-    .select({ id: carListing.id })
-    .from(carListing)
-    .where(eq(carListing.slug, slug))
-    .limit(1);
+async function executeDetailedQuery(whereClause: SQL): Promise<CarDetailedData | null> {
+  const runQuery = (includeExpiry: boolean) => 
+    db.select(buildDetailedSelectFields(includeExpiry))
+      .from(carListing)
+      .leftJoin(user, eq(user.id, carListing.userId))
+      .leftJoin(userProfile, eq(userProfile.userId, user.id))
+      .where(whereClause)
+      .limit(1);
 
-  if (idResult.length === 0) {
-    return null;
+  let result: any[];
+  try {
+    result = await runQuery(true);
+  } catch (err) {
+    if (!isMissingColumnError(err, 'expires_at')) throw err;
+    result = await runQuery(false);
   }
 
-  return getListingDetailed(idResult[0].id);
+  return result.length > 0 ? transformToDetailedData(result[0]) : null;
+}
+
+/**
+ * Get detailed listing data by ID
+ */
+export async function getListingDetailed(listingId: string): Promise<CarDetailedData | null> {
+  return executeDetailedQuery(eq(carListing.id, listingId));
+}
+
+/**
+ * Get detailed listing data by slug
+ * Single query instead of 2 separate queries
+ */
+export async function getListingDetailedBySlug(slug: string): Promise<CarDetailedData | null> {
+  return executeDetailedQuery(eq(carListing.slug, slug));
 }

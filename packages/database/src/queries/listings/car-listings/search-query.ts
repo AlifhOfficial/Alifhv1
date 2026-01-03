@@ -441,11 +441,35 @@ async function getAllFacets(params: SearchParams, now: Date): Promise<SearchFace
 }
 
 /**
- * Execute search with facets
+ * Exported facet fetcher for separate caching
+ * Call this separately with a longer TTL than search results
  */
-export async function searchListings(params: SearchParams): Promise<SearchResponse> {
+export async function getSearchFacets(params: SearchParams): Promise<SearchFacets> {
+  const now = new Date();
+  return getAllFacets(params, now);
+}
+
+/**
+ * Search options for controlling what gets computed
+ */
+interface SearchOptions {
+  /** Skip facet computation (default: false) - use when facets are cached separately */
+  skipFacets?: boolean;
+  /** Skip total count query (default: false) - uses hasMore from extra row fetch */
+  skipTotalCount?: boolean;
+}
+
+/**
+ * Execute search with optional facets and count
+ */
+export async function searchListings(
+  params: SearchParams, 
+  options: SearchOptions = {}
+): Promise<SearchResponse> {
   const startTime = Date.now();
   const now = new Date();
+  
+  const { skipFacets = false, skipTotalCount = false } = options;
   
   const limit = Math.min(Math.max(params.limit || DEFAULT_LIMIT, 1), MAX_LIMIT);
   const offset = Math.max(params.offset || 0, 0);
@@ -453,8 +477,8 @@ export async function searchListings(params: SearchParams): Promise<SearchRespon
   const conditions = buildSearchConditions(params, now);
   const orderBy = buildOrderBy(params);
 
-  // Execute search and facets in parallel
-  const [searchResults, facets, totalResult] = await Promise.all([
+  // Build parallel query array dynamically
+  const queries: Promise<any>[] = [
     // STEP 1: Get IDs with pagination
     (async () => {
       const listingIds = await db
@@ -466,10 +490,10 @@ export async function searchListings(params: SearchParams): Promise<SearchRespon
         .offset(offset);
 
       if (listingIds.length === 0) {
-        return [];
+        return { listings: [], hasMoreFromFetch: false };
       }
 
-      const hasMore = listingIds.length > limit;
+      const hasMoreFromFetch = listingIds.length > limit;
       const idsToFetch = listingIds.slice(0, limit).map(l => l.id);
 
       // STEP 2: Batch fetch full details
@@ -508,33 +532,63 @@ export async function searchListings(params: SearchParams): Promise<SearchRespon
       const idOrder = new Map(idsToFetch.map((id, idx) => [id, idx]));
       listings.sort((a, b) => (idOrder.get(a.id) ?? 0) - (idOrder.get(b.id) ?? 0));
 
-      return listings.map(l => ({
-        ...l,
-        images: l.images || [],
-      })) as SearchResultItem[];
+      return {
+        listings: listings.map(l => ({
+          ...l,
+          images: l.images || [],
+        })) as SearchResultItem[],
+        hasMoreFromFetch,
+      };
     })(),
-    
-    // Get facets
-    getAllFacets(params, now),
-    
-    // Get total count (separate query for performance)
-    db
-      .select({ count: count() })
-      .from(carListing)
-      .where(conditions.length > 0 ? and(...conditions) : undefined),
-  ]);
+  ];
 
-  const total = Number(totalResult[0]?.count || 0);
+  // Only include facet query if not skipped
+  if (!skipFacets) {
+    queries.push(getAllFacets(params, now));
+  }
+
+  // Only include total count if not skipped
+  if (!skipTotalCount) {
+    queries.push(
+      db
+        .select({ count: count() })
+        .from(carListing)
+        .where(conditions.length > 0 ? and(...conditions) : undefined)
+    );
+  }
+
+  // Execute all queries in parallel
+  const results = await Promise.all(queries);
+  
+  // Extract results based on what was queried
+  const searchResult = results[0] as { listings: SearchResultItem[]; hasMoreFromFetch: boolean };
+  let facets: SearchFacets | undefined;
+  let total: number | undefined;
+  
+  let resultIdx = 1;
+  if (!skipFacets) {
+    facets = results[resultIdx++] as SearchFacets;
+  }
+  if (!skipTotalCount) {
+    const totalResult = results[resultIdx] as Array<{ count: number }>;
+    total = Number(totalResult[0]?.count || 0);
+  }
+
   const took = Date.now() - startTime;
 
+  // Use hasMore from extra row fetch if total count was skipped
+  const hasMore = skipTotalCount 
+    ? searchResult.hasMoreFromFetch
+    : (offset + searchResult.listings.length) < (total ?? 0);
+
   return {
-    data: searchResults,
+    data: searchResult.listings,
     facets,
     meta: {
       total,
       limit,
       offset,
-      hasMore: offset + searchResults.length < total,
+      hasMore,
       took,
     },
     appliedFilters: params,
@@ -544,6 +598,8 @@ export async function searchListings(params: SearchParams): Promise<SearchRespon
 /**
  * Quick search for auto-suggest (header search)
  * Returns make/model/partner suggestions based on partial input
+ * 
+ * OPTIMIZATION: Runs partner and make/model queries in parallel
  */
 export async function quickSearch(query: string, limit = 10): Promise<Array<{
   type: 'make' | 'model' | 'make_model' | 'partner';
@@ -562,6 +618,54 @@ export async function quickSearch(query: string, limit = 10): Promise<Array<{
   const now = new Date();
   const conditions = buildPublicBaseConditions(now);
 
+  // Run both queries in parallel for better performance
+  const [partnerResults, makeModelResults] = await Promise.all([
+    // Partner/Dealer search - search by brand name
+    db
+      .select({
+        partnerId: carListing.partnerId,
+        partnerName: sql<string>`coalesce(${carListing.partnerBrandName}, ${partner.brandName})`,
+        count: count(),
+      })
+      .from(carListing)
+      .leftJoin(partner, eq(carListing.partnerId, partner.id))
+      .where(
+        and(
+          ...conditions,
+          isNotNull(carListing.partnerId),
+          or(
+            ilike(carListing.partnerBrandName, `%${searchTerm}%`),
+            ilike(partner.brandName, `%${searchTerm}%`)
+          )
+        )
+      )
+      .groupBy(carListing.partnerId, carListing.partnerBrandName, partner.brandName)
+      .orderBy(desc(count()))
+      .limit(5),
+    
+    // Standard make/model search
+    db
+      .select({
+        make: carListing.make,
+        model: carListing.model,
+        count: count(),
+      })
+      .from(carListing)
+      .where(
+        and(
+          ...conditions,
+          or(
+            ilike(carListing.make, `%${searchTerm}%`),
+            ilike(carListing.model, `%${searchTerm}%`),
+            sql`lower(${carListing.make} || ' ' || ${carListing.model}) LIKE ${'%' + searchTerm + '%'}`
+          )
+        )
+      )
+      .groupBy(carListing.make, carListing.model)
+      .orderBy(desc(count()))
+      .limit(limit * 2),
+  ]);
+
   const suggestions: Array<{
     type: 'make' | 'model' | 'make_model' | 'partner';
     text: string;
@@ -571,29 +675,8 @@ export async function quickSearch(query: string, limit = 10): Promise<Array<{
     partnerName?: string;
     count: number;
   }> = [];
-  // Partner/Dealer search - search by brand name
-  const partnerResults = await db
-    .select({
-      partnerId: carListing.partnerId,
-      partnerName: sql<string>`coalesce(${carListing.partnerBrandName}, ${partner.brandName})`,
-      count: count(),
-    })
-    .from(carListing)
-    .leftJoin(partner, eq(carListing.partnerId, partner.id))
-    .where(
-      and(
-        ...conditions,
-        isNotNull(carListing.partnerId),
-        or(
-          ilike(carListing.partnerBrandName, `%${searchTerm}%`),
-          ilike(partner.brandName, `%${searchTerm}%`)
-        )
-      )
-    )
-    .groupBy(carListing.partnerId, carListing.partnerBrandName, partner.brandName)
-    .orderBy(desc(count()))
-    .limit(5);
 
+  // Process partner results
   const seenPartners = new Set<string>();
   for (const r of partnerResults) {
     if (r.partnerId && r.partnerName && !seenPartners.has(r.partnerId)) {
@@ -608,32 +691,11 @@ export async function quickSearch(query: string, limit = 10): Promise<Array<{
     }
   }
 
-  // Standard make/model search
-  const results = await db
-    .select({
-      make: carListing.make,
-      model: carListing.model,
-      count: count(),
-    })
-    .from(carListing)
-    .where(
-      and(
-        ...conditions,
-        or(
-          ilike(carListing.make, `%${searchTerm}%`),
-          ilike(carListing.model, `%${searchTerm}%`),
-          sql`lower(${carListing.make} || ' ' || ${carListing.model}) LIKE ${'%' + searchTerm + '%'}`
-        )
-      )
-    )
-    .groupBy(carListing.make, carListing.model)
-    .orderBy(desc(count()))
-    .limit(limit * 2);
-
+  // Process make/model results
   const seenMakes = new Set<string>();
   const seenMakeModels = new Set<string>();
 
-  for (const r of results) {
+  for (const r of makeModelResults) {
     if (!r.make) continue;
 
     // Add make suggestion if not seen
