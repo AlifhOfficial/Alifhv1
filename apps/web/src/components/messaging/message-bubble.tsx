@@ -20,6 +20,7 @@ interface MessageBubbleProps {
   seenAt?: Date | string | null;
   otherUserAvatar?: string | null;
   otherUserName?: string | null;
+  listing?: { id: string; title: string; thumbnail: string | null };
 }
 
 export function MessageBubble({
@@ -31,6 +32,7 @@ export function MessageBubble({
   seenAt,
   otherUserAvatar,
   otherUserName,
+  listing,
 }: MessageBubbleProps) {
   const { sender, text, mediaUrl, mediaType, createdAt, isEdited, isSystemMessage } = message;
 
@@ -92,6 +94,36 @@ export function MessageBubble({
                 alt="Attached"
                 className="rounded-lg mb-2 max-w-full h-auto"
               />
+            )}
+
+            {/* Listing Preview (if present) */}
+            {listing && (
+              <div 
+                className={cn(
+                  "rounded-xl overflow-hidden mb-3 transition-all",
+                  isOwn 
+                    ? "bg-white/10" 
+                    : "bg-background border border-border/20"
+                )}
+              >
+                {listing.thumbnail ? (
+                  <img 
+                    src={listing.thumbnail} 
+                    alt={listing.title} 
+                    className="w-full aspect-[16/10] object-cover" 
+                  />
+                ) : (
+                  <div className="w-full aspect-[16/10] bg-muted/40" />
+                )}
+                <div className="p-3">
+                  <p className={cn(
+                    "text-sm font-semibold",
+                    isOwn ? "text-white" : "text-foreground"
+                  )}>
+                    {listing.title}
+                  </p>
+                </div>
+              </div>
             )}
 
             {/* Text */}

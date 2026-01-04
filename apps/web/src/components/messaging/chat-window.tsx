@@ -132,7 +132,7 @@ export function ChatWindow({
   };
 
   const defaultText = inbox === 'personal' && listing && messages.length === 0
-    ? `Hi, I'd like to inquire about "${listing.title}". Is it still available?`
+    ? `Hey ${displayName}, interested in "${listing.title}"?`
     : undefined;
 
   return (
@@ -194,27 +194,6 @@ export function ChatWindow({
           )}
         </div>
       </div>
-
-      {listing && (
-        <Link 
-          href={`/listings/${listing.id}`} 
-          className="flex items-center gap-3 px-4 py-2.5 border-b border-border/40 hover:bg-secondary/50 transition-colors"
-        >
-          {listing.thumbnail ? (
-            <img 
-              src={listing.thumbnail} 
-              alt={listing.title} 
-              className="w-10 h-10 rounded-lg object-cover flex-shrink-0" 
-            />
-          ) : (
-            <div className="w-10 h-10 rounded-lg flex-shrink-0 bg-muted" />
-          )}
-          <div className="min-w-0 flex-1">
-            <p className="text-[15px] font-semibold tracking-tight truncate">{listing.title}</p>
-          </div>
-          <small className="text-xs text-muted-foreground/70">→</small>
-        </Link>
-      )}
 
       <div ref={containerRef} onScroll={handleScroll} className="flex-1 min-h-0 overflow-y-auto p-4 bg-background flex flex-col-reverse gap-2">
         {isFetchingMore && (
@@ -281,6 +260,7 @@ export function ChatWindow({
                   seenAt={otherLastReadAt}
                   otherUserAvatar={otherParticipant?.avatarUrl || null}
                   otherUserName={otherParticipant?.name || null}
+                  listing={index === arr.length - 1 && listing ? listing : undefined}
                 />
               );
 

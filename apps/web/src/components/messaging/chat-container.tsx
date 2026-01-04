@@ -5,12 +5,11 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Inbox } from 'lucide-react';
+import { Inbox, PanelLeft } from 'lucide-react';
 import { ConversationList } from './conversation-list';
 import { ChatWindow } from './chat-window';
-import { WebSocketStatus } from './websocket-status';
 import { useConversations } from '@/hooks/messaging';
 import { cn } from '@/utils/cn';
 
@@ -20,12 +19,13 @@ interface ChatContainerProps {
   className?: string;
 }
 
-export function ChatContainer({ userId, inbox = 'personal', className }: ChatContainerProps) {
+function ChatContainerInner({ userId, inbox = 'personal', className }: ChatContainerProps) {
   const searchParams = useSearchParams();
   const urlConversationId = searchParams?.get('conversationId');
   
   const [selectedId, setSelectedId] = useState<string | undefined>(urlConversationId || undefined);
   const [showMobile, setShowMobile] = useState(!!urlConversationId);
+  const [listOpen, setListOpen] = useState(true);
 
   const { conversations, isLoading, totalUnread } = useConversations({ userId, scope: inbox });
 
@@ -41,31 +41,43 @@ export function ChatContainer({ userId, inbox = 'personal', className }: ChatCon
   const handleClose = () => {
     setSelectedId(undefined);
     setShowMobile(false);
+    setListOpen(true); // Reopen the list when closing chat
   };
 
   return (
     <div className={cn('flex h-full min-h-0 flex-col overflow-hidden', className)}>
-      {/* Status */}
-      <div className="flex-shrink-0 border-b border-border/40 bg-muted/20 px-4 py-2">
-        <WebSocketStatus showText />
-      </div>
-
       {/* Main */}
       <div className="flex min-h-0 flex-1 overflow-hidden">
         {/* List */}
-        <div className={cn('w-full lg:w-96 flex-shrink-0', showMobile && 'hidden lg:block')}>
+        <div className={cn(
+          'flex-shrink-0 transition-all duration-200',
+          listOpen ? 'w-full lg:w-96' : 'w-0 lg:w-0',
+          showMobile && 'hidden lg:block'
+        )}>
           <ConversationList
             inbox={inbox}
             conversations={conversations}
             isLoading={isLoading}
             totalUnread={totalUnread}
             activeConversationId={selectedId}
+            listOpen={listOpen}
+            onListToggle={setListOpen}
             onSelectConversation={(id) => { setSelectedId(id); setShowMobile(true); }}
           />
         </div>
 
         {/* Chat */}
-        <div className={cn('flex-1 min-w-0 hidden lg:flex', showMobile && 'flex')}>
+        <div className={cn('flex-1 min-w-0 hidden lg:flex relative', showMobile && 'flex')}>
+          {/* Show list button when collapsed AND no chat selected */}
+          {!listOpen && !selected && (
+            <button
+              onClick={() => setListOpen(true)}
+              className="absolute top-4 left-4 z-10 p-2 text-muted-foreground hover:text-foreground transition-colors bg-background border border-border/20 rounded-lg shadow-sm"
+              title="Show messages"
+            >
+              <PanelLeft className="h-4 w-4" />
+            </button>
+          )}
           {selected ? (
             <ChatWindow
               key={selected.id}
@@ -91,5 +103,19 @@ export function ChatContainer({ userId, inbox = 'personal', className }: ChatCon
         </div>
       </div>
     </div>
+  );
+}
+
+export function ChatContainer(props: ChatContainerProps) {
+  return (
+    <Suspense fallback={
+      <div className={cn('flex h-full min-h-0 flex-col overflow-hidden items-center justify-center', props.className)}>
+        <div className="w-16 h-16 mx-auto rounded-full bg-muted flex items-center justify-center animate-pulse">
+          <Inbox className="w-7 h-7 text-muted-foreground" />
+        </div>
+      </div>
+    }>
+      <ChatContainerInner {...props} />
+    </Suspense>
   );
 }

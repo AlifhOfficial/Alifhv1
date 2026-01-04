@@ -14,7 +14,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Search, Loader2, Inbox } from 'lucide-react';
+import { Search, Loader2, Inbox, PanelLeft } from 'lucide-react';
 import { ConversationListItem } from './conversation-list-item';
 import { PartnerConversationGroup } from './partner-conversation-group';
 import { UserConversationGroup } from './user-conversation-group';
@@ -27,6 +27,8 @@ interface ConversationListProps {
   isLoading: boolean;
   totalUnread: number;
   activeConversationId?: string;
+  listOpen: boolean;
+  onListToggle: (open: boolean) => void;
   onSelectConversation: (conversationId: string) => void;
   className?: string;
 }
@@ -37,6 +39,8 @@ export function ConversationList({
   isLoading,
   totalUnread,
   activeConversationId,
+  listOpen,
+  onListToggle,
   onSelectConversation,
   className,
 }: ConversationListProps) {
@@ -206,33 +210,54 @@ export function ConversationList({
   }, [inbox, userGroups, partnerGroups]);
 
   return (
-    <div className={cn('flex flex-col h-full min-h-0 bg-background border-r border-border', className)}>
+    <div className={cn(
+      'flex flex-col h-full min-h-0 bg-background border-r border-border/20 transition-all duration-200',
+      !listOpen && 'w-0 overflow-hidden',
+      className
+    )}>
       {/* Header */}
-      <div className="p-5 border-b border-border bg-background/80 backdrop-blur-sm flex-shrink-0">
+      <div className="p-5 border-b border-border/20 bg-background/80 backdrop-blur-sm flex-shrink-0">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold tracking-tight">Messages</h2>
-          {totalUnread > 0 && (
-            <small className="text-xs bg-blue-500 text-white font-semibold px-2 py-0.5 rounded-full min-w-[18px] text-center">
-              {totalUnread > 99 ? '99+' : totalUnread}
-            </small>
-          )}
+          <div className="flex items-center gap-2">
+            {totalUnread > 0 && (
+              <small className="text-xs bg-blue-500/90 text-white font-semibold px-2 py-0.5 rounded-full min-w-[18px] text-center">
+                {totalUnread > 99 ? '99+' : totalUnread}
+              </small>
+            )}
+            <button
+              onClick={() => onListToggle(false)}
+              className={cn(
+                "p-1.5 -mr-1 text-muted-foreground hover:text-foreground transition-all duration-200",
+                !listOpen && "opacity-0 pointer-events-none w-0 p-0 -mr-0"
+              )}
+              title="Hide messages"
+              aria-hidden={!listOpen}
+              tabIndex={listOpen ? 0 : -1}
+            >
+              <PanelLeft className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Search conversations..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-3 py-3 text-[15px] border border-border bg-muted text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 rounded-xl transition-all duration-200"
-          />
-        </div>
+        {/* Search - only show when expanded */}
+        {listOpen && (
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
+            <input
+              type="text"
+              placeholder="Search conversations..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-3 py-3 text-[15px] border border-border/20 bg-muted/20 text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 rounded-xl transition-all duration-200"
+            />
+          </div>
+        )}
       </div>
 
-      {/* Conversations List */}
-      <div className="flex-1 min-h-0 overflow-y-auto">
+      {/* Conversations List - only show when expanded */}
+      {listOpen && (
+        <div className="flex-1 min-h-0 overflow-y-auto">
         {isLoading ? (
           <div className="flex items-center justify-center h-32">
             <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
@@ -243,7 +268,7 @@ export function ConversationList({
               <div className="w-16 h-16 mx-auto rounded-full bg-muted flex items-center justify-center">
                 <Inbox className="w-7 h-7 text-muted-foreground" />
               </div>
-              <p className="text-[15px] text-muted-foreground">
+              <p className="text-[15px] text-muted-foreground/40">
                 {searchQuery ? 'No conversations found' : 'No messages yet'}
               </p>
             </div>
@@ -286,6 +311,7 @@ export function ConversationList({
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }

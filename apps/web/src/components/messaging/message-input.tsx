@@ -180,8 +180,8 @@ export function MessageInput({
   };
 
   return (
-    <div className="border-t border-border bg-background/95 backdrop-blur-sm px-4 py-3">
-      <div className="flex items-center bg-muted/50 border border-border rounded-2xl p-1.5 lg:p-2 min-w-0 overflow-hidden w-full">
+    <div className="border-t border-border/20 bg-background/95 backdrop-blur-sm px-4 py-3">
+      <div className="flex items-center bg-muted/20 border border-border/20 rounded-2xl p-1.5 lg:p-2 min-w-0 overflow-hidden w-full">
         {/* Text Input */}
         <textarea
           ref={textareaRef}

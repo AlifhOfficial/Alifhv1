@@ -68,7 +68,7 @@ export function ConversationListItem({
         isNested 
           ? 'py-2.5 px-3 hover:bg-muted/20 rounded-xl' 
           : 'py-3.5 px-4 hover:bg-muted/20 rounded-xl',
-        isActive && 'bg-secondary/50'
+        isActive && 'bg-muted/40'
       )}
     >
       <div className="flex items-start overflow-hidden gap-3">
@@ -95,36 +95,36 @@ export function ConversationListItem({
             <h3
               className={cn(
                 'text-[15px] font-semibold tracking-tight truncate',
-                unreadCount > 0 ? 'text-foreground' : 'text-foreground/90'
+                unreadCount > 0 ? 'text-foreground' : 'text-foreground/80'
               )}
             >
               {displayName}
             </h3>
-            <small className="text-xs text-muted-foreground/70 ml-2 flex-shrink-0 font-medium">
+            <small className="text-xs text-muted-foreground/60 ml-2 flex-shrink-0 font-medium">
               {lastMessageDate ? formatDistanceToNow(lastMessageDate, { addSuffix: true }) : ''}
             </small>
           </div>
 
           {/* Listing Context (only for non-nested items) */}
           {showListingContext && (
-            <small className="text-xs text-muted-foreground/70 mb-0.5 truncate block">
+            <small className="text-xs text-muted-foreground/60 mb-0.5 truncate block">
               Re: {listing.title}
             </small>
           )}
 
-          <div className="flex items-center justify-between overflow-hidden">
+          <div className="flex items-center justify-between overflow-hidden gap-2">
             <p
               className={cn(
-                'text-[15px] truncate pr-2 min-w-0 flex-1',
+                'text-[15px] truncate min-w-0 flex-1 whitespace-nowrap overflow-hidden text-ellipsis',
                 unreadCount > 0
-                  ? 'text-foreground/80 font-semibold'
-                  : 'text-muted-foreground'
+                  ? 'text-foreground/70 font-semibold'
+                  : 'text-muted-foreground/70'
               )}
             >
               {lastMessagePreview || 'No messages yet'}
             </p>
             {unreadCount > 0 && (
-              <small className="text-xs flex-shrink-0 px-2 py-0.5 font-semibold bg-blue-500 text-white rounded-full min-w-[18px] text-center">
+              <small className="text-xs flex-shrink-0 px-2 py-0.5 font-semibold bg-blue-500/90 text-white rounded-full min-w-[18px] text-center">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </small>
             )}
