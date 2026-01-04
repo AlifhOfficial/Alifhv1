@@ -118,8 +118,8 @@ export function ContactSection({
           )}
         </button>
 
-        {/* Call Button - If phone available */}
-        {phoneNumber && (
+        {/* Call Button - If phone available and not own listing */}
+        {phoneNumber && !isBlocked && (
           <a
             href={`tel:${phoneNumber}`}
             className="flex-1 min-w-[100px] py-3 px-4 border border-border rounded-full text-sm font-medium text-foreground hover:bg-muted/50 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
@@ -129,8 +129,8 @@ export function ContactSection({
           </a>
         )}
 
-        {/* Book Test Drive - If dealer listing */}
-        {showBooking && onBookTestDrive && (
+        {/* Book Test Drive - If dealer listing and not own listing */}
+        {showBooking && onBookTestDrive && !isBlocked && (
           <button
             onClick={onBookTestDrive}
             className="flex-1 min-w-[100px] py-3 px-4 bg-green-500 text-white rounded-full text-sm font-medium hover:bg-green-600 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
