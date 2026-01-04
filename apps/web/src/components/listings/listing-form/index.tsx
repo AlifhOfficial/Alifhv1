@@ -118,8 +118,13 @@ export function ListingForm({
   };
   
   const handleSubmit = async () => {
+    // Derive condition automatically (no UI): < 5000 km => new
+    const derivedCondition: ListingFormData['condition'] =
+      typeof formData.mileage === 'number' && formData.mileage < 5000 ? 'new' : 'used';
+    const submitData = { ...formData, condition: derivedCondition };
+
     for (const step of FORM_STEPS) {
-      const result = validateStep(step.id, formData);
+      const result = validateStep(step.id, submitData);
       if (!result.success) {
         setCurrentStep(step.id);
         if (result.errors) {
@@ -137,7 +142,7 @@ export function ListingForm({
     
     setIsSubmitting(true);
     try {
-      await onSubmit(formData as ListingFormData);
+      await onSubmit(submitData as ListingFormData);
     } catch (error) {
       console.error('Submit error:', error);
     } finally {
@@ -149,7 +154,9 @@ export function ListingForm({
     if (onSaveDraft) {
       setIsSubmitting(true);
       try {
-        await onSaveDraft(formData);
+        const derivedCondition: ListingFormData['condition'] =
+          typeof formData.mileage === 'number' && formData.mileage < 5000 ? 'new' : 'used';
+        await onSaveDraft({ ...formData, condition: derivedCondition });
       } finally {
         setIsSubmitting(false);
       }

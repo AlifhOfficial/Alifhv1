@@ -22,6 +22,12 @@ export function EditListingView({ listing, userId, listingType = 'personal' }: E
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
+  const moderationReason = (() => {
+    const notes = listing.specialNotes as unknown;
+    if (!notes || typeof notes !== 'object') return undefined;
+    return (notes as { moderation?: { reason?: string } }).moderation?.reason;
+  })();
+
   const backToUrl =
     listingType === 'work'
       ? '/staff-dashboard/work-listings'
@@ -35,39 +41,37 @@ export function EditListingView({ listing, userId, listingType = 'personal' }: E
     model: listing.model,
     year: listing.year,
     trim: listing.trim || undefined,
-    condition: listing.condition as 'new' | 'used' || 'used',
+    condition: (listing.condition as ListingFormData['condition']) ?? 'used',
     price: listing.price,
     currency: listing.currency,
     isNegotiable: listing.isNegotiable,
     mileage: listing.mileage,
-    specs: listing.specs as any,
-    steeringSide: listing.steeringSide as any,
-    bodyType: listing.bodyType as any || undefined,
-    fuelType: listing.fuelType as any || undefined,
-    transmission: listing.transmission as any || undefined,
-    engineSize: listing.engineSize as any || undefined,
-    engineType: listing.engineType as any || undefined,
+    specs: (listing.specs as ListingFormData['specs']) ?? 'gcc',
+    steeringSide: (listing.steeringSide as ListingFormData['steeringSide']) ?? 'left',
+    bodyType: (listing.bodyType as ListingFormData['bodyType']) || undefined,
+    fuelType: (listing.fuelType as ListingFormData['fuelType']) || undefined,
+    transmission: (listing.transmission as ListingFormData['transmission']) || undefined,
+    engineSize: (listing.engineSize as ListingFormData['engineSize']) || undefined,
+    engineType: (listing.engineType as ListingFormData['engineType']) || undefined,
     cylinders: listing.cylinders || undefined,
-    powerRange: listing.powerRange as any || undefined,
+    powerRange: (listing.powerRange as ListingFormData['powerRange']) || undefined,
     fuelEconomy: listing.fuelEconomy || undefined,
-    doors: listing.doors as any || undefined,
-    seatingCapacity: listing.seatingCapacity as any || undefined,
-    exteriorColor: listing.exteriorColor as any || undefined,
-    interiorColor: listing.interiorColor as any || undefined,
-    exportStatus: listing.exportStatus as any,
-    warrantyType: listing.warrantyType as any || undefined,
+    doors: (listing.doors as ListingFormData['doors']) || undefined,
+    seatingCapacity: (listing.seatingCapacity as ListingFormData['seatingCapacity']) || undefined,
+    exteriorColor: (listing.exteriorColor as ListingFormData['exteriorColor']) || undefined,
+    interiorColor: (listing.interiorColor as ListingFormData['interiorColor']) || undefined,
+    exportStatus: (listing.exportStatus as ListingFormData['exportStatus']) ?? 'local_only',
+    warrantyType: (listing.warrantyType as ListingFormData['warrantyType']) || undefined,
     emirate: listing.emirate,
     city: listing.city || undefined,
     // Convert images from string[] to ListingImage[]
-    images: (listing.images || []).map((img, index) => ({
-      key: typeof img === 'string' ? img : (img as any).key || '',
-      order: index,
-    })),
+    images: (listing.images || [])
+      .filter((img): img is string => typeof img === 'string' && img.trim().length > 0)
+      .map((img, index) => ({ key: img, order: index })),
     videoUrl: listing.videoUrl || undefined,
     description: listing.description || undefined,
     extras: listing.extras || [],
     tags: listing.tags || [],
-    technicalFeatures: listing.technicalFeatures || {},
     ownerRemarks: listing.specialNotes?.ownerRemarks || [],
     partnerId: listing.partnerId || undefined,
   };
@@ -124,10 +128,10 @@ export function EditListingView({ listing, userId, listingType = 'personal' }: E
         </div>
 
         {listing.lifecycleStatus === 'archived' &&
-          (listing.specialNotes?.suspensionReason || (listing.specialNotes as any)?.moderation?.reason) && (
+          (listing.specialNotes?.suspensionReason || moderationReason) && (
             <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
               <p className="text-sm text-red-500">
-                Suspended: {listing.specialNotes?.suspensionReason || (listing.specialNotes as any)?.moderation?.reason}
+                Suspended: {listing.specialNotes?.suspensionReason || moderationReason}
               </p>
               <p className="text-xs text-muted-foreground/70 mt-2">
                 You can edit and resubmit this listing, but it will stay hidden until an admin unsuspends it.

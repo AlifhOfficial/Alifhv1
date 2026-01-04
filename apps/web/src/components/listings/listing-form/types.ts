@@ -111,43 +111,6 @@ export const detailsStepSchema = z.object({
   // Extras & Tags
   extras: z.array(z.string()).default([]),
   tags: z.array(z.string()).max(3, 'Maximum 3 tags allowed').default([]),
-  
-  // Technical Features
-  technicalFeatures: z.object({
-    // Safety
-    abs: z.boolean().optional(),
-    airbags: z.number().optional(),
-    parkingSensors: z.boolean().optional(),
-    rearCamera: z.boolean().optional(),
-    blindSpotMonitor: z.boolean().optional(),
-    laneAssist: z.boolean().optional(),
-    adaptiveCruise: z.boolean().optional(),
-    collisionWarning: z.boolean().optional(),
-    // Comfort
-    leatherSeats: z.boolean().optional(),
-    heatedSeats: z.boolean().optional(),
-    ventilatedSeats: z.boolean().optional(),
-    sunroof: z.boolean().optional(),
-    panoramicRoof: z.boolean().optional(),
-    climateControl: z.boolean().optional(),
-    powerSeats: z.boolean().optional(),
-    memorySeats: z.boolean().optional(),
-    // Technology
-    touchscreen: z.boolean().optional(),
-    screenSize: z.string().optional(),
-    appleCarPlay: z.boolean().optional(),
-    androidAuto: z.boolean().optional(),
-    bluetooth: z.boolean().optional(),
-    navigation: z.boolean().optional(),
-    soundSystem: z.string().optional(),
-    wirelessCharging: z.boolean().optional(),
-    // Performance
-    sportMode: z.boolean().optional(),
-    paddleShifters: z.boolean().optional(),
-    allWheelDrive: z.boolean().optional(),
-    adjustableSuspension: z.boolean().optional(),
-    launchControl: z.boolean().optional(),
-  }).default({}),
 });
 
 // ============================================================================
@@ -309,7 +272,6 @@ export function getDefaultFormValues(): Partial<ListingFormData> {
     exportStatus: 'local_only',
     extras: [],
     tags: [],
-    technicalFeatures: {},
     images: [],
     ownerRemarks: [],
   };

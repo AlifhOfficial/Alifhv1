@@ -67,28 +67,6 @@ function TogglePill({
   );
 }
 
-function BooleanField({
-  label,
-  checked,
-  onCheckedChange,
-}: {
-  label: string;
-  checked: boolean;
-  onCheckedChange: (checked: boolean) => void;
-}) {
-  return (
-    <label className="flex items-center justify-between gap-4 rounded-xl border border-border/50 bg-muted/10 px-4 py-3 hover:bg-muted/20 transition-colors">
-      <span className="text-[14px] font-medium text-foreground">{label}</span>
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={(e) => onCheckedChange(e.target.checked)}
-        className="h-4 w-4 accent-foreground"
-      />
-    </label>
-  );
-}
-
 export function DetailsStep({ data, updateField, errors }: StepProps) {
   const specsOptions = useMemo(
     () => SPECS_TYPES.map((o) => ({ value: o.value, label: o.label })),
@@ -153,16 +131,6 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
   const selectedExtras: ListingFormData['extras'] = data.extras ?? [];
   const selectedTags: ListingFormData['tags'] = data.tags ?? [];
 
-  type TechnicalFeatures = NonNullable<ListingFormData['technicalFeatures']>;
-  const technicalFeatures: TechnicalFeatures = data.technicalFeatures ?? {};
-
-  const setTechnicalFeature = <K extends keyof TechnicalFeatures>(key: K, value: TechnicalFeatures[K]) => {
-    updateField('technicalFeatures', {
-      ...technicalFeatures,
-      [key]: value,
-    });
-  };
-
   const setRequiredEnum = <K extends keyof ListingFormData>(field: K, value: string) => {
     updateField(field, value as ListingFormData[K]);
   };
@@ -204,29 +172,6 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
               onValueChange={(v) => setRequiredEnum('steeringSide', v)}
               placeholder="Select steering..."
             />
-          </FormField>
-
-          <FormField label="Condition" hint="Required">
-            <div className="grid grid-cols-2 gap-3">
-              {([
-                { value: 'used', label: 'Used' },
-                { value: 'new', label: 'New' },
-              ] as const).map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => updateField('condition', opt.value)}
-                  className={cn(
-                    'h-12 rounded-xl border text-[15px] font-semibold transition-colors',
-                    data.condition === opt.value
-                      ? 'bg-foreground text-background border-foreground'
-                      : 'bg-muted/10 text-foreground border-border/50 hover:bg-muted/20'
-                  )}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
           </FormField>
         </div>
       </Card>
@@ -431,69 +376,6 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
           })}
         </div>
         {errors.tags && <p className="mt-3 text-sm font-medium text-red-500">{errors.tags}</p>}
-      </Card>
-
-      <Card title="Key Features" subtitle="Optional — improves listing quality.">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <BooleanField label="ABS" checked={Boolean(technicalFeatures.abs)} onCheckedChange={(v) => setTechnicalFeature('abs', v)} />
-          <BooleanField label="Parking Sensors" checked={Boolean(technicalFeatures.parkingSensors)} onCheckedChange={(v) => setTechnicalFeature('parkingSensors', v)} />
-          <BooleanField label="Rear Camera" checked={Boolean(technicalFeatures.rearCamera)} onCheckedChange={(v) => setTechnicalFeature('rearCamera', v)} />
-          <BooleanField label="Blind Spot Monitor" checked={Boolean(technicalFeatures.blindSpotMonitor)} onCheckedChange={(v) => setTechnicalFeature('blindSpotMonitor', v)} />
-          <BooleanField label="Lane Assist" checked={Boolean(technicalFeatures.laneAssist)} onCheckedChange={(v) => setTechnicalFeature('laneAssist', v)} />
-          <BooleanField label="Adaptive Cruise" checked={Boolean(technicalFeatures.adaptiveCruise)} onCheckedChange={(v) => setTechnicalFeature('adaptiveCruise', v)} />
-          <BooleanField label="Collision Warning" checked={Boolean(technicalFeatures.collisionWarning)} onCheckedChange={(v) => setTechnicalFeature('collisionWarning', v)} />
-          <BooleanField label="Leather Seats" checked={Boolean(technicalFeatures.leatherSeats)} onCheckedChange={(v) => setTechnicalFeature('leatherSeats', v)} />
-          <BooleanField label="Heated Seats" checked={Boolean(technicalFeatures.heatedSeats)} onCheckedChange={(v) => setTechnicalFeature('heatedSeats', v)} />
-          <BooleanField label="Ventilated Seats" checked={Boolean(technicalFeatures.ventilatedSeats)} onCheckedChange={(v) => setTechnicalFeature('ventilatedSeats', v)} />
-          <BooleanField label="Sunroof" checked={Boolean(technicalFeatures.sunroof)} onCheckedChange={(v) => setTechnicalFeature('sunroof', v)} />
-          <BooleanField label="Panoramic Roof" checked={Boolean(technicalFeatures.panoramicRoof)} onCheckedChange={(v) => setTechnicalFeature('panoramicRoof', v)} />
-          <BooleanField label="Touchscreen" checked={Boolean(technicalFeatures.touchscreen)} onCheckedChange={(v) => setTechnicalFeature('touchscreen', v)} />
-          <BooleanField label="Apple CarPlay" checked={Boolean(technicalFeatures.appleCarPlay)} onCheckedChange={(v) => setTechnicalFeature('appleCarPlay', v)} />
-          <BooleanField label="Android Auto" checked={Boolean(technicalFeatures.androidAuto)} onCheckedChange={(v) => setTechnicalFeature('androidAuto', v)} />
-          <BooleanField label="Bluetooth" checked={Boolean(technicalFeatures.bluetooth)} onCheckedChange={(v) => setTechnicalFeature('bluetooth', v)} />
-          <BooleanField label="Navigation" checked={Boolean(technicalFeatures.navigation)} onCheckedChange={(v) => setTechnicalFeature('navigation', v)} />
-          <BooleanField label="Wireless Charging" checked={Boolean(technicalFeatures.wirelessCharging)} onCheckedChange={(v) => setTechnicalFeature('wirelessCharging', v)} />
-          <BooleanField label="Sport Mode" checked={Boolean(technicalFeatures.sportMode)} onCheckedChange={(v) => setTechnicalFeature('sportMode', v)} />
-          <BooleanField label="Paddle Shifters" checked={Boolean(technicalFeatures.paddleShifters)} onCheckedChange={(v) => setTechnicalFeature('paddleShifters', v)} />
-          <BooleanField label="All Wheel Drive" checked={Boolean(technicalFeatures.allWheelDrive)} onCheckedChange={(v) => setTechnicalFeature('allWheelDrive', v)} />
-          <BooleanField label="Adjustable Suspension" checked={Boolean(technicalFeatures.adjustableSuspension)} onCheckedChange={(v) => setTechnicalFeature('adjustableSuspension', v)} />
-          <BooleanField label="Launch Control" checked={Boolean(technicalFeatures.launchControl)} onCheckedChange={(v) => setTechnicalFeature('launchControl', v)} />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-          <FormField label="Airbags" hint="Optional">
-            <input
-              type="number"
-              inputMode="numeric"
-              value={technicalFeatures.airbags ?? ''}
-              onChange={(e) => setTechnicalFeature('airbags', e.target.value ? parseInt(e.target.value, 10) : undefined)}
-              placeholder="e.g. 6"
-              min={0}
-              max={20}
-              className="w-full h-12 bg-background border border-border/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 hover:bg-muted/10 transition-colors px-4 text-[15px] font-medium placeholder:text-muted-foreground/50"
-            />
-          </FormField>
-
-          <FormField label="Screen Size" hint="Optional">
-            <input
-              type="text"
-              value={technicalFeatures.screenSize ?? ''}
-              onChange={(e) => setTechnicalFeature('screenSize', e.target.value)}
-              placeholder='e.g. 10"'
-              className="w-full h-12 bg-background border border-border/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 hover:bg-muted/10 transition-colors px-4 text-[15px] font-medium placeholder:text-muted-foreground/50"
-            />
-          </FormField>
-
-          <FormField label="Sound System" hint="Optional">
-            <input
-              type="text"
-              value={technicalFeatures.soundSystem ?? ''}
-              onChange={(e) => setTechnicalFeature('soundSystem', e.target.value)}
-              placeholder="e.g. Bose"
-              className="w-full h-12 bg-background border border-border/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 hover:bg-muted/10 transition-colors px-4 text-[15px] font-medium placeholder:text-muted-foreground/50"
-            />
-          </FormField>
-        </div>
       </Card>
     </div>
   );
