@@ -24,30 +24,23 @@ export function DecodedVehiclePreview({ data, isVisible }: DecodedVehiclePreview
   ].filter(f => f.value);
   
   return (
-    <div className="mt-5 p-6 bg-background border border-border/50 rounded-2xl">
-      {/* Header */}
-      <div className="flex items-center gap-3 pb-4 border-b border-border/20">
-        <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center">
-          <CheckCircle2 className="w-4 h-4 text-green-500" />
-        </div>
-        <div>
-          <p className="text-[13px] font-semibold text-green-600">
-            {data.model ? 'Vehicle Identified' : 'Partial Match'}
+    <section className="pt-8 border-t border-border/20 space-y-4">
+      <div className="flex items-start gap-3">
+        <CheckCircle2 className="w-5 h-5 text-foreground mt-0.5" />
+        <div className="min-w-0">
+          <p className="text-[14px] font-semibold tracking-tight">
+            {data.model ? 'Vehicle identified' : 'Partial match'}
           </p>
-          {!data.model && (
-            <p className="text-[12px] text-muted-foreground/60">Select model below to continue</p>
-          )}
+          <p className="text-[13px] text-muted-foreground/70">
+            {data.model
+              ? `${data.year} ${data.make} ${data.model}`
+              : `${data.year} ${data.make} — select model below to continue`}
+          </p>
         </div>
       </div>
-      
-      {/* Vehicle Title */}
-      <h3 className="text-[18px] font-bold tracking-tight mt-4 mb-4">
-        {data.year} {data.make} {data.model || ''}
-      </h3>
-      
-      {/* Decoded Specs Grid */}
+
       {decodedFields.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
           {decodedFields.map(({ label, value }) => (
             <div key={label} className="space-y-1">
               <p className="text-[11px] font-medium text-muted-foreground/50 uppercase tracking-wider">{label}</p>
@@ -56,6 +49,6 @@ export function DecodedVehiclePreview({ data, isVisible }: DecodedVehiclePreview
           ))}
         </div>
       )}
-    </div>
+    </section>
   );
 }

@@ -198,25 +198,25 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <h3 className={cn(
-              "text-base tracking-tight text-foreground truncate",
+              "text-lg sm:text-xl tracking-tight text-foreground truncate",
               partner.tier === 'black' ? "font-bold" : "font-semibold"
             )}>
               {partner.brandName}
             </h3>
             {partner.isVerified && (
-              <CheckCircle2 className="w-4 h-4 text-blue-500 flex-shrink-0" />
+              <CheckCircle2 className="w-5 h-5 text-blue-500 flex-shrink-0" />
             )}
           </div>
           
           {location && (
-            <div className="flex items-center gap-1.5 mt-1 text-sm text-muted-foreground">
-              <MapPin className="w-3.5 h-3.5" />
-              <span className="truncate">{location}</span>
+            <div className="flex items-center gap-2 mt-1.5 text-sm text-muted-foreground">
+              <MapPin className="w-4 h-4" />
+              <span className="truncate font-medium">{location}</span>
             </div>
           )}
 
           {partner.experienceYears && (
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm text-muted-foreground mt-1.5 font-medium">
               {partner.experienceYears}+ years in business
             </p>
           )}
@@ -239,11 +239,11 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
           href={partner.website}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors"
+          className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
         >
-          <Globe className="w-3.5 h-3.5" />
+          <Globe className="w-4 h-4" />
           <span className="truncate">{partner.website.replace(/^https?:\/\/(www\.)?/, '')}</span>
-          <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
+          <ExternalLink className="w-4 h-4 flex-shrink-0" />
         </Link>
       )}
 
@@ -253,9 +253,9 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
           {badges.slice(0, 3).map((badge, idx) => (
             <span
               key={idx}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium bg-muted text-muted-foreground rounded-md"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-muted text-muted-foreground rounded-lg"
             >
-              <Award className="w-3 h-3" />
+              <Award className="w-4 h-4" />
               {badge}
             </span>
           ))}
@@ -265,8 +265,8 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
       {/* About Section */}
       {partner.description && (
         <div className="space-y-2">
-          <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground">About</p>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="text-[13px] uppercase tracking-wider font-semibold text-muted-foreground">About</p>
+          <p className="text-sm sm:text-[15px] text-muted-foreground leading-relaxed">
             {partner.description}
           </p>
         </div>
@@ -276,13 +276,13 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
       <div className="grid grid-cols-2 gap-4 py-4 border-y border-border">
         {/* Google Rating */}
         <div className="space-y-1">
-          <div className="flex items-center gap-1.5">
-            <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-            <span className="text-xs text-muted-foreground">Google</span>
+          <div className="flex items-center gap-2">
+            <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+            <span className="text-sm font-medium text-muted-foreground">Google</span>
           </div>
-          <p className="text-base font-semibold tabular-nums text-foreground">
+          <p className="text-lg font-semibold tabular-nums text-foreground">
             {partner.googleRating !== null && partner.googleRating !== undefined
-              ? <>{partner.googleRating.toFixed(1)}<span className="text-xs font-normal text-muted-foreground ml-1">({partner.googleReviewCount ?? 0})</span></>
+              ? <>{partner.googleRating.toFixed(1)}<span className="text-sm font-normal text-muted-foreground ml-1">({partner.googleReviewCount ?? 0})</span></>
               : <span className="text-muted-foreground">N/A</span>
             }
           </p>
@@ -290,13 +290,13 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
 
         {/* Platform Rating */}
         <div className="space-y-1">
-          <div className="flex items-center gap-1.5">
-            <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-            <span className="text-xs text-muted-foreground">Alifh</span>
+          <div className="flex items-center gap-2">
+            <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+            <span className="text-sm font-medium text-muted-foreground">Alifh</span>
           </div>
-          <p className="text-base font-semibold tabular-nums text-foreground">
+          <p className="text-lg font-semibold tabular-nums text-foreground">
             {partner.platformRating !== null && partner.platformRating !== undefined
-              ? <>{partner.platformRating.toFixed(1)}<span className="text-xs font-normal text-muted-foreground ml-1">({partner.platformReviewCount ?? 0})</span></>
+              ? <>{partner.platformRating.toFixed(1)}<span className="text-sm font-normal text-muted-foreground ml-1">({partner.platformReviewCount ?? 0})</span></>
               : <span className="text-muted-foreground">N/A</span>
             }
           </p>
@@ -304,22 +304,22 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
 
         {/* Inventory */}
         <div className="space-y-1">
-          <div className="flex items-center gap-1.5">
-            <Car className="w-3.5 h-3.5 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">Inventory</span>
+          <div className="flex items-center gap-2">
+            <Car className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm font-medium text-muted-foreground">Inventory</span>
           </div>
-          <p className="text-base font-semibold tabular-nums text-foreground">
+          <p className="text-lg font-semibold tabular-nums text-foreground">
             {stats?.inventoryCount ?? <span className="text-muted-foreground">N/A</span>}
           </p>
         </div>
 
         {/* Total Sales */}
         <div className="space-y-1">
-          <div className="flex items-center gap-1.5">
-            <TrendingUp className="w-3.5 h-3.5 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">Sales</span>
+          <div className="flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm font-medium text-muted-foreground">Sales</span>
           </div>
-          <p className="text-base font-semibold tabular-nums text-foreground">
+          <p className="text-lg font-semibold tabular-nums text-foreground">
             {stats?.totalSales !== null && stats?.totalSales !== undefined && stats.totalSales > 0
               ? stats.totalSales.toLocaleString()
               : <span className="text-muted-foreground">N/A</span>
@@ -329,22 +329,22 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
 
         {/* Response Time */}
         <div className="space-y-1">
-          <div className="flex items-center gap-1.5">
-            <Clock className="w-3.5 h-3.5 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">Response</span>
+          <div className="flex items-center gap-2">
+            <Clock className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm font-medium text-muted-foreground">Response</span>
           </div>
-          <p className="text-base font-semibold tabular-nums text-foreground">
+          <p className="text-lg font-semibold tabular-nums text-foreground">
             {stats?.responseTime ? formatResponseTime(stats.responseTime) : <span className="text-muted-foreground">N/A</span>}
           </p>
         </div>
 
         {/* Response Rate */}
         <div className="space-y-1">
-          <div className="flex items-center gap-1.5">
-            <MessageCircle className="w-3.5 h-3.5 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">Rate</span>
+          <div className="flex items-center gap-2">
+            <MessageCircle className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm font-medium text-muted-foreground">Rate</span>
           </div>
-          <p className="text-base font-semibold tabular-nums text-foreground">
+          <p className="text-lg font-semibold tabular-nums text-foreground">
             {stats?.responseRate ? `${stats.responseRate}%` : <span className="text-muted-foreground">N/A</span>}
           </p>
         </div>
@@ -353,12 +353,12 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
       {/* Specialties */}
       {specialties.length > 0 && (
         <div className="space-y-2">
-          <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground">Specializes In</p>
+          <p className="text-[13px] uppercase tracking-wider font-semibold text-muted-foreground">Specializes In</p>
           <div className="flex flex-wrap gap-2">
             {specialties.map((specialty, idx) => (
               <span
                 key={idx}
-                className="px-2.5 py-1 text-xs font-medium bg-muted text-muted-foreground rounded-md"
+                className="px-3 py-1.5 text-sm font-medium bg-muted text-foreground/80 rounded-lg"
               >
                 {specialty}
               </span>
@@ -370,10 +370,10 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
       {/* View Showroom Link - Inline text link */}
       <Link
         href={`/showrooms/${partner.id}`}
-        className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
       >
         View full showroom
-        <ExternalLink className="w-3.5 h-3.5" />
+        <ExternalLink className="w-4 h-4" />
       </Link>
     </div>
   );
@@ -410,20 +410,20 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
         {/* User Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="text-base font-semibold tracking-tight text-foreground truncate">{name}</h3>
+            <h3 className="text-lg sm:text-xl font-semibold tracking-tight text-foreground truncate">{name}</h3>
             {kycVerified && (
-              <CheckCircle2 className="w-4 h-4 text-blue-500 flex-shrink-0" />
+              <CheckCircle2 className="w-5 h-5 text-blue-500 flex-shrink-0" />
             )}
           </div>
           
           {location && (
-            <div className="flex items-center gap-1.5 mt-1 text-sm text-muted-foreground">
-              <MapPin className="w-3.5 h-3.5" />
-              <span className="truncate">{location}</span>
+            <div className="flex items-center gap-2 mt-1.5 text-sm text-muted-foreground">
+              <MapPin className="w-4 h-4" />
+              <span className="truncate font-medium">{location}</span>
             </div>
           )}
 
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground mt-1.5 font-medium">
             Member since {memberSinceYear}
           </p>
         </div>
@@ -443,7 +443,7 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
           <span
             key={idx}
             className={cn(
-              "inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md",
+              "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg",
               badge.toLowerCase() === 'ace' 
                 ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
                 : badge.toLowerCase() === 'first'
@@ -451,25 +451,25 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
                 : "bg-muted text-muted-foreground"
             )}
           >
-            <Award className="w-3 h-3" />
+            <Award className="w-4 h-4" />
             {badge}
           </span>
         ))}
         {kycVerified && (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium bg-green-500/10 text-green-600 dark:text-green-400 rounded-md">
-            <Shield className="w-3 h-3" />
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-green-500/10 text-green-600 dark:text-green-400 rounded-lg">
+            <Shield className="w-4 h-4" />
             ID Verified
           </span>
         )}
         {emailVerified && (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium bg-muted text-muted-foreground rounded-md">
-            <CheckCircle2 className="w-3 h-3 text-green-500" />
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-muted text-muted-foreground rounded-lg">
+            <CheckCircle2 className="w-4 h-4 text-green-500" />
             Email
           </span>
         )}
         {phoneVerified && (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium bg-muted text-muted-foreground rounded-md">
-            <CheckCircle2 className="w-3 h-3 text-green-500" />
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-muted text-muted-foreground rounded-lg">
+            <CheckCircle2 className="w-4 h-4 text-green-500" />
             Phone
           </span>
         )}
@@ -477,7 +477,7 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
 
       {/* Description */}
       {profile?.description && (
-        <p className="text-sm text-muted-foreground leading-relaxed">
+        <p className="text-sm sm:text-[15px] text-muted-foreground leading-relaxed">
           {profile.description}
         </p>
       )}
@@ -486,34 +486,34 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
       <div className="grid grid-cols-2 gap-4 py-4 border-y border-border">
         {/* Inventory */}
         <div className="space-y-1">
-          <div className="flex items-center gap-1.5">
-            <Car className="w-3.5 h-3.5 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">Inventory</span>
+          <div className="flex items-center gap-2">
+            <Car className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm font-medium text-muted-foreground">Inventory</span>
           </div>
-          <p className="text-base font-semibold tabular-nums text-foreground">{profile?.inventoryCount ?? 0}</p>
+          <p className="text-lg font-semibold tabular-nums text-foreground">{profile?.inventoryCount ?? 0}</p>
         </div>
 
         {/* Response Time */}
         {profile?.avgResponseTime && (
           <div className="space-y-1">
-            <div className="flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">Response</span>
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm font-medium text-muted-foreground">Response</span>
             </div>
-            <p className="text-base font-semibold tabular-nums text-foreground">{formatResponseTime(profile.avgResponseTime)}</p>
+            <p className="text-lg font-semibold tabular-nums text-foreground">{formatResponseTime(profile.avgResponseTime)}</p>
           </div>
         )}
 
         {/* Rating */}
         {hasRating && (
           <div className="space-y-1">
-            <div className="flex items-center gap-1.5">
-              <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-              <span className="text-xs text-muted-foreground">Rating</span>
+            <div className="flex items-center gap-2">
+              <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+              <span className="text-sm font-medium text-muted-foreground">Rating</span>
             </div>
-            <p className="text-base font-semibold tabular-nums text-foreground">
+            <p className="text-lg font-semibold tabular-nums text-foreground">
               {profile!.platformRating!.toFixed(1)}
-              <span className="text-xs font-normal text-muted-foreground ml-1">({profile!.platformReviewCount})</span>
+              <span className="text-sm font-normal text-muted-foreground ml-1">({profile!.platformReviewCount})</span>
             </p>
           </div>
         )}
@@ -522,12 +522,12 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
       {/* Tags */}
       {tags.length > 0 && (
         <div className="space-y-2">
-          <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground">Tags</p>
+          <p className="text-[13px] uppercase tracking-wider font-semibold text-muted-foreground">Tags</p>
           <div className="flex flex-wrap gap-2">
             {tags.map((tag, idx) => (
               <span
                 key={idx}
-                className="px-2.5 py-1 text-xs font-medium bg-muted text-muted-foreground rounded-md"
+                className="px-3 py-1.5 text-sm font-medium bg-muted text-foreground/80 rounded-lg"
               >
                 {tag}
               </span>

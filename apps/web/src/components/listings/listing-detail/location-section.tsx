@@ -73,22 +73,22 @@ export function LocationSection({ sellerData, className }: LocationSectionProps)
 
   return (
     <div className={cn("space-y-4", className)}>
-      <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground">
+      <p className="text-[13px] uppercase tracking-wider font-semibold text-muted-foreground">
         Location
       </p>
 
       {/* Address Display */}
-      <div className="flex items-start gap-2">
-        <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+      <div className="flex items-start gap-2.5">
+        <MapPin className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
         <div className="space-y-0.5">
           {sellerData.type === 'partner' && locationData.address && (
-            <p className="text-sm font-medium text-foreground">{locationData.address}</p>
+            <p className="text-sm sm:text-[15px] font-semibold text-foreground">{locationData.address}</p>
           )}
           {locationString && (
             <p className={cn(
               sellerData.type === 'partner' && locationData.address
-                ? "text-sm text-muted-foreground"
-                : "text-sm font-medium text-foreground"
+                ? "text-sm text-muted-foreground font-medium"
+                : "text-sm sm:text-[15px] font-semibold text-foreground"
             )}>
               {locationString}
             </p>
@@ -102,18 +102,18 @@ export function LocationSection({ sellerData, className }: LocationSectionProps)
           href={mapsSearchUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 min-w-[120px] py-2.5 px-3 text-sm font-medium text-foreground border border-border rounded-full hover:bg-muted/50 transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap"
+          className="flex-1 min-w-[120px] py-2.5 px-4 text-sm font-semibold text-foreground border border-border rounded-full hover:bg-muted/50 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
         >
-          <ExternalLink className="w-3.5 h-3.5" />
+          <ExternalLink className="w-4 h-4" />
           View Map
         </a>
         <a
           href={directionsUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 min-w-[120px] py-2.5 px-3 text-sm font-medium text-foreground border border-border rounded-full hover:bg-muted/50 transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap"
+          className="flex-1 min-w-[120px] py-2.5 px-4 text-sm font-semibold text-foreground border border-border rounded-full hover:bg-muted/50 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
         >
-          <Navigation className="w-3.5 h-3.5" />
+          <Navigation className="w-4 h-4" />
           Directions
         </a>
       </div>

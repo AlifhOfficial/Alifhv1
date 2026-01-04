@@ -1,9 +1,16 @@
 'use client';
 
+/**
+ * Details Step - Clean Style with Color Accents
+ * 
+ * Larger typography, colored toggle pills.
+ * Blue-500 for selected states.
+ */
+
 import { useMemo } from 'react';
+import { CheckCircle2 } from 'lucide-react';
 import { cn } from '@/utils';
 import { Combobox } from '../combobox';
-import { FormField } from '../form-field';
 import {
   BODY_TYPES,
   DOORS_OPTIONS,
@@ -26,15 +33,41 @@ import {
 import type { ListingFormData } from '../types';
 import type { StepProps } from './types';
 
-function Card({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
+// ============================================================================
+// Shared Components
+// ============================================================================
+
+function SectionHeader({ title, optional }: { title: string; optional?: boolean }) {
   return (
-    <section className="p-6 sm:p-7 bg-background border border-border/50 rounded-2xl">
-      <header className="space-y-1.5 mb-6">
-        <h3 className="text-[16px] sm:text-[17px] font-semibold tracking-tight">{title}</h3>
-        {subtitle && <p className="text-[14px] text-muted-foreground">{subtitle}</p>}
-      </header>
+    <div className="flex items-baseline justify-between">
+      <h3 className="text-lg font-medium text-foreground">{title}</h3>
+      {optional && <span className="text-sm text-muted-foreground/60">Optional</span>}
+    </div>
+  );
+}
+
+function FieldWrapper({ 
+  label, 
+  required, 
+  error, 
+  children 
+}: { 
+  label: string; 
+  required?: boolean; 
+  error?: string; 
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-2">
+      <label className="text-base font-medium text-muted-foreground">
+        {label}
+        {required && <span className="text-red-500 ml-0.5">*</span>}
+      </label>
       {children}
-    </section>
+      {error && (
+        <p className="text-base font-medium text-red-500">{error}</p>
+      )}
+    </div>
   );
 }
 
@@ -55,17 +88,22 @@ function TogglePill({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        'px-3.5 py-2 rounded-full text-[14px] font-medium border transition-colors',
+        'inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-base font-medium transition-all duration-200',
         pressed
-          ? 'bg-foreground text-background border-foreground'
-          : 'bg-muted/20 text-foreground border-border/50 hover:bg-muted/30',
-        disabled && 'opacity-40 cursor-not-allowed hover:bg-muted/20'
+          ? 'bg-blue-500 text-white'
+          : 'bg-muted/30 text-muted-foreground hover:bg-muted/50 hover:text-foreground',
+        disabled && 'opacity-40 cursor-not-allowed hover:bg-muted/30 hover:text-muted-foreground'
       )}
     >
+      {pressed && <CheckCircle2 className="w-4 h-4" />}
       {label}
     </button>
   );
 }
+
+// ============================================================================
+// Details Step Component
+// ============================================================================
 
 export function DetailsStep({ data, updateField, errors }: StepProps) {
   const specsOptions = useMemo(
@@ -140,130 +178,148 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <Card title="Essentials" subtitle="The basics buyers look for first.">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField label="Mileage (km)" required error={errors.mileage}>
-            <input
-              type="number"
-              inputMode="numeric"
-              value={data.mileage ?? ''}
-              onChange={(e) => updateField('mileage', parseInt(e.target.value || '0', 10) || 0)}
-              placeholder="e.g. 45,000"
-              min={0}
-              className="w-full h-12 bg-background border border-border/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 hover:bg-muted/10 transition-colors px-4 text-[15px] font-medium placeholder:text-muted-foreground/50"
-            />
-          </FormField>
+    <div className="space-y-10">
+      {/* Essentials */}
+      <div className="space-y-6">
+        <SectionHeader title="Essentials" />
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <FieldWrapper label="Mileage" required error={errors.mileage}>
+            <div className="relative">
+              <input
+                type="number"
+                inputMode="numeric"
+                value={data.mileage ?? ''}
+                onChange={(e) => updateField('mileage', parseInt(e.target.value || '0', 10) || 0)}
+                placeholder="45,000"
+                min={0}
+                className={cn(
+                  "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
+                  "outline-none transition-colors px-0 pr-12 text-base font-medium",
+                  "placeholder:text-muted-foreground/40"
+                )}
+              />
+              <span className="absolute right-0 top-1/2 -translate-y-1/2 text-sm text-muted-foreground/60">
+                km
+              </span>
+            </div>
+          </FieldWrapper>
 
-          <FormField label="Regional Specs" required error={errors.specs}>
+          <FieldWrapper label="Regional Specs" required error={errors.specs}>
             <Combobox
               options={specsOptions}
               value={data.specs || ''}
               onValueChange={(v) => setRequiredEnum('specs', v)}
-              placeholder="Select specs..."
-              searchPlaceholder="Search specs..."
+              placeholder="Select specs"
+              searchPlaceholder="Search..."
             />
-          </FormField>
+          </FieldWrapper>
 
-          <FormField label="Steering" required error={errors.steeringSide}>
+          <FieldWrapper label="Steering" required error={errors.steeringSide}>
             <Combobox
               options={steeringOptions}
               value={data.steeringSide || ''}
               onValueChange={(v) => setRequiredEnum('steeringSide', v)}
-              placeholder="Select steering..."
+              placeholder="Select steering"
             />
-          </FormField>
+          </FieldWrapper>
         </div>
-      </Card>
+      </div>
 
-      <Card title="Appearance" subtitle="Helps buyers filter quickly.">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField label="Body Type" hint="Optional">
+      {/* Appearance */}
+      <div className="space-y-6">
+        <SectionHeader title="Appearance" optional />
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <FieldWrapper label="Body Type">
             <Combobox
               options={bodyTypeOptions}
               value={data.bodyType || ''}
               onValueChange={(v) => setOptionalEnum('bodyType', v)}
-              placeholder="Select body type..."
+              placeholder="Select body type"
             />
-          </FormField>
+          </FieldWrapper>
 
-          <FormField label="Exterior Color" hint="Optional">
+          <FieldWrapper label="Exterior Color">
             <Combobox
               options={exteriorColorOptions}
               value={data.exteriorColor || ''}
               onValueChange={(v) => setOptionalEnum('exteriorColor', v)}
-              placeholder="Select exterior color..."
+              placeholder="Select color"
             />
-          </FormField>
+          </FieldWrapper>
 
-          <FormField label="Interior Color" hint="Optional">
+          <FieldWrapper label="Interior Color">
             <Combobox
               options={interiorColorOptions}
               value={data.interiorColor || ''}
               onValueChange={(v) => setOptionalEnum('interiorColor', v)}
-              placeholder="Select interior color..."
+              placeholder="Select color"
             />
-          </FormField>
+          </FieldWrapper>
 
-          <FormField label="Doors" hint="Optional">
+          <FieldWrapper label="Doors">
             <Combobox
               options={doorsOptions}
               value={data.doors || ''}
               onValueChange={(v) => setOptionalEnum('doors', v)}
-              placeholder="Select doors..."
+              placeholder="Select doors"
             />
-          </FormField>
+          </FieldWrapper>
 
-          <FormField label="Seating" hint="Optional">
+          <FieldWrapper label="Seating">
             <Combobox
               options={seatingOptions}
               value={data.seatingCapacity || ''}
               onValueChange={(v) => setOptionalEnum('seatingCapacity', v)}
-              placeholder="Select seating..."
+              placeholder="Select seating"
             />
-          </FormField>
+          </FieldWrapper>
         </div>
-      </Card>
+      </div>
 
-      <Card title="Powertrain" subtitle="Optional, but improves search results.">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField label="Fuel Type" hint="Optional">
+      {/* Powertrain */}
+      <div className="space-y-6">
+        <SectionHeader title="Powertrain" optional />
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <FieldWrapper label="Fuel Type">
             <Combobox
               options={fuelOptions}
               value={data.fuelType || ''}
               onValueChange={(v) => setOptionalEnum('fuelType', v)}
-              placeholder="Select fuel type..."
+              placeholder="Select fuel type"
             />
-          </FormField>
+          </FieldWrapper>
 
-          <FormField label="Transmission" hint="Optional">
+          <FieldWrapper label="Transmission">
             <Combobox
               options={transmissionOptions}
               value={data.transmission || ''}
               onValueChange={(v) => setOptionalEnum('transmission', v)}
-              placeholder="Select transmission..."
+              placeholder="Select transmission"
             />
-          </FormField>
+          </FieldWrapper>
 
-          <FormField label="Engine Size" hint="Optional">
+          <FieldWrapper label="Engine Size">
             <Combobox
               options={engineSizeOptions}
               value={data.engineSize || ''}
               onValueChange={(v) => setOptionalEnum('engineSize', v)}
-              placeholder="Select engine size..."
+              placeholder="Select engine size"
             />
-          </FormField>
+          </FieldWrapper>
 
-          <FormField label="Engine Type" hint="Optional">
+          <FieldWrapper label="Engine Type">
             <Combobox
               options={engineTypeOptions}
               value={data.engineType || ''}
               onValueChange={(v) => setOptionalEnum('engineType', v)}
-              placeholder="Select engine type..."
+              placeholder="Select engine type"
             />
-          </FormField>
+          </FieldWrapper>
 
-          <FormField label="Cylinders" hint="Optional" error={errors.cylinders}>
+          <FieldWrapper label="Cylinders" error={errors.cylinders}>
             <input
               type="number"
               inputMode="numeric"
@@ -272,111 +328,150 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
                 const next = e.target.value ? parseInt(e.target.value, 10) : null;
                 updateField('cylinders', next);
               }}
-              placeholder="e.g. 4"
+              placeholder="4"
               min={0}
               max={16}
-              className="w-full h-12 bg-background border border-border/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 hover:bg-muted/10 transition-colors px-4 text-[15px] font-medium placeholder:text-muted-foreground/50"
+              className={cn(
+                "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
+                "outline-none transition-colors px-0 text-base font-medium",
+                "placeholder:text-muted-foreground/40"
+              )}
             />
-          </FormField>
+          </FieldWrapper>
 
-          <FormField label="Power" hint="Optional">
+          <FieldWrapper label="Power">
             <Combobox
               options={powerOptions}
               value={data.powerRange || ''}
               onValueChange={(v) => setOptionalEnum('powerRange', v)}
-              placeholder="Select power range..."
+              placeholder="Select power range"
             />
-          </FormField>
+          </FieldWrapper>
 
-          <FormField label="Fuel Economy" hint="Optional">
+          <FieldWrapper label="Fuel Economy">
             <input
               type="text"
               value={data.fuelEconomy || ''}
               onChange={(e) => updateField('fuelEconomy', e.target.value)}
-              placeholder="e.g. 12 km/L"
-              className="w-full h-12 bg-background border border-border/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 hover:bg-muted/10 transition-colors px-4 text-[15px] font-medium placeholder:text-muted-foreground/50"
+              placeholder="12 km/L"
+              className={cn(
+                "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
+                "outline-none transition-colors px-0 text-base font-medium",
+                "placeholder:text-muted-foreground/40"
+              )}
             />
-          </FormField>
+          </FieldWrapper>
 
-          <FormField label="Torque" hint="Optional">
+          <FieldWrapper label="Torque">
             <input
               type="text"
               value={data.torque || ''}
               onChange={(e) => updateField('torque', e.target.value)}
-              placeholder="e.g. 350 Nm"
-              className="w-full h-12 bg-background border border-border/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 hover:bg-muted/10 transition-colors px-4 text-[15px] font-medium placeholder:text-muted-foreground/50"
+              placeholder="350 Nm"
+              className={cn(
+                "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
+                "outline-none transition-colors px-0 text-base font-medium",
+                "placeholder:text-muted-foreground/40"
+              )}
             />
-          </FormField>
+          </FieldWrapper>
         </div>
-      </Card>
+      </div>
 
-      <Card title="Status" subtitle="Optional fields that build trust.">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField label="Warranty" hint="Optional">
+      {/* Status */}
+      <div className="space-y-6">
+        <SectionHeader title="Status" optional />
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <FieldWrapper label="Warranty">
             <Combobox
               options={warrantyOptions}
               value={data.warrantyType || ''}
               onValueChange={(v) => setOptionalEnum('warrantyType', v)}
-              placeholder="Select warranty..."
+              placeholder="Select warranty"
             />
-          </FormField>
+          </FieldWrapper>
 
-          <FormField label="Export" hint="Optional">
+          <FieldWrapper label="Export">
             <Combobox
               options={exportOptions}
               value={data.exportStatus || ''}
               onValueChange={(v) => setRequiredEnum('exportStatus', v)}
-              placeholder="Select export status..."
+              placeholder="Select export status"
             />
-          </FormField>
+          </FieldWrapper>
         </div>
-      </Card>
+      </div>
 
-      <Card title="Extras" subtitle="Select the features that apply.">
-        <div className="flex flex-wrap gap-2.5">
+      {/* Extras */}
+      <div className="space-y-4">
+        <SectionHeader title="Extras" optional />
+        
+        <div className="flex flex-wrap gap-6">
           {VEHICLE_EXTRAS.map((extra) => {
-            const pressed = selectedExtras.includes(extra.value);
+            const isSelected = selectedExtras.includes(extra.value);
             return (
-              <TogglePill
+              <button
                 key={extra.value}
-                label={extra.label}
-                pressed={pressed}
                 onClick={() => {
-                  const next = pressed
+                  const next = isSelected
                     ? selectedExtras.filter((v) => v !== extra.value)
                     : [...selectedExtras, extra.value];
                   updateField('extras', next);
                 }}
-              />
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-muted transition-colors",
+                  isSelected ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {isSelected && <CheckCircle2 className="w-4 h-4 text-green-500" />}
+                {extra.label}
+              </button>
             );
           })}
         </div>
-      </Card>
+      </div>
 
-      <Card title="Tags" subtitle={`Pick up to ${MAX_LISTING_TAGS}. Keep it minimal and accurate.`}>
-        <div className="flex flex-wrap gap-2.5">
+      {/* Tags */}
+      <div className="space-y-4">
+        <div className="flex items-baseline justify-between">
+          <SectionHeader title="Tags" />
+          <span className="text-sm font-medium text-blue-500">max {MAX_LISTING_TAGS}</span>
+        </div>
+        
+        {/* All tags */}
+        <div className="flex flex-wrap gap-6">
           {LISTING_TAGS.map((tag) => {
-            const pressed = selectedTags.includes(tag.value);
-            const disabled = !pressed && selectedTags.length >= MAX_LISTING_TAGS;
+            const isSelected = selectedTags.includes(tag.value);
+            const disabled = !isSelected && selectedTags.length >= MAX_LISTING_TAGS;
 
             return (
-              <TogglePill
+              <button
                 key={tag.value}
-                label={tag.label}
-                pressed={pressed}
                 disabled={disabled}
                 onClick={() => {
-                  const next = pressed
-                    ? selectedTags.filter((v) => v !== tag.value)
-                    : [...selectedTags, tag.value];
-                  updateField('tags', next);
+                  if (isSelected) {
+                    const next = selectedTags.filter((v) => v !== tag.value);
+                    updateField('tags', next);
+                  } else {
+                    const next = [...selectedTags, tag.value];
+                    updateField('tags', next);
+                  }
                 }}
-              />
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-muted transition-colors",
+                  isSelected ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+                  disabled && "opacity-50 cursor-not-allowed"
+                )}
+              >
+                {isSelected && <CheckCircle2 className="w-4 h-4 text-green-500" />}
+                {tag.label}
+              </button>
             );
           })}
         </div>
-        {errors.tags && <p className="mt-3 text-sm font-medium text-red-500">{errors.tags}</p>}
-      </Card>
+        {errors.tags && <p className="text-sm font-medium text-red-500">{errors.tags}</p>}
+      </div>
     </div>
   );
 }

@@ -55,14 +55,14 @@ export function ListingTimestamp({
 
   return (
     <div className={cn("py-4 border-y border-border", className)}>
-      <div className="flex items-center gap-2">
-        <Clock className="w-4 h-4 text-muted-foreground" />
+      <div className="flex items-center gap-2.5">
+        <Clock className="w-5 h-5 text-muted-foreground" />
         <div className="flex items-baseline gap-2">
-          <span className="text-sm font-medium text-foreground">
+          <span className="text-sm sm:text-[15px] font-semibold text-foreground">
             {formatTimeAgo(postedDate)}
           </span>
           {wasUpdated && (
-            <span className="text-sm text-muted-foreground">
+            <span className="text-sm text-muted-foreground font-medium">
               • Updated {formatTimeAgo(updatedDateObj)}
             </span>
           )}

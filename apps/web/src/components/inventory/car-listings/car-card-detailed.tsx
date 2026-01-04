@@ -237,7 +237,7 @@ function PricingInsights({ listing }: { listing: CarDetailedData }) {
             <div className="space-y-1.5">
               {valueFactors.positives.map((factor, idx) => (
                 <div key={idx} className="flex items-start gap-2 text-sm">
-                  <span className="text-green-500 mt-0.5">✓</span>
+                  <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
                   <span className="text-foreground/80">{factor}</span>
                 </div>
               ))}
@@ -373,17 +373,17 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
       {/* Highlights - Clean minimal list */}
       {allHighlights.length > 0 && (
         <div className="space-y-3">
-          <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
+          <p className="text-[13px] uppercase tracking-wider font-semibold text-muted-foreground">
             Highlights
           </p>
-          <div className="flex flex-wrap gap-x-4 gap-y-2">
+          <div className="flex flex-wrap gap-x-5 gap-y-2.5">
             {allHighlights.map((highlight, idx) => (
               <div 
                 key={idx}
                 className="flex items-center gap-1.5"
               >
-                <CheckCircle2 className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />
-                <span className="text-sm text-foreground">{highlight}</span>
+                <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
+                <span className="text-sm sm:text-[15px] font-medium text-foreground">{highlight}</span>
               </div>
             ))}
           </div>
@@ -394,47 +394,47 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
       <div className="space-y-4">
         {/* Title & Actions Row */}
         <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 min-w-0 space-y-1">
-            <h1 className="text-lg sm:text-xl font-semibold tracking-tight text-foreground break-words">
+          <div className="flex-1 min-w-0 space-y-1.5">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground break-words">
               {carTitle}
             </h1>
             
             {/* Price */}
-            <div className="flex items-baseline gap-2 flex-wrap">
-              <p className="text-xl sm:text-2xl font-bold tabular-nums text-foreground">
+            <div className="flex items-baseline gap-2.5 flex-wrap">
+              <p className="text-2xl sm:text-3xl font-bold tabular-nums text-blue-500">
                 {formatPrice(listing.price)}
               </p>
               {listing.isNegotiable && (
-                <span className="text-xs text-muted-foreground/70">Negotiable</span>
+                <span className="text-sm text-green-500 font-semibold">Negotiable</span>
               )}
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-1.5 flex-shrink-0">
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             {listing.isBlkListing && (
-              <div className="px-2 py-1 text-[10px] font-bold tracking-widest bg-black text-white dark:bg-white dark:text-black rounded">
+              <div className="px-2.5 py-1 text-[10px] font-bold tracking-widest bg-black text-white dark:bg-white dark:text-black rounded">
                 BLK
               </div>
             )}
 
             <button 
               onClick={handleShare}
-              className="p-2 hover:opacity-70 transition-opacity"
+              className="p-2 sm:p-2.5 rounded-full hover:bg-muted/50 transition-colors"
               aria-label="Share"
             >
-              <Share2 className="w-4 h-4 text-muted-foreground" />
+              <Share2 className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
             </button>
             
             <button 
               onClick={handleFavoriteClick}
               disabled={favorite.isUpdating}
-              className="p-2 hover:opacity-70 transition-opacity"
+              className="p-2 sm:p-2.5 rounded-full hover:bg-muted/50 transition-colors"
               aria-label={favorite.isFavorite ? "Remove from favorites" : "Add to favorites"}
             >
               <Heart 
                 className={cn(
-                  "w-4 h-4 transition-transform",
+                  "w-5 h-5 sm:w-6 sm:h-6 transition-transform",
                   heartScale && "scale-125",
                   favorite.isFavorite ? "text-rose-500" : "text-muted-foreground"
                 )}
@@ -445,12 +445,12 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
             <button 
               onClick={handleSuperlikeClick}
               disabled={superlike.isUpdating}
-              className="p-2 hover:opacity-70 transition-opacity"
+              className="p-2 sm:p-2.5 rounded-full hover:bg-muted/50 transition-colors"
               aria-label={superlike.isSuperliked ? "Remove superlike" : "Superlike"}
             >
               <Sparkles 
                 className={cn(
-                  "w-4 h-4",
+                  "w-5 h-5 sm:w-6 sm:h-6",
                   superlike.isSuperliked ? "text-yellow-500" : "text-muted-foreground"
                 )}
                 fill={superlike.isSuperliked ? "currentColor" : "none"}
@@ -460,22 +460,22 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
         </div>
 
         {/* Quick Details */}
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
-          <span className="font-medium tabular-nums">{formatMileage(listing.mileage)} km</span>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm sm:text-[15px] text-muted-foreground">
+          <span className="font-semibold tabular-nums text-foreground/80">{formatMileage(listing.mileage)} km</span>
           <span className="text-muted-foreground/40">•</span>
-          <span>{formatEnumValue(listing.specs)} Specs</span>
+          <span className="font-semibold text-foreground/80">{formatEnumValue(listing.specs)} Specs</span>
           <span className="text-muted-foreground/40">•</span>
-          <span className="flex items-center gap-1">
-            <MapPin className="w-3 h-3" />
+          <span className="flex items-center gap-1.5 font-semibold text-foreground/80">
+            <MapPin className="w-4 h-4" />
             {listing.city ? `${listing.city}, ${formatEnumValue(listing.emirate)}` : formatEnumValue(listing.emirate)}
           </span>
         </div>
 
         {/* VIN */}
         {listing.vin && (
-          <div className="flex items-baseline gap-2">
-            <span className="text-[10px] text-muted-foreground/70 uppercase tracking-wider">VIN</span>
-            <span className="font-mono text-xs text-foreground">{listing.vin}</span>
+          <div className="flex items-baseline gap-2.5">
+            <span className="text-[11px] text-muted-foreground uppercase tracking-wider font-semibold">VIN</span>
+            <span className="font-mono text-sm text-muted-foreground/80">{listing.vin}</span>
           </div>
         )}
       </div>
@@ -483,10 +483,10 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
       {/* Description */}
       {listing.description && (
         <div className="space-y-3">
-          <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
+          <p className="text-[13px] uppercase tracking-wider font-semibold text-muted-foreground">
             Description
           </p>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="text-sm sm:text-[15px] text-muted-foreground leading-relaxed">
             {listing.description}
           </p>
         </div>
@@ -494,7 +494,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
 
       {/* Specifications - Two Column with Label/Value rows */}
       <div className="space-y-4">
-        <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
+        <p className="text-[13px] uppercase tracking-wider font-semibold text-muted-foreground">
           Specifications
         </p>
         
@@ -588,14 +588,14 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
       {/* Extras / Features */}
       {listing.extras.length > 0 && (
         <div className="space-y-3">
-          <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
+          <p className="text-[13px] uppercase tracking-wider font-semibold text-muted-foreground">
             Features
           </p>
           <div className="flex flex-wrap gap-2">
             {listing.extras.map((extra, idx) => (
               <span 
                 key={idx}
-                className="px-2.5 py-1 text-xs text-muted-foreground bg-muted/50 rounded"
+                className="px-3 py-1.5 text-sm font-medium text-foreground/80 bg-muted/50 rounded-lg"
               >
                 {extra}
               </span>
@@ -607,17 +607,17 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
       {/* Quick Notes / Owner Remarks */}
       {ownerRemarks.length > 0 && (
         <div className="space-y-3 pt-4">
-          <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
+          <p className="text-[13px] uppercase tracking-wider font-semibold text-muted-foreground">
             Quick Notes
           </p>
-          <ul className="space-y-2">
+          <ul className="space-y-2.5">
             {ownerRemarks.map((remark, idx) => (
               <li 
                 key={idx}
-                className="flex items-start gap-2 text-sm text-muted-foreground"
+                className="flex items-start gap-2.5 text-sm sm:text-[15px] text-muted-foreground"
               >
-                <span className="text-muted-foreground/50 mt-0.5">•</span>
-                <span>{remark}</span>
+                <span className="text-blue-500/60 mt-0.5">•</span>
+                <span className="font-medium">{remark}</span>
               </li>
             ))}
           </ul>
@@ -630,22 +630,23 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
           href={listing.videoUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-3 p-4 bg-muted/30 rounded-xl border border-border/40 hover:bg-muted/50 transition-colors group"
+          className="flex items-center gap-3.5 p-4 bg-muted/30 rounded-xl border border-border/40 hover:bg-muted/50 transition-colors group"
         >
-          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-            <Play className="w-4 h-4 text-primary ml-0.5" />
+          <div className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+            <Play className="w-5 h-5 text-primary ml-0.5" />
           </div>
-          <span className="text-sm font-medium tracking-tight text-foreground">Watch Video</span>
+          <span className="text-sm sm:text-[15px] font-semibold tracking-tight text-foreground">Watch Video</span>
         </a>
       )}
 
       {/* AI Pricing Insights - Experimental */}
       <div className="space-y-4">
-        <p className="text-sm text-muted-foreground pt-4 border-t border-border/40">
-          <span className="text-red-500">⚠</span>{' '}
-          <span className="font-medium text-red-500">Experimental:</span>{' '}
-          Strictly do not rely on this. AI-generated insights are for reference only.
-        </p>
+        <div className="pt-4 border-t border-border/40 flex items-start gap-3">
+          <Sparkles className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+          <p className="text-sm sm:text-[15px] text-muted-foreground leading-relaxed font-medium">
+            <span className="font-semibold text-foreground">Experimental:</span> AI-generated insights are for reference only. <span className="text-red-500 font-semibold">Do not rely on this data.</span>
+          </p>
+        </div>
         <PricingInsights listing={listing} />
       </div>
 

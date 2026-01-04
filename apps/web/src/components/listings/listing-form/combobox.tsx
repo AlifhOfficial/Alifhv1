@@ -1,5 +1,14 @@
 'use client';
 
+/**
+ * Combobox Component - Clean Minimal Style
+ * 
+ * Following Alifh Design Philosophy:
+ * - Border-bottom style inputs
+ * - Clean transitions
+ * - No heavy card borders
+ */
+
 import { useId, useState } from 'react';
 import { Check, ChevronDown } from 'lucide-react';
 import { cn } from '@/utils';
@@ -31,7 +40,7 @@ export function Combobox({
   options,
   value,
   onValueChange,
-  placeholder = "Select...",
+  placeholder = "Select",
   searchPlaceholder = "Search...",
   disabled = false,
 }: ComboboxProps) {
@@ -49,28 +58,37 @@ export function Combobox({
           aria-expanded={open}
           disabled={disabled}
           className={cn(
-            "w-full h-11 flex items-center justify-between px-4 bg-background border border-border/40 rounded-xl text-sm",
-            "transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary",
-            value ? "text-foreground font-medium" : "text-muted-foreground/50",
+            "w-full h-12 flex items-center justify-between px-0 bg-transparent border-b-2 border-border/40",
+            "transition-colors focus:outline-none focus:border-blue-500",
+            value ? "text-foreground text-base font-medium" : "text-muted-foreground/40 text-base",
             disabled && "opacity-50 cursor-not-allowed"
           )}
         >
-          <span className="flex items-center gap-2.5 truncate">
+          <span className="flex items-center gap-2 truncate">
             {selected?.icon}
             {selected?.label || placeholder}
           </span>
           <ChevronDown className={cn(
-            "w-4 h-4 text-muted-foreground/50 transition-transform duration-200",
+            "w-4 h-4 text-muted-foreground/40 transition-transform duration-200",
             open && "rotate-180"
           )} />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0 rounded-xl border-border/50 shadow-lg" align="start">
+      <PopoverContent 
+        className="w-[--radix-popover-trigger-width] p-0 rounded-xl border-border/30 shadow-xl bg-background/95 backdrop-blur-xl" 
+        align="start"
+        sideOffset={8}
+      >
         <Command className="rounded-xl">
-          <CommandInput placeholder={searchPlaceholder} className="h-10 border-b border-border/30" />
-          <CommandList id={listId} className="max-h-[280px]">
-            <CommandEmpty className="py-6 text-center text-sm text-muted-foreground/60">No results found.</CommandEmpty>
-            <CommandGroup className="p-1">
+          <CommandInput 
+            placeholder={searchPlaceholder} 
+            className="h-11 border-b border-border/20 text-sm" 
+          />
+          <CommandList id={listId} className="max-h-[240px]">
+            <CommandEmpty className="py-8 text-center text-sm text-muted-foreground/50">
+              No results found
+            </CommandEmpty>
+            <CommandGroup className="p-1.5">
               {options.map((option) => (
                 <CommandItem
                   key={option.value}
@@ -81,15 +99,15 @@ export function Combobox({
                   }}
                   className={cn(
                     "cursor-pointer rounded-lg px-3 py-2.5 text-sm transition-colors",
-                    value === option.value && "bg-primary/5"
+                    value === option.value && "bg-blue-500/10 text-blue-600"
                   )}
                 >
-                  <span className="flex items-center gap-2 flex-1">
+                  <span className="flex items-center gap-2.5 flex-1">
                     {option.icon}
                     {option.label}
                   </span>
                   {value === option.value && (
-                    <Check className="w-4 h-4 text-primary" />
+                    <Check className="w-4 h-4 text-blue-500" />
                   )}
                 </CommandItem>
               ))}

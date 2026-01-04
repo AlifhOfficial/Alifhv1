@@ -100,16 +100,6 @@ export function NewListingView({ userId }: NewListingViewProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b border-border/40">
-        <div className="max-w-4xl mx-auto px-6 py-8">
-          <h1 className="text-2xl font-semibold tracking-tight">List Your Car</h1>
-          <p className="text-sm text-muted-foreground mt-2">
-            Enter your VIN to auto-fill vehicle details
-          </p>
-        </div>
-      </div>
-
       {/* Error Message */}
       {error && (
         <div className="max-w-4xl mx-auto px-6 mt-6">

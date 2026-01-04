@@ -1,7 +1,14 @@
 'use client';
 
+/**
+ * VIN Input Component - macOS Style
+ * 
+ * Clean, minimal VIN entry with status indicators.
+ * Following "Less is More" principle.
+ */
+
 import { useState, useCallback } from 'react';
-import { Loader2, CheckCircle2, X } from 'lucide-react';
+import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { cn } from '@/utils';
 import type { VINCheckResponse } from './types';
 
@@ -37,10 +44,9 @@ export function VINInput({ value, onChange, onDecode, disabled, excludeListingId
       
       if (data.available) {
         setStatus('available');
-        // Handle partial decode - model may be empty for some VINs
         if (data.decoded) {
           const { year, make, model } = data.decoded;
-          setMessage(model ? `${year} ${make} ${model}` : `${year} ${make} - select model below`);
+          setMessage(model ? `${year} ${make} ${model}` : `${year} ${make}`);
         } else {
           setMessage('VIN verified');
         }
@@ -71,53 +77,58 @@ export function VINInput({ value, onChange, onDecode, disabled, excludeListingId
   
   return (
     <div className="space-y-3">
-      <div className="space-y-2">
-        <label className="text-[13px] font-semibold tracking-tight text-foreground/80">
-          Vehicle Identification Number
-        </label>
-        <div className="relative">
-          <input
-            type="text"
-            value={value}
-            onChange={handleChange}
-            disabled={disabled}
-            placeholder="Enter 17-character VIN"
-            className={cn(
-              "w-full h-12 bg-background border rounded-xl text-[16px] font-mono tracking-[0.16em] uppercase px-4 pr-12",
-              "transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20",
-              status === 'available' && "border-green-500/40 bg-green-500/5 focus:border-green-500/60",
-              status === 'taken' && "border-red-500/40 bg-red-500/5 focus:border-red-500/60",
-              status === 'error' && "border-amber-500/40 bg-amber-500/5 focus:border-amber-500/60",
-              (status === 'idle' || status === 'checking') && "border-border/50 hover:bg-muted/10 focus:border-primary/50",
-              disabled && "opacity-50 cursor-not-allowed",
-              "placeholder:text-muted-foreground/40 placeholder:tracking-normal placeholder:font-sans placeholder:text-[14px]"
-            )}
-          />
-          
-          <div className="absolute right-4 top-1/2 -translate-y-1/2">
-            {isChecking ? (
-              <Loader2 className="w-5 h-5 text-muted-foreground/60 animate-spin" />
-            ) : status === 'available' ? (
+      {/* Label */}
+      <label className="text-sm font-medium text-muted-foreground">
+        Vehicle Identification Number
+      </label>
+      
+      {/* Input */}
+      <div className="relative">
+        <input
+          type="text"
+          value={value}
+          onChange={handleChange}
+          disabled={disabled}
+          placeholder="Enter 17-character VIN"
+          className={cn(
+            "w-full h-14 bg-transparent border-b-2 text-lg font-mono tracking-[0.15em] uppercase px-0 pr-12",
+            "transition-all duration-200 outline-none",
+            status === 'available' && "border-green-500 text-foreground",
+            status === 'taken' && "border-red-500 text-foreground",
+            status === 'error' && "border-yellow-500 text-foreground",
+            (status === 'idle' || status === 'checking') && "border-border/40 focus:border-blue-500 text-foreground",
+            disabled && "opacity-50 cursor-not-allowed",
+            "placeholder:text-muted-foreground/30 placeholder:tracking-normal placeholder:font-sans placeholder:text-base"
+          )}
+        />
+        
+        {/* Status Icon */}
+        <div className="absolute right-0 top-1/2 -translate-y-1/2">
+          {isChecking ? (
+            <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
+          ) : status === 'available' ? (
+            <div className="p-1 bg-green-500/10 rounded-full">
               <CheckCircle2 className="w-5 h-5 text-green-500" />
-            ) : status === 'taken' || status === 'error' ? (
-              <X className="w-5 h-5 text-red-500" />
-            ) : null}
-          </div>
+            </div>
+          ) : status === 'taken' ? (
+            <AlertCircle className="w-5 h-5 text-red-500" />
+          ) : status === 'error' ? (
+            <AlertCircle className="w-5 h-5 text-yellow-500" />
+          ) : null}
         </div>
       </div>
       
-      {/* Character count */}
+      {/* Footer - Character count & status message */}
       <div className="flex items-center justify-between">
-        <p className="text-[12px] font-medium text-muted-foreground/50 tabular-nums">
-          {value.length} / 17 characters
+        <p className="text-xs font-medium text-muted-foreground/50 tabular-nums">
+          {value.length}/17
         </p>
-        {/* Status message */}
         {message && (
           <p className={cn(
-            "text-[13px] font-semibold",
-            status === 'available' && "text-green-600",
+            "text-sm font-medium",
+            status === 'available' && "text-green-500",
             status === 'taken' && "text-red-500",
-            status === 'error' && "text-amber-600"
+            status === 'error' && "text-yellow-500"
           )}>
             {message}
           </p>

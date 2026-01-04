@@ -174,7 +174,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
       <main className="pt-20">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-sm font-medium tracking-tight py-4 mb-4 sm:mb-6 overflow-x-auto scrollbar-hide">
+          <nav className="flex items-center gap-2 text-sm font-semibold tracking-tight py-4 mb-4 sm:mb-6 overflow-x-auto scrollbar-hide">
             <Link 
               href="/listings" 
               className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
@@ -258,14 +258,14 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
                 {/* Safety Note */}
                 <div className="py-4 border-t border-border flex items-start gap-3">
                   {isDealerListing ? (
-                    <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                   ) : (
-                    <AlertTriangle className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" />
+                    <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
                   )}
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-sm sm:text-[15px] text-muted-foreground leading-relaxed font-medium">
                     {isDealerListing 
                       ? 'We trust this dealer as a respected partner of Alifh.'
-                      : <><span className="font-medium text-foreground">Safety Tip:</span> Meet in public places and verify the vehicle before payment.</>
+                      : <><span className="font-semibold text-foreground">Safety Tip:</span> Meet in public places and verify the vehicle before payment.</>
                     }
                   </p>
                 </div>
