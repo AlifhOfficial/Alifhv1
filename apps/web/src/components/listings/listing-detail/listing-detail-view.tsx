@@ -26,7 +26,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useCreateConversation } from '@/hooks/messaging';
 import { useListingDetail, type SellerData } from '@/hooks/listings';
-import { useUser } from '@/hooks/auth/use-auth';
+import { useAuth } from '@/providers/auth-provider';
 
 // Re-export types for backwards compatibility
 export type { PartnerSellerData, UserSellerData, SellerData } from '@/hooks/listings';
@@ -40,7 +40,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
   const [isStartingChat, setIsStartingChat] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const { createConversation } = useCreateConversation();
-  const { user } = useUser();
+  const { session: user } = useAuth();
   
   // Fetch listing data via hook
   const { listing, sellerData, isLoading, error } = useListingDetail(listingId);
@@ -114,6 +114,11 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
 
   // Check if this listing is from a dealer (has partnerId) - only dealer listings can be booked
   const isDealerListing = !!listing.partnerId;
+  
+  // Check if current user is staff of the partner that owns this listing
+  const isOwnPartnerListing = listing.partnerId 
+    ? (user?.partnerMemberships ?? []).some(m => m.partnerId === listing.partnerId)
+    : false;
 
   const handleChatWithSeller = async () => {
     // Check if user is authenticated
@@ -124,6 +129,11 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
 
     // Don't allow chatting with yourself
     if (user.id === listing.userId) {
+      return;
+    }
+    
+    // Don't allow partner staff to chat about their own dealership's listings
+    if (isOwnPartnerListing) {
       return;
     }
 
@@ -214,6 +224,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
                     currentUserId={user?.id}
                     sellerUserId={listing.userId}
                     partnerId={listing.partnerId}
+                    isOwnPartnerListing={isOwnPartnerListing}
                     onStartChat={handleChatWithSeller}
                     isStartingChat={isStartingChat}
                     showBooking={isDealerListing}

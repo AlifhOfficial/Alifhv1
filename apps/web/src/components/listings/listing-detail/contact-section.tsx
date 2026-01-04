@@ -19,6 +19,8 @@ interface ContactSectionProps {
   currentUserId?: string;
   sellerUserId: string;
   partnerId?: string | null;
+  /** True if current user is staff of the partner that owns this listing */
+  isOwnPartnerListing?: boolean;
   onStartChat?: () => void;
   isStartingChat?: boolean;
   // Booking props (optional - for dealer listings)
@@ -34,6 +36,7 @@ export function ContactSection({
   currentUserId,
   sellerUserId,
   partnerId,
+  isOwnPartnerListing = false,
   onStartChat,
   isStartingChat,
   showBooking = false,
@@ -65,6 +68,8 @@ export function ContactSection({
   }
 
   const isOwnListing = currentUserId === sellerUserId;
+  const isBlocked = isOwnListing || isOwnPartnerListing;
+  const blockedMessage = isOwnPartnerListing ? 'Your Dealership' : 'Your Listing';
 
   const handleChatClick = () => {
     if (!currentUserId) {
@@ -95,10 +100,10 @@ export function ContactSection({
         {/* Chat Button - Primary */}
         <button
           onClick={handleChatClick}
-          disabled={isStartingChat || isOwnListing}
+          disabled={isStartingChat || isBlocked}
           className={cn(
             "flex-1 min-w-[100px] py-3 px-4 rounded-full text-sm font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap",
-            isOwnListing
+            isBlocked
               ? "bg-muted text-muted-foreground cursor-not-allowed"
               : "bg-primary text-primary-foreground hover:bg-primary/90"
           )}
@@ -108,7 +113,7 @@ export function ContactSection({
           ) : (
             <>
               <MessageCircle className="w-4 h-4" />
-              {isOwnListing ? 'Your Listing' : 'Chat'}
+              {isBlocked ? blockedMessage : 'Chat'}
             </>
           )}
         </button>

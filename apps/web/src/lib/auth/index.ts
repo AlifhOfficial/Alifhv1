@@ -304,10 +304,22 @@ export type Session = typeof auth.$Infer.Session & {
   user: typeof auth.$Infer.Session.user & {
     role: UserRole;
     hasPartnerAccess?: boolean;
+    partnerMemberships?: Array<{
+      staffId: string;
+      partnerId: string;
+      partnerName: string;
+      staffRole: string;
+    }>;
   };
 };
 
 export type AuthUser = typeof auth.$Infer.Session.user & {
   role: UserRole;
   hasPartnerAccess?: boolean;
+  partnerMemberships?: Array<{
+    staffId: string;
+    partnerId: string;
+    partnerName: string;
+    staffRole: string;
+  }>;
 };
