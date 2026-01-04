@@ -86,7 +86,7 @@ export async function GET(
         hasMore: offset + listings.length < total,
       },
       {
-        headers: API_CACHE_HEADERS.PRIVATE_ULTRA_LONG, // Cache 2 hours in browser
+        headers: API_CACHE_HEADERS.NO_STORE, // No cache - data changes frequently
       }
     );
   } catch (error) {

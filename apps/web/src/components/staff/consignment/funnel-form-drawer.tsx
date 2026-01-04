@@ -107,6 +107,7 @@ export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProp
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['consignment-funnels'] });
       queryClient.invalidateQueries({ queryKey: ['partner-all-funnels'] });
+      queryClient.invalidateQueries({ queryKey: ['funnel-preview'] });
       onClose();
     },
   });
@@ -127,6 +128,7 @@ export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProp
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['consignment-funnels'] });
       queryClient.invalidateQueries({ queryKey: ['partner-all-funnels'] });
+      queryClient.invalidateQueries({ queryKey: ['funnel-preview'] });
       onClose();
     },
   });

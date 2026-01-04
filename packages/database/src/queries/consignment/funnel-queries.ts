@@ -218,13 +218,16 @@ export type FunnelListingResult = {
  * - moderationStatus = 'approved'
  * - lifecycleStatus = 'active'
  * - Apply funnel filters
+ * 
+ * Options:
+ * - countOnly: If true, only return the count (no listings) - used for getting accurate counts
  */
 export async function getFunnelMatchingListings(
   funnelId: string,
   partnerId: string,
-  options: { limit?: number; offset?: number } = {}
+  options: { limit?: number; offset?: number; countOnly?: boolean } = {}
 ): Promise<{ listings: FunnelListingResult[]; total: number }> {
-  const { limit = 20, offset = 0 } = options;
+  const { limit = 20, offset = 0, countOnly = false } = options;
   
   // Get funnel
   const funnel = await db.query.consignmentFunnel.findFirst({
@@ -310,8 +313,14 @@ export async function getFunnelMatchingListings(
       ...filterConditions
     ));
   
+  // If countOnly, just return the count without fetching listings
+  if (countOnly) {
+    const countResult = await countQuery;
+    return { listings: [], total: Number(countResult[0]?.count ?? 0) };
+  }
+  
   // Execute queries
-  // For small limits (previews), skip count query for performance
+  // For small limits (previews), skip count query for performance (count will be estimated)
   const skipCount = limit <= 10 && offset === 0;
   
   if (skipCount) {
@@ -342,10 +351,11 @@ export async function getPartnerFunnelCounts(partnerId: string, staffId: string)
   const counts: Record<string, number> = {};
   
   // Get counts in parallel for better performance
+  // Use countOnly: true for accurate counts without fetching listings
   await Promise.all(
     funnels.map(async (funnel) => {
       if (funnel.isActive) {
-        const { total } = await getFunnelMatchingListings(funnel.id, partnerId, { limit: 1, offset: 0 });
+        const { total } = await getFunnelMatchingListings(funnel.id, partnerId, { countOnly: true });
         counts[funnel.id] = total;
       } else {
         counts[funnel.id] = 0;

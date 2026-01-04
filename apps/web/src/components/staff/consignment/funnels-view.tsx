@@ -64,7 +64,6 @@ export function ConsignmentFunnelsView() {
   const [deletingFunnel, setDeletingFunnel] = useState<ConsignmentFunnel | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
-  const [syncTimestamp, setSyncTimestamp] = useState<number | null>(null); // For cache busting
 
   // Get last sync time from localStorage (persists across refreshes)
   const getLastSyncTime = () => {
@@ -170,8 +169,6 @@ export function ConsignmentFunnelsView() {
               }
               setLastSyncTime(now);
               setIsSyncing(true);
-              // Set sync timestamp to bust browser HTTP cache
-              setSyncTimestamp(now);
               // Refetch main query
               await refetch();
               // Also invalidate funnel previews
@@ -250,7 +247,6 @@ export function ConsignmentFunnelsView() {
             <FunnelRow
               key={funnel.id}
               funnel={funnel}
-              syncTimestamp={syncTimestamp}
               onViewAll={() => setViewingFunnel(funnel)}
               onEdit={() => setEditingFunnel(funnel)}
               onDelete={() => setDeletingFunnel(funnel)}
@@ -294,7 +290,6 @@ export function ConsignmentFunnelsView() {
 
 interface FunnelRowProps {
   funnel: FunnelWithCount;
-  syncTimestamp: number | null;
   onViewAll: () => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -310,7 +305,7 @@ interface MatchingListing {
   thumbnail: string | null;
 }
 
-function FunnelRow({ funnel, syncTimestamp, onViewAll, onEdit, onDelete, isDeleting }: FunnelRowProps) {
+function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRowProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const filterTags = getFilterTags(funnel.filters);
 
@@ -319,17 +314,18 @@ function FunnelRow({ funnel, syncTimestamp, onViewAll, onEdit, onDelete, isDelet
     listings: MatchingListing[];
     total: number;
   }>({
-    queryKey: ['funnel-preview', funnel.id, syncTimestamp],
+    queryKey: ['funnel-preview', funnel.id],
     queryFn: async () => {
-      // Add cache-busting param when syncing to bypass browser HTTP cache
-      const url = syncTimestamp 
-        ? `/api/partner/consignment/funnels/${funnel.id}/matches?limit=4&_t=${syncTimestamp}`
-        : `/api/partner/consignment/funnels/${funnel.id}/matches?limit=4`;
-      const res = await fetch(url);
+      // Always use cache-busting param to bypass browser HTTP cache
+      const res = await fetch(`/api/partner/consignment/funnels/${funnel.id}/matches?limit=4&_t=${Date.now()}`, {
+        cache: 'no-store',
+      });
       if (!res.ok) throw new Error('Failed to fetch preview');
       return res.json();
     },
-    staleTime: 10 * 60 * 1000, // 10 minutes for previews
+    staleTime: 0, // Always refetch on invalidation
+    refetchOnMount: 'always',
+    gcTime: 0, // Don't cache stale data
   });
 
   return (
