@@ -132,7 +132,7 @@ export function ChatWindow({
   };
 
   const defaultText = inbox === 'personal' && listing && messages.length === 0
-    ? `Hey ${displayName}, interested in "${listing.title}"?`
+    ? `Hi, is this still available?`
     : undefined;
 
   return (

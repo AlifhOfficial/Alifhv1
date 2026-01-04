@@ -75,6 +75,26 @@ export function MessageBubble({
           </small>
         )}
 
+        {/* Listing Preview - rendered OUTSIDE the bubble */}
+        {listing && (
+          <div className="mb-2 w-full rounded-xl overflow-hidden border border-border/30 bg-card shadow-sm">
+            {listing.thumbnail ? (
+              <img 
+                src={listing.thumbnail} 
+                alt={listing.title} 
+                className="w-full aspect-[16/10] object-cover" 
+              />
+            ) : (
+              <div className="w-full aspect-[16/10] bg-muted/40" />
+            )}
+            <div className="p-3 bg-card">
+              <p className="text-sm font-semibold text-foreground">
+                {listing.title}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Message Bubble with Hover Timestamp */}
         <div className="relative">
           {/* Message Bubble */}
@@ -94,36 +114,6 @@ export function MessageBubble({
                 alt="Attached"
                 className="rounded-lg mb-2 max-w-full h-auto"
               />
-            )}
-
-            {/* Listing Preview (if present) */}
-            {listing && (
-              <div 
-                className={cn(
-                  "rounded-xl overflow-hidden mb-3 transition-all",
-                  isOwn 
-                    ? "bg-white/10" 
-                    : "bg-background border border-border/20"
-                )}
-              >
-                {listing.thumbnail ? (
-                  <img 
-                    src={listing.thumbnail} 
-                    alt={listing.title} 
-                    className="w-full aspect-[16/10] object-cover" 
-                  />
-                ) : (
-                  <div className="w-full aspect-[16/10] bg-muted/40" />
-                )}
-                <div className="p-3">
-                  <p className={cn(
-                    "text-sm font-semibold",
-                    isOwn ? "text-white" : "text-foreground"
-                  )}>
-                    {listing.title}
-                  </p>
-                </div>
-              </div>
             )}
 
             {/* Text */}

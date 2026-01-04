@@ -453,7 +453,7 @@ function FilterGroup({ title, options, selected, onChange }: FilterGroupProps) {
                   {option.label}
                 </span>
                 {isSelected && (
-                  <CheckCircle2 className="h-4 w-4 text-sidebar-foreground" />
+                  <CheckCircle2 className="h-4 w-4 text-green-500" />
                 )}
               </button>
             );
@@ -573,7 +573,7 @@ function SearchableFilterGroup({
                       {option.label}
                     </span>
                     {isSelected && (
-                      <CheckCircle2 className="h-4 w-4 text-sidebar-foreground" />
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />
                     )}
                   </button>
                 );
