@@ -109,8 +109,8 @@ export default function SuperlikesPage() {
         {/* Header */}
         <div className="flex items-center justify-between gap-4">
           <div className="space-y-2">
-            <h1 className="text-2xl font-semibold tracking-tight">Superlikes</h1>
-            <p className="text-sm text-muted-foreground/70">
+            <h1 className="text-2xl font-bold tracking-tight">Superlikes</h1>
+            <p className="text-[15px] font-medium text-muted-foreground/70">
               {validSuperlikeIds.length} item{validSuperlikeIds.length === 1 ? '' : 's'}
             </p>
           </div>
@@ -151,8 +151,8 @@ export default function SuperlikesPage() {
                 <div className="flex flex-col items-center text-center space-y-4 max-w-sm">
                   <Moon className="w-16 h-16 text-muted-foreground/20" />
                   <div className="space-y-2">
-                    <h2 className="text-lg font-medium text-muted-foreground">Such empty here</h2>
-                    <p className="text-sm text-muted-foreground/60">
+                    <h2 className="text-lg font-semibold tracking-tight text-muted-foreground">Such empty here</h2>
+                    <p className="text-[15px] font-medium text-muted-foreground/60">
                       Superlike some cars and they'll appear here
                     </p>
                   </div>

@@ -8,6 +8,57 @@
  */
 
 // ============================================================================
+// LISTING STATUS ENUMS - Used for database and admin/moderation
+// ============================================================================
+
+export const LISTING_MODERATION_STATUSES = [
+  'draft',
+  'submitted',
+  'pending_review',
+  'approved',
+  'rejected',
+] as const;
+
+export type ListingModerationStatus = (typeof LISTING_MODERATION_STATUSES)[number];
+
+export const LISTING_LIFECYCLE_STATUSES = [
+  'active',
+  'archived',
+  'sold',
+  'expired',
+  'deleted',
+] as const;
+
+export type ListingLifecycleStatus = (typeof LISTING_LIFECYCLE_STATUSES)[number];
+
+export const LISTING_POSTED_BY_ROLES = [
+  'user',   // Private seller
+  'staff',  // Dealer (partner staff)
+] as const;
+
+export type ListingPostedByRole = (typeof LISTING_POSTED_BY_ROLES)[number];
+
+export const SELLER_TYPES = [
+  'dealer',
+  'private',
+] as const;
+
+export type SellerType = (typeof SELLER_TYPES)[number];
+
+// ============================================================================
+// VEHICLE CONDITION - New vs Used
+// ============================================================================
+
+export const VEHICLE_CONDITIONS = [
+  { value: 'new', label: 'Brand New' },
+  { value: 'used', label: 'Used' },
+] as const;
+
+export type VehicleCondition = (typeof VEHICLE_CONDITIONS)[number]['value'];
+
+export const VEHICLE_CONDITION_VALUES = VEHICLE_CONDITIONS.map(c => c.value) as [string, ...string[]];
+
+// ============================================================================
 // CAR MAKES - Sorted alphabetically, includes popular UAE brands
 // ============================================================================
 
@@ -197,6 +248,92 @@ export type EngineSize = (typeof ENGINE_SIZES)[number]['value'];
 export const ENGINE_SIZE_VALUES = ENGINE_SIZES.map(e => e.value) as [string, ...string[]];
 
 // ============================================================================
+// ENGINE TYPES
+// ============================================================================
+
+export const ENGINE_TYPES = [
+  { value: 'inline-3', label: 'Inline-3' },
+  { value: 'inline-4', label: 'Inline-4' },
+  { value: 'inline-6', label: 'Inline-6' },
+  { value: 'v6', label: 'V6' },
+  { value: 'v8', label: 'V8' },
+  { value: 'v10', label: 'V10' },
+  { value: 'v12', label: 'V12' },
+  { value: 'w12', label: 'W12' },
+  { value: 'electric', label: 'Electric' },
+  { value: 'hybrid', label: 'Hybrid' },
+  { value: 'other', label: 'Other' },
+] as const;
+
+export type EngineType = (typeof ENGINE_TYPES)[number]['value'];
+
+export const ENGINE_TYPE_VALUES = ENGINE_TYPES.map(e => e.value) as [string, ...string[]];
+
+// ============================================================================
+// STEERING SIDE
+// ============================================================================
+
+export const STEERING_SIDES = [
+  { value: 'left', label: 'Left Hand Drive' },
+  { value: 'right', label: 'Right Hand Drive' },
+] as const;
+
+export type SteeringSide = (typeof STEERING_SIDES)[number]['value'];
+
+export const STEERING_SIDE_VALUES = STEERING_SIDES.map(s => s.value) as [string, ...string[]];
+
+// ============================================================================
+// EXPORT STATUS
+// ============================================================================
+
+export const EXPORT_STATUSES = [
+  { value: 'local_only', label: 'Local Only' },
+  { value: 'gcc', label: 'GCC' },
+  { value: 'international', label: 'International' },
+  { value: 'restricted', label: 'Restricted' },
+] as const;
+
+export type ExportStatus = (typeof EXPORT_STATUSES)[number]['value'];
+
+export const EXPORT_STATUS_VALUES = EXPORT_STATUSES.map(e => e.value) as [string, ...string[]];
+
+// ============================================================================
+// WARRANTY TYPES
+// ============================================================================
+
+export const WARRANTY_TYPES = [
+  { value: 'none', label: 'No Warranty' },
+  { value: 'manufacturer', label: 'Manufacturer Warranty' },
+  { value: 'extended', label: 'Extended Warranty' },
+  { value: 'dealer', label: 'Dealer Warranty' },
+  { value: 'other', label: 'Other' },
+] as const;
+
+export type WarrantyType = (typeof WARRANTY_TYPES)[number]['value'];
+
+export const WARRANTY_TYPE_VALUES = WARRANTY_TYPES.map(w => w.value) as [string, ...string[]];
+
+// ============================================================================
+// POWER RANGES (HP)
+// ============================================================================
+
+export const POWER_RANGES = [
+  { value: 'under_100', label: 'Under 100 HP' },
+  { value: '100_200', label: '100-200 HP' },
+  { value: '200_300', label: '200-300 HP' },
+  { value: '300_400', label: '300-400 HP' },
+  { value: '400_500', label: '400-500 HP' },
+  { value: '500_600', label: '500-600 HP' },
+  { value: '600_700', label: '600-700 HP' },
+  { value: '700_plus', label: '700+ HP' },
+  { value: 'unknown', label: 'Unknown' },
+] as const;
+
+export type PowerRange = (typeof POWER_RANGES)[number]['value'];
+
+export const POWER_RANGE_VALUES = POWER_RANGES.map(p => p.value) as [string, ...string[]];
+
+// ============================================================================
 // BODY TYPES
 // ============================================================================
 
@@ -216,6 +353,9 @@ export const BODY_TYPES = [
 
 export type BodyType = (typeof BODY_TYPES)[number]['value'];
 
+// Export values array for database enum
+export const BODY_TYPE_VALUES = BODY_TYPES.map(b => b.value) as [string, ...string[]];
+
 // ============================================================================
 // FUEL TYPES
 // ============================================================================
@@ -231,6 +371,9 @@ export const FUEL_TYPES = [
 
 export type FuelType = (typeof FUEL_TYPES)[number]['value'];
 
+// Export values array for database enum
+export const FUEL_TYPE_VALUES = FUEL_TYPES.map(f => f.value) as [string, ...string[]];
+
 // ============================================================================
 // TRANSMISSION TYPES
 // ============================================================================
@@ -244,6 +387,9 @@ export const TRANSMISSION_TYPES = [
 ] as const;
 
 export type TransmissionType = (typeof TRANSMISSION_TYPES)[number]['value'];
+
+// Export values array for database enum
+export const TRANSMISSION_TYPE_VALUES = TRANSMISSION_TYPES.map(t => t.value) as [string, ...string[]];
 
 // ============================================================================
 // DRIVE TYPES
@@ -300,6 +446,9 @@ export const EXTERIOR_COLORS = [
 
 export type ExteriorColor = (typeof EXTERIOR_COLORS)[number]['value'];
 
+// Export values array for database enum
+export const EXTERIOR_COLOR_VALUES = EXTERIOR_COLORS.map(c => c.value) as [string, ...string[]];
+
 // ============================================================================
 // INTERIOR COLORS
 // ============================================================================
@@ -318,6 +467,9 @@ export const INTERIOR_COLORS = [
 
 export type InteriorColor = (typeof INTERIOR_COLORS)[number]['value'];
 
+// Export values array for database enum
+export const INTERIOR_COLOR_VALUES = INTERIOR_COLORS.map(c => c.value) as [string, ...string[]];
+
 // ============================================================================
 // DOORS OPTIONS
 // ============================================================================
@@ -331,6 +483,9 @@ export const DOORS_OPTIONS = [
 ] as const;
 
 export type DoorsOption = (typeof DOORS_OPTIONS)[number]['value'];
+
+// Export values array for database enum
+export const DOORS_VALUES = DOORS_OPTIONS.map(d => d.value) as [string, ...string[]];
 
 // ============================================================================
 // SEATING CAPACITY OPTIONS
@@ -347,6 +502,9 @@ export const SEATING_OPTIONS = [
 ] as const;
 
 export type SeatingOption = (typeof SEATING_OPTIONS)[number]['value'];
+
+// Export values array for database enum
+export const SEATING_CAPACITY_VALUES = SEATING_OPTIONS.map(s => s.value) as [string, ...string[]];
 
 // ============================================================================
 // UAE EMIRATES

@@ -154,13 +154,13 @@ export function UserBookingsView() {
 
   return (
     <div className="min-h-screen bg-background pb-32">
-      <div className="max-w-6xl mx-auto px-8 py-16 space-y-16">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-10">
         {/* Header Section */}
-        <section className="space-y-6">
+        <section className="space-y-4">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight">My Bookings</h1>
-              <p className="text-sm text-muted-foreground/70 mt-2">
+              <h1 className="text-2xl font-bold tracking-tight">My Bookings</h1>
+              <p className="text-[15px] font-medium text-muted-foreground/70 mt-2">
                 View and manage your booked test drives
               </p>
             </div>
@@ -168,7 +168,7 @@ export function UserBookingsView() {
             <button
               onClick={fetchBookings}
               disabled={isLoading}
-              className="p-2 hover:bg-secondary/50 rounded-lg transition-colors disabled:opacity-50"
+              className="p-2 hover:bg-muted/40 rounded-lg transition-colors disabled:opacity-50"
               title="Refresh"
             >
               <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">

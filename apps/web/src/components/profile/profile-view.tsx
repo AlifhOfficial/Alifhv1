@@ -16,6 +16,7 @@ import {
   Loader2, 
   Camera,
   Check,
+  CheckCircle2,
   AlertCircle,
   Star,
   X
@@ -316,11 +317,11 @@ export function ProfileView() {
 
   return (
     <div className="min-h-screen bg-background pb-32">
-      <div className="max-w-4xl mx-auto px-8 py-16 space-y-16">
+      <div className="max-w-4xl mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-10">
 
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row gap-8 items-start md:items-center justify-between">
-          <div className="flex items-center gap-6">
+        <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
+          <div className="flex items-center gap-5">
             <div className="relative group">
               <input 
                 type="file" 
@@ -371,9 +372,9 @@ export function ProfileView() {
               )}
             </div>
             
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-semibold tracking-tight text-foreground">{displayName}</h1>
+                <h1 className="text-2xl font-bold tracking-tight text-foreground">{displayName}</h1>
                 {profile?.kycVerified && (
                   <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
                     <Check className="w-3 h-3 text-white" />
@@ -381,22 +382,22 @@ export function ProfileView() {
                 )}
               </div>
               <div className="flex items-center gap-2">
-                <p className="text-sm text-foreground/70">{user?.email}</p>
-                <span className="text-sm text-foreground/70">•</span>
-                <span className="text-sm text-foreground/70">
+                <p className="text-[15px] font-medium text-muted-foreground/70">{user?.email}</p>
+                <span className="text-sm text-muted-foreground/50">•</span>
+                <span className="text-[15px] font-medium text-muted-foreground/70">
                   Member since {memberSinceYear ?? '—'}
                 </span>
               </div>
               
-              <div className="flex flex-wrap gap-3 pt-4">
+              <div className="flex flex-wrap gap-3 pt-3">
                 {profile?.kycVerified ? (
-                  <span className="text-xs font-medium text-foreground/80">
+                  <span className="text-sm font-semibold text-foreground/80">
                     Verified
                   </span>
                 ) : (
                   <a 
                     href="/kyc/verify" 
-                    className="text-xs text-blue-500 hover:text-blue-600 font-medium transition-colors"
+                    className="text-sm text-primary hover:text-primary/80 font-semibold transition-colors"
                   >
                     Verify Account
                   </a>
@@ -411,14 +412,14 @@ export function ProfileView() {
                 <button
                   onClick={cancel}
                   disabled={saving}
-                  className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  className="px-5 py-2 rounded-full text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={save}
                   disabled={saving}
-                  className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
                 >
                   {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   Save Changes
@@ -427,7 +428,7 @@ export function ProfileView() {
             ) : (
               <button
                 onClick={() => setEditing(true)}
-                className="px-5 py-2 rounded-full border border-border bg-background text-sm font-medium hover:bg-secondary/50 transition-colors"
+                className="px-5 py-2 rounded-full border border-border/40 bg-background text-sm font-semibold hover:bg-muted/40 transition-colors"
               >
                 Edit Profile
               </button>
@@ -436,28 +437,28 @@ export function ProfileView() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-5 border-y border-border divide-x divide-border">
-          <div className="p-8 flex flex-col gap-2">
-            <span className="text-xs font-medium text-muted-foreground">Listings</span>
-            <span className="text-xl font-semibold text-foreground">
+        <div className="grid grid-cols-2 md:grid-cols-5 border-y border-border/40 divide-x divide-border/40">
+          <div className="p-5 sm:p-6 flex flex-col gap-1.5">
+            <span className="text-sm font-semibold text-muted-foreground/70">Listings</span>
+            <span className="text-xl font-bold text-foreground">
               {stats?.listingsCount ?? '—'}
             </span>
           </div>
-          <div className="p-8 flex flex-col gap-2">
-            <span className="text-xs font-medium text-muted-foreground">Sold</span>
-            <span className="text-xl font-semibold text-foreground">
+          <div className="p-5 sm:p-6 flex flex-col gap-1.5">
+            <span className="text-sm font-semibold text-muted-foreground/70">Sold</span>
+            <span className="text-xl font-bold text-foreground">
               {stats?.soldCount ?? '—'}
             </span>
           </div>
-          <div className="p-8 flex flex-col gap-2">
-            <span className="text-xs font-medium text-muted-foreground">Response Rate</span>
-            <span className="text-xl font-semibold text-foreground">
+          <div className="p-5 sm:p-6 flex flex-col gap-1.5">
+            <span className="text-sm font-semibold text-muted-foreground/70">Response Rate</span>
+            <span className="text-xl font-bold text-foreground">
               {stats?.responseRate !== null && stats?.responseRate !== undefined ? `${stats.responseRate}%` : '—'}
             </span>
           </div>
-          <div className="p-8 flex flex-col gap-2">
-            <span className="text-xs font-medium text-muted-foreground">Rating</span>
-            <span className="text-xl font-semibold text-foreground">
+          <div className="p-5 sm:p-6 flex flex-col gap-1.5">
+            <span className="text-sm font-semibold text-muted-foreground/70">Rating</span>
+            <span className="text-xl font-bold text-foreground">
               {profile?.platformRating ? (
                 <span className="flex items-center gap-1.5">
                   <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
@@ -466,9 +467,9 @@ export function ProfileView() {
               ) : '—'}
             </span>
           </div>
-          <div className="p-8 flex flex-col gap-2">
-            <span className="text-xs font-medium text-muted-foreground">Status</span>
-            <span className="text-xl font-semibold">
+          <div className="p-5 sm:p-6 flex flex-col gap-1.5">
+            <span className="text-sm font-semibold text-muted-foreground/70">Status</span>
+            <span className="text-xl font-bold">
               {profile?.kycVerified ? (
                 <span className="flex items-center gap-2 text-foreground">
                   <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
@@ -484,21 +485,19 @@ export function ProfileView() {
         </div>
 
         {/* Form Sections */}
-        <div className="space-y-12">
+        <div className="space-y-8">
           
           {/* Awards & Badges */}
-          <section className="space-y-6">
-            <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-              <h3 className="text-lg font-medium tracking-tight">Awards & Badges</h3>
-            </div>
+          <section className="space-y-4">
+            <h3 className="text-[15px] font-bold tracking-tight text-foreground">Awards & Badges</h3>
             
-            <div className="rounded-xl border border-border bg-card p-6">
+            <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               {profile?.badges && profile.badges.length > 0 ? (
                 <div className="flex flex-wrap gap-3">
                   {profile.badges.map((badge, i) => (
                     <span 
                       key={i} 
-                      className="px-4 py-2 rounded-md bg-muted/20 text-foreground text-sm font-medium border border-border"
+                      className="px-4 py-2 rounded-lg bg-muted/30 text-foreground text-sm font-semibold border border-border/40"
                     >
                       {badge}
                     </span>
@@ -506,10 +505,10 @@ export function ProfileView() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <p className="text-sm text-muted-foreground mb-2">No badges earned yet</p>
+                  <p className="text-[15px] font-medium text-muted-foreground/60 mb-2">No badges earned yet</p>
                   <a 
                     href="/badges" 
-                    className="text-sm text-blue-500 hover:text-blue-600 font-medium transition-colors"
+                    className="text-sm text-primary hover:text-primary/80 font-semibold transition-colors"
                   >
                     Learn more about badges
                   </a>
@@ -519,44 +518,40 @@ export function ProfileView() {
           </section>
           
           {/* Personal Information */}
-          <section className="space-y-6">
-            <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-              <h3 className="text-lg font-medium tracking-tight">Personal Information</h3>
-            </div>
+          <section className="space-y-4">
+            <h3 className="text-[15px] font-bold tracking-tight text-foreground">Personal Information</h3>
             
-            <div className="rounded-xl border border-border bg-card p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+            <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">First Name</label>
+                <label className="text-sm font-semibold tracking-tight text-foreground">First Name</label>
                 <input
                   value={form.firstName}
                   onChange={(e) => updateField({ firstName: e.target.value })}
                   disabled={!editing}
                   placeholder="Enter first name"
-                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
+                  className="w-full h-10 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/50 text-foreground font-medium"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Last Name</label>
+                <label className="text-sm font-semibold tracking-tight text-foreground">Last Name</label>
                 <input
                   value={form.lastName}
                   onChange={(e) => updateField({ lastName: e.target.value })}
                   disabled={!editing}
                   placeholder="Enter last name"
-                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
+                  className="w-full h-10 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/50 text-foreground font-medium"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground flex items-center justify-between">
+                <label className="text-sm font-semibold tracking-tight text-foreground flex items-center justify-between">
                   <span>Email Address</span>
                   {profile?.emailVerified ? (
-                    <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
-                      <Check className="w-3 h-3 text-white" />
-                    </div>
+                    <CheckCircle2 className="w-4 h-4 text-green-500" />
                   ) : (
                     <a 
                       href="/verify-email" 
-                      className="text-xs text-blue-500 hover:text-blue-600 font-medium transition-colors"
+                      className="text-xs text-primary hover:text-primary/80 font-semibold transition-colors"
                     >
                       Verify
                     </a>
@@ -565,20 +560,18 @@ export function ProfileView() {
                 <input
                   value={user?.email ?? ''}
                   disabled
-                  className="w-full h-10 bg-transparent border-b border-border text-foreground/60 cursor-not-allowed outline-none"
+                  className="w-full h-10 bg-transparent border-b border-border/40 text-foreground/70 cursor-not-allowed outline-none font-medium"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground flex items-center justify-between">
+                <label className="text-sm font-semibold tracking-tight text-foreground flex items-center justify-between">
                   <span>Phone Number</span>
                   {profile?.phoneVerified ? (
-                    <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
-                      <Check className="w-3 h-3 text-white" />
-                    </div>
+                    <CheckCircle2 className="w-4 h-4 text-green-500" />
                   ) : form.phone ? (
                     <a 
                       href="/verify-phone" 
-                      className="text-xs text-blue-500 hover:text-blue-600 font-medium transition-colors"
+                      className="text-xs text-primary hover:text-primary/80 font-semibold transition-colors"
                     >
                       Verify
                     </a>
@@ -593,7 +586,7 @@ export function ProfileView() {
                   onChange={(e) => updateField({ phone: e.target.value })}
                   disabled={!editing}
                   placeholder="+971 50 000 0000"
-                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
+                  className="w-full h-10 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/50 text-foreground font-medium"
                 />
               </div>
             </div>
@@ -601,33 +594,31 @@ export function ProfileView() {
           </section>
 
           {/* Bio */}
-          <section className="space-y-6">
-            <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-              <h3 className="text-lg font-medium tracking-tight">Bio</h3>
-            </div>
-            <div className="rounded-xl border border-border bg-card p-6">
+          <section className="space-y-4">
+            <h3 className="text-[15px] font-bold tracking-tight text-foreground">Bio</h3>
+            <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               <textarea
                 value={form.bio}
                 onChange={(e) => updateField({ bio: e.target.value })}
                 disabled={!editing}
                 rows={4}
                 placeholder="Tell others about yourself..."
-                className="w-full p-4 bg-card rounded-xl border border-border focus:border-foreground outline-none resize-none transition-all disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
+                className="w-full p-4 bg-muted/20 rounded-xl border border-border/40 focus:border-primary outline-none resize-none transition-all disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/50 text-foreground font-medium"
               />
-              <p className="text-xs text-muted-foreground text-right">
+              <p className="text-xs text-muted-foreground/70 text-right mt-2">
                 {form.bio.length} characters
               </p>
             </div>
           </section>
 
           {/* Tags */}
-          <section className="space-y-6">
-            <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-              <h3 className="text-lg font-medium tracking-tight">Tags</h3>
-              <span className="text-sm text-muted-foreground">{form.tags.length}/3 selected</span>
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-[15px] font-bold tracking-tight text-foreground">Tags</h3>
+              <span className="text-sm font-semibold text-muted-foreground/70">{form.tags.length}/3 selected</span>
             </div>
             
-            <div className="rounded-xl border border-border bg-card p-6">
+            <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               <div className="flex flex-wrap gap-3">
               {TAGS.map(tag => {
                 const isSelected = form.tags.includes(tag);
@@ -637,10 +628,10 @@ export function ProfileView() {
                     onClick={() => editing && toggleTag(tag)}
                     disabled={!editing}
                     className={cn(
-                      "px-4 py-2 rounded-md text-sm font-medium transition-all border",
+                      "px-4 py-2 rounded-lg text-sm font-semibold transition-all border",
                       isSelected 
-                        ? "bg-blue-500 text-white border-blue-500" 
-                        : "bg-muted/20 text-foreground border-border hover:border-blue-500/40 hover:bg-muted/30",
+                        ? "bg-primary text-primary-foreground border-primary" 
+                        : "bg-muted/40 text-foreground/90 border-border/60 hover:border-primary/40 hover:bg-muted/50",
                       !editing && !isSelected && "opacity-50",
                       !editing && "cursor-default"
                     )}
@@ -654,14 +645,14 @@ export function ProfileView() {
           </section>
 
           {/* Location */}
-          <section className="space-y-6">
-            <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-              <h3 className="text-lg font-medium tracking-tight">Location</h3>
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-[15px] font-bold tracking-tight text-foreground">Location</h3>
               {editing && (
                 <button
                   onClick={handleUseCurrentLocation}
                   disabled={isLoadingLocation}
-                  className="text-sm font-medium text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5"
+                  className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5"
                 >
                   {isLoadingLocation ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <MapPin className="w-3.5 h-3.5" />}
                   Auto-detect
@@ -669,25 +660,25 @@ export function ProfileView() {
               )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">City</label>
+                <label className="text-sm font-semibold tracking-tight text-foreground">City</label>
                 <input
                   value={form.city}
                   onChange={(e) => updateField({ city: e.target.value })}
                   disabled={!editing}
                   placeholder="Dubai"
-                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
+                  className="w-full h-10 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/50 text-foreground font-medium"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">Emirate</label>
+                <label className="text-sm font-semibold tracking-tight text-foreground">Emirate</label>
                 <input
                   value={form.emirate}
                   onChange={(e) => updateField({ emirate: e.target.value })}
                   disabled={!editing}
                   placeholder="Dubai"
-                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
+                  className="w-full h-10 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/50 text-foreground font-medium"
                 />
               </div>
             </div>
@@ -702,7 +693,7 @@ export function ProfileView() {
               </Suspense>
             </div>
             {editing && (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm font-medium text-muted-foreground/70 mt-3">
                 Click on the map to pin your exact location.
               </p>
             )}

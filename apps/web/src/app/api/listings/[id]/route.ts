@@ -280,6 +280,7 @@ export async function PUT(
     if (body.model !== undefined) updateData.model = body.model;
     if (body.year !== undefined) updateData.year = body.year;
     if (body.trim !== undefined) updateData.trim = body.trim;
+    if (body.condition !== undefined) updateData.condition = body.condition;
     if (body.description !== undefined) updateData.description = body.description;
     if (body.vin !== undefined) updateData.vin = body.vin;
     if (body.price !== undefined) updateData.price = body.price;

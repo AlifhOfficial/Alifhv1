@@ -18,10 +18,12 @@ import {
 } from './helpers';
 import type { 
   UpdateCarListingInput, 
-  ListingModerationStatus, 
-  ListingLifecycleStatus,
   CONTENT_EDIT_KEYS 
 } from './types';
+import type { 
+  ListingModerationStatus, 
+  ListingLifecycleStatus 
+} from '../../../../schema/listing-constants';
 import { CONTENT_EDIT_KEYS as contentEditKeys } from './types';
 
 /**
@@ -38,6 +40,7 @@ function buildUpdateData(input: UpdateCarListingInput, now: Date): Record<string
   if (input.trim !== undefined) updateData.trim = input.trim;
   if (input.description !== undefined) updateData.description = input.description;
   if (input.vin !== undefined) updateData.vin = input.vin;
+  if (input.condition !== undefined) updateData.condition = input.condition;
 
   // Pricing
   if (input.price !== undefined) updateData.price = input.price;

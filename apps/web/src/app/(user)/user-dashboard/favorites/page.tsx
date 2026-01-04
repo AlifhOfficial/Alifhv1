@@ -96,8 +96,8 @@ export default function FavoritesPage() {
         {/* Header */}
         <div className="flex items-center justify-between gap-4">
           <div className="space-y-2">
-            <h1 className="text-2xl font-semibold tracking-tight">Favorites</h1>
-            <p className="text-sm text-muted-foreground/70">
+            <h1 className="text-2xl font-bold tracking-tight">Favorites</h1>
+            <p className="text-[15px] font-medium text-muted-foreground/70">
               {validFavoriteIds.length} item{validFavoriteIds.length === 1 ? '' : 's'}
             </p>
           </div>
@@ -135,8 +135,8 @@ export default function FavoritesPage() {
                 <div className="flex flex-col items-center text-center space-y-4 max-w-sm">
                   <Moon className="w-16 h-16 text-muted-foreground/20" />
                   <div className="space-y-2">
-                    <h2 className="text-lg font-medium text-muted-foreground">Such empty here</h2>
-                    <p className="text-sm text-muted-foreground/60">
+                    <h2 className="text-lg font-semibold tracking-tight text-muted-foreground">Such empty here</h2>
+                    <p className="text-[15px] font-medium text-muted-foreground/60">
                       Heart some cars and they'll appear here
                     </p>
                   </div>

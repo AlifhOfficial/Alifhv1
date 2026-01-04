@@ -14,15 +14,17 @@ import { userProfile } from '../../../../schema/profile';
 import { escapeLikePattern } from './helpers';
 import { isPublicSql, suspensionReasonSql, suspendedAtSql } from '../sql-fragments';
 import type { 
-  ListingPostedByRole,
-  ListingModerationStatus,
-  ListingLifecycleStatus,
   ListingSummary,
   ListingSummaryWithPoster,
   ListingStats,
   GetListingsByUserOptions,
   GetListingsByPartnerOptions,
 } from './types';
+import type {
+  ListingPostedByRole,
+  ListingModerationStatus,
+  ListingLifecycleStatus,
+} from '../../../../schema/listing-constants';
 
 /**
  * Build where conditions for status filters

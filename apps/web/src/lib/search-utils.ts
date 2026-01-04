@@ -54,6 +54,7 @@ export interface SearchParams {
   interiorColor?: string[];
   doors?: string[];
   seatingCapacity?: string[];
+  condition?: 'new' | 'used';
   isNegotiable?: boolean;
   underWarranty?: boolean;
   isBlkListing?: boolean;
@@ -172,6 +173,7 @@ export function searchParamsToUrl(params: SearchParams): URLSearchParams {
   if (params.partnerVerified !== undefined) urlParams.set('verified', String(params.partnerVerified));
   if (params.isBlackTierPartner !== undefined) urlParams.set('blackTier', String(params.isBlackTierPartner));
   
+  if (params.condition) urlParams.set('condition', params.condition);
   if (params.sellerType) urlParams.set('seller', params.sellerType);
   if (params.partnerId) urlParams.set('partnerId', params.partnerId);
   if (params.partnerName) urlParams.set('partnerName', params.partnerName);
@@ -233,6 +235,7 @@ export function urlToSearchParams(urlParams: URLSearchParams): SearchParams {
     partnerVerified: parseBoolean('verified'),
     isBlackTierPartner: parseBoolean('blackTier'),
     
+    condition: urlParams.get('condition') as SearchParams['condition'],
     sellerType: urlParams.get('seller') as SearchParams['sellerType'],
     partnerId: urlParams.get('partnerId') || undefined,
     partnerName: urlParams.get('partnerName') || undefined,
@@ -270,6 +273,7 @@ export function countActiveFilters(params: SearchParams): number {
   if (params.isBlkListing !== undefined) count++;
   if (params.partnerVerified !== undefined) count++;
   if (params.isBlackTierPartner !== undefined) count++;
+  if (params.condition) count++;
   
   return count;
 }

@@ -13,11 +13,11 @@ import {
   addDays, 
   DEFAULT_LISTING_EXPIRY_DAYS 
 } from './helpers';
+import type { CreateCarListingInput } from './types';
 import type { 
-  CreateCarListingInput, 
   ListingModerationStatus, 
   ListingLifecycleStatus 
-} from './types';
+} from '../../../../schema/listing-constants';
 
 /**
  * Create a new car listing
@@ -59,6 +59,7 @@ export async function createCarListing(input: CreateCarListingInput): Promise<st
     year: input.year,
     trim: input.trim ?? null,
     description: input.description ?? null,
+    condition: input.condition ?? 'used',
     
     // Pricing
     price: input.price,

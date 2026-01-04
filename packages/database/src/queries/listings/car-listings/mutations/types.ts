@@ -7,13 +7,18 @@
  */
 
 import type { TechnicalFeatures, SpecialNotes } from '../car-detailed-query';
+import type {
+  ListingPostedByRole,
+  ListingModerationStatus,
+  ListingLifecycleStatus,
+} from '../../../../schema/listing-constants';
 
 // Re-export for convenience
 export type { TechnicalFeatures, SpecialNotes };
 
-export type ListingPostedByRole = 'user' | 'staff';
-export type ListingModerationStatus = 'draft' | 'submitted' | 'pending_review' | 'approved' | 'rejected';
-export type ListingLifecycleStatus = 'active' | 'archived' | 'sold' | 'expired' | 'deleted';
+// Note: ListingPostedByRole, ListingModerationStatus, ListingLifecycleStatus
+// are imported from listing-constants but NOT re-exported to avoid conflicts.
+// Import directly from '@alifh/database' or listing-constants if needed.
 
 /**
  * Input data for creating a new car listing
@@ -35,6 +40,7 @@ export interface CreateCarListingInput {
   vin?: string;
   trim?: string;
   description?: string;
+  condition?: 'new' | 'used'; // defaults to 'used'
   currency?: string; // defaults to 'AED'
   isNegotiable?: boolean;
   
@@ -93,6 +99,7 @@ export interface UpdateCarListingInput {
   trim?: string;
   description?: string;
   vin?: string;
+  condition?: 'new' | 'used';
   
   // Pricing
   price?: number;

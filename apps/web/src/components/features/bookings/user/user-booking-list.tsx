@@ -38,14 +38,14 @@ export function UserBookingList({
 
   if (bookings.length === 0) {
     return (
-      <div className="bg-card rounded-2xl border border-border/40 py-32 px-16">
-        <div className="flex flex-col items-center text-center space-y-6">
-          <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+      <div className="bg-sidebar rounded-xl border border-border/40 py-24 px-12">
+        <div className="flex flex-col items-center text-center space-y-5">
+          <div className="w-16 h-16 rounded-full bg-muted/40 flex items-center justify-center">
             <Calendar className="w-7 h-7 text-muted-foreground" />
           </div>
-          <div className="space-y-3">
-            <h3 className="text-lg font-medium text-foreground">No bookings yet</h3>
-            <p className="text-sm text-muted-foreground/70 max-w-md">
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold tracking-tight text-foreground">No bookings yet</h3>
+            <p className="text-[15px] font-medium text-muted-foreground/70 max-w-md">
               {selectedStatus === 'all' 
                 ? "Your booked test drives will appear here"
                 : `No ${USER_BOOKING_STATUS_LABELS[selectedStatus]?.toLowerCase() || selectedStatus} bookings`}

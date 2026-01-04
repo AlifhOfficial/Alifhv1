@@ -495,15 +495,15 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
 
   return (
     <div className="min-h-screen bg-background pb-32">
-      <div className="max-w-6xl mx-auto px-8 py-16 space-y-16">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-10">
         {/* Header Section */}
-        <section className="space-y-6">
+        <section className="space-y-4">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight">
+              <h1 className="text-2xl font-bold tracking-tight">
                 {listingType === 'work' ? 'Work Listings' : 'My Listings'}
               </h1>
-              <p className="text-sm text-muted-foreground/70 mt-2">
+              <p className="text-[15px] font-medium text-muted-foreground/70 mt-2">
                 {listingType === 'work' 
                   ? 'Manage listings for your partner/dealership' 
                   : 'Manage your personal car listings'}
@@ -513,7 +513,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
             <div className="flex items-center gap-4">
               {/* BLK Quota - inline in header */}
               {listingType === 'work' && blackQuota && (
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm font-semibold tracking-tight text-muted-foreground/70">
                   BLK {blackQuota.activeBlackListingsCount}/{blackQuota.blackListingQuota}
                 </span>
               )}
@@ -521,7 +521,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
               <button 
                 onClick={() => fetchData(true)} 
                 disabled={isRefreshing}
-                className="p-2 hover:bg-secondary/50 rounded-lg transition-colors disabled:opacity-50"
+                className="p-2 hover:bg-muted/40 rounded-lg transition-colors disabled:opacity-50"
                 title="Refresh"
               >
                 <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -549,18 +549,18 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
                     if (e.key === 'Enter') applySearch();
                   }}
                   placeholder="Search make, model, VIN..."
-                  className="flex-1 h-11 bg-transparent border-b border-border/40 focus:border-foreground outline-none transition-colors px-0 text-base"
+                  className="flex-1 h-11 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors px-0 text-[15px] font-medium"
                 />
                 <button 
                   onClick={applySearch} 
-                  className="px-5 py-2.5 rounded-full border border-border/40 hover:bg-secondary/50 text-base font-medium transition-colors"
+                  className="px-5 py-2.5 rounded-full border border-border/40 hover:bg-muted/40 text-sm font-semibold tracking-tight transition-colors"
                 >
                   Search
                 </button>
                 {(draftQuery || appliedQuery) && (
                   <button 
                     onClick={clearSearch} 
-                    className="text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
+                    className="text-sm font-medium text-muted-foreground/70 hover:text-foreground transition-colors"
                   >
                     Clear
                   </button>
@@ -580,17 +580,17 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
               </Select>
 
               <Link href={newListingUrl}>
-                <button className="px-6 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium tracking-tight transition-colors">
+                <button className="px-6 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold tracking-tight transition-colors">
                   New Listing
                 </button>
               </Link>
             </div>
 
             <div className="flex items-center justify-between">
-              <p className="text-sm text-muted-foreground/70">
+              <p className="text-[15px] font-medium text-muted-foreground/70">
                 {appliedQuery ? `Search: "${appliedQuery}"` : 'Tip: Use Active for clean inventory.'}
               </p>
-              <p className="text-sm text-muted-foreground/70">
+              <p className="text-[15px] font-medium text-muted-foreground/70">
                 Showing {meta?.count ?? listings.length} of {stats.all}
               </p>
             </div>
@@ -598,23 +598,23 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
         </section>
 
         {/* Listings Section */}
-        <section className="space-y-6">
+        <section className="space-y-5">
           <div className="flex items-baseline justify-between border-b border-border/40 pb-3">
-            <h3 className="text-xl font-medium tracking-tight">Your Listings</h3>
+            <h3 className="text-[15px] font-bold tracking-tight">Your Listings</h3>
           </div>
 
           {/* Refreshing Indicator */}
           {isRefreshing && (
-            <div className="flex items-center justify-center gap-2 text-base text-muted-foreground">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-foreground"></div>
+            <div className="flex items-center justify-center gap-2 text-[15px] font-medium text-muted-foreground/70">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
               Refreshing...
             </div>
           )}
 
           {/* Error Message */}
           {error && (
-            <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
-              <p className="text-base text-red-500">{error}</p>
+            <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-5">
+              <p className="text-[15px] font-medium text-red-500">{error}</p>
             </div>
           )}
 
@@ -627,16 +627,16 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
 
           {/* Empty State */}
           {!isLoading && listings.length === 0 && (
-            <div className="bg-card rounded-2xl border border-border/40 py-32 px-16">
-              <div className="flex flex-col items-center text-center space-y-6">
-                <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center">
+            <div className="bg-sidebar rounded-xl border border-border/40 py-24 px-12">
+              <div className="flex flex-col items-center text-center space-y-5">
+                <div className="w-20 h-20 rounded-full bg-muted/40 flex items-center justify-center">
                   <Inbox className="w-9 h-9 text-muted-foreground" />
                 </div>
-                <div className="space-y-3">
-                  <h3 className="text-xl font-medium text-foreground">
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold tracking-tight text-foreground">
                     {appliedQuery ? 'No listings found' : 'No listings yet'}
                   </h3>
-                  <p className="text-base text-muted-foreground/70 max-w-md">
+                  <p className="text-[15px] font-medium text-muted-foreground/70 max-w-md">
                     {appliedQuery 
                       ? 'Try adjusting your search or clearing filters' 
                       : 'Your listings will appear here once you create them'
@@ -692,14 +692,14 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
             <button 
               onClick={closeConfirmModal}
               disabled={isConfirming}
-              className="px-6 py-3 rounded-full border border-border/40 hover:bg-secondary/50 text-base font-medium tracking-tight transition-colors disabled:opacity-50"
+              className="px-6 py-2.5 rounded-full border border-border/40 hover:bg-muted/40 text-sm font-semibold tracking-tight transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               onClick={executeConfirmedAction}
               disabled={isConfirming}
-              className={`px-6 py-3 rounded-full text-white text-base font-medium tracking-tight transition-colors disabled:opacity-50 ${
+              className={`px-6 py-2.5 rounded-full text-white text-sm font-semibold tracking-tight transition-colors disabled:opacity-50 ${
                 confirmModal.variant === 'destructive' 
                   ? 'bg-destructive hover:bg-destructive/90 text-destructive-foreground' 
                   : 'bg-primary hover:bg-primary/90 text-primary-foreground'

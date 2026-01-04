@@ -71,6 +71,7 @@ export const vinStepSchema = z.object({
     .min(1990, 'Year must be 1990 or later')
     .max(currentYear + 1, `Year cannot exceed ${currentYear + 1}`),
   trim: z.string().optional().nullable(),
+  condition: z.enum(['new', 'used']).default('used'),
 });
 
 // ============================================================================
@@ -302,6 +303,7 @@ export function getDefaultFormValues(): Partial<ListingFormData> {
   return {
     currency: 'AED',
     isNegotiable: true,
+    condition: 'used',
     specs: 'gcc',
     steeringSide: 'left',
     exportStatus: 'local_only',

@@ -60,10 +60,10 @@ export function UserBookingCard({
   };
 
   return (
-    <div className="rounded-xl border border-border/40 overflow-hidden bg-muted/20 hover:bg-secondary/50 transition-colors">
+    <div className="rounded-xl border border-border/40 overflow-hidden bg-sidebar hover:bg-muted/30 transition-colors">
       {/* Booking Header */}
       <div 
-        className="p-6 cursor-pointer"
+        className="p-5 cursor-pointer"
         onClick={onToggleExpand}
       >
         <div className="flex items-start justify-between gap-4">
@@ -72,29 +72,29 @@ export function UserBookingCard({
               <img
                 src={booking.listingThumbnail}
                 alt={booking.listingTitle}
-                className="w-24 h-18 object-cover rounded-lg flex-shrink-0"
+                className="w-24 h-18 object-cover rounded-lg flex-shrink-0 border border-border/40"
               />
             )}
             <div className="min-w-0 space-y-2 flex-1">
               <Link 
                 href={`/listings/${booking.listingId}`}
-                className="font-medium hover:text-primary transition-colors line-clamp-1 block"
+                className="font-semibold tracking-tight hover:text-primary transition-colors line-clamp-1 block"
                 onClick={e => e.stopPropagation()}
               >
                 {booking.listingTitle}
               </Link>
-              <div className="flex items-center gap-1.5 text-sm text-muted-foreground/70">
+              <div className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground/70">
                 <Building2 className="w-3.5 h-3.5" />
                 <span>{booking.partnerName}</span>
               </div>
               <div className="flex flex-wrap items-center gap-4 text-sm">
                 <div className="flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span className="font-medium">
+                  <span className="font-semibold tracking-tight">
                     {formatDate(booking.scheduledStartTime)}
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 text-muted-foreground/70">
+                <div className="flex items-center gap-1.5 font-medium text-muted-foreground/70">
                   <Clock className="w-3.5 h-3.5" />
                   <span>
                     {formatTime(booking.scheduledStartTime)} - {formatTime(booking.scheduledEndTime)}
@@ -105,7 +105,7 @@ export function UserBookingCard({
           </div>
           <div className="flex items-center gap-3 flex-shrink-0">
             <span className={cn(
-              "flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium",
+              "flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-tight",
               USER_BOOKING_STATUS_COLORS[booking.status]
             )}>
               <BookingStatusIcon status={booking.status} />
@@ -121,38 +121,38 @@ export function UserBookingCard({
 
       {/* Expanded Details */}
       {isExpanded && (
-        <div className="border-t border-border/40 p-6 space-y-6">
+        <div className="border-t border-border/40 p-5 space-y-5">
           {/* Confirmation Token */}
           {booking.confirmationToken && (
-            <div className="rounded-2xl border border-border/40 bg-card p-6">
+            <div className="rounded-xl border border-border/40 bg-muted/20 p-5">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-muted/40 flex items-center justify-center flex-shrink-0">
                   <Calendar className="w-5 h-5 text-muted-foreground" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium">Confirmation Code</p>
-                  <p className="text-lg font-mono font-semibold text-foreground">{booking.confirmationToken}</p>
+                  <p className="text-sm font-semibold tracking-tight">Confirmation Code</p>
+                  <p className="text-lg font-mono font-bold text-foreground tracking-wider">{booking.confirmationToken}</p>
                 </div>
               </div>
             </div>
           )}
 
           {/* Details Grid */}
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-5">
             <div className="space-y-2">
-              <h4 className="text-sm font-medium">Booking Details</h4>
+              <h4 className="text-sm font-semibold tracking-tight">Booking Details</h4>
               <div className="space-y-1.5 text-sm">
-                <p className="text-muted-foreground/70">
-                  <span className="text-foreground font-medium">Attendees:</span>{' '}
+                <p className="font-medium text-muted-foreground/70">
+                  <span className="text-foreground font-semibold">Attendees:</span>{' '}
                   {booking.numberOfAttendees} {booking.numberOfAttendees === 1 ? 'person' : 'people'}
                 </p>
-                <p className="text-muted-foreground/70">
-                  <span className="text-foreground font-medium">Booked on:</span>{' '}
+                <p className="font-medium text-muted-foreground/70">
+                  <span className="text-foreground font-semibold">Booked on:</span>{' '}
                   {new Date(booking.createdAt).toLocaleDateString('en-AE')}
                 </p>
                 {booking.confirmedAt && (
-                  <p className="text-muted-foreground/70">
-                    <span className="text-foreground font-medium">Confirmed on:</span>{' '}
+                  <p className="font-medium text-muted-foreground/70">
+                    <span className="text-foreground font-semibold">Confirmed on:</span>{' '}
                     {new Date(booking.confirmedAt).toLocaleDateString('en-AE')}
                   </p>
                 )}
@@ -160,17 +160,17 @@ export function UserBookingCard({
             </div>
 
             {(booking.notes || booking.specialRequests) && (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {booking.notes && (
                   <div>
-                    <h4 className="text-sm font-medium">Your Notes</h4>
-                    <p className="text-sm text-muted-foreground/70 mt-1">{booking.notes}</p>
+                    <h4 className="text-sm font-semibold tracking-tight">Your Notes</h4>
+                    <p className="text-[15px] font-medium text-muted-foreground/70 mt-1.5">{booking.notes}</p>
                   </div>
                 )}
                 {booking.specialRequests && (
                   <div>
-                    <h4 className="text-sm font-medium">Special Requests</h4>
-                    <p className="text-sm text-muted-foreground/70 mt-1">{booking.specialRequests}</p>
+                    <h4 className="text-sm font-semibold tracking-tight">Special Requests</h4>
+                    <p className="text-[15px] font-medium text-muted-foreground/70 mt-1.5">{booking.specialRequests}</p>
                   </div>
                 )}
               </div>
@@ -179,13 +179,13 @@ export function UserBookingCard({
 
           {/* Cancellation Reason */}
           {booking.cancellationReason && (
-            <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
-              <p className="text-sm font-medium text-red-500">Cancellation Reason</p>
-              <p className="text-sm text-muted-foreground/70 mt-1 capitalize">
+            <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-5">
+              <p className="text-sm font-semibold tracking-tight text-red-500">Cancellation Reason</p>
+              <p className="text-[15px] font-medium text-muted-foreground/70 mt-1.5 capitalize">
                 {booking.cancellationReason.replace(/_/g, ' ')}
               </p>
               {booking.cancellationNotes && (
-                <p className="text-sm text-muted-foreground/70 mt-1">
+                <p className="text-[15px] font-medium text-muted-foreground/70 mt-1.5">
                   {booking.cancellationNotes}
                 </p>
               )}
@@ -197,7 +197,7 @@ export function UserBookingCard({
             <div className="pt-4 border-t border-border/40">
               {booking.feedbackRating ? (
                 <div className="space-y-2">
-                  <h4 className="text-sm font-medium">Your Feedback</h4>
+                  <h4 className="text-sm font-semibold tracking-tight">Your Feedback</h4>
                   <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map(star => (
                       <Star
@@ -212,13 +212,13 @@ export function UserBookingCard({
                     ))}
                   </div>
                   {booking.feedbackComment && (
-                    <p className="text-sm text-muted-foreground/70">{booking.feedbackComment}</p>
+                    <p className="text-[15px] font-medium text-muted-foreground/70">{booking.feedbackComment}</p>
                   )}
                 </div>
               ) : (
                 <button
                   onClick={onLeaveFeedback}
-                  className="px-6 py-3 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium tracking-tight transition-colors"
+                  className="px-6 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold tracking-tight transition-colors"
                 >
                   Leave Feedback
                 </button>
@@ -234,7 +234,7 @@ export function UserBookingCard({
                   if (confirm('Cancel this booking?')) onCancel();
                 }}
                 disabled={isActionLoading}
-                className="px-6 py-3 rounded-full border border-red-500/40 text-red-500 text-sm font-medium tracking-tight hover:bg-red-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2.5 rounded-full border border-red-500/40 text-red-500 text-sm font-semibold tracking-tight hover:bg-red-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel Booking
               </button>

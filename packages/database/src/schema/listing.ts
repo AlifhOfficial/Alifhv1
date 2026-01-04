@@ -11,194 +11,79 @@ import {
 } from 'drizzle-orm/pg-core';
 import { user } from './auth';
 import { partner } from './partner';
-import { ENGINE_SIZE_VALUES, SPECS_TYPE_VALUES } from './listing-constants';
+import {
+  LISTING_MODERATION_STATUSES,
+  LISTING_LIFECYCLE_STATUSES,
+  LISTING_POSTED_BY_ROLES,
+  SELLER_TYPES,
+  VEHICLE_CONDITION_VALUES,
+  BODY_TYPE_VALUES,
+  FUEL_TYPE_VALUES,
+  TRANSMISSION_TYPE_VALUES,
+  SPECS_TYPE_VALUES,
+  ENGINE_SIZE_VALUES,
+  ENGINE_TYPE_VALUES,
+  STEERING_SIDE_VALUES,
+  EXPORT_STATUS_VALUES,
+  WARRANTY_TYPE_VALUES,
+  POWER_RANGE_VALUES,
+  EXTERIOR_COLOR_VALUES,
+  INTERIOR_COLOR_VALUES,
+  DOORS_VALUES,
+  SEATING_CAPACITY_VALUES,
+} from './listing-constants';
 
-export const listingModerationStatusEnum = pgEnum('listing_moderation_status', [
-  'draft',
-  'submitted',
-  'pending_review',
-  'approved',
-  'rejected',
-]);
+export const listingModerationStatusEnum = pgEnum('listing_moderation_status', LISTING_MODERATION_STATUSES);
 
-export const listingLifecycleStatusEnum = pgEnum('listing_lifecycle_status', [
-  'active',
-  'archived',
-  'sold',
-  'expired',
-  'deleted',
-]);
+export const listingLifecycleStatusEnum = pgEnum('listing_lifecycle_status', LISTING_LIFECYCLE_STATUSES);
 
 /**
  * Posted by role - determines seller type automatically:
  * - 'user' = private seller
  * - 'staff' = dealer (partner)
  */
-export const listingPostedByRoleEnum = pgEnum('listing_posted_by_role', [
-  'user',   // Private seller
-  'staff',  // Dealer (partner staff)
-]);
+export const listingPostedByRoleEnum = pgEnum('listing_posted_by_role', LISTING_POSTED_BY_ROLES);
 
 /**
  * Seller type - derived from postedByRole but kept for backward compatibility
  * - 'private' = user posting (postedByRole: 'user')
  * - 'dealer' = staff posting (postedByRole: 'staff')
  */
-export const sellerTypeEnum = pgEnum('seller_type', [
-  'dealer',
-  'private',
-]);
+export const sellerTypeEnum = pgEnum('seller_type', SELLER_TYPES);
 
-export const bodyTypeEnum = pgEnum('body_type', [
-  'sedan',
-  'suv',
-  'coupe',
-  'convertible',
-  'hatchback',
-  'wagon',
-  'pickup',
-  'van',
-  'sports',
-  'luxury',
-  'other',
-]);
+export const vehicleConditionEnum = pgEnum('vehicle_condition', VEHICLE_CONDITION_VALUES);
 
-export const fuelTypeEnum = pgEnum('fuel_type', [
-  'petrol',
-  'diesel',
-  'electric',
-  'hybrid',
-  'plugin_hybrid',
-  'hydrogen',
-]);
+export const bodyTypeEnum = pgEnum('body_type', BODY_TYPE_VALUES);
 
-export const transmissionTypeEnum = pgEnum('transmission_type', [
-  'automatic',
-  'manual',
-  'cvt',
-  'dct',
-  'semi_automatic',
-]);
+export const fuelTypeEnum = pgEnum('fuel_type', FUEL_TYPE_VALUES);
 
-export const specsTypeEnum = pgEnum('specs_type', [
-  'gcc',
-  'american',
-  'european',
-  'japanese',
-  'chinese',   // Added - trending in UAE
-  'korean',    // Added - trending in UAE
-  'canadian',
-  'other',
-]);
+export const transmissionTypeEnum = pgEnum('transmission_type', TRANSMISSION_TYPE_VALUES);
 
-export const steeringSideEnum = pgEnum('steering_side', [
-  'left',
-  'right',
-]);
+export const specsTypeEnum = pgEnum('specs_type', SPECS_TYPE_VALUES);
 
-export const exportStatusEnum = pgEnum('export_status', [
-  'local_only',
-  'gcc',
-  'international',
-  'restricted',
-]);
+export const steeringSideEnum = pgEnum('steering_side', STEERING_SIDE_VALUES);
+
+export const exportStatusEnum = pgEnum('export_status', EXPORT_STATUS_VALUES);
 
 /**
  * Simplified engine size ranges
  * Much easier for users to select and filter
  */
-export const engineSizeEnum = pgEnum('engine_size', [
-  'under_1.5L',
-  '1.5L_2.0L',
-  '2.0L_2.5L',
-  '2.5L_3.0L',
-  '3.0L_4.0L',
-  '4.0L_5.0L',
-  '5.0L_6.0L',
-  'over_6.0L',
-  'electric',
-]);
+export const engineSizeEnum = pgEnum('engine_size', ENGINE_SIZE_VALUES);
 
-export const engineTypeEnum = pgEnum('engine_type', [
-  'inline-3',
-  'inline-4',
-  'inline-6',
-  'v6',
-  'v8',
-  'v10',
-  'v12',
-  'w12',
-  'electric',
-  'hybrid',
-  'other',
-]);
+export const engineTypeEnum = pgEnum('engine_type', ENGINE_TYPE_VALUES);
 
-export const exteriorColorEnum = pgEnum('exterior_color', [
-  'white',
-  'black',
-  'silver',
-  'grey',
-  'blue',
-  'red',
-  'green',
-  'brown',
-  'beige',
-  'gold',
-  'orange',
-  'yellow',
-  'purple',
-  'other',
-]);
+export const exteriorColorEnum = pgEnum('exterior_color', EXTERIOR_COLOR_VALUES);
 
-export const interiorColorEnum = pgEnum('interior_color', [
-  'black',
-  'beige',
-  'brown',
-  'tan',
-  'grey',
-  'white',
-  'red',
-  'burgundy',
-  'other',
-]);
+export const interiorColorEnum = pgEnum('interior_color', INTERIOR_COLOR_VALUES);
 
-export const warrantyTypeEnum = pgEnum('warranty_type', [
-  'none',
-  'manufacturer',
-  'extended',
-  'dealer',
-  'other',
-]);
+export const warrantyTypeEnum = pgEnum('warranty_type', WARRANTY_TYPE_VALUES);
 
-export const powerRangeEnum = pgEnum('power_range', [
-  'under_100',
-  '100_200',
-  '200_300',
-  '300_400',
-  '400_500',
-  '500_600',
-  '600_700',
-  '700_plus',
-  'unknown',
-]);
+export const powerRangeEnum = pgEnum('power_range', POWER_RANGE_VALUES);
 
-export const doorsEnum = pgEnum('doors', [
-  '2',
-  '3',
-  '4',
-  '5',
-  '6',
-]);
+export const doorsEnum = pgEnum('doors', DOORS_VALUES);
 
-export const seatingCapacityEnum = pgEnum('seating_capacity', [
-  '2',
-  '4',
-  '5',
-  '6',
-  '7',
-  '8',
-  '9_plus',
-]);
+export const seatingCapacityEnum = pgEnum('seating_capacity', SEATING_CAPACITY_VALUES);
 
 export const carListing = pgTable('car_listing', {
   id: text('id').primaryKey(),
@@ -232,6 +117,7 @@ export const carListing = pgTable('car_listing', {
   model: text('model').notNull(),
   year: integer('year').notNull(),
   trim: text('trim'),
+  condition: vehicleConditionEnum('condition').default('used').notNull(),
   bodyType: bodyTypeEnum('body_type'),
   fuelType: fuelTypeEnum('fuel_type'),
   transmission: transmissionTypeEnum('transmission'),

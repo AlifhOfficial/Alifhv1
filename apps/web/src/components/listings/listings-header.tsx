@@ -195,6 +195,12 @@ export function ListingsHeader({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48 bg-sidebar border-sidebar-border text-sidebar-foreground">
               <DropdownMenuItem
+                onClick={() => setFilters({ condition: params.condition === 'new' ? undefined : 'new' })}
+                className={`text-sm font-medium cursor-pointer ${params.condition === 'new' ? 'bg-sidebar-accent text-sidebar-foreground' : 'hover:bg-sidebar-accent/50'}`}
+              >
+                New Cars
+              </DropdownMenuItem>
+              <DropdownMenuItem
                 onClick={() => setFilters({ isBlkListing: params.isBlkListing ? undefined : true })}
                 className={`text-sm font-medium cursor-pointer ${params.isBlkListing ? 'bg-sidebar-accent text-sidebar-foreground' : 'hover:bg-sidebar-accent/50'}`}
               >
@@ -305,6 +311,9 @@ function getActiveFilterChips(
   const chips: Array<{ key: string; label: string }> = [];
 
   // Premium filters at the top
+  if (params.condition === 'new') {
+    chips.push({ key: 'condition', label: 'New Cars' });
+  }
   if (params.isBlkListing) {
     chips.push({ key: 'isBlkListing', label: 'Black Listings' });
   }

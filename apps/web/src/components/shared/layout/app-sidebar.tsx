@@ -207,7 +207,7 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
                 </div>
                 <div className="flex flex-col min-w-0 flex-1 gap-0.5">
                   <span className="truncate font-bold text-[15px] tracking-tight">{displayName}</span>
-                  <span className="truncate text-sm text-sidebar-foreground/70">
+                  <span className="truncate text-sm font-medium text-sidebar-foreground/70">
                     {isStaffMode ? staffOverride?.workEmail : user.email}
                   </span>
                 </div>
@@ -232,9 +232,9 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
                   <Collapsible asChild defaultOpen className="group/collapsible">
                     <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
-                        <SidebarMenuButton tooltip={section.collapsible.label} className="font-semibold">
+                        <SidebarMenuButton tooltip={section.collapsible.label} className="font-semibold tracking-tight">
                           {CollapsibleIcon && <CollapsibleIcon className="size-4" />}
-                          <span className="tracking-tight">{section.collapsible.label}</span>
+                          <span>{section.collapsible.label}</span>
                           <ChevronDown className="ml-auto size-4 transition-transform duration-200 group-data-[state=closed]/collapsible:-rotate-90" />
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
@@ -245,8 +245,8 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
                             
                             return (
                               <SidebarMenuSubItem key={item.label}>
-                                <SidebarMenuSubButton asChild isActive={isActive}>
-                                  <Link href={item.href} className="tracking-tight">
+                                <SidebarMenuSubButton asChild isActive={isActive} className="font-medium tracking-tight">
+                                  <Link href={item.href}>
                                     <span>{item.label}</span>
                                   </Link>
                                 </SidebarMenuSubButton>
@@ -282,11 +282,11 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
                           asChild 
                           isActive={isActive}
                           tooltip={item.label}
-                          className="font-semibold"
+                          className="font-semibold tracking-tight"
                         >
                           <Link href={item.href}>
                             {Icon && <Icon className="size-4" />}
-                            <span className="tracking-tight">{item.label}</span>
+                            <span>{item.label}</span>
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -303,18 +303,18 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Support">
+            <SidebarMenuButton asChild tooltip="Support" className="font-semibold tracking-tight">
               <Link href="/support">
                 <LifeBuoy className="size-4" />
-                <span className="font-semibold tracking-tight">Support</span>
+                <span>Support</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Feedback">
+            <SidebarMenuButton asChild tooltip="Feedback" className="font-semibold tracking-tight">
               <Link href="/feedback">
                 <Send className="size-4" />
-                <span className="font-semibold tracking-tight">Feedback</span>
+                <span>Feedback</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

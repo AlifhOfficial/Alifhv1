@@ -35,6 +35,7 @@ export function EditListingView({ listing, userId, listingType = 'personal' }: E
     model: listing.model,
     year: listing.year,
     trim: listing.trim || undefined,
+    condition: listing.condition as 'new' | 'used' || 'used',
     price: listing.price,
     currency: listing.currency,
     isNegotiable: listing.isNegotiable,

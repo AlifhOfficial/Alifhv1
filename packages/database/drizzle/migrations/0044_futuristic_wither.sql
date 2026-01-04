@@ -1,0 +1,2 @@
+CREATE INDEX "user_profile_consignment_mode_idx" ON "user_profile" USING btree ("consignment_mode");--> statement-breakpoint
+CREATE INDEX "car_listing_user_consignment_idx" ON "car_listing" USING btree ("partner_id","moderation_status","lifecycle_status","user_id");

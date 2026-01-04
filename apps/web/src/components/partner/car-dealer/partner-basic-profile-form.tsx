@@ -401,11 +401,11 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
 
   return (
     <div className="min-h-screen bg-background pb-32">
-      <div className="max-w-4xl mx-auto px-8 py-16 space-y-16">
+      <div className="max-w-4xl mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-10">
         
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row gap-8 items-start md:items-center justify-between">
-          <div className="flex items-center gap-6">
+        <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
+          <div className="flex items-center gap-5">
             <div className="relative group">
               <input 
                 type="file" 
@@ -458,9 +458,9 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
               )}
             </div>
             
-            <div className="space-y-1 min-w-0">
+            <div className="space-y-1.5 min-w-0">
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-semibold tracking-tight text-foreground truncate">{profile.brandName}</h1>
+                <h1 className="text-2xl font-bold tracking-tight text-foreground truncate">{profile.brandName}</h1>
                 {profile.isVerified && (
                   <svg 
                     viewBox="0 0 20 20" 
@@ -477,11 +477,11 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                 )}
               </div>
               <div className="flex items-center gap-2">
-                <p className="text-sm text-foreground/70">{profile.companyNameLegal}</p>
+                <p className="text-[15px] font-medium text-muted-foreground/70">{profile.companyNameLegal}</p>
                 {profile.experienceYears && (
                   <>
-                    <span className="text-sm text-foreground/70">•</span>
-                    <span className="text-sm text-foreground/70">
+                    <span className="text-sm text-muted-foreground/50">•</span>
+                    <span className="text-[15px] font-medium text-muted-foreground/70">
                       {profile.experienceYears} years experience
                     </span>
                   </>
@@ -489,10 +489,10 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
               </div>
               
               {!profile.isVerified && (
-                <div className="pt-2">
+                <div className="pt-3">
                   <a 
                     href="/partner/verify" 
-                    className="text-xs text-blue-500 hover:text-blue-600 font-medium transition-colors"
+                    className="text-sm text-primary hover:text-primary/80 font-semibold transition-colors"
                   >
                     Verify Business
                   </a>
@@ -507,14 +507,14 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                 <button
                   onClick={cancel}
                   disabled={isUpdating}
-                  className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  className="px-5 py-2 rounded-full text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={save}
                   disabled={isUpdating}
-                  className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
                 >
                   {isUpdating && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   Save Changes
@@ -523,7 +523,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
             ) : (
               <button
                 onClick={() => setEditing(true)}
-                className="px-5 py-2 rounded-full border border-border bg-background text-sm font-medium hover:bg-secondary/50 transition-colors"
+                className="px-5 py-2 rounded-full border border-border/40 bg-background text-sm font-semibold hover:bg-muted/40 transition-colors"
               >
                 Edit Profile
               </button>
@@ -533,38 +533,38 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-5 border-y border-border/40 divide-x divide-border/40">
-          <div className="p-6 md:p-8 flex flex-col gap-1">
-            <small className="text-muted-foreground">Inventory</small>
-            <h2 className="text-foreground">
+          <div className="p-5 sm:p-6 flex flex-col gap-1.5">
+            <span className="text-sm font-semibold text-muted-foreground/70">Inventory</span>
+            <span className="text-xl font-bold text-foreground">
               {statsLoading ? '—' : stats?.inventoryCount ?? '—'}
-            </h2>
+            </span>
           </div>
-          <div className="p-6 md:p-8 flex flex-col gap-1">
-            <small className="text-muted-foreground">Total Sales</small>
-            <h2 className="text-foreground">
+          <div className="p-5 sm:p-6 flex flex-col gap-1.5">
+            <span className="text-sm font-semibold text-muted-foreground/70">Total Sales</span>
+            <span className="text-xl font-bold text-foreground">
               {statsLoading ? '—' : stats?.totalSales ?? '—'}
-            </h2>
+            </span>
           </div>
-          <div className="p-6 md:p-8 flex flex-col gap-1">
-            <small className="text-muted-foreground">Response Rate</small>
-            <h2 className="text-foreground">
+          <div className="p-5 sm:p-6 flex flex-col gap-1.5">
+            <span className="text-sm font-semibold text-muted-foreground/70">Response Rate</span>
+            <span className="text-xl font-bold text-foreground">
               {statsLoading ? '—' : stats?.responseRate !== null && stats?.responseRate !== undefined ? `${stats.responseRate}%` : '—'}
-            </h2>
+            </span>
           </div>
-          <div className="p-6 md:p-8 flex flex-col gap-1">
-            <small className="text-muted-foreground">Rating</small>
-            <h2 className="text-foreground">
+          <div className="p-5 sm:p-6 flex flex-col gap-1.5">
+            <span className="text-sm font-semibold text-muted-foreground/70">Rating</span>
+            <span className="text-xl font-bold text-foreground">
               {profile.googleRating || profile.platformRating ? (
                 <span className="flex items-center gap-1.5">
                   <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                   {(profile.googleRating || profile.platformRating)?.toFixed(1)}
                 </span>
               ) : '—'}
-            </h2>
+            </span>
           </div>
-          <div className="p-6 md:p-8 flex flex-col gap-1">
-            <small className="text-muted-foreground">Status</small>
-            <h2>
+          <div className="p-5 sm:p-6 flex flex-col gap-1.5">
+            <span className="text-sm font-semibold text-muted-foreground/70">Status</span>
+            <span className="text-xl font-bold">
               {profile.isVerified ? (
                 <span className="flex items-center gap-2 text-foreground">
                   <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-blue-500">
@@ -576,26 +576,24 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
               ) : (
                 <span className="text-muted-foreground text-sm">Unverified</span>
               )}
-            </h2>
+            </span>
           </div>
         </div>
 
         {/* Form Sections */}
-        <div className="space-y-12">
+        <div className="space-y-8">
           
           {/* Awards & Badges */}
-          <section className="space-y-6">
-            <div className="flex items-baseline justify-between pb-3">
-              <h2>Awards & Badges</h2>
-            </div>
+          <section className="space-y-4">
+            <h3 className="text-[15px] font-bold tracking-tight text-foreground">Awards & Badges</h3>
             
-            <div className="rounded-xl border border-border bg-card p-6">
+            <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               {profile.badges && profile.badges.length > 0 ? (
                 <div className="flex flex-wrap gap-3">
                   {profile.badges.map((badge, i) => (
                     <span 
                       key={i} 
-                      className="px-4 py-2 rounded-md bg-muted/20 text-foreground text-sm font-medium border border-border"
+                      className="px-4 py-2 rounded-lg bg-muted/30 text-foreground text-sm font-semibold border border-border/40"
                     >
                       {badge}
                     </span>
@@ -603,10 +601,10 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <p className="text-sm text-muted-foreground mb-2">No badges earned yet</p>
+                  <p className="text-[15px] font-medium text-muted-foreground/60 mb-2">No badges earned yet</p>
                   <a 
                     href="/partner/badges" 
-                    className="text-sm text-blue-500 hover:text-blue-600 font-medium transition-colors"
+                    className="text-sm text-primary hover:text-primary/80 font-semibold transition-colors"
                   >
                     Learn more about badges
                   </a>
@@ -616,31 +614,29 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           </section>
           
           {/* Basic Information */}
-          <section className="space-y-6">
-            <div className="flex items-baseline justify-between pb-3">
-              <h2>Basic Information</h2>
-            </div>
+          <section className="space-y-4">
+            <h3 className="text-[15px] font-bold tracking-tight text-foreground">Basic Information</h3>
             
-            <div className="rounded-xl border border-border/40 bg-card p-6">
-              <div className="space-y-6">
+            <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+              <div className="space-y-5">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Brand Name</label>
+                  <label className="text-sm font-semibold tracking-tight text-foreground">Brand Name</label>
                   <input
                     value={form.brandName}
                     onChange={(e) => updateField({ brandName: e.target.value })}
                     disabled={!editing}
                     placeholder="Your Business Name"
-                    className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
+                    className="w-full h-10 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/50 text-foreground font-medium"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Website</label>
+                  <label className="text-sm font-semibold tracking-tight text-foreground">Website</label>
                   <input
                     value={form.website}
                     onChange={(e) => updateField({ website: e.target.value })}
                     disabled={!editing}
                     placeholder="https://example.com"
-                    className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
+                    className="w-full h-10 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/50 text-foreground font-medium"
                   />
                 </div>
               </div>
@@ -648,30 +644,28 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           </section>
           
           {/* Description */}
-          <section className="space-y-6">
-            <div className="flex items-baseline justify-between pb-3">
-              <h2>Description</h2>
-            </div>
-            <div className="rounded-xl border border-border bg-card p-6">
+          <section className="space-y-4">
+            <h3 className="text-[15px] font-bold tracking-tight text-foreground">Description</h3>
+            <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               <textarea
                 value={form.description}
                 onChange={(e) => updateField({ description: e.target.value })}
                 disabled={!editing}
                 rows={4}
                 placeholder="Tell customers about your dealership..."
-                className="w-full p-4 bg-card rounded-xl border border-border focus:border-foreground outline-none resize-none transition-all disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
+                className="w-full p-4 bg-muted/20 rounded-xl border border-border/40 focus:border-primary outline-none resize-none transition-all disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/50 text-foreground font-medium"
               />
-              <p className="text-xs text-muted-foreground text-right">
+              <p className="text-xs text-muted-foreground/70 text-right mt-2">
                 {form.description.length} characters
               </p>
             </div>
           </section>
           
           {/* Hero Image */}
-          <section className="space-y-6">
-            <div className="flex items-baseline justify-between pb-3">
-              <h2>Hero Image</h2>
-              <small className="text-muted-foreground">1920x600px</small>
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-[15px] font-bold tracking-tight text-foreground">Hero Image</h3>
+              <span className="text-sm font-semibold text-muted-foreground/70">1920x600px</span>
             </div>
             
             <div className="rounded-xl overflow-hidden border border-border/40 bg-secondary/10">
@@ -695,7 +689,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                     <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <label
                         htmlFor="hero-upload"
-                        className="px-5 py-2 rounded-full bg-blue-500 text-white text-sm font-medium cursor-pointer hover:bg-blue-600 transition-colors flex items-center gap-2"
+                        className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-semibold cursor-pointer hover:bg-primary/90 transition-colors flex items-center gap-2"
                       >
                         <Upload className="w-4 h-4" />
                         Change Image
@@ -728,47 +722,47 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           </section>
           
           {/* Specialties */}
-          <section className="space-y-6">
-            <div className="flex items-baseline justify-between pb-3">
-              <h2>Specialties</h2>
-              <small className="text-muted-foreground">{form.specialties.length}/4</small>
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-[15px] font-bold tracking-tight text-foreground">Specialties</h3>
+              <span className="text-sm font-semibold text-muted-foreground/70">{form.specialties.length}/4</span>
             </div>
             
             {editing && (
-              <div className="rounded-xl border border-border bg-card p-4">
+              <div className="rounded-xl border border-border/40 bg-sidebar p-4">
                 <div className="flex gap-2">
                   <input
                     value={customSpecialty}
                     onChange={(e) => setCustomSpecialty(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && addCustomSpecialty()}
                     placeholder="Add a specialty (e.g., Luxury Vehicles, Sports Cars)..."
-                    className="flex-1 h-10 px-4 bg-transparent border border-border rounded-lg focus:border-foreground outline-none transition-colors placeholder:text-muted-foreground/40 text-foreground"
+                    className="flex-1 h-10 px-4 bg-transparent border border-border/40 rounded-lg focus:border-primary outline-none transition-colors placeholder:text-muted-foreground/50 text-foreground font-medium"
                   />
                   <button
                     onClick={addCustomSpecialty}
                     disabled={!customSpecialty.trim() || form.specialties.length >= 4}
-                    className="px-4 py-2 rounded-lg bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Add
                   </button>
                 </div>
-                <small className="block text-muted-foreground mt-2">What does your dealership specialize in? Add up to 4 specialties.</small>
+                <p className="text-sm font-medium text-muted-foreground/70 mt-2">What does your dealership specialize in? Add up to 4 specialties.</p>
               </div>
             )}
             
-            <div className="rounded-xl border border-border bg-card p-6">
+            <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               {form.specialties.length > 0 ? (
-                <ul className="space-y-3">
+                <ul className="space-y-2">
                   {form.specialties.map((specialty, index) => (
-                    <li key={specialty} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted/30 transition-colors">
+                    <li key={specialty} className="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-muted/40 transition-colors border-b border-border/20 last:border-0">
                       <div className="flex items-center gap-3">
-                        <span className="text-sm font-medium text-muted-foreground">{index + 1}.</span>
-                        <span className="text-sm text-foreground">{specialty}</span>
+                        <span className="text-sm font-semibold text-muted-foreground/70">{index + 1}.</span>
+                        <span className="text-[15px] font-medium text-foreground">{specialty}</span>
                       </div>
                       {editing && (
                         <button
                           onClick={() => toggleSpecialty(specialty)}
-                          className="text-xs text-red-500 hover:text-red-600 font-medium transition-colors px-2"
+                          className="text-sm text-red-500 hover:text-red-600 font-semibold transition-colors px-2"
                         >
                           Remove
                         </button>
@@ -778,7 +772,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                 </ul>
               ) : (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-[15px] font-medium text-muted-foreground/60">
                     {editing ? 'Add specialties to showcase what you focus on' : 'No specialties added yet'}
                   </p>
                 </div>
@@ -787,9 +781,9 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           </section>
           
           {/* Google Reviews */}
-          <section className="space-y-6">
-            <div className="flex items-baseline justify-between pb-3">
-              <h2>Google Reviews</h2>
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-[15px] font-bold tracking-tight text-foreground">Google Reviews</h3>
               {form.googleReviewUrl?.trim() && !editing && (
                 <button
                   onClick={async () => {
@@ -821,26 +815,26 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                       });
                     }
                   }}
-                  className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                  className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
                 >
                   Sync Now
                 </button>
               )}
             </div>
             
-            <div className="rounded-xl border border-border bg-card p-6">
-              <div className="space-y-6">
+            <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+              <div className="space-y-5">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Google Maps URL</label>
+                  <label className="text-sm font-semibold tracking-tight text-foreground">Google Maps URL</label>
                   <input
                     value={form.googleReviewUrl}
                     onChange={(e) => updateField({ googleReviewUrl: e.target.value })}
                     disabled={!editing}
                     placeholder="https://maps.google.com/?cid=123456789..."
-                    className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
+                    className="w-full h-10 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/50 text-foreground font-medium"
                   />
                   {editing && (
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-sm font-medium text-muted-foreground/70">
                       Paste your Google Business Profile URL to automatically sync reviews
                     </p>
                   )}
@@ -848,17 +842,17 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                 
                 {/* Current ratings display */}
                 {(profile.googleRating || profile.googleReviewsSyncedAt) && (
-                  <div className="pt-4 border-t border-border">
+                  <div className="pt-4 border-t border-border/40">
                     <div className="grid grid-cols-2 gap-4">
                       {profile.googleRating && (
-                        <div className="space-y-1">
-                          <small className="text-muted-foreground">Google Rating</small>
+                        <div className="space-y-1.5">
+                          <span className="text-sm font-semibold tracking-tight text-muted-foreground/70">Google Rating</span>
                           <div className="flex items-center gap-2">
                             <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                            <span className="text-lg font-semibold text-foreground">
+                            <span className="text-lg font-bold text-foreground">
                               {profile.googleRating.toFixed(1)}
                             </span>
-                            <span className="text-sm text-muted-foreground">
+                            <span className="text-sm font-medium text-muted-foreground/70">
                               ({profile.googleReviewCount ?? 0} reviews)
                             </span>
                           </div>
@@ -866,9 +860,9 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                       )}
                       
                       {profile.googleReviewsSyncedAt && (
-                        <div className="space-y-1">
-                          <small className="text-muted-foreground">Last Synced</small>
-                          <p className="text-sm text-foreground">
+                        <div className="space-y-1.5">
+                          <span className="text-sm font-semibold tracking-tight text-muted-foreground/70">Last Synced</span>
+                          <p className="text-[15px] font-medium text-foreground">
                             {new Date(profile.googleReviewsSyncedAt).toLocaleDateString()}
                           </p>
                         </div>
@@ -881,15 +875,13 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           </section>
           
           {/* Business Details */}
-          <section className="space-y-6">
-            <div className="flex items-baseline justify-between pb-3">
-              <h2>Business Details</h2>
-            </div>
+          <section className="space-y-4">
+            <h3 className="text-[15px] font-bold tracking-tight text-foreground">Business Details</h3>
             
-            <div className="rounded-xl border border-border bg-card p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+            <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Years of Experience</label>
+                  <label className="text-sm font-semibold tracking-tight text-foreground">Years of Experience</label>
                   <input
                     type="number"
                     min="0"
@@ -897,12 +889,12 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                     onChange={(e) => updateField({ experienceYears: parseInt(e.target.value) || null })}
                     disabled={!editing}
                     placeholder="0"
-                    className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
+                    className="w-full h-10 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/50 text-foreground font-medium"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Founded Year</label>
+                  <label className="text-sm font-semibold tracking-tight text-foreground">Founded Year</label>
                   <input
                     type="number"
                     min="1900"
@@ -911,7 +903,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                     onChange={(e) => updateField({ foundedYear: parseInt(e.target.value) || null })}
                     disabled={!editing}
                     placeholder={new Date().getFullYear().toString()}
-                    className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
+                    className="w-full h-10 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/50 text-foreground font-medium"
                   />
                 </div>
               </div>
@@ -919,14 +911,14 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           </section>
           
           {/* Location */}
-          <section className="space-y-6">
-            <div className="flex items-baseline justify-between pb-3">
-              <h2>Location</h2>
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-[15px] font-bold tracking-tight text-foreground">Location</h3>
               {editing && (
                 <button
                   onClick={handleUseCurrentLocation}
                   disabled={isLoadingLocation}
-                  className="text-sm font-medium text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5"
+                  className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5"
                 >
                   {isLoadingLocation ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <MapPin className="w-3.5 h-3.5" />}
                   Auto-detect
@@ -934,25 +926,25 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
               )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">City</label>
+                <label className="text-sm font-semibold tracking-tight text-foreground">City</label>
                 <input
                   value={form.city}
                   onChange={(e) => updateField({ city: e.target.value })}
                   disabled={!editing}
                   placeholder="Dubai"
-                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
+                  className="w-full h-10 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/50 text-foreground font-medium"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">Emirate</label>
+                <label className="text-sm font-semibold tracking-tight text-foreground">Emirate</label>
                 <input
                   value={form.emirate}
                   onChange={(e) => updateField({ emirate: e.target.value })}
                   disabled={!editing}
                   placeholder="Dubai"
-                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/40 text-foreground"
+                  className="w-full h-10 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/50 text-foreground font-medium"
                 />
               </div>
             </div>

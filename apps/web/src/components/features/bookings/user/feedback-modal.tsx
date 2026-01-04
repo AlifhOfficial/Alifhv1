@@ -34,16 +34,16 @@ export function FeedbackModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
       
-      <div className="relative z-50 bg-background border border-border rounded-xl p-6 w-full max-w-md mx-4">
+      <div className="relative z-50 bg-background border border-border/40 rounded-xl p-6 w-full max-w-md mx-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-medium tracking-tight">Rate Your Experience</h3>
-          <button onClick={onClose} className="p-2 hover:bg-secondary/50 rounded-full transition-colors">
+          <h3 className="text-lg font-bold tracking-tight">Rate Your Experience</h3>
+          <button onClick={onClose} className="p-2 hover:bg-muted/40 rounded-full transition-colors">
             <X className="w-4 h-4" />
           </button>
         </div>
         
-        <p className="text-sm text-muted-foreground mb-6">
+        <p className="text-[15px] font-medium text-muted-foreground/70 mb-6">
           How was your test drive?
         </p>
 
@@ -67,7 +67,7 @@ export function FeedbackModal({
         </div>
 
         <div className="space-y-3 mb-6">
-          <label className="flex items-center gap-2 text-sm font-medium">
+          <label className="flex items-center gap-2 text-sm font-semibold tracking-tight">
             Comments (optional)
           </label>
           <textarea
@@ -75,21 +75,21 @@ export function FeedbackModal({
             onChange={(e) => onCommentChange(e.target.value)}
             placeholder="Share your experience..."
             rows={3}
-            className="w-full px-4 py-3 bg-transparent border border-border rounded-xl text-sm resize-none focus:outline-none focus:border-foreground transition-colors"
+            className="w-full px-4 py-3 bg-muted/20 border border-border/40 rounded-xl text-sm font-medium resize-none focus:outline-none focus:border-primary transition-colors placeholder:text-muted-foreground/50"
           />
         </div>
 
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors"
+            className="flex-1 px-5 py-2.5 rounded-full border border-border/40 hover:bg-muted/40 text-sm font-semibold tracking-tight transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={onSubmit}
             disabled={rating === 0 || isSubmitting}
-            className="flex-1 px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-5 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold tracking-tight transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? 'Submitting...' : 'Submit'}
           </button>

@@ -50,6 +50,7 @@ export interface MediumFilterParams {
   mileageMax?: number;
   emirate?: string[];
   specs?: SpecsType[];
+  condition?: 'new' | 'used';
 }
 
 /**
@@ -354,6 +355,7 @@ export function urlToSearchParams(urlParams: URLSearchParams): SearchParams {
     model: parseArray('model'),
     emirate: parseArray('emirate'),
     specs: parseArray('specs') as SearchParams['specs'],
+    condition: urlParams.get('condition') as SearchParams['condition'],
     bodyType: parseArray('bodyType') as SearchParams['bodyType'],
     fuelType: parseArray('fuelType') as SearchParams['fuelType'],
     transmission: parseArray('transmission') as SearchParams['transmission'],
@@ -398,6 +400,7 @@ export function countActiveFilters(params: SearchParams): number {
   if (params.mileageMax) count++;
   if (params.emirate?.length) count++;
   if (params.specs?.length) count++;
+  if (params.condition) count++;
   if (params.bodyType?.length) count++;
   if (params.fuelType?.length) count++;
   if (params.transmission?.length) count++;

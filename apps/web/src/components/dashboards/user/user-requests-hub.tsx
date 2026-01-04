@@ -57,20 +57,20 @@ const RejectedApplicationCard = ({ request, onDismiss, onReapply }: RejectedAppl
   };
 
   return (
-    <div className="bg-card rounded-2xl border border-border/40 p-8">
-      <div className="flex items-start gap-4 mb-6">
-        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+    <div className="bg-sidebar rounded-xl border border-border/40 p-6">
+      <div className="flex items-start gap-4 mb-5">
+        <div className="w-10 h-10 rounded-full bg-muted/40 flex items-center justify-center flex-shrink-0">
           <XCircle className="w-5 h-5 text-red-500" />
         </div>
         <div className="flex-1">
-          <h4 className="font-medium text-foreground mb-1">Application Not Approved</h4>
-          <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-            Your application for <span className="font-medium text-foreground">{request.companyNameLegal}</span> was not approved.
+          <h4 className="font-semibold tracking-tight text-foreground mb-1.5">Application Not Approved</h4>
+          <p className="text-[15px] font-medium text-muted-foreground/70 leading-relaxed mb-3">
+            Your application for <span className="font-semibold text-foreground">{request.companyNameLegal}</span> was not approved.
           </p>
           {request.rejectionReason && (
-            <div className="bg-muted/50 rounded-lg p-3 mb-4">
-              <p className="text-xs text-muted-foreground mb-1">Feedback</p>
-              <p className="text-sm text-foreground">{request.rejectionReason}</p>
+            <div className="bg-muted/30 rounded-lg p-3 mb-4 border border-border/40">
+              <p className="text-xs font-semibold tracking-tight text-muted-foreground/70 mb-1.5">Feedback</p>
+              <p className="text-[15px] font-medium text-foreground">{request.rejectionReason}</p>
             </div>
           )}
         </div>
@@ -79,14 +79,14 @@ const RejectedApplicationCard = ({ request, onDismiss, onReapply }: RejectedAppl
       <div className="flex items-center gap-3">
         <button
           onClick={onReapply}
-          className="flex-1 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-medium text-sm transition-colors"
+          className="flex-1 px-5 py-2.5 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-sm tracking-tight transition-colors"
         >
           Submit New Application
         </button>
         <button
           onClick={handleDismiss}
           disabled={isDismissing}
-          className="px-4 py-2.5 rounded-xl border border-border/40 hover:bg-secondary/50 text-muted-foreground hover:text-foreground font-medium text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
+          className="px-5 py-2.5 rounded-full border border-border/40 hover:bg-muted/40 text-muted-foreground hover:text-foreground font-semibold text-sm tracking-tight transition-colors disabled:opacity-50 flex items-center gap-2"
         >
           {isDismissing ? (
             <>
@@ -153,13 +153,13 @@ export function UserRequestsHub() {
     }
 
     return (
-      <div className="max-w-3xl mx-auto px-6 py-12 space-y-12">
+      <div className="max-w-3xl mx-auto px-6 py-12 space-y-10">
         
         {/* Partner Application Section */}
-        <section className="space-y-6">
+        <section className="space-y-4">
           <div>
-            <h3 className="text-base font-medium">Partner Application</h3>
-            <p className="text-sm text-muted-foreground mt-1">Apply to become a verified dealership partner</p>
+            <h3 className="text-[15px] font-bold tracking-tight">Partner Application</h3>
+            <p className="text-[15px] font-medium text-muted-foreground/70 mt-1.5">Apply to become a verified dealership partner</p>
           </div>
           
           {/* Show status for pending/approved requests */}
@@ -176,12 +176,12 @@ export function UserRequestsHub() {
           ) : (
             <button
               onClick={() => setActiveTab('partner-application')}
-              className="group w-full p-8 rounded-2xl border border-border/40 hover:border-border transition-all text-left bg-card"
+              className="group w-full p-6 rounded-xl border border-border/40 hover:border-border/60 transition-all text-left bg-sidebar"
             >
               <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 space-y-2">
-                  <h4 className="font-medium">Become a Partner</h4>
-                  <p className="text-sm text-muted-foreground">
+                <div className="flex-1 space-y-1.5">
+                  <h4 className="font-semibold tracking-tight">Become a Partner</h4>
+                  <p className="text-[15px] font-medium text-muted-foreground/70">
                     Join the UAE's most transparent car marketplace
                   </p>
                 </div>
@@ -192,28 +192,28 @@ export function UserRequestsHub() {
         </section>
 
         {/* Staff Invites Section */}
-        <section className="space-y-6">
+        <section className="space-y-4">
           <div className="flex items-baseline justify-between">
             <div>
-              <h3 className="text-base font-medium">Staff Invitations</h3>
-              <p className="text-sm text-muted-foreground mt-1">Invitations from dealership partners</p>
+              <h3 className="text-[15px] font-bold tracking-tight">Staff Invitations</h3>
+              <p className="text-[15px] font-medium text-muted-foreground/70 mt-1.5">Invitations from dealership partners</p>
             </div>
             {inviteCount > 0 && (
-              <span className="px-2 py-1 rounded-full bg-muted text-xs font-medium">{inviteCount}</span>
+              <span className="px-2.5 py-1 rounded-full bg-muted/40 text-xs font-semibold tracking-tight">{inviteCount}</span>
             )}
           </div>
           
           {inviteCount > 0 ? (
             <button
               onClick={() => setActiveTab('staff-invites')}
-              className="group w-full p-8 rounded-2xl border border-border/40 hover:border-border transition-all text-left bg-card"
+              className="group w-full p-6 rounded-xl border border-border/40 hover:border-border/60 transition-all text-left bg-sidebar"
             >
               <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 space-y-2">
-                  <h4 className="font-medium">
+                <div className="flex-1 space-y-1.5">
+                  <h4 className="font-semibold tracking-tight">
                     {inviteCount} Pending Invitation{inviteCount !== 1 ? 's' : ''}
                   </h4>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-[15px] font-medium text-muted-foreground/70">
                     Review and respond to invitations
                   </p>
                 </div>
@@ -221,8 +221,8 @@ export function UserRequestsHub() {
               </div>
             </button>
           ) : (
-            <div className="p-12 rounded-2xl border border-border/40 bg-card text-center">
-              <p className="text-sm text-muted-foreground">No pending invitations</p>
+            <div className="p-8 rounded-xl border border-border/40 bg-sidebar text-center">
+              <p className="text-[15px] font-medium text-muted-foreground/60">No pending invitations</p>
             </div>
           )}
         </section>
@@ -241,13 +241,13 @@ export function UserRequestsHub() {
             <div className="flex items-center gap-4">
               <a
                 href="/user-dashboard"
-                className="p-2 hover:bg-secondary rounded-lg transition-colors"
+                className="p-2 hover:bg-muted/40 rounded-lg transition-colors"
               >
                 <ArrowLeft className="w-4 h-4 text-muted-foreground" />
               </a>
               <div>
-                <h1 className="text-2xl font-semibold tracking-tight">Requests</h1>
-                <p className="text-sm text-muted-foreground mt-0.5">
+                <h1 className="text-2xl font-bold tracking-tight">Requests</h1>
+                <p className="text-[15px] font-medium text-muted-foreground/70 mt-1">
                   Partner applications and staff invitations
                 </p>
               </div>
@@ -257,7 +257,7 @@ export function UserRequestsHub() {
                 queryClient.invalidateQueries({ queryKey: ['partner', 'request'] });
                 queryClient.invalidateQueries({ queryKey: ['user', 'staff-invites'] });
               }}
-              className="p-2 hover:bg-secondary rounded-lg transition-colors"
+              className="p-2 hover:bg-muted/40 rounded-lg transition-colors"
             >
               <RefreshCw className="w-4 h-4 text-muted-foreground" />
             </button>
@@ -268,14 +268,14 @@ export function UserRequestsHub() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setActiveTab('overview')}
-              className="p-2 hover:bg-secondary rounded-lg transition-colors"
+              className="p-2 hover:bg-muted/40 rounded-lg transition-colors"
             >
               <ArrowLeft className="w-4 h-4 text-muted-foreground" />
             </button>
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">Requests</span>
-              <span className="text-muted-foreground">/</span>
-              <span className="font-medium">
+              <span className="font-medium text-muted-foreground/70">Requests</span>
+              <span className="text-muted-foreground/50">/</span>
+              <span className="font-semibold tracking-tight">
                 {activeTab === 'partner-application' ? 'Partner Application' : 'Staff Invitations'}
               </span>
             </div>

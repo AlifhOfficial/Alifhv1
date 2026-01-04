@@ -173,32 +173,36 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
       
       <main className="pt-20">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
-          {/* Breadcrumb - Integrated into page flow */}
-          <nav className="flex items-center gap-2 text-sm font-medium tracking-tight py-5 sm:py-6 mb-4 sm:mb-6 overflow-x-auto scrollbar-hide">
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-2 text-sm font-medium tracking-tight py-4 mb-4 sm:mb-6 overflow-x-auto scrollbar-hide">
             <Link 
               href="/listings" 
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
             >
               All Cars
             </Link>
             <span className="text-muted-foreground/40">/</span>
             <Link 
               href={`/listings?make=${encodeURIComponent(listing.make)}`}
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
             >
               {listing.make}
             </Link>
             <span className="text-muted-foreground/40">/</span>
             <Link 
               href={`/listings?make=${encodeURIComponent(listing.make)}&model=${encodeURIComponent(listing.model)}`}
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
             >
               {listing.model}
             </Link>
-            <span className="text-muted-foreground/40">/</span>
-            <span className="text-foreground truncate max-w-[200px] sm:max-w-none">
-              {listing.year} {listing.make} {listing.model}{listing.trim ? ` ${listing.trim}` : ''}
-            </span>
+            {listing.trim && (
+              <>
+                <span className="text-muted-foreground/40">/</span>
+                <span className="text-foreground whitespace-nowrap">
+                  {listing.trim}
+                </span>
+              </>
+            )}
           </nav>
 
           {/* Main Content */}

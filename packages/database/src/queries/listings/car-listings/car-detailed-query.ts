@@ -94,6 +94,7 @@ export interface CarDetailedData {
   model: string;
   year: number;
   trim: string | null;
+  condition: 'new' | 'used';
   description: string | null;
   price: number;
   currency: string;
@@ -188,6 +189,7 @@ function buildDetailedSelectFields(includeExpiry: boolean) {
     model: carListing.model,
     year: carListing.year,
     trim: carListing.trim,
+    condition: carListing.condition,
     description: carListing.description,
     price: carListing.price,
     currency: carListing.currency,

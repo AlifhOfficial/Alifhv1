@@ -67,9 +67,9 @@ export function FilterSidebar({
         onChange={(make) => onFilterChange({ make, model: undefined })}
       />
 
-      {/* Model (shown when make is selected) */}
-      {params.make?.length ? (
-        <FilterSection title="Model">
+      {/* Model */}
+      <FilterSection title="Model" defaultOpen>
+        {params.make?.length ? (
           <MultiSelectFilter
             options={facets?.model ?? []}
             selected={params.model ?? []}
@@ -77,8 +77,12 @@ export function FilterSidebar({
             placeholder="Any model"
             isLoading={isLoading}
           />
-        </FilterSection>
-      ) : null}
+        ) : (
+          <p className="text-sm text-muted-foreground/60 py-3 px-3 font-medium">
+            Please select your make first
+          </p>
+        )}
+      </FilterSection>
 
       {/* Year Range */}
       <FilterSection title="Year">

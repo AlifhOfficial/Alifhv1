@@ -117,6 +117,11 @@ function buildSearchConditions(params: SearchParams, now: Date): SQL[] {
     conditions.push(inArray(carListing.specs, params.specs));
   }
 
+  // Condition filter (new/used)
+  if (params.condition) {
+    conditions.push(eq(carListing.condition, params.condition));
+  }
+
   // === ADVANCED TIER ===
 
   // Body type

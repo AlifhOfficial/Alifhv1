@@ -7,11 +7,8 @@
  * @module queries/listings/car-listings/mutations
  */
 
-// Types
+// Types (excluding status types which are now in schema/listing-constants)
 export type {
-  ListingPostedByRole,
-  ListingModerationStatus,
-  ListingLifecycleStatus,
   CreateCarListingInput,
   UpdateCarListingInput,
   ListingSummary,
@@ -22,6 +19,9 @@ export type {
   TechnicalFeatures,
   SpecialNotes,
 } from './types';
+
+// Note: ListingPostedByRole, ListingModerationStatus, ListingLifecycleStatus
+// are now exported from schema/listing-constants to avoid duplication
 
 export { CONTENT_EDIT_KEYS } from './types';
 

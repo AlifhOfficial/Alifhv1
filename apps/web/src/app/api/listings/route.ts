@@ -243,6 +243,7 @@ export async function POST(req: NextRequest) {
       vin: body.vin || undefined,
       trim: body.trim || undefined,
       description: body.description || undefined,
+      condition: body.condition || 'used',
       currency: body.currency || 'AED',
       isNegotiable: body.isNegotiable ?? false,
       

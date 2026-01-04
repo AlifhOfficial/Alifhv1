@@ -463,13 +463,13 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
         )}
         {emailVerified && (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium bg-muted text-muted-foreground rounded-md">
-            <CheckCircle2 className="w-3 h-3" />
+            <CheckCircle2 className="w-3 h-3 text-green-500" />
             Email
           </span>
         )}
         {phoneVerified && (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium bg-muted text-muted-foreground rounded-md">
-            <CheckCircle2 className="w-3 h-3" />
+            <CheckCircle2 className="w-3 h-3 text-green-500" />
             Phone
           </span>
         )}

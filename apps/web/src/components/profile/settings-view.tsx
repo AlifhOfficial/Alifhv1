@@ -16,51 +16,39 @@ import { useAuth } from '@/providers/auth-provider';
 
 export function SettingsView() {
   const { session: user } = useAuth();
-  const { profile, updateProfile, refresh } = useUserProfile();
+  const { profile, updateProfile } = useUserProfile();
   const { toast } = useToast();
-
-  const [form, setForm] = useState({
-    consignmentMode: true,
-    showPhone: true,
-    useGeneratedAvatar: true,
-  });
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteText, setDeleteText] = useState('');
-  const [initialized, setInitialized] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [savingField, setSavingField] = useState<string | null>(null);
 
-  // Initialize from profile
-  useEffect(() => {
-    if (profile && !initialized) {
-      setForm({
-        consignmentMode: profile.consignmentMode ?? true,
-        showPhone: profile.privacySettings?.showPhone ?? true,
-        useGeneratedAvatar: profile.preferences?.useGeneratedAvatar ?? true,
-      });
-      setInitialized(true);
-    }
-  }, [profile, initialized]);
+  // Derive state directly from profile (no local state needed)
+  const consignmentMode = profile?.consignmentMode ?? false;
+  const showPhone = profile?.privacySettings?.showPhone ?? true;
+  const useGeneratedAvatar = profile?.preferences?.useGeneratedAvatar ?? true;
 
-  const updateField = (updates: Partial<typeof form>) => {
-    setForm(f => ({ ...f, ...updates }));
-  };
-
-  const save = async (field: 'consignmentMode' | 'showPhone' | 'useGeneratedAvatar') => {
-    setSaving(true);
+  const saveToggle = async (field: 'consignmentMode' | 'showPhone' | 'useGeneratedAvatar', currentValue: boolean) => {
+    const newValue = !currentValue;
+    setSavingField(field);
+    
     try {
       const payload: UserProfileUpdate = {
-        consignmentMode: field === 'consignmentMode' ? form.consignmentMode : undefined,
-        privacySettings: field === 'showPhone' ? { showPhone: form.showPhone } : undefined,
-        preferences: field === 'useGeneratedAvatar' ? { useGeneratedAvatar: form.useGeneratedAvatar } : undefined,
+        consignmentMode: field === 'consignmentMode' ? newValue : undefined,
+        privacySettings: field === 'showPhone' ? { showPhone: newValue } : undefined,
+        preferences: field === 'useGeneratedAvatar' ? { useGeneratedAvatar: newValue } : undefined,
       };
+      
       await updateProfile(payload);
-      await refresh();
       toast({ title: 'Setting updated' });
-    } catch {
-      toast({ title: 'Failed to update', variant: 'destructive' });
+    } catch (error) {
+      toast({ 
+        title: 'Failed to update', 
+        description: error instanceof Error ? error.message : 'Please try again',
+        variant: 'destructive' 
+      });
     } finally {
-      setSaving(false);
+      setSavingField(null);
     }
   };
 
@@ -82,176 +70,186 @@ export function SettingsView() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-12 space-y-16">
+    <div className="max-w-2xl mx-auto px-4 py-8 sm:py-12">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">Settings</h1>
+        <p className="text-[15px] font-medium text-muted-foreground/60 mt-1.5">
+          Manage your preferences and account
+        </p>
+      </div>
 
-        {/* Header */}
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
-          <p className="text-sm text-muted-foreground/70 mt-2">
-            Manage your preferences and account
-          </p>
-        </div>
+      {/* Preferences Section */}
+      <section className="mb-10">
+        <h2 className="text-[15px] font-bold tracking-tight text-foreground mb-4">
+          Preferences
+        </h2>
 
-        {/* Preferences */}
-        <section className="space-y-6">
-          <h3 className="text-base font-medium tracking-tight">Preferences</h3>
-
-          <div className="space-y-3">
-            {/* Consignment Mode */}
-            <div className="rounded-xl border border-border/40 p-6 flex items-start justify-between gap-6 hover:bg-muted/10 transition-colors">
-              <div className="space-y-1.5 flex-1">
-                <p className="text-sm font-medium">Consignment Mode</p>
-                <p className="text-sm text-muted-foreground/70">
-                  Enable this to list vehicles on consignment
-                </p>
-              </div>
-              <button
-                onClick={async () => {
-                  updateField({ consignmentMode: !form.consignmentMode });
-                  await save('consignmentMode');
-                }}
-                disabled={saving}
-                className={cn(
-                  "relative h-7 w-12 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50",
-                  form.consignmentMode ? "bg-primary" : "bg-muted"
-                )}
-              >
-                <span
-                  className={cn(
-                    "absolute top-1 h-5 w-5 rounded-full shadow-sm transition-transform",
-                    form.consignmentMode ? "left-6 bg-white" : "left-1 bg-white"
-                  )}
-                />
-              </button>
+        <div className="space-y-0 border border-border/40 rounded-xl overflow-hidden bg-sidebar">
+          {/* Consignment Mode */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border/20 hover:bg-muted/10 transition-colors">
+            <div className="flex-1 min-w-0 pr-4">
+              <p className="text-[15px] font-semibold tracking-tight text-foreground">
+                Consignment Mode
+              </p>
+              <p className="text-sm font-medium text-muted-foreground/60 mt-0.5">
+                List vehicles on consignment
+              </p>
             </div>
-
-            {/* Show Phone */}
-            <div className="rounded-xl border border-border/40 p-6 flex items-start justify-between gap-6 hover:bg-muted/10 transition-colors">
-              <div className="space-y-1.5 flex-1">
-                <p className="text-sm font-medium">Show Phone Number</p>
-                <p className="text-sm text-muted-foreground/70">
-                  Display your phone on your public profile
-                </p>
-              </div>
-              <button
-                onClick={async () => {
-                  updateField({ showPhone: !form.showPhone });
-                  await save('showPhone');
-                }}
-                disabled={saving}
+            <button
+              onClick={() => saveToggle('consignmentMode', consignmentMode)}
+              disabled={savingField === 'consignmentMode'}
+              className={cn(
+                "relative h-7 w-12 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 flex-shrink-0",
+                consignmentMode ? "bg-primary" : "bg-muted/40"
+              )}
+              aria-label="Toggle consignment mode"
+            >
+              <span
                 className={cn(
-                  "relative h-7 w-12 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50",
-                  form.showPhone ? "bg-primary" : "bg-muted"
+                  "absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition-all duration-200",
+                  consignmentMode ? "left-6" : "left-1"
                 )}
-              >
-                <span
-                  className={cn(
-                    "absolute top-1 h-5 w-5 rounded-full shadow-sm transition-transform",
-                    form.showPhone ? "left-6 bg-white" : "left-1 bg-white"
-                  )}
-                />
-              </button>
-            </div>
-
-            {/* Generated Avatar */}
-            <div className="rounded-xl border border-border/40 p-6 flex items-start justify-between gap-6 hover:bg-muted/10 transition-colors">
-              <div className="space-y-1.5 flex-1">
-                <p className="text-sm font-medium">Generated Avatar</p>
-                <p className="text-sm text-muted-foreground/70">
-                  Show robot avatar when no profile photo is set
-                </p>
-              </div>
-              <button
-                onClick={async () => {
-                  updateField({ useGeneratedAvatar: !form.useGeneratedAvatar });
-                  await save('useGeneratedAvatar');
-                }}
-                disabled={saving}
-                className={cn(
-                  "relative h-7 w-12 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50",
-                  form.useGeneratedAvatar ? "bg-primary" : "bg-muted"
-                )}
-              >
-                <span
-                  className={cn(
-                    "absolute top-1 h-5 w-5 rounded-full shadow-sm transition-transform",
-                    form.useGeneratedAvatar ? "left-6 bg-white" : "left-1 bg-white"
-                  )}
-                />
-              </button>
-            </div>
+              />
+            </button>
           </div>
-        </section>
 
-        {/* Account Actions */}
-        <section className="space-y-6">
-          <h3 className="text-base font-medium tracking-tight">Account</h3>
+          {/* Show Phone Number */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border/20 hover:bg-muted/10 transition-colors">
+            <div className="flex-1 min-w-0 pr-4">
+              <p className="text-[15px] font-semibold tracking-tight text-foreground">
+                Show Phone Number
+              </p>
+              <p className="text-sm font-medium text-muted-foreground/60 mt-0.5">
+                Display your phone on public profile
+              </p>
+            </div>
+            <button
+              onClick={() => saveToggle('showPhone', showPhone)}
+              disabled={savingField === 'showPhone'}
+              className={cn(
+                "relative h-7 w-12 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 flex-shrink-0",
+                showPhone ? "bg-primary" : "bg-muted/40"
+              )}
+              aria-label="Toggle phone visibility"
+            >
+              <span
+                className={cn(
+                  "absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition-all duration-200",
+                  showPhone ? "left-6" : "left-1"
+                )}
+              />
+            </button>
+          </div>
 
-          <div className="rounded-xl border border-border/40 p-6">
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <p className="text-sm font-medium">Delete Account</p>
-                <p className="text-sm text-muted-foreground/70">
-                  This will permanently delete your account and all data after 6 months
+          {/* Generated Avatar */}
+          <div className="flex items-center justify-between px-5 py-4 hover:bg-muted/10 transition-colors">
+            <div className="flex-1 min-w-0 pr-4">
+              <p className="text-[15px] font-semibold tracking-tight text-foreground">
+                Generated Avatar
+              </p>
+              <p className="text-sm font-medium text-muted-foreground/60 mt-0.5">
+                Use robot avatar when no photo is set
+              </p>
+            </div>
+            <button
+              onClick={() => saveToggle('useGeneratedAvatar', useGeneratedAvatar)}
+              disabled={savingField === 'useGeneratedAvatar'}
+              className={cn(
+                "relative h-7 w-12 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 flex-shrink-0",
+                useGeneratedAvatar ? "bg-primary" : "bg-muted/40"
+              )}
+              aria-label="Toggle generated avatar"
+            >
+              <span
+                className={cn(
+                  "absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition-all duration-200",
+                  useGeneratedAvatar ? "left-6" : "left-1"
+                )}
+              />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Account Section */}
+      <section>
+        <h2 className="text-[15px] font-bold tracking-tight text-foreground mb-4">
+          Account
+        </h2>
+
+        <div className="border border-border/40 rounded-xl overflow-hidden bg-sidebar">
+          <div className="px-5 py-5">
+            <div className="space-y-3">
+              <div>
+                <p className="text-[15px] font-semibold tracking-tight text-foreground">
+                  Delete Account
+                </p>
+                <p className="text-sm font-medium text-muted-foreground/60 mt-0.5">
+                  Permanently delete your account and all data after 6 months
                 </p>
               </div>
               <button
                 onClick={() => setShowDeleteModal(true)}
-                className="px-5 py-2 rounded-full border border-border/40 text-sm font-medium tracking-tight hover:bg-muted/50 transition-colors"
+                className="px-5 py-2 rounded-full border border-border/40 text-sm font-semibold tracking-tight text-foreground hover:bg-muted/40 transition-colors"
               >
                 Delete Account
               </button>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Delete Modal */}
-        {showDeleteModal && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4">
-            <div className="bg-card/95 backdrop-blur-sm border border-border/30 rounded-2xl p-8 max-w-md w-full shadow-2xl space-y-6">
-            
-            {/* Content */}
-            <div className="space-y-3">
-              <h2 className="text-xl font-semibold tracking-tight">Delete Account?</h2>
-              <p className="text-sm text-muted-foreground/70 leading-relaxed">
-                This action cannot be undone. Your account will be permanently deleted after 6 months.
-              </p>
-            </div>
-            
-            <div className="space-y-3">
-              <label className="text-xs font-medium text-muted-foreground block">
-                Type "DELETE" to confirm
-              </label>
-              <input
-                type="text"
-                value={deleteText}
-                onChange={(e) => setDeleteText(e.target.value)}
-                placeholder="DELETE"
-                className="w-full h-11 px-4 bg-muted/20 border border-border/40 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all"
-              />
-            </div>
+      {/* Delete Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4">
+          <div className="bg-background/95 backdrop-blur-sm border border-border/30 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl">
+            <div className="space-y-5">
+              {/* Header */}
+              <div>
+                <h2 className="text-xl font-bold tracking-tight text-foreground">Delete Account?</h2>
+                <p className="text-[15px] font-medium text-muted-foreground/70 mt-2 leading-relaxed">
+                  This action cannot be undone. Your account will be permanently deleted after 6 months.
+                </p>
+              </div>
+              
+              {/* Input */}
+              <div className="space-y-2.5">
+                <label className="text-sm font-semibold tracking-tight text-foreground block">
+                  Type "DELETE" to confirm
+                </label>
+                <input
+                  type="text"
+                  value={deleteText}
+                  onChange={(e) => setDeleteText(e.target.value)}
+                  placeholder="DELETE"
+                  className="w-full h-11 px-4 bg-muted/20 border border-border/40 rounded-xl text-[15px] font-medium tracking-tight focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all"
+                />
+              </div>
 
-            <div className="flex gap-3 pt-2">
-              <button
-                onClick={() => {
-                  setShowDeleteModal(false);
-                  setDeleteText('');
-                }}
-                className="flex-1 px-6 py-2.5 rounded-full border border-border/40 hover:bg-muted/50 text-sm font-medium tracking-tight transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={deleteAccount}
-                disabled={deleteText !== 'DELETE'}
-                className="flex-1 px-6 py-2.5 rounded-full bg-red-500 text-white hover:bg-red-600 text-sm font-medium tracking-tight disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-red-500/20"
-              >
-                Delete Account
-              </button>
+              {/* Actions */}
+              <div className="flex gap-3 pt-1">
+                <button
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setDeleteText('');
+                  }}
+                  className="flex-1 px-6 py-2.5 rounded-full border border-border/40 hover:bg-muted/40 text-sm font-semibold tracking-tight text-foreground transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={deleteAccount}
+                  disabled={deleteText !== 'DELETE'}
+                  className="flex-1 px-6 py-2.5 rounded-full bg-red-500 text-white hover:bg-red-600 text-sm font-semibold tracking-tight disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-red-500/20"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
+    </div>
   );
 }
