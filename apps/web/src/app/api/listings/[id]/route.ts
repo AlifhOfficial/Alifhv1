@@ -31,7 +31,6 @@ import {
   type UpdateCarListingInput,
 } from '@alifh/database';
 import { memoryCache, getListingDetailed } from '@alifh/database';
-import { autoMatchConsignment } from '@/lib/consignment/auto-match';
 import { getClientIp } from '@/lib/utils/get-client-ip';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_LISTINGS, RATE_LIMITS_GENERAL } from '@/lib/rate-limit';
 import { moderateListing, type ModerationInput } from '@alifh/ai/moderation';
@@ -480,14 +479,6 @@ export async function PUT(
     }).catch((error) => {
       console.error('[Audit] Failed to write listing update log:', error);
     });
-
-    // Auto-match with consignment partners if it becomes public (staff-posted listings)
-    // Run in background - don't block the user's response
-    if (updated?.postedByRole === 'staff' && isPublic) {
-      autoMatchConsignment(id).catch((error) => {
-        console.error('[Consignment] Background auto-match failed:', error);
-      });
-    }
 
     // AI Auto-Moderation for USER-posted listings
     // Trigger when user edits ANY content field (not just status changes)

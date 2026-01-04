@@ -25,7 +25,6 @@ import {
   getListingModerationContext,
   invalidateListingCaches,
 } from '@alifh/database';
-import { autoMatchConsignment } from '@/lib/consignment/auto-match';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_ADMIN } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
@@ -119,8 +118,6 @@ export async function POST(
         after = await approveListingAsAdmin(id, sessionUser.id);
         message = 'Listing approved and published';
         auditAction = 'listing.moderation.approve';
-        // Background consignment matching (if applicable)
-        if (after) void autoMatchConsignment(id);
         break;
 
       case 'reject':

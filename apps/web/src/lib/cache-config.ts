@@ -179,6 +179,13 @@ export const API_CACHE_HEADERS = {
   },
 
   /**
+   * Alias for NO_CACHE - Use when you want to be explicit about no-store
+   */
+  NO_STORE: {
+    'Cache-Control': 'no-store, no-cache, must-revalidate, private',
+  },
+
+  /**
    * Private cache - 1 minute
    * Use for: User-specific reads (favorites, bookings)
    */
@@ -200,6 +207,14 @@ export const API_CACHE_HEADERS = {
    */
   PRIVATE_LONG: {
     'Cache-Control': 'private, max-age=3600, stale-while-revalidate=1800',
+  },
+
+  /**
+   * Private cache - 2 hours
+   * Use for: Lead funnels, saved searches (with manual sync button)
+   */
+  PRIVATE_ULTRA_LONG: {
+    'Cache-Control': 'private, max-age=7200, stale-while-revalidate=3600',
   },
 
   /**

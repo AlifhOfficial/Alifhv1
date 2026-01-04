@@ -35,8 +35,7 @@ import {
   message,
 } from './messaging';
 import {
-  consignmentLead,
-  partnerConsignmentPreference,
+  consignmentFunnel,
 } from './consignment';
 
 // Note: Removed tables (not imported):
@@ -139,12 +138,8 @@ export const partnerRelations = relations(partner, ({ many, one }) => ({
   // Messaging
   conversations: many(conversation),
   
-  // Consignment
-  consignmentLeads: many(consignmentLead),
-  consignmentPreference: one(partnerConsignmentPreference, {
-    fields: [partner.id],
-    references: [partnerConsignmentPreference.partnerId],
-  }),
+  // Consignment Funnels (saved searches)
+  consignmentFunnels: many(consignmentFunnel),
   
   // ❌ Removed for V1:
   // - reviews, requests (not implemented yet)
@@ -239,9 +234,6 @@ export const carListingRelations = relations(carListing, ({ one, many }) => ({
   
   // Messaging
   conversations: many(conversation),
-  
-  // Consignment
-  consignmentLeads: many(consignmentLead),
   
   // ❌ Removed for V1:
   // - reservedByUser, soldToUser (not implemented)
@@ -370,27 +362,11 @@ export const messageRelations = relations(message, ({ one, many }) => ({
 
 // ===== CONSIGNMENT RELATIONS =====
 
-// Partner Consignment Preference relations
-export const partnerConsignmentPreferenceRelations = relations(partnerConsignmentPreference, ({ one }) => ({
+// Consignment Funnel relations (saved searches)
+export const consignmentFunnelRelations = relations(consignmentFunnel, ({ one }) => ({
   partner: one(partner, {
-    fields: [partnerConsignmentPreference.partnerId],
+    fields: [consignmentFunnel.partnerId],
     references: [partner.id],
-  }),
-}));
-
-// Consignment Lead relations
-export const consignmentLeadRelations = relations(consignmentLead, ({ one, many }) => ({
-  partner: one(partner, {
-    fields: [consignmentLead.partnerId],
-    references: [partner.id],
-  }),
-  user: one(user, {
-    fields: [consignmentLead.userId],
-    references: [user.id],
-  }),
-  listing: one(carListing, {
-    fields: [consignmentLead.listingId],
-    references: [carListing.id],
   }),
 }));
 

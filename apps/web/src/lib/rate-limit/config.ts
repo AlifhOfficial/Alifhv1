@@ -511,45 +511,6 @@ export const RATE_LIMITS_KYC = {
 } as const;
 
 // ============================================================================
-// CONSIGNMENT & MATCHING (AI Operations)
-// ============================================================================
-
-export const RATE_LIMITS_CONSIGNMENT = {
-  /**
-   * AI matching requests
-   * 10 per hour per user - expensive AI operation
-   */
-  MATCH: {
-    windowSeconds: 60 * 60,
-    maxRequests: 10,
-    keyPrefix: 'consignment:match',
-    description: 'AI consignment matching',
-  },
-
-  /**
-   * Update preferences
-   * 20 per hour per user
-   */
-  PREFERENCES: {
-    windowSeconds: 60 * 60,
-    maxRequests: 20,
-    keyPrefix: 'consignment:preferences',
-    description: 'Update consignment preferences',
-  },
-
-  /**
-   * Fetch leads
-   * 30 per minute per user
-   */
-  FETCH_LEADS: {
-    windowSeconds: 60,
-    maxRequests: 30,
-    keyPrefix: 'consignment:leads',
-    description: 'Fetch consignment leads',
-  },
-} as const;
-
-// ============================================================================
 // GENERAL READ OPERATIONS
 // ============================================================================
 
@@ -602,7 +563,6 @@ export const ALL_RATE_LIMITS = {
   ...RATE_LIMITS_PARTNER,
   ...RATE_LIMITS_ADMIN,
   ...RATE_LIMITS_KYC,
-  ...RATE_LIMITS_CONSIGNMENT,
   ...RATE_LIMITS_GENERAL,
 } as const;
 

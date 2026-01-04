@@ -35,6 +35,7 @@ export type UserProfileUpdate = Partial<{
   tags: string[];
   consignmentMode: boolean;
   privacySettings: { showPhone?: boolean };
+  preferences: { theme?: string; language?: string; distanceUnit?: string; useGeneratedAvatar?: boolean };
   avatar: string | null;
   status: string;
 }>;

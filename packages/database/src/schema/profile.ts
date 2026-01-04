@@ -89,6 +89,7 @@ export const userProfile = pgTable('user_profile', {
   index('user_profile_phone_idx').on(table.phone),
   index('user_profile_location_idx').on(table.locationCity, table.locationEmirate),
   index('user_profile_kyc_verified_idx').on(table.kycVerified),
+  index('user_profile_consignment_mode_idx').on(table.consignmentMode),
 ]);
 
 export const kycRecord = pgTable('kyc_record', {

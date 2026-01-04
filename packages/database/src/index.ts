@@ -52,15 +52,16 @@ export * from './queries/booking/availability-queries';
 export * from './queries/booking/booking-queries';
 export * from './queries/booking/booking-mutations';
 
-// Explicit listings + consignment query exports (required for proper bundling)
+// Explicit listings query exports (required for proper bundling)
 export * from './queries/listings/car-listings/car-listing-context-query';
 export * from './queries/listings/car-listings/search-query';
 export * from './queries/listings/black-listings-query';
-export * from './queries/consignment/partner-consignment-preferences-query';
-export * from './queries/consignment/partner-consignment-leads-query';
 
 // Explicit audit query exports (required for proper bundling)
 export * from './queries/audit/audit-log-mutations';
 
 // Explicit conversation query exports (required for proper bundling)
 export * from './queries/conversation';
+
+// Explicit consignment query exports (required for proper bundling)
+export * from './queries/consignment/funnel-queries';

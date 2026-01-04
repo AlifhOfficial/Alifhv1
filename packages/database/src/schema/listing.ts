@@ -454,6 +454,10 @@ export const carListing = pgTable('car_listing', {
   
   // Consignment lead matching index
   index('car_listing_openToConsignment_publicish_idx').on(table.openToConsignment, table.moderationStatus, table.lifecycleStatus),
+  
+  // Consignment funnel matching - user listings with proper status
+  // Covers WHERE partnerId IS NULL AND moderationStatus = 'approved' AND lifecycleStatus = 'active'
+  index('car_listing_user_consignment_idx').on(table.partnerId, table.moderationStatus, table.lifecycleStatus, table.userId),
 ]);
 
 export const listingPriceHistory = pgTable('listing_price_history', {

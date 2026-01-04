@@ -18,7 +18,7 @@ const navSections = [
     items: [
       { label: "Works For", href: "/staff-dashboard/works-for" },
       { label: "Work Listings", href: "/staff-dashboard/work-listings" },
-      { label: "Consignment Leads", href: "/staff-dashboard/consignment/leads" },
+      { label: "Lead Funnels", href: "/staff-dashboard/consignment" },
     ]
   },
   {

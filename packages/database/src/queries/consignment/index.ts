@@ -1,9 +1,7 @@
 /**
- * Consignment Queries
- *
+ * Consignment Queries Index
+ * 
  * @module queries/consignment
  */
 
-export * from './partner-consignment-preferences-query';
-export * from './partner-consignment-leads-query';
-
+export * from './funnel-queries';

@@ -104,10 +104,6 @@ export function PartnerValueSection() {
                 title: 'Analytics Dashboard',
                 desc: 'Inventory value. Views. Favorites. Superlikes. Which cars are hot, which need repricing. Numbers that actually help.',
               },
-              {
-                title: 'Consignment Simplified',
-                desc: 'Sellers opt-in. You set floor and ceiling. If it qualifies, make an offer. No inspecting cars you won\'t take.',
-              },
             ].map((item, i) => (
               <div key={i} className="p-6 border border-border/40 rounded-lg">
                 <p className="text-sm font-medium text-foreground mb-2">{item.title}</p>

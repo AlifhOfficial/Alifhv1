@@ -16,6 +16,7 @@ const navSections = [
     collapsible: { label: "Business", icon: "briefcase" },
     items: [
       { label: "Inventory", href: "/partner-dashboard/inventory" },
+      { label: "Lead Funnels", href: "/partner-dashboard/lead-funnels" },
       { label: "Bookings", href: "/partner-dashboard/bookings" },
       { label: "Performance", href: "/partner-dashboard/performance" },
     ]
