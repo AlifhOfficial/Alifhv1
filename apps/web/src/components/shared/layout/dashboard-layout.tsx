@@ -133,9 +133,9 @@ export function DashboardContent({ children, header, fullHeight = false }: Dashb
   };
 
   return (
-    <SidebarInset className="flex flex-col overflow-hidden">
-      {/* Header with SidebarTrigger, ThemeToggle, and actions */}
-      <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border px-4">
+    <SidebarInset className="flex flex-col relative">
+      {/* Header with SidebarTrigger, ThemeToggle, and actions - Glassmorphic */}
+      <header className="flex h-14 shrink-0 items-center gap-2 bg-background/80 backdrop-blur-xl px-4 z-20 sticky top-0">
         <SidebarTrigger className="-ml-1" />
         <ThemeToggle />
         {header && (
@@ -146,8 +146,8 @@ export function DashboardContent({ children, header, fullHeight = false }: Dashb
         )}
         
         {/* Right side actions */}
-        <div className="ml-auto flex items-center gap-2">
-          <Button variant="ghost" asChild className="h-8 px-3">
+        <div className="ml-auto flex items-center gap-1">
+          <Button variant="ghost" asChild className="h-8 px-3 text-sm font-semibold tracking-tight">
             <Link href="/">
               Home
             </Link>
@@ -155,8 +155,9 @@ export function DashboardContent({ children, header, fullHeight = false }: Dashb
           <Button 
             variant="ghost" 
             onClick={onSignOut}
-            className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-3"
+            className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-3 gap-1.5 text-sm font-semibold tracking-tight"
           >
+            <LogOut className="h-3.5 w-3.5" />
             Sign Out
           </Button>
         </div>
@@ -168,7 +169,7 @@ export function DashboardContent({ children, header, fullHeight = false }: Dashb
           {children}
         </div>
       ) : (
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto -mt-14 pt-14">
           <div className="p-4">
             {children}
           </div>

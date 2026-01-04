@@ -2,6 +2,7 @@
 
 import { DashboardLayout, DashboardContent } from "@/components/shared/layout/dashboard-layout";
 import { AppSidebar } from "@/components/shared/layout/app-sidebar";
+import { PageLoader } from "@/components/shared/page-loader";
 import { WebSocketProvider } from "@/providers/websocket-provider";
 import { useAuth } from "@/providers/auth-provider";
 
@@ -45,7 +46,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
   const { session, isLoading } = useAuth();
   
   if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return <PageLoader />;
   }
   
   if (!session) {

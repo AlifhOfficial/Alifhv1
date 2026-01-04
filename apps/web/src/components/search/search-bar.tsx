@@ -309,9 +309,9 @@ export function SearchBar({
 
   // Size classes
   const sizeClasses = {
-    sm: 'h-9 text-sm',
-    md: 'h-10 text-sm',
-    lg: 'h-12 text-base',
+    sm: 'h-10 text-sm px-1',
+    md: 'h-11 text-sm px-1',
+    lg: 'h-12 text-base px-2',
   };
 
   const iconSizes = {
@@ -342,14 +342,15 @@ export function SearchBar({
       {/* Input */}
       <div className={cn(
         'relative flex items-center',
-        'bg-muted/30 border border-border/50 rounded-xl',
+        'bg-background border border-border/40 rounded-full',
+        'hover:border-border/60',
         'transition-all duration-200',
-        isFocused && 'bg-background border-primary/40 shadow-sm ring-2 ring-primary/10',
+        isFocused && 'border-primary/40 ring-1 ring-primary/20',
         sizeClasses[size]
       )}>
         <Search className={cn(
           'absolute left-3.5 transition-colors',
-          isFocused ? 'text-primary' : 'text-muted-foreground/50',
+          isFocused ? 'text-primary' : 'text-muted-foreground/70',
           iconSizes[size]
         )} />
         
@@ -364,9 +365,9 @@ export function SearchBar({
           autoFocus={autoFocus}
           className={cn(
             'w-full h-full bg-transparent pl-11 pr-10',
-            'placeholder:text-muted-foreground/50',
+            'placeholder:text-muted-foreground/60 placeholder:font-medium',
             'focus:outline-none',
-            'font-semibold tracking-tight'
+            'font-semibold tracking-tight text-foreground'
           )}
           aria-label="Search cars"
           aria-expanded={showDropdown}
@@ -400,7 +401,7 @@ export function SearchBar({
         <div 
           className={cn(
             'absolute top-full left-0 right-0 z-50 mt-2',
-            'bg-popover/95 backdrop-blur-xl border border-border/50 rounded-xl shadow-xl',
+            'bg-background/80 backdrop-blur-xl border border-border/40 rounded-2xl shadow-xl',
             'overflow-hidden animate-in fade-in-0 slide-in-from-top-2 duration-150'
           )}
           role="listbox"

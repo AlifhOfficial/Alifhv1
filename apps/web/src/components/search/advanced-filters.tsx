@@ -386,8 +386,8 @@ function FilterGroup({
                         <CheckCircle2 className={cn(
                           'h-4 w-4',
                           option.value === 'white' || option.value === 'beige' || option.value === 'yellow' || option.value === 'gold'
-                            ? 'text-sidebar-foreground'
-                            : 'text-white'
+                            ? 'text-green-600'
+                            : 'text-green-400'
                         )} />
                       )}
                     </button>
@@ -420,7 +420,7 @@ function FilterGroup({
                           {option.count}
                         </span>
                         {isSelected && (
-                          <CheckCircle2 className="h-4 w-4 text-sidebar-foreground" />
+                          <CheckCircle2 className="h-4 w-4 text-green-500" />
                         )}
                       </div>
                     </button>
@@ -474,7 +474,7 @@ function ToggleOption({ label, checked, onChange }: ToggleOptionProps) {
           ? 'bg-sidebar-foreground border-sidebar-foreground'
           : 'border-sidebar-border bg-transparent'
       )}>
-        {checked && <CheckCircle2 className="h-3.5 w-3.5 text-sidebar" />}
+        {checked && <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />}
       </div>
     </button>
   );

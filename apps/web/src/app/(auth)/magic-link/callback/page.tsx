@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { PageLoader } from "@/components/shared/page-loader";
 
 function MagicLinkCallback() {
   const searchParams = useSearchParams();
@@ -65,13 +66,7 @@ function MagicLinkCallback() {
 
 export default function MagicLinkCallbackPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Loading...</h1>
-        </div>
-      </div>
-    }>
+    <Suspense fallback={<PageLoader />}>
       <MagicLinkCallback />
     </Suspense>
   );

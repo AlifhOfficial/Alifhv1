@@ -341,8 +341,8 @@ export function Navbar() {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? "bg-background/95 backdrop-blur-md border-b border-border/40"
-            : "bg-background/80 backdrop-blur-md"
+            ? "bg-background/90 backdrop-blur-xl"
+            : "bg-background/80 backdrop-blur-xl"
         }`}
       >
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6">

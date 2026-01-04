@@ -23,7 +23,7 @@ export type SearchSortOption =
   | 'popular';
 
 export const SORT_OPTIONS: { value: SearchSortOption; label: string }[] = [
-  { value: 'relevance', label: 'Most Relevant' },
+  { value: 'relevance', label: 'Default' },
   { value: 'newest', label: 'Newest First' },
   { value: 'oldest', label: 'Oldest First' },
   { value: 'price_low', label: 'Price: Low to High' },

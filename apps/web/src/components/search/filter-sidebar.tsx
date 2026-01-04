@@ -47,20 +47,6 @@ export function FilterSidebar({
   
   return (
     <div className="flex flex-col [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted-foreground/10 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-muted-foreground/15">
-      {/* Header */}
-      <div className="flex items-center justify-between py-4 mb-2 border-b border-border/30">
-        <h2 className="text-lg font-bold tracking-tight">Filters</h2>
-        {activeFilterCount > 0 && (
-          <button
-            type="button"
-            onClick={onClearFilters}
-            className="text-sm font-semibold text-muted-foreground/70 hover:text-foreground transition-colors"
-          >
-            Clear all
-          </button>
-        )}
-      </div>
-
       {/* Make */}
       <FilterSection title="Make" defaultOpen>
         <MakeFilter
@@ -133,7 +119,7 @@ export function FilterSidebar({
           )}
         >
           <span className="tracking-tight">Negotiable prices only</span>
-          {params.isNegotiable && <CheckCircle2 className="h-4 w-4" />}
+          {params.isNegotiable && <CheckCircle2 className="h-4 w-4 text-green-500" />}
         </button>
       </FilterSection>
 
@@ -258,7 +244,7 @@ function MakeFilter({ options, selected, onChange, isLoading, onViewAll }: MakeF
             <span className="tracking-tight">{option.label}</span>
             <div className="flex items-center gap-2.5">
               <span className="text-sm text-muted-foreground/60 tabular-nums font-medium">{option.count}</span>
-              <CheckCircle2 className="h-4 w-4 text-foreground" />
+              <CheckCircle2 className="h-4 w-4 text-green-500" />
             </div>
           </button>
         );
@@ -284,7 +270,7 @@ function MakeFilter({ options, selected, onChange, isLoading, onViewAll }: MakeF
             <span className="tracking-tight">{option.label}</span>
             <div className="flex items-center gap-2.5">
               <span className="text-sm text-muted-foreground/60 tabular-nums font-medium">{option.count}</span>
-              {isSelected && <CheckCircle2 className="h-4 w-4 text-foreground" />}
+              {isSelected && <CheckCircle2 className="h-4 w-4 text-green-500" />}
             </div>
           </button>
         );
@@ -381,7 +367,7 @@ function MakeModal({ isOpen, onClose, options, selected, onChange }: MakeModalPr
                 <span className="tracking-tight">{option.label}</span>
                 <div className="flex items-center gap-2.5">
                   <span className="text-sm text-muted-foreground/60 tabular-nums font-medium">{option.count}</span>
-                  {isSelected && <CheckCircle2 className="h-4 w-4 text-foreground" />}
+                  {isSelected && <CheckCircle2 className="h-4 w-4 text-green-500" />}
                 </div>
               </button>
             );
@@ -476,7 +462,7 @@ function MultiSelectFilter({
             </span>
             <div className="flex items-center gap-2.5">
               <span className="text-sm text-muted-foreground/60 tabular-nums font-medium">{option.count}</span>
-              {isSelected && <CheckCircle2 className="h-4 w-4 text-foreground" />}
+              {isSelected && <CheckCircle2 className="h-4 w-4 text-green-500" />}
             </div>
           </button>
         );
