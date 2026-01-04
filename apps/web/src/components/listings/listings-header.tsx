@@ -259,11 +259,12 @@ export function ListingsHeader({
           </div>
         </div>
 
-        {/* Active Chips */}
+        {/* Active Chips - with sidebar-aware padding to align with content grid */}
         <div 
           className={cn(
             "overflow-hidden transition-all duration-200",
-            activeChips.length > 0 ? "mt-3 sm:mt-4 max-h-32 opacity-100" : "max-h-0 opacity-0"
+            activeChips.length > 0 ? "mt-3 sm:mt-4 max-h-32 opacity-100" : "max-h-0 opacity-0",
+            sidebarOpen && "lg:pl-6"
           )}
         >
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">

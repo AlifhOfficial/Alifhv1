@@ -135,7 +135,7 @@ export function DashboardContent({ children, header, fullHeight = false }: Dashb
   return (
     <SidebarInset className="flex flex-col relative">
       {/* Header with SidebarTrigger, ThemeToggle, and actions - Glassmorphic */}
-      <header className="flex h-14 shrink-0 items-center gap-2 bg-background/80 backdrop-blur-xl px-4 z-20 sticky top-0">
+      <header className="flex h-14 shrink-0 items-center gap-2 bg-background/80 backdrop-blur-xl px-4 z-20 sticky top-0 border-b border-border/40">
         <SidebarTrigger className="-ml-1" />
         <ThemeToggle />
         {header && (

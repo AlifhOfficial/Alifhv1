@@ -83,10 +83,7 @@ export function ListingsView({ embedded = false }: ListingsViewProps) {
             />
 
             {/* RIGHT: Search Header + Content */}
-            <div className={cn(
-              "flex-1 min-w-0 flex flex-col",
-              sidebarOpen && "lg:pl-6"
-            )}>
+            <div className="flex-1 min-w-0 flex flex-col">
               {/* TOP: Fixed Search Header */}
               <ListingsHeader
                 params={params}
@@ -108,7 +105,10 @@ export function ListingsView({ embedded = false }: ListingsViewProps) {
               />
 
               {/* BOTTOM: Scrollable Content */}
-              <main className="flex-1 py-4 sm:py-6">
+              <main className={cn(
+                "flex-1 py-4 sm:py-6",
+                sidebarOpen && "lg:pl-6"
+              )}>
                 <ListingsContent
                   listings={listings}
                   meta={meta}
