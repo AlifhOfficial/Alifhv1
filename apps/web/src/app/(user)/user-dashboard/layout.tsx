@@ -48,6 +48,17 @@ export default function UserDashboardLayout({ children }: { children: React.Reac
   const { session: user, isLoading } = useAuth();
   const pathname = usePathname();
   
+  // Check if user is banned - must be before any conditional returns
+  const isBanned = user ? (user as any).isBanned === true : false;
+  const isOnBannedPage = pathname === '/user-dashboard/banned';
+  
+  // useEffect must be called unconditionally (before any returns)
+  useEffect(() => {
+    if (user && isBanned && !isOnBannedPage) {
+      redirect('/user-dashboard/banned');
+    }
+  }, [user, isBanned, isOnBannedPage]);
+  
   if (isLoading) {
     return <PageLoader />;
   }
@@ -55,16 +66,6 @@ export default function UserDashboardLayout({ children }: { children: React.Reac
   if (!user) {
     redirect('/');
   }
-
-  // Check if user is banned and redirect to banned page if not already there
-  const isBanned = (user as any).isBanned === true;
-  const isOnBannedPage = pathname === '/user-dashboard/banned';
-  
-  useEffect(() => {
-    if (isBanned && !isOnBannedPage) {
-      redirect('/user-dashboard/banned');
-    }
-  }, [isBanned, isOnBannedPage]);
 
   // If banned and not on banned page, show loader while redirecting
   if (isBanned && !isOnBannedPage) {
