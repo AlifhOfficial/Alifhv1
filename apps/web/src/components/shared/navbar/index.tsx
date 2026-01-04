@@ -52,7 +52,7 @@ const navItems: NavItem[] = [
         items: [
           { label: "Sedans", href: "/listings?bodyType=sedan" },
           { label: "SUVs", href: "/listings?bodyType=suv" },
-          { label: "Trucks", href: "/listings?bodyType=truck" },
+          { label: "Trucks", href: "/listings?bodyType=pickup" },
           { label: "Coupes", href: "/listings?bodyType=coupe" },
           { label: "Negotiable", href: "/listings?negotiable=true" },
         ],
