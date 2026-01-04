@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Loader2, ArrowLeft, MoreVertical, Moon, Cloud } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
@@ -156,21 +156,23 @@ export function ChatWindow({
         <div className="flex-1 min-w-0">
           <h3 className="text-[15px] font-bold tracking-tight truncate text-foreground">{displayName}</h3>
           <div className="flex items-center gap-1.5 mt-0.5">
-            {isOtherOnline ? (
-              <>
+            {isOtherOnline && (
+              <div className="flex items-center gap-1.5">
                 <Moon className="w-3 h-3 text-rose-500 fill-rose-500" />
                 <small className="text-xs text-rose-600 dark:text-rose-400 font-semibold">Active now</small>
-              </>
-            ) : lastActiveAt ? (
-              <>
+              </div>
+            )}
+            {!isOtherOnline && lastActiveAt && (
+              <div className="flex items-center gap-1.5">
                 <Moon className="w-3 h-3 text-purple-500 fill-purple-500" />
                 <small className="text-xs text-muted-foreground/70 font-medium">Last seen {formatLastSeen(lastActiveAt)}</small>
-              </>
-            ) : (
-              <>
+              </div>
+            )}
+            {!isOtherOnline && !lastActiveAt && (
+              <div className="flex items-center gap-1.5">
                 <Cloud className="w-3 h-3 text-slate-500 fill-slate-400" />
                 <small className="text-xs text-muted-foreground/70 font-medium">Away</small>
-              </>
+              </div>
             )}
           </div>
         </div>
@@ -216,7 +218,7 @@ export function ChatWindow({
             </div>
           </div>
         ) : (
-          <>
+          <div className="contents">
             {isOtherTyping && (
               <div key="typing" className="flex items-start gap-2.5 mb-1.5 px-2">
                 <div className="w-8 flex-shrink-0" />
@@ -226,47 +228,42 @@ export function ChatWindow({
               </div>
             )}
 
-            {messages.flatMap((message, index, arr) => {
-              const elements: ReactNode[] = [];
+            {messages.map((message, index, arr) => {
               const messageDate = new Date(message.createdAt);
               // With flex-col-reverse, next in array is prev visually
               const nextMessage = arr[index + 1];
               const nextDate = nextMessage ? new Date(nextMessage.createdAt) : null;
-
-              // Date separator before older messages (visually above)
-              if (!nextDate || !isSameDay(nextDate, messageDate)) {
-                elements.push(
-                  <div key={`date-${message.id}`} className="flex justify-center py-3">
-                    <small className="text-xs inline-flex items-center rounded-full bg-muted px-3 py-1 text-muted-foreground/70">
-                      {format(messageDate, 'EEE, MMM d')}
-                    </small>
-                  </div>
-                );
-              }
+              const showDateSeparator = !nextDate || !isSameDay(nextDate, messageDate);
 
               const showAvatar = !nextMessage || nextMessage.senderId !== message.senderId;
               const isOwn = message.senderId === userId;
               const isReadByOther = isOwn && otherLastReadAt ? messageDate <= otherLastReadAt : false;
               const showSeen = isOwn && message.id === lastReadMsgId;
 
-              elements.push(
-                <MessageBubble
-                  key={message.id}
-                  message={message}
-                  isOwn={isOwn}
-                  showAvatar={showAvatar}
-                  isReadByOther={isReadByOther}
-                  showSeen={showSeen}
-                  seenAt={otherLastReadAt}
-                  otherUserAvatar={otherParticipant?.avatarUrl || null}
-                  otherUserName={otherParticipant?.name || null}
-                  listing={index === arr.length - 1 && listing ? listing : undefined}
-                />
+              return (
+                <div key={message.id}>
+                  {showDateSeparator && (
+                    <div className="flex justify-center py-3">
+                      <small className="text-xs inline-flex items-center rounded-full bg-muted px-3 py-1 text-muted-foreground/70">
+                        {format(messageDate, 'EEE, MMM d')}
+                      </small>
+                    </div>
+                  )}
+                  <MessageBubble
+                    message={message}
+                    isOwn={isOwn}
+                    showAvatar={showAvatar}
+                    isReadByOther={isReadByOther}
+                    showSeen={showSeen}
+                    seenAt={otherLastReadAt}
+                    otherUserAvatar={otherParticipant?.avatarUrl || null}
+                    otherUserName={otherParticipant?.name || null}
+                    listing={index === arr.length - 1 && listing ? listing : undefined}
+                  />
+                </div>
               );
-
-              return elements;
             })}
-          </>
+          </div>
         )}
       </div>
 

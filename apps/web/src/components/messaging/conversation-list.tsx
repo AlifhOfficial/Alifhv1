@@ -289,16 +289,19 @@ export function ConversationList({
         ) : (
           // Personal inbox: grouped by user + partner
           <div className="px-2 py-2 space-y-1">
-            {sortedItems.items.map((item) =>
-              item.type === 'user-group' ? (
-                <UserConversationGroup
-                  key={item.user.id}
-                  user={item.user}
-                  conversations={item.conversations}
-                  activeConversationId={activeConversationId}
-                  onSelectConversation={onSelectConversation}
-                />
-              ) : (
+            {sortedItems.items.map((item) => {
+              if (item.type === 'user-group') {
+                return (
+                  <UserConversationGroup
+                    key={item.user.id}
+                    user={item.user}
+                    conversations={item.conversations}
+                    activeConversationId={activeConversationId}
+                    onSelectConversation={onSelectConversation}
+                  />
+                );
+              }
+              return (
                 <PartnerConversationGroup
                   key={item.partner.id}
                   partner={item.partner}
@@ -306,8 +309,8 @@ export function ConversationList({
                   activeConversationId={activeConversationId}
                   onSelectConversation={onSelectConversation}
                 />
-              )
-            )}
+              );
+            })}
           </div>
         )}
       </div>
