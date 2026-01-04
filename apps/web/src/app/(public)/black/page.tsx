@@ -5,7 +5,6 @@
 
 import { Suspense } from 'react';
 import { BlackListingsView } from '@/components/listings/black-listings-view';
-import { Navbar } from '@/components/shared/navbar';
 
 export const metadata = {
   title: 'Signature Collection | Alifh',
@@ -14,15 +13,9 @@ export const metadata = {
 
 export default function BlackListingsPage() {
   return (
-    <>
-      <Suspense fallback={<div className="h-16" />}>
-        <Navbar />
-      </Suspense>
-      
-      <Suspense fallback={<PageSkeleton />}>
-        <BlackListingsView />
-      </Suspense>
-    </>
+    <Suspense fallback={<PageSkeleton />}>
+      <BlackListingsView />
+    </Suspense>
   );
 }
 

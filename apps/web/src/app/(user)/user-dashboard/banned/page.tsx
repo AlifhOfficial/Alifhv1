@@ -1,14 +1,15 @@
 /**
- * Banned User Page
+ * Banned User Page - User Dashboard
  * Shown when a user's account has been suspended
+ * Automatically displayed when user is banned
  */
 
 import Link from 'next/link';
-import { Ban, Mail, ArrowLeft } from 'lucide-react';
+import { Ban, Mail } from 'lucide-react';
 
-export default function BannedPage() {
+export default function UserBannedPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+    <div className="min-h-[calc(100vh-3.5rem)] flex items-center justify-center px-4">
       <div className="max-w-md w-full text-center space-y-6">
         {/* Icon */}
         <div className="w-20 h-20 mx-auto rounded-full bg-red-500/10 flex items-center justify-center">
@@ -42,13 +43,6 @@ export default function BannedPage() {
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link
-            href="/"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-border hover:bg-muted/50 transition-colors text-sm font-medium"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Go Home
-          </Link>
           <Link
             href="mailto:support@alifh.com?subject=Ban%20Appeal"
             className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium"

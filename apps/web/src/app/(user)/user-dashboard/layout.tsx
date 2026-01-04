@@ -5,7 +5,8 @@ import { AppSidebar } from "@/components/shared/layout/app-sidebar";
 import { PageLoader } from "@/components/shared/page-loader";
 import { WebSocketProvider } from "@/providers/websocket-provider";
 import { useAuth } from "@/providers/auth-provider";
-import { redirect } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 const navSections = [
   {
@@ -45,6 +46,7 @@ const navSections = [
 
 export default function UserDashboardLayout({ children }: { children: React.ReactNode }) {
   const { session: user, isLoading } = useAuth();
+  const pathname = usePathname();
   
   if (isLoading) {
     return <PageLoader />;
@@ -52,6 +54,21 @@ export default function UserDashboardLayout({ children }: { children: React.Reac
   
   if (!user) {
     redirect('/');
+  }
+
+  // Check if user is banned and redirect to banned page if not already there
+  const isBanned = (user as any).isBanned === true;
+  const isOnBannedPage = pathname === '/user-dashboard/banned';
+  
+  useEffect(() => {
+    if (isBanned && !isOnBannedPage) {
+      redirect('/user-dashboard/banned');
+    }
+  }, [isBanned, isOnBannedPage]);
+
+  // If banned and not on banned page, show loader while redirecting
+  if (isBanned && !isOnBannedPage) {
+    return <PageLoader />;
   }
 
   return (
