@@ -395,13 +395,13 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
         {/* Title & Actions Row */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0 space-y-1.5">
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground break-words">
+            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-foreground break-words">
               {carTitle}
             </h1>
             
             {/* Price */}
             <div className="flex items-baseline gap-2.5 flex-wrap">
-              <p className="text-2xl sm:text-3xl font-bold tabular-nums text-blue-500">
+              <p className="text-xl sm:text-2xl font-bold tabular-nums text-blue-500">
                 {formatPrice(listing.price)}
               </p>
               {listing.isNegotiable && (

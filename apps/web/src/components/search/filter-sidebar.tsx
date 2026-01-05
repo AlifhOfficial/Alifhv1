@@ -110,6 +110,36 @@ export function FilterSidebar({
         />
       </FilterSection>
 
+      {/* Condition */}
+      <FilterSection title="Condition">
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => onFilterChange({ condition: params.condition === 'new' ? undefined : 'new' })}
+            className={cn(
+              'flex-1 px-3 py-2.5 text-[15px] font-semibold rounded-lg transition-all',
+              params.condition === 'new'
+                ? 'bg-foreground text-background'
+                : 'bg-muted/20 text-foreground/80 hover:bg-muted/40 hover:text-foreground'
+            )}
+          >
+            Brand New
+          </button>
+          <button
+            type="button"
+            onClick={() => onFilterChange({ condition: params.condition === 'used' ? undefined : 'used' })}
+            className={cn(
+              'flex-1 px-3 py-2.5 text-[15px] font-semibold rounded-lg transition-all',
+              params.condition === 'used'
+                ? 'bg-foreground text-background'
+                : 'bg-muted/20 text-foreground/80 hover:bg-muted/40 hover:text-foreground'
+            )}
+          >
+            Used
+          </button>
+        </div>
+      </FilterSection>
+
       {/* Negotiable Toggle */}
       <FilterSection title="Negotiable">
         <button

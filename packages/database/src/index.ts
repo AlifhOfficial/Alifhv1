@@ -35,6 +35,7 @@ export * from './queries/admin/partner-operations-query';
 export * from './queries/admin/ban-appeals-query';
 export * from './queries/admin/kyc-query';
 export * from './queries/admin/listings-admin-query';
+export * from './queries/admin/feedback-query';
 
 // Explicit auth query exports (required for proper bundling)
 export * from './queries/auth/user-auth-queries';

@@ -172,7 +172,7 @@ export function Navbar() {
     mountedStore.getServerSnapshot
   );
 
-  const isDark = mounted && resolvedTheme === "dark";
+  const isDark = mounted && (resolvedTheme === "dark" || resolvedTheme === "charcoal");
 
   // Scroll handler - just track scroll state
   useEffect(() => {
@@ -339,11 +339,7 @@ export function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled
-            ? "bg-background/90 backdrop-blur-xl border-b border-border/40"
-            : "bg-background/80 backdrop-blur-xl"
-        }`}
+        className="fixed top-0 left-0 right-0 z-50 bg-background"
       >
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14 sm:h-16">
@@ -371,7 +367,7 @@ export function Navbar() {
                 >
                   <Link
                     href={item.href}
-                    className={`px-4 py-2 text-sm font-semibold tracking-tight transition-colors rounded-md block ${
+                    className={`px-4 py-2 text-[15px] font-semibold tracking-tight transition-colors rounded-md block ${
                       pathname === item.href
                         ? "text-foreground"
                         : "text-muted-foreground hover:text-foreground"

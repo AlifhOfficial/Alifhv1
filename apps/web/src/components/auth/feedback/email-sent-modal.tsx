@@ -82,11 +82,11 @@ export function EmailSentModal({
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-md flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] bg-black/60 flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div 
-        className="max-w-sm w-full bg-card/95 backdrop-blur-sm border border-border/30 rounded-2xl p-8 shadow-2xl relative"
+        className="max-w-sm w-full bg-card border border-border rounded-2xl p-8 shadow-2xl relative"
         onClick={(e) => e.stopPropagation()}
       >
 

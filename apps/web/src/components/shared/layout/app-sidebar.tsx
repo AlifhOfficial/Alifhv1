@@ -35,11 +35,13 @@ import {
   Briefcase,
   LifeBuoy,
   Send,
+  X,
 } from "lucide-react";
 import { useMemo, useState, useEffect, type ComponentType } from "react";
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
 import { BrandAvatar } from "@/components/partner/car-dealer/ui/brand-avatar";
 import { useAuth } from "@/providers/auth-provider";
+import { SupportModal } from "@/components/shared/support/support-modal";
 import {
   Sidebar,
   SidebarContent,
@@ -151,6 +153,10 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
   
   // Track hydration state to prevent mismatch
   const [isHydrated, setIsHydrated] = useState(false);
+  
+  // Support modal state
+  const [showSupportModal, setShowSupportModal] = useState(false);
+  
   useEffect(() => {
     setIsHydrated(true);
   }, []);
@@ -182,7 +188,7 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
   const isStaffMode = Boolean(staffOverride?.companyLogo);
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="border-r">
       {/* Header - User Profile */}
       <SidebarHeader>
         <SidebarMenu>
@@ -303,11 +309,13 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Support" className="font-semibold tracking-tight">
-              <Link href="/support">
-                <LifeBuoy className="size-4" />
-                <span>Support</span>
-              </Link>
+            <SidebarMenuButton 
+              onClick={() => setShowSupportModal(true)}
+              tooltip="Support" 
+              className="font-semibold tracking-tight cursor-pointer"
+            >
+              <LifeBuoy className="size-4" />
+              <span>Support</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
@@ -323,6 +331,9 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
 
       {/* Rail for collapse/expand on hover */}
       <SidebarRail />
+
+      {/* Support Modal */}
+      <SupportModal isOpen={showSupportModal} onClose={() => setShowSupportModal(false)} />
     </Sidebar>
   );
 }

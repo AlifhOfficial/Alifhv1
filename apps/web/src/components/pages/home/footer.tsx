@@ -19,7 +19,7 @@ export function Footer() {
   }, []);
 
   // Use black logo as default, switch after mount to avoid hydration mismatch
-  const logoSrc = mounted && resolvedTheme === 'dark' 
+  const logoSrc = mounted && (resolvedTheme === 'dark' || resolvedTheme === 'charcoal')
     ? "/assets/Alifh_logo_White.svg" 
     : "/assets/Alifh_logo_Black.svg";
 

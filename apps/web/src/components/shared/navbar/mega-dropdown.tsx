@@ -52,12 +52,12 @@ export function MegaDropdown({ activeDropdown, navItems, onClose, onMouseEnter, 
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       >
-        <div className="bg-background/95 backdrop-blur-xl border-b border-border/30">
+        <div className="bg-background">
           <div className="max-w-5xl mx-auto px-8 py-12">
             <div className="grid grid-cols-3 gap-x-12">
               {sortedSubmenu.map((section) => (
                 <div key={section.title}>
-                  <h3 className="text-sm font-medium text-muted-foreground/60 mb-5">
+                  <h3 className="text-xs uppercase tracking-wider font-semibold text-blue-600 mb-5">
                     {section.title}
                   </h3>
                   <nav className="space-y-3">

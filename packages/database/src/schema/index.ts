@@ -13,5 +13,6 @@ export * from './booking';
 export * from './messaging';
 export * from './consignment';
 export * from './admin';
+export * from './feedback';
 
 export * from './relations';

@@ -55,7 +55,7 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp,
                 <>
                   <button
                     onClick={() => toggleExpanded(item.label)}
-                    className={`w-full flex items-center justify-between px-3 py-3 text-base font-semibold tracking-tight transition-colors rounded-lg ${
+                    className={`w-full flex items-center justify-between px-3 py-3 text-[15px] font-semibold tracking-tight transition-colors rounded-lg ${
                       pathname === item.href
                         ? "text-foreground bg-muted/30"
                         : "text-foreground/80 hover:text-foreground hover:bg-muted/20"
@@ -105,7 +105,7 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp,
                 <Link
                   href={item.href}
                   onClick={onNavigate}
-                  className={`block px-3 py-3 text-base font-semibold tracking-tight transition-colors rounded-lg ${
+                  className={`block px-3 py-3 text-[15px] font-semibold tracking-tight transition-colors rounded-lg ${
                     pathname === item.href
                       ? "text-foreground bg-muted/30"
                       : "text-foreground/80 hover:text-foreground hover:bg-muted/20"
@@ -127,14 +127,14 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp,
                   onProfile?.();
                   onNavigate();
                 }}
-                className="block w-full px-3 py-3 text-base font-semibold tracking-tight text-foreground/80 hover:text-foreground transition-colors rounded-lg hover:bg-muted/20 text-left"
+                className="block w-full px-3 py-3 text-[15px] font-semibold tracking-tight text-foreground/80 hover:text-foreground transition-colors rounded-lg hover:bg-muted/20 text-left"
               >
                 Profile
               </button>
               <Link
                 href="/user-dashboard"
                 onClick={onNavigate}
-                className="block w-full px-3 py-3 text-base font-semibold tracking-tight text-foreground/80 hover:text-foreground transition-colors rounded-lg hover:bg-muted/20 text-left"
+                className="block w-full px-3 py-3 text-[15px] font-semibold tracking-tight text-foreground/80 hover:text-foreground transition-colors rounded-lg hover:bg-muted/20 text-left"
               >
                 Dashboard
               </Link>
@@ -143,7 +143,7 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp,
                   onSignOut?.();
                   onNavigate();
                 }}
-                className="block w-full px-3 py-3 text-base font-semibold tracking-tight text-destructive hover:bg-destructive/10 transition-colors rounded-lg text-left"
+                className="block w-full px-3 py-3 text-[15px] font-semibold tracking-tight text-destructive hover:bg-destructive/10 transition-colors rounded-lg text-left"
               >
                 Sign Out
               </button>

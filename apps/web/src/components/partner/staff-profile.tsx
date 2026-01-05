@@ -129,8 +129,8 @@ export function StaffProfile() {
               <ArrowLeft className="w-4 h-4 text-muted-foreground" />
             </Link>
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-foreground">Work Profile</h1>
-              <p className="text-sm text-muted-foreground mt-1">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Work Profile</h1>
+              <p className="text-sm sm:text-[15px] text-muted-foreground mt-1.5">
                 Set up your work identity for client interactions
               </p>
             </div>
@@ -149,14 +149,14 @@ export function StaffProfile() {
                 <button
                   onClick={handleCancel}
                   disabled={updateMutation.isPending}
-                  className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  className="px-4 py-2 text-[15px] font-semibold tracking-tight text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={updateMutation.isPending}
-                  className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-[15px] font-semibold tracking-tight transition-colors disabled:opacity-50"
                 >
                   {updateMutation.isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   Save Changes
@@ -165,7 +165,7 @@ export function StaffProfile() {
             ) : (
               <button
                 onClick={() => setEditing(true)}
-                className="px-5 py-2 rounded-full border border-border bg-background text-sm font-medium hover:bg-secondary/50 transition-colors"
+                className="px-5 py-2.5 rounded-full border border-border bg-background text-[15px] font-semibold tracking-tight hover:bg-secondary/50 transition-colors"
               >
                 Edit Profile
               </button>
@@ -177,9 +177,9 @@ export function StaffProfile() {
         <div className="rounded-xl border border-border/40 p-6 bg-muted/30">
           <div className="flex gap-3">
             <Info className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
-            <div className="text-sm space-y-2">
-              <p className="font-medium text-foreground">Why separate work details?</p>
-              <p className="text-muted-foreground">
+            <div className="text-sm sm:text-[15px] space-y-2">
+              <p className="font-semibold text-foreground">Why separate work details?</p>
+              <p className="font-medium text-muted-foreground leading-relaxed">
                 Your display name will be shown to clients instead of your personal name. 
                 Work email and phone are used for business communications, keeping your personal contact private.
               </p>
@@ -192,13 +192,14 @@ export function StaffProfile() {
           
           {/* Work Identity */}
           <section className="space-y-6">
-            <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-              <h3 className="text-lg font-medium tracking-tight">Work Identity</h3>
+            <div className="space-y-1.5">
+              <h3 className="text-lg sm:text-xl font-bold tracking-tight">Work Identity</h3>
+              <div className="h-px bg-border/40" />
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">Display Name</label>
+                <label className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Display Name</label>
                 <input
                   value={formData.displayName}
                   onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
@@ -212,7 +213,7 @@ export function StaffProfile() {
               </div>
               
               <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">Work Email</label>
+                <label className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Work Email</label>
                 <input
                   type="email"
                   value={formData.workEmail}
@@ -227,7 +228,7 @@ export function StaffProfile() {
               </div>
               
               <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">Work Phone</label>
+                <label className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Work Phone</label>
                 <input
                   type="tel"
                   value={formData.workPhone}
@@ -245,22 +246,23 @@ export function StaffProfile() {
 
           {/* Role Information */}
           <section className="space-y-6">
-            <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-              <h3 className="text-lg font-medium tracking-tight">Role Information</h3>
+            <div className="space-y-1.5">
+              <h3 className="text-lg sm:text-xl font-bold tracking-tight">Role Information</h3>
+              <div className="h-px bg-border/40" />
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-3 border-y border-border/40 divide-x divide-border/40">
               <div className="p-8 flex flex-col gap-2">
-                <small className="text-muted-foreground">Role</small>
-                <h2 className="text-foreground capitalize">{profile.role}</h2>
+                <small className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Role</small>
+                <h2 className="text-sm sm:text-[15px] font-medium text-foreground capitalize">{profile.role}</h2>
               </div>
               <div className="p-8 flex flex-col gap-2">
-                <small className="text-muted-foreground">Title</small>
-                <h2 className="text-foreground">{profile.title || 'Not set'}</h2>
+                <small className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Title</small>
+                <h2 className="text-sm sm:text-[15px] font-medium text-foreground">{profile.title || 'Not set'}</h2>
               </div>
               <div className="p-8 flex flex-col gap-2">
-                <small className="text-muted-foreground">Department</small>
-                <h2 className="text-foreground">{profile.department || 'Not set'}</h2>
+                <small className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Department</small>
+                <h2 className="text-sm sm:text-[15px] font-medium text-foreground">{profile.department || 'Not set'}</h2>
               </div>
             </div>
           </section>

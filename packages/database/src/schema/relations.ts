@@ -37,6 +37,9 @@ import {
 import {
   consignmentFunnel,
 } from './consignment';
+import {
+  feedback,
+} from './feedback';
 
 // Note: Removed tables (not imported):
 // - userBookingRestriction (simplified to app logic)
@@ -367,6 +370,18 @@ export const consignmentFunnelRelations = relations(consignmentFunnel, ({ one })
   partner: one(partner, {
     fields: [consignmentFunnel.partnerId],
     references: [partner.id],
+  }),
+}));
+
+// Feedback relations (many-to-one)
+export const feedbackRelations = relations(feedback, ({ one }) => ({
+  user: one(user, {
+    fields: [feedback.userId],
+    references: [user.id],
+  }),
+  reviewer: one(user, {
+    fields: [feedback.reviewedBy],
+    references: [user.id],
   }),
 }));
 

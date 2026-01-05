@@ -118,7 +118,7 @@ export function ProfileMenu({
     
     return (
       <div className="relative flex items-center gap-2.5" data-menu-container>
-        <span className="text-sm font-medium text-foreground hidden sm:inline">
+        <span className="text-[15px] font-semibold tracking-tight text-foreground hidden sm:inline">
           {firstName}
         </span>
         
@@ -153,7 +153,7 @@ export function ProfileMenu({
                 <button
                   key={dashboard.path}
                   onClick={() => handleDashboardNavigation(dashboard.path)}
-                  className="w-full text-left px-3 py-2 text-[15px] font-semibold text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                  className="w-full text-left px-3 py-2 text-[15px] font-medium tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
                 >
                   {dashboard.name}
                 </button>
@@ -168,7 +168,7 @@ export function ProfileMenu({
                   router.push('/user-dashboard/profile');
                   onToggleMenu();
                 }}
-                className="w-full text-left px-3 py-2 text-[15px] font-semibold text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors flex items-center gap-2.5"
+                className="w-full text-left px-3 py-2 text-[15px] font-medium tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors flex items-center gap-2.5"
               >
                 <User size={16} strokeWidth={2} className="text-sidebar-foreground/40" />
                 Profile
@@ -180,9 +180,9 @@ export function ProfileMenu({
               {/* Sign Out */}
               <button
                 onClick={onSignOut}
-                className="w-full text-left px-3 py-2 text-[15px] font-semibold text-destructive/80 hover:text-destructive hover:bg-destructive/10 transition-colors flex items-center gap-2.5"
+                className="w-full text-left px-3 py-2 text-[15px] font-medium tracking-tight text-destructive hover:bg-destructive/10 transition-colors flex items-center gap-2.5"
               >
-                <LogOut size={16} strokeWidth={2} className="text-destructive/60" />
+                <LogOut size={16} strokeWidth={2} className="text-destructive" />
                 Sign out
               </button>
             </div>
@@ -215,13 +215,13 @@ export function ProfileMenu({
           <div className="py-1.5">
             <button
               onClick={onSignIn}
-              className="w-full text-left px-3 py-2 text-[15px] font-semibold text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+              className="w-full text-left px-3 py-2 text-[15px] font-medium tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
             >
               Sign in
             </button>
             <button
               onClick={onSignUp}
-              className="w-full text-left px-3 py-2 text-[15px] font-semibold text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+              className="w-full text-left px-3 py-2 text-[15px] font-medium tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
             >
               Create account
             </button>

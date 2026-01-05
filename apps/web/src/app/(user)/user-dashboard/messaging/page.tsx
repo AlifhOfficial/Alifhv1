@@ -20,7 +20,7 @@ export default function MessagingPage() {
   if (!session?.id) {
     return (
       <div className="h-[calc(100vh-3.5rem)] -m-4 flex items-center justify-center">
-        <p className="text-muted-foreground">Please sign in to view messages</p>
+        <p className="text-sm sm:text-[15px] font-medium text-muted-foreground">Please sign in to view messages</p>
       </div>
     );
   }

@@ -2,7 +2,7 @@
  * Theme Provider
  * 
  * Provides theme context using next-themes
- * Supports light/dark modes with system preference detection
+ * Supports light/dark/charcoal modes with system preference detection
  */
 
 "use client";
@@ -19,7 +19,8 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     <NextThemesProvider 
       attribute="class" 
       defaultTheme="dark" 
-      enableSystem
+      themes={["light", "dark", "charcoal"]}
+      enableSystem={false}
       disableTransitionOnChange
     >
       {children}

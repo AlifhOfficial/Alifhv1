@@ -32,7 +32,7 @@ export function WelcomeModal({
     setMounted(true);
   }, []);
 
-  const isDark = mounted && resolvedTheme === "dark";
+  const isDark = mounted && (resolvedTheme === "dark" || resolvedTheme === "charcoal");
 
   useEffect(() => {
     if (open) {
@@ -55,7 +55,7 @@ export function WelcomeModal({
 
   return (
     <div 
-      className="fixed inset-0 z-[10000] bg-black/70 backdrop-blur-lg flex items-center justify-center p-4"
+      className="fixed inset-0 z-[10000] bg-black/70 flex items-center justify-center p-4"
       onClick={onContinue}
     >
       {/* Falling Sparkles Effect */}
@@ -100,7 +100,7 @@ export function WelcomeModal({
       )}
       
       <div 
-        className={`max-w-sm w-full bg-card/95 backdrop-blur-sm border border-border/30 rounded-2xl p-8 shadow-2xl transform transition-all duration-500 ${
+        className={`max-w-sm w-full bg-card border border-border rounded-2xl p-8 shadow-2xl transform transition-all duration-500 ${
           showContent ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
         onClick={(e) => e.stopPropagation()}

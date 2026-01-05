@@ -101,7 +101,7 @@ export function KnowledgeSidebar({ className }: KnowledgeSidebarProps) {
   };
 
   // Theme-aware logo
-  const logoSrc = mounted && resolvedTheme === 'dark' 
+  const logoSrc = mounted && (resolvedTheme === 'dark' || resolvedTheme === 'charcoal')
     ? "/assets/Alifh_logo_White.svg" 
     : "/assets/Alifh_logo_Black.svg";
 
@@ -320,7 +320,7 @@ export function MobileKnowledgeSidebar() {
   };
 
   // Theme-aware logo
-  const logoSrc = mounted && resolvedTheme === 'dark' 
+  const logoSrc = mounted && (resolvedTheme === 'dark' || resolvedTheme === 'charcoal')
     ? "/assets/Alifh_logo_White.svg" 
     : "/assets/Alifh_logo_Black.svg";
 

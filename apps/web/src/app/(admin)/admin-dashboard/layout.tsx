@@ -32,6 +32,7 @@ const navSections = [
       { label: "All Users", href: "/admin-dashboard/users" },
       { label: "Ban Appeals", href: "/admin-dashboard/ban-appeals" },
       { label: "KYC Management", href: "/admin-dashboard/kyc" },
+      { label: "Feedback", href: "/admin-dashboard/feedback" },
     ]
   },
   {

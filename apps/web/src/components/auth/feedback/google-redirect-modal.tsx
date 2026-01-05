@@ -34,11 +34,11 @@ export function GoogleRedirectModal({ open, onClose }: GoogleRedirectModalProps)
 
   return (
     <div 
-      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div 
-        className="max-w-md w-full bg-card border border-border/40 rounded-lg p-6 relative"
+        className="max-w-md w-full bg-card border border-border rounded-lg p-6 relative"
         onClick={(e) => e.stopPropagation()}
       >
         

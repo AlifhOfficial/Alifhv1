@@ -401,7 +401,7 @@ export function SearchBar({
         <div 
           className={cn(
             'absolute top-full left-0 right-0 z-50 mt-2',
-            'bg-background/80 backdrop-blur-xl border border-border/40 rounded-2xl shadow-xl',
+            'bg-sidebar-background border border-sidebar-border rounded-2xl shadow-xl',
             'overflow-hidden animate-in fade-in-0 slide-in-from-top-2 duration-150'
           )}
           role="listbox"

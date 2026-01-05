@@ -8,93 +8,196 @@
 @layer base {
   :root {
     /* Base Colors */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 5%;
+    --background: hsl(0 0% 100%);
+    --foreground: hsl(0 0% 5%);
     
     /* Card & Popover */
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 5%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 5%;
+    --card: hsl(0 0% 100%);
+    --card-foreground: hsl(0 0% 5%);
+    --popover: hsl(0 0% 100%);
+    --popover-foreground: hsl(0 0% 5%);
     
     /* Primary (Blue) */
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 0 0% 98%;
+    --primary: hsl(221.2 83.2% 53.3%);
+    --primary-foreground: hsl(0 0% 98%);
     
     /* Secondary & Muted */
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 10%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
+    --secondary: hsl(0 0% 96%);
+    --secondary-foreground: hsl(0 0% 10%);
+    --muted: hsl(0 0% 96%);
+    --muted-foreground: hsl(0 0% 45%);
     
     /* Accent */
-    --accent: 0 0% 96%;
-    --accent-foreground: 0 0% 10%;
+    --accent: hsl(0 0% 96%);
+    --accent-foreground: hsl(0 0% 10%);
     
     /* Destructive (Red) */
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: hsl(0 84.2% 60.2%);
+    --destructive-foreground: hsl(0 0% 98%);
     
     /* Border & Input */
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 221.2 83.2% 53.3%;
+    --border: hsl(0 0% 94%);
+    --input: hsl(0 0% 94%);
+    --ring: hsl(221.2 83.2% 53.3%);
     --radius: 0.5rem;
     
     /* Sidebar */
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 0 0% 10%;
-    --sidebar-primary: 0 0% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 0 0% 95%;
-    --sidebar-accent-foreground: 0 0% 10%;
-    --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 221.2 83.2% 53.3%;
+    --sidebar-background: hsl(0 0% 98%);
+    --sidebar-foreground: hsl(0 0% 10%);
+    --sidebar-primary: hsl(0 0% 10%);
+    --sidebar-primary-foreground: hsl(0 0% 98%);
+    --sidebar-accent: hsl(0 0% 95%);
+    --sidebar-accent-foreground: hsl(0 0% 10%);
+    --sidebar-border: hsl(0 0% 94%);
+    --sidebar-ring: hsl(221.2 83.2% 53.3%);
   }
 
   .dark {
-    /* Base Colors */
-    --background: 0 0% 0%;
-    --foreground: 0 0% 98%;
+    /* Base Colors - Pure OLED black */
+    --background: hsl(0 0% 0%);
+    --foreground: hsl(0 0% 98%);
     
     /* Card & Popover */
-    --card: 0 0% 4%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 4%;
-    --popover-foreground: 0 0% 98%;
+    --card: hsl(0 0% 4%);
+    --card-foreground: hsl(0 0% 98%);
+    --popover: hsl(0 0% 4%);
+    --popover-foreground: hsl(0 0% 98%);
     
     /* Primary (Blue) */
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 0 0% 98%;
+    --primary: hsl(217.2 91.2% 59.8%);
+    --primary-foreground: hsl(0 0% 98%);
     
     /* Secondary & Muted */
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
+    --secondary: hsl(0 0% 15%);
+    --secondary-foreground: hsl(0 0% 98%);
+    --muted: hsl(0 0% 15%);
+    --muted-foreground: hsl(0 0% 65%);
     
     /* Accent */
-    --accent: 0 0% 15%;
-    --accent-foreground: 0 0% 98%;
+    --accent: hsl(0 0% 15%);
+    --accent-foreground: hsl(0 0% 98%);
     
     /* Destructive (Red) */
-    --destructive: 0 62.8% 50%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: hsl(0 62.8% 50%);
+    --destructive-foreground: hsl(0 0% 98%);
     
     /* Border & Input */
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
-    --ring: 217.2 91.2% 59.8%;
+    --border: hsl(0 0% 10%);
+    --input: hsl(0 0% 10%);
+    --ring: hsl(217.2 91.2% 59.8%);
     
     /* Sidebar */
-    --sidebar-background: 0 0% 10%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 0 0% 98%;
-    --sidebar-primary-foreground: 0 0% 10%;
-    --sidebar-accent: 0 0% 16%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 0 0% 16%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: hsl(0 0% 10%);
+    --sidebar-foreground: hsl(0 0% 95%);
+    --sidebar-primary: hsl(0 0% 98%);
+    --sidebar-primary-foreground: hsl(0 0% 10%);
+    --sidebar-accent: hsl(0 0% 16%);
+    --sidebar-accent-foreground: hsl(0 0% 95%);
+    --sidebar-border: hsl(0 0% 10%);
+    --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  }
+
+  /* Charcoal Theme - macOS-inspired Design System */
+  .charcoal {
+    /* Neutral Scale - macOS grays */
+    --neutral-0: 0 0% 100%;
+    --neutral-5: 0 0% 96%;
+    --neutral-10: 0 0% 93%;
+    --neutral-20: 0 0% 86%;
+    --neutral-30: 0 0% 76%;
+    --neutral-40: 0 0% 68%;
+    --neutral-50: 0 0% 53%;
+    --neutral-60: 0 0% 44%;
+    --neutral-70: 0 0% 36%;
+    --neutral-80: 0 0% 25%;
+    --neutral-90: 0 0% 15%;
+    --neutral-95: 0 0% 12%;
+    --neutral-100: 0 0% 8%;
+    
+    /* Opacity Variants - White */
+    --opacity-white-100: 0 0% 100% / 100%;
+    --opacity-white-96: 0 0% 100% / 96%;
+    --opacity-white-88: 0 0% 100% / 88%;
+    --opacity-white-64: 0 0% 100% / 64%;
+    --opacity-white-48: 0 0% 100% / 48%;
+    --opacity-white-32: 0 0% 100% / 32%;
+    --opacity-white-24: 0 0% 100% / 24%;
+    --opacity-white-16: 0 0% 100% / 16%;
+    --opacity-white-12: 0 0% 100% / 12%;
+    --opacity-white-10: 0 0% 100% / 10%;
+    --opacity-white-8: 0 0% 100% / 8%;
+    --opacity-white-6: 0 0% 100% / 6%;
+    --opacity-white-4: 0 0% 100% / 4%;
+    
+    /* Opacity Variants - Black */
+    --opacity-black-64: 0 0% 15% / 64%;
+    --opacity-black-48: 0 0% 15% / 48%;
+    --opacity-black-32: 0 0% 15% / 32%;
+    --opacity-black-24: 0 0% 25% / 24%;
+    --opacity-black-16: 0 0% 25% / 16%;
+    --opacity-black-12: 0 0% 25% / 12%;
+    --opacity-black-10: 0 0% 25% / 10%;
+    --opacity-black-8: 0 0% 25% / 8%;
+    
+    /* Shadows - macOS style */
+    --shadow: 0 12px 80px hsl(0 0% 0% / 16%);
+    --shadow-sm: 0 2px 8px hsl(0 0% 0% / 8%);
+    --shadow-md: 0 4px 16px hsl(0 0% 0% / 12%);
+    --shadow-lg: 0 8px 24px hsl(0 0% 0% / 48%);
+    --shadow-image-inset: inset 0 0 0 0.5px hsl(var(--opacity-white-16));
+    --shadow-dropdown: 0 8px 24px hsl(0 0% 0% / 48%);
+    
+    /* Base Colors */
+    --background: hsl(var(--neutral-100));
+    --foreground: hsl(var(--neutral-5));
+    
+    /* Card & Popover - Elevated surfaces */
+    --card: hsl(var(--neutral-95));
+    --card-foreground: hsl(var(--neutral-5));
+    --popover: hsl(var(--neutral-95));
+    --popover-foreground: hsl(var(--neutral-5));
+    
+    /* Primary - Blue accent */
+    --primary: hsl(217 91% 60%);
+    --primary-foreground: hsl(var(--neutral-5));
+    
+    /* Secondary - Subtle surfaces */
+    --secondary: hsl(var(--opacity-white-6));
+    --secondary-foreground: hsl(var(--neutral-5));
+    
+    /* Muted - Subdued elements */
+    --muted: hsl(var(--opacity-white-8));
+    --muted-foreground: hsl(var(--neutral-40));
+    
+    /* Accent - Interactive elements */
+    --accent: hsl(var(--opacity-white-10));
+    --accent-foreground: hsl(var(--neutral-5));
+    
+    /* Destructive - Error states */
+    --destructive: hsl(0 63% 50%);
+    --destructive-foreground: hsl(var(--neutral-5));
+    
+    /* Border & Input - Refined separators */
+    --border: hsl(var(--opacity-white-6));
+    --input: hsl(var(--opacity-white-8));
+    --ring: hsl(217 91% 60%);
+    
+    /* Chart Colors */
+    --chart-1: hsl(217 91% 60%);
+    --chart-2: hsl(162 73% 46%);
+    --chart-3: hsl(48 96% 53%);
+    --chart-4: hsl(280 67% 47%);
+    --chart-5: hsl(25 95% 53%);
+    
+    /* Sidebar - macOS-style sidebar */
+    --sidebar-background: hsl(var(--neutral-95));
+    --sidebar-foreground: hsl(var(--neutral-5));
+    --sidebar-primary: hsl(217 91% 60%);
+    --sidebar-primary-foreground: hsl(var(--neutral-5));
+    --sidebar-accent: hsl(var(--opacity-white-8));
+    --sidebar-accent-foreground: hsl(var(--neutral-5));
+    --sidebar-border: hsl(var(--opacity-white-6));
+    --sidebar-ring: hsl(217 91% 60%);
   }
 }
 
@@ -152,7 +255,8 @@
     color-scheme: light;
   }
   
-  html.dark {
+  html.dark,
+  html.charcoal {
     color-scheme: dark;
   }
   

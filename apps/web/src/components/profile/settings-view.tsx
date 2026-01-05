@@ -8,6 +8,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useTheme } from 'next-themes';
 import { useUserProfile, type UserProfileUpdate } from '@/hooks/profile';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
@@ -18,10 +19,26 @@ export function SettingsView() {
   const { session: user } = useAuth();
   const { profile, updateProfile } = useUserProfile();
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteText, setDeleteText] = useState('');
   const [savingField, setSavingField] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isCharcoal = theme === 'charcoal';
+
+  // Toggle charcoal theme
+  const toggleCharcoalMode = () => {
+    const newTheme = isCharcoal ? 'dark' : 'charcoal';
+    setTheme(newTheme);
+    toast({ title: newTheme === 'charcoal' ? 'Charcoal theme enabled' : 'Dark theme enabled' });
+  };
 
   // Derive state directly from profile (no local state needed)
   const consignmentMode = profile?.consignmentMode ?? false;
@@ -78,6 +95,43 @@ export function SettingsView() {
           Manage your preferences and account
         </p>
       </div>
+
+      {/* Appearance Section */}
+      <section className="mb-10">
+        <h2 className="text-[15px] font-bold tracking-tight text-foreground mb-4">
+          Appearance
+        </h2>
+
+        <div className="space-y-0 border border-border/40 rounded-xl overflow-hidden bg-sidebar">
+          {/* Charcoal Theme */}
+          <div className="flex items-center justify-between px-5 py-4 hover:bg-muted/10 transition-colors">
+            <div className="flex-1 min-w-0 pr-4">
+              <p className="text-[15px] font-semibold tracking-tight text-foreground">
+                Charcoal Theme
+              </p>
+              <p className="text-sm font-medium text-muted-foreground/60 mt-0.5">
+                Softer dark mode, easier on the eyes
+              </p>
+            </div>
+            <button
+              onClick={toggleCharcoalMode}
+              disabled={!mounted}
+              className={cn(
+                "relative h-7 w-12 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 flex-shrink-0 disabled:opacity-50",
+                mounted && isCharcoal ? "bg-primary" : "bg-muted/40"
+              )}
+              aria-label="Toggle charcoal theme"
+            >
+              <span
+                className={cn(
+                  "absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition-all duration-200",
+                  mounted && isCharcoal ? "left-6" : "left-1"
+                )}
+              />
+            </button>
+          </div>
+        </div>
+      </section>
 
       {/* Preferences Section */}
       <section className="mb-10">
@@ -191,7 +245,7 @@ export function SettingsView() {
               </div>
               <button
                 onClick={() => setShowDeleteModal(true)}
-                className="px-5 py-2 rounded-full border border-border/40 text-sm font-semibold tracking-tight text-foreground hover:bg-muted/40 transition-colors"
+                className="px-5 py-2.5 rounded-full bg-red-500 text-white hover:bg-red-600 text-sm font-semibold tracking-tight transition-colors"
               >
                 Delete Account
               </button>
