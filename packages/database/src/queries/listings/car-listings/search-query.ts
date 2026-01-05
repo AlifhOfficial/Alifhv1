@@ -735,3 +735,35 @@ export async function quickSearch(query: string, limit = 10): Promise<Array<{
     .sort((a, b) => b.count - a.count)
     .slice(0, limit);
 }
+
+/**
+ * Get popular makes for auto-suggest dropdown
+ * Returns top makes by listing count for the default suggestions
+ */
+export async function getPopularMakes(limit = 8): Promise<Array<{
+  type: 'make';
+  text: string;
+  make: string;
+  count: number;
+}>> {
+  const now = new Date();
+  const conditions = buildPublicBaseConditions(now);
+
+  const results = await db
+    .select({
+      make: carListing.make,
+      count: count(),
+    })
+    .from(carListing)
+    .where(and(...conditions))
+    .groupBy(carListing.make)
+    .orderBy(desc(count()))
+    .limit(limit);
+
+  return results.map(r => ({
+    type: 'make' as const,
+    text: r.make,
+    make: r.make,
+    count: Number(r.count),
+  }));
+}

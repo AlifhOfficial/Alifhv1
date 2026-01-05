@@ -171,8 +171,8 @@ export function SearchBar({
     return apiSuggestions;
   }, [query, apiSuggestions, vinLookup]);
   
-  // Show dropdown when focused and has suggestions or VIN is loading
-  const showDropdown = isFocused && (suggestions.length > 0 || (isLoading && debouncedQuery.length >= 2) || (vinLookup?.loading));
+  // Show dropdown when focused and has suggestions or loading
+  const showDropdown = isFocused && (suggestions.length > 0 || isLoading || vinLookup?.loading);
 
   // Handle search submission
   const handleSearch = useCallback((searchQuery: string, make?: string, model?: string, partnerId?: string, partnerName?: string) => {

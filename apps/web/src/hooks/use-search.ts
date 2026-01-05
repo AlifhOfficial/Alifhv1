@@ -247,16 +247,19 @@ interface QuickSearchResult {
 
 export function useQuickSearch(query: string, enabled = true): QuickSearchResult {
   const { data, isLoading } = useQuery({
-    queryKey: ['listings', 'suggest', query],
+    queryKey: ['listings', 'suggest', query || 'popular'],
     queryFn: async () => {
-      if (query.length < 2) return { suggestions: [] };
+      // Fetch popular suggestions when empty, or search suggestions when typing
+      const endpoint = query.length >= 2 
+        ? `/api/listings/search/suggest?q=${encodeURIComponent(query)}`
+        : '/api/listings/search/suggest?popular=true';
       
-      const response = await fetch(`/api/listings/search/suggest?q=${encodeURIComponent(query)}`);
+      const response = await fetch(endpoint);
       if (!response.ok) return { suggestions: [] };
       return response.json();
     },
-    enabled: enabled && query.length >= 2,
-    staleTime: 30_000, // 30 seconds
+    enabled,
+    staleTime: query ? 30_000 : 60_000, // Popular suggestions cached longer
     gcTime: 5 * 60 * 1000,
   });
 

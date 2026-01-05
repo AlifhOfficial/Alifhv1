@@ -17,7 +17,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { memoryCache, quickSearch } from "@alifh/database";
+import { memoryCache, quickSearch, getPopularMakes } from "@alifh/database";
 import { createRateLimiter, getIdentifier, rateLimitResponse } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -33,6 +33,7 @@ const suggestLimiter = createRateLimiter({
 });
 
 const CACHE_TTL = 30_000; // 30 seconds
+const POPULAR_CACHE_TTL = 60_000; // 60 seconds for popular makes
 
 const CDN_CACHE_HEADERS = {
   'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
@@ -49,12 +50,42 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const query = searchParams.get('q') || '';
+    const popular = searchParams.get('popular') === 'true';
     const limitParam = Number(searchParams.get('limit') || '8');
     const limit = Math.min(Math.max(limitParam, 1), 20);
 
-    // Require minimum 2 characters
-    if (query.length < 2) {
-      return NextResponse.json({ suggestions: [] });
+    // Return popular makes when requested
+    if (popular || query.length < 2) {
+      const popularCacheKey = `suggest:popular:${limit}`;
+      const isProd = process.env.NODE_ENV === 'production';
+      
+      if (isProd) {
+        const cached = memoryCache.get<any>(popularCacheKey);
+        if (cached) {
+          const response = NextResponse.json(cached);
+          Object.entries(CDN_CACHE_HEADERS).forEach(([key, value]) =>
+            response.headers.set(key, value)
+          );
+          return response;
+        }
+      }
+      
+      const popularMakes = await getPopularMakes(limit);
+      const result = { suggestions: popularMakes };
+      
+      if (isProd) {
+        memoryCache.set(popularCacheKey, result, POPULAR_CACHE_TTL);
+      }
+      
+      const response = NextResponse.json(result);
+      if (isProd) {
+        Object.entries(CDN_CACHE_HEADERS).forEach(([key, value]) =>
+          response.headers.set(key, value)
+        );
+      } else {
+        response.headers.set('Cache-Control', 'no-store');
+      }
+      return response;
     }
 
     // Check cache
