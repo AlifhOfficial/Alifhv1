@@ -18,9 +18,9 @@ import {
   ScanLine,
   GitCompare,
   Sparkles,
-  Sun,
   Moon,
-  Languages
+  Languages,
+  CheckCircle2
 } from 'lucide-react';
 import { cn } from '@/utils';
 import { Button } from '@/components/ui/button';
@@ -78,13 +78,28 @@ interface KnowledgeSidebarProps {
 export function KnowledgeSidebar({ className }: KnowledgeSidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [showThemeMenu, setShowThemeMenu] = useState(false);
   const pathname = usePathname();
-  const { resolvedTheme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const { language } = useLanguage();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('[data-theme-menu]')) {
+        setShowThemeMenu(false);
+      }
+    };
+
+    if (showThemeMenu) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [showThemeMenu]);
 
   // Active state logic - exact or child paths
   const isActive = (href: string, exact?: boolean) => {
@@ -105,9 +120,11 @@ export function KnowledgeSidebar({ className }: KnowledgeSidebarProps) {
     ? "/assets/Alifh_logo_White.svg" 
     : "/assets/Alifh_logo_Black.svg";
 
-  const toggleTheme = () => {
-    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
-  };
+  const themes = [
+    { value: 'light', label: 'Light' },
+    { value: 'dark', label: 'Dark' },
+    { value: 'charcoal', label: 'Charcoal' }
+  ];
 
   return (
     <aside
@@ -267,26 +284,53 @@ export function KnowledgeSidebar({ className }: KnowledgeSidebarProps) {
           <LanguageToggle isCollapsed={isCollapsed} />
           
           {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className={cn(
-              'flex items-center gap-2.5 px-2 py-1.5 rounded-md transition-all duration-150 w-full',
-              'text-foreground/70 hover:bg-muted/60 hover:text-foreground',
-              isCollapsed && 'justify-center px-0'
-            )}
-            title={isCollapsed ? (resolvedTheme === 'dark' ? 'Light mode' : 'Dark mode') : undefined}
-          >
-            {mounted && resolvedTheme === 'dark' ? (
-              <Sun className="h-4 w-4 text-muted-foreground/70" />
-            ) : (
+          <div className="relative" data-theme-menu>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowThemeMenu(!showThemeMenu);
+              }}
+              className={cn(
+                'flex items-center gap-2.5 px-2 py-1.5 rounded-md transition-all duration-150 w-full',
+                'text-foreground/70 hover:bg-muted/60 hover:text-foreground',
+                isCollapsed && 'justify-center px-0'
+              )}
+              title={isCollapsed ? 'Theme' : undefined}
+            >
               <Moon className="h-4 w-4 text-muted-foreground/70" />
+              {!isCollapsed && (
+                <span className="text-[13px] font-medium">Theme</span>
+              )}
+            </button>
+
+            {showThemeMenu && (
+              <div 
+                className={cn(
+                  "absolute bottom-full mb-2 bg-sidebar border border-sidebar-border rounded-lg shadow-lg z-50 overflow-hidden",
+                  isCollapsed ? "left-0 w-32" : "left-0 right-0 w-full"
+                )}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="py-1.5">
+                  {themes.map((themeOption) => (
+                    <button
+                      key={themeOption.value}
+                      onClick={() => {
+                        setTheme(themeOption.value);
+                        setShowThemeMenu(false);
+                      }}
+                      className="w-full text-left px-3 py-2 text-[13px] font-medium tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors flex items-center justify-between"
+                    >
+                      <span>{themeOption.label}</span>
+                      {theme === themeOption.value && (
+                        <CheckCircle2 className="size-3.5" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
             )}
-            {!isCollapsed && (
-              <span className="text-[13px] font-medium">
-                {mounted && resolvedTheme === 'dark' ? 'Light mode' : 'Dark mode'}
-              </span>
-            )}
-          </button>
+          </div>
         </div>
       </div>
     </aside>
@@ -297,13 +341,28 @@ export function KnowledgeSidebar({ className }: KnowledgeSidebarProps) {
 export function MobileKnowledgeSidebar() {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [showThemeMenu, setShowThemeMenu] = useState(false);
   const pathname = usePathname();
-  const { resolvedTheme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const { language } = useLanguage();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('[data-mobile-theme-menu]')) {
+        setShowThemeMenu(false);
+      }
+    };
+
+    if (showThemeMenu) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [showThemeMenu]);
 
   // Active state logic - exact or child paths
   const isActive = (href: string, exact?: boolean) => {
@@ -324,9 +383,11 @@ export function MobileKnowledgeSidebar() {
     ? "/assets/Alifh_logo_White.svg" 
     : "/assets/Alifh_logo_Black.svg";
 
-  const toggleTheme = () => {
-    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
-  };
+  const themes = [
+    { value: 'light', label: 'Light' },
+    { value: 'dark', label: 'Dark' },
+    { value: 'charcoal', label: 'Charcoal' }
+  ];
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -429,19 +490,43 @@ export function MobileKnowledgeSidebar() {
             <LanguageToggle />
             
             {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 text-foreground/70 hover:bg-muted/60 hover:text-foreground"
-            >
-              {mounted && resolvedTheme === 'dark' ? (
-                <Sun className="h-[18px] w-[18px] text-muted-foreground/70" />
-              ) : (
+            <div className="relative" data-mobile-theme-menu>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowThemeMenu(!showThemeMenu);
+                }}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 text-foreground/70 hover:bg-muted/60 hover:text-foreground"
+              >
                 <Moon className="h-[18px] w-[18px] text-muted-foreground/70" />
+                <span className="text-[14px] font-medium">Theme</span>
+              </button>
+
+              {showThemeMenu && (
+                <div 
+                  className="absolute bottom-full left-0 right-0 mb-2 bg-sidebar border border-sidebar-border rounded-lg shadow-lg z-50 overflow-hidden"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="py-1.5">
+                    {themes.map((themeOption) => (
+                      <button
+                        key={themeOption.value}
+                        onClick={() => {
+                          setTheme(themeOption.value);
+                          setShowThemeMenu(false);
+                        }}
+                        className="w-full text-left px-3 py-2 text-[14px] font-medium tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors flex items-center justify-between"
+                      >
+                        <span>{themeOption.label}</span>
+                        {theme === themeOption.value && (
+                          <CheckCircle2 className="size-4" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               )}
-              <span className="text-[14px] font-medium">
-                {mounted && resolvedTheme === 'dark' ? 'Light mode' : 'Dark mode'}
-              </span>
-            </button>
+            </div>
           </div>
         </div>
       </SheetContent>

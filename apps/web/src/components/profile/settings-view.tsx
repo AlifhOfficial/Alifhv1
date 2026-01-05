@@ -11,7 +11,7 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { useUserProfile, type UserProfileUpdate } from '@/hooks/profile';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useAuth } from '@/providers/auth-provider';
 
@@ -30,15 +30,6 @@ export function SettingsView() {
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  const isCharcoal = theme === 'charcoal';
-
-  // Toggle charcoal theme
-  const toggleCharcoalMode = () => {
-    const newTheme = isCharcoal ? 'dark' : 'charcoal';
-    setTheme(newTheme);
-    toast({ title: newTheme === 'charcoal' ? 'Charcoal theme enabled' : 'Dark theme enabled' });
-  };
 
   // Derive state directly from profile (no local state needed)
   const consignmentMode = profile?.consignmentMode ?? false;
@@ -103,33 +94,36 @@ export function SettingsView() {
         </h2>
 
         <div className="space-y-0 border border-border/40 rounded-xl overflow-hidden bg-sidebar">
-          {/* Charcoal Theme */}
-          <div className="flex items-center justify-between px-5 py-4 hover:bg-muted/10 transition-colors">
-            <div className="flex-1 min-w-0 pr-4">
-              <p className="text-[15px] font-semibold tracking-tight text-foreground">
-                Charcoal Theme
-              </p>
-              <p className="text-sm font-medium text-muted-foreground/60 mt-0.5">
-                Softer dark mode, easier on the eyes
-              </p>
-            </div>
-            <button
-              onClick={toggleCharcoalMode}
-              disabled={!mounted}
+          {/* Theme Selection */}
+          {[
+            { value: 'light', label: 'Light', description: 'Bright and clean' },
+            { value: 'dark', label: 'Dark', description: 'Deep black theme' },
+            { value: 'charcoal', label: 'Charcoal', description: 'Softer dark mode, easier on the eyes' }
+          ].map((themeOption, index, array) => (
+            <div 
+              key={themeOption.value}
               className={cn(
-                "relative h-7 w-12 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 flex-shrink-0 disabled:opacity-50",
-                mounted && isCharcoal ? "bg-primary" : "bg-muted/40"
+                "flex items-center justify-between px-5 py-4 hover:bg-muted/10 transition-colors cursor-pointer",
+                index < array.length - 1 && "border-b border-border/20"
               )}
-              aria-label="Toggle charcoal theme"
+              onClick={() => {
+                setTheme(themeOption.value);
+                toast({ title: `${themeOption.label} theme enabled` });
+              }}
             >
-              <span
-                className={cn(
-                  "absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition-all duration-200",
-                  mounted && isCharcoal ? "left-6" : "left-1"
-                )}
-              />
-            </button>
-          </div>
+              <div className="flex-1 min-w-0 pr-4">
+                <p className="text-[15px] font-semibold tracking-tight text-foreground">
+                  {themeOption.label}
+                </p>
+                <p className="text-sm font-medium text-muted-foreground/60 mt-0.5">
+                  {themeOption.description}
+                </p>
+              </div>
+              {mounted && theme === themeOption.value && (
+                <CheckCircle2 className="size-5 text-primary flex-shrink-0" />
+              )}
+            </div>
+          ))}
         </div>
       </section>
 

@@ -16,7 +16,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Moon, Sun, Menu, X } from "lucide-react";
+import { Moon, Menu, X, CheckCircle2 } from "lucide-react";
 import { MegaDropdown } from "./mega-dropdown";
 import { MobileMenu } from "./mobile-menu";
 import { ProfileMenu } from "./user-dropdown";
@@ -151,6 +151,7 @@ export function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [currentAuthModal, setCurrentAuthModal] = useState<AuthModalType>(null);
   const [triggerEmailVerification, setTriggerEmailVerification] = useState(false);
   const [triggerGoogleOnboarding, setTriggerGoogleOnboarding] = useState(false);
@@ -190,6 +191,20 @@ export function Navbar() {
     return () => document.removeEventListener("click", handleClick);
   }, [showProfileMenu]);
 
+  // Close theme menu when clicking outside
+  useEffect(() => {
+    if (!showThemeMenu) return;
+    
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('[data-theme-menu-container]')) {
+        setShowThemeMenu(false);
+      }
+    };
+    setTimeout(() => document.addEventListener("click", handleClick), 0);
+    return () => document.removeEventListener("click", handleClick);
+  }, [showThemeMenu]);
+
   // Close menus on escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -197,6 +212,7 @@ export function Navbar() {
         setShowMobileMenu(false);
         setActiveDropdown(null);
         setShowProfileMenu(false);
+        setShowThemeMenu(false);
       }
     };
     document.addEventListener('keydown', handleEscape);
@@ -382,14 +398,45 @@ export function Navbar() {
             {/* Right Actions */}
             <div className="flex items-center gap-3">
               {/* Theme Toggle */}
-              <button
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-md"
-                aria-label="Toggle theme"
-                suppressHydrationWarning
-              >
-                {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-              </button>
+              {/* Theme Toggle */}
+              <div className="relative" data-theme-menu-container>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowThemeMenu(!showThemeMenu);
+                  }}
+                  className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-md"
+                  aria-label="Theme menu"
+                  suppressHydrationWarning
+                >
+                  <Moon className="w-4 h-4" />
+                </button>
+
+                {showThemeMenu && (
+                  <div 
+                    className="absolute right-0 top-full mt-2 w-32 bg-sidebar border border-sidebar-border rounded-lg shadow-lg z-50 overflow-hidden"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="py-1.5">
+                      {[{ value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }, { value: 'charcoal', label: 'Charcoal' }].map((themeOption) => (
+                        <button
+                          key={themeOption.value}
+                          onClick={() => {
+                            setTheme(themeOption.value);
+                            setShowThemeMenu(false);
+                          }}
+                          className="w-full text-left px-3 py-2 text-[14px] font-medium tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors flex items-center justify-between"
+                        >
+                          <span>{themeOption.label}</span>
+                          {theme === themeOption.value && (
+                            <CheckCircle2 className="size-3.5" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {/* Profile/Auth Actions */}
               <ProfileMenu
