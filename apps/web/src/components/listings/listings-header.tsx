@@ -6,6 +6,7 @@
 'use client';
 
 import { useMemo, useCallback, useRef } from 'react';
+import Link from 'next/link';
 import { SearchBar } from '@/components/search/search-bar';
 import { FilterSidebar } from '@/components/search/filter-sidebar';
 import { AdvancedFilters } from '@/components/search/advanced-filters';
@@ -100,10 +101,55 @@ export function ListingsHeader({
       setFilters({ yearMin: undefined, yearMax: undefined });
     } else if (chipKey === 'sortBy') {
       setSort('relevance'); // Reset to default sort
+    } else if (chipKey === 'model') {
+      // When removing model, also remove trim
+      setFilters({ model: undefined, trim: undefined });
+    } else if (chipKey === 'make') {
+      // When removing make, also remove model and trim
+      setFilters({ make: undefined, model: undefined, trim: undefined });
     } else {
       setFilters({ [chipKey]: undefined });
     }
   }, [setFilters, setSort]);
+
+  // Generate breadcrumb items based on active filters
+  const breadcrumbItems = useMemo(() => {
+    const items: Array<{ label: string; href: string }> = [
+      { label: 'All Cars', href: '/listings' }
+    ];
+
+    // Add make
+    if (params.make && params.make.length > 0) {
+      const make = params.make[0]; // Use first make
+      items.push({
+        label: make,
+        href: `/listings?make=${encodeURIComponent(make)}`
+      });
+    }
+
+    // Add model
+    if (params.model && params.model.length > 0 && params.make && params.make.length > 0) {
+      const make = params.make[0];
+      const model = params.model[0]; // Use first model
+      items.push({
+        label: model,
+        href: `/listings?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}`
+      });
+    }
+
+    // Add trim
+    if (params.trim && params.trim.length > 0 && params.make && params.make.length > 0 && params.model && params.model.length > 0) {
+      const make = params.make[0];
+      const model = params.model[0];
+      const trim = params.trim[0]; // Use first trim
+      items.push({
+        label: trim,
+        href: `/listings?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}&trim=${encodeURIComponent(trim)}`
+      });
+    }
+
+    return items;
+  }, [params.make, params.model, params.trim]);
 
   return (
     <header className={cn(
@@ -182,6 +228,7 @@ export function ListingsHeader({
               placeholder="Search make, model or dealer..."
               redirectOnSearch={false}
               onSearch={setFilters}
+              currentFilters={params}
             />
           </div>
 
@@ -265,6 +312,32 @@ export function ListingsHeader({
           </div>
         </div>
 
+        {/* Breadcrumb - Show when make/model/trim filters are active */}
+        {breadcrumbItems.length > 1 && (
+          <nav 
+            className={cn(
+              "flex items-center gap-2 text-sm font-semibold tracking-tight py-3 overflow-x-auto scrollbar-hide border-t border-border/30 mt-3",
+              sidebarOpen && "lg:pl-6"
+            )}
+          >
+            {breadcrumbItems.map((item, index) => (
+              <div key={item.href} className="flex items-center gap-2">
+                {index > 0 && <span className="text-muted-foreground/40">/</span>}
+                {index === breadcrumbItems.length - 1 ? (
+                  <span className="text-foreground whitespace-nowrap">{item.label}</span>
+                ) : (
+                  <Link 
+                    href={item.href}
+                    className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
+                  >
+                    {item.label}
+                  </Link>
+                )}
+              </div>
+            ))}
+          </nav>
+        )}
+
         {/* Active Chips - with sidebar-aware padding to align with content grid */}
         <div 
           className={cn(
@@ -330,12 +403,7 @@ function getActiveFilterChips(
   if (params.q) {
     chips.push({ key: 'q', label: `"${params.q}"` });
   }
-  if (params.make?.length) {
-    chips.push({ key: 'make', label: params.make.join(', ') });
-  }
-  if (params.model?.length) {
-    chips.push({ key: 'model', label: params.model.join(', ') });
-  }
+  // Skip make, model, trim - they're shown in breadcrumb
   if (params.yearMin || params.yearMax) {
     const label = params.yearMin && params.yearMax
       ? `${params.yearMin} - ${params.yearMax}`

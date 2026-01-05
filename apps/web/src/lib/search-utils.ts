@@ -39,6 +39,7 @@ export interface SearchParams {
   preset?: 'newest' | 'cheapest' | 'luxury' | 'electric' | 'suv';
   make?: string[];
   model?: string[];
+  trim?: string[];
   yearMin?: number;
   yearMax?: number;
   priceMin?: number;
@@ -151,6 +152,7 @@ export function searchParamsToUrl(params: SearchParams): URLSearchParams {
   
   if (params.make?.length) urlParams.set('make', params.make.join(','));
   if (params.model?.length) urlParams.set('model', params.model.join(','));
+  if (params.trim?.length) urlParams.set('trim', params.trim.join(','));
   if (params.emirate?.length) urlParams.set('emirate', params.emirate.join(','));
   if (params.specs?.length) urlParams.set('specs', params.specs.join(','));
   if (params.bodyType?.length) urlParams.set('bodyType', params.bodyType.join(','));
@@ -213,6 +215,7 @@ export function urlToSearchParams(urlParams: URLSearchParams): SearchParams {
     
     make: parseArray('make'),
     model: parseArray('model'),
+    trim: parseArray('trim'),
     emirate: parseArray('emirate'),
     specs: parseArray('specs'),
     bodyType: parseArray('bodyType'),

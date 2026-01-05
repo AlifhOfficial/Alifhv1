@@ -11,7 +11,7 @@
 
 import { useCallback, useMemo } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { 
   urlToSearchParams, 
   searchParamsToUrl, 
@@ -23,7 +23,6 @@ import {
 } from '@/lib/search-utils';
 
 const SEARCH_STALE_TIME = 15_000; // 15 seconds
-const FACET_STALE_TIME = 60_000; // 60 seconds
 
 interface UseSearchOptions {
   /** Initial search params (overridden by URL params) */
@@ -86,7 +85,6 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const queryClient = useQueryClient();
 
   // Parse current params from URL (or use initial params if URL sync disabled)
   const params = useMemo<SearchParams>(() => {
@@ -230,14 +228,15 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
 }
 
 /**
- * Quick search hook for auto-suggest
+ * Quick search hook for auto-suggest (hierarchical)
  */
 interface QuickSearchResult {
   suggestions: Array<{
-    type: 'make' | 'model' | 'make_model' | 'partner';
+    type: 'make' | 'model' | 'make_model' | 'make_model_trim' | 'partner';
     text: string;
     make?: string;
     model?: string;
+    trim?: string;
     partnerId?: string;
     partnerName?: string;
     count: number;
@@ -245,21 +244,35 @@ interface QuickSearchResult {
   isLoading: boolean;
 }
 
-export function useQuickSearch(query: string, enabled = true): QuickSearchResult {
+export function useQuickSearch(
+  query: string, 
+  enabled = true,
+  context?: { make?: string; model?: string }
+): QuickSearchResult {
   const { data, isLoading } = useQuery({
-    queryKey: ['listings', 'suggest', query || 'popular'],
+    queryKey: ['listings', 'suggest', query || 'popular', context?.make, context?.model],
     queryFn: async () => {
-      // Fetch popular suggestions when empty, or search suggestions when typing
-      const endpoint = query.length >= 2 
-        ? `/api/listings/search/suggest?q=${encodeURIComponent(query)}`
-        : '/api/listings/search/suggest?popular=true';
+      // Build query params
+      const params = new URLSearchParams();
+      
+      if (query.length >= 2) {
+        params.set('q', query);
+      } else {
+        params.set('popular', 'true');
+      }
+      
+      // Add context for hierarchical search
+      if (context?.make) params.set('make', context.make);
+      if (context?.model) params.set('model', context.model);
+      
+      const endpoint = `/api/listings/search/suggest?${params.toString()}`;
       
       const response = await fetch(endpoint);
       if (!response.ok) return { suggestions: [] };
       return response.json();
     },
     enabled,
-    staleTime: query ? 30_000 : 60_000, // Popular suggestions cached longer
+    staleTime: query ? 30_000 : 60_000,
     gcTime: 5 * 60 * 1000,
   });
 

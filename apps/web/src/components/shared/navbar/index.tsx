@@ -54,7 +54,6 @@ const navItems: NavItem[] = [
           { label: "SUVs", href: "/listings?bodyType=suv" },
           { label: "Trucks", href: "/listings?bodyType=pickup" },
           { label: "Coupes", href: "/listings?bodyType=coupe" },
-          { label: "Negotiable", href: "/listings?negotiable=true" },
         ],
       },
       {
@@ -63,6 +62,8 @@ const navItems: NavItem[] = [
           { label: "Under AED 50k", href: "/listings?priceMax=50000" },
           { label: "Under AED 100k", href: "/listings?priceMax=100000" },
           { label: "Low Mileage", href: "/listings?mileageMax=50000" },
+          { label: "Negotiable", href: "/listings?negotiable=true" },
+
         ],
       },
     ],

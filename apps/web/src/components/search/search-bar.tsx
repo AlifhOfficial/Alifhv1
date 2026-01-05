@@ -109,15 +109,18 @@ interface SearchBarProps {
   onSearch?: (filters: Partial<SearchParams>) => void;
   /** Redirect to listings page on search */
   redirectOnSearch?: boolean;
+  /** Current filters for hierarchical search context */
+  currentFilters?: Partial<SearchParams>;
 }
 
 export function SearchBar({
-  placeholder = 'Search by make, model, dealer or VIN...',
+  placeholder = 'Search make . model . trim or VIN...',
   size = 'md',
   className,
   autoFocus = false,
   onSearch,
   redirectOnSearch = true,
+  currentFilters,
 }: SearchBarProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -127,11 +130,67 @@ export function SearchBar({
   const [isFocused, setIsFocused] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   
-  // Debounce query for API calls
-  const debouncedQuery = useDebounce(query, 200);
+  // Parse hierarchical query (e.g., "audi . rs5 . limited")
+  const parsedQuery = useMemo(() => {
+    const parts = query.split(/\s*\.\s*/);
+    
+    if (parts.length >= 3) {
+      // Make . Model . Trim (or partial trim)
+      return {
+        make: parts[0].trim(),
+        model: parts[1].trim(),
+        searchTerm: parts.slice(2).join(' ').trim(),
+        level: 'trim' as const,
+      };
+    } else if (parts.length === 2) {
+      // Make . Model (or partial model)
+      return {
+        make: parts[0].trim(),
+        model: undefined,
+        searchTerm: parts[1].trim(),
+        level: 'model' as const,
+      };
+    } else {
+      // Just searching (no dots)
+      return {
+        make: undefined,
+        model: undefined,
+        searchTerm: query.trim(),
+        level: 'make' as const,
+      };
+    }
+  }, [query]);
   
-  // Get suggestions
-  const { suggestions: apiSuggestions, isLoading } = useQuickSearch(debouncedQuery, isFocused);
+  // Build context from parsed query OR current filters for hierarchical search
+  const searchContext = useMemo(() => {
+    // Prioritize parsed query context (from dot notation)
+    if (parsedQuery.level === 'model' && parsedQuery.make) {
+      return { make: parsedQuery.make };
+    }
+    if (parsedQuery.level === 'trim' && parsedQuery.make && parsedQuery.model) {
+      return { make: parsedQuery.make, model: parsedQuery.model };
+    }
+    
+    // Fallback to current filters
+    if (!currentFilters) return undefined;
+    
+    const context: { make?: string; model?: string } = {};
+    if (currentFilters.make && currentFilters.make.length > 0) {
+      context.make = currentFilters.make[0];
+    }
+    if (currentFilters.model && currentFilters.model.length > 0) {
+      context.model = currentFilters.model[0];
+    }
+    
+    return Object.keys(context).length > 0 ? context : undefined;
+  }, [parsedQuery, currentFilters]);
+  
+  // Use the search term from parsed query for API
+  const effectiveSearchTerm = parsedQuery.searchTerm || '';
+  const debouncedSearchTerm = useDebounce(effectiveSearchTerm, 200);
+  
+  // Get suggestions with hierarchical context
+  const { suggestions: apiSuggestions, isLoading } = useQuickSearch(debouncedSearchTerm, isFocused, searchContext);
   
   // VIN lookup using external store pattern (no setState in effect)
   const vinLookup = useVinLookup(query);
@@ -175,7 +234,7 @@ export function SearchBar({
   const showDropdown = isFocused && (suggestions.length > 0 || isLoading || vinLookup?.loading);
 
   // Handle search submission
-  const handleSearch = useCallback((searchQuery: string, make?: string, model?: string, partnerId?: string, partnerName?: string) => {
+  const handleSearch = useCallback((searchQuery: string, make?: string, model?: string, trim?: string, partnerId?: string, partnerName?: string) => {
     // Build filters object for callback
     const filters: Partial<SearchParams> = {};
     if (partnerId && partnerId.trim()) {
@@ -187,6 +246,9 @@ export function SearchBar({
       filters.make = [make.trim()];
       if (model && model.trim()) {
         filters.model = [model.trim()];
+      }
+      if (trim && trim.trim()) {
+        filters.trim = [trim.trim()];
       }
     } else if (searchQuery && searchQuery.trim()) {
       filters.q = searchQuery.trim();
@@ -207,11 +269,14 @@ export function SearchBar({
           searchParams.partnerName = partnerName.trim();
         }
       } 
-      // Make and model filters
+      // Make, model, and trim filters
       else if (make && make.trim()) {
         searchParams.make = [make.trim()];
         if (model && model.trim()) {
           searchParams.model = [model.trim()];
+        }
+        if (trim && trim.trim()) {
+          searchParams.trim = [trim.trim()];
         }
       }
       // Fallback to text search
@@ -245,15 +310,34 @@ export function SearchBar({
       setIsFocused(false);
       inputRef.current?.blur();
     } else if (suggestion.type === 'partner') {
-      handleSearch(suggestion.text, undefined, undefined, suggestion.partnerId, suggestion.partnerName);
+      handleSearch(suggestion.text, undefined, undefined, undefined, suggestion.partnerId, suggestion.partnerName);
+    } else if (suggestion.type === 'make_model_trim') {
+      // Full selection - apply filters
+      handleSearch(suggestion.text, suggestion.make, suggestion.model, suggestion.trim);
     } else if (suggestion.type === 'make_model') {
-      handleSearch(suggestion.text, suggestion.make, suggestion.model);
+      // Check if we're in hierarchical mode (from context or parsed query)
+      const hasHierarchicalContext = searchContext?.make || parsedQuery.make;
+      
+      if (hasHierarchicalContext) {
+        // Model selected from context - build full path with ". " for trim input
+        const newQuery = `${suggestion.make} . ${suggestion.model} . `;
+        setQuery(newQuery);
+        setSelectedIndex(-1);
+        inputRef.current?.focus();
+      } else {
+        // Direct selection - apply filters
+        handleSearch(suggestion.text, suggestion.make, suggestion.model);
+      }
     } else if (suggestion.type === 'make') {
-      handleSearch(suggestion.text, suggestion.make);
+      // Make selected - append ". " for model input
+      const newQuery = `${suggestion.make} . `;
+      setQuery(newQuery);
+      setSelectedIndex(-1);
+      inputRef.current?.focus();
     } else {
       handleSearch(suggestion.text);
     }
-  }, [handleSearch, router]);
+  }, [handleSearch, router, searchContext, parsedQuery]);
 
   // Clamp selectedIndex if it exceeds suggestions length (derived state)
   const clampedSelectedIndex = selectedIndex >= suggestions.length ? -1 : selectedIndex;
@@ -262,7 +346,16 @@ export function SearchBar({
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (!showDropdown) {
       if (e.key === 'Enter' && query.trim()) {
-        handleSearch(query.trim());
+        // Check if we have a dot notation query
+        if (parsedQuery.level === 'trim' && parsedQuery.make && parsedQuery.model) {
+          // "Audi . RS5 . Limited" -> filter by make, model, and optional trim search
+          handleSearch('', parsedQuery.make, parsedQuery.model, parsedQuery.searchTerm || undefined);
+        } else if (parsedQuery.level === 'model' && parsedQuery.make) {
+          // "Audi . RS" -> filter by make only (model is partial)
+          handleSearch('', parsedQuery.make);
+        } else {
+          handleSearch(query.trim());
+        }
       }
       return;
     }
@@ -285,7 +378,14 @@ export function SearchBar({
         if (clampedSelectedIndex >= 0 && suggestions[clampedSelectedIndex]) {
           handleSuggestionClick(suggestions[clampedSelectedIndex]);
         } else if (query.trim()) {
-          handleSearch(query.trim());
+          // Check if we have a dot notation query
+          if (parsedQuery.level === 'trim' && parsedQuery.make && parsedQuery.model) {
+            handleSearch('', parsedQuery.make, parsedQuery.model, parsedQuery.searchTerm || undefined);
+          } else if (parsedQuery.level === 'model' && parsedQuery.make) {
+            handleSearch('', parsedQuery.make);
+          } else {
+            handleSearch(query.trim());
+          }
         }
         break;
       case 'Escape':
@@ -293,7 +393,7 @@ export function SearchBar({
         inputRef.current?.blur();
         break;
     }
-  }, [showDropdown, suggestions, clampedSelectedIndex, query, handleSearch, handleSuggestionClick]);
+  }, [showDropdown, suggestions, clampedSelectedIndex, query, parsedQuery, handleSearch, handleSuggestionClick]);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -354,6 +454,17 @@ export function SearchBar({
           iconSizes[size]
         )} />
         
+        {/* Styled display overlay - hides dots completely */}
+        {query && (
+          <div className="absolute left-11 right-10 pointer-events-none font-semibold tracking-tight text-foreground truncate">
+            {query.split(/(\s*\.\s*)/).map((part, i) => 
+              part.match(/^\s*\.\s*$/) 
+                ? <span key={i} className="text-transparent select-none">{part}</span>
+                : <span key={i}>{part}</span>
+            )}
+          </div>
+        )}
+        
         <input
           ref={inputRef}
           type="text"
@@ -367,7 +478,9 @@ export function SearchBar({
             'w-full h-full bg-transparent pl-11 pr-10',
             'placeholder:text-muted-foreground/60 placeholder:font-medium',
             'focus:outline-none',
-            'font-semibold tracking-tight text-foreground'
+            'font-semibold tracking-tight',
+            // Hide text when showing styled overlay (but keep for caret positioning)
+            query ? 'text-transparent caret-foreground' : 'text-foreground'
           )}
           aria-label="Search cars"
           aria-expanded={showDropdown}

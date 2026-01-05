@@ -53,10 +53,15 @@ export async function GET(req: NextRequest) {
     const popular = searchParams.get('popular') === 'true';
     const limitParam = Number(searchParams.get('limit') || '8');
     const limit = Math.min(Math.max(limitParam, 1), 20);
+    
+    // Get context for hierarchical search
+    const contextMake = searchParams.get('make') || undefined;
+    const contextModel = searchParams.get('model') || undefined;
+    const context = contextMake ? { make: contextMake, model: contextModel } : undefined;
 
-    // Return popular makes when requested
+    // Return popular makes/models/trims when requested (hierarchical)
     if (popular || query.length < 2) {
-      const popularCacheKey = `suggest:popular:${limit}`;
+      const popularCacheKey = `suggest:popular:${limit}:${contextMake || ''}:${contextModel || ''}`;
       const isProd = process.env.NODE_ENV === 'production';
       
       if (isProd) {
@@ -70,8 +75,11 @@ export async function GET(req: NextRequest) {
         }
       }
       
-      const popularMakes = await getPopularMakes(limit);
-      const result = { suggestions: popularMakes };
+      // Use hierarchical search with empty query to get popular items based on context
+      const popularItems = context 
+        ? await quickSearch('', limit, context)
+        : await getPopularMakes(limit);
+      const result = { suggestions: popularItems };
       
       if (isProd) {
         memoryCache.set(popularCacheKey, result, POPULAR_CACHE_TTL);
@@ -90,7 +98,7 @@ export async function GET(req: NextRequest) {
 
     // Check cache
     const isProd = process.env.NODE_ENV === 'production';
-    const cacheKey = `suggest:${query.toLowerCase()}:${limit}`;
+    const cacheKey = `suggest:${query.toLowerCase()}:${limit}:${contextMake || ''}:${contextModel || ''}`;
 
     if (isProd) {
       const cached = memoryCache.get<any>(cacheKey);
@@ -103,8 +111,8 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // Execute quick search
-    const suggestions = await quickSearch(query, limit);
+    // Execute quick search with context
+    const suggestions = await quickSearch(query, limit, context);
 
     const result = { suggestions };
 

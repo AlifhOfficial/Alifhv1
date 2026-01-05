@@ -86,6 +86,11 @@ function buildSearchConditions(params: SearchParams, now: Date): SQL[] {
     conditions.push(inArray(carListing.model, params.model));
   }
 
+  // Trim filter
+  if (params.trim?.length) {
+    conditions.push(inArray(carListing.trim, params.trim));
+  }
+
   // Year range
   if (params.yearMin) {
     conditions.push(gte(carListing.year, params.yearMin));
@@ -602,57 +607,101 @@ export async function searchListings(
 
 /**
  * Quick search for auto-suggest (header search)
- * Returns make/model/partner suggestions based on partial input
+ * Hierarchical: shows makes → models → trims based on context
  * 
  * OPTIMIZATION: Runs partner and make/model queries in parallel
  */
-export async function quickSearch(query: string, limit = 10): Promise<Array<{
-  type: 'make' | 'model' | 'make_model' | 'partner';
+export async function quickSearch(
+  query: string, 
+  limit = 10,
+  context?: { make?: string; model?: string }
+): Promise<Array<{
+  type: 'make' | 'model' | 'make_model' | 'make_model_trim' | 'partner';
   text: string;
   make?: string;
   model?: string;
+  trim?: string;
   partnerId?: string;
   partnerName?: string;
   count: number;
 }>> {
-  if (!query?.trim() || query.length < 2) {
+  // Allow empty query if context is provided (for popular suggestions)
+  const hasValidQuery = query?.trim() && query.length >= 2;
+  if (!hasValidQuery && !context) {
     return [];
   }
 
-  const searchTerm = query.trim().toLowerCase();
+  const searchTerm = query?.trim().toLowerCase() || '';
   const now = new Date();
   const conditions = buildPublicBaseConditions(now);
 
-  // Run both queries in parallel for better performance
-  const [partnerResults, makeModelResults] = await Promise.all([
-    // Partner/Dealer search - search by brand name
-    db
-      .select({
-        partnerId: carListing.partnerId,
-        partnerName: sql<string>`coalesce(${carListing.partnerBrandName}, ${partner.brandName})`,
-        count: count(),
-      })
-      .from(carListing)
-      .leftJoin(partner, eq(carListing.partnerId, partner.id))
-      .where(
-        and(
-          ...conditions,
-          isNotNull(carListing.partnerId),
-          or(
-            ilike(carListing.partnerBrandName, `%${searchTerm}%`),
-            ilike(partner.brandName, `%${searchTerm}%`)
-          )
-        )
-      )
-      .groupBy(carListing.partnerId, carListing.partnerBrandName, partner.brandName)
-      .orderBy(desc(count()))
-      .limit(5),
+  // Determine what to search based on context
+  let makeModelQuery;
+
+  if (context?.make && context?.model) {
+    // Context: Make + Model selected → Show TRIMS only
+    const trimConditions = [
+      ...conditions,
+      eq(carListing.make, context.make),
+      eq(carListing.model, context.model),
+      isNotNull(carListing.trim),
+    ];
     
-    // Standard make/model search
-    db
+    // Add search filter only if query provided
+    if (searchTerm) {
+      trimConditions.push(ilike(carListing.trim, `%${searchTerm}%`));
+    }
+    
+    makeModelQuery = db
       .select({
         make: carListing.make,
         model: carListing.model,
+        trim: carListing.trim,
+        count: count(),
+      })
+      .from(carListing)
+      .where(and(...trimConditions))
+      .groupBy(carListing.make, carListing.model, carListing.trim)
+      .orderBy(desc(count()))
+      .limit(limit);
+  } else if (context?.make) {
+    // Context: Make selected → Show MODELS only
+    const modelConditions = [
+      ...conditions,
+      eq(carListing.make, context.make),
+      isNotNull(carListing.model),
+    ];
+    
+    // Add search filter only if query provided
+    if (searchTerm) {
+      modelConditions.push(ilike(carListing.model, `%${searchTerm}%`));
+    }
+    
+    makeModelQuery = db
+      .select({
+        make: carListing.make,
+        model: carListing.model,
+        trim: sql<string | null>`NULL`.as('trim'),
+        count: count(),
+      })
+      .from(carListing)
+      .where(and(...modelConditions))
+      .groupBy(carListing.make, carListing.model)
+      .orderBy(desc(count()))
+      .limit(limit);
+  } else {
+    // No context → Show MAKES and MAKE+MODEL combinations
+    // If no search term, this shouldn't be called (popular makes should be used instead)
+    // But we handle it gracefully by requiring a search term
+    if (!searchTerm) {
+      return [];
+    }
+    
+    makeModelQuery = db
+      .select({
+        make: carListing.make,
+        model: carListing.model,
+        trim: sql<string | null>`NULL`.as('trim'),
         count: count(),
       })
       .from(carListing)
@@ -668,20 +717,51 @@ export async function quickSearch(query: string, limit = 10): Promise<Array<{
       )
       .groupBy(carListing.make, carListing.model)
       .orderBy(desc(count()))
-      .limit(limit * 2),
+      .limit(limit * 2);
+  }
+
+  // Run both queries in parallel
+  const [partnerResults, makeModelResults] = await Promise.all([
+    // Partner/Dealer search - only if query provided
+    searchTerm 
+      ? db
+          .select({
+            partnerId: carListing.partnerId,
+            partnerName: sql<string>`coalesce(${carListing.partnerBrandName}, ${partner.brandName})`,
+            count: count(),
+          })
+          .from(carListing)
+          .leftJoin(partner, eq(carListing.partnerId, partner.id))
+          .where(
+            and(
+              ...conditions,
+              isNotNull(carListing.partnerId),
+              or(
+                ilike(carListing.partnerBrandName, `%${searchTerm}%`),
+                ilike(partner.brandName, `%${searchTerm}%`)
+              )
+            )
+          )
+          .groupBy(carListing.partnerId, carListing.partnerBrandName, partner.brandName)
+          .orderBy(desc(count()))
+          .limit(5)
+      : Promise.resolve([]),
+    
+    makeModelQuery,
   ]);
 
   const suggestions: Array<{
-    type: 'make' | 'model' | 'make_model' | 'partner';
+    type: 'make' | 'model' | 'make_model' | 'make_model_trim' | 'partner';
     text: string;
     make?: string;
     model?: string;
+    trim?: string;
     partnerId?: string;
     partnerName?: string;
     count: number;
   }> = [];
 
-  // Process partner results
+  // Process partner results - always show
   const seenPartners = new Set<string>();
   for (const r of partnerResults) {
     if (r.partnerId && r.partnerName && !seenPartners.has(r.partnerId)) {
@@ -696,36 +776,72 @@ export async function quickSearch(query: string, limit = 10): Promise<Array<{
     }
   }
 
-  // Process make/model results
-  const seenMakes = new Set<string>();
-  const seenMakeModels = new Set<string>();
-
-  for (const r of makeModelResults) {
-    if (!r.make) continue;
-
-    // Add make suggestion if not seen
-    if (!seenMakes.has(r.make) && r.make.toLowerCase().includes(searchTerm)) {
-      seenMakes.add(r.make);
-      suggestions.push({
-        type: 'make',
-        text: r.make,
-        make: r.make,
-        count: Number(r.count),
-      });
+  // Process make/model/trim results based on context
+  if (context?.make && context?.model) {
+    // Showing trims only
+    const seenTrims = new Set<string>();
+    for (const r of makeModelResults) {
+      if (r.trim && !seenTrims.has(r.trim)) {
+        seenTrims.add(r.trim);
+        suggestions.push({
+          type: 'make_model_trim',
+          text: r.trim, // Just show trim name
+          make: r.make,
+          model: r.model,
+          trim: r.trim,
+          count: Number(r.count),
+        });
+      }
     }
-
-    // Add make+model suggestion
-    if (r.model) {
-      const key = `${r.make}-${r.model}`;
-      if (!seenMakeModels.has(key)) {
-        seenMakeModels.add(key);
+  } else if (context?.make) {
+    // Showing models only
+    const seenModels = new Set<string>();
+    for (const r of makeModelResults) {
+      if (r.model && !seenModels.has(r.model)) {
+        seenModels.add(r.model);
         suggestions.push({
           type: 'make_model',
-          text: `${r.make} ${r.model}`,
+          text: r.model, // Just show model name
           make: r.make,
           model: r.model,
           count: Number(r.count),
         });
+      }
+    }
+  } else {
+    // Showing makes and make+model combinations
+    const seenMakes = new Set<string>();
+    const seenMakeModels = new Set<string>();
+
+    for (const r of makeModelResults) {
+      if (!r.make) continue;
+
+      // Add make suggestion if not seen
+      if (!seenMakes.has(r.make) && r.make.toLowerCase().includes(searchTerm)) {
+        seenMakes.add(r.make);
+        suggestions.push({
+          type: 'make',
+          text: r.make,
+          make: r.make,
+          count: Number(r.count),
+        });
+      }
+
+      // Add make+model suggestion
+      if (r.model) {
+        const makeModelKey = `${r.make}-${r.model}`;
+        const makeModelText = `${r.make} ${r.model}`.toLowerCase();
+        
+        if (!seenMakeModels.has(makeModelKey) && makeModelText.includes(searchTerm)) {
+          seenMakeModels.add(makeModelKey);
+          suggestions.push({
+            type: 'make_model',
+            text: `${r.make} ${r.model}`,
+            make: r.make,
+            model: r.model,
+            count: Number(r.count),
+          });
+        }
       }
     }
   }
