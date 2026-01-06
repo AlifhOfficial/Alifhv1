@@ -54,6 +54,7 @@ export {
   hardDeleteCarListing,
   hardDeleteDeletedCarListingsForUser,
   checkListingOwnership,
+  checkListingAccess,
 } from './delete';
 
 // Query operations

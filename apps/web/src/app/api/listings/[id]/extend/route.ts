@@ -2,7 +2,7 @@
  * API: Extend Listing Expiry
  * POST /api/listings/[id]/extend
  *
- * Allows listing owner (or admin) to extend expiry within the last 2 days.
+ * Allows listing owner, partner staff, or admin to extend expiry within the last 2 days.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -50,14 +50,33 @@ export async function POST(
     }
 
     const isAdmin = user.role === 'admin' || user.role === 'super_admin';
-    const isOwner = await checkListingOwnership(id, user.id);
-    if (!isAdmin && !isOwner) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const isDirectOwner = await checkListingOwnership(id, user.id);
+    
+    // Check if user has partner access with manageListings permission
+    const partnerMembership = user.partnerMemberships?.[0];
+    const hasPartnerListingAccess = partnerMembership?.permissions?.manageListings === true;
+    const partnerId = partnerMembership?.partnerId;
 
+    // Get listing context
     const before = await getListingModerationContext(id);
+    if (!before) {
+      return NextResponse.json({ error: 'Listing not found' }, { status: 404 });
+    }
+    
+    // Check if listing belongs to user's partner
+    const isPartnerListing = partnerId && before.partnerId === partnerId;
+    
+    // Authorization check
+    const canExtend = isAdmin || isDirectOwner || (hasPartnerListingAccess && isPartnerListing);
+    
+    if (!canExtend) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     const result = await extendCarListingExpiry({
       listingId: id,
       userId: user.id,
+      partnerId: isPartnerListing ? partnerId : undefined,
       days: days as 7 | 14,
     });
 
@@ -77,6 +96,7 @@ export async function POST(
       userAgent: req.headers.get('user-agent'),
       metadata: {
         days,
+        partnerId: isPartnerListing ? partnerId : null,
       },
       oldValues: {
         expiresAt: before?.expiresAt ? before.expiresAt.toISOString() : null,

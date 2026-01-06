@@ -1,6 +1,11 @@
 /**
  * API: Mark Listing as Sold
  * POST /api/listings/[id]/mark-sold
+ * 
+ * Supports:
+ * - Direct user ownership (userId match)
+ * - Partner staff with manageListings permission
+ * - Admin override
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -42,12 +47,36 @@ export async function POST(
     const { id } = await params;
 
     const isAdmin = user.role === 'admin' || user.role === 'super_admin';
-    const isOwner = await checkListingOwnership(id, user.id);
-    if (!isAdmin && !isOwner) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-
+    const isDirectOwner = await checkListingOwnership(id, user.id);
+    
+    // Check if user has partner access with manageListings permission
+    const partnerMembership = user.partnerMemberships?.[0];
+    const hasPartnerListingAccess = partnerMembership?.permissions?.manageListings === true;
+    const partnerId = partnerMembership?.partnerId;
+    
+    // Get listing context to check if it belongs to the user's partner
     const before = await getListingModerationContext(id);
+    if (!before) {
+      return NextResponse.json({ error: 'Listing not found' }, { status: 404 });
+    }
+    
+    // Check if listing belongs to user's partner
+    const isPartnerListing = partnerId && before.partnerId === partnerId;
+    
+    // Authorization: admin, direct owner, or partner staff with permission
+    const canMarkSold = isAdmin || isDirectOwner || (hasPartnerListingAccess && isPartnerListing);
+    
+    if (!canMarkSold) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
-    const result = await markCarListingSold({ listingId: id, userId: user.id });
+    // Mark as sold - pass partnerId if this is a partner listing
+    const result = await markCarListingSold({ 
+      listingId: id, 
+      userId: user.id,
+      partnerId: isPartnerListing ? partnerId : undefined,
+    });
+    
     if (result.success === false) {
       return NextResponse.json({ error: result.error }, { status: 400 });
     }

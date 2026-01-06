@@ -1,5 +1,5 @@
 /**
- * API: Hard Delete Listing (Owner)
+ * API: Hard Delete Listing (Owner/Partner Staff)
  * DELETE /api/listings/[id]/hard-delete
  *
  * Permanent delete. Use sparingly.
@@ -44,22 +44,45 @@ export async function DELETE(
     const { id } = await params;
 
     const isAdmin = user.role === 'admin' || user.role === 'super_admin';
-    const isOwner = await checkListingOwnership(id, user.id);
-    if (!isAdmin && !isOwner) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-
+    
     if (isAdmin) {
       return NextResponse.json(
         { error: 'Admins should delete via /api/admin/listings/[id]' },
         { status: 403 }
       );
     }
-
+    
+    const isDirectOwner = await checkListingOwnership(id, user.id);
+    
+    // Check if user has partner access with manageListings permission
+    const partnerMembership = user.partnerMemberships?.[0];
+    const hasPartnerListingAccess = partnerMembership?.permissions?.manageListings === true;
+    const partnerId = partnerMembership?.partnerId;
+    
+    // Get listing context
     const before = await getListingModerationContext(id);
+    if (!before) {
+      return NextResponse.json({ error: 'Listing not found' }, { status: 404 });
+    }
+    
+    // Check if listing belongs to user's partner
+    const isPartnerListing = partnerId && before.partnerId === partnerId;
+    
+    // Authorization check
+    const canDelete = isDirectOwner || (hasPartnerListingAccess && isPartnerListing);
+    
+    if (!canDelete) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
-    const ok = await hardDeleteCarListing({ listingId: id, userId: user.id });
+    const ok = await hardDeleteCarListing({ 
+      listingId: id, 
+      userId: user.id,
+      partnerId: isPartnerListing ? partnerId : undefined,
+    });
 
     if (!ok) {
-      return NextResponse.json({ error: 'Listing not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Listing not found or unauthorized' }, { status: 404 });
     }
 
     // Invalidate all listing caches using centralized function
@@ -72,6 +95,9 @@ export async function DELETE(
       userId: user.id,
       ipAddress: getClientIp(req),
       userAgent: req.headers.get('user-agent'),
+      metadata: {
+        partnerId: isPartnerListing ? partnerId : null,
+      },
       oldValues: before
         ? {
             moderationStatus: before.moderationStatus,

@@ -20,7 +20,8 @@ import {
   Sparkles,
   Moon,
   Languages,
-  CheckCircle2
+  CheckCircle2,
+  BarChart3
 } from 'lucide-react';
 import { cn } from '@/utils';
 import { Button } from '@/components/ui/button';
@@ -34,6 +35,11 @@ const knowledgeItems = [
   { label: 'Buying & Selling', labelAr: 'البيع والشراء', href: '/knowledge/buying', icon: ShoppingBag },
   { label: 'Legal & Finance', labelAr: 'القانون والمالية', href: '/knowledge/legal', icon: Scale },
   { label: 'Maintenance', labelAr: 'الصيانة', href: '/knowledge/maintenance', icon: Wrench },
+];
+
+// Partner-specific knowledge items
+const partnerItems = [
+  { label: 'For Partners', labelAr: 'للشركاء', href: '/knowledge/partners', icon: BarChart3, exact: true },
 ];
 
 const toolItems = [
@@ -268,6 +274,44 @@ export function KnowledgeSidebar({ className }: KnowledgeSidebarProps) {
                         </span>
                       )}
                     </>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Partners Section */}
+          <div className="space-y-1">
+            {!isCollapsed && (
+              <span className="block text-[11px] font-medium text-muted-foreground/50 uppercase tracking-wider px-2 mb-2">
+                {language === 'ar' ? 'الشركاء' : 'Partners'}
+              </span>
+            )}
+            {isCollapsed && <div className="h-px bg-border/40 mx-2 my-2" />}
+            {partnerItems.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.href, item.exact);
+              const label = language === 'ar' ? item.labelAr : item.label;
+              
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    'group flex items-center gap-2.5 px-2 py-1.5 rounded-md transition-all duration-150',
+                    active 
+                      ? 'bg-primary/10 text-primary' 
+                      : 'text-foreground/70 hover:bg-muted/60 hover:text-foreground',
+                    isCollapsed && 'justify-center px-0'
+                  )}
+                  title={isCollapsed ? label : undefined}
+                >
+                  <Icon className={cn(
+                    'h-4 w-4 flex-shrink-0 transition-colors',
+                    active ? 'text-primary' : 'text-muted-foreground/70 group-hover:text-foreground/80'
+                  )} />
+                  {!isCollapsed && (
+                    <span className="text-[13px] font-medium truncate">{label}</span>
                   )}
                 </Link>
               );

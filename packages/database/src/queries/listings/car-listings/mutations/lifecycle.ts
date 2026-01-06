@@ -57,11 +57,13 @@ export async function expirePublishedListingsForPartner(partnerId: string): Prom
 
 /**
  * Extend a car listing's expiry date
+ * Supports both direct ownership (userId) and partner ownership (partnerId)
  * Only available within 2 days of expiry
  */
 export async function extendCarListingExpiry(input: {
   listingId: string;
   userId: string;
+  partnerId?: string;
   days: 7 | 14;
 }): Promise<{ success: true; expiresAt: Date } | { success: false; error: string }> {
   const now = new Date();
@@ -69,16 +71,27 @@ export async function extendCarListingExpiry(input: {
   const record = await db
     .select({
       id: carListing.id,
+      userId: carListing.userId,
+      partnerId: carListing.partnerId,
       lifecycleStatus: carListing.lifecycleStatus,
       expiresAt: carListing.expiresAt,
     })
     .from(carListing)
-    .where(and(eq(carListing.id, input.listingId), eq(carListing.userId, input.userId)))
+    .where(eq(carListing.id, input.listingId))
     .limit(1);
 
   if (record.length === 0) return { success: false, error: 'Listing not found' };
 
   const listing = record[0];
+  
+  // Verify ownership
+  const isDirectOwner = listing.userId === input.userId;
+  const isPartnerOwner = input.partnerId && listing.partnerId === input.partnerId;
+  
+  if (!isDirectOwner && !isPartnerOwner) {
+    return { success: false, error: 'Not authorized to extend this listing' };
+  }
+  
   if (listing.lifecycleStatus !== 'active') return { success: false, error: 'Only active listings can be extended' };
   if (!listing.expiresAt) return { success: false, error: 'Listing expiry is not set' };
 
@@ -111,7 +124,7 @@ export async function extendCarListingExpiry(input: {
       updatedAt: now,
       lastEditedAt: now,
     })
-    .where(and(eq(carListing.id, input.listingId), eq(carListing.userId, input.userId)))
+    .where(eq(carListing.id, input.listingId))
     .returning({ expiresAt: carListing.expiresAt });
 
   if (!updated?.expiresAt) return { success: false, error: 'Failed to extend listing' };
@@ -120,35 +133,59 @@ export async function extendCarListingExpiry(input: {
 
 /**
  * Mark a car listing as sold
+ * Supports both direct ownership (userId) and partner ownership (partnerId)
+ * If soldPrice is not provided, defaults to the listing's current price
  */
 export async function markCarListingSold(input: {
   listingId: string;
   userId: string;
-}): Promise<{ success: true } | { success: false; error: string }> {
+  partnerId?: string; // Optional: for partner staff marking listings as sold
+  soldPrice?: number; // Optional: defaults to listing price if not provided
+}): Promise<{ success: true; soldPrice: number } | { success: false; error: string }> {
   const now = new Date();
 
   const current = await db
-    .select({ lifecycleStatus: carListing.lifecycleStatus })
+    .select({ 
+      lifecycleStatus: carListing.lifecycleStatus,
+      partnerId: carListing.partnerId,
+      userId: carListing.userId,
+      price: carListing.price,
+    })
     .from(carListing)
-    .where(and(eq(carListing.id, input.listingId), eq(carListing.userId, input.userId)))
+    .where(eq(carListing.id, input.listingId))
     .limit(1);
 
   if (current.length === 0) return { success: false, error: 'Listing not found' };
-  if (current[0].lifecycleStatus === 'deleted') return { success: false, error: 'Listing is deleted' };
+  
+  const listing = current[0];
+  
+  // Verify ownership
+  const isDirectOwner = listing.userId === input.userId;
+  const isPartnerOwner = input.partnerId && listing.partnerId === input.partnerId;
+  
+  if (!isDirectOwner && !isPartnerOwner) {
+    return { success: false, error: 'Not authorized to update this listing' };
+  }
+  
+  if (listing.lifecycleStatus === 'deleted') return { success: false, error: 'Listing is deleted' };
+
+  // Use provided soldPrice or default to listing price
+  const finalSoldPrice = input.soldPrice ?? listing.price;
 
   const updated = await db
     .update(carListing)
     .set({
       lifecycleStatus: 'sold',
       soldAt: now,
+      soldPrice: finalSoldPrice,
       updatedAt: now,
       lastEditedAt: now,
     })
-    .where(and(eq(carListing.id, input.listingId), eq(carListing.userId, input.userId)))
+    .where(eq(carListing.id, input.listingId))
     .returning({ id: carListing.id });
 
-  if (updated.length === 0) return { success: false, error: 'Listing not found' };
-  return { success: true };
+  if (updated.length === 0) return { success: false, error: 'Failed to update listing' };
+  return { success: true, soldPrice: finalSoldPrice };
 }
 
 /**

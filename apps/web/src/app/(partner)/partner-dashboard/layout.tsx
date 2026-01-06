@@ -10,24 +10,34 @@ import { redirect } from "next/navigation";
 const navSections = [
   {
     items: [
-      { label: "Overview", href: "/partner-dashboard", icon: "layout-dashboard" },
+      { label: "Overview", href: "/partner-dashboard/insights", icon: "layout-dashboard" },
     ]
   },
   {
-    collapsible: { label: "Business", icon: "briefcase" },
+    collapsible: { label: "Operations", icon: "briefcase" },
     items: [
       { label: "Inventory", href: "/partner-dashboard/inventory" },
-      { label: "Lead Funnels", href: "/partner-dashboard/lead-funnels" },
       { label: "Bookings", href: "/partner-dashboard/bookings" },
-      { label: "Performance", href: "/partner-dashboard/performance" },
+      { label: "Leads", href: "/partner-dashboard/lead-funnels" },
+    ]
+  },
+  {
+    collapsible: { label: "Insights", icon: "bar-chart" },
+    items: [
+      { label: "Analytics", href: "/partner-dashboard/analytics" },
+    ]
+  },
+  {
+    collapsible: { label: "Team", icon: "users" },
+    items: [
+      { label: "Staff", href: "/partner-dashboard/staff" },
     ]
   },
   {
     collapsible: { label: "Settings", icon: "settings" },
     items: [
-      { label: "Basic Profile", href: "/partner-dashboard/basic" },
-      { label: "Full Settings", href: "/partner-dashboard/profile" },
-      { label: "Staff", href: "/partner-dashboard/staff" },
+      { label: "Business Profile", href: "/partner-dashboard/basic" },
+      { label: "Account", href: "/partner-dashboard/profile" },
     ]
   },
 ];
