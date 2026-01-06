@@ -39,22 +39,17 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const listingBrowseLimiter = createRateLimiter(RATE_LIMITS_LISTINGS.BROWSE);
-export const revalidate = 0; // No ISR caching - rely on memory cache only
+export const revalidate = 0;
 
-// CDN caching for public feed - reduces origin hits significantly
-// Memory cache handles invalidation; CDN provides edge distribution
+// CDN caching for public feed - 5min cache for near-zero latency
 const CDN_CACHE_HEADERS = {
-  // CDN caches for 60s, serves stale for 120s while revalidating
-  'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+  'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
 } as const;
 
 // For personalized/batch requests (favorites, superlikes) - no CDN cache
 const NO_CACHE_HEADERS = {
   'Cache-Control': 'private, no-cache, no-store, must-revalidate',
 } as const;
-
-// Only log in development or for cache misses in production
-const DEBUG_LOGGING = process.env.NODE_ENV !== 'production';
 
 export async function GET(req: NextRequest) {
   try {
@@ -139,12 +134,9 @@ export async function GET(req: NextRequest) {
       return response;
     }
 
-    // ⚡ CACHE HIT: Return cached data
+    // Cache check (disabled - no-op)
     const cached = memoryCache.get<any>(cacheKey);
     if (cached) {
-      if (DEBUG_LOGGING) {
-        console.log(`[car-card] ✅ Cache HIT for ${cacheKey.substring(0, 50)}...`);
-      }
       const response = NextResponse.json(cached);
       Object.entries(cacheHeaders).forEach(([key, value]) => 
         response.headers.set(key, value)
@@ -153,13 +145,7 @@ export async function GET(req: NextRequest) {
       return response;
     }
 
-    // ⚡ CACHE MISS: Query database using query function
-    if (DEBUG_LOGGING) {
-      console.log(`[car-card] ❌ Cache MISS for ${cacheKey.substring(0, 50)}... - querying DB`);
-    }
-    const queryStart = performance.now();
-
-    // Use exported query function - handles 2-step optimization internally
+    // Query database
     const listings = await getListingCards({
       ids: ids || undefined,
       visibility: 'public',
@@ -167,16 +153,11 @@ export async function GET(req: NextRequest) {
       limit,
       offset,
     });
-    
-    const queryTime = performance.now() - queryStart;
-    if (DEBUG_LOGGING) {
-      console.log(`[car-card] 📊 Total DB time: ${queryTime.toFixed(2)}ms - ${listings.length} results`);
-    }
 
     // Calculate hasMore based on whether we got a full page of results
     const hasMore = listings.length === limit;
 
-    // ⚡ CACHE: Store results
+    // Store results (disabled - no-op)
     const responseData = {
       data: listings,
       meta: {
@@ -184,8 +165,6 @@ export async function GET(req: NextRequest) {
         limit,
         offset,
         hasMore,
-        // Note: total count requires expensive COUNT(*) query and is not available in edge runtime
-        // Use hasMore flag for pagination instead
       },
     };
     
@@ -196,8 +175,6 @@ export async function GET(req: NextRequest) {
     Object.entries(cacheHeaders).forEach(([key, value]) => 
       response.headers.set(key, value)
     );
-    response.headers.set('X-Cache', 'MISS');
-    response.headers.set('X-Query-Time', `${queryTime.toFixed(2)}ms`);
     
     return response;
   } catch (error) {

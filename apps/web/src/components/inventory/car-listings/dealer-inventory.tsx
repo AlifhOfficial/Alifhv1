@@ -738,7 +738,7 @@ export function DealerInventory({
                             View
                           </button>
                         </Link>
-                        {canReassign && allStaffData.activeStaff.length > 1 && (
+                        {canReassign && allStaffData.activeStaff.length > 0 && (
                           <button
                             onClick={() => setReassignModal({
                               open: true,

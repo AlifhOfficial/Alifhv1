@@ -41,10 +41,10 @@ import {
 const readLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_PUBLIC);
 const updateLimiter = createRateLimiter(RATE_LIMITS_PARTNER.PROFILE_UPDATE);
 
-export const revalidate = 60; // Cache for 60 seconds
+export const revalidate = 300; // Cache for 5 minutes
 
 const CACHE_HEADERS_PUBLIC = {
-  'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+  'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
 } as const;
 
 const CACHE_HEADERS_NO_CACHE = {

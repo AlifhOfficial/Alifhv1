@@ -50,9 +50,9 @@ const searchLimiter = createRateLimiter({
 const SEARCH_CACHE_TTL = 15; // 15 seconds for search results
 const FACET_CACHE_TTL = 60; // 60 seconds for facets (change less frequently)
 
-// CDN cache headers - shorter TTL for search
+// CDN cache headers - 2min for search results
 const CDN_CACHE_HEADERS = {
-  'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+  'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=300',
 } as const;
 
 /**

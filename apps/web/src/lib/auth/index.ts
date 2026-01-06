@@ -21,12 +21,16 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { magicLink } from "better-auth/plugins/magic-link";
 import { admin } from "better-auth/plugins/admin";
 import { customSession } from "better-auth/plugins";
-import { db, memoryCache, CacheKeys, CacheTTL, eq, and } from "@alifh/database";
+import { db, CacheKeys, CacheTTL, eq, and, setSessionCacheInvalidator } from "@alifh/database";
 import * as schema from "@alifh/database";
 import { UserRole } from "@/types/auth";
 import { emailService } from "@/lib/email";
 import { ac, roles } from "@/lib/auth/permissions";
 import { AUTH_CONFIG } from "./config";
+import { sessionCache } from "@/lib/redis";
+
+// Register Redis cache invalidator with database package
+setSessionCacheInvalidator((key) => sessionCache.delete(key));
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -97,7 +101,8 @@ export const auth = betterAuth({
     customSession(async ({ user, session }) => {
       const cacheKey = CacheKeys.userSession(user.id);
       
-      const cached = memoryCache.get<{
+      // Try Redis cache first (works in serverless)
+      const cached = await sessionCache.get<{
         role: string;
         banned: boolean;
         hasPartnerAccess: boolean;
@@ -111,10 +116,6 @@ export const auth = betterAuth({
       }>(cacheKey);
 
       if (cached) {
-        // Always log cache hits in dev for debugging
-        if (process.env.NODE_ENV === 'development') {
-          console.log(`[customSession] Cache HIT for user ${user.id.slice(0, 8)}... (saved DB query)`);
-        }
         return {
           user: {
             ...user,
@@ -233,12 +234,8 @@ export const auth = betterAuth({
         useGeneratedAvatar,
       };
       
-      memoryCache.set(cacheKey, sessionData, CacheTTL.userSession);
-      
-      // Always log cache misses in dev for debugging
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`[customSession] Cache MISS for user ${user.id.slice(0, 8)}... - loaded from DB (${activePartnerships.length} memberships)`);
-      }
+      // Cache in Redis for 5 minutes (works in serverless)
+      await sessionCache.set(cacheKey, sessionData, CacheTTL.userSession);
 
       return {
         user: {

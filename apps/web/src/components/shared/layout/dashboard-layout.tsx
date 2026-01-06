@@ -135,7 +135,7 @@ export function DashboardContent({ children, header, fullHeight = false }: Dashb
   return (
     <SidebarInset className="flex flex-col relative">
       {/* Header with SidebarTrigger, ThemeToggle, and actions */}
-      <header className="flex h-14 shrink-0 items-center gap-2 bg-background px-4 z-20 sticky top-0 border-b border-border/40">
+      <header className="flex h-14 shrink-0 items-center gap-2 bg-background px-4 z-50 sticky top-0 border-b border-border/40">
         <SidebarTrigger className="-ml-1" />
         <ThemeToggle />
         {header && (
@@ -169,7 +169,7 @@ export function DashboardContent({ children, header, fullHeight = false }: Dashb
           {children}
         </div>
       ) : (
-        <div className="flex-1 overflow-y-auto -mt-14 pt-14">
+        <div className="flex-1 overflow-y-auto">
           <div className="p-4">
             {children}
           </div>

@@ -17,8 +17,8 @@ const navSections = [
   {
     collapsible: { label: "Work", icon: "briefcase" },
     items: [
-      { label: "Works For", href: "/staff-dashboard/works-for" },
-      { label: "Work Listings", href: "/staff-dashboard/work-listings" },
+      { label: "Dealership", href: "/staff-dashboard/works-for" },
+      { label: "Manage Inventory", href: "/staff-dashboard/work-listings" },
       { label: "Lead Funnels", href: "/staff-dashboard/consignment" },
     ]
   },

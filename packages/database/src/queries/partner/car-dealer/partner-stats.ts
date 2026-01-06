@@ -28,21 +28,18 @@ export interface PartnerStats {
 }
 
 /**
- * Get partner stats with caching
- * Cached for 5 minutes to reduce expensive aggregation queries
+ * Get partner stats
+ * Expensive aggregation queries
  */
 export async function calculatePartnerStats(partnerId: string): Promise<PartnerStats> {
   const cacheKey = CacheKeys.partnerStats(partnerId);
   
-  // Check cache first
+  // Check cache first (disabled - no-op)
   const cached = memoryCache.get<PartnerStats>(cacheKey);
   if (cached) {
-    console.log(`[calculatePartnerStats] Cache HIT for ${partnerId.slice(0, 8)}...`);
     return cached;
   }
 
-  const queryStart = performance.now();
-  
   try {
     const now = new Date();
 
@@ -107,10 +104,7 @@ export async function calculatePartnerStats(partnerId: string): Promise<PartnerS
       responseRate,
     };
 
-    const queryTime = performance.now() - queryStart;
-    console.log(`[calculatePartnerStats] Cache MISS for ${partnerId.slice(0, 8)}... - DB query: ${queryTime.toFixed(2)}ms (2 queries)`);
-
-    // Store in cache (5min TTL)
+    // Store in cache (disabled - no-op)
     memoryCache.set(cacheKey, stats, CacheTTL.partnerStats);
 
     return stats;

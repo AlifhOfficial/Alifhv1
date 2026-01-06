@@ -1,40 +1,13 @@
 /**
- * Memory Cache - Production
+ * Memory Cache - DISABLED (No-Op)
  * 
- * In-memory caching layer for frequently accessed database queries.
- * Lightweight Redis alternative for MVP with automatic cleanup.
+ * Cache is currently disabled. All operations are no-ops.
+ * This maintains the same interface so all existing code continues to work.
  * 
- * USAGE:
- * - Session data (5min TTL) - prevents N+1 auth queries
- * - User favorites (30s TTL) - reduces listing page load
- * - Listing details (5min TTL) - caches rarely-changing data
- * 
- * ARCHITECTURE:
- * - Uses native Map for O(1) lookups (Bun's JS engine is optimized)
- * - TTL-based expiration with lazy deletion on access
- * - Background cleanup every 60s to prevent memory leaks
- * - Single instance per Node/Bun process (singleton pattern)
- * 
- * DEPLOYMENT:
- * - Works in serverless (each instance has isolated cache)
- * - No shared state across instances (stateless design)
- * - Memory usage: ~100KB per 1000 entries
- * - Auto-destroys on process exit
- * 
- * MIGRATION PATH:
- * When scaling beyond single-server:
- * 1. Replace with Redis/Valkey for distributed caching
- * 2. Update CacheKeys to use Redis key patterns
- * 3. Implement pub/sub for cache invalidation
- * 4. Keep same interface - minimal code changes needed
+ * TODO: Implement Redis/Upstash for proper distributed caching
  * 
  * @module caches/memory-cache
  */
-
-interface CacheEntry<T> {
-  data: T;
-  expiresAt: number;
-}
 
 interface CacheStats {
   hits: number;
@@ -44,202 +17,70 @@ interface CacheStats {
   hitRate: number;
 }
 
-class MemoryCache {
-  private cache = new Map<string, CacheEntry<any>>();
-  private cleanupInterval: ReturnType<typeof setInterval> | null = null;
-  private stats = {
-    hits: 0,
-    misses: 0,
-    sets: 0,
-    deletes: 0,
-  };
-
-  constructor() {
-    // Background cleanup every 60s to prevent memory bloat
-    if (typeof globalThis.Bun !== 'undefined') {
-      this.cleanupInterval = setInterval(() => this.cleanup(), 60000);
-    }
+/**
+ * No-Op Cache - Does nothing but maintains interface
+ * All methods are safe to call but have no effect
+ */
+class NoOpCache {
+  /** Always returns null - cache disabled */
+  get<T>(_key: string): T | null {
+    return null;
   }
 
-  /**
-   * Get value from cache
-   */
-  get<T>(key: string): T | null {
-    const entry = this.cache.get(key);
-    
-    if (!entry) {
-      this.stats.misses++;
-      return null;
-    }
-    
-    // Check if expired
-    if (Date.now() > entry.expiresAt) {
-      this.cache.delete(key);
-      this.stats.misses++;
-      return null;
-    }
-    
-    this.stats.hits++;
-    return entry.data;
+  /** Does nothing - cache disabled */
+  set<T>(_key: string, _value: T, _ttlSeconds: number = 60): void {
+    // No-op
   }
 
-  /**
-   * Set value in cache with TTL (in seconds)
-   */
-  set<T>(key: string, value: T, ttlSeconds: number = 60): void {
-    this.cache.set(key, {
-      data: value,
-      expiresAt: Date.now() + (ttlSeconds * 1000),
-    });
-    this.stats.sets++;
+  /** Does nothing - cache disabled */
+  delete(..._keys: string[]): void {
+    // No-op
   }
 
-  /**
-   * Delete key from cache
-   */
-  delete(...keys: string[]): void {
-    for (const key of keys) {
-      this.cache.delete(key);
-      this.stats.deletes++;
-    }
+  /** Does nothing - cache disabled */
+  deleteByPrefix(_prefix: string): number {
+    return 0;
   }
 
-  /**
-   * Delete all keys matching a prefix
-   * Useful for invalidating families of cached queries (e.g. listings cards).
-   *
-   * @returns number of deleted keys
-   */
-  deleteByPrefix(prefix: string): number {
-    let deleted = 0;
-    for (const key of this.cache.keys()) {
-      if (key.startsWith(prefix)) {
-        this.cache.delete(key);
-        deleted++;
-      }
-    }
-    return deleted;
-  }
-
-  /**
-   * Clear all cache
-   */
+  /** Does nothing - cache disabled */
   clear(): void {
-    this.cache.clear();
+    // No-op
   }
 
-  /**
-   * Get cache stats with hit rate
-   */
+  /** Returns empty stats */
   getStats(): CacheStats {
-    let expired = 0;
-    const now = Date.now();
-    
-    for (const entry of this.cache.values()) {
-      if (now > entry.expiresAt) expired++;
-    }
-    
-    const totalRequests = this.stats.hits + this.stats.misses;
-    const hitRate = totalRequests > 0 ? (this.stats.hits / totalRequests) * 100 : 0;
-    
     return {
-      hits: this.stats.hits,
-      misses: this.stats.misses,
-      sets: this.stats.sets,
-      deletes: this.stats.deletes,
-      hitRate: Math.round(hitRate * 100) / 100, // Round to 2 decimals
-    };
-  }
-
-  /**
-   * Reset stats counters
-   */
-  resetStats(): void {
-    this.stats = {
       hits: 0,
       misses: 0,
       sets: 0,
       deletes: 0,
+      hitRate: 0,
     };
   }
 
-  /**
-   * Get cache info (for monitoring)
-   */
+  /** Does nothing */
+  resetStats(): void {
+    // No-op
+  }
+
+  /** Returns disabled cache info */
   info() {
-    let expired = 0;
-    const now = Date.now();
-    
-    for (const entry of this.cache.values()) {
-      if (now > entry.expiresAt) expired++;
-    }
-    
-    const totalRequests = this.stats.hits + this.stats.misses;
-    const hitRate = totalRequests > 0 ? (this.stats.hits / totalRequests) * 100 : 0;
-    
     return {
-      entries: {
-        total: this.cache.size,
-        expired,
-        active: this.cache.size - expired,
-      },
-      performance: {
-        hits: this.stats.hits,
-        misses: this.stats.misses,
-        hitRate: `${Math.round(hitRate * 100) / 100}%`,
-      },
-      operations: {
-        sets: this.stats.sets,
-        deletes: this.stats.deletes,
-      },
+      status: 'disabled',
+      entries: { total: 0, expired: 0, active: 0 },
+      performance: { hits: 0, misses: 0, hitRate: '0%' },
+      operations: { sets: 0, deletes: 0 },
     };
   }
 
-  /**
-   * Remove expired entries
-   */
-  private cleanup(): void {
-    const now = Date.now();
-    const toDelete: string[] = [];
-    
-    for (const [key, entry] of this.cache.entries()) {
-      if (now > entry.expiresAt) {
-        toDelete.push(key);
-      }
-    }
-    
-    for (const key of toDelete) {
-      this.cache.delete(key);
-    }
-    
-    if (toDelete.length > 0) {
-      console.log(`[MemoryCache] Cleaned up ${toDelete.length} expired entries`);
-    }
-  }
-
-  /**
-   * Destroy cache and cleanup
-   */
+  /** Does nothing */
   destroy(): void {
-    if (this.cleanupInterval) {
-      clearInterval(this.cleanupInterval);
-      this.cleanupInterval = null;
-    }
-    this.cache.clear();
+    // No-op
   }
 }
 
-// Singleton instance that survives hot reloads in development
-// Use globalThis to persist across module re-evaluations
-const globalForCache = globalThis as unknown as { 
-  memoryCache: MemoryCache | undefined 
-};
-
-export const memoryCache = globalForCache.memoryCache ?? new MemoryCache();
-
-if (process.env.NODE_ENV !== 'production') {
-  globalForCache.memoryCache = memoryCache;
-}
+// Single instance - no need for globalThis since it stores nothing
+export const memoryCache = new NoOpCache();
 
 /**
  * Cache Keys

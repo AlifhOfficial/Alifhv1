@@ -61,6 +61,10 @@ export async function GET(req: NextRequest) {
         offset,
         hasMore: offset + result.listings.length < result.total,
       },
+    }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+      },
     });
   } catch (error) {
     console.error('[API] Error fetching public black listings:', error);

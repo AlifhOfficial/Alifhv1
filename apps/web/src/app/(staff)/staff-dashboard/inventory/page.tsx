@@ -10,8 +10,8 @@ import { ListingsView } from '@/components/listings/listings-view';
 export default function StaffInventoryPage() {
   return (
     <Suspense fallback={<PageSkeleton />}>
-      {/* DashboardContent wraps pages in p-4; cancel it for full-bleed listings */}
-      <div className="-m-4">
+      {/* DashboardContent wraps pages in p-4; cancel horizontal margins for full-bleed listings */}
+      <div className="-mx-4 -mb-4">
         <ListingsView embedded />
       </div>
     </Suspense>
@@ -20,7 +20,7 @@ export default function StaffInventoryPage() {
 
 function PageSkeleton() {
   return (
-    <div className="-m-4 min-h-screen bg-background">
+    <div className="-mx-4 -mb-4 min-h-screen bg-background">
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex">
           {/* Sidebar skeleton - matches ListingsSidebar structure */}

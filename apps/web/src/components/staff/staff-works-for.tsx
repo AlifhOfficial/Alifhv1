@@ -1,46 +1,21 @@
 /**
  * Staff Works For Component
- * Displays the partner profile information for the staff member
- * Following profile-view minimal design system
+ * Displays the partner profile using SellerProfileCard component
+ * Reuses existing listing detail seller card for consistency
  */
 
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
-import { Building2, Mail, Phone, MapPin, Globe, Star, Users, LogOut, AlertTriangle } from 'lucide-react';
-import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
+import { LogOut, AlertTriangle, Building2 } from 'lucide-react';
+import { SellerProfileCard } from '@/components/listings/listing-detail/seller-profile-card';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/providers/auth-provider';
 import type { ExtendedUser } from '@/types/auth';
-
-interface PartnerProfile {
-  id: string;
-  companyNameLegal: string;
-  brandName: string;
-  email: string;
-  phone: string;
-  website?: string | null;
-  address?: string | null;
-  emirate?: string | null;
-  city?: string | null;
-  status: 'pending' | 'active' | 'suspended' | 'cancelled';
-  tier: 'standard' | 'gold' | 'platinum' | 'black';
-  logo?: string | null;
-  description?: string | null;
-  specialties?: string[];
-  experienceYears?: number | null;
-  foundedYear?: number | null;
-  googleRating?: number | null;
-  googleReviewCount: number;
-  platformRating?: number | null;
-  platformReviewCount: number;
-  showroomCount: number;
-  isVerified: boolean;
-  badges?: string[];
-  tags?: string[];
-}
+import type { PartnerSellerData } from '@/hooks/listings/use-listing-detail';
 
 export function StaffWorksFor() {
   const router = useRouter();
@@ -54,27 +29,71 @@ export function StaffWorksFor() {
   const user = session as ExtendedUser | null;
   const membership = user?.partnerMemberships?.[0];
 
-  const { data: partnerData, isLoading: profileLoading, error } = useQuery({
-    queryKey: ['staff', 'partner-profile', membership?.partnerId],
+  const { data: worksForData, isLoading: profileLoading, error } = useQuery<PartnerSellerData>({
+    queryKey: ['staff', 'works-for', membership?.partnerId],
     queryFn: async () => {
       if (!membership) {
         throw new Error('No partner membership found');
       }
       
-      const res = await fetch(`/api/partners/${membership.partnerId}/dealer-profile`);
-      if (!res.ok) throw new Error(`Failed to fetch partner profile: ${res.status}`);
+      // Fetch partner profile and stats (same endpoints as listing detail page)
+      const [profileRes, statsRes] = await Promise.all([
+        fetch(`/api/partners/${membership.partnerId}/dealer-profile`),
+        fetch(`/api/partners/${membership.partnerId}/stats`)
+      ]);
       
-      const profile = await res.json();
+      if (!profileRes.ok) throw new Error(`Failed to fetch partner profile: ${profileRes.status}`);
+      
+      const profile = await profileRes.json();
+      const stats = statsRes.ok ? await statsRes.json() : null;
+      
+      // Transform to PartnerSellerData structure
       return {
-        ...profile,
-        staffRole: membership.staffRole,
-        permissions: membership.permissions,
+        type: 'partner' as const,
+        partner: {
+          id: profile.id,
+          companyNameLegal: profile.companyNameLegal,
+          brandName: profile.brandName,
+          tradeLicense: profile.tradeLicense,
+          status: profile.status,
+          tier: profile.tier,
+          email: profile.email,
+          phone: profile.phone,
+          website: profile.website,
+          address: profile.address,
+          emirate: profile.emirate,
+          city: profile.city,
+          locationLat: profile.locationLat,
+          locationLng: profile.locationLng,
+          showroomCount: profile.showroomCount ?? 1,
+          logo: profile.logo,
+          heroImage: profile.heroImage,
+          description: profile.description,
+          specialties: profile.specialties ?? [],
+          experienceYears: profile.experienceYears,
+          foundedYear: profile.foundedYear,
+          googleReviewUrl: profile.googleReviewUrl,
+          googleRating: profile.googleRating,
+          googleReviewCount: profile.googleReviewCount ?? 0,
+          platformRating: profile.platformRating,
+          platformReviewCount: profile.platformReviewCount ?? 0,
+          isVerified: profile.isVerified,
+          badges: profile.badges ?? [],
+          tags: profile.tags ?? [],
+        },
+        partnerStats: stats ?? {
+          inventoryCount: 0,
+          totalSales: 0,
+          responseRate: null,
+          responseTime: null,
+        },
       };
     },
-    enabled: !!membership?.partnerId, // Only fetch when we have a membership
+    enabled: !!membership?.partnerId,
   });
 
   const isLoading = sessionLoading || profileLoading;
+  const isOwner = membership?.staffRole === 'owner';
 
   const resignMutation = useMutation({
     mutationFn: async (reason?: string) => {
@@ -94,9 +113,7 @@ export function StaffWorksFor() {
         title: 'Resigned Successfully',
         description: 'You have left the organization. Redirecting...',
       });
-      // Invalidate all queries to refresh session data
       queryClient.invalidateQueries();
-      // Redirect to user dashboard after short delay
       setTimeout(() => {
         router.push('/user-dashboard');
       }, 1500);
@@ -114,23 +131,18 @@ export function StaffWorksFor() {
     resignMutation.mutate(resignReason || undefined);
   };
 
-  const partner: (PartnerProfile & { staffRole?: string; permissions?: any }) | undefined = partnerData;
-
   if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto px-6 py-16">
-        <div className="animate-pulse space-y-8">
-          <div className="h-10 bg-secondary/50 rounded-xl w-48" />
-          <div className="h-96 bg-secondary/50 rounded-xl" />
-        </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
-  if (error || !partner) {
+  if (error || !worksForData) {
     return (
-      <div className="max-w-4xl mx-auto px-6 py-16">
-        <div className="text-center py-24 rounded-xl border border-border">
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
           <Building2 className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
           <h3 className="font-medium mb-2">Unable to load partner information</h3>
           <p className="text-sm text-muted-foreground">
@@ -142,291 +154,131 @@ export function StaffWorksFor() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-16 space-y-16">
+    <div className="max-w-4xl mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-10">
       
       {/* Header */}
-      <section className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Works For</h1>
+      <div className="space-y-1.5">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">Dealership</h1>
         <p className="text-sm text-muted-foreground">
-          Details about the company you work for
+          Your workplace at {worksForData.partner.brandName}
         </p>
-      </section>
+      </div>
 
-      {/* Partner Overview */}
-      <section className="space-y-8">
-        <div className="rounded-xl border border-border p-8 space-y-8">
-          
-          {/* Company Header */}
-          <div className="flex items-start gap-6">
-            <BrandAvatar
-              logoUrl={partner.logo}
-              brandName={partner.brandName}
-              size="lg"
-            />
+      {/* Partner Profile Card - Reusing existing component */}
+      <div className="rounded-xl border border-border/40 bg-sidebar p-6">
+        <SellerProfileCard sellerData={worksForData} />
+      </div>
 
-            <div className="flex-1 space-y-4">
-              <div>
-                <div className="flex items-center gap-3 mb-1">
-                  <h2 className="text-xl font-semibold">{partner.brandName}</h2>
-                  {partner.isVerified && (
-                    <span className="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-500 text-xs font-medium">
-                      Verified
-                    </span>
-                  )}
-                </div>
-                <p className="text-sm text-muted-foreground">{partner.companyNameLegal}</p>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2">
-                <span className={`px-2 py-0.5 rounded-md text-xs font-medium ${
-                  partner.status === 'active' 
-                    ? 'bg-green-500/10 text-green-500' 
-                    : 'bg-yellow-500/10 text-yellow-500'
-                }`}>
-                  {partner.status}
-                </span>
-                <span className="px-2 py-0.5 rounded-md bg-foreground/5 text-foreground text-xs font-medium capitalize">
-                  {partner.tier}
-                </span>
-                {partner.staffRole && (
-                  <span className="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-500 text-xs font-medium capitalize">
-                    {partner.staffRole}
-                  </span>
-                )}
-              </div>
-
-              {partner.description && (
-                <p className="text-sm leading-relaxed">{partner.description}</p>
-              )}
+      {/* Resign Section - Only for non-owners */}
+      {!isOwner && (
+        <div className="rounded-xl border border-border/40 bg-sidebar p-6 space-y-4">
+          <div className="flex items-start gap-3">
+            <div className="p-2 rounded-lg bg-red-500/10 flex-shrink-0">
+              <LogOut className="w-5 h-5 text-red-500" />
+            </div>
+            <div className="flex-1 space-y-1">
+              <h3 className="text-base font-semibold text-foreground">Leave Organization</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                This will remove your access to all partner features. This action cannot be undone.
+              </p>
             </div>
           </div>
-
-          {/* Contact Info */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-8 border-t border-border/40">
-            {partner.email && (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Mail className="w-3.5 h-3.5" />
-                  <span>Email</span>
-                </div>
-                <p className="text-sm font-medium">{partner.email}</p>
-              </div>
-            )}
-            
-            {partner.phone && (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Phone className="w-3.5 h-3.5" />
-                  <span>Phone</span>
-                </div>
-                <p className="text-sm font-medium">{partner.phone}</p>
-              </div>
-            )}
-
-            {partner.website && (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Globe className="w-3.5 h-3.5" />
-                  <span>Website</span>
-                </div>
-                <a
-                  href={partner.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium text-blue-500 hover:text-blue-600 transition-colors"
-                >
-                  {partner.website}
-                </a>
-              </div>
-            )}
-
-            {(partner.address || partner.city || partner.emirate) && (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="w-3.5 h-3.5" />
-                  <span>Location</span>
-                </div>
-                <p className="text-sm font-medium">
-                  {[partner.address, partner.city, partner.emirate]
-                    .filter(Boolean)
-                    .join(', ')}
-                </p>
-              </div>
-            )}
-          </div>
+          <button
+            onClick={() => setShowResignModal(true)}
+            className="px-5 py-2.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition-colors"
+          >
+            Resign from {worksForData.partner.brandName}
+          </button>
         </div>
-      </section>
-
-      {/* Stats */}
-      <section className="space-y-8">
-        <div className="border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">Statistics</h3>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border divide-x divide-border">
-          <div className="p-8 text-center">
-            <Users className="w-5 h-5 text-blue-500 mx-auto mb-3" />
-            <p className="text-xs text-muted-foreground mb-1">Showrooms</p>
-            <p className="text-xl font-semibold">{partner.showroomCount || 1}</p>
-          </div>
-
-          {partner.platformRating && (
-            <div className="p-8 text-center">
-              <Star className="w-5 h-5 text-yellow-500 mx-auto mb-3" />
-              <p className="text-xs text-muted-foreground mb-1">Platform Rating</p>
-              <p className="text-xl font-semibold">{partner.platformRating.toFixed(1)}</p>
-              <p className="text-xs text-muted-foreground mt-1">{partner.platformReviewCount} reviews</p>
-            </div>
-          )}
-
-          {partner.googleRating && (
-            <div className="p-8 text-center">
-              <Star className="w-5 h-5 text-yellow-500 mx-auto mb-3" />
-              <p className="text-xs text-muted-foreground mb-1">Google</p>
-              <p className="text-xl font-semibold">{partner.googleRating.toFixed(1)}</p>
-              <p className="text-xs text-muted-foreground mt-1">{partner.googleReviewCount} reviews</p>
-            </div>
-          )}
-
-          {partner.experienceYears && (
-            <div className="p-8 text-center">
-              <Building2 className="w-5 h-5 text-foreground/50 mx-auto mb-3" />
-              <p className="text-xs text-muted-foreground mb-1">Experience</p>
-              <p className="text-xl font-semibold">{partner.experienceYears}</p>
-              <p className="text-xs text-muted-foreground mt-1">years</p>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Badges & Tags */}
-      {((partner.badges && partner.badges.length > 0) || 
-        (partner.tags && partner.tags.length > 0) || 
-        (partner.specialties && partner.specialties.length > 0)) && (
-        <section className="space-y-8">
-          <div className="border-b border-border/40 pb-2">
-            <h3 className="text-lg font-medium tracking-tight">Specialties & Badges</h3>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {partner.specialties?.map((spec, index) => (
-              <span 
-                key={`spec-${index}`}
-                className="px-3 py-1 rounded-md bg-blue-500/10 text-blue-500 text-xs font-medium"
-              >
-                {spec}
-              </span>
-            ))}
-            {partner.badges?.map((badge, index) => (
-              <span 
-                key={`badge-${index}`}
-                className="px-3 py-1 rounded-md bg-green-500/10 text-green-500 text-xs font-medium"
-              >
-                {badge.replace(/_/g, ' ')}
-              </span>
-            ))}
-            {partner.tags?.map((tag, index) => (
-              <span 
-                key={`tag-${index}`}
-                className="px-3 py-1 rounded-md bg-foreground/5 text-foreground text-xs"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </section>
       )}
 
-      {/* Resign Section */}
-      {partner.staffRole !== 'owner' && (
-        <section className="space-y-8">
-          <div className="border-b border-border/40 pb-2">
-            <h3 className="text-lg font-medium tracking-tight text-red-500">Leave Organization</h3>
-          </div>
-
-          <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6">
-            <div className="flex items-start gap-4">
-              <div className="p-2 rounded-lg bg-red-500/10">
-                <LogOut className="w-5 h-5 text-red-500" />
+      {/* Resign Confirmation Modal */}
+      {showResignModal && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowResignModal(false)}
+          />
+          <div className="relative bg-sidebar rounded-xl border border-border/40 shadow-2xl max-w-md w-full p-6">
+            <div className="space-y-5">
+              {/* Header with Icon */}
+              <div className="flex items-start gap-3">
+                <div className="p-2 rounded-lg bg-red-500/10 flex-shrink-0">
+                  <AlertTriangle className="w-5 h-5 text-red-500" />
+                </div>
+                <div className="flex-1 space-y-1">
+                  <h3 className="text-lg sm:text-xl font-semibold tracking-tight text-foreground">Confirm Resignation</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">This action cannot be undone</p>
+                </div>
               </div>
-              <div className="flex-1">
-                <h4 className="font-medium mb-1">Resign from {partner.brandName}</h4>
-                <p className="text-sm text-muted-foreground mb-4">
-                  This will remove your access to all partner features including listings, messaging, and team collaboration. This action cannot be undone.
+
+              {/* Divider */}
+              <div className="border-t border-border" />
+
+              {/* Content */}
+              <div className="space-y-3">
+                <p className="text-sm sm:text-[15px] text-foreground leading-relaxed">
+                  Are you sure you want to resign from <span className="font-semibold">{worksForData.partner.brandName}</span>?
                 </p>
+                <p className="text-[13px] uppercase tracking-wider font-semibold text-muted-foreground">You will lose access to:</p>
+                
+                <ul className="space-y-2 pl-1">
+                  <li className="flex items-start gap-2.5 text-sm text-muted-foreground">
+                    <div className="w-1 h-1 rounded-full bg-red-500 flex-shrink-0 mt-2" />
+                    <span>Partner inventory and listings</span>
+                  </li>
+                  <li className="flex items-start gap-2.5 text-sm text-muted-foreground">
+                    <div className="w-1 h-1 rounded-full bg-red-500 flex-shrink-0 mt-2" />
+                    <span>Team messaging and collaboration</span>
+                  </li>
+                  <li className="flex items-start gap-2.5 text-sm text-muted-foreground">
+                    <div className="w-1 h-1 rounded-full bg-red-500 flex-shrink-0 mt-2" />
+                    <span>Customer leads and bookings</span>
+                  </li>
+                  <li className="flex items-start gap-2.5 text-sm text-muted-foreground">
+                    <div className="w-1 h-1 rounded-full bg-red-500 flex-shrink-0 mt-2" />
+                    <span>All staff-related features</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Reason Input */}
+              <div className="space-y-2">
+                <label className="text-[13px] uppercase tracking-wider font-semibold text-muted-foreground">
+                  Reason for leaving <span className="text-muted-foreground/60">(optional)</span>
+                </label>
+                <textarea
+                  value={resignReason}
+                  onChange={(e) => setResignReason(e.target.value)}
+                  placeholder="Let us know why you're leaving..."
+                  className="w-full h-24 px-4 py-3 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500/50 transition-all"
+                />
+              </div>
+
+              {/* Divider */}
+              <div className="border-t border-border" />
+
+              {/* Actions */}
+              <div className="flex gap-3">
                 <button
-                  onClick={() => setShowResignModal(true)}
-                  className="px-5 py-2 rounded-full border border-red-500 text-red-500 hover:bg-red-500 hover:text-white text-sm font-medium transition-colors"
+                  onClick={() => setShowResignModal(false)}
+                  disabled={resignMutation.isPending}
+                  className="flex-1 px-5 py-2.5 rounded-lg border border-border bg-background hover:bg-muted text-sm font-medium text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Resign
+                  Cancel
+                </button>
+                <button
+                  onClick={handleResign}
+                  disabled={resignMutation.isPending}
+                  className="flex-1 px-5 py-2.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {resignMutation.isPending ? 'Resigning...' : 'Confirm Resignation'}
                 </button>
               </div>
             </div>
           </div>
-        </section>
-      )}
-
-      {/* Resign Confirmation Modal */}
-      {showResignModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div 
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setShowResignModal(false)}
-          />
-          <div className="relative bg-background rounded-xl border border-border p-8 max-w-md w-full mx-4 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-red-500/10">
-                <AlertTriangle className="w-6 h-6 text-red-500" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold">Confirm Resignation</h3>
-                <p className="text-sm text-muted-foreground">This action cannot be undone</p>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <p className="text-sm">
-                Are you sure you want to resign from <span className="font-medium">{partner.brandName}</span>? 
-                You will lose access to:
-              </p>
-              <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
-                <li>Partner inventory and listings</li>
-                <li>Team messaging and collaboration</li>
-                <li>Customer leads and bookings</li>
-                <li>All staff-related features</li>
-              </ul>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm text-muted-foreground">
-                Reason for leaving (optional)
-              </label>
-              <textarea
-                value={resignReason}
-                onChange={(e) => setResignReason(e.target.value)}
-                placeholder="Enter your reason..."
-                className="w-full h-24 px-4 py-3 rounded-lg border border-border bg-transparent text-sm resize-none focus:outline-none focus:ring-1 focus:ring-red-500"
-              />
-            </div>
-
-            <div className="flex gap-3 pt-2">
-              <button
-                onClick={() => setShowResignModal(false)}
-                disabled={resignMutation.isPending}
-                className="flex-1 px-5 py-2.5 rounded-full border border-border hover:bg-secondary/10 text-sm font-medium transition-colors disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleResign}
-                disabled={resignMutation.isPending}
-                className="flex-1 px-5 py-2.5 rounded-full bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition-colors disabled:opacity-50"
-              >
-                {resignMutation.isPending ? 'Resigning...' : 'Confirm Resign'}
-              </button>
-            </div>
-          </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

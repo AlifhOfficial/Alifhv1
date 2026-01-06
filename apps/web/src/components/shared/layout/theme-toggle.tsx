@@ -60,7 +60,7 @@ export function ThemeToggle() {
 
       {showMenu && (
         <div 
-          className="absolute right-0 top-full mt-2 w-32 bg-sidebar border border-sidebar-border rounded-lg shadow-lg z-50 overflow-hidden"
+          className="absolute left-0 top-full mt-2 w-32 bg-sidebar border border-sidebar-border rounded-lg shadow-lg z-50 overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="py-1.5">

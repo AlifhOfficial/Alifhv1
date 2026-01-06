@@ -55,21 +55,18 @@ export type ExtendedUserProfile = UserProfileRecord & {
 
 /**
  * Get profile by user ID with email verification status and basic user info
- * Uses single JOIN query + memory cache (2min TTL)
+ * Uses single JOIN query
  * Includes user.name, user.image, user.createdAt for UI fallbacks
  */
 export const getUserProfileByUserId = async (userId: string): Promise<ExtendedUserProfile | null> => {
   const cacheKey = CacheKeys.userProfile(userId);
   
-  // Check cache first
+  // Check cache first (disabled - no-op)
   const cached = memoryCache.get<ExtendedUserProfile>(cacheKey);
   if (cached) {
-    console.log(`[getUserProfileByUserId] Cache HIT for ${userId.slice(0, 8)}...`);
     return cached;
   }
 
-  const queryStart = performance.now();
-  
   // Single JOIN query - includes all needed user table fields
   const [result] = await db
     .select({
@@ -88,10 +85,7 @@ export const getUserProfileByUserId = async (userId: string): Promise<ExtendedUs
     .where(eq(userProfile.userId, userId))
     .limit(1);
 
-  const queryTime = performance.now() - queryStart;
-
   if (!result) {
-    console.log(`[getUserProfileByUserId] Cache MISS for ${userId.slice(0, 8)}... - not found`);
     return null;
   }
 
@@ -104,9 +98,7 @@ export const getUserProfileByUserId = async (userId: string): Promise<ExtendedUs
     userCreatedAt: result.userCreatedAt,
   };
 
-  console.log(`[getUserProfileByUserId] Cache MISS for ${userId.slice(0, 8)}... - DB query: ${queryTime.toFixed(2)}ms`);
-
-  // Cache the result
+  // Cache the result (disabled - no-op)
   memoryCache.set(cacheKey, profile, CacheTTL.userProfile);
 
   return profile;

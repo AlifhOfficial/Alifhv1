@@ -59,7 +59,10 @@ export async function GET(
 
     const stats = await calculatePartnerStats(partnerId);
 
-    return NextResponse.json(stats);
+    const response = NextResponse.json(stats);
+    // Cache for 5min - expensive aggregation query
+    response.headers.set('Cache-Control', 'private, max-age=300, stale-while-revalidate=600');
+    return response;
   } catch (error) {
     console.error('[Partner Stats API] Error:', error);
     return NextResponse.json(

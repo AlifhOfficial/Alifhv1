@@ -57,17 +57,15 @@ export type DealerBaseProfile = {
 export async function getDealerBaseProfile(partnerId: string, skipCache = false): Promise<DealerBaseProfile | null> {
   const cacheKey = CacheKeys.partnerMiniProfile(partnerId);
   
-  // Check cache first (unless skip requested)
+  // Check cache first (disabled - no-op)
   if (!skipCache) {
     const cached = memoryCache.get<DealerBaseProfile>(cacheKey);
     if (cached) {
-      console.log(`[getDealerBaseProfile] Cache HIT for ${partnerId.slice(0, 8)}...`);
       return cached;
     }
   }
 
   // Use select() for better performance - only fetches specified columns
-  const queryStart = performance.now();
   const [result] = await db
     .select({
       // Identity & Legal
@@ -123,9 +121,6 @@ export async function getDealerBaseProfile(partnerId: string, skipCache = false)
     .from(partner)
     .where(eq(partner.id, partnerId))
     .limit(1);
-  
-  const queryTime = performance.now() - queryStart;
-  console.log(`[getDealerBaseProfile] Cache MISS for ${partnerId.slice(0, 8)}... - DB query: ${queryTime.toFixed(2)}ms`);
 
   if (!result) return null;
 

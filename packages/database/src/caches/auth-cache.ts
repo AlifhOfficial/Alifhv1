@@ -14,14 +14,29 @@
  * workflows while keeping cache concerns isolated from query logic.
  * 
  * CACHE STRATEGY:
- * - Session cache TTL: 5 minutes
+ * - Session cache TTL: 5 minutes (in Redis for serverless)
  * - Invalidate eagerly on mutations to prevent stale role/permission data
  * - Partner staff changes reflect within 5min without invalidation
+ * 
+ * NOTE: Redis invalidation is handled by the web app's sessionCache module.
+ * This module is kept for backward compatibility but the actual invalidation
+ * happens via the exported invalidateSessionCache callback set by the web app.
  * 
  * @module caches/auth-cache
  */
 
-import { memoryCache, CacheKeys } from "./memory-cache";
+import { CacheKeys } from "./memory-cache";
+
+// Callback to invalidate session in Redis (set by web app at startup)
+let invalidateSessionCacheCallback: ((key: string) => Promise<void>) | null = null;
+
+/**
+ * Register the Redis cache invalidation callback
+ * Called by the web app to connect the database package to Redis
+ */
+export function setSessionCacheInvalidator(callback: (key: string) => Promise<void>): void {
+  invalidateSessionCacheCallback = callback;
+}
 
 /**
  * Invalidate user session cache after auth changes
@@ -33,7 +48,14 @@ import { memoryCache, CacheKeys } from "./memory-cache";
  * invalidateUserSession(userId);
  */
 export function invalidateUserSession(userId: string): void {
-  memoryCache.delete(CacheKeys.userSession(userId));
+  const key = CacheKeys.userSession(userId);
+  
+  // Fire and forget - don't block the mutation
+  if (invalidateSessionCacheCallback) {
+    invalidateSessionCacheCallback(key).catch(err => {
+      console.error('[auth-cache] Failed to invalidate session:', err);
+    });
+  }
 }
 
 /**
@@ -46,8 +68,7 @@ export function invalidateUserSession(userId: string): void {
  * invalidateUserSessions(userIds);
  */
 export function invalidateUserSessions(userIds: string[]): void {
-  const keys = userIds.map(id => CacheKeys.userSession(id));
-  memoryCache.delete(...keys);
+  userIds.forEach(id => invalidateUserSession(id));
 }
 
 /**

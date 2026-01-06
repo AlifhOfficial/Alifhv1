@@ -35,10 +35,10 @@ const detailedLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_PUBLIC);
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const revalidate = 120;
+export const revalidate = 300;
 
 const CACHE_HEADERS = {
-  'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=300',
+  'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
 } as const;
 
 interface RouteParams {
