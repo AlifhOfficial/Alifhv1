@@ -98,6 +98,38 @@ export function useMessages(conversationId: string, userId?: string, options: Us
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const watchingRef = useRef(false);
 
+  // Update state when initial values change (from conversation refresh)
+  // Only update if the new value is MORE recent than current state
+  useEffect(() => {
+    if (options.initialLastSeenAt) {
+      const d = options.initialLastSeenAt instanceof Date 
+        ? options.initialLastSeenAt 
+        : new Date(options.initialLastSeenAt);
+      if (!isNaN(d.getTime())) {
+        setOtherLastSeenAt(prev => {
+          // Only update if new value is more recent or we have no value
+          if (!prev || d > prev) return d;
+          return prev;
+        });
+      }
+    }
+  }, [options.initialLastSeenAt]);
+
+  useEffect(() => {
+    if (options.initialLastReadAt) {
+      const d = options.initialLastReadAt instanceof Date 
+        ? options.initialLastReadAt 
+        : new Date(options.initialLastReadAt);
+      if (!isNaN(d.getTime())) {
+        setOtherLastReadAt(prev => {
+          // Only update if new value is more recent or we have no value
+          if (!prev || d > prev) return d;
+          return prev;
+        });
+      }
+    }
+  }, [options.initialLastReadAt]);
+
   // Query
   const query = useInfiniteQuery({
     queryKey: ['messages', conversationId],
