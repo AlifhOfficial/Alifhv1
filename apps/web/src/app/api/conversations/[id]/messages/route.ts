@@ -27,7 +27,6 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const startTime = Date.now();
   try {
     const user = await getSessionUser();
     if (!user?.id) {
@@ -49,16 +48,11 @@ export async function GET(
     const limit = parseInt(searchParams.get('limit') || '50');
     const cursor = searchParams.get('cursor') || undefined;
 
-    console.log(`🔍 [API] GET /api/conversations/${conversationId}/messages - userId: ${user.id}, cursor: ${cursor || 'none'}, limit: ${limit}`);
-
     const messages = await getMessages(conversationId, {
       limit,
       cursor,
       userId: user.id, // Verify user is participant
     });
-
-    const duration = Date.now() - startTime;
-    console.log(`✅ [API] GET /api/conversations/${conversationId}/messages - ${messages.length} messages, ${duration}ms`);
 
     return NextResponse.json({
       messages,
@@ -66,17 +60,14 @@ export async function GET(
       nextCursor: messages.length === limit ? messages[messages.length - 1].createdAt.toISOString() : null,
     });
   } catch (error) {
-    const duration = Date.now() - startTime;
     // Handle unauthorized access
     if (error instanceof Error && error.message.includes('not a participant')) {
-      console.error(`❌ [API] GET /api/conversations/*/messages - Unauthorized after ${duration}ms`);
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 403 }
       );
     }
 
-    console.error(`❌ [API] GET /api/conversations/*/messages - Failed after ${duration}ms:`, error);
     return NextResponse.json(
       { error: 'Failed to fetch messages' },
       { status: 500 }
@@ -93,7 +84,6 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const startTime = Date.now();
   try {
     const user = await getSessionUser();
     if (!user?.id) {
@@ -113,8 +103,6 @@ export async function POST(
     const { id: conversationId } = await params;
     const body = await req.json();
     const { text, mediaUrl, mediaType, mediaThumbnail, mediaMetadata } = body;
-
-    console.log(`📤 [API] POST /api/conversations/${conversationId}/messages - userId: ${user.id}, hasText: ${!!text}, hasMedia: ${!!mediaUrl}`);
 
     // Validate message content
     if (!text && !mediaUrl) {
@@ -143,7 +131,6 @@ export async function POST(
       
       // Get participants to broadcast to their user channels
       const participants = await getConversationParticipants(conversationId);
-      console.log(`📡 [API] Broadcasting new_message to ${participants.length} participants`);
       
       // Broadcast to ALL participants in PARALLEL (non-blocking)
       Promise.all(
@@ -160,21 +147,14 @@ export async function POST(
                 message,
               },
             }),
-          }).catch((err) => {
-            console.error(`❌ [API] WebSocket broadcast failed for user ${participant.userId}:`, err);
-          })
+          }).catch(() => {})
         )
       ).catch(() => {}); // Fire and forget, don't block response
-
-      const duration = Date.now() - startTime;
-      console.log(`✅ [API] POST /api/conversations/${conversationId}/messages - Message sent, ${duration}ms`);
 
       return NextResponse.json({ message });
     } catch (error) {
       // If message send fails, user is likely not a participant
       if (error instanceof Error && error.message.includes('participant')) {
-        const duration = Date.now() - startTime;
-        console.error(`❌ [API] POST /api/conversations/*/messages - Unauthorized after ${duration}ms`);
         return NextResponse.json(
           { error: 'Unauthorized' },
           { status: 403 }
@@ -183,8 +163,6 @@ export async function POST(
       throw error;
     }
   } catch (error) {
-    const duration = Date.now() - startTime;
-    console.error(`❌ [API] POST /api/conversations/*/messages - Failed after ${duration}ms:`, error);
     // Return detailed error in development
     return NextResponse.json(
       { 

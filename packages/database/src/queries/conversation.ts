@@ -77,10 +77,7 @@ export async function createOrGetConversation(params: {
   type?: 'direct' | 'inquiry' | 'negotiation' | 'booking' | 'consignment' | 'support' | 'system';
   subject?: string;
 }): Promise<string> {
-  const startTime = Date.now();
   const { initiatedBy, otherUserId, listingId, subject } = params;
-
-  console.log(`🔍 [DB] createOrGetConversation - initiatedBy: ${initiatedBy}, otherUserId: ${otherUserId}, listingId: ${listingId || 'none'}`);
 
   // Derive partnerId from listing when present (partner listings should resolve to partner identity)
   let derivedPartnerId: string | undefined = params.partnerId;
@@ -153,16 +150,12 @@ export async function createOrGetConversation(params: {
       .having(sql`count(distinct ${conversationParticipant.userId}) = 2`);
 
     if (existingDirectQuery.length > 0) {
-      const duration = Date.now() - startTime;
-      console.log(`✅ [DB] createOrGetConversation - Found existing conversation: ${existingDirectQuery[0].id}, ${duration}ms`);
       return existingDirectQuery[0].id;
     }
   }
 
   // Create new conversation
   const conversationId = createId();
-
-  console.log(`➕ [DB] Creating new conversation: ${conversationId}`);
 
   // Note: neon-http does not support transactions. We perform inserts sequentially and
   // best-effort cleanup if participant insertion fails.
@@ -199,11 +192,7 @@ export async function createOrGetConversation(params: {
         notificationsEnabled: true,
       },
     ]);
-    
-    const duration = Date.now() - startTime;
-    console.log(`✅ [DB] createOrGetConversation - Created new conversation: ${conversationId}, ${duration}ms`);
   } catch (error) {
-    console.error(`❌ [DB] createOrGetConversation - Failed:`, error);
     if (conversationInserted) {
       try {
         await db
@@ -244,10 +233,7 @@ export async function getUserConversations(
     partnerScope?: 'only' | 'exclude';
   } = {}
 ): Promise<ConversationWithDetails[]> {
-  const startTime = Date.now();
   const { limit = 50, offset = 0, includeArchived = false, partnerIds, partnerScope } = options;
-
-  console.log(`🔍 [DB] getUserConversations - userId: ${userId}, limit: ${limit}, offset: ${offset}, scope: ${partnerScope || 'all'}`);
 
   const whereConditions = [];
   if (!includeArchived) {
@@ -348,9 +334,6 @@ export async function getUserConversations(
   if (results.length === 0) {
     return [];
   }
-
-  const duration = Date.now() - startTime;
-  console.log(`✅ [DB] getUserConversations - ${results.length} conversations, ${duration}ms (single query)`);
 
   return results.map((row) => {
     const effectivePartnerId = row.partnerId ?? row.listingPartnerId;

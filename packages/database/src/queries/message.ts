@@ -70,7 +70,6 @@ export interface SendMessageParams {
  * Optimized: All operations in single parallel batch
  */
 export async function sendMessage(params: SendMessageParams): Promise<MessageWithSender> {
-  const startTime = Date.now();
   const {
     conversationId,
     senderId,
@@ -82,8 +81,6 @@ export async function sendMessage(params: SendMessageParams): Promise<MessageWit
     isSystemMessage = false,
     systemMessageType,
   } = params;
-
-  console.log(`📤 [DB] sendMessage - conversationId: ${conversationId}, senderId: ${senderId}, hasText: ${!!text}, hasMedia: ${!!mediaUrl}`);
 
   const messageId = createId();
   const now = new Date();
@@ -185,9 +182,6 @@ export async function sendMessage(params: SendMessageParams): Promise<MessageWit
     throw new Error('Sender not found');
   }
 
-  const duration = Date.now() - startTime;
-  console.log(`✅ [DB] sendMessage - Message sent: ${messageId}, ${duration}ms`);
-
   // Construct and return message
   return {
     id: messageId,
@@ -230,10 +224,7 @@ export async function getMessages(
     userId?: string; // To verify user is participant
   } = {}
 ): Promise<MessageWithSender[]> {
-  const startTime = Date.now();
   const { limit = 50, cursor, userId } = options;
-
-  console.log(`🔍 [DB] getMessages - conversationId: ${conversationId}, cursor: ${cursor || 'none'}, limit: ${limit}`);
 
   // Build messages query (join userProfile to get avatar)
   const messagesQuery = db
@@ -291,9 +282,6 @@ export async function getMessages(
   if (userId && participantCheck.length === 0) {
     throw new Error('User is not a participant in this conversation');
   }
-
-  const duration = Date.now() - startTime;
-  console.log(`✅ [DB] getMessages - ${messages.length} messages, ${duration}ms`);
 
   return messages.map((msg) => ({
     id: msg.id,

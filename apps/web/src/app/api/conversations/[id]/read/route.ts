@@ -51,8 +51,6 @@ export async function PATCH(
       const wsBroadcastUrl = process.env.WS_BROADCAST_URL || 'http://localhost:3001/broadcast';
       const participants = await getConversationParticipants(id);
       
-      console.log(`📡 [API] Broadcasting read_receipt to ${participants.length} participants`);
-      
       for (const participant of participants) {
         fetch(wsBroadcastUrl, {
           method: 'POST',

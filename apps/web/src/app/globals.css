@@ -211,30 +211,41 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    /* Prevent iOS text size adjustment */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
   
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    /* Inter with proper Windows fallbacks - Segoe UI is Windows' native UI font */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     font-optical-sizing: auto;
+    /* Slightly heavier base weight for Windows clarity (450 instead of 400) */
+    font-weight: 450;
+    /* Improve Windows text rendering */
+    font-synthesis: none;
   }
   
   /* Typography System - Alifh Design (Cross-platform optimized) */
   h1 {
-    @apply text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight;
+    @apply text-4xl sm:text-5xl md:text-6xl tracking-tight;
+    font-weight: 600; /* semibold - explicit for Windows */
     line-height: 1.1;
     letter-spacing: -0.02em;
   }
   
   h2 {
-    @apply text-lg sm:text-xl font-medium tracking-tight;
+    @apply text-lg sm:text-xl tracking-tight;
+    font-weight: 500; /* medium - explicit for Windows */
     line-height: 1.2;
     letter-spacing: -0.01em;
   }
   
   h3 {
-    @apply text-base font-medium;
+    @apply text-base;
+    font-weight: 500; /* medium - explicit for Windows */
     line-height: 1.3;
   }
   
@@ -248,6 +259,11 @@
     @apply text-xs;
     font-weight: 450;
     opacity: 0.7;
+  }
+  
+  /* Buttons and interactive text - heavier for clickability */
+  button, [role="button"], a {
+    font-weight: 475;
   }
   
   /* Prevent theme transition flash */

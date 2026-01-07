@@ -41,8 +41,6 @@ function setOnline(server: Server, userId: string) {
   state.connections++;
   presence.set(userId, state);
 
-  console.log(`🟢 [WS] User online: ${userId} (connections: ${state.connections})`);
-
   if (state.connections === 1) {
     server.publish(`presence:${userId}`, JSON.stringify({
       type: "presence",
@@ -59,7 +57,6 @@ function setOffline(server: Server, userId: string) {
   if (!state) return;
 
   state.connections = Math.max(0, state.connections - 1);
-  console.log(`🔴 [WS] User offline: ${userId} (connections: ${state.connections})`);
 
   if (state.connections === 0) {
     state.lastSeenAt = new Date().toISOString();
@@ -118,14 +115,10 @@ const server = Bun.serve<WSData>({
         if (!channel || !message) {
           return Response.json({ error: "channel and message required" }, { status: 400 });
         }
-        const count = server.publish(channel, JSON.stringify(message));
-        
-        // Extract userId from channel if it's a user channel
+        server.publish(channel, JSON.stringify(message));
         const userId = channel.startsWith('user:') ? channel.slice(5) : null;
-        const actualConnections = userId ? (presence.get(userId)?.connections ?? 0) : '?';
-        
-        console.log(`📡 [WS] Broadcast to ${channel} - type: ${message.type || 'unknown'} (${actualConnections} actual connections, ${count} subscription slots)`);
-        return Response.json({ success: true, recipients: count });
+        const connections = userId ? (presence.get(userId)?.connections ?? 0) : 0;
+        return Response.json({ success: true, delivered: connections > 0 });
       }).catch(() => Response.json({ error: "Invalid JSON" }, { status: 400 }));
     }
 
@@ -135,7 +128,6 @@ const server = Bun.serve<WSData>({
   websocket: {
     open(ws) {
       const { userId } = ws.data;
-      console.log(`🔌 [WS] Client connected: ${userId}`);
       ws.subscribe(`user:${userId}`);
       ws.subscribe(`presence:${userId}`);
       setOnline(server, userId);
@@ -194,7 +186,6 @@ const server = Bun.serve<WSData>({
 
     close(ws) {
       const { userId, watchedUsers } = ws.data;
-      console.log(`🔌 [WS] Client disconnected: ${userId}`);
       ws.unsubscribe(`user:${userId}`);
       ws.unsubscribe(`presence:${userId}`);
       for (const id of watchedUsers) ws.unsubscribe(`presence:${id}`);
@@ -202,6 +193,3 @@ const server = Bun.serve<WSData>({
     },
   },
 });
-
-console.log(`🚀 WebSocket Server running on ws://0.0.0.0:${PORT}`);
-console.log(`   Endpoints: /ws?userId=ID, /health, /broadcast`);
