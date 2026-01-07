@@ -66,7 +66,7 @@ export function ListingsView({ embedded = false }: ListingsViewProps) {
         {/* Main Layout Container - respects max-width */}
         <div className={cn(
           "mx-auto px-4 sm:px-6 lg:px-8",
-          !embedded && "max-w-[1400px]"
+          !embedded && "max-w-[1400px] pt-4 sm:pt-6"
         )}>
           <div className="flex">
             {/* LEFT: Fixed Sidebar */}

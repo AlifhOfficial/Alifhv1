@@ -24,7 +24,6 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  SheetOverlay,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import {
@@ -149,7 +148,7 @@ export function AdvancedFilters({
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+    <Sheet open={isOpen} onOpenChange={setIsOpen} modal={true}>
       <SheetTrigger asChild>
         {children || (
           <button type="button" className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-sm sm:text-[15px] transition-colors text-blue-600 font-semibold hover:text-blue-700 whitespace-nowrap">
@@ -163,8 +162,11 @@ export function AdvancedFilters({
           </button>
         )}
       </SheetTrigger>
-            <SheetOverlay className="backdrop-blur-md bg-background/30" />
-            <SheetContent side="right" className="w-80 sm:w-[400px] p-0 flex flex-col bg-sidebar text-sidebar-foreground border-sidebar-border">
+      <SheetContent 
+        side="right" 
+        overlayClassName="backdrop-blur-md bg-background/30"
+        className="w-80 sm:w-[400px] p-0 flex flex-col bg-sidebar text-sidebar-foreground border-sidebar-border !fixed !inset-y-0 !right-0"
+      >
         {/* Fixed Header */}
         <SheetHeader className="flex-shrink-0 p-6 pb-4 border-b border-sidebar-border/50">
           <SheetTitle className="text-xl font-bold tracking-tight">More Filters</SheetTitle>

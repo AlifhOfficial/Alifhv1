@@ -183,7 +183,7 @@ export function ListingsHeader({
             <SheetContent side="bottom" className="h-[85vh] p-4 sm:p-6 bg-background text-foreground border-border">
               <SheetTitle className="sr-only">Filters</SheetTitle>
               {/* Mobile filters header */}
-              <div className="flex items-center justify-between py-4 mb-2 border-b border-border/30">
+              <div className="flex items-center justify-between py-4 mb-2">
                 <h2 className="text-lg font-bold tracking-tight">Filters</h2>
                 {activeFilterCount > 0 && (
                   <button
@@ -289,7 +289,7 @@ export function ListingsHeader({
         {breadcrumbItems.length > 1 && (
           <nav 
             className={cn(
-              "flex items-center gap-2 text-sm font-semibold tracking-tight py-3 overflow-x-auto scrollbar-hide border-t border-border/30 mt-3",
+              "flex items-center gap-2 text-sm font-semibold tracking-tight py-3 overflow-x-auto scrollbar-hide mt-3",
               sidebarOpen && "lg:pl-6"
             )}
           >
@@ -315,7 +315,7 @@ export function ListingsHeader({
         {!params.make?.length && (facets?.make ?? []).length > 0 && (
           <div 
             className={cn(
-              "flex items-center gap-2 py-3 overflow-x-auto scrollbar-hide border-t border-border/30 mt-3",
+              "flex items-center gap-2 py-3 overflow-x-auto scrollbar-hide mt-3",
               sidebarOpen && "lg:pl-6"
             )}
           >
@@ -342,7 +342,7 @@ export function ListingsHeader({
           <div 
             className={cn(
               "flex items-center gap-2 py-3 overflow-x-auto scrollbar-hide",
-              breadcrumbItems.length > 1 ? "border-t border-border/20" : "border-t border-border/30 mt-3",
+              breadcrumbItems.length <= 1 && "mt-3",
               sidebarOpen && "lg:pl-6"
             )}
           >
@@ -368,7 +368,7 @@ export function ListingsHeader({
         {params.make?.length && params.model?.length && !params.trim?.length && (facets?.trim ?? []).length > 0 && (
           <div 
             className={cn(
-              "flex items-center gap-2 py-3 overflow-x-auto scrollbar-hide border-t border-border/20",
+              "flex items-center gap-2 py-3 overflow-x-auto scrollbar-hide",
               sidebarOpen && "lg:pl-6"
             )}
           >

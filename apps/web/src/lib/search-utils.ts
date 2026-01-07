@@ -65,6 +65,7 @@ export interface SearchParams {
   partnerName?: string;
   partnerVerified?: boolean;
   isBlackTierPartner?: boolean;
+  randomize?: boolean;
   limit?: number;
   offset?: number;
   cursor?: string;

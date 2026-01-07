@@ -38,7 +38,7 @@ export function FilterSidebar({
   activeFilterCount: _activeFilterCount,
 }: FilterSidebarProps) {
   return (
-    <div className="flex flex-col [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted-foreground/10 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-muted-foreground/15">
+    <div className="flex flex-col">
       {/* Popular - Premium filters */}
       <FilterSection title="Popular" defaultOpen>
         <div className="flex flex-col gap-1">
@@ -81,26 +81,14 @@ export function FilterSidebar({
                 : 'text-foreground/80 font-medium hover:text-foreground hover:bg-muted/20'
             )}
           >
-            <span className="tracking-tight">Ace Members</span>
+            <span className="tracking-tight">Black Members</span>
             {params.isBlackTierPartner && <CheckCircle2 className="h-4 w-4 text-green-500" />}
           </button>
         </div>
       </FilterSection>
 
-      {/* Year Range */}
-      <FilterSection title="Year">
-        <RangeFilter
-          minValue={params.yearMin}
-          maxValue={params.yearMax}
-          rangeMin={facets?.yearRange.min ?? 2000}
-          rangeMax={facets?.yearRange.max ?? new Date().getFullYear() + 1}
-          onChange={(yearMin, yearMax) => onFilterChange({ yearMin, yearMax })}
-          formatLabel={(val) => String(val)}
-        />
-      </FilterSection>
-
       {/* Price Range */}
-      <FilterSection title="Price (AED)">
+      <FilterSection title="Price (AED)" defaultOpen>
         <RangeFilter
           minValue={params.priceMin}
           maxValue={params.priceMax}
@@ -113,36 +101,42 @@ export function FilterSidebar({
         />
       </FilterSection>
 
-      {/* Condition */}
-      <FilterSection title="Condition">
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => onFilterChange({ condition: params.condition === 'new' ? undefined : 'new' })}
-            className={cn(
-              'flex-1 flex items-center justify-center gap-2 px-3 py-2.5 text-[15px] font-semibold rounded-lg transition-all',
-              params.condition === 'new'
-                ? 'text-foreground bg-muted/40'
-                : 'bg-muted/20 text-foreground/80 hover:bg-muted/40 hover:text-foreground'
-            )}
-          >
-            <span>Brand New</span>
-            {params.condition === 'new' && <CheckCircle2 className="h-4 w-4 text-green-500" />}
-          </button>
-          <button
-            type="button"
-            onClick={() => onFilterChange({ condition: params.condition === 'used' ? undefined : 'used' })}
-            className={cn(
-              'flex-1 flex items-center justify-center gap-2 px-3 py-2.5 text-[15px] font-semibold rounded-lg transition-all',
-              params.condition === 'used'
-                ? 'text-foreground bg-muted/40'
-                : 'bg-muted/20 text-foreground/80 hover:bg-muted/40 hover:text-foreground'
-            )}
-          >
-            <span>Used</span>
-            {params.condition === 'used' && <CheckCircle2 className="h-4 w-4 text-green-500" />}
-          </button>
-        </div>
+      {/* Year Range */}
+      <FilterSection title="Year" defaultOpen>
+        <RangeFilter
+          minValue={params.yearMin}
+          maxValue={params.yearMax}
+          rangeMin={facets?.yearRange.min ?? 2000}
+          rangeMax={facets?.yearRange.max ?? new Date().getFullYear() + 1}
+          onChange={(yearMin, yearMax) => onFilterChange({ yearMin, yearMax })}
+          formatLabel={(val) => String(val)}
+        />
+      </FilterSection>
+
+      {/* Mileage */}
+      <FilterSection title="Mileage (km)">
+        <RangeFilter
+          minValue={0}
+          maxValue={params.mileageMax}
+          rangeMin={0}
+          rangeMax={facets?.mileageRange.max ?? 300000}
+          onChange={(_, mileageMax) => onFilterChange({ mileageMax })}
+          formatLabel={formatMileage}
+          step={10000}
+          singleValue
+          presets={MILEAGE_PRESETS}
+        />
+      </FilterSection>
+
+      {/* Location */}
+      <FilterSection title="Location">
+        <MultiSelectFilter
+          options={facets?.emirate ?? []}
+          selected={params.emirate ?? []}
+          onChange={(emirate) => onFilterChange({ emirate })}
+          placeholder="Any location"
+          isLoading={isLoading}
+        />
       </FilterSection>
 
       {/* Negotiable Toggle */}
@@ -162,33 +156,7 @@ export function FilterSidebar({
         </button>
       </FilterSection>
 
-      {/* Mileage */}
-      <FilterSection title="Mileage (km)">
-        <RangeFilter
-          minValue={0}
-          maxValue={params.mileageMax}
-          rangeMin={0}
-          rangeMax={facets?.mileageRange.max ?? 300000}
-          onChange={(_, mileageMax) => onFilterChange({ mileageMax })}
-          formatLabel={formatMileage}
-          step={10000}
-          singleValue
-          presets={MILEAGE_PRESETS}
-        />
-      </FilterSection>
-
-      {/* Emirate */}
-      <FilterSection title="Location">
-        <MultiSelectFilter
-          options={facets?.emirate ?? []}
-          selected={params.emirate ?? []}
-          onChange={(emirate) => onFilterChange({ emirate })}
-          placeholder="Any location"
-          isLoading={isLoading}
-        />
-      </FilterSection>
-
-      {/* Specs */}
+      {/* Regional Specs */}
       <FilterSection title="Regional Specs">
         <MultiSelectFilter
           options={facets?.specs ?? []}
@@ -361,8 +329,17 @@ function RangeFilter({
   }, [onChange, minValue]);
 
   const handlePresetClick = useCallback((preset: { min?: number; max?: number }) => {
-    onChange(preset.min, preset.max);
-  }, [onChange]);
+    // Toggle off if already active (tap to remove)
+    const isActive = 
+      (preset.min === minValue || (!preset.min && !minValue)) &&
+      (preset.max === maxValue || (!preset.max && !maxValue));
+    
+    if (isActive) {
+      onChange(undefined, undefined);
+    } else {
+      onChange(preset.min, preset.max);
+    }
+  }, [onChange, minValue, maxValue]);
 
   const handleClear = useCallback(() => {
     onChange(undefined, undefined);

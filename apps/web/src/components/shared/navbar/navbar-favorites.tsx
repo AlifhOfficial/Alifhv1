@@ -117,9 +117,17 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
         <Heart className="size-4" />
       </button>
 
+      {/* Backdrop */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-background/60 backdrop-blur-sm z-[60]"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-sidebar border border-sidebar-border rounded-xl shadow-lg z-50 overflow-hidden">
+        <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-sidebar/95 backdrop-blur-md border border-sidebar-border rounded-xl shadow-lg z-[70] overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3.5 border-b border-sidebar-border">
             <h3 className="text-base font-semibold tracking-tight text-sidebar-foreground">

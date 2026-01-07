@@ -46,17 +46,16 @@ export function ListingsSidebar({
 
   return (
     <aside className={cn(
-      "hidden lg:block w-64 flex-shrink-0",
-      "border-r border-border/40"
+      "hidden lg:block w-64 flex-shrink-0"
     )}>
       <div className={cn(
-        "sticky overflow-y-auto pr-6 py-4 sm:py-6",
+        "sticky flex flex-col",
         embedded 
           ? "top-0 max-h-screen"
           : "top-14 sm:top-16 max-h-[calc(100vh-3.5rem)] sm:max-h-[calc(100vh-4rem)]"
       )}>
-        {/* Header with collapse button */}
-        <div className="flex items-center justify-between mb-4">
+        {/* Fixed Header with collapse button */}
+        <div className="flex items-center justify-between py-4 sm:py-6 pr-6 flex-shrink-0">
           <h2 className="text-base font-semibold tracking-tight">Filters</h2>
           <button
             onClick={() => onSidebarToggle(false)}
@@ -67,14 +66,17 @@ export function ListingsSidebar({
           </button>
         </div>
         
-        <FilterSidebar
-          params={params}
-          facets={facets}
-          isLoading={isLoading}
-          onFilterChange={setFilters}
-          onClearFilters={clearFilters}
-          activeFilterCount={activeFilterCount}
-        />
+        {/* Scrollable Filter Content */}
+        <div className="flex-1 overflow-y-auto pr-6 pb-6">
+          <FilterSidebar
+            params={params}
+            facets={facets}
+            isLoading={isLoading}
+            onFilterChange={setFilters}
+            onClearFilters={clearFilters}
+            activeFilterCount={activeFilterCount}
+          />
+        </div>
       </div>
     </aside>
   );

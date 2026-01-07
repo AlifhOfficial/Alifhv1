@@ -366,21 +366,22 @@ export function SearchBar({
       {/* Input */}
       <div className={cn(
         'relative flex items-center',
-        'bg-background border border-border/40 rounded-full',
-        'hover:border-border/60',
+        'bg-sidebar border border-sidebar-border rounded-full',
+        'shadow-sm hover:shadow-md',
+        'hover:border-sidebar-border/80',
         'transition-all duration-200',
-        isFocused && 'border-primary/40 ring-1 ring-primary/20',
+        isFocused && 'border-primary/50 ring-2 ring-primary/20 shadow-md',
         sizeClasses[size]
       )}>
         <Search className={cn(
           'absolute left-3.5 transition-colors',
-          isFocused ? 'text-primary' : 'text-muted-foreground/70',
+          isFocused ? 'text-primary' : 'text-sidebar-foreground/60',
           iconSizes[size]
         )} />
         
         {/* Styled display overlay - hides dots completely */}
         {query && (
-          <div className="absolute left-11 right-10 pointer-events-none font-semibold tracking-tight text-foreground truncate">
+          <div className="absolute left-11 right-10 pointer-events-none font-semibold tracking-tight text-sidebar-foreground truncate">
             {query.split(/(\s*\.\s*)/).map((part, i) => 
               part.match(/^\s*\.\s*$/) 
                 ? <span key={i} className="text-transparent select-none">{part}</span>
@@ -400,11 +401,11 @@ export function SearchBar({
           autoFocus={autoFocus}
           className={cn(
             'w-full h-full bg-transparent pl-11 pr-10',
-            'placeholder:text-muted-foreground/60 placeholder:font-medium',
+            'placeholder:text-sidebar-foreground/50 placeholder:font-medium',
             'focus:outline-none',
             'font-semibold tracking-tight',
             // Hide text when showing styled overlay (but keep for caret positioning)
-            query ? 'text-transparent caret-foreground' : 'text-foreground'
+            query ? 'text-transparent caret-sidebar-foreground' : 'text-sidebar-foreground'
           )}
           aria-label="Search cars"
           aria-expanded={showDropdown}
