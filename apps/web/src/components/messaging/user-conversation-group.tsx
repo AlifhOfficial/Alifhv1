@@ -100,7 +100,7 @@ export function UserConversationGroup({
                 <path 
                   d="M2 0 L2 14 Q2 22 10 22 L20 22" 
                   stroke="currentColor" 
-                  strokeWidth="2.5" 
+                  strokeWidth="1.5" 
                   strokeLinecap="round"
                   fill="none"
                 />
