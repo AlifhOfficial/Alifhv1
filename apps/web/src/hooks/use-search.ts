@@ -272,8 +272,8 @@ export function useQuickSearch(
       return response.json();
     },
     enabled,
-    staleTime: query ? 30_000 : 60_000,
-    gcTime: 5 * 60 * 1000,
+    staleTime: query ? 60_000 : 120_000, // 1 min for queries, 2 min for popular
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
   return {

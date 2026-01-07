@@ -644,7 +644,7 @@ export async function searchListings(
  */
 export async function quickSearch(
   query: string, 
-  limit = 10,
+  limit = 4,
   context?: { make?: string; model?: string }
 ): Promise<Array<{
   type: 'make' | 'model' | 'make_model' | 'make_model_trim' | 'partner';
@@ -740,9 +740,10 @@ export async function quickSearch(
         and(
           ...conditions,
           or(
-            ilike(carListing.make, `%${searchTerm}%`),
-            ilike(carListing.model, `%${searchTerm}%`),
-            sql`lower(${carListing.make} || ' ' || ${carListing.model}) LIKE ${'%' + searchTerm + '%'}`
+            ilike(carListing.make, `${searchTerm}%`), // Prefix match is faster (can use index)
+            ilike(carListing.model, `${searchTerm}%`),
+            ilike(carListing.make, `%${searchTerm}%`), // Fallback to contains
+            ilike(carListing.model, `%${searchTerm}%`)
           )
         )
       )
@@ -775,7 +776,7 @@ export async function quickSearch(
           )
           .groupBy(carListing.partnerId, carListing.partnerBrandName, partner.brandName)
           .orderBy(desc(count()))
-          .limit(5)
+          .limit(2) // Only show top 2 partner matches
       : Promise.resolve([]),
     
     makeModelQuery,
@@ -887,7 +888,7 @@ export async function quickSearch(
  * Get popular makes for auto-suggest dropdown
  * Returns top makes by listing count for the default suggestions
  */
-export async function getPopularMakes(limit = 8): Promise<Array<{
+export async function getPopularMakes(limit = 4): Promise<Array<{
   type: 'make';
   text: string;
   make: string;

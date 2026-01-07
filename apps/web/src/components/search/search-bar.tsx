@@ -129,7 +129,7 @@ export function SearchBar({
   
   // Simple search term - just use the query directly
   const searchTerm = query.trim();
-  const debouncedSearchTerm = useDebounce(searchTerm, 200);
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   
   // Get suggestions - no context, always show makes/models/partners
   const { suggestions: apiSuggestions, isLoading } = useQuickSearch(debouncedSearchTerm, isFocused);

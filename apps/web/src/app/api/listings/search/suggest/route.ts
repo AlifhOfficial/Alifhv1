@@ -32,11 +32,11 @@ const suggestLimiter = createRateLimiter({
   description: 'Search suggestions',
 });
 
-const CACHE_TTL = 30_000; // 30 seconds
-const POPULAR_CACHE_TTL = 60_000; // 60 seconds for popular makes
+const CACHE_TTL = 60_000; // 60 seconds
+const POPULAR_CACHE_TTL = 120_000; // 2 minutes for popular makes
 
 const CDN_CACHE_HEADERS = {
-  'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+  'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=300',
 } as const;
 
 export async function GET(req: NextRequest) {
@@ -51,8 +51,8 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const query = searchParams.get('q') || '';
     const popular = searchParams.get('popular') === 'true';
-    const limitParam = Number(searchParams.get('limit') || '8');
-    const limit = Math.min(Math.max(limitParam, 1), 20);
+    const limitParam = Number(searchParams.get('limit') || '4');
+    const limit = Math.min(Math.max(limitParam, 1), 10);
     
     // Get context for hierarchical search
     const contextMake = searchParams.get('make') || undefined;
