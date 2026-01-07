@@ -148,6 +148,7 @@ export interface SearchFacets {
   // Medium tier facets
   make: FacetBucket[];
   model: FacetBucket[];
+  trim: FacetBucket[];
   yearRange: { min: number; max: number };
   priceRange: { min: number; max: number };
   mileageRange: { min: number; max: number };

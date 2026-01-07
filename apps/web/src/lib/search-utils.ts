@@ -82,6 +82,7 @@ export interface FacetBucket {
 export interface SearchFacets {
   make: FacetBucket[];
   model: FacetBucket[];
+  trim: FacetBucket[];
   yearRange: { min: number; max: number };
   priceRange: { min: number; max: number };
   mileageRange: { min: number; max: number };

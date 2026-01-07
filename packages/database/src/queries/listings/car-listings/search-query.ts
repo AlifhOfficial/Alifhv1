@@ -388,6 +388,34 @@ async function getModelFacets(params: SearchParams, now: Date): Promise<FacetBuc
 }
 
 /**
+ * Get trim facets (filtered by selected makes and models)
+ */
+async function getTrimFacets(params: SearchParams, now: Date): Promise<FacetBucket[]> {
+  const paramsWithoutTrim = { ...params };
+  delete paramsWithoutTrim.trim;
+  
+  const conditions = buildSearchConditions(paramsWithoutTrim, now);
+
+  const results = await db
+    .select({
+      value: carListing.trim,
+      count: count(),
+    })
+    .from(carListing)
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .groupBy(carListing.trim);
+
+  return results
+    .filter(r => r.value)
+    .map(r => ({
+      value: r.value!,
+      label: r.value!,
+      count: Number(r.count),
+    }))
+    .sort((a, b) => b.count - a.count);
+}
+
+/**
  * Build label maps for enum facets
  */
 const bodyTypeLabelMap = Object.fromEntries(BODY_TYPES.map(b => [b.value, b.label]));
@@ -407,6 +435,7 @@ async function getAllFacets(params: SearchParams, now: Date): Promise<SearchFace
   const [
     make,
     model,
+    trim,
     ranges,
     emirate,
     specs,
@@ -420,6 +449,7 @@ async function getAllFacets(params: SearchParams, now: Date): Promise<SearchFace
   ] = await Promise.all([
     getMakeFacets(params, now),
     getModelFacets(params, now),
+    getTrimFacets(params, now),
     getRangeFacets(params, now),
     getFacetCounts('emirate', params, now, emirateLabelMap),
     getFacetCounts('specs', params, now, specsLabelMap),
@@ -435,6 +465,7 @@ async function getAllFacets(params: SearchParams, now: Date): Promise<SearchFace
   return {
     make,
     model,
+    trim,
     yearRange: ranges.yearRange,
     priceRange: ranges.priceRange,
     mileageRange: ranges.mileageRange,

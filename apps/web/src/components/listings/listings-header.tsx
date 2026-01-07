@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useMemo, useCallback, useRef } from 'react';
+import { useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { SearchBar } from '@/components/search/search-bar';
 import { FilterSidebar } from '@/components/search/filter-sidebar';
@@ -79,15 +79,10 @@ export function ListingsHeader({
   clearFilters,
   setSort,
 }: ListingsHeaderProps) {
-  // Use ref to avoid listings array causing recalculations
-  const listingsRef = useRef(listings);
-  listingsRef.current = listings;
-
-  // Memoize active chips - use stable reference for listings
+  // Memoize active chips - pass listings directly, memoize on params change
   const activeChips = useMemo(
-    () => getActiveFilterChips(params, listingsRef.current),
-    // Only depend on params - listings ref is stable
-    [params]
+    () => getActiveFilterChips(params, listings),
+    [params, listings]
   );
 
   // Memoize chip removal handler to avoid recreating on each render
@@ -217,7 +212,7 @@ export function ListingsHeader({
           </Sheet>
 
           {/* Results count - hidden on mobile, shows on larger screens */}
-          <span className="hidden sm:inline-block text-sm text-muted-foreground tabular-nums whitespace-nowrap">
+          <span className="hidden sm:inline-block text-[15px] font-semibold text-muted-foreground tabular-nums whitespace-nowrap tracking-tight">
             {isLoading ? '...' : `${meta?.total ?? 0} cars`}
           </span>
 
@@ -225,51 +220,20 @@ export function ListingsHeader({
           <div className="w-full sm:flex-1 sm:min-w-[200px] order-last sm:order-none">
             <SearchBar
               size="sm"
-              placeholder="Search make, model or dealer..."
+              placeholder="Search make, model, dealer..."
               redirectOnSearch={false}
               onSearch={setFilters}
-              currentFilters={params}
             />
           </div>
-
-          {/* Popular Dropdown - Premium filters */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">
-                <span>Popular</span>
-                <ChevronDown className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 bg-sidebar border-sidebar-border text-sidebar-foreground">
-              <DropdownMenuItem
-                onClick={() => setFilters({ condition: params.condition === 'new' ? undefined : 'new' })}
-                className={`text-sm font-medium cursor-pointer ${params.condition === 'new' ? 'bg-sidebar-accent text-sidebar-foreground' : 'hover:bg-sidebar-accent/50'}`}
-              >
-                New Cars
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => setFilters({ isBlkListing: params.isBlkListing ? undefined : true })}
-                className={`text-sm font-medium cursor-pointer ${params.isBlkListing ? 'bg-sidebar-accent text-sidebar-foreground' : 'hover:bg-sidebar-accent/50'}`}
-              >
-                Black Listings
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => setFilters({ isBlackTierPartner: params.isBlackTierPartner ? undefined : true })}
-                className={`text-sm font-medium cursor-pointer ${params.isBlackTierPartner ? 'bg-sidebar-accent text-sidebar-foreground' : 'hover:bg-sidebar-accent/50'}`}
-              >
-                Ace Members
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
 
           {/* Sort Dropdown */}
           <div className="relative">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-sidebar-foreground hover:text-sidebar-foreground transition-colors">
+                <button className="flex items-center gap-1.5 px-4 py-2 text-[15px] font-semibold tracking-tight text-muted-foreground hover:text-foreground transition-colors">
                   <span className="hidden sm:inline">{SORT_OPTIONS.find(s => s.value === params.sortBy)?.label || 'Sort'}</span>
                   <span className="sm:hidden">Sort</span>
-                  <ChevronDown className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  <ChevronDown className="size-4 text-muted-foreground/60" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48 bg-sidebar border-sidebar-border text-sidebar-foreground">
@@ -277,7 +241,10 @@ export function ListingsHeader({
                   <DropdownMenuItem
                     key={option.value}
                     onClick={() => setSort(option.value)}
-                    className={`text-sm font-medium cursor-pointer ${params.sortBy === option.value ? 'bg-sidebar-accent text-sidebar-foreground' : 'hover:bg-sidebar-accent/50'}`}
+                    className={cn(
+                      "text-[14px] font-medium tracking-tight cursor-pointer",
+                      params.sortBy === option.value ? "bg-sidebar-accent text-sidebar-foreground" : "hover:bg-sidebar-accent/50"
+                    )}
                   >
                     {option.label}
                   </DropdownMenuItem>
@@ -290,15 +257,21 @@ export function ListingsHeader({
           <div className="hidden lg:flex items-center gap-1">
             <button
               onClick={() => onViewModeChange('grid')}
-              className={`p-1.5 transition-colors ${viewMode === 'grid' ? 'text-foreground' : 'text-muted-foreground/50 hover:text-foreground'}`}
+              className={cn(
+                "p-2 transition-colors rounded-md",
+                viewMode === 'grid' ? "text-foreground" : "text-muted-foreground/50 hover:text-foreground"
+              )}
             >
-              <LayoutGrid className="h-4 w-4" />
+              <LayoutGrid className="size-4" />
             </button>
             <button
               onClick={() => onViewModeChange('list')}
-              className={`p-1.5 transition-colors ${viewMode === 'list' ? 'text-foreground' : 'text-muted-foreground/50 hover:text-foreground'}`}
+              className={cn(
+                "p-2 transition-colors rounded-md",
+                viewMode === 'list' ? "text-foreground" : "text-muted-foreground/50 hover:text-foreground"
+              )}
             >
-              <List className="h-4 w-4" />
+              <List className="size-4" />
             </button>
           </div>
 
@@ -336,6 +309,85 @@ export function ListingsHeader({
               </div>
             ))}
           </nav>
+        )}
+
+        {/* Make Quick-Select - Show when no make is selected */}
+        {!params.make?.length && (facets?.make ?? []).length > 0 && (
+          <div 
+            className={cn(
+              "flex items-center gap-2 py-3 overflow-x-auto scrollbar-hide border-t border-border/30 mt-3",
+              sidebarOpen && "lg:pl-6"
+            )}
+          >
+            <span className="text-[13px] font-medium text-muted-foreground/70 whitespace-nowrap shrink-0">
+              Makes:
+            </span>
+            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
+              {(facets?.make ?? []).map((make) => (
+                <button
+                  key={make.value}
+                  onClick={() => setFilters({ make: [make.value], model: undefined, trim: undefined })}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-semibold tracking-tight text-muted-foreground hover:text-foreground bg-muted/20 hover:bg-muted/40 rounded-full transition-all whitespace-nowrap"
+                >
+                  <span>{make.label}</span>
+                  <span className="text-[11px] text-muted-foreground/50 tabular-nums">{make.count}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Model Quick-Select - Show when make is selected but no model */}
+        {params.make?.length && !params.model?.length && (facets?.model ?? []).length > 0 && (
+          <div 
+            className={cn(
+              "flex items-center gap-2 py-3 overflow-x-auto scrollbar-hide",
+              breadcrumbItems.length > 1 ? "border-t border-border/20" : "border-t border-border/30 mt-3",
+              sidebarOpen && "lg:pl-6"
+            )}
+          >
+            <span className="text-[13px] font-medium text-muted-foreground/70 whitespace-nowrap shrink-0">
+              Models:
+            </span>
+            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
+              {(facets?.model ?? []).map((model) => (
+                <button
+                  key={model.value}
+                  onClick={() => setFilters({ model: [model.value] })}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-semibold tracking-tight text-muted-foreground hover:text-foreground bg-muted/20 hover:bg-muted/40 rounded-full transition-all whitespace-nowrap"
+                >
+                  <span>{model.label}</span>
+                  <span className="text-[11px] text-muted-foreground/50 tabular-nums">{model.count}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Trim Quick-Select - Show when make & model selected but no trim */}
+        {params.make?.length && params.model?.length && !params.trim?.length && (facets?.trim ?? []).length > 0 && (
+          <div 
+            className={cn(
+              "flex items-center gap-2 py-3 overflow-x-auto scrollbar-hide border-t border-border/20",
+              sidebarOpen && "lg:pl-6"
+            )}
+          >
+            <span className="text-[13px] font-medium text-muted-foreground/70 whitespace-nowrap shrink-0">
+              Trims:
+            </span>
+            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
+              {(facets?.trim ?? []).map((trim) => (
+                <button
+                  key={trim.value}
+                  onClick={() => setFilters({ trim: [trim.value] })}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-semibold tracking-tight text-muted-foreground hover:text-foreground bg-muted/20 hover:bg-muted/40 rounded-full transition-all whitespace-nowrap"
+                >
+                  <span>{trim.label}</span>
+                  <span className="text-[11px] text-muted-foreground/50 tabular-nums">{trim.count}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* Active Chips - with sidebar-aware padding to align with content grid */}
@@ -403,7 +455,16 @@ function getActiveFilterChips(
   if (params.q) {
     chips.push({ key: 'q', label: `"${params.q}"` });
   }
-  // Skip make, model, trim - they're shown in breadcrumb
+  // Add make/model/trim as chips (clickable to remove)
+  if (params.make?.length) {
+    chips.push({ key: 'make', label: params.make[0] });
+  }
+  if (params.model?.length) {
+    chips.push({ key: 'model', label: params.model[0] });
+  }
+  if (params.trim?.length) {
+    chips.push({ key: 'trim', label: params.trim[0] });
+  }
   if (params.yearMin || params.yearMax) {
     const label = params.yearMin && params.yearMax
       ? `${params.yearMin} - ${params.yearMax}`

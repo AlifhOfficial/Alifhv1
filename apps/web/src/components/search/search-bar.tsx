@@ -109,18 +109,15 @@ interface SearchBarProps {
   onSearch?: (filters: Partial<SearchParams>) => void;
   /** Redirect to listings page on search */
   redirectOnSearch?: boolean;
-  /** Current filters for hierarchical search context */
-  currentFilters?: Partial<SearchParams>;
 }
 
 export function SearchBar({
-  placeholder = 'Search make . model . trim or VIN...',
+  placeholder = 'Search make, model, dealer...',
   size = 'md',
   className,
   autoFocus = false,
   onSearch,
   redirectOnSearch = true,
-  currentFilters,
 }: SearchBarProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -130,67 +127,12 @@ export function SearchBar({
   const [isFocused, setIsFocused] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   
-  // Parse hierarchical query (e.g., "audi . rs5 . limited")
-  const parsedQuery = useMemo(() => {
-    const parts = query.split(/\s*\.\s*/);
-    
-    if (parts.length >= 3) {
-      // Make . Model . Trim (or partial trim)
-      return {
-        make: parts[0].trim(),
-        model: parts[1].trim(),
-        searchTerm: parts.slice(2).join(' ').trim(),
-        level: 'trim' as const,
-      };
-    } else if (parts.length === 2) {
-      // Make . Model (or partial model)
-      return {
-        make: parts[0].trim(),
-        model: undefined,
-        searchTerm: parts[1].trim(),
-        level: 'model' as const,
-      };
-    } else {
-      // Just searching (no dots)
-      return {
-        make: undefined,
-        model: undefined,
-        searchTerm: query.trim(),
-        level: 'make' as const,
-      };
-    }
-  }, [query]);
+  // Simple search term - just use the query directly
+  const searchTerm = query.trim();
+  const debouncedSearchTerm = useDebounce(searchTerm, 200);
   
-  // Build context from parsed query OR current filters for hierarchical search
-  const searchContext = useMemo(() => {
-    // Prioritize parsed query context (from dot notation)
-    if (parsedQuery.level === 'model' && parsedQuery.make) {
-      return { make: parsedQuery.make };
-    }
-    if (parsedQuery.level === 'trim' && parsedQuery.make && parsedQuery.model) {
-      return { make: parsedQuery.make, model: parsedQuery.model };
-    }
-    
-    // Fallback to current filters
-    if (!currentFilters) return undefined;
-    
-    const context: { make?: string; model?: string } = {};
-    if (currentFilters.make && currentFilters.make.length > 0) {
-      context.make = currentFilters.make[0];
-    }
-    if (currentFilters.model && currentFilters.model.length > 0) {
-      context.model = currentFilters.model[0];
-    }
-    
-    return Object.keys(context).length > 0 ? context : undefined;
-  }, [parsedQuery, currentFilters]);
-  
-  // Use the search term from parsed query for API
-  const effectiveSearchTerm = parsedQuery.searchTerm || '';
-  const debouncedSearchTerm = useDebounce(effectiveSearchTerm, 200);
-  
-  // Get suggestions with hierarchical context
-  const { suggestions: apiSuggestions, isLoading } = useQuickSearch(debouncedSearchTerm, isFocused, searchContext);
+  // Get suggestions - no context, always show makes/models/partners
+  const { suggestions: apiSuggestions, isLoading } = useQuickSearch(debouncedSearchTerm, isFocused);
   
   // VIN lookup using external store pattern (no setState in effect)
   const vinLookup = useVinLookup(query);
@@ -235,8 +177,18 @@ export function SearchBar({
 
   // Handle search submission
   const handleSearch = useCallback((searchQuery: string, make?: string, model?: string, trim?: string, partnerId?: string, partnerName?: string) => {
-    // Build filters object for callback
-    const filters: Partial<SearchParams> = {};
+    // Build filters object for callback - clear all search-related filters first
+    const filters: Partial<SearchParams> = {
+      // Clear all search-related filters
+      q: undefined,
+      make: undefined,
+      model: undefined,
+      trim: undefined,
+      partnerId: undefined,
+      partnerName: undefined,
+    };
+    
+    // Then set the new ones
     if (partnerId && partnerId.trim()) {
       filters.partnerId = partnerId.trim();
       if (partnerName && partnerName.trim()) {
@@ -315,29 +267,15 @@ export function SearchBar({
       // Full selection - apply filters
       handleSearch(suggestion.text, suggestion.make, suggestion.model, suggestion.trim);
     } else if (suggestion.type === 'make_model') {
-      // Check if we're in hierarchical mode (from context or parsed query)
-      const hasHierarchicalContext = searchContext?.make || parsedQuery.make;
-      
-      if (hasHierarchicalContext) {
-        // Model selected from context - build full path with ". " for trim input
-        const newQuery = `${suggestion.make} . ${suggestion.model} . `;
-        setQuery(newQuery);
-        setSelectedIndex(-1);
-        inputRef.current?.focus();
-      } else {
-        // Direct selection - apply filters
-        handleSearch(suggestion.text, suggestion.make, suggestion.model);
-      }
+      // Direct selection - apply make + model filters
+      handleSearch('', suggestion.make, suggestion.model);
     } else if (suggestion.type === 'make') {
-      // Make selected - append ". " for model input
-      const newQuery = `${suggestion.make} . `;
-      setQuery(newQuery);
-      setSelectedIndex(-1);
-      inputRef.current?.focus();
+      // Apply make filter immediately - facets will update to show models
+      handleSearch('', suggestion.make);
     } else {
       handleSearch(suggestion.text);
     }
-  }, [handleSearch, router, searchContext, parsedQuery]);
+  }, [handleSearch, router]);
 
   // Clamp selectedIndex if it exceeds suggestions length (derived state)
   const clampedSelectedIndex = selectedIndex >= suggestions.length ? -1 : selectedIndex;
@@ -346,16 +284,8 @@ export function SearchBar({
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (!showDropdown) {
       if (e.key === 'Enter' && query.trim()) {
-        // Check if we have a dot notation query
-        if (parsedQuery.level === 'trim' && parsedQuery.make && parsedQuery.model) {
-          // "Audi . RS5 . Limited" -> filter by make, model, and optional trim search
-          handleSearch('', parsedQuery.make, parsedQuery.model, parsedQuery.searchTerm || undefined);
-        } else if (parsedQuery.level === 'model' && parsedQuery.make) {
-          // "Audi . RS" -> filter by make only (model is partial)
-          handleSearch('', parsedQuery.make);
-        } else {
-          handleSearch(query.trim());
-        }
+        // Simple text search
+        handleSearch(query.trim());
       }
       return;
     }
@@ -378,14 +308,8 @@ export function SearchBar({
         if (clampedSelectedIndex >= 0 && suggestions[clampedSelectedIndex]) {
           handleSuggestionClick(suggestions[clampedSelectedIndex]);
         } else if (query.trim()) {
-          // Check if we have a dot notation query
-          if (parsedQuery.level === 'trim' && parsedQuery.make && parsedQuery.model) {
-            handleSearch('', parsedQuery.make, parsedQuery.model, parsedQuery.searchTerm || undefined);
-          } else if (parsedQuery.level === 'model' && parsedQuery.make) {
-            handleSearch('', parsedQuery.make);
-          } else {
-            handleSearch(query.trim());
-          }
+          // Simple text search
+          handleSearch(query.trim());
         }
         break;
       case 'Escape':
@@ -393,7 +317,7 @@ export function SearchBar({
         inputRef.current?.blur();
         break;
     }
-  }, [showDropdown, suggestions, clampedSelectedIndex, query, parsedQuery, handleSearch, handleSuggestionClick]);
+  }, [showDropdown, suggestions, clampedSelectedIndex, query, handleSearch, handleSuggestionClick]);
 
   // Close dropdown on click outside
   useEffect(() => {
