@@ -32,10 +32,18 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
   const { data: favoritesData, isLoading } = useFavoritesStatus();
 
   const favoriteIds = useMemo(() => favoritesData?.favorites || [], [favoritesData?.favorites]);
-  const favoriteCount = favoriteIds.length;
+  
+  // Count only shows valid listings (not deleted ones)
+  // This prevents showing "1 saved" when the listing no longer exists
+  const favoriteCount = listings.length > 0 ? listings.length : (isLoadingListings ? favoriteIds.length : 0);
 
   // Fetch listings function
   const fetchListings = useCallback(async (ids: string[]) => {
+    if (!ids.length) {
+      setListings([]);
+      setIsLoadingListings(false);
+      return;
+    }
     setIsLoadingListings(true);
     try {
       const res = await fetch(`/api/listings/car-card?ids=${encodeURIComponent(ids.join(','))}`, {
@@ -50,14 +58,17 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
     }
   }, []);
 
-  // Load listing details when dropdown opens
+  // Load listing details on mount and when favorites change
   useEffect(() => {
-    if (!isOpen || !favoriteIds.length) return;
+    if (!favoriteIds.length) {
+      setListings([]);
+      return;
+    }
     
     // Only fetch top 3
     const topIds = favoriteIds.slice(0, 3);
     fetchListings(topIds);
-  }, [isOpen, favoriteIds, fetchListings]);
+  }, [favoriteIds, fetchListings]);
 
   // Close on outside click
   useEffect(() => {

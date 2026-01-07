@@ -14,11 +14,35 @@ import { decodeVIN, isValidVINFormat, formatVIN } from '@/lib/vin-decoder';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+// Simple timing helper
+function createTimer() {
+  const start = performance.now();
+  const timings: Record<string, number> = {};
+  
+  return {
+    mark(label: string, duration: number) {
+      timings[label] = Math.round(duration);
+    },
+    start() {
+      return performance.now();
+    },
+    getTimings() {
+      return {
+        ...timings,
+        total: Math.round(performance.now() - start),
+      };
+    },
+  };
+}
+
 export async function GET(request: NextRequest) {
+  const timer = createTimer();
+  
   try {
     const searchParams = request.nextUrl.searchParams;
     const vin = searchParams.get('vin');
     const excludeListingId = searchParams.get('excludeId'); // For edit mode
+    const debug = searchParams.get('debug') === 'true';
     
     if (!vin) {
       return NextResponse.json(
@@ -40,9 +64,7 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    // Check for existing listing with this VIN
-    // Exclude soft-deleted listings (lifecycleStatus = 'deleted') - those VINs can be reused
-    
+    // Build conditions for DB query
     const conditions = [
       eq(carListing.vin, formattedVIN),
       ne(carListing.lifecycleStatus, 'deleted'), // Allow reuse of VINs from deleted listings
@@ -53,24 +75,35 @@ export async function GET(request: NextRequest) {
       conditions.push(ne(carListing.id, excludeListingId));
     }
     
-    const existingListing = await db
-      .select({
-        id: carListing.id,
-        make: carListing.make,
-        model: carListing.model,
-        year: carListing.year,
-        moderationStatus: carListing.moderationStatus,
-        lifecycleStatus: carListing.lifecycleStatus,
-        deletedAt: carListing.deletedAt,
-      })
-      .from(carListing)
-      .where(and(...conditions))
-      .limit(1);
+    // Run DB query and NHTSA decode in PARALLEL (they're independent)
+    const dbStart = timer.start();
+    const nhtsaStart = timer.start();
+    
+    const [existingListing, decodeResult] = await Promise.all([
+      db
+        .select({
+          id: carListing.id,
+          make: carListing.make,
+          model: carListing.model,
+          year: carListing.year,
+          moderationStatus: carListing.moderationStatus,
+          lifecycleStatus: carListing.lifecycleStatus,
+          deletedAt: carListing.deletedAt,
+        })
+        .from(carListing)
+        .where(and(...conditions))
+        .limit(1)
+        .then(result => {
+          timer.mark('db_query', performance.now() - dbStart);
+          return result;
+        }),
+      decodeVIN(formattedVIN).then(result => {
+        timer.mark('nhtsa_decode', performance.now() - nhtsaStart);
+        return result;
+      }),
+    ]);
     
     const isInUse = existingListing.length > 0;
-    
-    // Decode VIN to get vehicle info
-    const decodeResult = await decodeVIN(formattedVIN);
     
     if (isInUse) {
       const existing = existingListing[0];
@@ -85,6 +118,11 @@ export async function GET(request: NextRequest) {
         message = `This VIN belongs to an archived listing: ${existing.year} ${existing.make} ${existing.model}`;
       }
       
+      const timings = timer.getTimings();
+      if (debug) {
+        console.log('[check-vin] Timings (ms):', timings);
+      }
+      
       return NextResponse.json({
         available: false,
         message,
@@ -97,7 +135,13 @@ export async function GET(request: NextRequest) {
           lifecycleStatus: existing.lifecycleStatus,
         },
         decoded: decodeResult.success ? decodeResult.data : null,
+        ...(debug && { _timings: timings }),
       });
+    }
+    
+    const timings = timer.getTimings();
+    if (debug) {
+      console.log('[check-vin] Timings (ms):', timings);
     }
     
     // VIN is available
@@ -106,6 +150,7 @@ export async function GET(request: NextRequest) {
       message: 'VIN is available',
       decoded: decodeResult.success ? decodeResult.data : null,
       decodeError: !decodeResult.success ? decodeResult.error : null,
+      ...(debug && { _timings: timings }),
     });
     
   } catch (error) {

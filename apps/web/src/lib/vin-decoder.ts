@@ -221,6 +221,8 @@ function getNumericValue(results: NHTSAResult[], variable: string): number | nul
  * @returns Decoded vehicle information or error
  */
 export async function decodeVIN(vin: string): Promise<VINDecodeResult> {
+  const startTime = performance.now();
+  
   // Validate VIN format
   const cleanVIN = vin.trim().toUpperCase();
   
@@ -234,19 +236,34 @@ export async function decodeVIN(vin: string): Promise<VINDecodeResult> {
   }
   
   try {
+    const fetchStart = performance.now();
+    
+    // Add timeout - NHTSA API can be slow (5s timeout)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    
     const response = await fetch(
       `https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/${cleanVIN}?format=json`,
       {
         headers: { 'Accept': 'application/json' },
         next: { revalidate: 86400 }, // Cache for 24 hours
+        signal: controller.signal,
       }
     );
     
+    clearTimeout(timeoutId);
+    const fetchDuration = Math.round(performance.now() - fetchStart);
+    
     if (!response.ok) {
+      console.log(`[vin-decoder] NHTSA fetch failed in ${fetchDuration}ms`);
       return { success: false, error: 'Failed to connect to VIN decoder service' };
     }
     
+    const parseStart = performance.now();
     const data: NHTSAResponse = await response.json();
+    const parseDuration = Math.round(performance.now() - parseStart);
+    
+    console.log(`[vin-decoder] NHTSA API: fetch=${fetchDuration}ms, parse=${parseDuration}ms, total=${Math.round(performance.now() - startTime)}ms`);
     
     // Extract make, model, year - try to get whatever data is available
     // Note: Error codes 5,14 etc. mean partial decode - we still want partial data
@@ -303,6 +320,11 @@ export async function decodeVIN(vin: string): Promise<VINDecodeResult> {
     return { success: true, data: decoded };
     
   } catch (error) {
+    // Handle timeout specifically
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.warn('[vin-decoder] NHTSA API timeout after 5s');
+      return { success: false, error: 'VIN decoder service timed out. Please try again.' };
+    }
     console.error('VIN decode error:', error);
     return { success: false, error: 'Failed to decode VIN. Please try again.' };
   }
