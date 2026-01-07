@@ -171,6 +171,12 @@ export async function sendMessage(params: SendMessageParams): Promise<MessageWit
           eq(conversationParticipant.userId, senderId)
         )
       ),
+    
+    // 7. Update sender's lastActiveAt timestamp
+    db
+      .update(userProfile)
+      .set({ lastActiveAt: now })
+      .where(eq(userProfile.userId, senderId)),
   ]);
 
   // Validate after parallel execution

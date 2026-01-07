@@ -452,18 +452,29 @@ export async function markConversationAsRead(
   conversationId: string,
   userId: string
 ): Promise<void> {
-  await db
-    .update(conversationParticipant)
-    .set({
-      unreadCount: 0,
-      lastReadAt: new Date(),
-    })
-    .where(
-      and(
-        eq(conversationParticipant.conversationId, conversationId),
-        eq(conversationParticipant.userId, userId)
-      )
-    );
+  const now = new Date();
+  
+  await Promise.all([
+    // Update conversation participant
+    db
+      .update(conversationParticipant)
+      .set({
+        unreadCount: 0,
+        lastReadAt: now,
+      })
+      .where(
+        and(
+          eq(conversationParticipant.conversationId, conversationId),
+          eq(conversationParticipant.userId, userId)
+        )
+      ),
+    
+    // Update user's lastActiveAt
+    db
+      .update(userProfile)
+      .set({ lastActiveAt: now })
+      .where(eq(userProfile.userId, userId)),
+  ]);
 }
 
 /**
