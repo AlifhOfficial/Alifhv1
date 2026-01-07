@@ -28,6 +28,7 @@ interface ChatWindowProps {
   };
   partner?: { id: string; name: string; logo: string | null };
   listing?: { id: string; title: string; thumbnail: string | null };
+  unreadCount?: number;
   onBack?: () => void;
   className?: string;
 }
@@ -39,6 +40,7 @@ export function ChatWindow({
   otherParticipant,
   partner,
   listing,
+  unreadCount = 0,
   onBack,
   className,
 }: ChatWindowProps) {
@@ -123,7 +125,7 @@ export function ChatWindow({
 
   // Mark as read when opening conversation or receiving messages from other user
   useEffect(() => {
-    if (isLoading || messages.length === 0) return;
+    if (isLoading || messages.length === 0 || unreadCount === 0) return;
     
     // Get the newest message
     const newestMessage = messages[0];
@@ -139,7 +141,7 @@ export function ChatWindow({
       lastMessageIdRef.current = newestMessage.id;
       markAsRead(conversationId);
     }
-  }, [conversationId, isLoading, messages, userId, markAsRead]);
+  }, [conversationId, isLoading, messages, userId, unreadCount, markAsRead]);
 
   // Reset on conversation switch
   useEffect(() => {
