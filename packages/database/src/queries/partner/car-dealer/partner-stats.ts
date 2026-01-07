@@ -43,49 +43,52 @@ export async function calculatePartnerStats(partnerId: string): Promise<PartnerS
   try {
     const now = new Date();
 
-    // QUERY 1: Listing stats - inventory + sales in single query
-    // Uses conditional aggregation to get both counts in one query
-    const listingStats = await db
-      .select({
-        inventoryCount: sql<number>`COUNT(*) FILTER (WHERE 
-          ${carListing.moderationStatus} = 'approved' 
-          AND ${carListing.lifecycleStatus} = 'active' 
-          AND ${carListing.expiresAt} IS NOT NULL 
-          AND ${carListing.expiresAt} > ${now}
-        )`.as('inventory_count'),
-        totalSales: sql<number>`COUNT(*) FILTER (WHERE 
-          ${carListing.lifecycleStatus} = 'sold'
-        )`.as('total_sales'),
-      })
-      .from(carListing)
-      .where(eq(carListing.partnerId, partnerId));
+    // Run both queries in parallel since they're independent
+    const [listingStats, conversationStats] = await Promise.all([
+      // QUERY 1: Listing stats - inventory + sales in single query
+      db
+        .select({
+          inventoryCount: sql<number>`COUNT(*) FILTER (WHERE 
+            ${carListing.moderationStatus} = 'approved' 
+            AND ${carListing.lifecycleStatus} = 'active' 
+            AND ${carListing.expiresAt} IS NOT NULL 
+            AND ${carListing.expiresAt} > ${now}
+          )`.as('inventory_count'),
+          totalSales: sql<number>`COUNT(*) FILTER (WHERE 
+            ${carListing.lifecycleStatus} = 'sold'
+          )`.as('total_sales'),
+        })
+        .from(carListing)
+        .where(eq(carListing.partnerId, partnerId)),
 
+      // QUERY 2: Conversation stats - total, responded, and avg response time in single query
+      db
+        .select({
+          totalInquiries: sql<number>`COUNT(*) FILTER (WHERE 
+            ${conversation.type} = 'inquiry'
+          )`.as('total_inquiries'),
+          respondedInquiries: sql<number>`COUNT(*) FILTER (WHERE 
+            ${conversation.type} = 'inquiry' 
+            AND ${conversation.messageCount} > 0
+          )`.as('responded_inquiries'),
+          avgResponseMinutes: sql<number>`AVG(
+            CASE WHEN ${conversation.type} = 'inquiry' AND ${conversation.messageCount} > 0 THEN
+              EXTRACT(EPOCH FROM (
+                (SELECT MIN(created_at) FROM message WHERE conversation_id = ${conversation.id})
+                - ${conversation.createdAt}
+              )) / 60
+            END
+          )`.as('avg_response_minutes'),
+        })
+        .from(conversation)
+        .where(eq(conversation.partnerId, partnerId)),
+    ]);
+
+    // Extract listing stats
     const inventoryCount = Number(listingStats[0]?.inventoryCount ?? 0);
     const totalSales = Number(listingStats[0]?.totalSales ?? 0);
 
-    // QUERY 2: Conversation stats - total, responded, and avg response time in single query
-    // Combines all conversation-based metrics
-    const conversationStats = await db
-      .select({
-        totalInquiries: sql<number>`COUNT(*) FILTER (WHERE 
-          ${conversation.type} = 'inquiry'
-        )`.as('total_inquiries'),
-        respondedInquiries: sql<number>`COUNT(*) FILTER (WHERE 
-          ${conversation.type} = 'inquiry' 
-          AND ${conversation.messageCount} > 0
-        )`.as('responded_inquiries'),
-        avgResponseMinutes: sql<number>`AVG(
-          CASE WHEN ${conversation.type} = 'inquiry' AND ${conversation.messageCount} > 0 THEN
-            EXTRACT(EPOCH FROM (
-              (SELECT MIN(created_at) FROM message WHERE conversation_id = ${conversation.id})
-              - ${conversation.createdAt}
-            )) / 60
-          END
-        )`.as('avg_response_minutes'),
-      })
-      .from(conversation)
-      .where(eq(conversation.partnerId, partnerId));
-
+    // Extract conversation stats
     const totalInquiries = Number(conversationStats[0]?.totalInquiries ?? 0);
     const respondedInquiries = Number(conversationStats[0]?.respondedInquiries ?? 0);
     

@@ -49,21 +49,28 @@ interface RouteParams {
 type ListingResult = NonNullable<Awaited<ReturnType<typeof getListingDetailed>>>;
 
 async function fetchSellerData(listing: ListingResult) {
+  const start = performance.now();
+  
   if (listing.partnerId) {
     // Partner listing - fetch dealer profile and stats in parallel
     const [partnerProfile, partnerStats] = await Promise.all([
       getDealerBaseProfile(listing.partnerId),
       calculatePartnerStats(listing.partnerId),
     ]);
+    console.log(`[fetchSellerData] partner (getDealerBaseProfile + calculatePartnerStats): ${(performance.now() - start).toFixed(0)}ms`);
     return { type: 'partner' as const, partner: partnerProfile, partnerStats };
   } else {
     // User listing - single query gets profile + extended user info
     const userProfile = await getUserProfileByUserId(listing.userId);
+    console.log(`[fetchSellerData] user (getUserProfileByUserId): ${(performance.now() - start).toFixed(0)}ms`);
     return { type: 'user' as const, userProfile };
   }
 }
 
 export async function GET(req: NextRequest, { params }: RouteParams) {
+  const startTime = performance.now();
+  const logTiming = (label: string) => console.log(`[listing-detailed] ${label}: ${(performance.now() - startTime).toFixed(0)}ms`);
+
   try {
     // Rate limit by IP (public endpoint)
     const identifier = getIdentifier(req);
@@ -71,6 +78,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     if (!rateLimitResult.success) {
       return rateLimitResponse(rateLimitResult);
     }
+    logTiming('rate-limit');
 
     const isProd = process.env.NODE_ENV === 'production';
 
@@ -86,6 +94,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     // In dev, bypass cache so new/updated listings reflect immediately.
     if (!isProd) {
       const listing = await getListingDetailed(id);
+      logTiming('getListingDetailed');
       if (!listing) {
         return NextResponse.json({ error: 'Listing not found' }, { status: 404 });
       }
@@ -95,9 +104,11 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 
       // Fetch seller data
       const sellerData = await fetchSellerData(listing);
+      logTiming('fetchSellerData');
 
       const response = NextResponse.json({ listing, sellerData });
       response.headers.set('Cache-Control', 'no-store');
+      logTiming('total');
       return response;
     }
 
