@@ -22,9 +22,21 @@ function isExtendedUser(user: unknown): user is ExtendedUser {
   );
 }
 
+// Next.js 16+ proxy function
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isApiRoute = pathname.startsWith('/api/');
+  const isProtectedRoute = 
+    pathname.startsWith('/user-dashboard') ||
+    pathname.startsWith('/admin-dashboard') ||
+    pathname.startsWith('/partner-dashboard') ||
+    pathname.startsWith('/staff-dashboard') ||
+    isApiRoute;
+
+  // Skip non-protected routes entirely
+  if (!isProtectedRoute) {
+    return NextResponse.next();
+  }
 
   // Get session token from cookies - Better Auth stores session data in cookies
   const sessionToken = request.cookies.get("better-auth.session_token")?.value;
@@ -139,9 +151,13 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/user-dashboard/:path*",
-    "/admin-dashboard/:path*",
-    "/partner-dashboard/:path*",
-    "/staff-dashboard/:path*",
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
+     * - public folder files
+     */
+    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
   ],
 };

@@ -41,7 +41,6 @@ export const getSessionUser = cache(async (): Promise<ExtendedUser | null> => {
         // Fall through to fetch
       }
     }
-    
     const session = await auth.api.getSession({
       headers: headersList,
     });

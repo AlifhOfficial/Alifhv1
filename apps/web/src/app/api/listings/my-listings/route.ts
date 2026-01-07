@@ -46,10 +46,21 @@ export const runtime = 'nodejs';
 const EXPIRY_MAINTENANCE_TTL_SECONDS = 300;
 const LISTING_STATS_TTL_SECONDS = 15;
 
+// Debug flag: set DEBUG_LISTING_TIMING=true to log performance timings
+const DEBUG_TIMING = process.env.DEBUG_LISTING_TIMING === 'true';
+
 export async function GET(req: NextRequest) {
+  const startTime = performance.now();
+  const logTiming = (label: string) => {
+    if (DEBUG_TIMING) {
+      console.log(`[my-listings] ${label}: ${(performance.now() - startTime).toFixed(0)}ms`);
+    }
+  };
+  
   try {
     // Auth check - must be authenticated
     const user = await getSessionUser();
+    logTiming('auth');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -60,6 +71,7 @@ export async function GET(req: NextRequest) {
     if (!rateLimitResult.success) {
       return rateLimitResponse(rateLimitResult);
     }
+    logTiming('rate-limit');
 
     const { searchParams } = new URL(req.url);
     
@@ -260,13 +272,19 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    // ⚡ OPTIMIZATION: Fire-and-forget maintenance (don't block on expiry update)
     const maintenanceKey = `maintenance:expire:user:${user.id}`;
     if (!memoryCache.get<boolean>(maintenanceKey)) {
-      await expirePublishedListingsForUser(user.id);
-      memoryCache.set(maintenanceKey, true, EXPIRY_MAINTENANCE_TTL_SECONDS);
+      // Non-blocking: run in background just like work listings
+      expirePublishedListingsForUser(user.id)
+        .then(() => memoryCache.set(maintenanceKey, true, EXPIRY_MAINTENANCE_TTL_SECONDS))
+        .catch(() => {}); // Fire and forget - maintenance is best-effort
     }
 
-    // ⚡ OPTIMIZATION: Parallelize listings + stats fetch
+    logTiming('pre-queries');
+    
+    // ⚡ OPTIMIZATION: Parallelize listings + stats fetch with individual timing
+    const listingsStart = performance.now();
     const listingsPromise = getListingsByUserId(user.id, {
       status,
       moderationStatus,
@@ -276,6 +294,9 @@ export async function GET(req: NextRequest) {
       sort,
       limit,
       offset,
+    }).then(result => {
+      if (DEBUG_TIMING) console.log(`[my-listings] listings-query: ${(performance.now() - listingsStart).toFixed(0)}ms (${result.length} rows)`);
+      return result;
     });
 
     let statsPromise: Promise<Awaited<ReturnType<typeof getListingStatsByUserId>> | undefined> = Promise.resolve(undefined);
@@ -283,9 +304,12 @@ export async function GET(req: NextRequest) {
       const statsKey = `listingStats:user:${user.id}:${listingType ?? 'all'}`;
       const cachedStats = memoryCache.get<Awaited<ReturnType<typeof getListingStatsByUserId>>>(statsKey);
       if (cachedStats) {
+        if (DEBUG_TIMING) console.log(`[my-listings] stats-query: 0ms (cache hit)`);
         statsPromise = Promise.resolve(cachedStats);
       } else {
+        const statsStart = performance.now();
         statsPromise = getListingStatsByUserId(user.id, { listingType }).then(stats => {
+          if (DEBUG_TIMING) console.log(`[my-listings] stats-query: ${(performance.now() - statsStart).toFixed(0)}ms`);
           memoryCache.set(statsKey, stats, LISTING_STATS_TTL_SECONDS);
           return stats;
         });
@@ -294,6 +318,7 @@ export async function GET(req: NextRequest) {
 
     // Wait for both in parallel
     const [listings, statsToUse] = await Promise.all([listingsPromise, statsPromise]);
+    logTiming('queries-done');
 
     return NextResponse.json({
       success: true,
