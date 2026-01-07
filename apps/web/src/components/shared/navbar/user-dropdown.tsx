@@ -162,16 +162,47 @@ export function ProfileMenu({
               {/* Divider */}
               <div className="my-1.5 mx-3 border-t border-sidebar-border" />
               
+              {/* Quick Links */}
+              <button
+                onClick={() => {
+                  router.push('/listings');
+                  onToggleMenu();
+                }}
+                className="w-full text-left px-3 py-2 text-[15px] font-medium tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+              >
+                Listings
+              </button>
+              <button
+                onClick={() => {
+                  router.push('/user-dashboard/bookings');
+                  onToggleMenu();
+                }}
+                className="w-full text-left px-3 py-2 text-[15px] font-medium tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+              >
+                Bookings
+              </button>
+              
+              {/* Divider */}
+              <div className="my-1.5 mx-3 border-t border-sidebar-border" />
+              
               {/* Account Actions */}
               <button
                 onClick={() => {
                   router.push('/user-dashboard/profile');
                   onToggleMenu();
                 }}
-                className="w-full text-left px-3 py-2 text-[15px] font-medium tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors flex items-center gap-2.5"
+                className="w-full text-left px-3 py-2 text-[15px] font-medium tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
               >
-                <User size={16} strokeWidth={2} className="text-sidebar-foreground/40" />
                 Profile
+              </button>
+              <button
+                onClick={() => {
+                  router.push('/user-dashboard/settings');
+                  onToggleMenu();
+                }}
+                className="w-full text-left px-3 py-2 text-[15px] font-medium tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+              >
+                Settings
               </button>
               
               {/* Divider */}

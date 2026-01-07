@@ -21,6 +21,8 @@ interface MessageBubbleProps {
   otherUserAvatar?: string | null;
   otherUserName?: string | null;
   listing?: { id: string; title: string; thumbnail: string | null };
+  /** Compact mode for floating chat windows */
+  compact?: boolean;
 }
 
 export function MessageBubble({
@@ -33,6 +35,7 @@ export function MessageBubble({
   otherUserAvatar,
   otherUserName,
   listing,
+  compact = false,
 }: MessageBubbleProps) {
   const { sender, text, mediaUrl, mediaType, createdAt, isEdited, isSystemMessage } = message;
 
@@ -50,24 +53,31 @@ export function MessageBubble({
   return (
     <div
       className={cn(
-        'flex gap-2.5 mb-1.5 group',
+        'flex mb-1.5 group',
+        compact ? 'gap-1.5' : 'gap-2.5',
         isOwn ? 'flex-row-reverse' : 'flex-row'
       )}
     >
-      {/* Avatar */}
-      {!isOwn && showAvatar ? (
-        <UserAvatar
-          src={sender.avatarUrl}
-          name={sender.name}
-          size="sm"
-          className="w-8 h-8 flex-shrink-0"
-        />
-      ) : (
-        <div className="w-8 flex-shrink-0" />
+      {/* Avatar - only show for received messages */}
+      {!isOwn && (
+        showAvatar ? (
+          <UserAvatar
+            src={sender.avatarUrl}
+            name={sender.name}
+            size="sm"
+            className={cn(compact ? 'w-6 h-6' : 'w-8 h-8', 'flex-shrink-0')}
+          />
+        ) : (
+          <div className={cn(compact ? 'w-6' : 'w-8', 'flex-shrink-0')} />
+        )
       )}
 
       {/* Message Content */}
-      <div className={cn('flex flex-col max-w-[80%] md:max-w-[65%] min-w-0', isOwn ? 'items-end' : 'items-start')}>
+      <div className={cn(
+        'flex flex-col min-w-0',
+        compact ? 'max-w-[85%]' : 'max-w-[80%] md:max-w-[65%]',
+        isOwn ? 'items-end' : 'items-start'
+      )}>
         {/* Sender Name (only for received messages with avatar) */}
         {!isOwn && showAvatar && (
           <small className="text-xs text-muted-foreground/70 mb-1 px-2 font-medium">
@@ -100,7 +110,8 @@ export function MessageBubble({
           {/* Message Bubble */}
           <div
             className={cn(
-              'rounded-2xl px-4 py-3 break-words shadow-sm transition-all',
+              'break-words shadow-sm transition-all',
+              compact ? 'rounded-xl px-3 py-2' : 'rounded-2xl px-4 py-3',
               isOwn
                 ? 'bg-blue-500 text-white rounded-tr-sm'
                 : 'bg-muted text-foreground rounded-tl-sm'
@@ -118,7 +129,10 @@ export function MessageBubble({
 
             {/* Text */}
             {text && (
-              <p className="text-[15px] leading-relaxed whitespace-pre-wrap">
+              <p className={cn(
+                'whitespace-pre-wrap',
+                compact ? 'text-[13px] leading-snug' : 'text-[15px] leading-relaxed'
+              )}>
                 {text}
               </p>
             )}

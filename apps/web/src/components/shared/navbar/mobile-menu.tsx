@@ -43,7 +43,7 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp,
 
   return (
     <div 
-      className="lg:hidden fixed inset-0 top-14 sm:top-16 z-40 bg-background/95 backdrop-blur-2xl overflow-y-auto"
+      className="lg:hidden fixed inset-0 top-14 sm:top-16 z-40 bg-background overflow-y-auto"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="px-6 py-8 space-y-6">
@@ -57,8 +57,8 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp,
                     onClick={() => toggleExpanded(item.label)}
                     className={`w-full flex items-center justify-between px-3 py-3 text-[15px] font-semibold tracking-tight transition-colors rounded-lg ${
                       pathname === item.href
-                        ? "text-foreground bg-muted/30"
-                        : "text-foreground/80 hover:text-foreground hover:bg-muted/20"
+                        ? "text-foreground bg-muted/50"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                     }`}
                   >
                     {item.label}
@@ -70,34 +70,26 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp,
                   </button>
                   
                   {expandedItems.includes(item.label) && (
-                    <div className="mt-3 mb-4 space-y-6 border-l border-border/30 ml-3 pl-5">
-                      {item.submenu.map((section, sectionIndex) => {
-                        const isProductSection = sectionIndex === 0;
-                        
-                        return (
-                          <div key={section.title}>
-                            <div className="text-sm font-medium text-muted-foreground/60 mb-3">
-                              {section.title}
-                            </div>
-                            <div className={isProductSection ? 'space-y-2' : 'space-y-3'}>
-                              {section.items.map((subItem) => (
-                                <Link
-                                  key={subItem.href}
-                                  href={subItem.href}
-                                  onClick={onNavigate}
-                                  className={`block transition-colors ${
-                                    isProductSection
-                                      ? 'text-xl font-semibold tracking-tight text-foreground/90 hover:text-primary'
-                                      : 'text-sm font-normal text-muted-foreground/70 hover:text-foreground'
-                                  }`}
-                                >
-                                  {subItem.label}
-                                </Link>
-                              ))}
-                            </div>
+                    <div className="mt-3 mb-4 space-y-6 border-l border-border/40 ml-3 pl-5">
+                      {item.submenu.map((section) => (
+                        <div key={section.title}>
+                          <div className="text-sm font-semibold text-foreground mb-3">
+                            {section.title}
                           </div>
-                        );
-                      })}
+                          <div className="space-y-2.5">
+                            {section.items.map((subItem) => (
+                              <Link
+                                key={subItem.href}
+                                href={subItem.href}
+                                onClick={onNavigate}
+                                className="block text-[14px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+                              >
+                                {subItem.label}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </>
@@ -107,8 +99,8 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp,
                   onClick={onNavigate}
                   className={`block px-3 py-3 text-[15px] font-semibold tracking-tight transition-colors rounded-lg ${
                     pathname === item.href
-                      ? "text-foreground bg-muted/30"
-                      : "text-foreground/80 hover:text-foreground hover:bg-muted/20"
+                      ? "text-foreground bg-muted/50"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                   }`}
                 >
                   {item.label}
@@ -119,7 +111,7 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp,
         </div>
 
         {/* Mobile Auth Actions */}
-        <div className="pt-6 border-t border-border/30 space-y-1">
+        <div className="pt-6 border-t border-border/40 space-y-1">
           {user ? (
             <>
               <button
@@ -127,14 +119,14 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp,
                   onProfile?.();
                   onNavigate();
                 }}
-                className="block w-full px-3 py-3 text-[15px] font-semibold tracking-tight text-foreground/80 hover:text-foreground transition-colors rounded-lg hover:bg-muted/20 text-left"
+                className="block w-full px-3 py-3 text-[15px] font-semibold tracking-tight text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/30 text-left"
               >
                 Profile
               </button>
               <Link
                 href="/user-dashboard"
                 onClick={onNavigate}
-                className="block w-full px-3 py-3 text-[15px] font-semibold tracking-tight text-foreground/80 hover:text-foreground transition-colors rounded-lg hover:bg-muted/20 text-left"
+                className="block w-full px-3 py-3 text-[15px] font-semibold tracking-tight text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/30 text-left"
               >
                 Dashboard
               </Link>

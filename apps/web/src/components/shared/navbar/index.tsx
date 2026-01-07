@@ -20,7 +20,10 @@ import { Moon, Menu, X, CheckCircle2 } from "lucide-react";
 import { MegaDropdown } from "./mega-dropdown";
 import { MobileMenu } from "./mobile-menu";
 import { ProfileMenu } from "./user-dropdown";
+import { NavbarMessaging } from "./navbar-messaging";
+import { NavbarFavorites } from "./navbar-favorites";
 import { AuthManager, AuthModalType } from "@/components/auth";
+import { useFloatingChatSafe } from "@/components/messaging/floating-chat-manager";
 import { useUser } from "@/hooks/auth/use-auth";
 import { handleSignOut } from "@/lib/auth/sign-out";
 
@@ -148,7 +151,7 @@ if (typeof window !== 'undefined') {
 }
 
 export function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [_isScrolled, setIsScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -166,6 +169,7 @@ export function Navbar() {
   const searchParams = useSearchParams();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const { user, isSignedIn: isAuthenticated, refetch: refetchAuth } = useUser();
+  const { openChat } = useFloatingChatSafe();
 
   // Use external store for mounted state (no setState in effect)
   const mounted = useSyncExternalStore(
@@ -397,8 +401,17 @@ export function Navbar() {
             </div>
 
             {/* Right Actions */}
-            <div className="flex items-center gap-3">
-              {/* Theme Toggle */}
+            <div className="flex items-center gap-2">
+              {/* Messaging - Only show when authenticated */}
+              {isAuthenticated && user?.id && (
+                <NavbarMessaging userId={user.id} onOpenChat={openChat} />
+              )}
+
+              {/* Favorites - Only show when authenticated */}
+              {isAuthenticated && user?.id && (
+                <NavbarFavorites userId={user.id} />
+              )}
+
               {/* Theme Toggle */}
               <div className="relative" data-theme-menu-container>
                 <button
@@ -406,11 +419,11 @@ export function Navbar() {
                     e.stopPropagation();
                     setShowThemeMenu(!showThemeMenu);
                   }}
-                  className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-md"
+                  className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md"
                   aria-label="Theme menu"
                   suppressHydrationWarning
                 >
-                  <Moon className="w-4 h-4" />
+                  <Moon className="size-4" />
                 </button>
 
                 {showThemeMenu && (
