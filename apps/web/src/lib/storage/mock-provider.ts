@@ -1,9 +1,12 @@
 import type { StorageProvider, UploadResult, SignedUrlOptions } from "./types";
 import { normalizeKey } from "@/utils/storage";
 
-// Edge-compatible UUID generator (Web Crypto API)
+// UUIDv7 when available (Bun runtime), fallback to v4 (Next.js build/Node)
 function generateUUID(): string {
-  return crypto.randomUUID();
+  // @ts-ignore - Bun global may not exist during Next.js build
+  return typeof globalThis.Bun !== 'undefined' && globalThis.Bun.randomUUIDv7
+    ? globalThis.Bun.randomUUIDv7()
+    : crypto.randomUUID();
 }
 
 const mockStore = new Map<string, Buffer>();

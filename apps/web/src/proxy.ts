@@ -7,41 +7,36 @@ import {
   isDealerStaff,
 } from "@/lib/auth/routing";
 import type { ExtendedUser } from "@/types/auth";
-import { Redis } from "@upstash/redis";
 
 // Request-scoped session cache key
 const SESSION_HEADER_KEY = "x-auth-user";
-const SESSION_CACHE_TTL = 300; // 5 minutes in Redis
-const LOCAL_CACHE_TTL = 10_000; // 10 seconds in-memory (ms)
+const CACHE_TTL = 60_000; // 1 minute in-memory (ms) - increased from 10s for v1
 
-// Initialize Redis for session caching
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-});
+/**
+ * In-memory session cache (v1 - no Redis)
+ * Note: Cache is per-serverless instance, not shared across Vercel containers.
+ * This is acceptable for v1 - each instance builds its own cache over time.
+ */
+const sessionCache = new Map<string, { user: ExtendedUser; expires: number }>();
+const CACHE_MAX_SIZE = 1000;
 
-// In-memory LRU cache to avoid Redis roundtrips on rapid requests
-// This dramatically reduces latency for repeated requests within seconds
-const localCache = new Map<string, { user: ExtendedUser; expires: number }>();
-const LOCAL_CACHE_MAX_SIZE = 1000;
-
-function getFromLocalCache(key: string): ExtendedUser | null {
-  const entry = localCache.get(key);
+function getCachedSession(key: string): ExtendedUser | null {
+  const entry = sessionCache.get(key);
   if (!entry) return null;
   if (Date.now() > entry.expires) {
-    localCache.delete(key);
+    sessionCache.delete(key);
     return null;
   }
   return entry.user;
 }
 
-function setLocalCache(key: string, user: ExtendedUser): void {
+function setCachedSession(key: string, user: ExtendedUser): void {
   // Simple LRU: if at max size, delete oldest entry
-  if (localCache.size >= LOCAL_CACHE_MAX_SIZE) {
-    const firstKey = localCache.keys().next().value;
-    if (firstKey) localCache.delete(firstKey);
+  if (sessionCache.size >= CACHE_MAX_SIZE) {
+    const firstKey = sessionCache.keys().next().value;
+    if (firstKey) sessionCache.delete(firstKey);
   }
-  localCache.set(key, { user, expires: Date.now() + LOCAL_CACHE_TTL });
+  sessionCache.set(key, { user, expires: Date.now() + CACHE_TTL });
 }
 
 function isExtendedUser(user: unknown): user is ExtendedUser {
@@ -89,38 +84,26 @@ export async function proxy(request: NextRequest) {
   try {
     const cacheKey = `session:${sessionToken.slice(0, 32)}`;
     
-    // Layer 1: Check in-memory cache first (sub-millisecond)
-    let user: ExtendedUser | null = getFromLocalCache(cacheKey);
+    // Check in-memory cache first
+    let user: ExtendedUser | null = getCachedSession(cacheKey);
     
     if (!user) {
-      // Layer 2: Try Redis cache (10-50ms typically)
-      const cachedSession = await redis.get<ExtendedUser>(cacheKey);
-      
-      if (cachedSession && isExtendedUser(cachedSession)) {
-        user = cachedSession;
-        // Populate local cache for subsequent rapid requests
-        setLocalCache(cacheKey, user);
-      } else {
-        // Layer 3: Cache miss - fetch from Better Auth (slowest)
-        const session = await auth.api.getSession({
-          headers: request.headers,
-        });
+      // Cache miss - fetch from Better Auth
+      const session = await auth.api.getSession({
+        headers: request.headers,
+      });
 
-        if (!session?.user || !isExtendedUser(session.user)) {
-          if (isApiRoute) {
-            return NextResponse.next();
-          }
-          return NextResponse.redirect(new URL("/sign-in", request.url));
+      if (!session?.user || !isExtendedUser(session.user)) {
+        if (isApiRoute) {
+          return NextResponse.next();
         }
-
-        user = session.user;
-        
-        // Populate both caches - Redis write is fire-and-forget (non-blocking)
-        setLocalCache(cacheKey, user);
-        redis.set(cacheKey, user, { ex: SESSION_CACHE_TTL }).catch(() => {
-          // Silently ignore Redis write failures - session still works
-        });
+        return NextResponse.redirect(new URL("/sign-in", request.url));
       }
+
+      user = session.user;
+      
+      // Cache for subsequent requests in this serverless instance
+      setCachedSession(cacheKey, user);
     }
 
     if (!user) {

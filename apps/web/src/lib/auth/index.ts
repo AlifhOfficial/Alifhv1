@@ -29,7 +29,7 @@ import { ac, roles } from "@/lib/auth/permissions";
 import { AUTH_CONFIG } from "./config";
 import { sessionCache } from "@/lib/redis";
 
-// Register Redis cache invalidator with database package
+// Register session cache invalidator with database package
 setSessionCacheInvalidator((key) => sessionCache.delete(key));
 
 export const auth = betterAuth({
@@ -51,7 +51,7 @@ export const auth = betterAuth({
     updateAge: AUTH_CONFIG.SESSION.UPDATE_AGE,
     cookieCache: {
       enabled: true,
-      maxAge: 5 * 60, // 5 minutes - matches our memory cache TTL
+      maxAge: 60, // 1 minute - in-memory cache for v1
     },
   },
 
@@ -101,7 +101,7 @@ export const auth = betterAuth({
     customSession(async ({ user, session }) => {
       const cacheKey = CacheKeys.userSession(user.id);
       
-      // Try Redis cache first (works in serverless)
+      // Try in-memory cache first
       const cached = await sessionCache.get<{
         role: string;
         banned: boolean;
@@ -234,7 +234,7 @@ export const auth = betterAuth({
         useGeneratedAvatar,
       };
       
-      // Cache in Redis for 5 minutes (works in serverless)
+      // Cache in memory for 5 minutes
       await sessionCache.set(cacheKey, sessionData, CacheTTL.userSession);
 
       return {

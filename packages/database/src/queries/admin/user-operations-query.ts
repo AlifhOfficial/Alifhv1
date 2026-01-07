@@ -8,6 +8,8 @@
  * @module queries/admin/user-operations-query
  */
 
+import { generateId } from '../../utils/uuid';
+
 import { eq, sql } from 'drizzle-orm';
 import { db } from '../../dbclient';
 import { user, session } from '../../schema/auth';
@@ -142,7 +144,7 @@ export async function addUserTag(userId: string, tag: string) {
   const [newProfile] = await db
     .insert(userProfile)
     .values({
-      id: crypto.randomUUID(),
+      id: generateId(),
       userId,
       tags: [tag],
       createdAt: new Date(),
@@ -210,7 +212,7 @@ export async function addUserBadge(userId: string, badge: string) {
   const [newProfile] = await db
     .insert(userProfile)
     .values({
-      id: crypto.randomUUID(),
+      id: generateId(),
       userId,
       badges: [badge],
       createdAt: new Date(),

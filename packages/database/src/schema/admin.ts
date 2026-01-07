@@ -1,10 +1,11 @@
 import { pgTable, text, timestamp, pgEnum, index } from 'drizzle-orm/pg-core';
 import { user } from './auth';
+import { generateId } from '../utils/uuid';
 
 export const appealStatusEnum = pgEnum('appeal_status', ['pending', 'approved', 'rejected']);
 
 export const banAppeal = pgTable('ban_appeal', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  id: text('id').primaryKey().$defaultFn(() => generateId()),
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   message: text('message').notNull(),
   status: appealStatusEnum('status').notNull().default('pending'),

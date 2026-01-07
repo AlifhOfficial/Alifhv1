@@ -22,6 +22,9 @@ export {
 // Re-export cuid2 for ID generation
 export { createId } from '@paralleldrive/cuid2';
 
+// Re-export UUID utilities
+export { generateId } from './utils/uuid';
+
 export * from './dbclient';
 export * from './schema';
 export * as googleReviews from './services/google-reviews';

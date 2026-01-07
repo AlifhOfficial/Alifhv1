@@ -1,10 +1,11 @@
 import { pgTable, text, timestamp, pgEnum, index, boolean } from 'drizzle-orm/pg-core';
 import { user } from './auth';
+import { generateId } from '../utils/uuid';
 
 export const feedbackStatusEnum = pgEnum('feedback_status', ['new', 'reviewed', 'archived']);
 
 export const feedback = pgTable('feedback', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  id: text('id').primaryKey().$defaultFn(() => generateId()),
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   title: text('title').notNull(),
   content: text('content').notNull(),

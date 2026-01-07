@@ -1,61 +1,45 @@
 /**
- * Upstash Redis Client
+ * In-Memory Session Cache (v1)
  * 
- * Used for session caching in serverless environment.
- * Free tier: 500K commands/month - sufficient for ~1000 users/day.
+ * Simple in-memory caching for session data. Note that in serverless environments
+ * (Vercel), each instance maintains its own cache - it's not shared across containers.
+ * This is acceptable for v1 as each instance builds its own cache over time.
  * 
- * Environment variables required:
- * - UPSTASH_REDIS_REST_URL: Redis REST API URL
- * - UPSTASH_REDIS_REST_TOKEN: Redis REST API token
+ * When you need shared caching later, add Redis/Upstash here.
  * 
  * @module lib/redis
  */
 
-import { Redis } from '@upstash/redis';
-
-// Lazy initialization to avoid errors when env vars are not set
-let redisInstance: Redis | null = null;
-
-/**
- * Get Redis client instance (singleton)
- * Returns null if environment variables are not configured
- */
-export function getRedis(): Redis | null {
-  if (redisInstance) return redisInstance;
-  
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-  
-  if (!url || !token) {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('[Redis] UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN not set - session caching disabled');
-    }
-    return null;
-  }
-  
-  redisInstance = new Redis({ url, token });
-  return redisInstance;
+interface CacheEntry<T> {
+  value: T;
+  expires: number;
 }
 
+// Simple in-memory cache with TTL
+const memoryCache = new Map<string, CacheEntry<unknown>>();
+const CACHE_MAX_SIZE = 1000;
+const DEFAULT_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
 /**
- * Redis-backed cache for session data
- * Falls back gracefully if Redis is not configured
+ * In-memory cache for session data
+ * Compatible with the previous Redis interface for easy migration
  */
 export const sessionCache = {
   /**
    * Get cached session data
    */
   async get<T>(key: string): Promise<T | null> {
-    const redis = getRedis();
-    if (!redis) return null;
+    const entry = memoryCache.get(key) as CacheEntry<T> | undefined;
     
-    try {
-      const data = await redis.get<T>(key);
-      return data;
-    } catch (error) {
-      console.error('[Redis] Get error:', error);
+    if (!entry) return null;
+    
+    // Check expiration
+    if (Date.now() > entry.expires) {
+      memoryCache.delete(key);
       return null;
     }
+    
+    return entry.value;
   },
   
   /**
@@ -63,50 +47,41 @@ export const sessionCache = {
    * @param ttlSeconds - Time to live in seconds (default: 300 = 5 minutes)
    */
   async set<T>(key: string, value: T, ttlSeconds: number = 300): Promise<void> {
-    const redis = getRedis();
-    if (!redis) return;
-    
-    try {
-      await redis.set(key, value, { ex: ttlSeconds });
-    } catch (error) {
-      console.error('[Redis] Set error:', error);
+    // Simple LRU: if at max size, delete oldest entry
+    if (memoryCache.size >= CACHE_MAX_SIZE) {
+      const firstKey = memoryCache.keys().next().value;
+      if (firstKey) memoryCache.delete(firstKey);
     }
+    
+    memoryCache.set(key, {
+      value,
+      expires: Date.now() + (ttlSeconds * 1000),
+    });
   },
   
   /**
    * Delete session data
    */
   async delete(key: string): Promise<void> {
-    const redis = getRedis();
-    if (!redis) return;
-    
-    try {
-      await redis.del(key);
-    } catch (error) {
-      console.error('[Redis] Delete error:', error);
-    }
+    memoryCache.delete(key);
   },
   
   /**
    * Delete all keys matching a pattern (e.g., user:* for all user sessions)
+   * Simple implementation for in-memory - filters by prefix
    */
   async deleteByPattern(pattern: string): Promise<void> {
-    const redis = getRedis();
-    if (!redis) return;
+    // Convert glob pattern to simple prefix match (e.g., "user:*" -> "user:")
+    const prefix = pattern.replace('*', '');
     
-    try {
-      // Scan and delete matching keys
-      let cursor = 0;
-      do {
-        const [newCursor, keys] = await redis.scan(cursor, { match: pattern, count: 100 });
-        cursor = Number(newCursor);
-        if (keys.length > 0) {
-          await redis.del(...keys);
-        }
-      } while (cursor !== 0);
-    } catch (error) {
-      console.error('[Redis] DeleteByPattern error:', error);
+    const keysToDelete: string[] = [];
+    for (const key of memoryCache.keys()) {
+      if (key.startsWith(prefix)) {
+        keysToDelete.push(key);
+      }
     }
+    
+    keysToDelete.forEach(key => memoryCache.delete(key));
   },
 };
 
