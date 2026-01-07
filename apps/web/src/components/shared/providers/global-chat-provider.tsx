@@ -1,6 +1,6 @@
 /**
- * Global Chat Provider - Wraps app with floating chat functionality
- * Client component wrapper for FloatingChatProvider with WebSocket support
+ * Global Chat Provider - Single source of truth for WebSocket + Floating Chat
+ * Wraps entire app with WebSocket connection and floating chat functionality
  */
 
 'use client';
@@ -17,6 +17,7 @@ interface GlobalChatProviderProps {
 export function GlobalChatProvider({ children }: GlobalChatProviderProps) {
   const { user } = useUser();
   
+  // Single WebSocket connection + FloatingChat for entire app
   return (
     <WebSocketProvider userId={user?.id} autoConnect={!!user?.id}>
       <FloatingChatProvider userId={user?.id}>

@@ -21,6 +21,7 @@ import { DashboardPageLayout } from '@/components/shared/layout';
 import { PartnerApplicationStatus, UserBanNotice } from '@/components/dashboards/user';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { useUserProfile } from '@/hooks/profile';
+import { useUnreadCount } from '@/hooks/messaging';
 
 type UserStats = {
   listingsCount: number;
@@ -76,12 +77,14 @@ export function UserDashboardOverview() {
   const [bookings, setBookings] = useState<UpcomingBooking[]>([]);
   const [listings, setListings] = useState<RecentListing[]>([]);
   const [favoritesCount, setFavoritesCount] = useState(0);
-  const [unreadCount, setUnreadCount] = useState(0);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [superlikeQuota, setSuperlikeQuota] = useState({ used: 0, total: 5, remaining: 5 });
   const [isLoading, setIsLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
+  
+  // Use hook for unread count (shared cache with navbar)
+  const { unreadCount } = useUnreadCount(user?.id);
   
   // Subscribe to profile updates for instant avatar sync
   const { profile } = useUserProfile();
@@ -98,12 +101,11 @@ export function UserDashboardOverview() {
 
     const fetchData = async () => {
       try {
-        const [statsRes, bookingsRes, listingsRes, favoritesRes, unreadRes, conversationsRes] = await Promise.all([
+        const [statsRes, bookingsRes, listingsRes, favoritesRes, conversationsRes] = await Promise.all([
           fetch('/api/user/stats', { credentials: 'include' }),
           fetch('/api/bookings?limit=3', { credentials: 'include' }),
           fetch('/api/listings/my-listings?limit=4&status=published', { credentials: 'include' }),
           fetch('/api/engagement/favorites-status', { credentials: 'include' }),
-          fetch('/api/conversations/unread-count', { credentials: 'include' }),
           fetch('/api/conversations?limit=5', { credentials: 'include' }),
         ]);
 
@@ -169,11 +171,6 @@ export function UserDashboardOverview() {
           // Sort by date and take top 5
           activities.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
           setRecentActivity(activities.slice(0, 5));
-        }
-
-        if (unreadRes.ok) {
-          const data = await unreadRes.json();
-          setUnreadCount(data.unreadCount || 0);
         }
 
         if (conversationsRes.ok) {

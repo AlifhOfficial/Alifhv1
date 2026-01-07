@@ -13,7 +13,6 @@ import { MessageBubble } from './message-bubble';
 import { MessageInput } from './message-input';
 import { useMessages, useSendMessage, useMarkAsRead } from '@/hooks/messaging';
 import { cn } from '@/utils/cn';
-import Link from 'next/link';
 import { format, formatDistanceToNow, isSameDay } from 'date-fns';
 
 interface ChatWindowProps {
@@ -65,9 +64,41 @@ export function ChatWindow({
   const containerRef = useRef<HTMLDivElement>(null);
   const lastMessageIdRef = useRef<string | null>(null);
   const [showListingPreview, setShowListingPreview] = useState(true);
+  const isNearBottomRef = useRef(true);
 
   // Messages are newest-first from API, flex-col-reverse displays them correctly
   // No sort needed - newest at bottom naturally
+
+  // Track if user is near bottom (for auto-scroll on new messages)
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const { scrollTop } = container;
+      // In flex-col-reverse, scrollTop of 0 is at the bottom
+      // Negative scrollTop means scrolling up into older messages
+      const distanceFromBottom = Math.abs(scrollTop);
+      isNearBottomRef.current = distanceFromBottom < 100;
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Smooth scroll to bottom when sending message or receiving new message while at bottom
+  useEffect(() => {
+    if (messages.length === 0 || isLoading) return;
+    
+    const container = containerRef.current;
+    if (!container) return;
+
+    // Auto-scroll if user is near bottom
+    if (isNearBottomRef.current) {
+      // Use smooth scroll for better UX
+      container.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [messages, isLoading]);
 
   // Find the NEWEST message that was read by other user (for "seen" indicator)
   const lastReadMsgId = useMemo(() => {
@@ -124,12 +155,10 @@ export function ChatWindow({
   const isPartnerBrand = inbox === 'personal' && partner;
   const lastActiveAt = otherLastSeenAt ?? otherLastReadAt;
 
-  const formatLastSeen = (date: Date) => {
-    const diffMin = Math.floor((Date.now() - date.getTime()) / 60000);
-    if (diffMin < 1) return 'Just now';
-    if (diffMin < 60) return `${diffMin}m ago`;
-    if (diffMin < 1440) return `${Math.floor(diffMin / 60)}h ago`;
-    return formatDistanceToNow(date, { addSuffix: true });
+  // Format last seen with relative time
+  const getLastSeenText = (date: Date) => {
+    // Using formatDistanceToNow which handles the time calculation internally
+    return formatDistanceToNow(date, { addSuffix: false });
   };
 
   const defaultText = inbox === 'personal' && listing && messages.length === 0
@@ -166,7 +195,7 @@ export function ChatWindow({
             {!isOtherOnline && lastActiveAt && (
               <div className="flex items-center gap-1.5">
                 <Moon className="w-3 h-3 text-purple-500 fill-purple-500" />
-                <small className="text-xs text-muted-foreground/70 font-medium">Last seen {formatLastSeen(lastActiveAt)}</small>
+                <small className="text-xs text-muted-foreground/70 font-medium">Last seen {getLastSeenText(lastActiveAt)}</small>
               </div>
             )}
             {!isOtherOnline && !lastActiveAt && (

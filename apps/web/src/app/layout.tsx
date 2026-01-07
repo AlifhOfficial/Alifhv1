@@ -3,6 +3,7 @@ import './globals.css'
 import { ThemeProvider } from '@/components/shared/providers/theme-provider'
 import { QueryProvider } from '@/components/shared/providers/query-provider'
 import { AuthProvider } from '@/providers/auth-provider'
+import { GlobalChatProvider } from '@/components/shared/providers/global-chat-provider'
 import { Toaster } from 'sonner'
 
 export const viewport: Viewport = {
@@ -57,7 +58,9 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             <QueryProvider>
-              {children}
+              <GlobalChatProvider>
+                {children}
+              </GlobalChatProvider>
               <Toaster richColors position="top-right" />
             </QueryProvider>
           </AuthProvider>

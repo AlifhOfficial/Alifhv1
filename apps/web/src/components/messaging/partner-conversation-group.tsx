@@ -10,7 +10,10 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 import { ConversationListItem } from './conversation-list-item';
 import { cn } from '@/utils/cn';
-import type { Conversation, ConversationPartner } from '@/hooks/messaging';
+import type { Conversation } from '@/hooks/messaging';
+
+// Derived type from Conversation
+type ConversationPartner = NonNullable<Conversation['partner']>;
 
 interface PartnerConversationGroupProps {
   partner: ConversationPartner;

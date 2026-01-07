@@ -18,8 +18,12 @@ import { Search, Loader2, MessageCircle, PanelLeft } from 'lucide-react';
 import { ConversationListItem } from './conversation-list-item';
 import { PartnerConversationGroup } from './partner-conversation-group';
 import { UserConversationGroup } from './user-conversation-group';
-import type { Conversation, ConversationPartner, ConversationParticipant } from '@/hooks/messaging';
+import type { Conversation } from '@/hooks/messaging';
 import { cn } from '@/utils/cn';
+
+// Derived types from Conversation
+type ConversationPartner = NonNullable<Conversation['partner']>;
+type ConversationParticipant = NonNullable<Conversation['otherParticipant']>;
 
 interface ConversationListProps {
   inbox?: 'personal' | 'staff';

@@ -337,6 +337,20 @@
       "when": 1767764362781,
       "tag": "0047_tense_karma",
       "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "7",
+      "when": 1767811950463,
+      "tag": "0048_green_black_bolt",
+      "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "7",
+      "when": 1767819006412,
+      "tag": "0049_misty_electro",
+      "breakpoints": true
     }
   ]
 }

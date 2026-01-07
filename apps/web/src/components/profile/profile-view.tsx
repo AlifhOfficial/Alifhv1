@@ -7,26 +7,19 @@
 
 'use client';
 
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUserProfile, type UserProfileUpdate, useUserStats } from '@/hooks/profile';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/providers/auth-provider';
 import { 
-  MapPin, 
   Loader2, 
   Camera,
-  Check,
   CheckCircle2,
-  AlertCircle,
   Star,
   X
 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { cn } from '@/utils/cn';
-
-const LocationMap = lazy(() => 
-  import('./sections/location-map').then(mod => ({ default: mod.LocationMap }))
-);
 
 // ============================================================================
 // Constants
@@ -68,10 +61,6 @@ export function ProfileView() {
     lastName: '',
     phone: '',
     bio: '',
-    city: '',
-    emirate: '',
-    lat: 25.2048,
-    lng: 55.2708,
     tags: [] as string[],
   });
 
@@ -79,8 +68,6 @@ export function ProfileView() {
   const [saving, setSaving] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [initialized, setInitialized] = useState(false);
-  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
-  const isGeocodingRef = React.useRef(false);
   
   // Track if form has unsaved changes
   const hasUnsavedChanges = React.useMemo(() => {
@@ -90,10 +77,6 @@ export function ProfileView() {
       form.lastName !== (profile.lastName ?? '') ||
       form.phone !== (profile.phone ?? '') ||
       form.bio !== (profile.description ?? '') ||
-      form.city !== (profile.locationCity ?? '') ||
-      form.emirate !== (profile.locationEmirate ?? '') ||
-      form.lat !== (profile.locationLat ?? 25.2048) ||
-      form.lng !== (profile.locationLng ?? 55.2708) ||
       JSON.stringify(form.tags) !== JSON.stringify(profile.tags ?? [])
     );
   }, [form, profile, initialized]);
@@ -106,10 +89,6 @@ export function ProfileView() {
         lastName: profile.lastName ?? '',
         phone: profile.phone ?? '',
         bio: profile.description ?? '',
-        city: profile.locationCity ?? '',
-        emirate: profile.locationEmirate ?? '',
-        lat: profile.locationLat ?? 25.2048,
-        lng: profile.locationLng ?? 55.2708,
         tags: profile.tags ?? [],
       });
       setInitialized(true);
@@ -130,10 +109,6 @@ export function ProfileView() {
         lastName: form.lastName.trim() || null,
         phone: form.phone.trim() || null,
         description: form.bio.trim() || null,
-        locationCity: form.city.trim() || null,
-        locationEmirate: form.emirate.trim() || null,
-        locationLat: form.lat,
-        locationLng: form.lng,
         tags: form.tags,
       };
       await updateProfile(payload);
@@ -155,10 +130,6 @@ export function ProfileView() {
         lastName: profile.lastName ?? '',
         phone: profile.phone ?? '',
         bio: profile.description ?? '',
-        city: profile.locationCity ?? '',
-        emirate: profile.locationEmirate ?? '',
-        lat: profile.locationLat ?? 25.2048,
-        lng: profile.locationLng ?? 55.2708,
         tags: profile.tags ?? [],
       });
     }
@@ -218,84 +189,6 @@ export function ProfileView() {
     }
   };
 
-  // Fetch current location (browser geolocation)
-  const handleUseCurrentLocation = () => {
-    if (isGeocodingRef.current) return; // Prevent duplicate calls
-    
-    if (!navigator.geolocation) {
-      toast({
-        title: 'Not supported',
-        description: 'Location services are not available in your browser',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    setIsLoadingLocation(true);
-    isGeocodingRef.current = true;
-    
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        
-        // Reverse geocode to get address details
-        try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`
-          );
-          const data = await res.json();
-          
-          updateField({
-            lat,
-            lng,
-            city: data?.address?.city || data?.address?.town || form.city,
-            emirate: data?.address?.state || form.emirate,
-          });
-          
-          toast({
-            title: 'Location set',
-            description: 'Your current location has been detected',
-          });
-        } catch {
-          updateField({ lat, lng });
-          toast({
-            title: 'Location set',
-            description: 'Location coordinates set. Please enter city/emirate manually.',
-          });
-        } finally {
-          setIsLoadingLocation(false);
-          isGeocodingRef.current = false;
-        }
-      },
-      () => {
-        setIsLoadingLocation(false);
-        isGeocodingRef.current = false;
-        toast({
-          title: 'Permission denied',
-          description: 'Please allow location access or enter manually',
-          variant: 'destructive',
-        });
-      }
-    );
-  };
-
-  // Location select from map click
-  const handleLocationSelect = async (lat: number, lng: number) => {
-    try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`);
-      const data = await res.json();
-      updateField({
-        lat,
-        lng,
-        city: data?.address?.city || data?.address?.town || form.city,
-        emirate: data?.address?.state || form.emirate,
-      });
-    } catch {
-      updateField({ lat, lng });
-    }
-  };
-
   // Tag toggle
   const toggleTag = (tag: string) => {
     if (form.tags.includes(tag)) {
@@ -311,25 +204,7 @@ export function ProfileView() {
     ? `${profile.firstName} ${profile.lastName}`
     : user?.name ?? 'User';
 
-  const initials = profile?.firstName && profile?.lastName
-    ? `${profile.firstName[0]}${profile.lastName[0]}`.toUpperCase()
-    : user?.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() ?? 'U';
-
   const memberSinceYear = profile?.memberSince ? new Date(profile.memberSince).getFullYear() : null;
-  
-  const completionChecks = [
-    Boolean(form.firstName?.trim()),
-    Boolean(form.lastName?.trim()),
-    Boolean(form.phone?.trim()),
-    Boolean(form.bio?.trim()),
-    Boolean(form.city?.trim()),
-    Boolean(form.emirate?.trim()),
-    Boolean(form.tags?.length),
-    Boolean(profile?.avatarUrl),
-  ];
-  const completionFilled = completionChecks.filter(Boolean).length;
-  const completionTotal = completionChecks.length;
-  const completionPercent = Math.round((completionFilled / completionTotal) * 100);
 
   return (
     <div className="min-h-screen bg-background pb-32">
@@ -421,31 +296,10 @@ export function ProfileView() {
           </div>
 
           <div className="flex items-center gap-3">
-            {editing || hasUnsavedChanges ? (
-              <>
-                <button
-                  onClick={cancel}
-                  disabled={saving}
-                  className="px-5 py-2 rounded-full text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={save}
-                  disabled={saving || !hasUnsavedChanges}
-                  className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
-                >
-                  {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                  Save Changes
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={() => setEditing(true)}
-                className="px-5 py-2 rounded-full border border-border/40 bg-background text-sm font-semibold hover:bg-muted/40 transition-colors"
-              >
-                Edit Profile
-              </button>
+            {!editing && !hasUnsavedChanges && (
+              <p className="text-sm text-muted-foreground/70 italic">
+                Tap any field to edit
+              </p>
             )}
           </div>
         </div>
@@ -665,6 +519,27 @@ export function ProfileView() {
           </section>
 
         </div>
+
+        {/* Bottom Actions */}
+        {(editing || hasUnsavedChanges) && (
+          <div className="flex items-center justify-end gap-3 pt-6 pb-4 sticky bottom-0 bg-background/80 backdrop-blur-sm border-t border-border/40 -mx-4 sm:-mx-8 px-4 sm:px-8">
+            <button
+              onClick={cancel}
+              disabled={saving}
+              className="px-5 py-2 rounded-full text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={save}
+              disabled={saving || !hasUnsavedChanges}
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
+            >
+              {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+              Save Changes
+            </button>
+          </div>
+        )}
 
       </div>
     </div>

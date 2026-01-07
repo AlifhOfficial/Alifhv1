@@ -77,7 +77,10 @@ export async function createOrGetConversation(params: {
   type?: 'direct' | 'inquiry' | 'negotiation' | 'booking' | 'consignment' | 'support' | 'system';
   subject?: string;
 }): Promise<string> {
+  const startTime = Date.now();
   const { initiatedBy, otherUserId, listingId, subject } = params;
+
+  console.log(`🔍 [DB] createOrGetConversation - initiatedBy: ${initiatedBy}, otherUserId: ${otherUserId}, listingId: ${listingId || 'none'}`);
 
   // Derive partnerId from listing when present (partner listings should resolve to partner identity)
   let derivedPartnerId: string | undefined = params.partnerId;
@@ -150,12 +153,16 @@ export async function createOrGetConversation(params: {
       .having(sql`count(distinct ${conversationParticipant.userId}) = 2`);
 
     if (existingDirectQuery.length > 0) {
+      const duration = Date.now() - startTime;
+      console.log(`✅ [DB] createOrGetConversation - Found existing conversation: ${existingDirectQuery[0].id}, ${duration}ms`);
       return existingDirectQuery[0].id;
     }
   }
 
   // Create new conversation
   const conversationId = createId();
+
+  console.log(`➕ [DB] Creating new conversation: ${conversationId}`);
 
   // Note: neon-http does not support transactions. We perform inserts sequentially and
   // best-effort cleanup if participant insertion fails.
@@ -192,7 +199,11 @@ export async function createOrGetConversation(params: {
         notificationsEnabled: true,
       },
     ]);
+    
+    const duration = Date.now() - startTime;
+    console.log(`✅ [DB] createOrGetConversation - Created new conversation: ${conversationId}, ${duration}ms`);
   } catch (error) {
+    console.error(`❌ [DB] createOrGetConversation - Failed:`, error);
     if (conversationInserted) {
       try {
         await db
@@ -233,7 +244,10 @@ export async function getUserConversations(
     partnerScope?: 'only' | 'exclude';
   } = {}
 ): Promise<ConversationWithDetails[]> {
+  const startTime = Date.now();
   const { limit = 50, offset = 0, includeArchived = false, partnerIds, partnerScope } = options;
+
+  console.log(`🔍 [DB] getUserConversations - userId: ${userId}, limit: ${limit}, offset: ${offset}, scope: ${partnerScope || 'all'}`);
 
   const whereConditions = [];
   if (!includeArchived) {
@@ -258,8 +272,8 @@ export async function getUserConversations(
     );
   }
 
-  // Single optimized query with all joins - eliminates N+1 pattern
-  // Fetches conversations with participant data, other participant, listing, and partner in one query
+  // SINGLE optimized query - fetches everything including other participant via subquery
+  // Eliminates second round-trip to database (~50ms savings)
   const results = await db
     .select({
       // Conversation fields
@@ -285,6 +299,33 @@ export async function getUserConversations(
       // Partner data (joined)
       partnerName: partner.brandName,
       partnerLogo: partner.logo,
+      // Other participant via correlated subquery (single query instead of two!)
+      otherParticipantId: sql<string | null>`(
+        SELECT cp2.user_id FROM conversation_participant cp2 
+        WHERE cp2.conversation_id = ${conversation.id} 
+        AND cp2.user_id != ${userId} 
+        LIMIT 1
+      )`,
+      otherParticipantName: sql<string | null>`(
+        SELECT u.name FROM conversation_participant cp2 
+        JOIN "user" u ON u.id = cp2.user_id
+        WHERE cp2.conversation_id = ${conversation.id} 
+        AND cp2.user_id != ${userId} 
+        LIMIT 1
+      )`,
+      otherParticipantAvatar: sql<string | null>`(
+        SELECT up.avatar FROM conversation_participant cp2 
+        LEFT JOIN user_profile up ON up.user_id = cp2.user_id
+        WHERE cp2.conversation_id = ${conversation.id} 
+        AND cp2.user_id != ${userId} 
+        LIMIT 1
+      )`,
+      otherParticipantLastReadAt: sql<Date | null>`(
+        SELECT cp2.last_read_at FROM conversation_participant cp2 
+        WHERE cp2.conversation_id = ${conversation.id} 
+        AND cp2.user_id != ${userId} 
+        LIMIT 1
+      )`,
     })
     .from(conversation)
     .innerJoin(
@@ -308,35 +349,10 @@ export async function getUserConversations(
     return [];
   }
 
-  const conversationIds = results.map((c) => c.id);
-
-  // Second query: Get OTHER participants (this is necessary as it's a many-to-one relationship)
-  // This is the only additional query needed - reduced from 4 queries to 2
-  const otherParticipants = await db
-    .select({
-      conversationId: conversationParticipant.conversationId,
-      oderId: user.id,
-      userName: user.name,
-      userImage: userProfile.avatar,
-      lastReadAt: conversationParticipant.lastReadAt,
-    })
-    .from(conversationParticipant)
-    .innerJoin(user, eq(user.id, conversationParticipant.userId))
-    .leftJoin(userProfile, eq(userProfile.userId, user.id))
-    .where(
-      and(
-        inArray(conversationParticipant.conversationId, conversationIds),
-        sql`${conversationParticipant.userId} != ${userId}`
-      )
-    );
-
-  // Map participants by conversation ID
-  const participantMap = new Map(
-    otherParticipants.map((p) => [p.conversationId, p])
-  );
+  const duration = Date.now() - startTime;
+  console.log(`✅ [DB] getUserConversations - ${results.length} conversations, ${duration}ms (single query)`);
 
   return results.map((row) => {
-    const participant = participantMap.get(row.id);
     const effectivePartnerId = row.partnerId ?? row.listingPartnerId;
 
     return {
@@ -353,12 +369,12 @@ export async function getUserConversations(
       isArchived: row.isArchived,
       isMuted: row.isMuted,
       isPinned: row.isPinned,
-      otherParticipant: participant
+      otherParticipant: row.otherParticipantId
         ? {
-            id: participant.oderId,
-            name: participant.userName,
-            avatarUrl: participant.userImage,
-            lastReadAt: participant.lastReadAt,
+            id: row.otherParticipantId,
+            name: row.otherParticipantName,
+            avatarUrl: row.otherParticipantAvatar,
+            lastReadAt: row.otherParticipantLastReadAt,
           }
         : null,
       listing: row.listingId && row.listingTitle

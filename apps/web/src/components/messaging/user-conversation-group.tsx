@@ -11,7 +11,10 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { ConversationListItem } from './conversation-list-item';
 import { cn } from '@/utils/cn';
-import type { Conversation, ConversationParticipant } from '@/hooks/messaging';
+import type { Conversation } from '@/hooks/messaging';
+
+// Derived type from Conversation
+type ConversationParticipant = NonNullable<Conversation['otherParticipant']>;
 
 interface UserConversationGroupProps {
   user: ConversationParticipant;

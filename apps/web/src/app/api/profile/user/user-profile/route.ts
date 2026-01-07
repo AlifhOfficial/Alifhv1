@@ -48,10 +48,6 @@ const UpdateProfileSchema = z.object({
   lastName: z.string().nullable().optional(),
   phone: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
-  locationCity: z.string().nullable().optional(),
-  locationEmirate: z.string().nullable().optional(),
-  locationLat: z.number().nullable().optional(),
-  locationLng: z.number().nullable().optional(),
   tags: z.array(z.string()).optional(),
   consignmentMode: z.boolean().optional(),
   privacySettings: z.object({ showPhone: z.boolean().optional() }).optional(),
@@ -62,7 +58,6 @@ const UpdateProfileSchema = z.object({
     useGeneratedAvatar: z.boolean().optional(),
   }).optional(),
   avatar: z.string().nullable().optional(),
-  status: z.string().optional(),
 });
 
 async function attachAvatarUrl(profile: any) {

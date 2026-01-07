@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { getConversationParticipants, markConversationAsRead } from '@alifh/database/server';
+import { markConversationAsRead, getConversationParticipants } from '@alifh/database/server';
 import {
   createRateLimiter,
   getIdentifier,
@@ -46,14 +46,14 @@ export async function PATCH(
     const lastReadAt = new Date().toISOString();
     await markConversationAsRead(id, user.id);
 
-    // Notify other participants (best-effort; WS is optional in dev)
+    // Broadcast read receipt to each participant's user channel
     try {
-      const participants = await getConversationParticipants(id);
-      const otherParticipants = participants.filter((p) => p.userId !== user.id);
       const wsBroadcastUrl = process.env.WS_BROADCAST_URL || 'http://localhost:3001/broadcast';
-
-      // Fire all broadcasts in parallel
-      const broadcasts = otherParticipants.map((participant) =>
+      const participants = await getConversationParticipants(id);
+      
+      console.log(`📡 [API] Broadcasting read_receipt to ${participants.length} participants`);
+      
+      for (const participant of participants) {
         fetch(wsBroadcastUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -66,15 +66,9 @@ export async function PATCH(
               lastReadAt,
             },
           }),
-        }).catch(() => {
-          // Ignore WebSocket broadcast failures
-        })
-      );
-      
-      Promise.allSettled(broadcasts).catch(() => {});
-    } catch {
-      // Ignore WebSocket failures
-    }
+        }).catch(() => {});
+      }
+    } catch {}
 
     return NextResponse.json({ success: true, lastReadAt });
   } catch (error) {

@@ -3,7 +3,6 @@
 import { DashboardLayout, DashboardContent } from "@/components/shared/layout/dashboard-layout";
 import { AppSidebar } from "@/components/shared/layout/app-sidebar";
 import { PageLoader } from "@/components/shared/page-loader";
-import { WebSocketProvider } from "@/providers/websocket-provider";
 import { useAuth } from "@/providers/auth-provider";
 import { redirect, usePathname } from "next/navigation";
 import { useEffect } from "react";
@@ -73,11 +72,9 @@ export default function UserDashboardLayout({ children }: { children: React.Reac
   }
 
   return (
-    <WebSocketProvider userId={user.id} autoConnect>
-      <DashboardLayout enableRightPanel>
-        <AppSidebar user={user} sections={navSections} />
-        <DashboardContent>{children}</DashboardContent>
-      </DashboardLayout>
-    </WebSocketProvider>
+    <DashboardLayout enableRightPanel>
+      <AppSidebar user={user} sections={navSections} />
+      <DashboardContent>{children}</DashboardContent>
+    </DashboardLayout>
   );
 }

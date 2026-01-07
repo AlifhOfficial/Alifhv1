@@ -8,8 +8,6 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useWebSocket } from './use-websocket';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { queryKeys } from '@/lib/query-keys';
-import { CACHE_STALE_TIME } from '@/lib/cache-config';
 
 // ============================================================================
 // Types
@@ -91,31 +89,26 @@ export function useMessages(conversationId: string, userId?: string, options: Us
   });
   const [otherLastSeenAt, setOtherLastSeenAt] = useState<Date | null>(null);
 
-  const typingTimeoutRef = useRef<NodeJS.Timeout>(undefined);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const watchingRef = useRef(false);
 
   // Query
   const query = useInfiniteQuery({
-    queryKey: queryKeys.messaging.messages(conversationId),
+    queryKey: ['messages', conversationId],
     queryFn: ({ pageParam }) => fetchMessages(conversationId, pageParam),
     getNextPageParam: (page) => page.nextCursor,
     initialPageParam: undefined as string | undefined,
-    staleTime: CACHE_STALE_TIME.LONG,
+    staleTime: 5 * 60 * 1000,
     enabled: !!conversationId && !!userId,
   });
 
   // Watch presence for other user
   useEffect(() => {
-    if (!options.otherUserId || !isConnected) return;
-    
-    // Only send watch if not already watching this user
-    if (!watchingRef.current) {
-      watchingRef.current = true;
-      send({ type: 'watch_user', targetUserId: options.otherUserId });
-    }
-    
+    if (!options.otherUserId || !isConnected || watchingRef.current) return;
+    watchingRef.current = true;
+    send({ type: 'watch_user', targetUserId: options.otherUserId });
     return () => {
-      if (watchingRef.current && options.otherUserId) {
+      if (watchingRef.current) {
         send({ type: 'unwatch_user', targetUserId: options.otherUserId });
         watchingRef.current = false;
       }
@@ -130,10 +123,19 @@ export function useMessages(conversationId: string, userId?: string, options: Us
       // New message
       if (msg.type === 'new_message' && msg.conversationId === conversationId) {
         const newMsg = msg.message as Message;
-        queryClient.setQueryData(queryKeys.messaging.messages(conversationId), (old: { pages: MessagesPage[] } | undefined) => {
+        console.log(`💬 [useMessages] New message received:`, {
+          convId: conversationId,
+          msgId: newMsg.id,
+          from: newMsg.senderId,
+          isMe: newMsg.senderId === userId
+        });
+        queryClient.setQueryData(['messages', conversationId], (old: { pages: MessagesPage[] } | undefined) => {
           if (!old) return old;
           const first = old.pages[0];
-          if (first.messages.some(m => m.id === newMsg.id)) return old;
+          if (first.messages.some(m => m.id === newMsg.id)) {
+            console.log(`⏭️ [useMessages] Message already in cache, skipping`);
+            return old;
+          }
           return {
             ...old,
             pages: [{ ...first, messages: [newMsg, ...first.messages] }, ...old.pages.slice(1)],
@@ -143,6 +145,7 @@ export function useMessages(conversationId: string, userId?: string, options: Us
 
       // Typing indicator
       if (msg.type === 'typing' && msg.conversationId === conversationId && msg.userId !== userId) {
+        console.log(`⌨️ [useMessages] Typing indicator:`, msg.userId, msg.isTyping ? 'started' : 'stopped');
         if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
         setIsOtherTyping(!!msg.isTyping);
         if (msg.isTyping) {
@@ -152,6 +155,7 @@ export function useMessages(conversationId: string, userId?: string, options: Us
 
       // Read receipt
       if (msg.type === 'read_receipt' && msg.conversationId === conversationId && msg.userId !== userId) {
+        console.log(`✓✓ [useMessages] Read receipt from:`, msg.userId, msg.lastReadAt);
         const d = msg.lastReadAt ? new Date(msg.lastReadAt) : null;
         if (d && !isNaN(d.getTime())) setOtherLastReadAt(d);
       }
@@ -209,9 +213,8 @@ export function useSendMessage() {
       postMessage(conversationId, text),
 
     onMutate: async ({ conversationId, senderId, text }) => {
-      const queryKey = queryKeys.messaging.messages(conversationId);
-      await queryClient.cancelQueries({ queryKey });
-      const previous = queryClient.getQueryData(queryKey);
+      await queryClient.cancelQueries({ queryKey: ['messages', conversationId] });
+      const previous = queryClient.getQueryData(['messages', conversationId]);
 
       // Optimistic message
       const tempMsg: Message = {
@@ -234,7 +237,7 @@ export function useSendMessage() {
         sender: { id: senderId, name: null, avatarUrl: null },
       };
 
-      queryClient.setQueryData(queryKey, (old: { pages: MessagesPage[] } | undefined) => {
+      queryClient.setQueryData(['messages', conversationId], (old: { pages: MessagesPage[] } | undefined) => {
         if (!old) return old;
         return {
           ...old,
@@ -245,13 +248,29 @@ export function useSendMessage() {
         };
       });
 
-      return { previous, queryKey };
+      // Optimistically clear unread count for this conversation
+      queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
+        const data = old as { conversations?: Array<{ id: string; unreadCount?: number }>; totalUnread?: number } | undefined;
+        if (!data?.conversations) return old;
+        
+        const conv = data.conversations.find(c => c.id === conversationId);
+        const unreadToRemove = conv?.unreadCount || 0;
+        
+        return {
+          ...data,
+          conversations: data.conversations.map(c =>
+            c.id === conversationId ? { ...c, unreadCount: 0 } : c
+          ),
+          totalUnread: Math.max(0, (data.totalUnread || 0) - unreadToRemove),
+        };
+      });
+
+      return { previous };
     },
 
-    onSuccess: (data, { conversationId }, ctx) => {
+    onSuccess: (data, { conversationId }) => {
       // Replace temp with real
-      const queryKey = ctx?.queryKey || queryKeys.messaging.messages(conversationId);
-      queryClient.setQueryData(queryKey, (old: { pages: MessagesPage[] } | undefined) => {
+      queryClient.setQueryData(['messages', conversationId], (old: { pages: MessagesPage[] } | undefined) => {
         if (!old) return old;
         const filtered = old.pages[0].messages.filter(m => !m.id.startsWith('temp-') && m.id !== data.message.id);
         return {
@@ -261,7 +280,7 @@ export function useSendMessage() {
       });
 
       // Update conversation preview
-      queryClient.setQueriesData({ queryKey: queryKeys.messaging.all, exact: false }, (old: unknown) => {
+      queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
         const data2 = old as { conversations?: Array<{ id: string; lastMessageAt?: unknown; lastMessagePreview?: string }> };
         if (!data2?.conversations) return old;
         return {
@@ -276,8 +295,7 @@ export function useSendMessage() {
     },
 
     onError: (_err, { conversationId }, ctx) => {
-      const queryKey = ctx?.queryKey || queryKeys.messaging.messages(conversationId);
-      if (ctx?.previous) queryClient.setQueryData(queryKey, ctx.previous);
+      if (ctx?.previous) queryClient.setQueryData(['messages', conversationId], ctx.previous);
     },
   });
 

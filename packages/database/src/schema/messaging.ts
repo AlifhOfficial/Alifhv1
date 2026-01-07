@@ -110,10 +110,12 @@ export const conversationParticipant = pgTable('conversation_participant', {
   updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
 }, (table) => [
   index('conversation_participant_conversationId_idx').on(table.conversationId),
-  index('conversation_participant_userId_idx').on(table.userId),
+  // Composite index for fetching user's conversations with unread filtering
+  index('conversation_participant_userId_isArchived_idx').on(table.userId, table.isArchived),
   index('conversation_participant_userId_unreadCount_idx').on(table.userId, table.unreadCount),
+  // Composite index for participant lookups (sendMessage, getMessages authorization)
+  index('conversation_participant_conversationId_userId_idx').on(table.conversationId, table.userId),
   unique('conversation_participant_conversationId_userId_unique').on(table.conversationId, table.userId),
-  // ❌ Removed: unreadCount, isArchived (standalone indexes not useful)
 ]);
 
 /**
@@ -157,10 +159,11 @@ export const message = pgTable('message', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
 }, (table) => [
-  index('message_conversationId_idx').on(table.conversationId),
+  // Composite index for efficient message fetching with cursor pagination
+  index('message_conversationId_createdAt_isDeleted_idx')
+    .on(table.conversationId, table.createdAt, table.isDeleted),
   index('message_senderId_idx').on(table.senderId),
-  index('message_conversationId_createdAt_idx').on(table.conversationId, table.createdAt),
-  // ❌ Removed: readAt, isSystemMessage, isDeleted (not queried separately in V1)
+  // ❌ Removed standalone indexes - using composite above
 ]);
 
 /**

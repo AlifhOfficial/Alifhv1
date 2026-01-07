@@ -38,6 +38,9 @@ export function MessageBubble({
   compact = false,
 }: MessageBubbleProps) {
   const { sender, text, mediaUrl, mediaType, createdAt, isEdited, isSystemMessage } = message;
+  
+  // Check if this is a temporary optimistic message
+  const isOptimistic = message.id.startsWith('temp-');
 
   // System message (centered, muted)
   if (isSystemMessage) {
@@ -53,9 +56,10 @@ export function MessageBubble({
   return (
     <div
       className={cn(
-        'flex mb-1.5 group',
+        'flex mb-1.5 group animate-in fade-in slide-in-from-bottom-2 duration-200',
         compact ? 'gap-1.5' : 'gap-2.5',
-        isOwn ? 'flex-row-reverse' : 'flex-row'
+        isOwn ? 'flex-row-reverse' : 'flex-row',
+        isOptimistic && 'opacity-70'
       )}
     >
       {/* Avatar - only show for received messages */}
@@ -110,11 +114,12 @@ export function MessageBubble({
           {/* Message Bubble */}
           <div
             className={cn(
-              'break-words shadow-sm transition-all',
+              'break-words shadow-sm transition-all duration-200',
               compact ? 'rounded-xl px-3 py-2' : 'rounded-2xl px-4 py-3',
               isOwn
                 ? 'bg-blue-500 text-white rounded-tr-sm'
-                : 'bg-muted text-foreground rounded-tl-sm'
+                : 'bg-muted text-foreground rounded-tl-sm',
+              isOptimistic && 'scale-[0.98]'
             )}
           >
             {/* Media (if any) */}
@@ -154,15 +159,23 @@ export function MessageBubble({
               'absolute top-1/2 -translate-y-1/2 text-xs text-muted-foreground/70',
               'opacity-0 group-hover:opacity-100 transition-opacity duration-200',
               'pointer-events-none whitespace-nowrap z-10',
-              isOwn ? '-left-2 -translate-x-full' : '-right-2 translate-x-full'
+              isOwn ? '-left-2 -translate-x-full' : '-right-2 translate-x-full',
+              isOptimistic && 'opacity-0' // Hide timestamp for optimistic messages
             )}
           >
             {formatDistanceToNow(new Date(createdAt), { addSuffix: true })}
           </small>
         </div>
 
+        {/* Sending indicator - show for optimistic messages */}
+        {isOptimistic && isOwn && (
+          <div className="mt-1 px-2 flex items-center justify-end">
+            <small className="text-xs text-muted-foreground/60 italic">Sending...</small>
+          </div>
+        )}
+
         {/* Failed indicator - only show X if message failed to send */}
-        {isOwn && !message.deliveredAt && !message.createdAt && (
+        {isOwn && !isOptimistic && !message.deliveredAt && !message.createdAt && (
           <div className="mt-1 px-2 flex items-center justify-end">
             <X className="h-3 w-3 text-red-500" aria-label="Failed to send" />
           </div>

@@ -24,26 +24,14 @@ export interface UserProfile {
   lastName?: string | null;
   phone?: string | null;
   description?: string | null;
-  locationCity?: string | null;
-  locationEmirate?: string | null;
-  locationLat?: number | null;
-  locationLng?: number | null;
   tags?: string[];
   consignmentMode?: boolean;
   privacySettings?: { showPhone?: boolean };
   preferences?: { theme?: string; language?: string; distanceUnit?: string; useGeneratedAvatar?: boolean };
   kycVerified?: boolean;
   badges?: string[];
-  inventoryCount?: number;
-  rating?: number;
   platformRating?: number | null;
-  platformReviewCount?: number | null;
-  
-  // ❌ avgResponseTime removed from user profile (only for partners)
-  
   memberSince?: Date | string;
-  status?: string;
-  createdAt?: Date | string;
   avatar?: string | null;
   avatarUrl?: string | null;
   emailVerified?: boolean;
@@ -51,14 +39,10 @@ export interface UserProfile {
 }
 
 export interface UserProfileUpdate {
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-  description?: string;
-  locationCity?: string;
-  locationEmirate?: string;
-  locationLat?: number | null;
-  locationLng?: number | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  phone?: string | null;
+  description?: string | null;
   tags?: string[];
   consignmentMode?: boolean;
   privacySettings?: { showPhone?: boolean };

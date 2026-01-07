@@ -12,7 +12,7 @@
  */
 
 import { createId } from '@paralleldrive/cuid2';
-import { eq, getTableColumns } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { db } from '../../../dbclient';
 import { memoryCache, CacheKeys, CacheTTL } from '../../../caches/memory-cache';
 import { userProfile } from '../../../schema/profile';
@@ -28,35 +28,47 @@ export type UserProfileUpdate = Partial<{
   lastName: string | null;
   phone: string | null;
   description: string | null;
-  locationCity: string | null;
-  locationEmirate: string | null;
-  locationLat: number | null;
-  locationLng: number | null;
   tags: string[];
   consignmentMode: boolean;
   privacySettings: { showPhone?: boolean };
   preferences: { theme?: string; language?: string; distanceUnit?: string; useGeneratedAvatar?: boolean };
   avatar: string | null;
-  status: string;
+  status: string; // 'active' | 'pending_deletion' | 'suspended'
 }>;
 
 /**
  * Extended user profile with user table fields
  * Combines profile data + verification + basic user info in single query
+ * Only includes fields used in UI for optimal performance
  */
-export type ExtendedUserProfile = UserProfileRecord & {
+export type ExtendedUserProfile = {
+  id: string;
+  userId: string;
+  firstName: string | null;
+  lastName: string | null;
+  phone: string | null;
+  description: string | null;
+  tags: string[];
+  consignmentMode: boolean;
+  privacySettings: { showPhone?: boolean } | null;
+  preferences: { theme?: string; language?: string; distanceUnit?: string; useGeneratedAvatar?: boolean } | null;
+  avatar: string | null;
+  kycVerified: boolean;
+  badges: string[];
+  platformRating: number | null;
+  memberSince: Date | null;
+  updatedAt: Date;
   emailVerified: boolean;
   phoneVerified: boolean;
   // User table fields (for fallback in UI)
   userName: string | null;
   userImage: string | null;
-  userCreatedAt: Date;
 };
 
 /**
  * Get profile by user ID with email verification status and basic user info
- * Uses single JOIN query
- * Includes user.name, user.image, user.createdAt for UI fallbacks
+ * Uses single JOIN query with minimal field selection for optimal performance
+ * Only fetches fields used in ProfileView UI
  */
 export const getUserProfileByUserId = async (userId: string): Promise<ExtendedUserProfile | null> => {
   const cacheKey = CacheKeys.userProfile(userId);
@@ -67,18 +79,32 @@ export const getUserProfileByUserId = async (userId: string): Promise<ExtendedUs
     return cached;
   }
 
-  // Single JOIN query - includes all needed user table fields
+  // Single JOIN query - only select fields used in UI
   const [result] = await db
     .select({
-      // All profile fields
-      ...getTableColumns(userProfile),
+      // Profile fields - only what's displayed/edited in UI
+      id: userProfile.id,
+      userId: userProfile.userId,
+      firstName: userProfile.firstName,
+      lastName: userProfile.lastName,
+      phone: userProfile.phone,
+      description: userProfile.description,
+      tags: userProfile.tags,
+      consignmentMode: userProfile.consignmentMode,
+      privacySettings: userProfile.privacySettings,
+      preferences: userProfile.preferences,
+      avatar: userProfile.avatar,
+      kycVerified: userProfile.kycVerified,
+      badges: userProfile.badges,
+      platformRating: userProfile.platformRating,
+      memberSince: userProfile.memberSince,
+      updatedAt: userProfile.updatedAt, // For cache busting on avatar URLs
       // Verification fields from user table
       emailVerified: user.emailVerified,
       phoneVerified: user.phoneVerified,
       // Basic user info (for UI fallbacks - eliminates separate query)
       userName: user.name,
       userImage: user.image,
-      userCreatedAt: user.createdAt,
     })
     .from(userProfile)
     .innerJoin(user, eq(user.id, userProfile.userId))
@@ -93,9 +119,6 @@ export const getUserProfileByUserId = async (userId: string): Promise<ExtendedUs
     ...result,
     emailVerified: result.emailVerified ?? false,
     phoneVerified: result.phoneVerified ?? false,
-    userName: result.userName,
-    userImage: result.userImage,
-    userCreatedAt: result.userCreatedAt,
   };
 
   // Cache the result (disabled - no-op)
@@ -107,12 +130,12 @@ export const getUserProfileByUserId = async (userId: string): Promise<ExtendedUs
 /**
  * Update profile by user ID
  * Auto-syncs firstName/lastName to user.name
- * Invalidates cache after update
+ * Clears phone verification if phone number changes
  */
 export const updateUserProfileByUserId = async (
   userId: string,
   updates: UserProfileUpdate
-): Promise<(UserProfileRecord & { emailVerified: boolean; phoneVerified: boolean }) | null> => {
+): Promise<ExtendedUserProfile | null> => {
   // Remove undefined values
   const cleanUpdates = Object.fromEntries(
     Object.entries(updates).filter(([, value]) => value !== undefined)
@@ -122,56 +145,36 @@ export const updateUserProfileByUserId = async (
     return getUserProfileByUserId(userId);
   }
 
-  // Invalidate cache before making changes
-  memoryCache.delete(CacheKeys.userProfile(userId));
+  // Fetch current profile once if needed for phone check or name sync
+  const needsCurrentProfile = 'phone' in cleanUpdates || 'firstName' in cleanUpdates || 'lastName' in cleanUpdates;
+  const currentProfile = needsCurrentProfile ? await getUserProfileByUserId(userId) : null;
 
-  // If phone number is being updated, check if it changed and clear verification
-  if (cleanUpdates.phone !== undefined) {
-    const currentProfile = await getUserProfileByUserId(userId);
-    if (currentProfile && currentProfile.phone !== cleanUpdates.phone) {
-      // Phone number changed - clear verification in user table
-      await db
-        .update(user)
-        .set({ phoneVerified: false })
-        .where(eq(user.id, userId));
-      // Invalidate again after verification change
-      memoryCache.delete(CacheKeys.userProfile(userId));
-    }
+  // Check if phone changed - clear verification if so
+  if ('phone' in cleanUpdates && currentProfile && currentProfile.phone !== cleanUpdates.phone) {
+    await db.update(user).set({ phoneVerified: false }).where(eq(user.id, userId));
   }
 
-  // Auto-sync: If firstName or lastName are being updated, sync to user.name
+  // Auto-sync firstName/lastName to user.name
   if ('firstName' in cleanUpdates || 'lastName' in cleanUpdates) {
-    const currentProfile = await getUserProfileByUserId(userId);
     const newFirstName = 'firstName' in cleanUpdates ? cleanUpdates.firstName : currentProfile?.firstName;
     const newLastName = 'lastName' in cleanUpdates ? cleanUpdates.lastName : currentProfile?.lastName;
-    
-    // Compute the new name from firstName + lastName
     const computedName = [newFirstName, newLastName].filter(Boolean).join(' ').trim();
     
     if (computedName) {
-      // Update user.name to match firstName + lastName
-      await db
-        .update(user)
-        .set({ name: computedName, updatedAt: new Date() })
-        .where(eq(user.id, userId));
+      await db.update(user).set({ name: computedName, updatedAt: new Date() }).where(eq(user.id, userId));
     }
   }
 
-  const [result] = await db
+  // Update profile
+  await db
     .update(userProfile)
-    .set({
-      ...cleanUpdates,
-      updatedAt: new Date(),
-    })
-    .where(eq(userProfile.userId, userId))
-    .returning();
+    .set({ ...cleanUpdates, updatedAt: new Date() })
+    .where(eq(userProfile.userId, userId));
 
-  if (!result) return null;
-
-  // Invalidate cache after update
+  // Invalidate cache once after all updates complete
   memoryCache.delete(CacheKeys.userProfile(userId));
 
-  // Fetch complete profile with verification status (will cache fresh data)
+  // Return fresh profile
   return getUserProfileByUserId(userId);
 };
 

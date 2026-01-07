@@ -24,6 +24,7 @@ const createConversationLimiter = createRateLimiter(RATE_LIMITS_MESSAGING.CREATE
 // ============================================================================
 
 export async function GET(req: NextRequest) {
+  const startTime = Date.now();
   try {
     const user = await getSessionUser();
     if (!user?.id) {
@@ -45,6 +46,8 @@ export async function GET(req: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0');
     const includeArchived = searchParams.get('includeArchived') === 'true';
     const scope = searchParams.get('scope'); // 'staff' | 'personal' | null
+    
+    console.log(`🔍 [API] GET /api/conversations - userId: ${user.id}, scope: ${scope || 'all'}, limit: ${limit}`);
 
     const partnerIds = (user.partnerMemberships ?? []).map((m) => m.partnerId).filter(Boolean);
     const partnerScope =
@@ -69,12 +72,17 @@ export async function GET(req: NextRequest) {
         ? conversations.reduce((sum, c) => sum + (c.unreadCount ?? 0), 0)
         : await getTotalUnreadCount(user.id);
 
+    const duration = Date.now() - startTime;
+    console.log(`✅ [API] GET /api/conversations - ${conversations.length} conversations, ${totalUnread} unread, ${duration}ms`);
+
     return NextResponse.json({
       conversations,
       totalUnread,
       hasMore: conversations.length === limit,
     });
   } catch (error) {
+    const duration = Date.now() - startTime;
+    console.error(`❌ [API] GET /api/conversations - Failed after ${duration}ms:`, error);
     const details =
       process.env.NODE_ENV !== 'production'
         ? error instanceof Error

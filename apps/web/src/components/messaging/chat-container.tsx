@@ -7,7 +7,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { MessageCircle, PanelLeft } from 'lucide-react';
+import { MessageCircle, PanelLeft, Loader2 } from 'lucide-react';
 import { ConversationList } from './conversation-list';
 import { ChatWindow } from './chat-window';
 import { useConversations } from '@/hooks/messaging';
@@ -23,24 +23,34 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
   const searchParams = useSearchParams();
   const urlConversationId = searchParams?.get('conversationId');
   
-  const [selectedId, setSelectedId] = useState<string | undefined>(urlConversationId || undefined);
-  const [showMobile, setShowMobile] = useState(!!urlConversationId);
+  // Derive selected ID from URL, with local override for user selection
+  const [localSelectedId, setLocalSelectedId] = useState<string | undefined>(undefined);
+  const [showMobileOverride, setShowMobileOverride] = useState<boolean | null>(null);
   const [listOpen, setListOpen] = useState(true);
+  
+  // URL takes precedence, but allow local selection to override
+  const selectedId = urlConversationId || localSelectedId;
+  // Show mobile if URL has conversation OR user manually selected one
+  const showMobile = showMobileOverride ?? !!selectedId;
 
-  const { conversations, isLoading, totalUnread } = useConversations({ userId, scope: inbox });
+  // useConversations includes real-time WebSocket updates for messages, unread counts, and sorting
+  const { conversations, isLoading, totalUnread, refetch } = useConversations({ userId, scope: inbox, limit: 50 });
 
+  // Fetch if conversation not in list (newly created)
   useEffect(() => {
-    if (urlConversationId) {
-      setSelectedId(urlConversationId);
-      setShowMobile(true);
+    if (selectedId && !isLoading) {
+      const exists = conversations.some(c => c.id === selectedId);
+      if (!exists) {
+        refetch();
+      }
     }
-  }, [urlConversationId]);
+  }, [selectedId, conversations, isLoading, refetch]);
 
   const selected = conversations.find(c => c.id === selectedId);
 
   const handleClose = () => {
-    setSelectedId(undefined);
-    setShowMobile(false);
+    setLocalSelectedId(undefined);
+    setShowMobileOverride(false);
     setListOpen(true); // Reopen the list when closing chat
   };
 
@@ -62,14 +72,14 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
             activeConversationId={selectedId}
             listOpen={listOpen}
             onListToggle={setListOpen}
-            onSelectConversation={(id) => { setSelectedId(id); setShowMobile(true); }}
+            onSelectConversation={(id) => { setLocalSelectedId(id); setShowMobileOverride(true); }}
           />
         </div>
 
         {/* Chat */}
         <div className={cn('flex-1 min-w-0 hidden lg:flex relative', showMobile && 'flex')}>
           {/* Show list button when collapsed AND no chat selected */}
-          {!listOpen && !selected && (
+          {!listOpen && !selected && !selectedId && (
             <button
               onClick={() => setListOpen(true)}
               className="absolute top-4 left-4 z-10 p-2 text-muted-foreground hover:text-foreground transition-colors bg-background border border-border/50 rounded-lg shadow-sm"
@@ -90,6 +100,14 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
               inbox={inbox}
               onBack={handleClose}
             />
+          ) : selectedId && isLoading ? (
+            // Loading state when conversation ID is selected but not yet in list
+            <div className="min-h-[400px] flex items-center justify-center h-full w-full bg-background">
+              <div className="text-center space-y-4">
+                <Loader2 className="w-8 h-8 mx-auto text-muted-foreground animate-spin" />
+                <p className="text-[15px] text-muted-foreground">Loading conversation...</p>
+              </div>
+            </div>
           ) : (
             <div className="min-h-[400px] flex items-center justify-center h-full w-full bg-background">
               <div className="text-center space-y-4">

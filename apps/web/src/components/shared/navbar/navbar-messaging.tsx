@@ -22,10 +22,10 @@ interface NavbarMessagingProps {
 export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
   const [isOpen, setIsOpen] = useState(false);
   
-  // Only fetch conversations when dropdown is opened
-  const { conversations, isLoading } = useConversations({ userId, scope: 'personal', enabled: isOpen });
-  // Keep unread count always active for badge display
-  const { unreadCount } = useUnreadCount(userId);
+  // Always fetch conversations (not just when open) for real-time updates
+  const { conversations, isLoading, totalUnread } = useConversations({ userId, scope: 'personal', limit: 50 });
+  // Use totalUnread from conversations hook (includes real-time updates)
+  const unreadCount = totalUnread;
 
   // Close on outside click
   useEffect(() => {
@@ -59,8 +59,22 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
     onOpenChat(conversation);
   }, [onOpenChat]);
 
-  // Get top 3 recent conversations
-  const recentConversations = conversations?.slice(0, 3) ?? [];
+  // Group conversations by user/partner
+  const groupedConversations = conversations.reduce((groups, conversation) => {
+    const key = conversation.partner?.id || conversation.otherParticipant?.id || 'unknown';
+    if (!groups[key]) {
+      groups[key] = {
+        user: conversation.partner || conversation.otherParticipant,
+        isPartner: !!conversation.partner,
+        conversations: [],
+      };
+    }
+    groups[key].conversations.push(conversation);
+    return groups;
+  }, {} as Record<string, { user: any; isPartner: boolean; conversations: Conversation[] }>);
+
+  // Get top groups (limit to 5 groups max in navbar)
+  const topGroups = Object.values(groupedConversations).slice(0, 5);
 
   return (
     <div className="relative" data-messaging-dropdown>
@@ -112,7 +126,7 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
               </div>
-            ) : recentConversations.length === 0 ? (
+            ) : topGroups.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
                 <MessageCircle className="w-12 h-12 text-muted-foreground/30 mb-3" />
                 <p className="text-[15px] font-medium text-muted-foreground">No messages yet</p>
@@ -122,11 +136,11 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
               </div>
             ) : (
               <div className="py-1.5">
-                {recentConversations.map((conversation) => (
-                  <ConversationPreviewItem
-                    key={conversation.id}
-                    conversation={conversation}
-                    onClick={() => handleOpenChat(conversation)}
+                {topGroups.map((group) => (
+                  <ConversationGroup
+                    key={group.user?.id || 'unknown'}
+                    group={group}
+                    onSelectConversation={handleOpenChat}
                   />
                 ))}
               </div>
@@ -151,15 +165,128 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
 }
 
 // ============================================================================
+// Conversation Group (for same user/partner)
+// ============================================================================
+
+interface ConversationGroupProps {
+  group: {
+    user: any;
+    isPartner: boolean;
+    conversations: Conversation[];
+  };
+  onSelectConversation: (conversation: Conversation) => void;
+}
+
+function ConversationGroup({ group, onSelectConversation }: ConversationGroupProps) {
+  const { user, isPartner, conversations } = group;
+  const [isExpanded, setIsExpanded] = useState(conversations.length === 1);
+
+  const displayName = user?.name || 'User';
+  const totalUnread = conversations.reduce((sum, c) => sum + c.unreadCount, 0);
+  const hasUnread = totalUnread > 0;
+
+  // If only one conversation, show it directly without grouping
+  if (conversations.length === 1) {
+    return (
+      <ConversationPreviewItem
+        conversation={conversations[0]}
+        onClick={() => onSelectConversation(conversations[0])}
+      />
+    );
+  }
+
+  return (
+    <div>
+      {/* Group Header */}
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className={cn(
+          'w-full text-left px-4 py-3 hover:bg-sidebar-accent/50 transition-colors rounded-lg',
+          'flex items-center gap-3'
+        )}
+      >
+        {isPartner ? (
+          <BrandAvatar
+            logoUrl={user?.logo}
+            brandName={displayName}
+            size="sm"
+            className="w-10 h-10 flex-shrink-0"
+          />
+        ) : (
+          <UserAvatar
+            src={user?.avatarUrl}
+            name={displayName}
+            size="md"
+            className="w-10 h-10 flex-shrink-0"
+          />
+        )}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <h4 className={cn(
+              'text-[14px] truncate',
+              hasUnread ? 'font-semibold text-sidebar-foreground' : 'font-medium text-sidebar-foreground/90'
+            )}>
+              {displayName}
+            </h4>
+            <small className="text-[12px] text-muted-foreground/60">
+              ({conversations.length})
+            </small>
+            {hasUnread && (
+              <span className="ml-auto flex-shrink-0 w-5 h-5 text-[11px] font-bold bg-rose-500 text-white rounded-full flex items-center justify-center">
+                {totalUnread > 9 ? '9+' : totalUnread}
+              </span>
+            )}
+          </div>
+        </div>
+        <ChevronRight className={cn(
+          'w-4 h-4 text-muted-foreground/60 transition-transform',
+          isExpanded && 'rotate-90'
+        )} />
+      </button>
+
+      {/* Expanded Conversations with connector lines */}
+      {isExpanded && (
+        <div className="ml-7 mt-1 mb-2 space-y-0.5">
+          {conversations.map((conversation) => (
+            <div key={conversation.id} className="relative pl-6">
+              {/* Smooth curved connector */}
+              <svg 
+                className="absolute left-0 top-0 w-5 h-6 text-muted-foreground/40"
+                viewBox="0 0 20 24"
+                fill="none"
+              >
+                <path 
+                  d="M2 0 L2 12 Q2 18 10 18 L20 18" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round"
+                  fill="none"
+                />
+              </svg>
+              <ConversationPreviewItem
+                conversation={conversation}
+                onClick={() => onSelectConversation(conversation)}
+                isGrouped
+              />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================================
 // Conversation Preview Item
 // ============================================================================
 
 interface ConversationPreviewItemProps {
   conversation: Conversation;
   onClick: () => void;
+  isGrouped?: boolean;
 }
 
-function ConversationPreviewItem({ conversation, onClick }: ConversationPreviewItemProps) {
+function ConversationPreviewItem({ conversation, onClick, isGrouped = false }: ConversationPreviewItemProps) {
   const {
     otherParticipant,
     lastMessagePreview,
@@ -181,12 +308,58 @@ function ConversationPreviewItem({ conversation, onClick }: ConversationPreviewI
 
   const lastMessageDate = safeDate(lastMessageAt);
 
+  // Grouped/nested conversation style (shown under parent group)
+  if (isGrouped) {
+    return (
+      <button
+        onClick={onClick}
+        className={cn(
+          'w-full text-left py-2 px-3 hover:bg-sidebar-accent/60 transition-colors rounded-md',
+          hasUnread && 'bg-sidebar-accent/40'
+        )}
+      >
+        <div className="flex items-center justify-between gap-2">
+          {/* Listing title or conversation context */}
+          <span className={cn(
+            'text-[13px] truncate flex-1',
+            hasUnread ? 'font-semibold text-sidebar-foreground' : 'text-sidebar-foreground/80'
+          )}>
+            {listing?.title || 'General'}
+          </span>
+          
+          {/* Time and unread badge */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {lastMessageDate && (
+              <span className="text-[11px] text-muted-foreground/60">
+                {formatDistanceToNow(lastMessageDate, { addSuffix: false })}
+              </span>
+            )}
+            {hasUnread && (
+              <span className="w-5 h-5 text-[10px] font-bold bg-rose-500 text-white rounded-full flex items-center justify-center">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </div>
+        </div>
+        
+        {/* Message preview */}
+        <p className={cn(
+          'text-[12px] truncate mt-0.5',
+          hasUnread ? 'text-muted-foreground/80' : 'text-muted-foreground/60'
+        )}>
+          {lastMessagePreview || 'No messages'}
+        </p>
+      </button>
+    );
+  }
+
+  // Non-grouped conversation style (standalone)
   return (
     <button
       onClick={onClick}
       className={cn(
-        'w-full text-left px-4 py-3 hover:bg-sidebar-accent transition-colors',
-        hasUnread && 'bg-sidebar-accent/50'
+        'w-full text-left px-4 py-3 hover:bg-sidebar-accent/50 transition-colors rounded-lg',
+        hasUnread && 'bg-sidebar-accent/30'
       )}
     >
       <div className="flex items-start gap-3">
@@ -216,17 +389,17 @@ function ConversationPreviewItem({ conversation, onClick }: ConversationPreviewI
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2 mb-1">
+          <div className="flex items-center justify-between gap-2 mb-0.5">
             <h4
               className={cn(
-                'text-[15px] truncate',
+                'text-[14px] truncate',
                 hasUnread ? 'font-semibold text-sidebar-foreground' : 'font-medium text-sidebar-foreground/90'
               )}
             >
               {displayName}
             </h4>
             {lastMessageDate && (
-              <span className="text-[12px] text-muted-foreground/80 flex-shrink-0">
+              <span className="text-[11px] text-muted-foreground/60 flex-shrink-0">
                 {formatDistanceToNow(lastMessageDate, { addSuffix: false })}
               </span>
             )}
@@ -242,8 +415,8 @@ function ConversationPreviewItem({ conversation, onClick }: ConversationPreviewI
           {/* Message preview */}
           <p
             className={cn(
-              'text-[14px] truncate leading-snug',
-              hasUnread ? 'text-sidebar-foreground/80 font-medium' : 'text-muted-foreground/70'
+              'text-[13px] truncate leading-snug',
+              hasUnread ? 'text-sidebar-foreground/80' : 'text-muted-foreground/60'
             )}
           >
             {lastMessagePreview || 'No messages'}

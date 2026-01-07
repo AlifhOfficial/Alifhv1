@@ -8,26 +8,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useWebSocket } from './use-websocket';
 import { useEffect } from 'react';
-import { queryKeys } from '@/lib/query-keys';
-import { CACHE_STALE_TIME } from '@/lib/cache-config';
-import { invalidateQueries, updateCache } from '@/lib/cache-patterns';
 
 // ============================================================================
 // Types
 // ============================================================================
-
-export interface ConversationPartner {
-  id: string;
-  name: string;
-  logo: string | null;
-}
-
-export interface ConversationParticipant {
-  id: string;
-  name: string | null;
-  avatarUrl: string | null;
-  lastReadAt?: Date | string | null;
-}
 
 export interface Conversation {
   id: string;
@@ -102,18 +86,21 @@ async function createConversationAPI(params: {
 interface UseConversationsOptions {
   userId?: string;
   scope?: 'personal' | 'staff';
-  enabled?: boolean; // Add enabled option
+  limit?: number; // Not used in query key, just for API
 }
 
 export function useConversations(options: UseConversationsOptions = {}) {
   const queryClient = useQueryClient();
   const { subscribe } = useWebSocket();
+  
+  // Stable query key - only include userId and scope
+  const queryKey = ['conversations', options.userId, options.scope] as const;
 
   const query = useQuery({
-    queryKey: queryKeys.messaging.conversations(options),
+    queryKey,
     queryFn: () => fetchConversations(options.scope),
-    staleTime: CACHE_STALE_TIME.LONG,
-    enabled: options.enabled ?? !!options.userId, // Allow explicit control
+    staleTime: 5 * 60 * 1000,
+    enabled: !!options.userId,
   });
 
   // WebSocket updates
@@ -121,18 +108,28 @@ export function useConversations(options: UseConversationsOptions = {}) {
     if (!options.userId) return;
 
     const unsub = subscribe((msg) => {
+      // Handle new messages
       if (msg.type === 'new_message' && msg.conversationId) {
+        console.log(`📬 [useConversations] New message received for conv: ${msg.conversationId}`);
         const newMsg = msg.message as { createdAt?: string; text?: string; senderId?: string } | undefined;
+        // Use msg.userId (from broadcast wrapper) for sender check
+        const senderId = msg.userId || newMsg?.senderId;
+        const isOwnMessage = senderId === options.userId;
 
-        queryClient.setQueryData(queryKeys.messaging.conversations(options), (old: ConversationsResponse | undefined) => {
-          if (!old?.conversations) return old;
+        queryClient.setQueryData(queryKey, (old: ConversationsResponse | undefined) => {
+          if (!old?.conversations) {
+            console.log(`📬 [useConversations] No cached conversations, invalidating`);
+            return old;
+          }
           
           const exists = old.conversations.some(c => c.id === msg.conversationId);
           if (!exists) {
-            queryClient.invalidateQueries({ queryKey: queryKeys.messaging.all });
+            console.log(`📬 [useConversations] Conversation not in cache, invalidating to fetch`);
+            queryClient.invalidateQueries({ queryKey: ['conversations'] });
             return old;
           }
 
+          console.log(`📬 [useConversations] Updating conversation in cache, isOwnMessage: ${isOwnMessage}`);
           return {
             ...old,
             conversations: old.conversations
@@ -141,17 +138,39 @@ export function useConversations(options: UseConversationsOptions = {}) {
                 lastMessageAt: new Date(newMsg?.createdAt || Date.now()),
                 lastMessagePreview: newMsg?.text?.substring(0, 100) || 'New message',
                 messageCount: (c.messageCount || 0) + 1,
-                unreadCount: newMsg?.senderId !== options.userId ? (c.unreadCount || 0) + 1 : c.unreadCount,
+                // Don't increment unread if this is your own message
+                unreadCount: isOwnMessage ? c.unreadCount : (c.unreadCount || 0) + 1,
               })
               .sort((a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()),
-            totalUnread: newMsg?.senderId !== options.userId ? (old.totalUnread || 0) + 1 : old.totalUnread,
+            // Don't increment total unread if this is your own message  
+            totalUnread: isOwnMessage ? old.totalUnread : (old.totalUnread || 0) + 1,
+          };
+        });
+      }
+      
+      // Handle read receipts - update other participant's lastReadAt
+      if (msg.type === 'read_receipt' && msg.conversationId && msg.userId !== options.userId) {
+        queryClient.setQueryData(queryKey, (old: ConversationsResponse | undefined) => {
+          if (!old?.conversations) return old;
+          
+          return {
+            ...old,
+            conversations: old.conversations.map(c => 
+              c.id !== msg.conversationId ? c : {
+                ...c,
+                otherParticipant: c.otherParticipant ? {
+                  ...c.otherParticipant,
+                  lastReadAt: msg.lastReadAt ? new Date(msg.lastReadAt) : c.otherParticipant.lastReadAt,
+                } : c.otherParticipant,
+              }
+            ),
           };
         });
       }
     });
 
     return unsub;
-  }, [subscribe, queryClient, options]);
+  }, [subscribe, queryClient, options.userId, options.scope, queryKey]);
 
   return {
     conversations: query.data?.conversations ?? [],
@@ -178,9 +197,9 @@ export function useMarkAsRead() {
       if (markedRef.has(conversationId)) return;
       markedRef.add(conversationId);
 
-      await queryClient.cancelQueries({ queryKey: queryKeys.messaging.all });
+      await queryClient.cancelQueries({ queryKey: ['conversations'] });
 
-      queryClient.setQueriesData({ queryKey: queryKeys.messaging.all, exact: false }, (old: unknown) => {
+      queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
         const data = old as ConversationsResponse | undefined;
         if (!data?.conversations) return old;
         
@@ -196,11 +215,11 @@ export function useMarkAsRead() {
         };
       });
 
-      queryClient.setQueryData(queryKeys.messaging.unreadCount(), (old: number | undefined) => Math.max(0, (old || 0) - 1));
+      queryClient.setQueryData(['unread-count'], (old: number | undefined) => Math.max(0, (old || 0) - 1));
     },
 
     onError: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.messaging.all });
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
     },
 
     onSettled: (_, __, conversationId) => {
@@ -222,8 +241,8 @@ export function useCreateConversation() {
   const mutation = useMutation({ 
     mutationFn: createConversationAPI,
     onSuccess: () => {
-      // Refetch conversations to show the newly created one
-      queryClient.invalidateQueries({ queryKey: queryKeys.messaging.all });
+      // Invalidate conversations list to include newly created conversation
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
     },
   });
 
