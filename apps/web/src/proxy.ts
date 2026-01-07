@@ -11,13 +11,38 @@ import { Redis } from "@upstash/redis";
 
 // Request-scoped session cache key
 const SESSION_HEADER_KEY = "x-auth-user";
-const SESSION_CACHE_TTL = 300; // 5 minutes
+const SESSION_CACHE_TTL = 300; // 5 minutes in Redis
+const LOCAL_CACHE_TTL = 10_000; // 10 seconds in-memory (ms)
 
 // Initialize Redis for session caching
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL!,
   token: process.env.UPSTASH_REDIS_REST_TOKEN!,
 });
+
+// In-memory LRU cache to avoid Redis roundtrips on rapid requests
+// This dramatically reduces latency for repeated requests within seconds
+const localCache = new Map<string, { user: ExtendedUser; expires: number }>();
+const LOCAL_CACHE_MAX_SIZE = 1000;
+
+function getFromLocalCache(key: string): ExtendedUser | null {
+  const entry = localCache.get(key);
+  if (!entry) return null;
+  if (Date.now() > entry.expires) {
+    localCache.delete(key);
+    return null;
+  }
+  return entry.user;
+}
+
+function setLocalCache(key: string, user: ExtendedUser): void {
+  // Simple LRU: if at max size, delete oldest entry
+  if (localCache.size >= LOCAL_CACHE_MAX_SIZE) {
+    const firstKey = localCache.keys().next().value;
+    if (firstKey) localCache.delete(firstKey);
+  }
+  localCache.set(key, { user, expires: Date.now() + LOCAL_CACHE_TTL });
+}
 
 function isExtendedUser(user: unknown): user is ExtendedUser {
   if (!user || typeof user !== "object") return false;
@@ -64,29 +89,38 @@ export async function proxy(request: NextRequest) {
   try {
     const cacheKey = `session:${sessionToken.slice(0, 32)}`;
     
-    // Try to get cached session from Redis
-    let user: ExtendedUser | null = null;
-    const cachedSession = await redis.get<ExtendedUser>(cacheKey);
+    // Layer 1: Check in-memory cache first (sub-millisecond)
+    let user: ExtendedUser | null = getFromLocalCache(cacheKey);
     
-    if (cachedSession && isExtendedUser(cachedSession)) {
-      user = cachedSession;
-    } else {
-      // Cache miss - fetch from Better Auth
-      const session = await auth.api.getSession({
-        headers: request.headers,
-      });
-
-      if (!session?.user || !isExtendedUser(session.user)) {
-        if (isApiRoute) {
-          return NextResponse.next();
-        }
-        return NextResponse.redirect(new URL("/sign-in", request.url));
-      }
-
-      user = session.user;
+    if (!user) {
+      // Layer 2: Try Redis cache (10-50ms typically)
+      const cachedSession = await redis.get<ExtendedUser>(cacheKey);
       
-      // Cache the session in Redis
-      await redis.set(cacheKey, user, { ex: SESSION_CACHE_TTL });
+      if (cachedSession && isExtendedUser(cachedSession)) {
+        user = cachedSession;
+        // Populate local cache for subsequent rapid requests
+        setLocalCache(cacheKey, user);
+      } else {
+        // Layer 3: Cache miss - fetch from Better Auth (slowest)
+        const session = await auth.api.getSession({
+          headers: request.headers,
+        });
+
+        if (!session?.user || !isExtendedUser(session.user)) {
+          if (isApiRoute) {
+            return NextResponse.next();
+          }
+          return NextResponse.redirect(new URL("/sign-in", request.url));
+        }
+
+        user = session.user;
+        
+        // Populate both caches - Redis write is fire-and-forget (non-blocking)
+        setLocalCache(cacheKey, user);
+        redis.set(cacheKey, user, { ex: SESSION_CACHE_TTL }).catch(() => {
+          // Silently ignore Redis write failures - session still works
+        });
+      }
     }
 
     if (!user) {
