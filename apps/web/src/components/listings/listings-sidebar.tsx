@@ -56,7 +56,7 @@ export function ListingsSidebar({
       )}>
         {/* Fixed Header with collapse button */}
         <div className="flex items-center justify-between py-4 sm:py-6 pr-6 flex-shrink-0">
-          <h2 className="text-base font-semibold tracking-tight">Filters</h2>
+          <h2 className="text-base font-semibold tracking-tight text-primary">Filters</h2>
           <button
             onClick={() => onSidebarToggle(false)}
             className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"

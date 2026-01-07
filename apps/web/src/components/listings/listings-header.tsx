@@ -5,18 +5,24 @@
 
 'use client';
 
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useState } from 'react';
 import Link from 'next/link';
 import { SearchBar } from '@/components/search/search-bar';
 import { FilterSidebar } from '@/components/search/filter-sidebar';
 import { AdvancedFilters } from '@/components/search/advanced-filters';
-import { LayoutGrid, List, SlidersHorizontal, X, ChevronDown, PanelLeft } from 'lucide-react';
+import { LayoutGrid, List, SlidersHorizontal, X, ChevronDown, PanelLeft, ChevronRight } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -79,6 +85,14 @@ export function ListingsHeader({
   clearFilters,
   setSort,
 }: ListingsHeaderProps) {
+  // Modal states for viewing all options
+  const [makesModalOpen, setMakesModalOpen] = useState(false);
+  const [modelsModalOpen, setModelsModalOpen] = useState(false);
+  const [trimsModalOpen, setTrimsModalOpen] = useState(false);
+
+  // Number of items to show before "View all"
+  const VISIBLE_COUNT = 6;
+
   // Memoize active chips - pass listings directly, memoize on params change
   const activeChips = useMemo(
     () => getActiveFilterChips(params, listings),
@@ -315,15 +329,15 @@ export function ListingsHeader({
         {!params.make?.length && (facets?.make ?? []).length > 0 && (
           <div 
             className={cn(
-              "flex items-center gap-2 py-3 overflow-x-auto scrollbar-hide mt-3",
+              "hidden sm:flex flex-wrap items-center gap-2 py-3 mt-3",
               sidebarOpen && "lg:pl-6"
             )}
           >
             <span className="text-[13px] font-medium text-muted-foreground/70 whitespace-nowrap shrink-0">
               Makes:
             </span>
-            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
-              {(facets?.make ?? []).map((make) => (
+            <div className="flex flex-wrap items-center gap-1.5">
+              {(facets?.make ?? []).slice(0, VISIBLE_COUNT).map((make) => (
                 <button
                   key={make.value}
                   onClick={() => setFilters({ make: [make.value], model: undefined, trim: undefined })}
@@ -333,15 +347,50 @@ export function ListingsHeader({
                   <span className="text-[11px] text-muted-foreground/50 tabular-nums">{make.count}</span>
                 </button>
               ))}
+              {(facets?.make ?? []).length > VISIBLE_COUNT && (
+                <button
+                  onClick={() => setMakesModalOpen(true)}
+                  className="flex items-center gap-1 px-3 py-1.5 text-[13px] font-semibold tracking-tight text-primary hover:text-primary/80 transition-colors"
+                >
+                  View all
+                  <ChevronRight className="size-3.5" />
+                </button>
+              )}
             </div>
           </div>
         )}
+
+        {/* Makes Modal */}
+        <Dialog open={makesModalOpen} onOpenChange={setMakesModalOpen}>
+          <DialogContent className="max-w-lg bg-sidebar border-sidebar-border p-0 gap-0">
+            <DialogHeader className="px-5 py-4 border-b border-sidebar-border">
+              <DialogTitle className="text-base font-semibold tracking-tight text-sidebar-foreground">
+                All Makes
+              </DialogTitle>
+            </DialogHeader>
+            <div className="grid grid-cols-2 gap-1 p-2 overflow-y-auto max-h-[60vh]">
+              {(facets?.make ?? []).map((make) => (
+                <button
+                  key={make.value}
+                  onClick={() => {
+                    setFilters({ make: [make.value], model: undefined, trim: undefined });
+                    setMakesModalOpen(false);
+                  }}
+                  className="flex items-center justify-between gap-3 px-3.5 py-2.5 text-[14px] font-medium text-sidebar-foreground hover:bg-sidebar-accent rounded-lg transition-colors text-left"
+                >
+                  <span className="truncate">{make.label}</span>
+                  <span className="text-[12px] text-muted-foreground/70 tabular-nums flex-shrink-0">{make.count}</span>
+                </button>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Model Quick-Select - Show when make is selected but no model */}
         {params.make?.length && !params.model?.length && (facets?.model ?? []).length > 0 && (
           <div 
             className={cn(
-              "flex items-center gap-2 py-3 overflow-x-auto scrollbar-hide",
+              "hidden sm:flex flex-wrap items-center gap-2 py-3",
               breadcrumbItems.length <= 1 && "mt-3",
               sidebarOpen && "lg:pl-6"
             )}
@@ -349,8 +398,8 @@ export function ListingsHeader({
             <span className="text-[13px] font-medium text-muted-foreground/70 whitespace-nowrap shrink-0">
               Models:
             </span>
-            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
-              {(facets?.model ?? []).map((model) => (
+            <div className="flex flex-wrap items-center gap-1.5">
+              {(facets?.model ?? []).slice(0, VISIBLE_COUNT).map((model) => (
                 <button
                   key={model.value}
                   onClick={() => setFilters({ model: [model.value] })}
@@ -360,23 +409,58 @@ export function ListingsHeader({
                   <span className="text-[11px] text-muted-foreground/50 tabular-nums">{model.count}</span>
                 </button>
               ))}
+              {(facets?.model ?? []).length > VISIBLE_COUNT && (
+                <button
+                  onClick={() => setModelsModalOpen(true)}
+                  className="flex items-center gap-1 px-3 py-1.5 text-[13px] font-semibold tracking-tight text-primary hover:text-primary/80 transition-colors"
+                >
+                  View all
+                  <ChevronRight className="size-3.5" />
+                </button>
+              )}
             </div>
           </div>
         )}
+
+        {/* Models Modal */}
+        <Dialog open={modelsModalOpen} onOpenChange={setModelsModalOpen}>
+          <DialogContent className="max-w-lg bg-sidebar border-sidebar-border p-0 gap-0">
+            <DialogHeader className="px-5 py-4 border-b border-sidebar-border">
+              <DialogTitle className="text-base font-semibold tracking-tight text-sidebar-foreground">
+                All Models
+              </DialogTitle>
+            </DialogHeader>
+            <div className="grid grid-cols-2 gap-1 p-2 overflow-y-auto max-h-[60vh]">
+              {(facets?.model ?? []).map((model) => (
+                <button
+                  key={model.value}
+                  onClick={() => {
+                    setFilters({ model: [model.value] });
+                    setModelsModalOpen(false);
+                  }}
+                  className="flex items-center justify-between gap-3 px-3.5 py-2.5 text-[14px] font-medium text-sidebar-foreground hover:bg-sidebar-accent rounded-lg transition-colors text-left"
+                >
+                  <span className="truncate">{model.label}</span>
+                  <span className="text-[12px] text-muted-foreground/70 tabular-nums flex-shrink-0">{model.count}</span>
+                </button>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Trim Quick-Select - Show when make & model selected but no trim */}
         {params.make?.length && params.model?.length && !params.trim?.length && (facets?.trim ?? []).length > 0 && (
           <div 
             className={cn(
-              "flex items-center gap-2 py-3 overflow-x-auto scrollbar-hide",
+              "hidden sm:flex flex-wrap items-center gap-2 py-3",
               sidebarOpen && "lg:pl-6"
             )}
           >
             <span className="text-[13px] font-medium text-muted-foreground/70 whitespace-nowrap shrink-0">
               Trims:
             </span>
-            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
-              {(facets?.trim ?? []).map((trim) => (
+            <div className="flex flex-wrap items-center gap-1.5">
+              {(facets?.trim ?? []).slice(0, VISIBLE_COUNT).map((trim) => (
                 <button
                   key={trim.value}
                   onClick={() => setFilters({ trim: [trim.value] })}
@@ -386,9 +470,44 @@ export function ListingsHeader({
                   <span className="text-[11px] text-muted-foreground/50 tabular-nums">{trim.count}</span>
                 </button>
               ))}
+              {(facets?.trim ?? []).length > VISIBLE_COUNT && (
+                <button
+                  onClick={() => setTrimsModalOpen(true)}
+                  className="flex items-center gap-1 px-3 py-1.5 text-[13px] font-semibold tracking-tight text-primary hover:text-primary/80 transition-colors"
+                >
+                  View all
+                  <ChevronRight className="size-3.5" />
+                </button>
+              )}
             </div>
           </div>
         )}
+
+        {/* Trims Modal */}
+        <Dialog open={trimsModalOpen} onOpenChange={setTrimsModalOpen}>
+          <DialogContent className="max-w-lg bg-sidebar border-sidebar-border p-0 gap-0">
+            <DialogHeader className="px-5 py-4 border-b border-sidebar-border">
+              <DialogTitle className="text-base font-semibold tracking-tight text-sidebar-foreground">
+                All Trims
+              </DialogTitle>
+            </DialogHeader>
+            <div className="grid grid-cols-2 gap-1 p-2 overflow-y-auto max-h-[60vh]">
+              {(facets?.trim ?? []).map((trim) => (
+                <button
+                  key={trim.value}
+                  onClick={() => {
+                    setFilters({ trim: [trim.value] });
+                    setTrimsModalOpen(false);
+                  }}
+                  className="flex items-center justify-between gap-3 px-3.5 py-2.5 text-[14px] font-medium text-sidebar-foreground hover:bg-sidebar-accent rounded-lg transition-colors text-left"
+                >
+                  <span className="truncate">{trim.label}</span>
+                  <span className="text-[12px] text-muted-foreground/70 tabular-nums flex-shrink-0">{trim.count}</span>
+                </button>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Active Chips - with sidebar-aware padding to align with content grid */}
         <div 
@@ -411,7 +530,10 @@ export function ListingsHeader({
             ))}
             {activeChips.length > 0 && (
               <button
-                onClick={clearFilters}
+                onClick={() => {
+                  clearFilters();
+                  setSort('relevance');
+                }}
                 className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
                 Clear all
