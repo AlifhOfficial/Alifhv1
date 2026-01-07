@@ -4,6 +4,7 @@
  */
 
 import type { Server } from "bun";
+import { db, userProfile, eq } from "@alifh/database";
 
 const PORT = parseInt(process.env.WS_PORT || "3001");
 
@@ -42,6 +43,12 @@ function setOnline(server: Server, userId: string) {
   presence.set(userId, state);
 
   if (state.connections === 1) {
+    // Update database lastActiveAt
+    db.update(userProfile)
+      .set({ lastActiveAt: new Date() })
+      .where(eq(userProfile.userId, userId))
+      .catch(() => {}); // Silent fail
+
     server.publish(`presence:${userId}`, JSON.stringify({
       type: "presence",
       userId,
@@ -60,6 +67,13 @@ function setOffline(server: Server, userId: string) {
 
   if (state.connections === 0) {
     state.lastSeenAt = new Date().toISOString();
+    
+    // Update database lastActiveAt when going offline
+    db.update(userProfile)
+      .set({ lastActiveAt: new Date(state.lastSeenAt) })
+      .where(eq(userProfile.userId, userId))
+      .catch(() => {}); // Silent fail
+
     server.publish(`presence:${userId}`, JSON.stringify({
       type: "presence",
       userId,

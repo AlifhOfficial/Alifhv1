@@ -5,9 +5,9 @@
   "description": "WebSocket server for real-time updates",
   "packageManager": "bun@1.3.4",
   "scripts": {
-    "dev": "bun --watch src/index.ts",
+    "dev": "bun --watch --env-file=../../.env.local src/index.ts",
     "build": "bun build ./src/index.ts --outdir dist",
-    "start": "bun dist/index.js",
+    "start": "bun --env-file=../../.env.local dist/index.js",
     "lint": "bun x eslint src/**/*.ts",
     "format": "bun x prettier --write src/**/*.ts"
   },

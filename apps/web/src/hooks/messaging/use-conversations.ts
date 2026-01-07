@@ -32,6 +32,7 @@ export interface Conversation {
     name: string | null;
     avatarUrl: string | null;
     lastReadAt?: Date | string | null;
+    lastSeenAt?: Date | string | null;
   } | null;
   listing: { id: string; title: string; thumbnail: string | null } | null;
   partner: { id: string; name: string; logo: string | null } | null;

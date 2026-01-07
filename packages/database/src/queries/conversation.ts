@@ -31,6 +31,7 @@ export interface ConversationWithDetails {
     name: string | null;
     avatarUrl: string | null;
     lastReadAt: Date | null;
+    lastSeenAt?: Date | null;
   } | null;
   listing: {
     id: string;
@@ -312,6 +313,13 @@ export async function getUserConversations(
         AND cp2.user_id != ${userId} 
         LIMIT 1
       )`,
+      otherParticipantLastSeenAt: sql<Date | null>`(
+        SELECT up.last_active_at FROM conversation_participant cp2 
+        LEFT JOIN user_profile up ON up.user_id = cp2.user_id
+        WHERE cp2.conversation_id = ${conversation.id} 
+        AND cp2.user_id != ${userId} 
+        LIMIT 1
+      )`,
     })
     .from(conversation)
     .innerJoin(
@@ -358,6 +366,7 @@ export async function getUserConversations(
             name: row.otherParticipantName,
             avatarUrl: row.otherParticipantAvatar,
             lastReadAt: row.otherParticipantLastReadAt,
+            lastSeenAt: row.otherParticipantLastSeenAt,
           }
         : null,
       listing: row.listingId && row.listingTitle

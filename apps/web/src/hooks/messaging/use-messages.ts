@@ -72,6 +72,7 @@ async function postMessage(conversationId: string, text: string): Promise<{ mess
 interface UseMessagesOptions {
   otherUserId?: string | null;
   initialLastReadAt?: Date | string | null;
+  initialLastSeenAt?: Date | string | null;
 }
 
 export function useMessages(conversationId: string, userId?: string, options: UseMessagesOptions = {}) {
@@ -87,7 +88,12 @@ export function useMessages(conversationId: string, userId?: string, options: Us
     const d = v instanceof Date ? v : new Date(v);
     return isNaN(d.getTime()) ? null : d;
   });
-  const [otherLastSeenAt, setOtherLastSeenAt] = useState<Date | null>(null);
+  const [otherLastSeenAt, setOtherLastSeenAt] = useState<Date | null>(() => {
+    const v = options.initialLastSeenAt;
+    if (!v) return null;
+    const d = v instanceof Date ? v : new Date(v);
+    return isNaN(d.getTime()) ? null : d;
+  });
 
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const watchingRef = useRef(false);

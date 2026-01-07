@@ -47,9 +47,11 @@ export function FloatingChatWindow({
     isOtherTyping,
     otherLastReadAt,
     isOtherOnline,
+    otherLastSeenAt,
     sendTyping,
   } = useMessages(conversation.id, userId, {
     initialLastReadAt: otherParticipant?.lastReadAt ?? null,
+    initialLastSeenAt: otherParticipant?.lastSeenAt ?? null,
     otherUserId: otherParticipant?.id ?? null,
   });
 
@@ -76,7 +78,7 @@ export function FloatingChatWindow({
 
   // Mark as read when opening or receiving new messages
   useEffect(() => {
-    if (isLoading || messages.length === 0 || isMinimized) return;
+    if (isLoading || messages.length === 0 || isMinimized || conversation.unreadCount === 0) return;
     
     const newestMessage = messages[0];
     if (!newestMessage) return;
@@ -88,7 +90,7 @@ export function FloatingChatWindow({
       lastMessageIdRef.current = newestMessage.id;
       markAsRead(conversation.id);
     }
-  }, [conversation.id, isLoading, messages, userId, markAsRead, isMinimized]);
+  }, [conversation.id, conversation.unreadCount, isLoading, messages, userId, markAsRead, isMinimized]);
 
   // Reset on conversation switch
   useEffect(() => {

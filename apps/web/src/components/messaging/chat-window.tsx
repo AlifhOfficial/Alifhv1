@@ -57,8 +57,19 @@ export function ChatWindow({
     sendTyping,
   } = useMessages(conversationId, userId, {
     initialLastReadAt: otherParticipant?.lastReadAt ?? null,
+    initialLastSeenAt: otherParticipant?.lastSeenAt ?? null,
     otherUserId: otherParticipant?.id ?? null,
   });
+
+  // Debug: Log presence data
+  useEffect(() => {
+    console.log('🔍 [ChatWindow] Presence data:', {
+      otherParticipant,
+      otherLastReadAt,
+      otherLastSeenAt,
+      isOtherOnline,
+    });
+  }, [otherParticipant, otherLastReadAt, otherLastSeenAt, isOtherOnline]);
 
   const { sendMessage, isSending } = useSendMessage();
   const { markAsRead } = useMarkAsRead();
@@ -162,7 +173,10 @@ export function ChatWindow({
   // Display
   const displayName = inbox === 'personal' && partner ? partner.name : otherParticipant?.name || 'User';
   const isPartnerBrand = inbox === 'personal' && partner;
-  const lastActiveAt = otherLastSeenAt ?? otherLastReadAt;
+  // Use lastSeenAt first, fallback to lastReadAt, then to initial values from conversation
+  const lastActiveAt = otherLastSeenAt ?? otherLastReadAt ?? 
+    (otherParticipant?.lastSeenAt ? new Date(otherParticipant.lastSeenAt) : null) ?? 
+    (otherParticipant?.lastReadAt ? new Date(otherParticipant.lastReadAt) : null);
 
   // Format last seen with relative time
   const getLastSeenText = (date: Date) => {
