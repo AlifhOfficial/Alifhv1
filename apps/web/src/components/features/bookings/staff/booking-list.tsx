@@ -56,18 +56,12 @@ export function BookingList({
   }
 
   return (
-    <section className="space-y-6">
-      <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-        <div className="flex items-center gap-2">
-          <h3 className="text-lg font-medium tracking-tight">All Bookings</h3>
-          {isLoading && (
-            <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-          )}
+    <section className="space-y-4">
+      {isLoading && (
+        <div className="flex justify-center py-4">
+          <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
         </div>
-        <span className="text-sm text-muted-foreground">
-          {bookings.length} booking{bookings.length !== 1 ? 's' : ''}
-        </span>
-      </div>
+      )}
       
       <div className="space-y-4">
         {bookings.map(booking => (

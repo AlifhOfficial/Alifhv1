@@ -363,10 +363,10 @@ export function StaffBookingsView() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-32">
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-8">
-        {/* Header Section */}
-        <section className="space-y-4">
+    <div className="min-h-full bg-background">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8">
+        {/* Header Section - Sticky */}
+        <section className="space-y-4 sticky top-0 bg-background z-10 pt-8 sm:pt-12 pb-4">
           <div className="flex items-start justify-between">
             <div>
               <h1 className="text-2xl font-bold tracking-tight">Bookings</h1>
@@ -434,50 +434,9 @@ export function StaffBookingsView() {
               )}
             </div>
           )}
-        </section>
 
-        {/* Error Alert */}
-        {error && (
-          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
-              <p className="text-sm text-red-500">{error}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Settings Tab */}
-        {activeTab === 'settings' && (
-          <>
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-semibold">Availability Settings</h2>
-                <p className="text-sm text-muted-foreground mt-1">Configure booking slots and availability</p>
-              </div>
-              <button
-                onClick={() => setActiveTab('bookings')}
-                className="text-sm text-muted-foreground hover:text-foreground"
-              >
-                ← Back to bookings
-              </button>
-            </div>
-            <AvailabilitySettings
-              availability={availability}
-              settings={settings}
-              isLoading={availabilityLoading}
-              savingDay={savingDay}
-              savingSettings={savingSettings}
-              onInitialize={initializeAvailability}
-              onUpdateDay={updateDayAvailability}
-              onUpdateSettings={updateBookingSettings}
-            />
-          </>
-        )}
-
-        {/* Bookings Tab */}
-        {activeTab === 'bookings' && (
-          <>
-            {/* Status Filter Tabs */}
+          {/* Status Filter Tabs - Part of sticky header when in bookings mode */}
+          {activeTab === 'bookings' && (
             <div className="border-b border-border/40">
               <div className="flex gap-1 overflow-x-auto pb-px">
                 {STATUS_TABS.map((tab) => {
@@ -504,7 +463,50 @@ export function StaffBookingsView() {
                 })}
               </div>
             </div>
-            
+          )}
+        </section>
+
+        {/* Error Alert */}
+        {error && (
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6 mt-6">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-red-500">{error}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Settings Tab */}
+        {activeTab === 'settings' && (
+          <div className="mt-6 pb-32">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold">Availability Settings</h2>
+                <p className="text-sm text-muted-foreground mt-1">Configure booking slots and availability</p>
+              </div>
+              <button
+                onClick={() => setActiveTab('bookings')}
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                ← Back to bookings
+              </button>
+            </div>
+            <AvailabilitySettings
+              availability={availability}
+              settings={settings}
+              isLoading={availabilityLoading}
+              savingDay={savingDay}
+              savingSettings={savingSettings}
+              onInitialize={initializeAvailability}
+              onUpdateDay={updateDayAvailability}
+              onUpdateSettings={updateBookingSettings}
+            />
+          </div>
+        )}
+
+        {/* Bookings Tab */}
+        {activeTab === 'bookings' && (
+          <div className="mt-6 pb-32">
             {/* Booking List - now with client-filtered bookings */}
             <BookingList
               bookings={filteredBookings}
@@ -512,7 +514,7 @@ export function StaffBookingsView() {
               selectedStatus={selectedStatus}
               onAction={handleBookingAction}
             />
-          </>
+          </div>
         )}
 
         {/* Cancel Modal */}

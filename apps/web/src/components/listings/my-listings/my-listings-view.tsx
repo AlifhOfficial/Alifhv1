@@ -493,10 +493,10 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
   };
 
   return (
-    <div className="min-h-screen bg-background pb-32">
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-8">
-        {/* Header */}
-        <section className="space-y-6">
+    <div className="min-h-full bg-background">
+      <div className="max-w-6xl mx-auto w-full px-4 sm:px-8">
+        {/* Header - Sticky */}
+        <section className="space-y-6 sticky top-0 bg-background z-10 pt-8 sm:pt-12 pb-4">
           <div className="flex items-start justify-between">
             <div>
               <h1 className="text-2xl font-bold tracking-tight">
@@ -607,7 +607,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
 
         {/* Error */}
         {error && (
-          <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-5">
+          <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-5 mt-6">
             <p className="text-sm font-medium text-red-500">{error}</p>
           </div>
         )}
@@ -636,7 +636,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
 
         {/* Listings */}
         {filteredAndSortedListings.length > 0 && (
-          <div className="space-y-4">
+          <div className="space-y-4 mt-6 pb-32">
             {filteredAndSortedListings.map((listing) => (
               <ListingCard
                 key={listing.id}

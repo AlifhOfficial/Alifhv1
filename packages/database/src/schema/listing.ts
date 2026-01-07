@@ -344,6 +344,20 @@ export const carListing = pgTable('car_listing', {
   // Consignment funnel matching - user listings with proper status
   // Covers WHERE partnerId IS NULL AND moderationStatus = 'approved' AND lifecycleStatus = 'active'
   index('car_listing_user_consignment_idx').on(table.partnerId, table.moderationStatus, table.lifecycleStatus, table.userId),
+  
+  // ⚡ Work listings by partner + staff member (staffMemberUserId filter)
+  // Covers: WHERE partnerId = ? AND userId = ? with status filters and sorting
+  index('car_listing_partnerId_userId_idx').on(table.partnerId, table.userId),
+  index('car_listing_partnerId_userId_publishedAt_idx').on(table.partnerId, table.userId, table.publishedAt.desc()),
+  index('car_listing_partnerId_userId_lifecycleStatus_idx').on(table.partnerId, table.userId, table.lifecycleStatus),
+  
+  // ⚡ User work listings (listingType='work' - partnerId IS NOT NULL)
+  // Covers stats queries: WHERE userId = ? AND partnerId IS NOT NULL
+  index('car_listing_userId_partnerId_not_null_idx').on(table.userId, table.partnerId),
+  
+  // ⚡ Optimized sorting index for newest sort (avoid coalesce in ORDER BY)
+  index('car_listing_partnerId_publishedAt_createdAt_idx').on(table.partnerId, table.publishedAt.desc(), table.createdAt.desc()),
+  index('car_listing_userId_publishedAt_createdAt_idx').on(table.userId, table.publishedAt.desc(), table.createdAt.desc()),
 ]);
 
 export const listingPriceHistory = pgTable('listing_price_history', {

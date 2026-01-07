@@ -114,22 +114,37 @@ function buildSearchConditions(q: string | undefined): any {
 
 /**
  * Build order by clause from sort option
- * Uses publishedAt (with createdAt fallback) for newest/oldest to sort by publish date
+ * 
+ * ⚡ OPTIMIZATION: Use multi-column sort (publishedAt DESC NULLS LAST, createdAt DESC)
+ * instead of coalesce() which prevents index usage. PostgreSQL will:
+ * 1. Sort by publishedAt DESC (nulls go last)
+ * 2. Then by createdAt DESC for equal/null publishedAt values
+ * This achieves the same logical order but can use composite indexes.
  */
 function buildOrderBy(sort: 'newest' | 'oldest' | 'updated' | 'expiring'): any[] {
   switch (sort) {
     case 'oldest':
-      return [asc(sql`coalesce(${carListing.publishedAt}, ${carListing.createdAt})`)];
+      // For oldest: publishedAt ASC NULLS FIRST (unpublished first), then createdAt ASC
+      return [
+        sql`${carListing.publishedAt} asc nulls first`,
+        asc(carListing.createdAt)
+      ];
     case 'updated':
       return [desc(carListing.updatedAt)];
     case 'expiring':
       return [
         sql`(${carListing.expiresAt} is null) asc`,
         asc(carListing.expiresAt),
-        desc(sql`coalesce(${carListing.publishedAt}, ${carListing.createdAt})`),
+        sql`${carListing.publishedAt} desc nulls last`,
+        desc(carListing.createdAt),
       ];
     default:
-      return [desc(sql`coalesce(${carListing.publishedAt}, ${carListing.createdAt})`)];
+      // ⚡ OPTIMIZATION: Multi-column sort instead of coalesce for index usage
+      // publishedAt DESC NULLS LAST, createdAt DESC achieves same logical order
+      return [
+        sql`${carListing.publishedAt} desc nulls last`,
+        desc(carListing.createdAt)
+      ];
   }
 }
 

@@ -330,6 +330,13 @@
       "when": 1767572395936,
       "tag": "0046_mysterious_firelord",
       "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1767764362781,
+      "tag": "0047_tense_karma",
+      "breakpoints": true
     }
   ]
 }

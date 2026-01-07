@@ -174,10 +174,10 @@ export function UserBookingsView() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-32">
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-10">
-        {/* Header Section */}
-        <section className="space-y-4">
+    <div className="min-h-full bg-background">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8">
+        {/* Header Section - Sticky */}
+        <section className="space-y-4 sticky top-0 bg-background z-10 pt-8 sm:pt-12 pb-4">
           <div className="flex items-start justify-between">
             <div>
               <h1 className="text-2xl font-bold tracking-tight">My Bookings</h1>
@@ -229,7 +229,7 @@ export function UserBookingsView() {
 
         {/* Error Alert */}
         {error && (
-          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6 mt-6">
             <div className="flex items-start gap-3">
               <AlertCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
               <p className="text-sm text-red-500">{error}</p>
@@ -238,13 +238,15 @@ export function UserBookingsView() {
         )}
 
         {/* Bookings List */}
-        <UserBookingList
-          bookings={bookings}
-          isLoading={isLoading}
-          selectedStatus={selectedStatus}
-          onCancel={(bookingId) => setCancelModal({ bookingId, isOpen: true })}
-          onOpenFeedback={(bookingId) => setFeedbackModal({ bookingId, isOpen: true })}
-        />
+        <div className="mt-6 pb-32">
+          <UserBookingList
+            bookings={bookings}
+            isLoading={isLoading}
+            selectedStatus={selectedStatus}
+            onCancel={(bookingId) => setCancelModal({ bookingId, isOpen: true })}
+            onOpenFeedback={(bookingId) => setFeedbackModal({ bookingId, isOpen: true })}
+          />
+        </div>
 
         {/* Modals */}
         <FeedbackModal
