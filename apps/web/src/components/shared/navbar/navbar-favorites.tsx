@@ -33,10 +33,6 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
   const { data: favoritesData, isLoading } = useFavoritesStatus({ enabled: isOpen });
 
   const favoriteIds = useMemo(() => favoritesData?.favorites || [], [favoritesData?.favorites]);
-  
-  // Count only shows valid listings (not deleted ones)
-  // This prevents showing "1 saved" when the listing no longer exists
-  const favoriteCount = listings.length > 0 ? listings.length : (isLoadingListings ? favoriteIds.length : 0);
 
   // Fetch listings function
   const fetchListings = useCallback(async (ids: string[]) => {
@@ -132,15 +128,10 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
       {isOpen && (
         <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-sidebar border border-sidebar-border rounded-xl shadow-lg z-[70] overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3.5 border-b border-sidebar-border">
+          <div className="px-4 py-3.5 border-b border-sidebar-border">
             <h3 className="text-base font-semibold tracking-tight text-sidebar-foreground">
               Favorites
             </h3>
-            {favoriteCount > 0 && (
-              <span className="text-[13px] font-medium text-muted-foreground">
-                {favoriteCount} saved
-              </span>
-            )}
           </div>
 
           {/* Content */}
@@ -149,7 +140,7 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
               </div>
-            ) : favoriteCount === 0 ? (
+            ) : listings.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
                 <Moon className="w-12 h-12 text-muted-foreground/30 mb-3" />
                 <p className="text-[15px] font-medium text-muted-foreground">No favorites yet</p>

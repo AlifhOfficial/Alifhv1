@@ -73,8 +73,8 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
     return groups;
   }, {} as Record<string, { user: any; isPartner: boolean; conversations: Conversation[] }>);
 
-  // Get top groups (limit to 5 groups max in navbar)
-  const topGroups = Object.values(groupedConversations).slice(0, 5);
+  // Get top 3 groups for preview, but keep all for scrolling
+  const allGroups = Object.values(groupedConversations);
 
   return (
     <div className="relative" data-messaging-dropdown>
@@ -126,7 +126,7 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
               </div>
-            ) : topGroups.length === 0 ? (
+            ) : allGroups.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
                 <MessageCircle className="w-12 h-12 text-muted-foreground/30 mb-3" />
                 <p className="text-[15px] font-medium text-muted-foreground">No messages yet</p>
@@ -136,7 +136,7 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
               </div>
             ) : (
               <div className="py-1.5">
-                {topGroups.map((group) => (
+                {allGroups.map((group) => (
                   <ConversationGroup
                     key={group.user?.id || 'unknown'}
                     group={group}

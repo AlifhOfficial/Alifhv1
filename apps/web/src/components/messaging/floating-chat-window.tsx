@@ -16,6 +16,24 @@ import { useMessages, useSendMessage, useMarkAsRead, type Conversation } from '@
 import { cn } from '@/utils/cn';
 import { format, isSameDay } from 'date-fns';
 
+// Simple time ago formatter (1m, 5m, 1h, 12h, 1d, etc)
+function formatTimeAgo(date: Date | string | null): string | null {
+  if (!date) return null;
+  const now = Date.now();
+  const then = new Date(date).getTime();
+  const diffMs = now - then;
+  
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return 'now';
+  if (mins < 60) return `${mins}m`;
+  
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h`;
+  
+  const days = Math.floor(hours / 24);
+  return `${days}d`;
+}
+
 interface FloatingChatWindowProps {
   conversation: Conversation;
   userId: string;
@@ -64,6 +82,11 @@ export function FloatingChatWindow({
   // Display info
   const displayName = partner?.name || otherParticipant?.name || 'User';
   const isPartnerBrand = !!partner;
+  
+  // Sync with chat-window: Use lastSeenAt first, fallback to lastReadAt, then to initial values
+  const lastActiveAt = otherLastSeenAt ?? otherLastReadAt ?? 
+    (otherParticipant?.lastSeenAt ? new Date(String(otherParticipant.lastSeenAt)) : null) ?? 
+    (otherParticipant?.lastReadAt ? new Date(String(otherParticipant.lastReadAt)) : null);
 
   // Find last read message for "seen" indicator
   const lastReadMsgId = useMemo(() => {
@@ -117,21 +140,21 @@ export function FloatingChatWindow({
       style={{ 
         right: rightOffset, 
         width: 320, 
-        height: isMinimized ? 44 : 480,
+        height: isMinimized ? 52 : 480,
         bottom: isMinimized ? 24 : 0
       }}
     >
       <div
         className={cn(
           'flex flex-col h-full bg-background border border-border shadow-2xl overflow-hidden',
-          isMinimized ? 'rounded-xl' : 'rounded-t-xl'
+          isMinimized ? 'rounded-2xl' : 'rounded-t-xl'
         )}
       >
         {/* Header */}
         <div
           className={cn(
-            'flex items-center gap-2.5 px-3 py-2 bg-sidebar cursor-pointer',
-            !isMinimized && 'border-b border-sidebar-border'
+            'flex items-center gap-3 px-4 bg-sidebar cursor-pointer',
+            isMinimized ? 'h-full' : 'py-3 border-b border-sidebar-border'
           )}
           onClick={isMinimized ? onMaximize : undefined}
         >
@@ -142,12 +165,12 @@ export function FloatingChatWindow({
               router.push(`/user-dashboard/messaging?conversation=${conversation.id}`);
               onClose();
             }}
-            className="flex-shrink-0 hover:opacity-80 transition-opacity"
+            className="flex-shrink-0 hover:opacity-80 transition-opacity flex items-center"
           >
             {isPartnerBrand ? (
-              <BrandAvatar logoUrl={partner?.logo} brandName={partner?.name || 'Partner'} size="xs" className="w-7 h-7" />
+              <BrandAvatar logoUrl={partner?.logo} brandName={partner?.name || 'Partner'} size="sm" className="w-9 h-9" />
             ) : (
-              <UserAvatar src={otherParticipant?.avatarUrl} name={displayName} size="sm" className="w-7 h-7" />
+              <UserAvatar src={otherParticipant?.avatarUrl} name={displayName} size="md" className="w-9 h-9" />
             )}
           </button>
 
@@ -160,20 +183,33 @@ export function FloatingChatWindow({
             }}
             className="flex-1 min-w-0 text-left hover:opacity-80 transition-opacity"
           >
-            <div className="flex items-center gap-1.5">
-              <h4 className="text-[13px] font-semibold truncate text-sidebar-foreground">
+            <div className="flex items-center gap-2">
+              <h4 className="text-[15px] font-semibold truncate text-sidebar-foreground">
                 {displayName}
               </h4>
-              {/* Activity indicator - inline with name */}
+              {/* Activity indicator - synced with chat-window logic */}
               {isOtherOnline ? (
-                <Moon className="w-2.5 h-2.5 text-rose-500 fill-rose-500 flex-shrink-0" />
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <Moon className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
+                  <span className="text-[13px] text-rose-500 font-medium">now</span>
+                </div>
+              ) : lastActiveAt ? (
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <Moon className="w-3.5 h-3.5 text-purple-500 fill-purple-500" />
+                  <span className="text-[13px] text-purple-500 font-medium">
+                    {formatTimeAgo(lastActiveAt)}
+                  </span>
+                </div>
               ) : (
-                <Cloud className="w-2.5 h-2.5 text-slate-400 fill-slate-300 flex-shrink-0" />
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <Cloud className="w-3.5 h-3.5 text-slate-500 fill-slate-400" />
+                  <span className="text-[13px] text-slate-500 font-medium">away</span>
+                </div>
               )}
             </div>
-            {listing && (
-              <p className="text-[11px] text-muted-foreground/70 truncate leading-tight">
-                RE: {listing.title}
+            {!isMinimized && listing && (
+              <p className="text-[13px] text-muted-foreground/70 truncate mt-0.5">
+                {listing.title}
               </p>
             )}
           </button>
@@ -189,13 +225,13 @@ export function FloatingChatWindow({
                   onMinimize();
                 }
               }}
-              className="p-1.5 hover:bg-sidebar-accent rounded-md transition-colors"
+              className="p-2 hover:bg-sidebar-accent rounded-lg transition-colors flex items-center justify-center"
               aria-label={isMinimized ? 'Expand' : 'Minimize'}
             >
               {isMinimized ? (
-                <Maximize2 className="w-3.5 h-3.5 text-muted-foreground" />
+                <Maximize2 className="w-4 h-4 text-muted-foreground" />
               ) : (
-                <Minus className="w-3.5 h-3.5 text-muted-foreground" />
+                <Minus className="w-4 h-4 text-muted-foreground" />
               )}
             </button>
             <button
@@ -203,10 +239,10 @@ export function FloatingChatWindow({
                 e.stopPropagation();
                 onClose();
               }}
-              className="p-1.5 hover:bg-sidebar-accent rounded-md transition-colors"
+              className="p-2 hover:bg-sidebar-accent rounded-lg transition-colors flex items-center justify-center"
               aria-label="Close"
             >
-              <X className="w-3.5 h-3.5 text-muted-foreground" />
+              <X className="w-4 h-4 text-muted-foreground" />
             </button>
           </div>
         </div>

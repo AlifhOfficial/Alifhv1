@@ -207,3 +207,5 @@ const server = Bun.serve<WSData>({
     },
   },
 });
+
+console.log(`🚀 WebSocket server running on port ${PORT}`);
