@@ -169,15 +169,13 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
     updateUrl(newParams);
   }, [params, updateUrl]);
 
-  // Clear all filters (keep sort and limit)
+  // Clear all filters (keep only limit, reset sort to default)
   const clearFilters = useCallback(() => {
     const newParams: SearchParams = {
       limit: params.limit,
-      sortBy: params.sortBy,
-      sortOrder: params.sortOrder,
     };
     updateUrl(newParams);
-  }, [params.limit, params.sortBy, params.sortOrder, updateUrl]);
+  }, [params.limit, updateUrl]);
 
   // Set sort option
   const setSort = useCallback((sortBy: SearchSortOption) => {

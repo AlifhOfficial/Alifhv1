@@ -196,19 +196,6 @@ export function ListingsHeader({
             </SheetTrigger>
             <SheetContent side="bottom" className="h-[85vh] p-4 sm:p-6 bg-background text-foreground border-border">
               <SheetTitle className="sr-only">Filters</SheetTitle>
-              {/* Mobile filters header */}
-              <div className="flex items-center justify-between py-4 mb-2">
-                <h2 className="text-lg font-bold tracking-tight">Filters</h2>
-                {activeFilterCount > 0 && (
-                  <button
-                    type="button"
-                    onClick={clearFilters}
-                    className="text-sm font-semibold text-muted-foreground/70 hover:text-foreground transition-colors"
-                  >
-                    Clear all
-                  </button>
-                )}
-              </div>
               <div className="overflow-y-auto h-full pb-4">
                 <FilterSidebar
                   params={params}
@@ -530,10 +517,7 @@ export function ListingsHeader({
             ))}
             {activeChips.length > 0 && (
               <button
-                onClick={() => {
-                  clearFilters();
-                  setSort('relevance');
-                }}
+                onClick={clearFilters}
                 className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
                 Clear all

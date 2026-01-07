@@ -28,7 +28,7 @@ export function useUnreadCount(userId?: string, activeConversationId?: string) {
     refetchInterval: false, // Disable polling - rely on WebSocket updates
     refetchOnWindowFocus: false, // No auto-refetch, WebSocket handles updates
     refetchOnReconnect: false, // No auto-refetch, WebSocket handles updates
-    enabled: !!userId,
+    enabled: false, // Don't fetch on mount - only update via WebSocket
   });
 
   useEffect(() => {

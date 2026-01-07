@@ -81,6 +81,22 @@ export function ProfileView() {
   const [initialized, setInitialized] = useState(false);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const isGeocodingRef = React.useRef(false);
+  
+  // Track if form has unsaved changes
+  const hasUnsavedChanges = React.useMemo(() => {
+    if (!profile || !initialized) return false;
+    return (
+      form.firstName !== (profile.firstName ?? '') ||
+      form.lastName !== (profile.lastName ?? '') ||
+      form.phone !== (profile.phone ?? '') ||
+      form.bio !== (profile.description ?? '') ||
+      form.city !== (profile.locationCity ?? '') ||
+      form.emirate !== (profile.locationEmirate ?? '') ||
+      form.lat !== (profile.locationLat ?? 25.2048) ||
+      form.lng !== (profile.locationLng ?? 55.2708) ||
+      JSON.stringify(form.tags) !== JSON.stringify(profile.tags ?? [])
+    );
+  }, [form, profile, initialized]);
 
   // Initialize form from profile
   useEffect(() => {
@@ -110,12 +126,12 @@ export function ProfileView() {
     setSaving(true);
     try {
       const payload: UserProfileUpdate = {
-        firstName: form.firstName.trim() || undefined,
-        lastName: form.lastName.trim() || undefined,
-        phone: form.phone.trim() || undefined,
-        description: form.bio.trim() || undefined,
-        locationCity: form.city.trim() || undefined,
-        locationEmirate: form.emirate.trim() || undefined,
+        firstName: form.firstName.trim() || null,
+        lastName: form.lastName.trim() || null,
+        phone: form.phone.trim() || null,
+        description: form.bio.trim() || null,
+        locationCity: form.city.trim() || null,
+        locationEmirate: form.emirate.trim() || null,
         locationLat: form.lat,
         locationLng: form.lng,
         tags: form.tags,
@@ -405,7 +421,7 @@ export function ProfileView() {
           </div>
 
           <div className="flex items-center gap-3">
-            {editing ? (
+            {editing || hasUnsavedChanges ? (
               <>
                 <button
                   onClick={cancel}
@@ -416,7 +432,7 @@ export function ProfileView() {
                 </button>
                 <button
                   onClick={save}
-                  disabled={saving}
+                  disabled={saving || !hasUnsavedChanges}
                   className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
                 >
                   {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}

@@ -106,12 +106,13 @@ async function toggleSuperlikeAPI(listingId: string): Promise<{
 // Main Hook: Get All Status Data
 // ============================================================================
 
-export function useFavoritesStatus() {
+export function useFavoritesStatus(options?: { enabled?: boolean }) {
   return useQuery<FavoritesStatusData>({
     queryKey: ['favorites-status'],
     queryFn: fetchFavoritesStatus,
     staleTime: 30000, // 30s - balance between freshness and performance
     refetchOnWindowFocus: true,
+    enabled: options?.enabled ?? true, // Allow disabling the query
   });
 }
 

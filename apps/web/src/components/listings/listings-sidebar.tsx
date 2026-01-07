@@ -27,8 +27,8 @@ interface ListingsSidebarProps {
   onSidebarToggle: (open: boolean) => void;
   /** Set filters callback */
   setFilters: (filters: Partial<SearchParams>) => void;
-  /** Clear filters callback */
-  clearFilters: () => void;
+  /** Clear all filters and sort callback */
+  onClearAll: () => void;
 }
 
 export function ListingsSidebar({
@@ -40,7 +40,7 @@ export function ListingsSidebar({
   sidebarOpen,
   onSidebarToggle,
   setFilters,
-  clearFilters,
+  onClearAll,
 }: ListingsSidebarProps) {
   if (!sidebarOpen) return null;
 
@@ -73,7 +73,7 @@ export function ListingsSidebar({
             facets={facets}
             isLoading={isLoading}
             onFilterChange={setFilters}
-            onClearFilters={clearFilters}
+            onClearFilters={onClearAll}
             activeFilterCount={activeFilterCount}
           />
         </div>

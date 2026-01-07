@@ -22,7 +22,9 @@ interface NavbarMessagingProps {
 export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
   const [isOpen, setIsOpen] = useState(false);
   
-  const { conversations, isLoading } = useConversations({ userId, scope: 'personal' });
+  // Only fetch conversations when dropdown is opened
+  const { conversations, isLoading } = useConversations({ userId, scope: 'personal', enabled: isOpen });
+  // Keep unread count always active for badge display
   const { unreadCount } = useUnreadCount(userId);
 
   // Close on outside click

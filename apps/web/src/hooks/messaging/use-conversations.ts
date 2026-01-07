@@ -102,6 +102,7 @@ async function createConversationAPI(params: {
 interface UseConversationsOptions {
   userId?: string;
   scope?: 'personal' | 'staff';
+  enabled?: boolean; // Add enabled option
 }
 
 export function useConversations(options: UseConversationsOptions = {}) {
@@ -112,7 +113,7 @@ export function useConversations(options: UseConversationsOptions = {}) {
     queryKey: queryKeys.messaging.conversations(options),
     queryFn: () => fetchConversations(options.scope),
     staleTime: CACHE_STALE_TIME.LONG,
-    enabled: !!options.userId,
+    enabled: options.enabled ?? !!options.userId, // Allow explicit control
   });
 
   // WebSocket updates

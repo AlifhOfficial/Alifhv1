@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ListingsHeader } from './listings-header';
 import { ListingsSidebar } from './listings-sidebar';
 import { ListingsContent } from './listings-content';
@@ -79,7 +79,7 @@ export function ListingsView({ embedded = false }: ListingsViewProps) {
               sidebarOpen={sidebarOpen}
               onSidebarToggle={setSidebarOpen}
               setFilters={setFilters}
-              clearFilters={clearFilters}
+              onClearAll={clearFilters}
             />
 
             {/* RIGHT: Search Header + Content */}

@@ -68,11 +68,13 @@ export function ListingsContent({
   // Error state
   if (error) {
     return (
-      <div className="rounded-lg border border-border/30 p-8 text-center">
-        <X className="w-8 h-8 text-red-500 mx-auto mb-3" />
-        <p className="font-medium mb-1">Something went wrong</p>
-        <p className="text-sm text-muted-foreground mb-4">{error.message}</p>
-        <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
+      <div className="flex flex-col items-center justify-center py-16 sm:py-24">
+        <div className="rounded-full bg-destructive/10 p-4 mb-4">
+          <X className="w-6 h-6 text-destructive" />
+        </div>
+        <h3 className="text-lg font-semibold mb-2">Something went wrong</h3>
+        <p className="text-sm text-muted-foreground mb-6 max-w-sm text-center">{error.message}</p>
+        <Button variant="outline" onClick={() => window.location.reload()}>
           Try again
         </Button>
       </div>
@@ -113,13 +115,15 @@ export function ListingsContent({
   // Empty state
   if (listings.length === 0) {
     return (
-      <div className="rounded-lg border border-border/30 p-6 text-center">
-        <Search className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
-        <p className="font-medium mb-1">No cars found</p>
-        <p className="text-sm text-muted-foreground mb-4">Try adjusting your filters</p>
+      <div className="flex flex-col items-center justify-center py-16 sm:py-24">
+        <div className="rounded-full bg-muted/50 p-4 mb-4">
+          <Search className="w-6 h-6 text-muted-foreground" />
+        </div>
+        <h3 className="text-lg font-semibold mb-2">No cars found</h3>
+        <p className="text-sm text-muted-foreground mb-6">Try adjusting your filters or search terms</p>
         {activeFilterCount > 0 && (
-          <Button variant="outline" size="sm" onClick={clearFilters}>
-            Clear filters
+          <Button variant="outline" onClick={clearFilters}>
+            Clear all filters
           </Button>
         )}
       </div>

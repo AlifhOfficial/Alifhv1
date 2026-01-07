@@ -29,7 +29,8 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
   const [listings, setListings] = useState<ListingPayload[]>([]);
   const [isLoadingListings, setIsLoadingListings] = useState(false);
   
-  const { data: favoritesData, isLoading } = useFavoritesStatus();
+  // Only fetch favorites when dropdown is opened
+  const { data: favoritesData, isLoading } = useFavoritesStatus({ enabled: isOpen });
 
   const favoriteIds = useMemo(() => favoritesData?.favorites || [], [favoritesData?.favorites]);
   
@@ -58,8 +59,10 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
     }
   }, []);
 
-  // Load listing details on mount and when favorites change
+  // Load listing details only when dropdown is open and favorites change
   useEffect(() => {
+    if (!isOpen) return;
+    
     if (!favoriteIds.length) {
       setListings([]);
       return;
@@ -68,7 +71,7 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
     // Only fetch top 3
     const topIds = favoriteIds.slice(0, 3);
     fetchListings(topIds);
-  }, [favoriteIds, fetchListings]);
+  }, [isOpen, favoriteIds, fetchListings]);
 
   // Close on outside click
   useEffect(() => {
