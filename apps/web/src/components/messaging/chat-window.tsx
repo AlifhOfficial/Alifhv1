@@ -25,6 +25,7 @@ interface ChatWindowProps {
     name: string | null;
     avatarUrl: string | null;
     lastReadAt?: Date | string | null;
+    lastSeenAt?: Date | string | null;
   };
   partner?: { id: string; name: string; logo: string | null };
   listing?: { id: string; title: string; thumbnail: string | null };
@@ -60,16 +61,6 @@ export function ChatWindow({
     initialLastSeenAt: otherParticipant?.lastSeenAt ?? null,
     otherUserId: otherParticipant?.id ?? null,
   });
-
-  // Debug: Log presence data
-  useEffect(() => {
-    console.log('🔍 [ChatWindow] Presence data:', {
-      otherParticipant,
-      otherLastReadAt,
-      otherLastSeenAt,
-      isOtherOnline,
-    });
-  }, [otherParticipant, otherLastReadAt, otherLastSeenAt, isOtherOnline]);
 
   const { sendMessage, isSending } = useSendMessage();
   const { markAsRead } = useMarkAsRead();
