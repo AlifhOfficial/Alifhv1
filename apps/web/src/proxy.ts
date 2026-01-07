@@ -7,9 +7,17 @@ import {
   isDealerStaff,
 } from "@/lib/auth/routing";
 import type { ExtendedUser } from "@/types/auth";
+import { Redis } from "@upstash/redis";
 
 // Request-scoped session cache key
 const SESSION_HEADER_KEY = "x-auth-user";
+const SESSION_CACHE_TTL = 300; // 5 minutes
+
+// Initialize Redis for session caching
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
 
 function isExtendedUser(user: unknown): user is ExtendedUser {
   if (!user || typeof user !== "object") return false;
@@ -54,26 +62,39 @@ export async function proxy(request: NextRequest) {
 
   // Fetch session once for all protected routes
   try {
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    });
+    const cacheKey = `session:${sessionToken.slice(0, 32)}`;
+    
+    // Try to get cached session from Redis
+    let user: ExtendedUser | null = null;
+    const cachedSession = await redis.get<ExtendedUser>(cacheKey);
+    
+    if (cachedSession && isExtendedUser(cachedSession)) {
+      user = cachedSession;
+    } else {
+      // Cache miss - fetch from Better Auth
+      const session = await auth.api.getSession({
+        headers: request.headers,
+      });
 
-    if (!session?.user) {
+      if (!session?.user || !isExtendedUser(session.user)) {
+        if (isApiRoute) {
+          return NextResponse.next();
+        }
+        return NextResponse.redirect(new URL("/sign-in", request.url));
+      }
+
+      user = session.user;
+      
+      // Cache the session in Redis
+      await redis.set(cacheKey, user, { ex: SESSION_CACHE_TTL });
+    }
+
+    if (!user) {
       if (isApiRoute) {
         return NextResponse.next();
       }
       return NextResponse.redirect(new URL("/sign-in", request.url));
     }
-
-    // Better Auth typing can be a union; only proceed once we confirm customSession fields exist.
-    if (!isExtendedUser(session.user)) {
-      if (isApiRoute) {
-        return NextResponse.next();
-      }
-      return NextResponse.redirect(new URL("/sign-in", request.url));
-    }
-
-    const user = session.user;
 
     // Check if user is banned - redirect to banned page
     if (user.banned) {

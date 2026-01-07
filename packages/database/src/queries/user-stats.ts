@@ -22,67 +22,66 @@ export interface UserStats {
 }
 
 export async function calculateUserStats(userId: string): Promise<UserStats> {
-  // Total PERSONAL listings count (exclude partner/work listings)
-  // A personal listing has postedByRole='user' AND no partnerId
-  const listingsResult = await db
-    .select({ count: sql<number>`count(*)::int` })
-    .from(carListing)
-    .where(
-      and(
-        eq(carListing.userId, userId),
-        eq(carListing.postedByRole, 'user'),
-        isNull(carListing.partnerId)
-      )
-    );
-  
+  // Run all 4 queries in parallel since they're independent
+  const [listingsResult, soldResult, totalInquiriesResult, respondedInquiriesResult] = await Promise.all([
+    // Total PERSONAL listings count (exclude partner/work listings)
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(carListing)
+      .where(
+        and(
+          eq(carListing.userId, userId),
+          eq(carListing.postedByRole, 'user'),
+          isNull(carListing.partnerId)
+        )
+      ),
+
+    // Sold count (personal listings only)
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(carListing)
+      .where(
+        and(
+          eq(carListing.userId, userId),
+          eq(carListing.postedByRole, 'user'),
+          isNull(carListing.partnerId),
+          eq(carListing.lifecycleStatus, 'sold')
+        )
+      ),
+
+    // Total inquiries on personal listings
+    db
+      .select({ count: count() })
+      .from(conversation)
+      .innerJoin(carListing, eq(conversation.listingId, carListing.id))
+      .where(
+        and(
+          eq(carListing.userId, userId),
+          eq(carListing.postedByRole, 'user'),
+          isNull(carListing.partnerId),
+          eq(conversation.type, 'inquiry')
+        )
+      ),
+
+    // Responded inquiries on personal listings
+    db
+      .select({ count: count() })
+      .from(conversation)
+      .innerJoin(carListing, eq(conversation.listingId, carListing.id))
+      .where(
+        and(
+          eq(carListing.userId, userId),
+          eq(carListing.postedByRole, 'user'),
+          isNull(carListing.partnerId),
+          eq(conversation.type, 'inquiry'),
+          sql`${conversation.messageCount} > 0`
+        )
+      ),
+  ]);
+
   const listingsCount = listingsResult[0]?.count ?? 0;
-
-  // Sold count (personal listings only)
-  const soldResult = await db
-    .select({ count: sql<number>`count(*)::int` })
-    .from(carListing)
-    .where(
-      and(
-        eq(carListing.userId, userId),
-        eq(carListing.postedByRole, 'user'),
-        isNull(carListing.partnerId),
-        eq(carListing.lifecycleStatus, 'sold')
-      )
-    );
-  
   const soldCount = soldResult[0]?.count ?? 0;
-
-  // Response rate: % of conversations on PERSONAL listings only
-  // This counts conversations initiated by others to the user's personal listings
-  const totalInquiriesResult = await db
-    .select({ count: count() })
-    .from(conversation)
-    .innerJoin(carListing, eq(conversation.listingId, carListing.id))
-    .where(
-      and(
-        eq(carListing.userId, userId),
-        eq(carListing.postedByRole, 'user'),
-        isNull(carListing.partnerId),
-        eq(conversation.type, 'inquiry')
-      )
-    );
-
   const totalInquiries = totalInquiriesResult[0]?.count ?? 0;
-
-  const respondedInquiriesResult = await db
-    .select({ count: count() })
-    .from(conversation)
-    .innerJoin(carListing, eq(conversation.listingId, carListing.id))
-    .where(
-      and(
-        eq(carListing.userId, userId),
-        eq(carListing.postedByRole, 'user'),
-        isNull(carListing.partnerId),
-        eq(conversation.type, 'inquiry'),
-        sql`${conversation.messageCount} > 0`
-      )
-    );
-
   const respondedInquiries = respondedInquiriesResult[0]?.count ?? 0;
   const responseRate = totalInquiries > 0 ? Math.round((respondedInquiries / totalInquiries) * 100) : null;
 
