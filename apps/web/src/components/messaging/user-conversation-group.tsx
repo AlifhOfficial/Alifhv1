@@ -66,7 +66,7 @@ export function UserConversationGroup({
               </small>
             )}
             {totalUnread > 0 && (
-              <small className="text-xs flex-shrink-0 w-5 h-5 font-semibold bg-blue-500 text-white rounded-full flex items-center justify-center ml-auto">
+              <small className="text-xs flex-shrink-0 w-5 h-5 font-semibold bg-red-500 text-white rounded-full flex items-center justify-center ml-auto">
                 {totalUnread > 9 ? '9+' : totalUnread}
               </small>
             )}
@@ -87,17 +87,17 @@ export function UserConversationGroup({
       {isExpanded && (
         <div className="ml-7 mt-1 mb-3 space-y-1">
           {conversations.map((conversation) => (
-            <div key={conversation.id} className="relative pl-5">
+            <div key={conversation.id} className="relative pl-6">
               {/* Smooth curved connector */}
               <svg 
-                className="absolute left-0 top-0 w-4 h-6 text-muted-foreground/30"
-                viewBox="0 0 16 24"
+                className="absolute left-0 top-0 w-5 h-7 text-muted-foreground/60"
+                viewBox="0 0 20 28"
                 fill="none"
               >
                 <path 
-                  d="M1 0 L1 12 Q1 18 7 18 L16 18" 
+                  d="M2 0 L2 14 Q2 22 10 22 L20 22" 
                   stroke="currentColor" 
-                  strokeWidth="1.5" 
+                  strokeWidth="2.5" 
                   strokeLinecap="round"
                   fill="none"
                 />

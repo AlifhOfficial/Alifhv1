@@ -7,7 +7,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Inbox, PanelLeft } from 'lucide-react';
+import { MessageCircle, PanelLeft } from 'lucide-react';
 import { ConversationList } from './conversation-list';
 import { ChatWindow } from './chat-window';
 import { useConversations } from '@/hooks/messaging';
@@ -45,7 +45,7 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
   };
 
   return (
-    <div className={cn('flex h-full min-h-0 flex-col overflow-hidden', className)}>
+    <div className={cn('flex h-full min-h-0 flex-col overflow-hidden border-t border-border/50', className)}>
       {/* Main */}
       <div className="flex min-h-0 flex-1 overflow-hidden">
         {/* List */}
@@ -72,7 +72,7 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
           {!listOpen && !selected && (
             <button
               onClick={() => setListOpen(true)}
-              className="absolute top-4 left-4 z-10 p-2 text-muted-foreground hover:text-foreground transition-colors bg-background border border-border/20 rounded-lg shadow-sm"
+              className="absolute top-4 left-4 z-10 p-2 text-muted-foreground hover:text-foreground transition-colors bg-background border border-border/50 rounded-lg shadow-sm"
               title="Show messages"
             >
               <PanelLeft className="h-4 w-4" />
@@ -93,10 +93,8 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
           ) : (
             <div className="min-h-[400px] flex items-center justify-center h-full w-full bg-background">
               <div className="text-center space-y-4">
-                <div className="w-16 h-16 mx-auto rounded-full bg-muted flex items-center justify-center">
-                  <Inbox className="w-7 h-7 text-muted-foreground" />
-                </div>
-                <p className="text-[15px] text-muted-foreground">Select a conversation</p>
+                <MessageCircle className="w-12 h-12 mx-auto text-muted-foreground/40 stroke-[1.5]" />
+                <p className="text-[15px] text-muted-foreground">such empty ZZZZ</p>
               </div>
             </div>
           )}
@@ -110,9 +108,7 @@ export function ChatContainer(props: ChatContainerProps) {
   return (
     <Suspense fallback={
       <div className={cn('flex h-full min-h-0 flex-col overflow-hidden items-center justify-center', props.className)}>
-        <div className="w-16 h-16 mx-auto rounded-full bg-muted flex items-center justify-center animate-pulse">
-          <Inbox className="w-7 h-7 text-muted-foreground" />
-        </div>
+        <MessageCircle className="w-12 h-12 mx-auto text-muted-foreground/40 stroke-[1.5] animate-pulse" />
       </div>
     }>
       <ChatContainerInner {...props} />

@@ -22,7 +22,7 @@ const navSections = [
     ]
   },
   {
-    collapsible: { label: "Communication", icon: "message-square" },
+    collapsible: { label: "Communication", icon: "message-circle" },
     items: [
       { label: "Messages", href: "/user-dashboard/messaging" },
       { label: "Requests", href: "/user-dashboard/requests" },

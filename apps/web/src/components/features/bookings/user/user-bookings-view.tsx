@@ -6,10 +6,10 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Package } from 'lucide-react';
 import { DashboardPageLayout } from '@/components/shared/layout';
 import type { UserBookingData } from './types';
-import { UserBookingFilters } from './user-booking-filters';
+import { USER_BOOKING_STATUS_LABELS } from './types';
 import { UserBookingList } from './user-booking-list';
 import { FeedbackModal } from './feedback-modal';
 import { CancelBookingModal } from './cancel-booking-modal';
@@ -18,7 +18,7 @@ export function UserBookingsView() {
   const [bookings, setBookings] = useState<UserBookingData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [selectedStatus, setSelectedStatus] = useState<string>('confirmed');
   const [feedbackModal, setFeedbackModal] = useState<{ bookingId: string; isOpen: boolean } | null>(null);
   const [feedbackRating, setFeedbackRating] = useState(0);
   const [feedbackComment, setFeedbackComment] = useState('');
@@ -31,6 +31,27 @@ export function UserBookingsView() {
   // Abort controller for cancelling in-flight requests
   const abortControllerRef = useRef<AbortController | null>(null);
 
+  // Status tabs configuration
+  const statusTabs = [
+    { key: 'all', label: 'All', color: 'purple' },
+    { key: 'pending', label: 'Pending', color: 'yellow' },
+    { key: 'confirmed', label: 'Confirmed', color: 'green' },
+    { key: 'completed', label: 'Completed', color: 'blue' },
+    { key: 'cancelled', label: 'Cancelled', color: 'red' },
+  ];
+
+  const getColorClasses = (color?: string) => {
+    switch (color) {
+      case 'blue': return 'text-blue-600 dark:text-blue-400';
+      case 'green': return 'text-green-600 dark:text-green-400';
+      case 'yellow': return 'text-yellow-600 dark:text-yellow-400';
+      case 'red': return 'text-red-600 dark:text-red-400';
+      case 'purple': return 'text-purple-600 dark:text-purple-400';
+      case 'gray': return 'text-gray-600 dark:text-gray-400';
+      default: return 'text-foreground';
+    }
+  };
+
   const fetchBookings = useCallback(async () => {
     // Cancel any in-flight request to prevent race conditions
     abortControllerRef.current?.abort();
@@ -40,8 +61,8 @@ export function UserBookingsView() {
     setError(null);
 
     try {
-      const statusParam = selectedStatus !== 'all' ? `&status=${selectedStatus}` : '';
-      const res = await fetch(`/api/bookings?${statusParam}`, {
+      // Fetch ALL bookings - filtering happens client-side for zero-latency toggling
+      const res = await fetch(`/api/bookings`, {
         signal: abortControllerRef.current.signal,
       });
       const data = await res.json();
@@ -58,7 +79,7 @@ export function UserBookingsView() {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedStatus]);
+  }, []); // No dependencies - only fetch on mount or manual refresh
 
   useEffect(() => {
     fetchBookings();
@@ -177,10 +198,33 @@ export function UserBookingsView() {
             </button>
           </div>
 
-          <UserBookingFilters 
-            selectedStatus={selectedStatus} 
-            onStatusChange={setSelectedStatus} 
-          />
+          {/* Status Tabs */}
+          <div className="border-b border-border/40">
+            <div className="flex gap-1 overflow-x-auto pb-px">
+              {statusTabs.map((tab) => {
+                const count = tab.key === 'all' 
+                  ? bookings.length 
+                  : bookings.filter(b => b.status === tab.key).length;
+                
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => setSelectedStatus(tab.key)}
+                    className={`px-5 py-3.5 border-b-2 transition-colors whitespace-nowrap text-[15px] font-semibold tracking-tight ${
+                      selectedStatus === tab.key
+                        ? `border-transparent ${getColorClasses(tab.color)}`
+                        : 'border-transparent text-muted-foreground/70 hover:text-foreground'
+                    }`}
+                  >
+                    {tab.label}
+                    <span className={`ml-2 text-sm font-semibold tracking-tight ${selectedStatus === tab.key ? getColorClasses(tab.color) : 'text-muted-foreground/60'}`}>
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </section>
 
         {/* Error Alert */}

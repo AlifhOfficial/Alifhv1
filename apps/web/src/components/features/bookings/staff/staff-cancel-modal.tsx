@@ -1,5 +1,5 @@
 /**
- * Cancel Booking Modal (User)
+ * Staff Cancel Booking Modal
  */
 
 'use client';
@@ -9,9 +9,9 @@ import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/utils';
 
-const DEFAULT_REASON = 'Changed mind';
+const DEFAULT_REASON = 'Busy';
 
-interface CancelBookingModalProps {
+interface StaffCancelModalProps {
   isOpen: boolean;
   reason: string;
   notes: string;
@@ -22,7 +22,7 @@ interface CancelBookingModalProps {
   onClose: () => void;
 }
 
-export function CancelBookingModal({
+export function StaffCancelModal({
   isOpen,
   reason,
   notes,
@@ -31,7 +31,7 @@ export function CancelBookingModal({
   onNotesChange,
   onSubmit,
   onClose,
-}: CancelBookingModalProps) {
+}: StaffCancelModalProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export function CancelBookingModal({
         <div className="mb-6">
           <h3 className="text-xl font-bold tracking-tight">Cancel Booking</h3>
           <p className="text-[15px] font-medium text-muted-foreground mt-1.5">
-            Tell us why you're cancelling. This helps the dealer improve their service.
+            Enter a reason for cancelling this booking. The customer will be notified.
           </p>
         </div>
 
@@ -79,7 +79,7 @@ export function CancelBookingModal({
           <textarea
             value={notes}
             onChange={(e) => onNotesChange(e.target.value)}
-            placeholder="Optional details..."
+            placeholder="Optional details for the customer..."
             rows={3}
             className={cn(
               'w-full px-4 py-3 bg-background border border-border rounded-xl text-[15px] font-medium resize-none placeholder:text-muted-foreground/50',
@@ -118,4 +118,3 @@ export function CancelBookingModal({
 
   return createPortal(modalContent, document.body);
 }
-

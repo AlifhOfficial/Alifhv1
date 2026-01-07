@@ -6,7 +6,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback, KeyboardEvent, ChangeEvent } from 'react';
-import { Send } from 'lucide-react';
+import { Send, X } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 interface MessageInputProps {
@@ -18,6 +18,10 @@ interface MessageInputProps {
   resetKey?: string;
   /** Compact mode for floating chat windows */
   compact?: boolean;
+  /** Listing preview to show above input (for first message) */
+  listingPreview?: { id: string; title: string; thumbnail: string | null };
+  /** Handler to dismiss the listing preview */
+  onDismissListing?: () => void;
 }
 
 export function MessageInput({
@@ -28,6 +32,8 @@ export function MessageInput({
   initialText,
   resetKey,
   compact = false,
+  listingPreview,
+  onDismissListing,
 }: MessageInputProps) {
   const [text, setText] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -184,11 +190,44 @@ export function MessageInput({
 
   return (
     <div className={cn(
-      'border-t border-border/20 bg-background/95 backdrop-blur-sm',
+      'border-t border-border/50 bg-background/95 backdrop-blur-sm',
       compact ? 'px-2.5 py-2' : 'px-4 py-3'
     )}>
+      {/* Listing Preview Card */}
+      {listingPreview && (
+        <div className="mb-3 relative">
+          <div className="rounded-xl overflow-hidden border border-border/30 bg-card shadow-sm">
+            <div className="flex gap-3 p-3">
+              {listingPreview.thumbnail ? (
+                <img 
+                  src={listingPreview.thumbnail} 
+                  alt={listingPreview.title} 
+                  className="w-20 h-20 object-cover rounded-lg flex-shrink-0" 
+                />
+              ) : (
+                <div className="w-20 h-20 bg-muted/40 rounded-lg flex-shrink-0" />
+              )}
+              <div className="flex-1 min-w-0 flex items-center">
+                <p className="text-sm font-semibold text-foreground line-clamp-2">
+                  {listingPreview.title}
+                </p>
+              </div>
+              {onDismissListing && (
+                <button
+                  onClick={onDismissListing}
+                  className="flex-shrink-0 p-1.5 hover:bg-secondary/50 rounded-lg transition-colors self-start"
+                  aria-label="Remove preview"
+                >
+                  <X className="w-4 h-4 text-muted-foreground" />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className={cn(
-        'flex items-center bg-muted/20 border border-border/20 rounded-2xl min-w-0 overflow-hidden w-full',
+        'flex items-center bg-muted/20 border border-border/40 rounded-2xl min-w-0 overflow-hidden w-full',
         compact ? 'p-1' : 'p-1.5 lg:p-2'
       )}>
         {/* Text Input */}

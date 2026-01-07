@@ -23,13 +23,20 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/layout';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/forms/select';
 import { Button } from '@/components/ui/forms';
 import { 
   Calendar, 
   Clock, 
   MapPin, 
   Car, 
-  CheckCircle, 
+  CheckCircle2, 
   AlertCircle,
   ChevronLeft,
   ChevronRight,
@@ -340,11 +347,11 @@ export function BookingModal({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-xl font-bold tracking-tight">
             <Calendar className="w-5 h-5 text-primary" />
             {step === 'success' ? 'Booking Confirmed' : 'Schedule Test Drive'}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-[15px] font-medium text-muted-foreground/70">
             {step === 'date' && 'Select a date to view available time slots'}
             {step === 'time' && 'Choose a time slot for your test drive'}
             {step === 'confirm' && 'Review and confirm your booking'}
@@ -353,25 +360,25 @@ export function BookingModal({
         </DialogHeader>
 
         {/* Listing Info */}
-        <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
+        <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-xl border border-border/40">
           {listingThumbnail && (
             <img 
               src={listingThumbnail} 
               alt={listingTitle}
-              className="w-16 h-12 object-cover rounded-md"
+              className="w-16 h-12 object-cover rounded-lg"
             />
           )}
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground truncate">{listingTitle}</p>
-            <p className="text-xs text-muted-foreground">{partnerName}</p>
+            <p className="text-[15px] font-semibold text-foreground truncate">{listingTitle}</p>
+            <p className="text-sm text-muted-foreground/70 font-medium">{partnerName}</p>
           </div>
         </div>
 
         {/* Error Display */}
         {error && (
-          <div className="flex items-start gap-2 p-3 bg-destructive/10 text-destructive rounded-lg">
+          <div className="flex items-start gap-2 p-4 bg-destructive/10 text-destructive rounded-xl border border-destructive/20">
             <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-            <p className="text-sm">{error}</p>
+            <p className="text-[15px] font-medium">{error}</p>
           </div>
         )}
 
@@ -389,17 +396,17 @@ export function BookingModal({
             <div className="flex items-center justify-between">
               <button
                 onClick={goToPreviousMonth}
-                className="p-2 hover:bg-muted rounded-lg transition-colors"
+                className="p-2 hover:bg-muted rounded-xl transition-colors"
                 disabled={currentMonth <= new Date()}
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              <h3 className="text-sm font-medium">
+              <h3 className="text-[15px] font-bold tracking-tight">
                 {MONTH_NAMES[currentMonth.getMonth()]} {currentMonth.getFullYear()}
               </h3>
               <button
                 onClick={goToNextMonth}
-                className="p-2 hover:bg-muted rounded-lg transition-colors"
+                className="p-2 hover:bg-muted rounded-xl transition-colors"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -432,11 +439,11 @@ export function BookingModal({
                     onClick={() => isAvailable && setSelectedDate(date)}
                     disabled={!isAvailable}
                     className={cn(
-                      "aspect-square rounded-lg text-sm font-medium transition-all",
-                      isSelected && "bg-primary text-primary-foreground",
+                      "aspect-square rounded-xl text-sm font-semibold transition-all",
+                      isSelected && "bg-primary text-primary-foreground shadow-sm",
                       !isSelected && isAvailable && "hover:bg-primary/10 text-foreground",
                       !isSelected && !isAvailable && "text-muted-foreground/40 cursor-not-allowed",
-                      isToday && !isSelected && "ring-1 ring-primary",
+                      isToday && !isSelected && "ring-2 ring-primary/50",
                       isAvailable && !isSelected && "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300"
                     )}
                   >
@@ -465,15 +472,15 @@ export function BookingModal({
           <div className="space-y-4">
             <button
               onClick={() => setStep('date')}
-              className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-1.5 text-[15px] font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
               Back to calendar
             </button>
 
-            <div className="flex items-center gap-2 text-sm">
+            <div className="flex items-center gap-2 text-[15px] font-semibold text-foreground">
               <Calendar className="w-4 h-4 text-primary" />
-              <span className="font-medium">{formatDate(selectedDate)}</span>
+              <span>{formatDate(selectedDate)}</span>
             </div>
 
             {timeSlots.length === 0 ? (
@@ -489,9 +496,9 @@ export function BookingModal({
                     onClick={() => slot.isAvailable && setSelectedSlot(slot)}
                     disabled={!slot.isAvailable}
                     className={cn(
-                      "py-2.5 px-3 rounded-lg text-sm font-medium transition-all",
-                      selectedSlot?.id === slot.id && "bg-primary text-primary-foreground",
-                      selectedSlot?.id !== slot.id && slot.isAvailable && "bg-muted/50 hover:bg-primary/10 text-foreground",
+                      "py-3 px-3 rounded-xl text-sm font-semibold transition-all",
+                      selectedSlot?.id === slot.id && "bg-primary text-primary-foreground shadow-sm",
+                      selectedSlot?.id !== slot.id && slot.isAvailable && "bg-muted/50 hover:bg-primary/10 text-foreground border border-border/40",
                       !slot.isAvailable && "bg-muted/30 text-muted-foreground/40 cursor-not-allowed line-through"
                     )}
                   >
@@ -517,25 +524,25 @@ export function BookingModal({
           <div className="space-y-4">
             <button
               onClick={() => setStep('time')}
-              className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-1.5 text-[15px] font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
               Change time
             </button>
 
             {/* Booking Summary */}
-            <div className="space-y-3 p-4 bg-muted/30 rounded-lg">
-              <div className="flex items-center gap-2 text-sm">
+            <div className="space-y-3 p-4 bg-muted/30 rounded-xl border border-border/40">
+              <div className="flex items-center gap-2 text-[15px] font-medium">
                 <Calendar className="w-4 h-4 text-primary" />
                 <span>{formatDate(selectedDate)}</span>
               </div>
-              <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-2 text-[15px] font-medium">
                 <Clock className="w-4 h-4 text-primary" />
                 <span>{formatTime(selectedSlot.startTime)} - {formatTime(selectedSlot.endTime)}</span>
-                <span className="text-muted-foreground">({selectedSlot.duration} min)</span>
+                <span className="text-muted-foreground/70">({selectedSlot.duration} min)</span>
               </div>
               {partnerAddress && (
-                <div className="flex items-start gap-2 text-sm">
+                <div className="flex items-start gap-2 text-[15px] font-medium">
                   <MapPin className="w-4 h-4 text-primary mt-0.5" />
                   <span>{partnerAddress}</span>
                 </div>
@@ -543,45 +550,48 @@ export function BookingModal({
             </div>
 
             {/* Optional Fields */}
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+                <label className="block text-sm font-semibold tracking-tight text-foreground mb-2">
                   Number of attendees
                 </label>
-                <select
-                  value={attendees}
-                  onChange={(e) => setAttendees(parseInt(e.target.value))}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm"
-                >
-                  {[1, 2, 3, 4, 5].map(n => (
-                    <option key={n} value={n}>{n} {n === 1 ? 'person' : 'people'}</option>
-                  ))}
-                </select>
+                <Select value={attendees.toString()} onValueChange={(value) => setAttendees(parseInt(value))}>
+                  <SelectTrigger className="w-full h-12 px-4 bg-background border border-border rounded-xl text-[15px] font-medium">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1, 2, 3, 4, 5].map(n => (
+                      <SelectItem key={n} value={n.toString()}>
+                        {n} {n === 1 ? 'person' : 'people'}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-muted-foreground mb-1.5">
-                  Notes (optional)
+                <label className="block text-sm font-semibold tracking-tight text-foreground mb-2">
+                  Notes <span className="text-muted-foreground/60 font-medium">(optional)</span>
                 </label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Any questions about the car?"
                   rows={2}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm resize-none"
+                  className="w-full px-4 py-3 bg-background border border-border rounded-xl text-[15px] font-medium resize-none focus:outline-none focus:border-primary transition-colors placeholder:text-muted-foreground/50"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-muted-foreground mb-1.5">
-                  Special requests (optional)
+                <label className="block text-sm font-semibold tracking-tight text-foreground mb-2">
+                  Special requests <span className="text-muted-foreground/60 font-medium">(optional)</span>
                 </label>
                 <textarea
                   value={specialRequests}
                   onChange={(e) => setSpecialRequests(e.target.value)}
                   placeholder="Need financing info, test drive route preference..."
                   rows={2}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm resize-none"
+                  className="w-full px-4 py-3 bg-background border border-border rounded-xl text-[15px] font-medium resize-none focus:outline-none focus:border-primary transition-colors placeholder:text-muted-foreground/50"
                 />
               </div>
             </div>
@@ -611,42 +621,42 @@ export function BookingModal({
 
         {/* Step 4: Success */}
         {step === 'success' && bookingResult && (
-          <div className="space-y-4 text-center py-4">
-            <div className="w-16 h-16 mx-auto bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center">
-              <CheckCircle className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+          <div className="space-y-6 text-center py-4">
+            <div className="w-20 h-20 mx-auto bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center">
+              <CheckCircle2 className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
             </div>
 
             <div>
-              <h3 className="text-lg font-medium text-foreground">Test Drive Scheduled!</h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                Confirmation code: <span className="font-mono font-medium">{bookingResult.confirmationToken}</span>
+              <h3 className="text-xl font-bold tracking-tight text-foreground">Test Drive Scheduled!</h3>
+              <p className="text-[15px] font-medium text-muted-foreground/70 mt-2">
+                Confirmation code: <span className="font-mono font-semibold text-foreground">{bookingResult.confirmationToken}</span>
               </p>
             </div>
 
-            <div className="space-y-2 p-4 bg-muted/30 rounded-lg text-left">
-              <div className="flex items-center gap-2 text-sm">
+            <div className="space-y-3 p-4 bg-muted/30 rounded-xl border border-border/40 text-left">
+              <div className="flex items-center gap-2 text-[15px] font-medium">
                 <Car className="w-4 h-4 text-primary" />
                 <span>{listingTitle}</span>
               </div>
-              <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-2 text-[15px] font-medium">
                 <Calendar className="w-4 h-4 text-primary" />
                 <span>{selectedDate && formatDate(selectedDate)}</span>
               </div>
-              <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-2 text-[15px] font-medium">
                 <Clock className="w-4 h-4 text-primary" />
                 <span>{selectedSlot && `${formatTime(selectedSlot.startTime)} - ${formatTime(selectedSlot.endTime)}`}</span>
               </div>
-              <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-2 text-[15px] font-medium">
                 <MapPin className="w-4 h-4 text-primary" />
                 <span>{partnerName}</span>
               </div>
             </div>
 
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm font-medium text-muted-foreground/70">
               You'll receive a confirmation email shortly. The dealer will confirm your booking.
             </p>
 
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <Button variant="outline" onClick={onClose} className="flex-1">
                 Close
               </Button>

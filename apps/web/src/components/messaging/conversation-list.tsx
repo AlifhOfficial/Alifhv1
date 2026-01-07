@@ -14,7 +14,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Search, Loader2, Inbox, PanelLeft } from 'lucide-react';
+import { Search, Loader2, MessageCircle, PanelLeft } from 'lucide-react';
 import { ConversationListItem } from './conversation-list-item';
 import { PartnerConversationGroup } from './partner-conversation-group';
 import { UserConversationGroup } from './user-conversation-group';
@@ -46,8 +46,11 @@ export function ConversationList({
 }: ConversationListProps) {
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Filter conversations by search query
+  // Filter conversations by search query AND only show conversations with messages
   const filteredConversations = conversations.filter((conv) => {
+    // Don't show conversations with no messages (user backed off before sending)
+    if (conv.messageCount === 0) return false;
+    
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
     const displayName =
@@ -211,17 +214,17 @@ export function ConversationList({
 
   return (
     <div className={cn(
-      'flex flex-col h-full min-h-0 bg-background border-r border-border/20 transition-all duration-200',
+      'flex flex-col h-full min-h-0 bg-background border-r border-border/50 transition-all duration-200',
       !listOpen && 'w-0 overflow-hidden',
       className
     )}>
       {/* Header */}
-      <div className="p-5 border-b border-border/20 bg-background/80 backdrop-blur-sm flex-shrink-0">
+      <div className="p-5 border-b border-border/50 bg-background/80 backdrop-blur-sm flex-shrink-0">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold tracking-tight">Messages</h2>
           <div className="flex items-center gap-2">
             {totalUnread > 0 && (
-              <small className="text-xs bg-blue-500/90 text-white font-semibold px-2 py-0.5 rounded-full min-w-[18px] text-center">
+              <small className="text-xs bg-red-500/90 text-white font-semibold px-2 py-0.5 rounded-full min-w-[18px] text-center">
                 {totalUnread > 99 ? '99+' : totalUnread}
               </small>
             )}
@@ -249,7 +252,7 @@ export function ConversationList({
               placeholder="Search conversations..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-3 py-3 text-[15px] border border-border/20 bg-muted/20 text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 rounded-xl transition-all duration-200"
+              className="w-full pl-10 pr-3 py-3 text-[15px] border border-border/40 bg-muted/20 text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 rounded-xl transition-all duration-200"
             />
           </div>
         )}
@@ -265,9 +268,7 @@ export function ConversationList({
         ) : filteredConversations.length === 0 ? (
           <div className="min-h-[400px] flex items-center justify-center">
             <div className="text-center space-y-4">
-              <div className="w-16 h-16 mx-auto rounded-full bg-muted flex items-center justify-center">
-                <Inbox className="w-7 h-7 text-muted-foreground" />
-              </div>
+              <MessageCircle className="w-12 h-12 mx-auto text-muted-foreground/40 stroke-[1.5]" />
               <p className="text-[15px] text-muted-foreground/40">
                 {searchQuery ? 'No conversations found' : 'No messages yet'}
               </p>

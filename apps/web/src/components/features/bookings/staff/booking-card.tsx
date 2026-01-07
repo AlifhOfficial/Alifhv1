@@ -10,7 +10,7 @@ import {
   User, 
   Phone,
   Mail,
-  CheckCircle,
+  CheckCircle2,
   XCircle,
   Loader2,
   ChevronDown,
@@ -213,10 +213,7 @@ export function BookingCard({
               
               {booking.status === 'confirmed' && !hasStarted && (
                 <button
-                  onClick={() => {
-                    const notes = prompt('Cancellation reason (optional):') || undefined;
-                    onAction('cancel', { reason: 'other', notes });
-                  }}
+                  onClick={() => onAction('cancel')}
                   disabled={isActionLoading}
                   className="px-5 py-2 rounded-full bg-red-500/10 text-red-500 text-sm font-medium hover:bg-red-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >

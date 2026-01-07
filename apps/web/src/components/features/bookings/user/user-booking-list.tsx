@@ -5,7 +5,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Calendar } from 'lucide-react';
+import { Package } from 'lucide-react';
 import Link from 'next/link';
 import type { UserBookingData } from './types';
 import { USER_BOOKING_STATUS_LABELS } from './types';
@@ -28,6 +28,11 @@ export function UserBookingList({
 }: UserBookingListProps) {
   const [expandedBooking, setExpandedBooking] = useState<string | null>(null);
 
+  // Client-side filtering for zero-latency toggling
+  const filteredBookings = selectedStatus === 'all' 
+    ? bookings 
+    : bookings.filter(booking => booking.status === selectedStatus);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-16">
@@ -36,29 +41,22 @@ export function UserBookingList({
     );
   }
 
-  if (bookings.length === 0) {
+  if (filteredBookings.length === 0) {
     return (
-      <div className="bg-sidebar rounded-xl border border-border/40 py-24 px-12">
-        <div className="flex flex-col items-center text-center space-y-5">
-          <div className="w-16 h-16 rounded-full bg-muted/40 flex items-center justify-center">
-            <Calendar className="w-7 h-7 text-muted-foreground" />
-          </div>
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold tracking-tight text-foreground">No bookings yet</h3>
-            <p className="text-[15px] font-medium text-muted-foreground/70 max-w-md">
-              {selectedStatus === 'all' 
-                ? "Your booked test drives will appear here"
-                : `No ${USER_BOOKING_STATUS_LABELS[selectedStatus]?.toLowerCase() || selectedStatus} bookings`}
-            </p>
-          </div>
-        </div>
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <Package className="w-12 h-12 text-muted-foreground/40 mb-4" />
+        <p className="text-lg font-medium text-muted-foreground">
+          {selectedStatus === 'all' 
+            ? "No test drives yet" 
+            : `No ${USER_BOOKING_STATUS_LABELS[selectedStatus]?.toLowerCase() || selectedStatus} bookings`}
+        </p>
       </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      {bookings.map(booking => (
+      {filteredBookings.map(booking => (
         <UserBookingCard
           key={booking.id}
           booking={booking}

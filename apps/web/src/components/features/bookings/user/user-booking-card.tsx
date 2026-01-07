@@ -230,11 +230,9 @@ export function UserBookingCard({
           {canCancel() && (
             <div className="flex gap-2 pt-4 border-t border-border/40">
               <button
-                onClick={() => {
-                  if (confirm('Cancel this booking?')) onCancel();
-                }}
+                onClick={onCancel}
                 disabled={isActionLoading}
-                className="px-6 py-2.5 rounded-full border border-red-500/40 text-red-500 text-sm font-semibold tracking-tight hover:bg-red-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-5 py-2 rounded-full bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel Booking
               </button>

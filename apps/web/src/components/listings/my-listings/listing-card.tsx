@@ -5,7 +5,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Eye, Heart } from 'lucide-react';
+import { Eye, Heart, Edit2, Archive, Trash2, CheckCircle2, Clock, Zap, RotateCcw } from 'lucide-react';
 import type { ListingData, ListingType } from './types';
 
 interface ListingCardProps {
@@ -112,222 +112,240 @@ export function ListingCard({
     : 'bg-muted text-muted-foreground';
 
   return (
-    <div className="rounded-xl border border-border/40 p-5 bg-sidebar hover:bg-muted/30 transition-colors">
-      <div className="flex items-start justify-between gap-6">
-        {/* Main Content */}
-        <div className="flex items-start gap-5 flex-1 min-w-0">
+    <div className="group relative overflow-hidden rounded-xl transition-all duration-300 bg-sidebar border border-sidebar-border hover:border-sidebar-border/80 hover:shadow-md">
+      <div className="flex flex-col">
+        {/* Main Content Row */}
+        <div className="flex items-start gap-5 p-5">
           {/* Thumbnail */}
-          <div className="w-36 h-28 bg-muted/40 rounded-lg overflow-hidden flex-shrink-0 border border-border/40">
-            {listing.thumbnail ? (
-              <img
-                src={listing.thumbnail}
-                alt={`${listing.year} ${listing.make} ${listing.model}`}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-muted-foreground/70">
-                <span className="text-sm">No image</span>
-              </div>
-            )}
-          </div>
+          <Link href={`/listings/${listing.id}`} className="flex-shrink-0">
+            <div className="relative aspect-[4/3] w-36 overflow-hidden rounded-lg bg-muted/20">
+              {listing.thumbnail ? (
+                <img
+                  src={listing.thumbnail}
+                  alt={`${listing.year} ${listing.make} ${listing.model}`}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-muted-foreground/50">
+                  <span className="text-xs">No image</span>
+                </div>
+              )}
+            </div>
+          </Link>
 
           {/* Details */}
           <div className="flex-1 min-w-0 space-y-3">
-            <div>
+            {/* Title and Price */}
+            <div className="flex items-start justify-between gap-4">
               <Link
                 href={`/listings/${listing.id}`}
-                className="text-lg font-semibold tracking-tight hover:text-primary transition-colors line-clamp-1"
+                className="group/title flex-1 min-w-0"
               >
-                {listing.year} {listing.make} {listing.model}
-                {listing.trim && ` ${listing.trim}`}
+                <h3 className="text-base font-medium text-sidebar-foreground group-hover/title:text-primary transition-colors line-clamp-1">
+                  {listing.make} {listing.model}
+                </h3>
+                <p className="text-sm font-medium text-muted-foreground line-clamp-1 min-h-[1rem] mt-1">
+                  {listing.trim || '\u00A0'}
+                </p>
               </Link>
-              <p className="text-[15px] font-medium text-muted-foreground/70 mt-1.5">
-                {listing.price?.toLocaleString() || '0'} AED
+              <p className="text-lg font-semibold text-blue-600 whitespace-nowrap">
+                {listing.price.toLocaleString()} AED
               </p>
             </div>
-            {/* Status & Info */}
-            <div className="flex items-center gap-4 flex-wrap">
+
+            {/* Stats Row */}
+            <div className="flex flex-wrap items-center gap-2.5 text-sm">
+              <span className="font-semibold text-sidebar-foreground/80">
+                {listing.year}
+              </span>
+              
               {/* BLK Badge */}
               {listing.isBlkListing && (
-                <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-zinc-800 text-zinc-100 tracking-wider">
-                  BLK
-                </span>
+                <>
+                  <span className="text-sidebar-foreground/40">•</span>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-zinc-800 text-zinc-100 tracking-wider">
+                    BLK
+                  </span>
+                </>
               )}
+              
+              <span className="text-sidebar-foreground/40">•</span>
+              
+              {/* Status */}
               <span
-                className={`px-3 py-1.5 rounded-full text-sm font-semibold tracking-tight w-fit ${
-                  listing.lifecycleStatus === 'deleted' ? 'bg-muted text-muted-foreground border border-border/40'
-                  : listing.lifecycleStatus === 'sold' ? 'bg-green-500/10 text-green-500'
-                  : listing.lifecycleStatus === 'expired' ? 'bg-yellow-500/10 text-yellow-500'
-                  : listing.lifecycleStatus === 'archived' && !isSuspended ? 'bg-muted text-muted-foreground border border-border/40'
-                  : isSuspended || isRejected ? 'bg-red-500/10 text-red-500'
-                  : listing.isPublic ? 'bg-green-500/10 text-green-500'
-                  : isInReview ? 'bg-yellow-500/10 text-yellow-500'
-                  : isDraft ? 'bg-muted text-muted-foreground border border-border/40'
-                  : 'bg-muted text-muted-foreground border border-border/40'
+                className={`px-2 py-0.5 rounded text-xs font-semibold ${
+                  listing.lifecycleStatus === 'deleted' ? 'bg-muted text-muted-foreground'
+                  : listing.lifecycleStatus === 'sold' ? 'bg-green-500/10 text-green-600'
+                  : listing.lifecycleStatus === 'expired' ? 'bg-yellow-500/10 text-yellow-600'
+                  : listing.lifecycleStatus === 'archived' && !isSuspended ? 'bg-muted text-muted-foreground'
+                  : isSuspended || isRejected ? 'bg-red-500/10 text-red-600'
+                  : listing.isPublic ? 'bg-green-500/10 text-green-600'
+                  : isInReview ? 'bg-yellow-500/10 text-yellow-600'
+                  : isDraft ? 'bg-muted text-muted-foreground'
+                  : 'bg-muted text-muted-foreground'
                 }`}
               >
                 {statusLabel}
               </span>
               
-              {/* Stats */}
-              <span className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground/70">
-                <Eye className="w-4 h-4" />
+              <span className="text-sidebar-foreground/40">•</span>
+              
+              {/* View Count */}
+              <span className="inline-flex items-center gap-1 font-medium text-sidebar-foreground/60">
+                <Eye className="w-3.5 h-3.5" />
                 {listing.viewCount}
               </span>
-              <span className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground/70">
-                <Heart className="w-4 h-4" />
+              
+              <span className="text-sidebar-foreground/40">•</span>
+              
+              {/* Favorite Count */}
+              <span className="inline-flex items-center gap-1 font-medium text-sidebar-foreground/60">
+                <Heart className="w-3.5 h-3.5" />
                 {listing.favouriteCount}
               </span>
+              
+              {/* Expiry Date - Always show if available */}
+              {expiresAt && (
+                <>
+                  <span className="text-sidebar-foreground/40">•</span>
+                  <span className={`font-medium ${isExpiringSoon ? 'text-red-600' : 'text-sidebar-foreground/60'}`}>
+                    Expires {expiresAt.toLocaleDateString()}
+                    {msRemaining !== null && msRemaining > 0 && ` (${Math.ceil(msRemaining / (24 * 60 * 60 * 1000))}d)`}
+                  </span>
+                </>
+              )}
             </div>
 
-            {/* Additional Info - Warnings & Expiry */}
+            {/* Warnings */}
             {(isSuspended && listing.suspensionReason) && (
-              <p className="text-[15px] font-medium text-red-500">
+              <p className="text-xs font-medium text-red-600">
                 Suspended: {listing.suspensionReason}
               </p>
             )}
-
             {(listing.moderationStatus === 'rejected' && listing.rejectionReason) && (
-              <p className="text-[15px] font-medium text-red-500">
+              <p className="text-xs font-medium text-red-600">
                 Rejected: {listing.rejectionReason}
-              </p>
-            )}
-
-            {expiresAt && (
-              <p className={`text-sm font-medium ${isExpiringSoon ? 'text-yellow-500' : 'text-muted-foreground/70'}`}>
-                Expires {expiresAt.toLocaleDateString()}
-                {msRemaining !== null && msRemaining > 0 ? ` (${Math.ceil(msRemaining / (24 * 60 * 60 * 1000))}d left)` : ''}
               </p>
             )}
           </div>
         </div>
 
-        {/* Price & Date - Right Side */}
-        <div className="text-right flex-shrink-0">
-          <p className="text-lg font-bold text-foreground whitespace-nowrap">
-            {listing.price.toLocaleString()} AED
-          </p>
-          <p className="text-sm font-medium text-muted-foreground/70 mt-1.5 whitespace-nowrap">
+        {/* Actions Row - Bottom */}
+        <div className="flex items-center justify-between px-5 pb-4 pt-3 border-t border-sidebar-border">
+          <div className="flex items-center gap-2">
+            {/* View - only for public listings */}
+            {listing.isPublic && (
+              <Link href={`/listings/${listing.id}`}>
+                <button className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent">
+                  View
+                </button>
+              </Link>
+            )}
+            
+            {/* Edit - only for non-suspended, non-deep-inventory */}
+            {!isSuspended && !isDeepInventory && (
+              <Link href={editHref}>
+                <button className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent">
+                  Edit
+                </button>
+              </Link>
+            )}
+
+            {/* Mark Sold */}
+            {listing.isPublic && listing.lifecycleStatus === 'active' && (
+              <button 
+                onClick={() => onMarkSold(listing.id)}
+                className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors text-green-600 hover:bg-green-500/10"
+              >
+                Mark Sold
+              </button>
+            )}
+            
+            {/* BLK Toggle - for work listings */}
+            {onToggleBlk && listing.lifecycleStatus === 'active' && (
+              listing.isBlkListing ? (
+                <button
+                  onClick={() => onToggleBlk(listing.id, true)}
+                  disabled={isTogglingBlk}
+                  className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isTogglingBlk ? 'Updating...' : 'Remove BLK'}
+                </button>
+              ) : canPromoteToBlk && (
+                <button
+                  onClick={() => onToggleBlk(listing.id, false)}
+                  disabled={isTogglingBlk}
+                  className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isTogglingBlk ? 'Updating...' : 'Promote to BLK'}
+                </button>
+              )
+            )}
+
+            {/* Extend buttons when expiring soon */}
+            {isExpiringSoon && (
+              <>
+                <button 
+                  onClick={() => onExtend(listing.id, 7)}
+                  className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+                >
+                  Extend 1w
+                </button>
+                <button 
+                  onClick={() => onExtend(listing.id, 14)}
+                  className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+                >
+                  Extend 2w
+                </button>
+              </>
+            )}
+
+            {/* Archive/Unarchive */}
+            {canArchiveToggle && (
+              <button
+                onClick={() => onArchive(listing.id)}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  deleteConfirm === listing.id 
+                    ? 'text-yellow-600 bg-yellow-500/10' 
+                    : 'text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent'
+                }`}
+              >
+                {deleteConfirm === listing.id
+                  ? 'Confirm?'
+                  : listing.lifecycleStatus === 'archived'
+                  ? 'Unarchive'
+                  : 'Archive'}
+              </button>
+            )}
+            
+            {/* Delete */}
+            {canDelete && !isDeepInventory && (
+              <button
+                onClick={() => onDelete(listing.id)}
+                className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors text-red-600 hover:bg-red-500/10"
+              >
+                Delete
+              </button>
+            )}
+            
+            {/* Suspended - Relist */}
+            {isSuspended && (
+              <Link href={newListingUrl}>
+                <button className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors text-primary hover:bg-primary/10">
+                  Relist Your Car
+                </button>
+              </Link>
+            )}
+          </div>
+          
+          {/* Updated Date - Right Side */}
+          <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
             {listing.publishedAt 
               ? `Published ${new Date(listing.publishedAt).toLocaleDateString()}`
               : `Updated ${new Date(listing.updatedAt).toLocaleDateString()}`
             }
-          </p>
+          </span>
         </div>
-      </div>
-
-      {/* Actions */}
-      <div className="flex flex-wrap gap-2 mt-5 pt-5 border-t border-border/40">
-        {/* View - only show for public listings (visible on marketplace) */}
-        {listing.isPublic && (
-          <Link href={`/listings/${listing.id}`}>
-            <button className="px-5 py-2.5 rounded-full border border-border/40 hover:bg-muted/40 text-sm font-semibold tracking-tight transition-colors">
-              View
-            </button>
-          </Link>
-        )}
-        
-        {/* Suspended listings - show Relist option prominently */}
-        {isSuspended && (
-          <Link href={newListingUrl}>
-            <button className="px-5 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold tracking-tight transition-colors">
-              Relist Your Car
-            </button>
-          </Link>
-        )}
-        
-        {/* Edit - only for non-suspended, non-deep-inventory items */}
-        {!isSuspended && !isDeepInventory && (
-          <Link href={editHref}>
-            <button className="px-5 py-2.5 rounded-full border border-border/40 hover:bg-muted/40 text-sm font-semibold tracking-tight transition-colors">
-              Edit
-            </button>
-          </Link>
-        )}
-
-        {/* Mark Sold - only show for public listings (makes sense only when car is listed) */}
-        {listing.isPublic && listing.lifecycleStatus === 'active' && (
-          <button 
-            onClick={() => onMarkSold(listing.id)}
-            className="px-5 py-2.5 rounded-full bg-green-500 hover:bg-green-600 text-white text-sm font-semibold tracking-tight transition-colors"
-          >
-            Mark Sold
-          </button>
-        )}
-        
-        {/* BLK Toggle Button - Only for active work listings */}
-        {onToggleBlk && listing.lifecycleStatus === 'active' && (
-          listing.isBlkListing ? (
-            <button
-              onClick={() => onToggleBlk(listing.id, true)}
-              disabled={isTogglingBlk}
-              className="px-5 py-2.5 rounded-full bg-zinc-800 text-zinc-100 text-sm font-semibold tracking-tight transition-colors hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isTogglingBlk ? 'Updating...' : 'Remove BLK'}
-            </button>
-          ) : canPromoteToBlk && (
-            <button
-              onClick={() => onToggleBlk(listing.id, false)}
-              disabled={isTogglingBlk}
-              className="px-5 py-2.5 rounded-full border border-zinc-500/50 text-zinc-400 text-sm font-semibold tracking-tight transition-colors hover:bg-zinc-800 hover:text-zinc-100 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isTogglingBlk ? 'Updating...' : 'Promote to BLK'}
-            </button>
-          )
-        )}
-
-        {isExpiringSoon && (
-          <>
-            <button 
-              onClick={() => onExtend(listing.id, 7)}
-              className="px-5 py-2.5 rounded-full border border-border/40 hover:bg-muted/40 text-sm font-semibold tracking-tight transition-colors"
-            >
-              Extend 1w
-            </button>
-            <button 
-              onClick={() => onExtend(listing.id, 14)}
-              className="px-5 py-2.5 rounded-full border border-border/40 hover:bg-muted/40 text-sm font-semibold tracking-tight transition-colors"
-            >
-              Extend 2w
-            </button>
-          </>
-        )}
-
-        {canArchiveToggle && (
-          <button
-            onClick={() => onArchive(listing.id)}
-            className={`px-5 py-2.5 rounded-full border text-sm font-semibold tracking-tight transition-colors ${
-              deleteConfirm === listing.id 
-                ? 'border-yellow-500/40 text-yellow-500 bg-yellow-500/10' 
-                : 'border-border/40 hover:bg-muted/40'
-            }`}
-          >
-            {deleteConfirm === listing.id
-              ? 'Confirm?'
-              : listing.lifecycleStatus === 'archived'
-              ? 'Unarchive'
-              : 'Archive'}
-          </button>
-        )}
-        
-        {/* Soft delete - only for non-deep-inventory items */}
-        {canDelete && !isDeepInventory && (
-          <button
-            onClick={() => onDelete(listing.id)}
-            className="px-5 py-2.5 rounded-full border border-red-500/40 text-red-500 hover:bg-red-500/10 text-sm font-medium tracking-tight transition-colors"
-          >
-            Delete
-          </button>
-        )}
-        
-        {deleteConfirm === listing.id && (
-          <button
-            onClick={onCancelDelete}
-            className="px-5 py-2.5 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium tracking-tight transition-colors"
-          >
-            Cancel
-          </button>
-        )}
       </div>
     </div>
   );

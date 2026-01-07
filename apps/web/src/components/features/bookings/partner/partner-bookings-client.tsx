@@ -7,7 +7,7 @@
 'use client';
 
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
-import { Calendar, Users, Clock, CheckCircle2, RefreshCw } from "lucide-react";
+import { Box, Users, Clock, RefreshCw } from "lucide-react";
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 
 interface PartnerBookingsClientProps {
@@ -470,27 +470,27 @@ export function PartnerBookingsClient({
 
       {/* Empty State - No bookings at all */}
       {!isLoading && !error && allBookings.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-24 px-6">
-          <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-6">
-            <CheckCircle2 className="w-8 h-8 text-muted-foreground/50" />
+        <div className="flex flex-col items-center justify-center py-24 text-center space-y-4">
+          <Box className="w-12 h-12 text-muted-foreground/40 stroke-[1.5]" />
+          <div>
+            <h3 className="text-xl font-semibold text-foreground">No bookings yet</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Customer bookings will appear here
+            </p>
           </div>
-          <h3 className="text-xl font-semibold text-foreground mb-2">No bookings yet</h3>
-          <p className="text-sm text-muted-foreground max-w-md text-center">
-            Customer bookings will appear here once they schedule appointments for your listings
-          </p>
         </div>
       )}
 
       {/* Empty State - No bookings in current filter */}
       {!isLoading && !error && allBookings.length > 0 && filteredBookings.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-24 px-6">
-          <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-6">
-            <CheckCircle2 className="w-8 h-8 text-muted-foreground/50" />
+        <div className="flex flex-col items-center justify-center py-24 text-center space-y-4">
+          <Box className="w-12 h-12 text-muted-foreground/40 stroke-[1.5]" />
+          <div>
+            <h3 className="text-xl font-semibold text-foreground">No bookings found</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Try a different filter
+            </p>
           </div>
-          <h3 className="text-xl font-semibold text-foreground mb-2">No bookings found</h3>
-          <p className="text-sm text-muted-foreground max-w-md text-center">
-            No bookings found for {allStaffForDisplay.find(s => s.staffUserId === selectedStaffFilter)?.staffName}'s listings
-          </p>
         </div>
       )}
 

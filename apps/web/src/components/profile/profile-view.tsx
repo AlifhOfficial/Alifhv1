@@ -376,9 +376,7 @@ export function ProfileView() {
               <div className="flex items-center gap-2">
                 <h1 className="text-2xl font-bold tracking-tight text-foreground">{displayName}</h1>
                 {profile?.kycVerified && (
-                  <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
-                    <Check className="w-3 h-3 text-white" />
-                  </div>
+                  <CheckCircle2 className="w-5 h-5 text-blue-500" />
                 )}
               </div>
               <div className="flex items-center gap-2">
@@ -472,9 +470,7 @@ export function ProfileView() {
             <span className="text-xl font-bold">
               {profile?.kycVerified ? (
                 <span className="flex items-center gap-2 text-foreground">
-                  <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
-                    <Check className="w-3 h-3 text-white" />
-                  </div>
+                  <CheckCircle2 className="w-5 h-5 text-blue-500" />
                   Verified
                 </span>
               ) : (
@@ -528,9 +524,10 @@ export function ProfileView() {
                 <input
                   value={form.firstName}
                   onChange={(e) => updateField({ firstName: e.target.value })}
-                  disabled={!editing}
+                  onClick={() => !editing && setEditing(true)}
+                  readOnly={!editing}
                   placeholder="Enter first name"
-                  className="w-full h-10 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/50 text-foreground font-medium"
+                  className="w-full h-10 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors read-only:cursor-pointer placeholder:text-muted-foreground/50 text-foreground font-medium"
                 />
               </div>
               <div className="space-y-2">
@@ -538,9 +535,10 @@ export function ProfileView() {
                 <input
                   value={form.lastName}
                   onChange={(e) => updateField({ lastName: e.target.value })}
-                  disabled={!editing}
+                  onClick={() => !editing && setEditing(true)}
+                  readOnly={!editing}
                   placeholder="Enter last name"
-                  className="w-full h-10 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/50 text-foreground font-medium"
+                  className="w-full h-10 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors read-only:cursor-pointer placeholder:text-muted-foreground/50 text-foreground font-medium"
                 />
               </div>
               <div className="space-y-2">
@@ -584,9 +582,10 @@ export function ProfileView() {
                 <input
                   value={form.phone}
                   onChange={(e) => updateField({ phone: e.target.value })}
-                  disabled={!editing}
+                  onClick={() => !editing && setEditing(true)}
+                  readOnly={!editing}
                   placeholder="+971 50 000 0000"
-                  className="w-full h-10 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/50 text-foreground font-medium"
+                  className="w-full h-10 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors read-only:cursor-pointer placeholder:text-muted-foreground/50 text-foreground font-medium"
                 />
               </div>
             </div>
@@ -600,10 +599,11 @@ export function ProfileView() {
               <textarea
                 value={form.bio}
                 onChange={(e) => updateField({ bio: e.target.value })}
-                disabled={!editing}
+                onClick={() => !editing && setEditing(true)}
+                readOnly={!editing}
                 rows={4}
                 placeholder="Tell others about yourself..."
-                className="w-full p-4 bg-muted/20 rounded-xl border border-border/40 focus:border-primary outline-none resize-none transition-all disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/50 text-foreground font-medium"
+                className="w-full p-4 bg-muted/20 rounded-xl border border-border/40 focus:border-primary outline-none resize-none transition-all read-only:cursor-pointer placeholder:text-muted-foreground/50 text-foreground font-medium"
               />
               <p className="text-xs text-muted-foreground/70 text-right mt-2">
                 {form.bio.length} characters
@@ -625,78 +625,27 @@ export function ProfileView() {
                 return (
                   <button
                     key={tag}
-                    onClick={() => editing && toggleTag(tag)}
-                    disabled={!editing}
+                    onClick={() => {
+                      if (!editing) {
+                        setEditing(true);
+                      } else {
+                        toggleTag(tag);
+                      }
+                    }}
                     className={cn(
-                      "px-4 py-2 rounded-lg text-sm font-semibold transition-all border",
+                      "px-4 py-2 rounded-lg text-sm font-semibold transition-all border inline-flex items-center gap-2 cursor-pointer",
                       isSelected 
-                        ? "bg-primary text-primary-foreground border-primary" 
-                        : "bg-muted/40 text-foreground/90 border-border/60 hover:border-primary/40 hover:bg-muted/50",
-                      !editing && !isSelected && "opacity-50",
-                      !editing && "cursor-default"
+                        ? "bg-muted/40 text-foreground border-border/60" 
+                        : "bg-muted/40 text-foreground/90 border-border/60 hover:border-primary/40 hover:bg-muted/50"
                     )}
                   >
                     {tag}
+                    {isSelected && <CheckCircle2 className="w-4 h-4 text-green-500" />}
                   </button>
                 );
               })}
             </div>
           </div>
-          </section>
-
-          {/* Location */}
-          <section className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-[15px] font-bold tracking-tight text-foreground">Location</h3>
-              {editing && (
-                <button
-                  onClick={handleUseCurrentLocation}
-                  disabled={isLoadingLocation}
-                  className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5"
-                >
-                  {isLoadingLocation ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <MapPin className="w-3.5 h-3.5" />}
-                  Auto-detect
-                </button>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold tracking-tight text-foreground">City</label>
-                <input
-                  value={form.city}
-                  onChange={(e) => updateField({ city: e.target.value })}
-                  disabled={!editing}
-                  placeholder="Dubai"
-                  className="w-full h-10 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/50 text-foreground font-medium"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold tracking-tight text-foreground">Emirate</label>
-                <input
-                  value={form.emirate}
-                  onChange={(e) => updateField({ emirate: e.target.value })}
-                  disabled={!editing}
-                  placeholder="Dubai"
-                  className="w-full h-10 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/50 text-foreground font-medium"
-                />
-              </div>
-            </div>
-
-            <div className="rounded-xl overflow-hidden border border-border/40 bg-secondary/10">
-              <Suspense fallback={<div className="h-64 flex items-center justify-center text-muted-foreground">Loading map...</div>}>
-                <LocationMap 
-                  latitude={form.lat} 
-                  longitude={form.lng} 
-                  onLocationSelect={editing ? handleLocationSelect : undefined} 
-                />
-              </Suspense>
-            </div>
-            {editing && (
-              <p className="text-sm font-medium text-muted-foreground/70 mt-3">
-                Click on the map to pin your exact location.
-              </p>
-            )}
           </section>
 
         </div>

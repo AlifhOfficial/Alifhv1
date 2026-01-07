@@ -6,7 +6,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { CheckCircle, XCircle, Clock, Eye, FileText } from 'lucide-react';
+import { CheckCircle2, XCircle, Clock, Eye, FileText } from 'lucide-react';
 import { DashboardPageLayout } from '@/components/shared/layout';
 import { useToast } from '@/hooks/use-toast';
 import { getSignedUrl } from '@/lib/storage';
@@ -199,7 +199,7 @@ export default function KycRequestsPage() {
       case 'approved':
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-500/10 text-green-600 dark:text-green-400 text-xs font-medium rounded-full">
-            <CheckCircle className="w-3 h-3" />
+            <CheckCircle2 className="w-3 h-3" />
             Approved
           </span>
         );
@@ -309,7 +309,7 @@ export default function KycRequestsPage() {
                       disabled={isProcessing}
                       className="h-9 px-4 text-sm font-medium bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
                     >
-                      <CheckCircle className="w-4 h-4" />
+                      <CheckCircle2 className="w-4 h-4" />
                       Approve
                     </button>
                     <button

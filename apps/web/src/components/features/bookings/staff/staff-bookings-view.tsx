@@ -1,26 +1,48 @@
 /**
  * Staff Bookings View Component
  * Main container for staff bookings management
- * Following partner dashboard UI patterns
  */
 
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { 
-  AlertCircle,
-  RefreshCw,
-} from 'lucide-react';
-import { cn } from '@/utils';
-import { DashboardPageLayout } from '@/components/shared/layout';
+import { AlertCircle, RefreshCw, CheckCircle2, Settings } from 'lucide-react';
 import type { BookingData, BookingStats, AvailabilityRule, BookingSettings } from './types';
-import { BookingStatsCards } from './booking-stats';
-import { BookingFilters } from './booking-filters';
 import { BookingList } from './booking-list';
 import { AvailabilitySettings } from './availability-settings';
-import { BookingVerifyByCode } from './booking-verify-by-code';
+import { StaffCancelModal } from './staff-cancel-modal';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/forms/select';
 
-type TabType = 'bookings' | 'availability';
+type TabType = 'bookings' | 'settings';
+type VerifyAction = 'check_in' | 'confirm' | 'complete' | 'no_show';
+
+// Status tabs configuration
+const STATUS_TABS = [
+  { key: 'all', label: 'All', color: 'purple' },
+  { key: 'pending', label: 'Pending', color: 'yellow' },
+  { key: 'confirmed', label: 'Confirmed', color: 'green' },
+  { key: 'completed', label: 'Completed', color: 'blue' },
+  { key: 'cancelled', label: 'Cancelled', color: 'red' },
+  { key: 'no_show', label: 'No Show', color: 'gray' },
+];
+
+function getColorClasses(color?: string) {
+  switch (color) {
+    case 'blue': return 'text-blue-600 dark:text-blue-400';
+    case 'green': return 'text-green-600 dark:text-green-400';
+    case 'yellow': return 'text-yellow-600 dark:text-yellow-400';
+    case 'red': return 'text-red-600 dark:text-red-400';
+    case 'purple': return 'text-purple-600 dark:text-purple-400';
+    case 'gray': return 'text-gray-600 dark:text-gray-400';
+    default: return 'text-foreground';
+  }
+}
 
 export function StaffBookingsView() {
   const [activeTab, setActiveTab] = useState<TabType>('bookings');
@@ -28,7 +50,7 @@ export function StaffBookingsView() {
   const [stats, setStats] = useState<BookingStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [selectedStatus, setSelectedStatus] = useState<string>('confirmed');
   
   // Availability state
   const [availability, setAvailability] = useState<AvailabilityRule[]>([]);
@@ -37,9 +59,22 @@ export function StaffBookingsView() {
   const [savingDay, setSavingDay] = useState<number | null>(null);
   const [savingSettings, setSavingSettings] = useState(false);
   
+  // Cancel modal state
+  const [cancelModal, setCancelModal] = useState<{ bookingId: string; isOpen: boolean } | null>(null);
+  const [cancelReason, setCancelReason] = useState<string>('customer_request');
+  const [cancelNotes, setCancelNotes] = useState('');
+  const [isCancelling, setIsCancelling] = useState(false);
+  
+  // Verify by code state (inline)
+  const [verifyCode, setVerifyCode] = useState('');
+  const [verifyAction, setVerifyAction] = useState<VerifyAction>('check_in');
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verifyMessage, setVerifyMessage] = useState<string | null>(null);
+  
   // Abort controller for cancelling in-flight requests
   const abortControllerRef = useRef<AbortController | null>(null);
 
+  // Fetch ALL bookings once - filtering happens client-side
   const fetchBookings = useCallback(async () => {
     // Cancel any in-flight request to prevent race conditions
     abortControllerRef.current?.abort();
@@ -49,8 +84,8 @@ export function StaffBookingsView() {
     setError(null);
 
     try {
-      const statusParam = selectedStatus !== 'all' ? `&status=${selectedStatus}` : '';
-      const res = await fetch(`/api/bookings/manage?stats=true${statusParam}`, {
+      // Fetch ALL bookings with stats - no status filter, client-side filtering for zero-latency toggling
+      const res = await fetch(`/api/bookings/manage?stats=true`, {
         signal: abortControllerRef.current.signal,
       });
       const data = await res.json();
@@ -68,7 +103,12 @@ export function StaffBookingsView() {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedStatus]);
+  }, []); // No dependencies - only fetch on mount or manual refresh
+
+  // Client-side filtered bookings for instant status switching
+  const filteredBookings = selectedStatus === 'all' 
+    ? bookings 
+    : bookings.filter(b => b.status === selectedStatus);
 
   const fetchAvailability = useCallback(async () => {
     setAvailabilityLoading(true);
@@ -87,6 +127,7 @@ export function StaffBookingsView() {
     }
   }, []);
 
+  // Fetch bookings only once on mount
   useEffect(() => {
     fetchBookings();
     
@@ -96,11 +137,52 @@ export function StaffBookingsView() {
     };
   }, [fetchBookings]);
 
+  // Fetch availability only when tab switches to settings
   useEffect(() => {
-    if (activeTab === 'availability') {
+    if (activeTab === 'settings') {
       fetchAvailability();
     }
   }, [activeTab, fetchAvailability]);
+
+  // Inline verify by code handler
+  async function handleVerifyByCode() {
+    const token = verifyCode.trim().toUpperCase();
+    if (!token) return;
+
+    setIsVerifying(true);
+    setVerifyMessage(null);
+    setError(null);
+
+    try {
+      const res = await fetch('/api/bookings/manage/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ confirmationToken: token, action: verifyAction }),
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Verification failed');
+      }
+
+      const messages: Record<VerifyAction, string> = {
+        check_in: 'Checked in',
+        confirm: 'Confirmed',
+        complete: 'Completed',
+        no_show: 'No-show recorded',
+      };
+      setVerifyMessage(messages[verifyAction]);
+      setVerifyCode('');
+      fetchBookings();
+      
+      // Clear message after 3s
+      setTimeout(() => setVerifyMessage(null), 3000);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Verification failed');
+    } finally {
+      setIsVerifying(false);
+    }
+  }
 
   async function initializeAvailability() {
     setAvailabilityLoading(true);
@@ -123,10 +205,24 @@ export function StaffBookingsView() {
   }
 
   async function updateDayAvailability(dayOfWeek: number, updates: Partial<AvailabilityRule>) {
+    const existingRule = availability.find(r => r.dayOfWeek === dayOfWeek);
+    const previousAvailability = [...availability];
+    
+    // Optimistic update for instant feedback
+    setAvailability(prev => {
+      const idx = prev.findIndex(r => r.dayOfWeek === dayOfWeek);
+      if (idx >= 0) {
+        const updated = [...prev];
+        updated[idx] = { ...updated[idx], ...updates };
+        return updated;
+      }
+      return prev;
+    });
+    
     setSavingDay(dayOfWeek);
     setError(null);
+    
     try {
-      const existingRule = availability.find(r => r.dayOfWeek === dayOfWeek);
       const res = await fetch('/api/bookings/availability', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -142,8 +238,14 @@ export function StaffBookingsView() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to update availability');
       
+      if (!res.ok) {
+        // Rollback on error
+        setAvailability(previousAvailability);
+        throw new Error(data.error || 'Failed to update availability');
+      }
+      
+      // Update with server response
       setAvailability(prev => {
         const existing = prev.findIndex(r => r.dayOfWeek === dayOfWeek);
         if (existing >= 0) {
@@ -161,8 +263,14 @@ export function StaffBookingsView() {
   }
 
   async function updateBookingSettings(updates: Partial<BookingSettings>) {
+    const previousSettings = settings;
+    
+    // Optimistic update
+    setSettings(prev => prev ? { ...prev, ...updates } : null);
+    
     setSavingSettings(true);
     setError(null);
+    
     try {
       const res = await fetch('/api/bookings/availability', {
         method: 'POST',
@@ -174,7 +282,12 @@ export function StaffBookingsView() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to update settings');
+      
+      if (!res.ok) {
+        // Rollback on error
+        setSettings(previousSettings);
+        throw new Error(data.error || 'Failed to update settings');
+      }
       
       setSettings(data.settings);
     } catch (err) {
@@ -185,6 +298,12 @@ export function StaffBookingsView() {
   }
 
   async function handleBookingAction(bookingId: string, action: string, data?: Record<string, any>) {
+    // If action is cancel, open the modal instead
+    if (action === 'cancel') {
+      setCancelModal({ bookingId, isOpen: true });
+      return;
+    }
+    
     setError(null);
     try {
       const res = await fetch(`/api/bookings/manage/${bookingId}`, {
@@ -205,112 +324,209 @@ export function StaffBookingsView() {
     }
   }
 
-  return (
-    <DashboardPageLayout
-      title="Bookings"
-      headerActions={
-        <div className="flex items-center gap-2">
-          {activeTab === 'bookings' && (
-            <button
-              onClick={fetchBookings}
-              disabled={isLoading}
-              className="p-2 hover:bg-secondary/50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Refresh"
-            >
-              <RefreshCw className="w-4 h-4 text-muted-foreground" />
-            </button>
-          )}
-          {activeTab === 'availability' && (
-            <button
-              onClick={fetchAvailability}
-              disabled={availabilityLoading}
-              className="p-2 hover:bg-secondary/50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Refresh"
-            >
-              <RefreshCw className="w-4 h-4 text-muted-foreground" />
-            </button>
-          )}
-        </div>
+  async function handleSubmitCancel() {
+    if (!cancelModal) return;
+    setIsCancelling(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/bookings/manage/${cancelModal.bookingId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          action: 'cancel', 
+          reason: cancelReason,
+          notes: cancelNotes || undefined 
+        }),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        throw new Error(result.error || 'Failed to cancel booking');
       }
-    >
-      <div className="space-y-16">
-        {/* Error */}
+
+      setCancelModal(null);
+      setCancelReason('customer_request');
+      setCancelNotes('');
+      fetchBookings();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to cancel booking');
+    } finally {
+      setIsCancelling(false);
+    }
+  }
+
+  function handleCloseCancel() {
+    setCancelModal(null);
+    setCancelReason('customer_request');
+    setCancelNotes('');
+  }
+
+  return (
+    <div className="min-h-screen bg-background pb-32">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-8">
+        {/* Header Section */}
+        <section className="space-y-4">
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">Bookings</h1>
+              <p className="text-[15px] font-medium text-muted-foreground/70 mt-2">
+                Manage test drive bookings
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setActiveTab(activeTab === 'settings' ? 'bookings' : 'settings')}
+                className={`p-2 rounded-lg transition-colors ${
+                  activeTab === 'settings' 
+                    ? 'bg-muted text-foreground' 
+                    : 'hover:bg-muted/40 text-muted-foreground'
+                }`}
+                title="Settings"
+              >
+                <Settings className="w-4 h-4" />
+              </button>
+              <button
+                onClick={activeTab === 'bookings' ? fetchBookings : fetchAvailability}
+                disabled={activeTab === 'bookings' ? isLoading : availabilityLoading}
+                className="p-2 hover:bg-muted/40 rounded-lg transition-colors disabled:opacity-50"
+                title="Refresh"
+              >
+                <RefreshCw className="w-4 h-4 text-muted-foreground" />
+              </button>
+            </div>
+          </div>
+
+          {/* Inline Verify by Code */}
+          {activeTab === 'bookings' && (
+            <div className="flex flex-wrap items-center gap-3 pt-4">
+              <input
+                value={verifyCode}
+                onChange={(e) => setVerifyCode(e.target.value.toUpperCase())}
+                placeholder="Enter booking code"
+                className="w-44 h-10 px-3 bg-secondary/30 border border-border/40 rounded-lg focus:border-foreground/40 focus:bg-secondary/50 outline-none transition-all text-sm font-mono placeholder:text-muted-foreground/50"
+                onKeyDown={(e) => e.key === 'Enter' && handleVerifyByCode()}
+              />
+              <Select value={verifyAction} onValueChange={(v) => setVerifyAction(v as VerifyAction)}>
+                <SelectTrigger className="w-32 h-10">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="check_in">Check-in</SelectItem>
+                  <SelectItem value="confirm">Confirm</SelectItem>
+                  <SelectItem value="complete">Complete</SelectItem>
+                  <SelectItem value="no_show">No-show</SelectItem>
+                </SelectContent>
+              </Select>
+              <button
+                onClick={handleVerifyByCode}
+                disabled={isVerifying || !verifyCode.trim()}
+                className="h-10 px-5 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-colors disabled:opacity-50"
+              >
+                {isVerifying ? '...' : 'Apply'}
+              </button>
+              {verifyMessage && (
+                <span className="flex items-center gap-1.5 text-sm text-green-600 dark:text-green-400">
+                  <CheckCircle2 className="w-4 h-4" />
+                  {verifyMessage}
+                </span>
+              )}
+            </div>
+          )}
+        </section>
+
+        {/* Error Alert */}
         {error && (
-          <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4">
-            <div className="flex gap-3">
-              <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-              <div className="text-sm space-y-1">
-                <p className="font-medium text-red-500">Something went wrong</p>
-                <p className="text-red-500/70">{error}</p>
-              </div>
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-red-500">{error}</p>
             </div>
           </div>
         )}
 
-        {/* Tab Navigation */}
-        <section className="space-y-6">
-          <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-            <h3 className="text-lg font-medium tracking-tight">Manage</h3>
-          </div>
-          
-          <div className="flex gap-2">
-            <button
-              onClick={() => setActiveTab('bookings')}
-              className={cn(
-                "px-5 py-2 rounded-full text-sm font-medium transition-colors",
-                activeTab === 'bookings'
-                  ? "bg-primary text-primary-foreground"
-                  : "border border-border/40 text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-              )}
-            >
-              Bookings
-            </button>
-            <button
-              onClick={() => setActiveTab('availability')}
-              className={cn(
-                "px-5 py-2 rounded-full text-sm font-medium transition-colors",
-                activeTab === 'availability'
-                  ? "bg-primary text-primary-foreground"
-                  : "border border-border/40 text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-              )}
-            >
-              Availability
-            </button>
-          </div>
-        </section>
-
-        {/* Availability Settings Tab */}
-        {activeTab === 'availability' && (
-          <AvailabilitySettings
-            availability={availability}
-            settings={settings}
-            isLoading={availabilityLoading}
-            savingDay={savingDay}
-            savingSettings={savingSettings}
-            onInitialize={initializeAvailability}
-            onUpdateDay={updateDayAvailability}
-            onUpdateSettings={updateBookingSettings}
-          />
+        {/* Settings Tab */}
+        {activeTab === 'settings' && (
+          <>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold">Availability Settings</h2>
+                <p className="text-sm text-muted-foreground mt-1">Configure booking slots and availability</p>
+              </div>
+              <button
+                onClick={() => setActiveTab('bookings')}
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                ← Back to bookings
+              </button>
+            </div>
+            <AvailabilitySettings
+              availability={availability}
+              settings={settings}
+              isLoading={availabilityLoading}
+              savingDay={savingDay}
+              savingSettings={savingSettings}
+              onInitialize={initializeAvailability}
+              onUpdateDay={updateDayAvailability}
+              onUpdateSettings={updateBookingSettings}
+            />
+          </>
         )}
 
         {/* Bookings Tab */}
         {activeTab === 'bookings' && (
-          <div className="space-y-12">
-            <BookingVerifyByCode onSuccess={fetchBookings} />
-            {stats && <BookingStatsCards stats={stats} />}
-            <BookingFilters 
-              selectedStatus={selectedStatus} 
-              onStatusChange={setSelectedStatus} 
-            />
+          <>
+            {/* Status Filter Tabs */}
+            <div className="border-b border-border/40">
+              <div className="flex gap-1 overflow-x-auto pb-px">
+                {STATUS_TABS.map((tab) => {
+                  const count = tab.key === 'all' 
+                    ? bookings.length 
+                    : bookings.filter(b => b.status === tab.key).length;
+                  
+                  return (
+                    <button
+                      key={tab.key}
+                      onClick={() => setSelectedStatus(tab.key)}
+                      className={`px-5 py-3.5 border-b-2 transition-colors whitespace-nowrap text-[15px] font-semibold tracking-tight ${
+                        selectedStatus === tab.key
+                          ? `border-transparent ${getColorClasses(tab.color)}`
+                          : 'border-transparent text-muted-foreground/70 hover:text-foreground'
+                      }`}
+                    >
+                      {tab.label}
+                      <span className={`ml-2 text-sm font-semibold tracking-tight ${selectedStatus === tab.key ? getColorClasses(tab.color) : 'text-muted-foreground/60'}`}>
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            
+            {/* Booking List - now with client-filtered bookings */}
             <BookingList
-              bookings={bookings}
+              bookings={filteredBookings}
               isLoading={isLoading}
               selectedStatus={selectedStatus}
               onAction={handleBookingAction}
             />
-          </div>
+          </>
         )}
+
+        {/* Cancel Modal */}
+        <StaffCancelModal
+          isOpen={cancelModal?.isOpen ?? false}
+          reason={cancelReason}
+          notes={cancelNotes}
+          isSubmitting={isCancelling}
+          onReasonChange={setCancelReason}
+          onNotesChange={setCancelNotes}
+          onSubmit={handleSubmitCancel}
+          onClose={handleCloseCancel}
+        />
       </div>
-    </DashboardPageLayout>
+    </div>
   );
 }

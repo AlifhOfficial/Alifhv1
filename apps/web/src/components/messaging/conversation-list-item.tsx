@@ -124,7 +124,7 @@ export function ConversationListItem({
               {lastMessagePreview || 'No messages yet'}
             </p>
             {unreadCount > 0 && (
-              <small className="text-xs flex-shrink-0 px-2 py-0.5 font-semibold bg-blue-500/90 text-white rounded-full min-w-[18px] text-center">
+              <small className="text-xs flex-shrink-0 px-2 py-0.5 font-semibold bg-red-500/90 text-white rounded-full min-w-[18px] text-center">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </small>
             )}

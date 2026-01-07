@@ -6,7 +6,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Calendar, Loader2 } from 'lucide-react';
+import { Box, Loader2 } from 'lucide-react';
 import type { BookingData } from './types';
 import { STATUS_LABELS } from './types';
 import { BookingCard } from './booking-card';
@@ -39,16 +39,18 @@ export function BookingList({
   // Show empty state only when not loading AND no bookings
   if (!isLoading && bookings.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center rounded-xl border border-border/40">
-        <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
-          <Calendar className="w-5 h-5 text-muted-foreground" />
+      <div className="flex flex-col items-center justify-center py-24 text-center space-y-4">
+        <Box className="w-12 h-12 text-muted-foreground/40 stroke-[1.5]" />
+        <div>
+          <h3 className="font-medium text-foreground">
+            {selectedStatus === 'all' ? "No bookings yet" : "No bookings found"}
+          </h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            {selectedStatus === 'all' 
+              ? "Bookings will appear here"
+              : `No ${STATUS_LABELS[selectedStatus]?.toLowerCase()} bookings`}
+          </p>
         </div>
-        <h3 className="font-medium text-foreground">No bookings found</h3>
-        <p className="text-sm text-muted-foreground/70 mt-1 max-w-sm">
-          {selectedStatus === 'all' 
-            ? "When customers book test drives, they'll appear here."
-            : `No ${STATUS_LABELS[selectedStatus]?.toLowerCase()} bookings at the moment.`}
-        </p>
       </div>
     );
   }

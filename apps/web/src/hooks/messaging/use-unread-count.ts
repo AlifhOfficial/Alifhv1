@@ -8,7 +8,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useWebSocket } from './use-websocket';
 import { useEffect } from 'react';
 import { queryKeys } from '@/lib/query-keys';
-import { CACHE_BEHAVIORS } from '@/lib/cache-config';
+import { CACHE_STALE_TIME } from '@/lib/cache-config';
 import { updateCache } from '@/lib/cache-patterns';
 
 async function fetchUnreadCount(): Promise<{ unreadCount: number }> {
@@ -24,7 +24,10 @@ export function useUnreadCount(userId?: string, activeConversationId?: string) {
   const query = useQuery({
     queryKey: queryKeys.messaging.unreadCount(),
     queryFn: fetchUnreadCount,
-    ...CACHE_BEHAVIORS.REALTIME,
+    staleTime: CACHE_STALE_TIME.LONG,
+    refetchInterval: false, // Disable polling - rely on WebSocket updates
+    refetchOnWindowFocus: false, // No auto-refetch, WebSocket handles updates
+    refetchOnReconnect: false, // No auto-refetch, WebSocket handles updates
     enabled: !!userId,
   });
 

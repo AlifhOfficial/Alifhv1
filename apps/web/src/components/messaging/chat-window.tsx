@@ -5,8 +5,8 @@
 
 'use client';
 
-import { useEffect, useMemo, useRef } from 'react';
-import { Loader2, ArrowLeft, MoreVertical, Moon, Cloud } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Loader2, ArrowLeft, Moon, Cloud, MessageCircle } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 import { MessageBubble } from './message-bubble';
@@ -64,6 +64,7 @@ export function ChatWindow({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const lastMessageIdRef = useRef<string | null>(null);
+  const [showListingPreview, setShowListingPreview] = useState(true);
 
   // Messages are newest-first from API, flex-col-reverse displays them correctly
   // No sort needed - newest at bottom naturally
@@ -138,7 +139,7 @@ export function ChatWindow({
   return (
     <div className={cn('flex flex-col h-full w-full min-h-0 bg-background', className)}>
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-border/40 bg-background">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-border/60 bg-background">
         {onBack && (
           <button onClick={onBack} className="p-2 hover:bg-secondary/50 rounded-xl transition-colors lg:hidden" aria-label="Back">
             <ArrowLeft className="w-5 h-5" />
@@ -177,24 +178,18 @@ export function ChatWindow({
           </div>
         </div>
 
-        <div className="flex items-center gap-1">
-          <button className="p-2 hover:bg-secondary/50 rounded-lg transition-colors" aria-label="More">
-            <MoreVertical className="w-4 h-4 text-muted-foreground" />
+        {onBack && (
+          <button 
+            onClick={onBack} 
+            className="p-2 hover:bg-secondary/50 rounded-lg transition-colors hidden lg:flex" 
+            aria-label="Close"
+            title="Close"
+          >
+            <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
-          
-          {onBack && (
-            <button 
-              onClick={onBack} 
-              className="p-2 hover:bg-secondary/50 rounded-lg transition-colors hidden lg:flex" 
-              aria-label="Close"
-              title="Close"
-            >
-              <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          )}
-        </div>
+        )}
       </div>
 
       <div ref={containerRef} onScroll={handleScroll} className="flex-1 min-h-0 overflow-y-auto p-4 bg-background flex flex-col-reverse gap-2">
@@ -211,9 +206,7 @@ export function ChatWindow({
         ) : messages.length === 0 ? (
           <div className="min-h-[300px] flex items-center justify-center">
             <div className="text-center space-y-3">
-              <svg className="w-16 h-16 mx-auto text-muted-foreground/40" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-              </svg>
+              <MessageCircle className="w-12 h-12 mx-auto text-muted-foreground/40 stroke-[1.5]" />
               <p className="text-[15px] text-muted-foreground">No messages yet</p>
             </div>
           </div>
@@ -273,6 +266,8 @@ export function ChatWindow({
         disabled={isSending}
         initialText={!isLoading && messages.length === 0 ? defaultText : undefined}
         resetKey={conversationId}
+        listingPreview={messages.length === 0 && showListingPreview ? listing : undefined}
+        onDismissListing={() => setShowListingPreview(false)}
       />
     </div>
   );

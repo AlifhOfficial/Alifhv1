@@ -4,7 +4,7 @@
 
 'use client';
 
-import { Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Clock, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 
 interface StatusIconProps {
   status: string;
@@ -18,7 +18,7 @@ export function BookingStatusIcon({ status, className = "w-4 h-4" }: StatusIconP
       return <Clock className={className} />;
     case 'confirmed':
     case 'completed':
-      return <CheckCircle className={className} />;
+      return <CheckCircle2 className={className} />;
     case 'cancelled':
     case 'rejected':
       return <XCircle className={className} />;

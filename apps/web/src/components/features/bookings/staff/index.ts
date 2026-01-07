@@ -10,4 +10,5 @@ export { BookingList } from './booking-list';
 export { AvailabilitySettings } from './availability-settings';
 export { BookingSettingsCard } from './booking-settings-card';
 export { WeeklySchedule } from './weekly-schedule';
+export { StaffCancelModal } from './staff-cancel-modal';
 export * from './types';
