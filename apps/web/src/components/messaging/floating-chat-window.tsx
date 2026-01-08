@@ -99,26 +99,49 @@ export function FloatingChatWindow({
     return null;
   }, [messages, otherLastReadAt, userId]);
 
-  // Mark as read when opening or receiving new messages
+  // Track last message we've marked as read to prevent duplicate API calls
+  const lastMarkedMsgIdRef = useRef<string | null>(null);
+  
+  // Parse myLastReadAt once
+  const myLastReadAtDate = useMemo(() => {
+    const v = conversation.myLastReadAt;
+    if (!v) return null;
+    const d = v instanceof Date ? v : new Date(v);
+    return isNaN(d.getTime()) ? null : d;
+  }, [conversation.myLastReadAt]);
+  
+  // Reset tracking on conversation switch
   useEffect(() => {
-    if (isLoading || messages.length === 0 || isMinimized || conversation.unreadCount === 0) return;
+    lastMessageIdRef.current = null;
+    lastMarkedMsgIdRef.current = null;
+  }, [conversation.id]);
+
+  // Smart mark-as-read: only call API when necessary
+  useEffect(() => {
+    if (isLoading || messages.length === 0 || isMinimized) return;
     
     const newestMessage = messages[0];
     if (!newestMessage) return;
     
-    const isFirstLoad = lastMessageIdRef.current === null;
-    const isNewMessageFromOther = newestMessage.senderId !== userId && newestMessage.id !== lastMessageIdRef.current;
+    // Skip if we've already marked this exact message in this session
+    if (newestMessage.id === lastMarkedMsgIdRef.current) return;
     
-    if (isFirstLoad || isNewMessageFromOther) {
-      lastMessageIdRef.current = newestMessage.id;
+    const newestMessageTime = new Date(newestMessage.createdAt);
+    const newestIsFromOther = newestMessage.senderId !== userId;
+    
+    // Skip if we've already read past this message (persisted in DB)
+    const alreadyRead = myLastReadAtDate && newestMessageTime <= myLastReadAtDate;
+    
+    // Update tracking
+    lastMessageIdRef.current = newestMessage.id;
+    
+    // Only call API if:
+    // - Newest message is from other user AND we haven't read it yet
+    if (newestIsFromOther && !alreadyRead) {
+      lastMarkedMsgIdRef.current = newestMessage.id;
       markAsRead(conversation.id);
     }
-  }, [conversation.id, conversation.unreadCount, isLoading, messages, userId, markAsRead, isMinimized]);
-
-  // Reset on conversation switch
-  useEffect(() => {
-    lastMessageIdRef.current = null;
-  }, [conversation.id]);
+  }, [conversation.id, isLoading, messages, userId, markAsRead, isMinimized, myLastReadAtDate]);
 
   // Infinite scroll
   const handleScroll = () => {
@@ -136,7 +159,7 @@ export function FloatingChatWindow({
 
   return (
     <div
-      className="fixed z-40 transition-all duration-200 ease-out"
+      className="fixed z-40 transition-all duration-200 ease-out overflow-hidden"
       style={{ 
         right: rightOffset, 
         width: 320, 
@@ -162,7 +185,7 @@ export function FloatingChatWindow({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              router.push(`/user-dashboard/messaging?conversation=${conversation.id}`);
+              router.push(`/user-dashboard/messaging?conversationId=${conversation.id}`);
               onClose();
             }}
             className="flex-shrink-0 hover:opacity-80 transition-opacity flex items-center"
@@ -178,7 +201,7 @@ export function FloatingChatWindow({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              router.push(`/user-dashboard/messaging?conversation=${conversation.id}`);
+              router.push(`/user-dashboard/messaging?conversationId=${conversation.id}`);
               onClose();
             }}
             className="flex-1 min-w-0 text-left hover:opacity-80 transition-opacity"
@@ -254,7 +277,7 @@ export function FloatingChatWindow({
             <div
               ref={containerRef}
               onScroll={handleScroll}
-              className="flex-1 min-h-0 overflow-y-auto p-3 bg-background flex flex-col-reverse gap-1.5"
+              className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-3 bg-background flex flex-col-reverse gap-1.5"
             >
               {isFetchingMore && (
                 <div className="flex justify-center py-2">

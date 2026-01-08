@@ -37,6 +37,7 @@ interface MessagesPage {
   messages: Message[];
   hasMore: boolean;
   nextCursor: string | null;
+  otherParticipantLastReadAt?: string | null; // Included on first page only
 }
 
 // ============================================================================
@@ -139,6 +140,21 @@ export function useMessages(conversationId: string, userId?: string, options: Us
     staleTime: 5 * 60 * 1000,
     enabled: !!conversationId && !!userId,
   });
+
+  // Update otherLastReadAt from API response (first page includes this for persistence)
+  const firstPageLastReadAt = query.data?.pages[0]?.otherParticipantLastReadAt;
+  useEffect(() => {
+    if (firstPageLastReadAt) {
+      const d = new Date(firstPageLastReadAt);
+      if (!isNaN(d.getTime())) {
+        setOtherLastReadAt(prev => {
+          // Only update if new value is more recent or we have no value
+          if (!prev || d > prev) return d;
+          return prev;
+        });
+      }
+    }
+  }, [firstPageLastReadAt]);
 
   // Watch presence for other user
   useEffect(() => {

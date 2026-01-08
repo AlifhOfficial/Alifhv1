@@ -30,6 +30,7 @@ interface ChatWindowProps {
   partner?: { id: string; name: string; logo: string | null };
   listing?: { id: string; title: string; thumbnail: string | null };
   unreadCount?: number;
+  myLastReadAt?: Date | string | null;
   onBack?: () => void;
   className?: string;
 }
@@ -42,6 +43,7 @@ export function ChatWindow({
   partner,
   listing,
   unreadCount = 0,
+  myLastReadAt,
   onBack,
   className,
 }: ChatWindowProps) {
@@ -125,30 +127,49 @@ export function ChatWindow({
 
   // No auto-scroll needed - flex-col-reverse naturally shows newest at bottom
 
-  // Mark as read when opening conversation or receiving messages from other user
+  // Track last message we've marked as read to prevent duplicate API calls
+  const lastMarkedMsgIdRef = useRef<string | null>(null);
+  
+  // Parse myLastReadAt once
+  const myLastReadAtDate = useMemo(() => {
+    if (!myLastReadAt) return null;
+    const d = myLastReadAt instanceof Date ? myLastReadAt : new Date(myLastReadAt);
+    return isNaN(d.getTime()) ? null : d;
+  }, [myLastReadAt]);
+  
+  // Reset tracking on conversation switch
   useEffect(() => {
-    if (isLoading || messages.length === 0 || unreadCount === 0) return;
+    lastMessageIdRef.current = null;
+    lastMarkedMsgIdRef.current = null;
+  }, [conversationId]);
+
+  // Smart mark-as-read: only call API when necessary
+  useEffect(() => {
+    if (isLoading || messages.length === 0) return;
     
-    // Get the newest message
     const newestMessage = messages[0];
     if (!newestMessage) return;
     
-    // Mark as read if:
-    // 1. First load of this conversation (lastMessageIdRef is null)
-    // 2. New message from other user that we haven't processed
-    const isFirstLoad = lastMessageIdRef.current === null;
-    const isNewMessageFromOther = newestMessage.senderId !== userId && newestMessage.id !== lastMessageIdRef.current;
+    // Skip if we've already marked this exact message in this session
+    if (newestMessage.id === lastMarkedMsgIdRef.current) return;
     
-    if (isFirstLoad || isNewMessageFromOther) {
-      lastMessageIdRef.current = newestMessage.id;
+    const newestMessageTime = new Date(newestMessage.createdAt);
+    const newestIsFromOther = newestMessage.senderId !== userId;
+    
+    // Skip if we've already read past this message (persisted in DB)
+    const alreadyRead = myLastReadAtDate && newestMessageTime <= myLastReadAtDate;
+    
+    // Update tracking
+    lastMessageIdRef.current = newestMessage.id;
+    
+    // Only call API if:
+    // - Newest message is from other user AND we haven't read it yet
+    // (If we already read it, our lastReadAt is already >= message time, so "Seen" works)
+    if (newestIsFromOther && !alreadyRead) {
+      lastMarkedMsgIdRef.current = newestMessage.id;
       markAsRead(conversationId);
     }
-  }, [conversationId, isLoading, messages, userId, unreadCount, markAsRead]);
-
-  // Reset on conversation switch
-  useEffect(() => {
-    lastMessageIdRef.current = null;
-  }, [conversationId]);
+  }, [conversationId, isLoading, messages, userId, markAsRead, myLastReadAtDate]);
 
   // Infinite scroll
   const handleScroll = () => {
@@ -180,7 +201,7 @@ export function ChatWindow({
     : undefined;
 
   return (
-    <div className={cn('flex flex-col h-full w-full min-h-0 bg-background', className)}>
+    <div className={cn('flex flex-col h-full w-full min-h-0 bg-background overflow-hidden', className)}>
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-border/60 bg-background">
         {onBack && (
@@ -235,7 +256,7 @@ export function ChatWindow({
         )}
       </div>
 
-      <div ref={containerRef} onScroll={handleScroll} className="flex-1 min-h-0 overflow-y-auto p-4 bg-background flex flex-col-reverse gap-2">
+      <div ref={containerRef} onScroll={handleScroll} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-4 bg-background flex flex-col-reverse gap-2">
         {isFetchingMore && (
           <div className="flex justify-center py-4">
             <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />

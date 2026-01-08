@@ -23,6 +23,7 @@ export interface ConversationWithDetails {
   lastMessagePreview: string | null;
   messageCount: number;
   unreadCount: number;
+  myLastReadAt: Date | null;
   isArchived: boolean;
   isMuted: boolean;
   isPinned: boolean;
@@ -357,6 +358,7 @@ export async function getUserConversations(
       lastMessagePreview: row.lastMessagePreview,
       messageCount: row.messageCount,
       unreadCount: row.unreadCount,
+      myLastReadAt: row.lastReadAt,
       isArchived: row.isArchived,
       isMuted: row.isMuted,
       isPinned: row.isPinned,

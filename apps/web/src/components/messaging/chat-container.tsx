@@ -98,6 +98,7 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
               listing={selected.listing || undefined}
               partner={selected.partner || undefined}
               unreadCount={selected.unreadCount}
+              myLastReadAt={selected.myLastReadAt}
               inbox={inbox}
               onBack={handleClose}
             />

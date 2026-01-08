@@ -48,16 +48,30 @@ export async function GET(
     const limit = parseInt(searchParams.get('limit') || '50');
     const cursor = searchParams.get('cursor') || undefined;
 
-    const messages = await getMessages(conversationId, {
-      limit,
-      cursor,
-      userId: user.id, // Verify user is participant
-    });
+    // On first page (no cursor), also fetch other participant's lastReadAt for "Seen" bubble
+    const isFirstPage = !cursor;
+    
+    const [messages, participants] = await Promise.all([
+      getMessages(conversationId, {
+        limit,
+        cursor,
+        userId: user.id, // Verify user is participant
+      }),
+      // Only fetch participants on first page load
+      isFirstPage ? getConversationParticipants(conversationId) : Promise.resolve([]),
+    ]);
+
+    // Find other participant's lastReadAt for "Seen" bubble positioning
+    const otherParticipant = isFirstPage 
+      ? participants.find(p => p.userId !== user.id) 
+      : null;
 
     return NextResponse.json({
       messages,
       hasMore: messages.length === limit,
       nextCursor: messages.length === limit ? messages[messages.length - 1].createdAt.toISOString() : null,
+      // Include on first page for persistent "Seen" bubble
+      ...(isFirstPage && { otherParticipantLastReadAt: otherParticipant?.lastReadAt?.toISOString() ?? null }),
     });
   } catch (error) {
     // Handle unauthorized access

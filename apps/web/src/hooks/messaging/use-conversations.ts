@@ -7,7 +7,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useWebSocket } from './use-websocket';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 // ============================================================================
 // Types
@@ -24,6 +24,7 @@ export interface Conversation {
   lastMessagePreview: string | null;
   messageCount: number;
   unreadCount: number;
+  myLastReadAt?: Date | string | null;
   isArchived: boolean;
   isMuted: boolean;
   isPinned: boolean;
@@ -189,14 +190,15 @@ export function useConversations(options: UseConversationsOptions = {}) {
 
 export function useMarkAsRead() {
   const queryClient = useQueryClient();
-  const markedRef = new Set<string>(); // Prevent duplicate calls
+  const markedRef = useRef(new Set<string>()); // Prevent duplicate calls within 5 seconds
 
   const mutation = useMutation({
     mutationFn: markAsReadAPI,
 
     onMutate: async (conversationId) => {
-      if (markedRef.has(conversationId)) return;
-      markedRef.add(conversationId);
+      // Skip optimistic update if already marked recently, but still allow API call
+      if (markedRef.current.has(conversationId)) return;
+      markedRef.current.add(conversationId);
 
       await queryClient.cancelQueries({ queryKey: ['conversations'] });
 
@@ -225,7 +227,7 @@ export function useMarkAsRead() {
 
     onSettled: (_, __, conversationId) => {
       // Allow re-marking after 5 seconds
-      setTimeout(() => markedRef.delete(conversationId), 5000);
+      setTimeout(() => markedRef.current.delete(conversationId), 5000);
     },
   });
 
