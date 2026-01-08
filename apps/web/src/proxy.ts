@@ -7,37 +7,10 @@ import {
   isDealerStaff,
 } from "@/lib/auth/routing";
 import type { ExtendedUser } from "@/types/auth";
+import { sessionCache, invalidateSessionByToken } from "@/lib/redis";
 
 // Request-scoped session cache key
 const SESSION_HEADER_KEY = "x-auth-user";
-const CACHE_TTL = 60_000; // 1 minute in-memory (ms) - increased from 10s for v1
-
-/**
- * In-memory session cache (v1 - no Redis)
- * Note: Cache is per-serverless instance, not shared across Vercel containers.
- * This is acceptable for v1 - each instance builds its own cache over time.
- */
-const sessionCache = new Map<string, { user: ExtendedUser; expires: number }>();
-const CACHE_MAX_SIZE = 1000;
-
-function getCachedSession(key: string): ExtendedUser | null {
-  const entry = sessionCache.get(key);
-  if (!entry) return null;
-  if (Date.now() > entry.expires) {
-    sessionCache.delete(key);
-    return null;
-  }
-  return entry.user;
-}
-
-function setCachedSession(key: string, user: ExtendedUser): void {
-  // Simple LRU: if at max size, delete oldest entry
-  if (sessionCache.size >= CACHE_MAX_SIZE) {
-    const firstKey = sessionCache.keys().next().value;
-    if (firstKey) sessionCache.delete(firstKey);
-  }
-  sessionCache.set(key, { user, expires: Date.now() + CACHE_TTL });
-}
 
 function isExtendedUser(user: unknown): user is ExtendedUser {
   if (!user || typeof user !== "object") return false;
@@ -82,13 +55,13 @@ export async function proxy(request: NextRequest) {
 
   // Fetch session once for all protected routes
   try {
-    const cacheKey = `session:${sessionToken.slice(0, 32)}`;
+    const tokenKey = `token:${sessionToken.slice(0, 32)}`;
     
-    // Check in-memory cache first
-    let user: ExtendedUser | null = getCachedSession(cacheKey);
+    // Check unified cache first (keyed by token for fast lookup)
+    let user: ExtendedUser | null = await sessionCache.get<ExtendedUser>(tokenKey);
     
     if (!user) {
-      // Cache miss - fetch from Better Auth
+      // Cache miss - fetch from Better Auth (which has its own userId-based cache)
       const session = await auth.api.getSession({
         headers: request.headers,
       });
@@ -102,8 +75,8 @@ export async function proxy(request: NextRequest) {
 
       user = session.user;
       
-      // Cache for subsequent requests in this serverless instance
-      setCachedSession(cacheKey, user);
+      // Cache by token AND register token->userId mapping for invalidation
+      await sessionCache.setWithMapping(tokenKey, user, user.id);
     }
 
     if (!user) {

@@ -74,8 +74,10 @@ export interface PartnerBookingStats {
   confirmedBookings: number;
   completedThisMonth: number;
   noShowRate: number; // percentage
+  noShowCount: number;
   bookingsThisWeek: number;
   cancellationRate: number; // percentage
+  cancelledCount: number;
 }
 
 export interface PartnerTrendStats {
@@ -440,8 +442,10 @@ export async function getPartnerInsightsBookingStats(partnerId: string): Promise
     confirmedBookings: Number(stats?.confirmedBookings ?? 0),
     completedThisMonth: Number(stats?.completedThisMonth ?? 0),
     noShowRate,
+    noShowCount: noShows,
     bookingsThisWeek: Number(stats?.bookingsThisWeek ?? 0),
     cancellationRate,
+    cancelledCount: cancelled,
   };
 }
 

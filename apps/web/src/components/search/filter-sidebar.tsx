@@ -88,7 +88,7 @@ export function FilterSidebar({
       </FilterSection>
 
       {/* Price Range */}
-      <FilterSection title="Price (AED)" defaultOpen>
+      <FilterSection title="Price" defaultOpen>
         <RangeFilter
           minValue={params.priceMin}
           maxValue={params.priceMax}
@@ -114,7 +114,7 @@ export function FilterSidebar({
       </FilterSection>
 
       {/* Mileage */}
-      <FilterSection title="Mileage (km)">
+      <FilterSection title="Mileage">
         <RangeFilter
           minValue={0}
           maxValue={params.mileageMax}

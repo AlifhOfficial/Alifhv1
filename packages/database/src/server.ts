@@ -11,6 +11,7 @@
 
 export { calculatePartnerStats, type PartnerStats } from './queries/partner/car-dealer/partner-stats';
 export { calculateUserStats, type UserStats } from './queries/user-stats';
+export { getUserDashboardStats, type UserDashboardStats } from './queries/user-dashboard';
 
 // Messaging queries
 export {

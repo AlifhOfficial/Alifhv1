@@ -119,17 +119,17 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
       {/* Backdrop */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-background/60 backdrop-blur-sm z-[60]"
+          className="fixed inset-0 z-[60]"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-sidebar border border-sidebar-border rounded-xl shadow-lg z-[70] overflow-hidden">
+        <div className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 top-14 sm:top-full sm:mt-2 sm:w-96 bg-sidebar border border-sidebar-border rounded-xl shadow-xl z-[70] overflow-hidden">
           {/* Header */}
           <div className="px-4 py-3.5 border-b border-sidebar-border">
-            <h3 className="text-base font-semibold tracking-tight text-sidebar-foreground">
+            <h3 className="text-[15px] font-semibold tracking-tight text-sidebar-foreground">
               Favorites
             </h3>
           </div>
@@ -142,9 +142,9 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
               </div>
             ) : listings.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                <Moon className="w-12 h-12 text-muted-foreground/30 mb-3" />
-                <p className="text-[15px] font-medium text-muted-foreground">No favorites yet</p>
-                <p className="text-[13px] text-muted-foreground/70 mt-1.5 leading-relaxed">
+                <Moon className="w-12 h-12 text-muted-foreground/40 mb-3" />
+                <p className="text-[15px] font-semibold text-foreground/80">No favorites yet</p>
+                <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
                   Heart some cars and they&apos;ll appear here
                 </p>
               </div>
@@ -167,7 +167,7 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
             <Link
               href="/user-dashboard/favorites"
               onClick={() => setIsOpen(false)}
-              className="flex items-center justify-center gap-2 px-4 py-3.5 text-[14px] font-medium text-primary hover:bg-sidebar-accent transition-colors"
+              className="flex items-center justify-center gap-2 px-4 py-3.5 text-sm font-semibold text-primary hover:bg-sidebar-accent transition-colors"
             >
               View all favorites
               <ChevronRight className="w-4 h-4" />
@@ -219,10 +219,10 @@ function FavoritePreviewItem({ listing, formatPrice, onClose }: FavoritePreviewI
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <h4 className="text-[15px] font-medium text-sidebar-foreground truncate">
+        <h4 className="text-sm font-semibold text-sidebar-foreground truncate">
           {title}
         </h4>
-        <p className="text-[14px] text-muted-foreground/80 mt-0.5">
+        <p className="text-[13px] text-muted-foreground mt-1">
           {formatPrice(price)}
         </p>
       </div>

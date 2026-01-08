@@ -60,42 +60,44 @@ export function UserBookingCard({
   };
 
   return (
-    <div className="rounded-xl border border-border/40 overflow-hidden bg-sidebar hover:bg-muted/30 transition-colors">
+    <div className="rounded-xl border border-sidebar-border overflow-hidden bg-sidebar hover:bg-sidebar-accent/50 transition-colors">
       {/* Booking Header */}
       <div 
-        className="p-5 cursor-pointer"
+        className="px-5 py-4 cursor-pointer"
         onClick={onToggleExpand}
       >
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-4 min-w-0 flex-1">
             {booking.listingThumbnail && (
-              <img
-                src={booking.listingThumbnail}
-                alt={booking.listingTitle}
-                className="w-24 h-18 object-cover rounded-lg flex-shrink-0 border border-border/40"
-              />
+              <div className="relative w-28 h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0 border border-sidebar-border">
+                <img
+                  src={booking.listingThumbnail}
+                  alt={booking.listingTitle}
+                  className="w-full h-full object-cover"
+                />
+              </div>
             )}
             <div className="min-w-0 space-y-2 flex-1">
               <Link 
                 href={`/listings/${booking.listingId}`}
-                className="font-semibold tracking-tight hover:text-primary transition-colors line-clamp-1 block"
+                className="text-base font-semibold tracking-tight text-sidebar-foreground hover:text-primary transition-colors line-clamp-1 block"
                 onClick={e => e.stopPropagation()}
               >
                 {booking.listingTitle}
               </Link>
-              <div className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground/70">
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                 <Building2 className="w-3.5 h-3.5" />
                 <span>{booking.partnerName}</span>
               </div>
               <div className="flex flex-wrap items-center gap-4 text-sm">
-                <div className="flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span className="font-semibold tracking-tight">
+                <div className="flex items-center gap-2 text-sidebar-foreground/90">
+                  <Calendar className="w-4 h-4 text-muted-foreground/60" />
+                  <span className="font-medium">
                     {formatDate(booking.scheduledStartTime)}
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 font-medium text-muted-foreground/70">
-                  <Clock className="w-3.5 h-3.5" />
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Clock className="w-4 h-4" />
                   <span>
                     {formatTime(booking.scheduledStartTime)} - {formatTime(booking.scheduledEndTime)}
                   </span>
@@ -105,14 +107,14 @@ export function UserBookingCard({
           </div>
           <div className="flex items-center gap-3 flex-shrink-0">
             <span className={cn(
-              "flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-tight",
+              "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold tracking-tight",
               USER_BOOKING_STATUS_COLORS[booking.status]
             )}>
               <BookingStatusIcon status={booking.status} />
               {USER_BOOKING_STATUS_LABELS[booking.status]}
             </span>
             <ChevronDown className={cn(
-              "w-4 h-4 text-muted-foreground transition-transform",
+              "w-5 h-5 text-muted-foreground/60 transition-transform duration-200",
               isExpanded && "rotate-180"
             )} />
           </div>
@@ -121,17 +123,17 @@ export function UserBookingCard({
 
       {/* Expanded Details */}
       {isExpanded && (
-        <div className="border-t border-border/40 p-5 space-y-5">
+        <div className="border-t border-sidebar-border px-5 py-4 space-y-5">
           {/* Confirmation Token */}
           {booking.confirmationToken && (
-            <div className="rounded-xl border border-border/40 bg-muted/20 p-5">
+            <div className="rounded-lg bg-sidebar-accent/40 px-5 py-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-muted/40 flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 rounded-full bg-sidebar-accent flex items-center justify-center flex-shrink-0">
                   <Calendar className="w-5 h-5 text-muted-foreground" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold tracking-tight">Confirmation Code</p>
-                  <p className="text-lg font-mono font-bold text-foreground tracking-wider">{booking.confirmationToken}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Confirmation Code</p>
+                  <p className="text-xl font-mono font-bold text-sidebar-foreground tracking-wider mt-1">{booking.confirmationToken}</p>
                 </div>
               </div>
             </div>
@@ -139,20 +141,20 @@ export function UserBookingCard({
 
           {/* Details Grid */}
           <div className="grid md:grid-cols-2 gap-5">
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold tracking-tight">Booking Details</h4>
-              <div className="space-y-1.5 text-sm">
-                <p className="font-medium text-muted-foreground/70">
-                  <span className="text-foreground font-semibold">Attendees:</span>{' '}
+            <div className="space-y-2.5">
+              <h4 className="text-base font-semibold tracking-tight text-sidebar-foreground">Booking Details</h4>
+              <div className="space-y-2 text-sm">
+                <p className="text-muted-foreground">
+                  <span className="text-sidebar-foreground/90 font-semibold">Attendees:</span>{' '}
                   {booking.numberOfAttendees} {booking.numberOfAttendees === 1 ? 'person' : 'people'}
                 </p>
-                <p className="font-medium text-muted-foreground/70">
-                  <span className="text-foreground font-semibold">Booked on:</span>{' '}
+                <p className="text-muted-foreground">
+                  <span className="text-sidebar-foreground/90 font-medium">Booked on:</span>{' '}
                   {new Date(booking.createdAt).toLocaleDateString('en-AE')}
                 </p>
                 {booking.confirmedAt && (
-                  <p className="font-medium text-muted-foreground/70">
-                    <span className="text-foreground font-semibold">Confirmed on:</span>{' '}
+                  <p className="text-muted-foreground">
+                    <span className="text-sidebar-foreground/90 font-medium">Confirmed on:</span>{' '}
                     {new Date(booking.confirmedAt).toLocaleDateString('en-AE')}
                   </p>
                 )}
@@ -163,14 +165,14 @@ export function UserBookingCard({
               <div className="space-y-3">
                 {booking.notes && (
                   <div>
-                    <h4 className="text-sm font-semibold tracking-tight">Your Notes</h4>
-                    <p className="text-[15px] font-medium text-muted-foreground/70 mt-1.5">{booking.notes}</p>
+                    <h4 className="text-base font-semibold tracking-tight text-sidebar-foreground">Your Notes</h4>
+                    <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{booking.notes}</p>
                   </div>
                 )}
                 {booking.specialRequests && (
                   <div>
-                    <h4 className="text-sm font-semibold tracking-tight">Special Requests</h4>
-                    <p className="text-[15px] font-medium text-muted-foreground/70 mt-1.5">{booking.specialRequests}</p>
+                    <h4 className="text-base font-semibold tracking-tight text-sidebar-foreground">Special Requests</h4>
+                    <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{booking.specialRequests}</p>
                   </div>
                 )}
               </div>
@@ -179,13 +181,13 @@ export function UserBookingCard({
 
           {/* Cancellation Reason */}
           {booking.cancellationReason && (
-            <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-5">
-              <p className="text-sm font-semibold tracking-tight text-red-500">Cancellation Reason</p>
-              <p className="text-[15px] font-medium text-muted-foreground/70 mt-1.5 capitalize">
+            <div className="rounded-lg bg-rose-500/10 px-5 py-4">
+              <p className="text-base font-semibold tracking-tight text-rose-500">Cancellation Reason</p>
+              <p className="text-sm text-muted-foreground mt-2 capitalize">
                 {booking.cancellationReason.replace(/_/g, ' ')}
               </p>
               {booking.cancellationNotes && (
-                <p className="text-[15px] font-medium text-muted-foreground/70 mt-1.5">
+                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
                   {booking.cancellationNotes}
                 </p>
               )}
@@ -194,11 +196,11 @@ export function UserBookingCard({
 
           {/* Feedback Section */}
           {booking.status === 'completed' && (
-            <div className="pt-4 border-t border-border/40">
+            <div className="pt-4 border-t border-sidebar-border">
               {booking.feedbackRating ? (
-                <div className="space-y-2">
-                  <h4 className="text-sm font-semibold tracking-tight">Your Feedback</h4>
-                  <div className="flex items-center gap-1">
+                <div className="space-y-2.5">
+                  <h4 className="text-base font-semibold tracking-tight text-sidebar-foreground">Your Feedback</h4>
+                  <div className="flex items-center gap-1.5">
                     {[1, 2, 3, 4, 5].map(star => (
                       <Star
                         key={star}
@@ -206,19 +208,19 @@ export function UserBookingCard({
                           "w-5 h-5",
                           star <= booking.feedbackRating!
                             ? "fill-yellow-500 text-yellow-500"
-                            : "text-muted-foreground"
+                            : "text-muted-foreground/40"
                         )}
                       />
                     ))}
                   </div>
                   {booking.feedbackComment && (
-                    <p className="text-[15px] font-medium text-muted-foreground/70">{booking.feedbackComment}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{booking.feedbackComment}</p>
                   )}
                 </div>
               ) : (
                 <button
                   onClick={onLeaveFeedback}
-                  className="px-6 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold tracking-tight transition-colors"
+                  className="px-5 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold tracking-tight transition-colors"
                 >
                   Leave Feedback
                 </button>
@@ -228,11 +230,11 @@ export function UserBookingCard({
 
           {/* Actions */}
           {canCancel() && (
-            <div className="flex gap-2 pt-4 border-t border-border/40">
+            <div className="flex gap-2 pt-4 border-t border-sidebar-border">
               <button
                 onClick={onCancel}
                 disabled={isActionLoading}
-                className="px-5 py-2 rounded-full bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-5 py-2.5 rounded-lg bg-rose-500 hover:bg-rose-600 text-white text-sm font-semibold tracking-tight transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel Booking
               </button>

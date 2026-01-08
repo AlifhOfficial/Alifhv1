@@ -27,10 +27,21 @@ import { UserRole } from "@/types/auth";
 import { emailService } from "@/lib/email";
 import { ac, roles } from "@/lib/auth/permissions";
 import { AUTH_CONFIG } from "./config";
-import { sessionCache } from "@/lib/redis";
+import { sessionCache, invalidateUserSessions } from "@/lib/redis";
 
 // Register session cache invalidator with database package
-setSessionCacheInvalidator((key) => sessionCache.delete(key));
+// This is called when profile/role updates happen - invalidates ALL caches for the user
+setSessionCacheInvalidator(async (key) => {
+  // Extract userId from key format "user:{userId}:session"
+  const match = key.match(/^user:(.+):session$/);
+  if (match) {
+    // Invalidate by userId - clears both userId-keyed and token-keyed caches
+    await invalidateUserSessions(match[1]);
+  } else {
+    // Fallback: delete by exact key
+    await sessionCache.delete(key);
+  }
+});
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
