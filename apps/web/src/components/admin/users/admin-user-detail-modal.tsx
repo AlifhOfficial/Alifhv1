@@ -137,9 +137,9 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
                     <Phone className="w-3.5 h-3.5" />
                     <span>Phone</span>
                   </div>
-                  <p className="text-sm font-medium">{user.profile.phone}</p>
+                  <p className="text-sm font-medium">{user.profile.phone || user.phoneNumber}</p>
                   <div className="flex items-center gap-1.5">
-                    {user.phoneVerified ? (
+                    {user.phoneNumberVerified ? (
                       <>
                         <CheckCircle2 className="w-3 h-3 text-green-500" />
                         <span className="text-xs text-green-500">Verified</span>

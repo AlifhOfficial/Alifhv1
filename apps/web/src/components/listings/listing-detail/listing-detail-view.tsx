@@ -147,8 +147,12 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
 
     setIsStartingChat(true);
     try {
+      // For staff listings, message the currently assigned staff member
+      // userId is updated when listings are reassigned
+      const contactUserId = listing.userId;
+      
       const { conversationId } = await createConversation({
-        otherUserId: listing.userId,
+        otherUserId: contactUserId,
         listingId: listing.id,
         partnerId: listing.partnerId ?? undefined,
       });

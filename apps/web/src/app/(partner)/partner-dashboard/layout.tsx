@@ -56,9 +56,15 @@ export default function PartnerDashboardLayout({ children }: { children: React.R
   const partnerMembership = (user as any).partnerMemberships?.find((m: any) => m.staffRole === 'owner');
   if (!partnerMembership) redirect('/access-denied?reason=not-partner-owner');
 
+  // Get company info for sidebar
+  const staffOverride = {
+    companyLogo: partnerMembership.partnerLogo,
+    companyName: partnerMembership.partnerName,
+  };
+
   return (
     <DashboardLayout enableRightPanel>
-      <AppSidebar user={user} sections={navSections} />
+      <AppSidebar user={user} sections={navSections} staffOverride={staffOverride} />
       <DashboardContent>{children}</DashboardContent>
     </DashboardLayout>
   );

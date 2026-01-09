@@ -324,8 +324,8 @@ export function FloatingChatWindow({
                           isReadByOther={isReadByOther}
                           showSeen={showSeen}
                           seenAt={otherLastReadAt}
-                          otherUserAvatar={otherParticipant?.avatarUrl || null}
-                          otherUserName={otherParticipant?.name || null}
+                          otherUserAvatar={otherParticipant?.avatarUrl ?? null}
+                          otherUserName={otherParticipant?.name ?? null}
                           compact
                         />
                       </div>

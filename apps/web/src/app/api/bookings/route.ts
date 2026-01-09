@@ -14,7 +14,7 @@ import {
   checkUserBookingRestrictions,
   runBookingMaintenance,
   memoryCache,
-  getPartnerBookingSettings,
+  getPartnerBookingSettingsBatch,
   type BookingStatus,
 } from '@alifh/database';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_BOOKINGS } from '@/lib/rate-limit';
@@ -57,32 +57,28 @@ export async function GET(req: NextRequest) {
       upcoming,
     });
 
-    // Enrich bookings with partner settings for cancellation/reschedule policies
+    // ⚡ OPTIMIZED: Single batch query instead of N queries per partner
     const partnerIds = [...new Set(result.bookings.map(b => b.partnerId))];
-    const settingsMap = new Map<string, Awaited<ReturnType<typeof getPartnerBookingSettings>>>();
-    
-    await Promise.all(
-      partnerIds.map(async (partnerId) => {
-        const settings = await getPartnerBookingSettings(partnerId);
-        settingsMap.set(partnerId, settings);
-      })
-    );
+    const settingsMap = await getPartnerBookingSettingsBatch(partnerIds);
 
-    const enrichedBookings = result.bookings.map(booking => ({
-      ...booking,
-      partnerSettings: settingsMap.get(booking.partnerId) ? {
-        allowUserCancellation: settingsMap.get(booking.partnerId)!.allowUserCancellation,
-        cancellationDeadlineHours: settingsMap.get(booking.partnerId)!.cancellationDeadlineHours ?? 2,
-        allowReschedule: settingsMap.get(booking.partnerId)!.allowReschedule,
-        maxRescheduleCount: settingsMap.get(booking.partnerId)!.maxRescheduleCount,
-        rescheduleDeadlineHours: settingsMap.get(booking.partnerId)!.rescheduleDeadlineHours ?? 4,
-        preparationInstructions: settingsMap.get(booking.partnerId)!.preparationInstructions,
-        directions: settingsMap.get(booking.partnerId)!.directions,
-        parkingInstructions: settingsMap.get(booking.partnerId)!.parkingInstructions,
-        contactPersonName: settingsMap.get(booking.partnerId)!.contactPersonName,
-        contactPersonPhone: settingsMap.get(booking.partnerId)!.contactPersonPhone,
-      } : undefined,
-    }));
+    const enrichedBookings = result.bookings.map(booking => {
+      const settings = settingsMap.get(booking.partnerId);
+      return {
+        ...booking,
+        partnerSettings: settings ? {
+          allowUserCancellation: settings.allowUserCancellation,
+          cancellationDeadlineHours: settings.cancellationDeadlineHours ?? 2,
+          allowReschedule: settings.allowReschedule,
+          maxRescheduleCount: settings.maxRescheduleCount,
+          rescheduleDeadlineHours: settings.rescheduleDeadlineHours ?? 4,
+          preparationInstructions: settings.preparationInstructions,
+          directions: settings.directions,
+          parkingInstructions: settings.parkingInstructions,
+          contactPersonName: settings.contactPersonName,
+          contactPersonPhone: settings.contactPersonPhone,
+        } : undefined,
+      };
+    });
 
     return NextResponse.json({
       bookings: enrichedBookings,

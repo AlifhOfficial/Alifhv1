@@ -1,7 +1,7 @@
 /**
  * Staff Profile API
  * GET - Get current staff member's profile
- * PATCH - Update staff profile (displayName, workEmail, workPhone)
+ * PATCH - Update staff profile (displayName, workPhone)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -73,8 +73,9 @@ export async function GET(req: NextRequest) {
 
 const updateSchema = z.object({
   displayName: z.string().max(100).optional(),
-  workEmail: z.string().email().optional().or(z.literal('')),
   workPhone: z.string().max(20).optional(),
+  usePersonalPhone: z.boolean().optional(),
+  workPhoneVerified: z.boolean().optional(),
 });
 
 export async function PATCH(req: NextRequest) {
@@ -108,8 +109,9 @@ export async function PATCH(req: NextRequest) {
     // Update the staff record
     const updated = await updateStaffProfile(membership.partnerId, user.id, {
       displayName: validated.displayName || null,
-      workEmail: validated.workEmail || null,
       workPhone: validated.workPhone || null,
+      usePersonalPhone: validated.usePersonalPhone,
+      workPhoneVerified: validated.workPhoneVerified,
     });
 
     if (!updated) {

@@ -59,7 +59,7 @@ export type ExtendedUserProfile = {
   memberSince: Date | null;
   updatedAt: Date;
   emailVerified: boolean;
-  phoneVerified: boolean;
+  phoneNumberVerified: boolean;
   // User table fields (for fallback in UI)
   userName: string | null;
 };
@@ -100,7 +100,7 @@ export const getUserProfileByUserId = async (userId: string): Promise<ExtendedUs
       updatedAt: userProfile.updatedAt, // For cache busting on avatar URLs
       // Verification fields from user table
       emailVerified: user.emailVerified,
-      phoneVerified: user.phoneVerified,
+      phoneNumberVerified: user.phoneNumberVerified,
       // Basic user info (for fallback in UI)
       userName: user.name,
     })
@@ -116,7 +116,7 @@ export const getUserProfileByUserId = async (userId: string): Promise<ExtendedUs
   const profile: ExtendedUserProfile = {
     ...result,
     emailVerified: result.emailVerified ?? false,
-    phoneVerified: result.phoneVerified ?? false,
+    phoneNumberVerified: result.phoneNumberVerified ?? false,
   };
 
   // Cache the result (disabled - no-op)
@@ -149,7 +149,7 @@ export const updateUserProfileByUserId = async (
 
   // Check if phone changed - clear verification if so
   if ('phone' in cleanUpdates && currentProfile && currentProfile.phone !== cleanUpdates.phone) {
-    await db.update(user).set({ phoneVerified: false }).where(eq(user.id, userId));
+    await db.update(user).set({ phoneNumberVerified: false }).where(eq(user.id, userId));
   }
 
   // Auto-sync firstName/lastName to user.name

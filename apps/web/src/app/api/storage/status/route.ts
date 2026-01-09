@@ -14,7 +14,7 @@
 import { NextResponse } from "next/server";
 import { getStorageStatus } from "@/lib/storage";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 export async function GET() {
   try {

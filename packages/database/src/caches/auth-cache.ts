@@ -27,14 +27,15 @@
 
 import { CacheKeys } from "./memory-cache";
 
-// Callback to invalidate session in Redis (set by web app at startup)
-let invalidateSessionCacheCallback: ((key: string) => Promise<void>) | null = null;
+// Callback to invalidate session cache (set by web app at startup)
+// Accepts both sync and async callbacks for flexibility
+let invalidateSessionCacheCallback: ((key: string) => void | Promise<void>) | null = null;
 
 /**
- * Register the Redis cache invalidation callback
- * Called by the web app to connect the database package to Redis
+ * Register the session cache invalidation callback
+ * Called by the web app to connect the database package to the cache
  */
-export function setSessionCacheInvalidator(callback: (key: string) => Promise<void>): void {
+export function setSessionCacheInvalidator(callback: (key: string) => void | Promise<void>): void {
   invalidateSessionCacheCallback = callback;
 }
 
@@ -52,9 +53,13 @@ export function invalidateUserSession(userId: string): void {
   
   // Fire and forget - don't block the mutation
   if (invalidateSessionCacheCallback) {
-    invalidateSessionCacheCallback(key).catch(err => {
-      console.error('[auth-cache] Failed to invalidate session:', err);
-    });
+    const result = invalidateSessionCacheCallback(key);
+    // Handle async callbacks gracefully
+    if (result && typeof result.catch === 'function') {
+      result.catch(err => {
+        console.error('[auth-cache] Failed to invalidate session:', err);
+      });
+    }
   }
 }
 
@@ -65,9 +70,9 @@ export function invalidateUserSession(userId: string): void {
  * @example
  * // After bulk role updates
  * await bulkUpdateRoles(userIds, newRole);
- * invalidateUserSessions(userIds);
+ * invalidateBatchUserSessions(userIds);
  */
-export function invalidateUserSessions(userIds: string[]): void {
+export function invalidateBatchUserSessions(userIds: string[]): void {
   userIds.forEach(id => invalidateUserSession(id));
 }
 

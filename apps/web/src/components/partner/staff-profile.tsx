@@ -8,14 +8,13 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Loader2, RefreshCw, User, Mail, Phone, Briefcase } from 'lucide-react';
+import { ArrowLeft, Loader2, RefreshCw, User, Phone, Briefcase } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import Link from 'next/link';
 
 interface StaffProfileData {
   id: string;
   displayName: string | null;
-  workEmail: string | null;
   workPhone: string | null;
   title: string | null;
   department: string | null;
@@ -36,7 +35,6 @@ export function StaffProfile() {
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({
     displayName: '',
-    workEmail: '',
     workPhone: '',
   });
 
@@ -57,7 +55,6 @@ export function StaffProfile() {
     if (profile) {
       setFormData({
         displayName: profile.displayName || '',
-        workEmail: profile.workEmail || '',
         workPhone: profile.workPhone || '',
       });
     }
@@ -99,7 +96,6 @@ export function StaffProfile() {
     if (profile) {
       setFormData({
         displayName: profile.displayName || '',
-        workEmail: profile.workEmail || '',
         workPhone: profile.workPhone || '',
       });
     }
@@ -240,31 +236,6 @@ export function StaffProfile() {
               ) : (
                 <p className="text-sm font-medium tracking-tight mt-1">
                   {profile.displayName || <span className="text-muted-foreground">Not set</span>}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Work Email */}
-        <div className="group p-4 -mx-4 rounded-xl hover:bg-secondary/30 transition-colors">
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
-              <Mail className="w-4 h-4 text-muted-foreground" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <label className="text-xs text-muted-foreground">Work Email</label>
-              {editing ? (
-                <input
-                  type="email"
-                  value={formData.workEmail}
-                  onChange={(e) => setFormData({ ...formData, workEmail: e.target.value })}
-                  placeholder="sales@company.ae"
-                  className="w-full mt-1 px-3 py-2 bg-secondary/50 rounded-lg text-sm font-medium border border-transparent focus:border-blue-500 focus:outline-none placeholder:text-muted-foreground/50"
-                />
-              ) : (
-                <p className="text-sm font-medium tracking-tight mt-1">
-                  {profile.workEmail || <span className="text-muted-foreground">Not set</span>}
                 </p>
               )}
             </div>

@@ -8,8 +8,8 @@ export const user = pgTable('user', {
   email: text('email').notNull().unique(),
   emailVerified: boolean('email_verified').default(false).notNull(),
   image: text('image'), // Profile picture URL from OAuth providers
-  phoneVerified: boolean('phone_verified').default(false).notNull(),
-  phoneVerifiedAt: timestamp('phone_verified_at'),
+  phoneNumber: text('phone_number'), // Better Auth phone plugin field
+  phoneNumberVerified: boolean('phone_number_verified').default(false).notNull(), // Better Auth phone plugin field
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
   role: platformRoleEnum('role').default('user').notNull(),

@@ -52,9 +52,15 @@ export default function StaffDashboardLayout({ children }: { children: React.Rea
   if (!staffMembership) redirect('/access-denied?reason=not-dealer-staff');
   if (staffMembership.staffRole === 'owner') redirect('/partner-dashboard');
 
+  // Get company info for sidebar
+  const staffOverride = {
+    companyLogo: staffMembership.partnerLogo,
+    companyName: staffMembership.partnerName,
+  };
+
   return (
     <DashboardLayout enableRightPanel>
-      <AppSidebar user={user} sections={navSections} />
+      <AppSidebar user={user} sections={navSections} staffOverride={staffOverride} />
       <DashboardContent>{children}</DashboardContent>
     </DashboardLayout>
   );

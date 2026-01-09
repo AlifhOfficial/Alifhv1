@@ -10,7 +10,7 @@
 import { createId } from '@paralleldrive/cuid2';
 import { eq } from 'drizzle-orm';
 import { db } from '../../dbclient';
-import { user } from '../../schema';
+import { user, userProfile } from '../../schema';
 import { memoryCache, CacheKeys, CacheTTL } from '../../caches';
 
 // Essential user queries
@@ -120,22 +120,5 @@ export const checkUserExistsByEmail = async (email: string): Promise<boolean> =>
   return !!result;
 };
 
-/**
- * Update user phone verification status
- * Called after OTP verification succeeds
- */
-export const updateUserPhoneVerified = async (userId: string, verified: boolean = true) => {
-  // Invalidate cache before update
-  memoryCache.delete(CacheKeys.userById(userId));
-  
-  const [result] = await db
-    .update(user)
-    .set({
-      phoneVerified: verified,
-      updatedAt: new Date(),
-    })
-    .where(eq(user.id, userId))
-    .returning();
-    
-  return result || null;
-};
+// Note: Phone verification is now handled by Better Auth's phoneNumber plugin
+// See: apps/web/src/lib/auth/index.ts - phoneNumber plugin with Twilio Verify

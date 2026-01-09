@@ -267,13 +267,15 @@ export async function verifyUserEmail(userId: string) {
 
 /**
  * Manually verify user phone (admin override)
+ * Note: Better Auth handles phone verification via phoneNumber plugin,
+ * but admins can manually override verification status
  */
-export async function verifyUserPhone(userId: string) {
+export async function verifyUserPhone(userId: string, phoneNumber?: string) {
   const [updated] = await db
     .update(user)
     .set({
-      phoneVerified: true,
-      phoneVerifiedAt: new Date(),
+      phoneNumber: phoneNumber || null,
+      phoneNumberVerified: true,
       updatedAt: new Date(),
     })
     .where(eq(user.id, userId))

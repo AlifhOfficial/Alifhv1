@@ -35,7 +35,7 @@ export interface UserProfile {
   avatar?: string | null;
   avatarUrl?: string | null;
   emailVerified?: boolean;
-  phoneVerified?: boolean;
+  phoneNumberVerified?: boolean;
 }
 
 export interface UserProfileUpdate {

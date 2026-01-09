@@ -12,4 +12,4 @@ export * from './mutations';
 export * from './cache-invalidation';
 export * from './sql-fragments';
 export * from './analytics';
-
+export * from './view-buffer';

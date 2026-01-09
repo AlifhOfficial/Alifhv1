@@ -18,6 +18,7 @@ import {
 import { carListing } from '../../schema/listing';
 import { partner } from '../../schema/partner';
 import { user } from '../../schema/auth';
+import { userProfile } from '../../schema/profile';
 import { checkUserBookingRestrictions, BOOKING_CONFIG, ACTIVE_BOOKING_STATUSES } from './booking-queries';
 import { getAvailableSlots, getPartnerBookingSettings } from './availability-queries';
 
@@ -224,23 +225,39 @@ export async function runBookingMaintenance(options?: { retentionDays?: number }
 
 /**
  * Create a new booking
+ * ⚡ OPTIMIZED: Parallelized validation queries (reduced from ~15 to ~6 round trips)
  */
 export async function createBooking(input: CreateBookingInput): Promise<BookingResult> {
-  // Check user restrictions first
-  const restrictions = await checkUserBookingRestrictions(input.userId);
+  const now = new Date();
+  const slotDay = new Date(input.scheduledStartTime);
+  slotDay.setUTCHours(0, 0, 0, 0);
+  const dayOfWeek = slotDay.getUTCDay();
+
+  // ⚡ PHASE 1: Parallel initial validation (4 queries → 1 round trip)
+  const [restrictions, listingData, userWithProfile] = await Promise.all([
+    checkUserBookingRestrictions(input.userId),
+    db.query.carListing.findFirst({
+      where: eq(carListing.id, input.listingId),
+      columns: { id: true, partnerId: true, lifecycleStatus: true },
+    }),
+    // Combined user + profile query (was 2 separate queries)
+    db
+      .select({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: userProfile.phone,
+      })
+      .from(user)
+      .leftJoin(userProfile, eq(userProfile.userId, user.id))
+      .where(eq(user.id, input.userId))
+      .limit(1),
+  ]);
+
+  // Early validation checks
   if (!restrictions.canBook) {
     return { success: false, error: restrictions.reason };
   }
-
-  // Get listing to find partner
-  const listingData = await db.query.carListing.findFirst({
-    where: eq(carListing.id, input.listingId),
-    columns: {
-      id: true,
-      partnerId: true,
-      lifecycleStatus: true,
-    },
-  });
 
   if (!listingData) {
     return { success: false, error: 'Listing not found' };
@@ -254,275 +271,224 @@ export async function createBooking(input: CreateBookingInput): Promise<BookingR
     return { success: false, error: 'This listing does not support test drive bookings' };
   }
 
-  const partnerId = listingData.partnerId;
+  if (userWithProfile.length === 0) {
+    return { success: false, error: 'User not found' };
+  }
 
-  // Check partner booking settings
-  const settings = await getPartnerBookingSettings(partnerId);
+  const partnerId = listingData.partnerId;
+  const userData = userWithProfile[0];
+  const userPhone = userData.phone || '+971500000000';
+
+  // ⚡ PHASE 2: Partner + booking validation (5 queries → 1 round trip)
+  const [settings, existingForListing, overlappingUserBooking, slots, availabilityRule] = await Promise.all([
+    getPartnerBookingSettings(partnerId),
+    db.query.booking.findFirst({
+      where: and(
+        eq(booking.userId, input.userId),
+        eq(booking.listingId, input.listingId),
+        inArray(booking.status, ['pending', 'confirmed']),
+        gte(booking.scheduledEndTime, now),
+        or(
+          eq(booking.status, 'confirmed'),
+          and(eq(booking.status, 'pending'), or(isNull(booking.expiresAt), gt(booking.expiresAt, now)))
+        )
+      ),
+      columns: { id: true },
+    }),
+    db.query.booking.findFirst({
+      where: and(
+        eq(booking.userId, input.userId),
+        inArray(booking.status, ['pending', 'confirmed']),
+        lt(booking.scheduledStartTime, input.scheduledEndTime),
+        gt(booking.scheduledEndTime, input.scheduledStartTime),
+        or(
+          eq(booking.status, 'confirmed'),
+          and(eq(booking.status, 'pending'), or(isNull(booking.expiresAt), gt(booking.expiresAt, now)))
+        )
+      ),
+      columns: { id: true },
+    }),
+    getAvailableSlots(partnerId, slotDay),
+    db.query.partnerAvailability.findFirst({
+      where: and(
+        eq(partnerAvailability.partnerId, partnerId),
+        eq(partnerAvailability.dayOfWeek, dayOfWeek),
+        eq(partnerAvailability.isActive, true)
+      ),
+      columns: { id: true, maxConcurrentBookings: true },
+    }),
+  ]);
+
+  // Validation checks
   if (settings && !settings.bookingEnabled) {
     return { success: false, error: 'This dealer is not accepting bookings at this time' };
   }
-
-  // Prevent multiple active bookings by the same user for the same listing.
-  // (User should reschedule/cancel their existing booking instead.)
-  const now = new Date();
-  const existingForListing = await db.query.booking.findFirst({
-    where: and(
-      eq(booking.userId, input.userId),
-      eq(booking.listingId, input.listingId),
-      inArray(booking.status, ['pending', 'confirmed']),
-      gte(booking.scheduledEndTime, now),
-      or(
-        eq(booking.status, 'confirmed'),
-        and(
-          eq(booking.status, 'pending'),
-          or(isNull(booking.expiresAt), gt(booking.expiresAt, now))
-        )
-      )
-    ),
-    columns: { id: true, status: true, scheduledStartTime: true },
-  });
 
   if (existingForListing) {
     return { success: false, error: 'You already have a test drive booked for this listing' };
   }
 
-  // Prevent overlapping bookings for the same user across different listings.
-  const overlappingUserBooking = await db.query.booking.findFirst({
-    where: and(
-      eq(booking.userId, input.userId),
-      inArray(booking.status, ['pending', 'confirmed']),
-      lt(booking.scheduledStartTime, input.scheduledEndTime),
-      gt(booking.scheduledEndTime, input.scheduledStartTime),
-      or(
-        eq(booking.status, 'confirmed'),
-        and(
-          eq(booking.status, 'pending'),
-          or(isNull(booking.expiresAt), gt(booking.expiresAt, now))
-        )
-      )
-    ),
-    columns: { id: true },
-  });
-
   if (overlappingUserBooking) {
     return { success: false, error: 'You already have another booking at that time' };
   }
 
-  // Check if the slot is available
-  const slotDay = new Date(input.scheduledStartTime);
-  slotDay.setUTCHours(0, 0, 0, 0);
-  const slots = await getAvailableSlots(partnerId, slotDay);
-  
-  // Find matching slot by comparing ISO strings (more reliable than getTime())
+  // Slot validation
   const inputStartISO = input.scheduledStartTime.toISOString();
-  const targetSlot = slots.find(
-    s => s.startTime.toISOString() === inputStartISO
-  );
+  const targetSlot = slots.find(s => s.startTime.toISOString() === inputStartISO);
 
   if (!targetSlot || !targetSlot.isAvailable) {
     return { success: false, error: 'This time slot is no longer available' };
   }
 
-  // Validate duration / end time to prevent client tampering
   if (input.scheduledEndTime.toISOString() !== targetSlot.endTime.toISOString()) {
     return { success: false, error: 'Invalid time slot selection' };
   }
 
-  // Hard protection against double-booking (race conditions / timezone issues):
-  // ensure partner capacity isn't exceeded for the requested interval.
-  const dayOfWeek = slotDay.getUTCDay();
-  const rule = await db.query.partnerAvailability.findFirst({
-    where: and(
-      eq(partnerAvailability.partnerId, partnerId),
-      eq(partnerAvailability.dayOfWeek, dayOfWeek),
-      eq(partnerAvailability.isActive, true)
-    ),
-    columns: {
-      id: true,
-      maxConcurrentBookings: true,
-    },
-  });
+  const maxConcurrentBookings = availabilityRule?.maxConcurrentBookings ?? 1;
 
-  const maxConcurrentBookings = rule?.maxConcurrentBookings ?? 1;
-
-  const overlapCountResult = await db
-    .select({ count: sql<number>`count(*)::int` })
-    .from(booking)
-    .where(
-      and(
+  // ⚡ PHASE 3: Final conflict checks (2 queries → 1 round trip)
+  const [overlapCountResult, listingOverlap] = await Promise.all([
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(booking)
+      .where(
+        and(
+          eq(booking.partnerId, partnerId),
+          inArray(booking.status, ['pending', 'confirmed']),
+          lt(booking.scheduledStartTime, input.scheduledEndTime),
+          gt(booking.scheduledEndTime, input.scheduledStartTime)
+        )
+      ),
+    db.query.booking.findFirst({
+      where: and(
         eq(booking.partnerId, partnerId),
+        eq(booking.listingId, input.listingId),
         inArray(booking.status, ['pending', 'confirmed']),
         lt(booking.scheduledStartTime, input.scheduledEndTime),
         gt(booking.scheduledEndTime, input.scheduledStartTime)
-      )
-    );
+      ),
+      columns: { id: true },
+    }),
+  ]);
 
   const overlapCount = overlapCountResult[0]?.count ?? 0;
   if (overlapCount >= maxConcurrentBookings) {
     return { success: false, error: 'This time slot is no longer available' };
   }
 
-  // Prevent duplicate bookings for the same listing at the exact same time (even if partner allows concurrency)
-  const listingOverlap = await db.query.booking.findFirst({
-    where: and(
-      eq(booking.partnerId, partnerId),
-      eq(booking.listingId, input.listingId),
-      inArray(booking.status, ['pending', 'confirmed']),
-      lt(booking.scheduledStartTime, input.scheduledEndTime),
-      gt(booking.scheduledEndTime, input.scheduledStartTime)
-    ),
-    columns: { id: true },
-  });
-
   if (listingOverlap) {
     return { success: false, error: 'This listing is already booked for that time' };
   }
 
-  // Check lead time requirements
+  // Lead time validation
   const hoursUntilBooking = (input.scheduledStartTime.getTime() - now.getTime()) / (1000 * 60 * 60);
   
   if (settings) {
     if (hoursUntilBooking < settings.minLeadTimeHours) {
-      return { 
-        success: false, 
-        error: `Bookings must be made at least ${settings.minLeadTimeHours} hours in advance` 
-      };
+      return { success: false, error: `Bookings must be made at least ${settings.minLeadTimeHours} hours in advance` };
     }
-
     const daysUntilBooking = hoursUntilBooking / 24;
     if (daysUntilBooking > settings.maxLeadTimeDays) {
-      return { 
-        success: false, 
-        error: `Bookings can only be made up to ${settings.maxLeadTimeDays} days in advance` 
-      };
+      return { success: false, error: `Bookings can only be made up to ${settings.maxLeadTimeDays} days in advance` };
     }
   }
 
-  // Get user data
-  const userData = await db.query.user.findFirst({
-    where: eq(user.id, input.userId),
-    columns: {
-      id: true,
-      name: true,
-      email: true,
-    },
-  });
-
-  if (!userData) {
-    return { success: false, error: 'User not found' };
-  }
-
-  // Get user's phone from profile
-  const profile = await db.query.userProfile.findFirst({
-    where: eq(user.id, input.userId),
-  });
-
-  const userPhone = profile?.phone || '+971500000000'; // Fallback
-
-  // Create booking slot record
+  // Create booking
   const slotId = createId();
   const bookingId = createId();
   const confirmationToken = generateConfirmationToken();
   const autoConfirm = settings?.autoConfirm ?? false;
 
-  // RACE CONDITION FIX: Use INSERT with immediate verification
-  // If a concurrent request creates a booking in between our checks,
-  // we'll catch it by re-verifying after insert.
   try {
-    await db.insert(bookingSlot).values({
-      id: slotId,
-      partnerId,
-      listingId: input.listingId,
-      startTime: input.scheduledStartTime,
-      endTime: input.scheduledEndTime,
-      duration: BOOKING_MUTATION_CONFIG.DEFAULT_SLOT_DURATION,
-      status: 'booked',
-      maxBookings: 1,
-      currentBookings: 1,
-    });
+    // ⚡ PHASE 4: Insert slot + booking in parallel
+    await Promise.all([
+      db.insert(bookingSlot).values({
+        id: slotId,
+        partnerId,
+        listingId: input.listingId,
+        startTime: input.scheduledStartTime,
+        endTime: input.scheduledEndTime,
+        duration: BOOKING_MUTATION_CONFIG.DEFAULT_SLOT_DURATION,
+        status: 'booked',
+        maxBookings: 1,
+        currentBookings: 1,
+      }),
+      db.insert(booking).values({
+        id: bookingId,
+        userId: input.userId,
+        partnerId,
+        listingId: input.listingId,
+        slotId,
+        status: autoConfirm ? 'confirmed' : 'pending',
+        source: input.source ?? 'web',
+        scheduledDate: slotDay,
+        scheduledStartTime: input.scheduledStartTime,
+        scheduledEndTime: input.scheduledEndTime,
+        confirmationToken,
+        userPhone,
+        userEmail: userData.email,
+        userName: userData.name || 'User',
+        notes: input.notes,
+        specialRequests: input.specialRequests,
+        numberOfAttendees: input.numberOfAttendees ?? 1,
+        confirmedAt: autoConfirm ? new Date() : null,
+        expiresAt: autoConfirm ? null : new Date(now.getTime() + BOOKING_MUTATION_CONFIG.PENDING_BOOKING_EXPIRY_HOURS * 60 * 60 * 1000),
+      }),
+    ]);
 
-    await db.insert(booking).values({
-      id: bookingId,
-      userId: input.userId,
-      partnerId,
-      listingId: input.listingId,
-      slotId,
-      status: autoConfirm ? 'confirmed' : 'pending',
-      source: input.source ?? 'web',
-      scheduledDate: slotDay,
-      scheduledStartTime: input.scheduledStartTime,
-      scheduledEndTime: input.scheduledEndTime,
-      confirmationToken,
-      userPhone,
-      userEmail: userData.email,
-      userName: userData.name || 'User',
-      notes: input.notes,
-      specialRequests: input.specialRequests,
-      numberOfAttendees: input.numberOfAttendees ?? 1,
-      confirmedAt: autoConfirm ? new Date() : null,
-      expiresAt: autoConfirm ? null : new Date(now.getTime() + BOOKING_MUTATION_CONFIG.PENDING_BOOKING_EXPIRY_HOURS * 60 * 60 * 1000),
-    });
+    // ⚡ PHASE 5: Post-insert verification (2 queries → 1 round trip)
+    const [postInsertOverlapCount, postInsertListingOverlap] = await Promise.all([
+      db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(booking)
+        .where(
+          and(
+            eq(booking.partnerId, partnerId),
+            inArray(booking.status, ['pending', 'confirmed']),
+            lt(booking.scheduledStartTime, input.scheduledEndTime),
+            gt(booking.scheduledEndTime, input.scheduledStartTime),
+            ne(booking.id, bookingId)
+          )
+        ),
+      db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(booking)
+        .where(
+          and(
+            eq(booking.partnerId, partnerId),
+            eq(booking.listingId, input.listingId),
+            inArray(booking.status, ['pending', 'confirmed']),
+            lt(booking.scheduledStartTime, input.scheduledEndTime),
+            gt(booking.scheduledEndTime, input.scheduledStartTime),
+            ne(booking.id, bookingId)
+          )
+        ),
+    ]);
 
-    // IMMEDIATE VERIFICATION: Check for any concurrent double-booking race condition
-    // After insert, verify we didn't exceed capacity
-    const postInsertOverlapCount = await db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(booking)
-      .where(
-        and(
-          eq(booking.partnerId, partnerId),
-          inArray(booking.status, ['pending', 'confirmed']),
-          lt(booking.scheduledStartTime, input.scheduledEndTime),
-          gt(booking.scheduledEndTime, input.scheduledStartTime),
-          ne(booking.id, bookingId) // Exclude our own booking
-        )
-      );
-
-    const concurrentBookings = (postInsertOverlapCount[0]?.count ?? 0) + 1; // +1 for our booking
+    const concurrentBookings = (postInsertOverlapCount[0]?.count ?? 0) + 1;
     
     if (concurrentBookings > maxConcurrentBookings) {
-      // Race condition occurred - rollback by deleting our booking
-      await db.delete(booking).where(eq(booking.id, bookingId));
-      await db.delete(bookingSlot).where(eq(bookingSlot.id, slotId));
+      await Promise.all([
+        db.delete(booking).where(eq(booking.id, bookingId)),
+        db.delete(bookingSlot).where(eq(bookingSlot.id, slotId)),
+      ]);
       return { success: false, error: 'This time slot was just booked. Please select another time.' };
     }
 
-    // Also verify listing wasn't double-booked
-    const postInsertListingOverlap = await db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(booking)
-      .where(
-        and(
-          eq(booking.partnerId, partnerId),
-          eq(booking.listingId, input.listingId),
-          inArray(booking.status, ['pending', 'confirmed']),
-          lt(booking.scheduledStartTime, input.scheduledEndTime),
-          gt(booking.scheduledEndTime, input.scheduledStartTime),
-          ne(booking.id, bookingId)
-        )
-      );
-
     if ((postInsertListingOverlap[0]?.count ?? 0) > 0) {
-      // Listing was double-booked - rollback
-      await db.delete(booking).where(eq(booking.id, bookingId));
-      await db.delete(bookingSlot).where(eq(bookingSlot.id, slotId));
+      await Promise.all([
+        db.delete(booking).where(eq(booking.id, bookingId)),
+        db.delete(bookingSlot).where(eq(bookingSlot.id, slotId)),
+      ]);
       return { success: false, error: 'This listing was just booked for that time. Please select another slot.' };
     }
 
-    return {
-      success: true,
-      bookingId,
-      confirmationToken,
-    };
+    return { success: true, bookingId, confirmationToken };
   } catch (err) {
-    // Handle unique constraint violations or other DB errors
     console.error('[createBooking] Insert failed:', err);
-    
-    // Attempt cleanup in case slot was created but booking failed
     try {
       await db.delete(bookingSlot).where(eq(bookingSlot.id, slotId));
     } catch { /* ignore cleanup errors */ }
-    
     return { success: false, error: 'Failed to create booking. Please try again.' };
   }
 }

@@ -101,7 +101,6 @@ interface AppSidebarProps {
   sections?: SidebarSection[];
   staffOverride?: {
     displayName?: string | null;
-    workEmail?: string | null;
     companyLogo?: string | null;
     companyName?: string | null;
   };
@@ -214,7 +213,7 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
                 <div className="flex flex-col min-w-0 flex-1 gap-0.5">
                   <span className="truncate font-bold text-[15px] tracking-tight">{displayName}</span>
                   <span className="truncate text-sm font-medium text-sidebar-foreground/70">
-                    {isStaffMode ? staffOverride?.workEmail : user.email}
+                    {isStaffMode ? staffOverride?.companyName : user.email}
                   </span>
                 </div>
               </div>

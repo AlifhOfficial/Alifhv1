@@ -21,6 +21,7 @@ interface StaffStats {
 
 interface TeamMember {
   id: string;
+  userName?: string | null;
   displayName: string | null;
   email: string;
   userEmail?: string;
@@ -173,14 +174,14 @@ export function StaffOverview() {
                   >
                     <UserAvatar
                       src={member.userAvatar}
-                      name={member.displayName || member.userEmail || member.email}
+                      name={member.userName || member.userEmail || member.email}
                       size="md"
                       className="flex-shrink-0"
                     />
                     
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium tracking-tight truncate">
-                        {member.displayName || 'No display name'}
+                        {member.userName || 'Unknown'}
                       </p>
                       <p className="text-xs text-muted-foreground truncate">
                         {member.userEmail || member.email}

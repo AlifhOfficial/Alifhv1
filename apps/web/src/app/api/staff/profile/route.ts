@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
 
 /**
  * PATCH /api/staff/profile
- * Update staff work identity (displayName, workEmail, workPhone)
+ * Update staff work identity (displayName, workPhone, usePersonalPhone)
  */
 export async function PATCH(request: NextRequest) {
   const user = await getSessionUser();
@@ -59,7 +59,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { displayName, workEmail, workPhone } = body;
+  const { displayName, workPhone, usePersonalPhone, workPhoneVerified } = body;
 
   // Find staff ID where user is NOT the owner
   const staffId = await getStaffIdForUser(user.id);
@@ -68,12 +68,15 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: 'No staff profile found' }, { status: 404 });
   }
 
+  // Build update object with only provided fields
+  const updateData: Record<string, any> = {};
+  if (displayName !== undefined) updateData.displayName = displayName || null;
+  if (workPhone !== undefined) updateData.workPhone = workPhone || null;
+  if (usePersonalPhone !== undefined) updateData.usePersonalPhone = usePersonalPhone;
+  if (workPhoneVerified !== undefined) updateData.workPhoneVerified = workPhoneVerified;
+
   // Update the staff profile
-  await updateStaffProfileById(staffId, {
-    displayName: displayName || null,
-    workEmail: workEmail || null,
-    workPhone: workPhone || null,
-  });
+  await updateStaffProfileById(staffId, updateData);
 
   return NextResponse.json({ success: true });
 }

@@ -12,7 +12,7 @@
 "use client";
 
 import { createAuthClient } from "better-auth/react";
-import { magicLinkClient, adminClient, customSessionClient } from "better-auth/client/plugins";
+import { magicLinkClient, adminClient, customSessionClient, phoneNumberClient } from "better-auth/client/plugins";
 import { ac, roles } from "@/lib/auth/permissions";
 import type { auth } from "@/lib/auth";
 
@@ -48,6 +48,7 @@ function getAuthClient() {
       },
       plugins: [
         magicLinkClient(),
+        phoneNumberClient(),
         adminClient({
           ac,
           roles: {

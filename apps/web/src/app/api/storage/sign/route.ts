@@ -22,7 +22,7 @@ import { z } from 'zod';
 import { getSignedUrl } from "@/lib/storage";
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 const SignedUrlSchema = z.object({
   key: z.string().min(1, 'Storage key is required'),

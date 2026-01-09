@@ -167,6 +167,7 @@ function formatResponseTime(minutes: number): string {
 function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
   const partner = sellerData.partner;
   const stats = sellerData.partnerStats;
+  const staffContact = sellerData.staffContact;
   
   if (!partner) return null;
 
@@ -176,6 +177,10 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
   const location = [partner.city, partner.emirate].filter(Boolean).join(', ');
   const badges = partner.badges ?? [];
   const specialties = partner.specialties ?? [];
+  
+  // Use staff contact info if listing was posted by staff, otherwise fall back to partner info
+  const contactPhone = staffContact?.phone ?? partner.phone;
+  const contactName = staffContact?.displayName ?? partner.brandName;
 
   return (
     <div className="space-y-5">
@@ -400,7 +405,7 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
   const tags = profile.tags ?? [];
   const kycVerified = profile.kycVerified ?? false;
   const emailVerified = profile.emailVerified ?? false;
-  const phoneVerified = profile.phoneVerified ?? false;
+  const phoneVerified = profile.phoneNumberVerified ?? false;
 
   return (
     <div className="space-y-5">

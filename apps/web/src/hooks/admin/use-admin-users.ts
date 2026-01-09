@@ -29,8 +29,8 @@ export interface AdminUserData {
   name: string;
   email: string;
   emailVerified: boolean;
-  phoneVerified: boolean;
-  phoneVerifiedAt: Date | string | null;
+  phoneNumber: string | null;
+  phoneNumberVerified: boolean;
   role: 'user' | 'admin' | 'super_admin';
   createdAt: Date | string;
   updatedAt: Date | string;

@@ -90,6 +90,7 @@ export interface CarDetailedData {
   slug: string | null;
   userId: string;
   postedByRole: 'user' | 'staff';
+  postedByStaffId: string | null;
   make: string;
   model: string;
   year: number;
@@ -185,6 +186,7 @@ function buildDetailedSelectFields(includeExpiry: boolean) {
     slug: carListing.slug,
     userId: carListing.userId,
     postedByRole: carListing.postedByRole,
+    postedByStaffId: carListing.postedByStaffId,
     make: carListing.make,
     model: carListing.model,
     year: carListing.year,

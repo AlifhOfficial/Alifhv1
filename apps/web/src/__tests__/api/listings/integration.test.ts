@@ -73,7 +73,7 @@ describe.skipIf(SKIP_INTEGRATION)('Listings API Integration Tests', () => {
           const listing = data.data[0];
           // Seller info fields
           expect(listing.postedByRole).toBeDefined();
-          expect(['individual', 'staff', 'owner']).toContain(listing.postedByRole);
+          expect(['individual', 'staff', 'owner', 'user']).toContain(listing.postedByRole);
         }
       });
 
@@ -103,12 +103,13 @@ describe.skipIf(SKIP_INTEGRATION)('Listings API Integration Tests', () => {
         const data = await response.json();
         
         expect(response.status).toBe(200);
-        // Detailed endpoint returns listing directly (not wrapped in data)
-        expect(data.id).toBe(listingId);
-        expect(data.make).toBeDefined();
-        expect(data.model).toBeDefined();
-        expect(data.price).toBeGreaterThan(0);
-        expect(data.images).toBeDefined();
+        // Detailed endpoint returns listing wrapped in data object
+        const listing = data.listing || data;
+        expect(listing.id).toBe(listingId);
+        expect(listing.make).toBeDefined();
+        expect(listing.model).toBeDefined();
+        expect(listing.price).toBeGreaterThan(0);
+        expect(listing.images).toBeDefined();
       });
 
       it('should return 404 for non-existent listing', async () => {

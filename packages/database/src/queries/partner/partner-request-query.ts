@@ -258,7 +258,6 @@ export async function createPartnerFromRequest(requestId: string, requestData: a
       isOwner: true,
       status: 'active',
       displayName: requestData.userName || requestData.companyNameLegal,
-      workEmail: requestData.userEmail || requestData.email,
       isPrimaryContact: true,
       joinedAt: new Date(),
       acceptedAt: new Date(),

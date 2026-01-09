@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db, carListing, inArray } from '@alifh/database';
+import { db, carListing, inArray, invalidateSearchCaches } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 
 export async function POST(req: NextRequest) {
@@ -57,6 +57,9 @@ export async function POST(req: NextRequest) {
         updatedAt: new Date(),
       })
       .where(inArray(carListing.id, listingIds));
+
+    // Invalidate search caches to reflect deleted listings
+    invalidateSearchCaches();
 
     return NextResponse.json({
       success: true,

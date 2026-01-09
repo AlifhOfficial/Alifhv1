@@ -60,6 +60,11 @@ export interface PartnerSellerData {
     responseTime: number | null;
     responseRate: number | null;
   };
+  /** Staff contact info if listing was posted by staff */
+  staffContact?: {
+    phone: string | null;
+    displayName: string | null;
+  } | null;
 }
 
 export interface UserSellerData {
@@ -87,7 +92,7 @@ export interface UserSellerData {
     privacySettings: { showPhone?: boolean; showEmail?: boolean };
     memberSince: Date | string;
     emailVerified: boolean;
-    phoneVerified: boolean;
+    phoneNumberVerified: boolean;
     userName: string | null;
     userCreatedAt: Date | string;
   } | null;

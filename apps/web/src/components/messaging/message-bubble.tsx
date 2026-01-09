@@ -63,11 +63,12 @@ export function MessageBubble({
       )}
     >
       {/* Avatar - only show for received messages */}
+      {/* Use otherUserAvatar/Name (partner info when available) instead of individual sender info */}
       {!isOwn && (
         showAvatar ? (
           <UserAvatar
-            src={sender.avatarUrl}
-            name={sender.name}
+            src={otherUserAvatar ?? sender.avatarUrl}
+            name={otherUserName ?? sender.name}
             size="sm"
             className={cn(compact ? 'w-6 h-6' : 'w-8 h-8', 'flex-shrink-0')}
           />
@@ -83,9 +84,10 @@ export function MessageBubble({
         isOwn ? 'items-end' : 'items-start'
       )}>
         {/* Sender Name (only for received messages with avatar) */}
+        {/* Use otherUserName (partner name when available) instead of individual sender name */}
         {!isOwn && showAvatar && (
           <small className="text-xs text-muted-foreground/70 mb-1 px-2 font-semibold">
-            {sender.name || 'User'}
+            {otherUserName ?? sender.name ?? 'User'}
           </small>
         )}
 

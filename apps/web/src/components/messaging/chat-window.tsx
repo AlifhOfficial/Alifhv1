@@ -307,8 +307,8 @@ export function ChatWindow({
                     isReadByOther={isReadByOther}
                     showSeen={showSeen}
                     seenAt={otherLastReadAt}
-                    otherUserAvatar={otherParticipant?.avatarUrl || null}
-                    otherUserName={otherParticipant?.name || null}
+                    otherUserAvatar={otherParticipant?.avatarUrl ?? null}
+                    otherUserName={otherParticipant?.name ?? null}
                     listing={index === arr.length - 1 && listing ? listing : undefined}
                   />
                 </div>

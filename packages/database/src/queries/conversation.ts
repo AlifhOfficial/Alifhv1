@@ -321,13 +321,28 @@ export async function getUserConversations(
         AND cp2.user_id != ${userId} 
         LIMIT 1
       )`,
+      // Check if other participant is staff of the partner (to decide whether to show brand or user avatar)
+      otherParticipantIsStaff: sql<boolean>`(
+        SELECT EXISTS(
+          SELECT 1 FROM partner_staff ps
+          WHERE ps.user_id = (
+            SELECT cp2.user_id FROM conversation_participant cp2 
+            WHERE cp2.conversation_id = ${conversation.id} 
+            AND cp2.user_id != ${userId} 
+            LIMIT 1
+          )
+          AND ps.partner_id = COALESCE(${conversation.partnerId}, ${carListing.partnerId})
+          AND ps.status = 'active'
+        )
+      )`,
     })
     .from(conversation)
     .innerJoin(
       conversationParticipant,
       and(
         eq(conversationParticipant.conversationId, conversation.id),
-        eq(conversationParticipant.userId, userId)
+        eq(conversationParticipant.userId, userId),
+        isNull(conversationParticipant.leftAt) // Only show conversations where user hasn't left
       )
     )
     .leftJoin(carListing, eq(carListing.id, conversation.listingId))
@@ -346,6 +361,10 @@ export async function getUserConversations(
 
   return results.map((row) => {
     const effectivePartnerId = row.partnerId ?? row.listingPartnerId;
+    const hasPartner = effectivePartnerId && row.partnerName;
+    // Only show partner brand if the OTHER participant is staff (not the current user)
+    // This means: customer sees partner brand, staff sees customer's real avatar
+    const showPartnerBrand = hasPartner && row.otherParticipantIsStaff;
 
     return {
       id: row.id,
@@ -362,11 +381,12 @@ export async function getUserConversations(
       isArchived: row.isArchived,
       isMuted: row.isMuted,
       isPinned: row.isPinned,
+      // Show partner brand only when other participant is staff, otherwise show their real info
       otherParticipant: row.otherParticipantId
         ? {
             id: row.otherParticipantId,
-            name: row.otherParticipantName,
-            avatarUrl: row.otherParticipantAvatar,
+            name: showPartnerBrand ? row.partnerName : row.otherParticipantName,
+            avatarUrl: showPartnerBrand ? row.partnerLogo : row.otherParticipantAvatar,
             lastReadAt: row.otherParticipantLastReadAt,
             lastSeenAt: row.otherParticipantLastSeenAt,
           }

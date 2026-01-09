@@ -8,7 +8,7 @@
 
 import { eq, and } from 'drizzle-orm';
 import { db } from '../../dbclient';
-import { partnerStaff, partner } from '../../schema';
+import { partnerStaff, partner, user, userProfile } from '../../schema';
 
 // ============================================================================
 // Types
@@ -17,8 +17,9 @@ import { partnerStaff, partner } from '../../schema';
 export interface StaffProfileData {
   id: string;
   displayName: string | null;
-  workEmail: string | null;
   workPhone: string | null;
+  usePersonalPhone: boolean;
+  workPhoneVerified: boolean;
   title: string | null;
   department: string | null;
   role: string;
@@ -33,8 +34,9 @@ export interface StaffProfileWithPartner {
   isPrimaryContact: boolean;
   status: string;
   displayName: string | null;
-  workEmail: string | null;
   workPhone: string | null;
+  usePersonalPhone: boolean;
+  workPhoneVerified: boolean;
   joinedAt: Date | null;
   partner: {
     id: string;
@@ -48,8 +50,9 @@ export interface StaffProfileWithPartner {
 
 export interface UpdateStaffProfileInput {
   displayName?: string | null;
-  workEmail?: string | null;
   workPhone?: string | null;
+  usePersonalPhone?: boolean;
+  workPhoneVerified?: boolean;
 }
 
 export interface ActivePartnerStaffMembership {
@@ -74,8 +77,9 @@ export async function getStaffProfile(
     .select({
       id: partnerStaff.id,
       displayName: partnerStaff.displayName,
-      workEmail: partnerStaff.workEmail,
       workPhone: partnerStaff.workPhone,
+      usePersonalPhone: partnerStaff.usePersonalPhone,
+      workPhoneVerified: partnerStaff.workPhoneVerified,
       title: partnerStaff.title,
       department: partnerStaff.department,
       role: partnerStaff.role,
@@ -108,8 +112,9 @@ export async function getStaffProfileWithPartner(
       isPrimaryContact: partnerStaff.isPrimaryContact,
       status: partnerStaff.status,
       displayName: partnerStaff.displayName,
-      workEmail: partnerStaff.workEmail,
       workPhone: partnerStaff.workPhone,
+      usePersonalPhone: partnerStaff.usePersonalPhone,
+      workPhoneVerified: partnerStaff.workPhoneVerified,
       joinedAt: partnerStaff.joinedAt,
       partner: {
         id: partner.id,
@@ -145,9 +150,10 @@ export async function updateStaffProfile(
   const [updated] = await db
     .update(partnerStaff)
     .set({
-      displayName: input.displayName,
-      workEmail: input.workEmail,
-      workPhone: input.workPhone,
+      ...(input.displayName !== undefined && { displayName: input.displayName }),
+      ...(input.workPhone !== undefined && { workPhone: input.workPhone }),
+      ...(input.usePersonalPhone !== undefined && { usePersonalPhone: input.usePersonalPhone }),
+      ...(input.workPhoneVerified !== undefined && { workPhoneVerified: input.workPhoneVerified }),
       updatedAt: new Date(),
     })
     .where(
@@ -159,8 +165,9 @@ export async function updateStaffProfile(
     .returning({
       id: partnerStaff.id,
       displayName: partnerStaff.displayName,
-      workEmail: partnerStaff.workEmail,
       workPhone: partnerStaff.workPhone,
+      usePersonalPhone: partnerStaff.usePersonalPhone,
+      workPhoneVerified: partnerStaff.workPhoneVerified,
       title: partnerStaff.title,
       department: partnerStaff.department,
       role: partnerStaff.role,
@@ -179,14 +186,66 @@ export async function updateStaffProfileById(
   const result = await db
     .update(partnerStaff)
     .set({
-      displayName: input.displayName,
-      workEmail: input.workEmail,
-      workPhone: input.workPhone,
+      ...(input.displayName !== undefined && { displayName: input.displayName }),
+      ...(input.workPhone !== undefined && { workPhone: input.workPhone }),
+      ...(input.usePersonalPhone !== undefined && { usePersonalPhone: input.usePersonalPhone }),
+      ...(input.workPhoneVerified !== undefined && { workPhoneVerified: input.workPhoneVerified }),
       updatedAt: new Date(),
     })
     .where(eq(partnerStaff.id, staffId));
 
   return (result.rowCount ?? 0) > 0;
+}
+
+/**
+ * Get staff effective phone for contact display
+ * Priority: 1. Work phone (if set and not using personal)
+ *           2. Personal phone from user profile
+ * 
+ * @param staffUserId - The user ID of the staff member
+ * @param partnerId - The partner ID (for staff lookup)
+ * @returns The effective phone number to display, or null
+ */
+export async function getStaffEffectivePhone(
+  staffUserId: string,
+  partnerId: string
+): Promise<{ phone: string | null; displayName: string | null }> {
+  const [result] = await db
+    .select({
+      workPhone: partnerStaff.workPhone,
+      usePersonalPhone: partnerStaff.usePersonalPhone,
+      displayName: partnerStaff.displayName,
+      personalPhone: userProfile.phone,
+      userName: user.name,
+    })
+    .from(partnerStaff)
+    .innerJoin(user, eq(user.id, partnerStaff.userId))
+    .leftJoin(userProfile, eq(userProfile.userId, partnerStaff.userId))
+    .where(
+      and(
+        eq(partnerStaff.userId, staffUserId),
+        eq(partnerStaff.partnerId, partnerId),
+        eq(partnerStaff.status, 'active')
+      )
+    )
+    .limit(1);
+
+  if (!result) {
+    return { phone: null, displayName: null };
+  }
+
+  // Priority: work phone (if not using personal) → personal phone
+  const effectivePhone = result.usePersonalPhone 
+    ? result.personalPhone 
+    : (result.workPhone ?? result.personalPhone);
+
+  // Display name with fallback to user name
+  const effectiveDisplayName = result.displayName ?? result.userName;
+
+  return { 
+    phone: effectivePhone, 
+    displayName: effectiveDisplayName 
+  };
 }
 
 /**

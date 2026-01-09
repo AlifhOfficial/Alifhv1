@@ -175,8 +175,9 @@ export const partnerStaff = pgTable('partner_staff', {
   
   // Staff Profile - Work identity (separate from personal)
   displayName: text('display_name'), // Preferred name for client interactions (code names common in UAE)
-  workEmail: text('work_email'), // Dedicated work email
   workPhone: text('work_phone'), // Dedicated work phone for calls
+  usePersonalPhone: boolean('use_personal_phone').default(false).notNull(), // Use personal phone instead of work phone
+  workPhoneVerified: boolean('work_phone_verified').default(false).notNull(), // Track if work phone is verified
   
   isPrimaryContact: boolean('is_primary_contact').default(false).notNull(),
   status: staffStatusEnum('status').default('active').notNull(),

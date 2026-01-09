@@ -23,6 +23,7 @@ import {
   createCarListing,
   getActivePartnerStaffMembershipByUserIdAndPartnerId,
   memoryCache,
+  invalidateSearchCaches,
   db,
   carListing,
   updateListingAIValuation,
@@ -400,6 +401,7 @@ export async function POST(req: NextRequest) {
     // Invalidate listing caches so new inventory reflects immediately
     memoryCache.deleteByPrefix('listings:cards:');
     memoryCache.deleteByPrefix('listings:partner:');
+    invalidateSearchCaches(); // Clear search results when new listing is created
 
     return NextResponse.json(
       {

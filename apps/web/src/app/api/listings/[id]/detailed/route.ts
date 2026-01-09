@@ -21,7 +21,8 @@ import {
   CacheTTL, 
   getListingDetailed, 
   getDealerBaseProfile, 
-  getUserProfileByUserId 
+  getUserProfileByUserId,
+  getStaffEffectivePhone,
 } from "@alifh/database";
 import { calculatePartnerStats } from "@alifh/database/server";
 import {
@@ -52,13 +53,27 @@ async function fetchSellerData(listing: ListingResult) {
   const start = performance.now();
   
   if (listing.partnerId) {
-    // Partner listing - fetch dealer profile and stats in parallel
-    const [partnerProfile, partnerStats] = await Promise.all([
+    // Partner listing - fetch dealer profile, stats, and staff phone if applicable
+    const [partnerProfile, partnerStats, staffContact] = await Promise.all([
       getDealerBaseProfile(listing.partnerId),
       calculatePartnerStats(listing.partnerId),
+      // Get contact info for currently assigned staff (userId is updated when reassigned)
+      listing.postedByRole === 'staff' && listing.userId
+        ? getStaffEffectivePhone(listing.userId, listing.partnerId)
+        : Promise.resolve(null),
     ]);
-    console.log(`[fetchSellerData] partner (getDealerBaseProfile + calculatePartnerStats): ${(performance.now() - start).toFixed(0)}ms`);
-    return { type: 'partner' as const, partner: partnerProfile, partnerStats };
+    console.log(`[fetchSellerData] partner (getDealerBaseProfile + calculatePartnerStats + staffPhone): ${(performance.now() - start).toFixed(0)}ms`);
+    
+    return { 
+      type: 'partner' as const, 
+      partner: partnerProfile, 
+      partnerStats,
+      // Staff contact info (phone priority: staff work → company → staff personal)
+      staffContact: staffContact ? {
+        phone: staffContact.phone,
+        displayName: staffContact.displayName,
+      } : null,
+    };
   } else {
     // User listing - single query gets profile + extended user info
     const userProfile = await getUserProfileByUserId(listing.userId);
@@ -80,8 +95,6 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     }
     logTiming('rate-limit');
 
-    const isProd = process.env.NODE_ENV === 'production';
-
     const { id } = await params;
 
     if (!id) {
@@ -91,33 +104,14 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // In dev, bypass cache so new/updated listings reflect immediately.
-    if (!isProd) {
-      const listing = await getListingDetailed(id);
-      logTiming('getListingDetailed');
-      if (!listing) {
-        return NextResponse.json({ error: 'Listing not found' }, { status: 404 });
-      }
-      if (!listing.isPublic) {
-        return NextResponse.json({ error: 'Listing not found' }, { status: 404 });
-      }
-
-      // Fetch seller data
-      const sellerData = await fetchSellerData(listing);
-      logTiming('fetchSellerData');
-
-      const response = NextResponse.json({ listing, sellerData });
-      response.headers.set('Cache-Control', 'no-store');
-      logTiming('total');
-      return response;
-    }
-
-    // Memory cache key
+    // Memory cache key (cache enabled in all environments - invalidation handles freshness)
     const cacheKey = `listing:detailed:${id}`;
     
     // Check memory cache first
     const cached = memoryCache.get(cacheKey);
+    console.log(`[listing-detailed] cache check: ${cached ? 'HIT' : 'MISS'}, key=${cacheKey}`);
     if (cached) {
+      console.log(`[listing-detailed] CACHE HIT for ${id} - ${(performance.now() - startTime).toFixed(0)}ms`);
       return NextResponse.json(cached, { headers: CACHE_HEADERS });
     }
 
@@ -143,8 +137,10 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     // Build response with listing + seller data
     const responseData = { listing, sellerData };
 
-    // Cache for 5 minutes
+    // Cache for 10 minutes (invalidated on listing changes)
     memoryCache.set(cacheKey, responseData, CacheTTL.listingDetail);
+    console.log(`[listing-detailed] cached: ${cacheKey}, TTL=${CacheTTL.listingDetail}s`);
+    logTiming('total');
 
     return NextResponse.json(responseData, { headers: CACHE_HEADERS });
   } catch (error) {

@@ -47,8 +47,9 @@ const searchLimiter = createRateLimiter({
 });
 
 // Cache TTLs (in seconds for memoryCache.set())
-const SEARCH_CACHE_TTL = 15; // 15 seconds for search results
-const FACET_CACHE_TTL = 60; // 60 seconds for facets (change less frequently)
+// With proper invalidation in place, we use long TTLs - cache clears when data changes
+const SEARCH_CACHE_TTL = 600; // 10 minutes for search results (invalidated on listing changes)
+const FACET_CACHE_TTL = 900; // 15 minutes for facets (invalidated on listing changes)
 
 // CDN cache headers - 2min for search results
 const CDN_CACHE_HEADERS = {
@@ -95,7 +96,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const isProd = process.env.NODE_ENV === 'production';
+    // Enable cache in all environments for performance
     const searchCacheKey = generateCacheKey(params, 'search');
     const facetCacheKey = generateCacheKey(params, 'facets');
 
@@ -103,26 +104,32 @@ export async function GET(req: NextRequest) {
     let cachedSearch: SearchResponse | null = null;
     let cachedFacets: SearchFacets | null = null;
     
-    if (isProd) {
-      cachedSearch = memoryCache.get<SearchResponse>(searchCacheKey);
-      cachedFacets = memoryCache.get<SearchFacets>(facetCacheKey);
-      
-      // Full cache hit - return immediately
-      if (cachedSearch && cachedFacets) {
-        const response = NextResponse.json({
-          ...cachedSearch,
-          facets: cachedFacets,
-          meta: {
-            ...cachedSearch.meta,
-            cached: true,
-            cacheAge: Date.now() - startTime,
-          },
-        });
-        Object.entries(CDN_CACHE_HEADERS).forEach(([key, value]) =>
-          response.headers.set(key, value)
-        );
-        return response;
-      }
+    // Debug: Log cache state
+    const cacheInfo = memoryCache.info();
+    console.log(`[search] cache state: ${cacheInfo.entries.active} active entries, ${cacheInfo.performance.hitRate} hit rate`);
+    
+    // Cache enabled in all environments (invalidation handles freshness)
+    cachedSearch = memoryCache.get<SearchResponse>(searchCacheKey);
+    cachedFacets = memoryCache.get<SearchFacets>(facetCacheKey);
+    
+    console.log(`[search] cache check: search=${!!cachedSearch}, facets=${!!cachedFacets}, key=${searchCacheKey}`);
+    
+    // Full cache hit - return immediately
+    if (cachedSearch && cachedFacets) {
+      console.log(`[search] CACHE HIT - ${Date.now() - startTime}ms`);
+      const response = NextResponse.json({
+        ...cachedSearch,
+        facets: cachedFacets,
+        meta: {
+          ...cachedSearch.meta,
+          cached: true,
+          cacheAge: Date.now() - startTime,
+        },
+      });
+      Object.entries(CDN_CACHE_HEADERS).forEach(([key, value]) =>
+        response.headers.set(key, value)
+      );
+      return response;
     }
 
     // Determine what we need to fetch
@@ -142,14 +149,14 @@ export async function GET(req: NextRequest) {
         : Promise.resolve(cachedFacets!),
     ]);
 
-    // Cache results separately in production
-    if (isProd) {
-      if (needsSearch) {
-        memoryCache.set(searchCacheKey, searchResult, SEARCH_CACHE_TTL);
-      }
-      if (needsFacets) {
-        memoryCache.set(facetCacheKey, facets, FACET_CACHE_TTL);
-      }
+    // Cache results (invalidation handles freshness)
+    if (needsSearch) {
+      memoryCache.set(searchCacheKey, searchResult, SEARCH_CACHE_TTL);
+      console.log(`[search] cached search results: ${searchCacheKey}`);
+    }
+    if (needsFacets) {
+      memoryCache.set(facetCacheKey, facets, FACET_CACHE_TTL);
+      console.log(`[search] cached facets: ${facetCacheKey}`);
     }
 
     // Combine results
@@ -160,13 +167,10 @@ export async function GET(req: NextRequest) {
 
     const response = NextResponse.json(finalResult);
     
-    if (isProd) {
-      Object.entries(CDN_CACHE_HEADERS).forEach(([key, value]) =>
-        response.headers.set(key, value)
-      );
-    } else {
-      response.headers.set('Cache-Control', 'no-store');
-    }
+    // CDN cache headers (memory cache + invalidation handles server-side freshness)
+    Object.entries(CDN_CACHE_HEADERS).forEach(([key, value]) =>
+      response.headers.set(key, value)
+    );
 
     return response;
   } catch (error) {

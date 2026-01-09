@@ -24,6 +24,7 @@ import {
 
 interface TeamMember {
   id: string;
+  userName: string | null;
   displayName: string | null;
   email: string;
   userEmail: string;
@@ -33,7 +34,6 @@ interface TeamMember {
   joinedAt: string | null;
   leftAt?: string | null;
   leftReason?: string | null;
-  workEmail: string | null;
   workPhone: string | null;
 }
 
@@ -81,7 +81,7 @@ export function PartnerStaffManagement() {
     if (!searchQuery.trim()) return activeTeam;
     const query = searchQuery.toLowerCase();
     return activeTeam.filter(m => 
-      (m.displayName || '').toLowerCase().includes(query) ||
+      (m.userName || '').toLowerCase().includes(query) ||
       (m.userEmail || m.email || '').toLowerCase().includes(query)
     );
   }, [activeTeam, searchQuery]);
@@ -90,7 +90,7 @@ export function PartnerStaffManagement() {
     if (!searchQuery.trim()) return formerTeam;
     const query = searchQuery.toLowerCase();
     return formerTeam.filter(m => 
-      (m.displayName || '').toLowerCase().includes(query) ||
+      (m.userName || '').toLowerCase().includes(query) ||
       (m.userEmail || m.email || '').toLowerCase().includes(query)
     );
   }, [formerTeam, searchQuery]);
@@ -187,6 +187,34 @@ export function PartnerStaffManagement() {
     onError: (error) => {
       toast({
         title: 'Failed to cancel invite',
+        description: (error as Error).message,
+        variant: 'destructive',
+      });
+    },
+  });
+
+  // Update role mutation
+  const updateRoleMutation = useMutation({
+    mutationFn: async ({ staffId, role }: { staffId: string; role: string }) => {
+      const res = await fetch('/api/partner/staff/operations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ operation: 'update', staffId, role }),
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to update role');
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['staff', 'team'] });
+      queryClient.invalidateQueries({ queryKey: ['staff', 'overview'] });
+      toast({ title: 'Role updated' });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Failed to update role',
         description: (error as Error).message,
         variant: 'destructive',
       });
@@ -488,7 +516,6 @@ export function PartnerStaffManagement() {
       ) : (
         <div className="space-y-1">
           {filteredActiveTeam.map((member) => {
-            const roleBadge = getRoleBadge(member.role);
             return (
               <div 
                 key={member.id} 
@@ -496,31 +523,34 @@ export function PartnerStaffManagement() {
               >
                 <UserAvatar
                   src={member.userAvatar}
-                  name={member.displayName || member.userEmail || member.email}
+                  name={member.userName || member.userEmail || member.email}
                   size="md"
                   className="flex-shrink-0"
                 />
                 
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium tracking-tight truncate">
-                    {member.displayName || 'No display name'}
+                    {member.userName || 'Unknown'}
                   </p>
                   <p className="text-xs text-muted-foreground truncate">
                     {member.userEmail || member.email}
-                    {member.workEmail && member.workEmail !== member.userEmail && (
-                      <span className="hidden sm:inline"> · Work: {member.workEmail}</span>
-                    )}
                   </p>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <span className={cn(
-                    "px-2.5 py-1 rounded-md text-xs font-medium capitalize",
-                    roleBadge.bg,
-                    roleBadge.color
-                  )}>
-                    {member.role}
-                  </span>
+                  <Select
+                    value={member.role}
+                    onValueChange={(newRole) => updateRoleMutation.mutate({ staffId: member.id, role: newRole })}
+                    disabled={updateRoleMutation.isPending}
+                  >
+                    <SelectTrigger className="w-24 h-8 text-xs font-medium border-0 bg-secondary/50 hover:bg-secondary">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sales">Staff</SelectItem>
+                      <SelectItem value="owner">Owner</SelectItem>
+                    </SelectContent>
+                  </Select>
                   
                   <div className="flex items-center gap-1.5">
                     <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
@@ -560,14 +590,14 @@ export function PartnerStaffManagement() {
                 >
                   <UserAvatar
                     src={member.userAvatar}
-                    name={member.displayName || member.userEmail || member.email}
+                    name={member.userName || member.userEmail || member.email}
                     size="md"
                     className="flex-shrink-0"
                   />
                   
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium tracking-tight truncate text-muted-foreground">
-                      {member.displayName || 'No display name'}
+                      {member.userName || 'Unknown'}
                     </p>
                     <p className="text-xs text-muted-foreground/70 truncate">
                       {member.userEmail || member.email}
@@ -614,8 +644,8 @@ export function PartnerStaffManagement() {
       <StaffDeleteModal
         open={deleteModal.open}
         onClose={handleCloseDeleteModal}
-        memberName={deleteModal.member?.displayName || ''}
-        memberEmail={deleteModal.member?.email || deleteModal.member?.userEmail || ''}
+        memberName={deleteModal.member?.userName || ''}
+        memberEmail={deleteModal.member?.userEmail || deleteModal.member?.email || ''}
         isLoading={removeMutation.isPending}
         error={deleteError}
         onConfirm={handleConfirmDelete}

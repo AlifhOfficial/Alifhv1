@@ -269,11 +269,11 @@ export function AdminUsersList() {
                           )}
                         </div>
                         
-                        {user.profile?.phone && (
+                        {(user.profile?.phone || user.phoneNumber) && (
                           <div className="flex items-center gap-1.5">
                             <Phone className="w-3.5 h-3.5" />
-                            {user.profile.phone}
-                            {user.phoneVerified && (
+                            {user.profile?.phone || user.phoneNumber}
+                            {user.phoneNumberVerified && (
                               <CheckCircle2 className="w-3 h-3 text-green-500" />
                             )}
                           </div>

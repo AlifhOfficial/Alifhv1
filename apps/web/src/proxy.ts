@@ -7,7 +7,7 @@ import {
   isDealerStaff,
 } from "@/lib/auth/routing";
 import type { ExtendedUser } from "@/types/auth";
-import { sessionCache, invalidateSessionByToken } from "@/lib/redis";
+import { sessionCache, CacheTTL } from "@alifh/database";
 
 // Request-scoped session cache key
 const SESSION_HEADER_KEY = "x-auth-user";
@@ -76,7 +76,8 @@ export async function proxy(request: NextRequest) {
       user = session.user;
       
       // Cache by token AND register token->userId mapping for invalidation
-      await sessionCache.setWithMapping(tokenKey, user, user.id);
+      // Uses CacheTTL.userSession (5 minutes) for consistency across the system
+      sessionCache.setWithMapping(tokenKey, user, user.id, CacheTTL.userSession);
     }
 
     if (!user) {

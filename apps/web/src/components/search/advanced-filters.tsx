@@ -33,78 +33,15 @@ import {
 } from '@/components/ui/collapsible';
 import type { SearchParams, SearchFacets } from '@/lib/search-utils';
 
-// Static data for filters (client-safe)
-const BODY_TYPES = [
-  { value: 'sedan', label: 'Sedan' },
-  { value: 'suv', label: 'SUV' },
-  { value: 'coupe', label: 'Coupe' },
-  { value: 'convertible', label: 'Convertible' },
-  { value: 'hatchback', label: 'Hatchback' },
-  { value: 'wagon', label: 'Wagon' },
-  { value: 'pickup', label: 'Pickup Truck' },
-  { value: 'van', label: 'Van' },
-  { value: 'sports', label: 'Sports Car' },
-  { value: 'luxury', label: 'Luxury' },
-  { value: 'other', label: 'Other' },
-];
-
-const FUEL_TYPES = [
-  { value: 'petrol', label: 'Petrol' },
-  { value: 'diesel', label: 'Diesel' },
-  { value: 'electric', label: 'Electric' },
-  { value: 'hybrid', label: 'Hybrid' },
-  { value: 'plugin_hybrid', label: 'Plug-in Hybrid' },
-  { value: 'hydrogen', label: 'Hydrogen' },
-];
-
-const TRANSMISSION_TYPES = [
-  { value: 'automatic', label: 'Automatic' },
-  { value: 'manual', label: 'Manual' },
-  { value: 'cvt', label: 'CVT' },
-  { value: 'dct', label: 'Dual Clutch (DCT)' },
-  { value: 'semi_automatic', label: 'Semi-Automatic' },
-];
-
-const ENGINE_SIZES = [
-  { value: 'under_1.5L', label: 'Under 1.5L' },
-  { value: '1.5L_2.0L', label: '1.5L - 2.0L' },
-  { value: '2.0L_2.5L', label: '2.0L - 2.5L' },
-  { value: '2.5L_3.0L', label: '2.5L - 3.0L' },
-  { value: '3.0L_4.0L', label: '3.0L - 4.0L' },
-  { value: '4.0L_5.0L', label: '4.0L - 5.0L' },
-  { value: '5.0L_6.0L', label: '5.0L - 6.0L' },
-  { value: 'over_6.0L', label: 'Over 6.0L' },
-  { value: 'electric', label: 'Electric' },
-];
-
-const EXTERIOR_COLORS = [
-  { value: 'white', label: 'White', hex: '#FFFFFF' },
-  { value: 'black', label: 'Black', hex: '#000000' },
-  { value: 'silver', label: 'Silver', hex: '#C0C0C0' },
-  { value: 'grey', label: 'Grey', hex: '#808080' },
-  { value: 'blue', label: 'Blue', hex: '#0066CC' },
-  { value: 'red', label: 'Red', hex: '#CC0000' },
-  { value: 'green', label: 'Green', hex: '#228B22' },
-  { value: 'brown', label: 'Brown', hex: '#8B4513' },
-  { value: 'beige', label: 'Beige', hex: '#F5F5DC' },
-  { value: 'gold', label: 'Gold', hex: '#FFD700' },
-  { value: 'orange', label: 'Orange', hex: '#FF8C00' },
-  { value: 'yellow', label: 'Yellow', hex: '#FFD700' },
-  { value: 'purple', label: 'Purple', hex: '#800080' },
-  { value: 'other', label: 'Other', hex: '#CCCCCC' },
-];
-
-const INTERIOR_COLORS = [
-  { value: 'black', label: 'Black', hex: '#1A1A1A' },
-  { value: 'beige', label: 'Beige', hex: '#F5F5DC' },
-  { value: 'brown', label: 'Brown', hex: '#8B4513' },
-  { value: 'tan', label: 'Tan', hex: '#D2B48C' },
-  { value: 'grey', label: 'Grey', hex: '#808080' },
-  { value: 'white', label: 'White', hex: '#F5F5F5' },
-  { value: 'red', label: 'Red', hex: '#8B0000' },
-  { value: 'burgundy', label: 'Burgundy', hex: '#800020' },
-  { value: 'other', label: 'Other', hex: '#CCCCCC' },
-];
+// Import static data from centralized constants (client-side, no DB calls)
+import {
+  BODY_TYPES,
+  FUEL_TYPES,
+  TRANSMISSION_TYPES,
+  ENGINE_SIZES,
+  EXTERIOR_COLORS,
+  INTERIOR_COLORS,
+} from '@/lib/filter-constants';
 
 interface AdvancedFiltersProps {
   params: SearchParams;

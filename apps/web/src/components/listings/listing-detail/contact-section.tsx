@@ -49,12 +49,16 @@ export function ContactSection({
   const [copied, setCopied] = useState(false);
 
   // Determine the phone number to display
+  // Partner listings: staff phone → company phone → staff personal phone
+  // User listings: user's phone (if privacy allows)
   let phoneNumber: string | null = null;
   let contactName: string | null = null;
 
   if (sellerData.type === 'partner' && sellerData.partner) {
-    phoneNumber = sellerData.partner.phone;
-    contactName = sellerData.partner.brandName;
+    // Priority: staff phone → company phone
+    // Staff phone already includes fallback to personal phone via getStaffEffectivePhone
+    phoneNumber = sellerData.staffContact?.phone ?? sellerData.partner.phone;
+    contactName = sellerData.staffContact?.displayName ?? sellerData.partner.brandName;
   } else if (sellerData.type === 'user') {
     const profile = sellerData.userProfile;
     const showPhoneSetting = profile?.privacySettings?.showPhone ?? true;

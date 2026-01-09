@@ -20,26 +20,33 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { magicLink } from "better-auth/plugins/magic-link";
 import { admin } from "better-auth/plugins/admin";
+import { phoneNumber } from "better-auth/plugins/phone-number";
 import { customSession } from "better-auth/plugins";
-import { db, CacheKeys, CacheTTL, eq, and, setSessionCacheInvalidator } from "@alifh/database";
+import Twilio from "twilio";
+import { db, CacheKeys, CacheTTL, eq, and, setSessionCacheInvalidator, sessionCache, invalidateUserSessions } from "@alifh/database";
 import * as schema from "@alifh/database";
 import { UserRole } from "@/types/auth";
 import { emailService } from "@/lib/email";
 import { ac, roles } from "@/lib/auth/permissions";
 import { AUTH_CONFIG } from "./config";
-import { sessionCache, invalidateUserSessions } from "@/lib/redis";
+
+// Twilio Verify client for phone OTP
+const twilioClient = Twilio(
+  process.env.TWILIO_ACCOUNT_SID!,
+  process.env.TWILIO_AUTH_TOKEN!
+);
 
 // Register session cache invalidator with database package
 // This is called when profile/role updates happen - invalidates ALL caches for the user
-setSessionCacheInvalidator(async (key) => {
+setSessionCacheInvalidator((key) => {
   // Extract userId from key format "user:{userId}:session"
   const match = key.match(/^user:(.+):session$/);
   if (match) {
     // Invalidate by userId - clears both userId-keyed and token-keyed caches
-    await invalidateUserSessions(match[1]);
+    invalidateUserSessions(match[1]);
   } else {
     // Fallback: delete by exact key
-    await sessionCache.delete(key);
+    sessionCache.delete(key);
   }
 });
 
@@ -109,11 +116,50 @@ export const auth = betterAuth({
         return true;
       },
     }),
+    phoneNumber({
+      // Use Twilio Verify for OTP - handles code generation, storage, and rate limiting
+      sendOTP: async ({ phoneNumber, code }, ctx) => {
+        // Twilio Verify generates its own code, so we ignore the `code` param
+        // and use Verify's built-in code management
+        await twilioClient.verify.v2
+          .services(process.env.TWILIO_VERIFY_SERVICE_SID!)
+          .verifications.create({
+            to: phoneNumber,
+            channel: "sms",
+            templateSid: "HJ152393dff43d3a2c1554ab0f28291dbe", // Template with security warning
+          });
+      },
+      // Use Twilio Verify to validate OTP - bypasses Better Auth's internal verification
+      verifyOTP: async ({ phoneNumber, code }, ctx) => {
+        try {
+          const check = await twilioClient.verify.v2
+            .services(process.env.TWILIO_VERIFY_SERVICE_SID!)
+            .verificationChecks.create({
+              to: phoneNumber,
+              code,
+            });
+          return check.status === "approved";
+        } catch (error) {
+          console.error("[PhoneVerify] Twilio Verify error:", error);
+          return false;
+        }
+      },
+      // Validate UAE phone numbers (+971)
+      phoneNumberValidator: (phone) => {
+        // Accept +971 (UAE) numbers, 9 digits after country code
+        const uaeRegex = /^\+971[0-9]{9}$/;
+        // Also accept international format
+        const intlRegex = /^\+[1-9][0-9]{6,14}$/;
+        return uaeRegex.test(phone) || intlRegex.test(phone);
+      },
+      otpLength: 6,
+      expiresIn: 600, // 10 minutes
+    }),
     customSession(async ({ user, session }) => {
       const cacheKey = CacheKeys.userSession(user.id);
       
       // Try in-memory cache first
-      const cached = await sessionCache.get<{
+      const cached = sessionCache.get<{
         role: string;
         banned: boolean;
         hasPartnerAccess: boolean;
@@ -176,6 +222,7 @@ export const auth = betterAuth({
                 brandName: true,
                 status: true,
                 tier: true,
+                logo: true,
               },
             },
           },
@@ -183,7 +230,7 @@ export const auth = betterAuth({
           id: string;
           role: string;
           permissions: unknown;
-          partner: { id: string; brandName: string; status: string; tier: string | null };
+          partner: { id: string; brandName: string; status: string; tier: string | null; logo: string | null };
         }>>,
       ]);
 
@@ -202,6 +249,7 @@ export const auth = betterAuth({
         staffId: m.id,
         partnerId: m.partner.id,
         partnerName: m.partner.brandName,
+        partnerLogo: m.partner.logo,
         partnerTier: m.partner.tier,
         staffRole: m.role,
         permissions: m.permissions,
@@ -246,7 +294,7 @@ export const auth = betterAuth({
       };
       
       // Cache in memory for 5 minutes
-      await sessionCache.set(cacheKey, sessionData, CacheTTL.userSession);
+      sessionCache.set(cacheKey, sessionData, CacheTTL.userSession);
 
       return {
         user: {
@@ -319,6 +367,7 @@ export type Session = typeof auth.$Infer.Session & {
       staffId: string;
       partnerId: string;
       partnerName: string;
+      partnerLogo: string | null;
       staffRole: string;
     }>;
   };
@@ -331,6 +380,7 @@ export type AuthUser = typeof auth.$Infer.Session.user & {
     staffId: string;
     partnerId: string;
     partnerName: string;
+    partnerLogo: string | null;
     staffRole: string;
   }>;
 };

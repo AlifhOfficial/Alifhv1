@@ -22,8 +22,8 @@ export type AdminUserData = {
   name: string;
   email: string;
   emailVerified: boolean;
-  phoneVerified: boolean;
-  phoneVerifiedAt: Date | null;
+  phoneNumber: string | null;
+  phoneNumberVerified: boolean;
   role: 'user' | 'admin' | 'super_admin';
   createdAt: Date;
   updatedAt: Date;
@@ -171,8 +171,8 @@ export const getAdminAllUsers = async (options?: {
       name: user.name,
       email: user.email,
       emailVerified: user.emailVerified,
-      phoneVerified: user.phoneVerified,
-      phoneVerifiedAt: user.phoneVerifiedAt,
+      phoneNumber: user.phoneNumber,
+      phoneNumberVerified: user.phoneNumberVerified,
       role: user.role,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
@@ -255,8 +255,8 @@ export const getAdminAllUsers = async (options?: {
     name: u.name,
     email: u.email,
     emailVerified: u.emailVerified,
-    phoneVerified: u.phoneVerified,
-    phoneVerifiedAt: u.phoneVerifiedAt,
+    phoneNumber: u.phoneNumber,
+    phoneNumberVerified: u.phoneNumberVerified,
     role: u.role,
     createdAt: u.createdAt,
     updatedAt: u.updatedAt,
@@ -310,8 +310,8 @@ const userWithProfileFields = {
   name: user.name,
   email: user.email,
   emailVerified: user.emailVerified,
-  phoneVerified: user.phoneVerified,
-  phoneVerifiedAt: user.phoneVerifiedAt,
+  phoneNumber: user.phoneNumber,
+  phoneNumberVerified: user.phoneNumberVerified,
   role: user.role,
   createdAt: user.createdAt,
   updatedAt: user.updatedAt,
@@ -375,8 +375,8 @@ async function buildAdminUserData(userData: typeof userWithProfileFields extends
     name: userData.name,
     email: userData.email,
     emailVerified: userData.emailVerified,
-    phoneVerified: userData.phoneVerified,
-    phoneVerifiedAt: userData.phoneVerifiedAt,
+    phoneNumber: userData.phoneNumber,
+    phoneNumberVerified: userData.phoneNumberVerified,
     role: userData.role,
     createdAt: userData.createdAt,
     updatedAt: userData.updatedAt,

@@ -468,6 +468,28 @@ export async function getPartnerBookingSettings(partnerId: string): Promise<Book
 }
 
 /**
+ * Batch fetch partner booking settings for multiple partners
+ * ⚡ OPTIMIZED: Single query instead of N queries
+ */
+export async function getPartnerBookingSettingsBatch(
+  partnerIds: string[]
+): Promise<Map<string, BookingSettings>> {
+  if (partnerIds.length === 0) return new Map();
+  
+  return withErrorHandling('getPartnerBookingSettingsBatch', async () => {
+    const settings = await db.query.partnerBookingSettings.findMany({
+      where: inArray(partnerBookingSettings.partnerId, partnerIds),
+    });
+
+    const map = new Map<string, BookingSettings>();
+    for (const s of settings) {
+      map.set(s.partnerId, mapBookingSettings(s));
+    }
+    return map;
+  });
+}
+
+/**
  * Create or update partner booking settings
  */
 export async function upsertPartnerBookingSettings(

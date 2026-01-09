@@ -18,6 +18,7 @@ export interface PartnerMembership {
   staffId: string;
   partnerId: string;
   partnerName: string;
+  partnerLogo: string | null;
   partnerTier: string;
   staffRole: StaffRole;
   permissions: {

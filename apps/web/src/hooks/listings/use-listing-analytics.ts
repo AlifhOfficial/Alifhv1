@@ -53,9 +53,16 @@ export function useTrackView() {
 /**
  * Hook for tracking listing impressions
  * Call when listings appear in search results
+ * 
+ * Optimizations:
+ * - Deduplicates across the session (won't re-track same listing)
+ * - Debounces API calls (waits 1s of inactivity)
+ * - Server buffers and batch-writes to DB every 30s
  */
 export function useTrackImpressions() {
-  // Debounce impressions to avoid excessive API calls
+  // Track which listings we've already reported this session
+  const trackedImpressionsRef = useRef<Set<string>>(new Set());
+  // Pending impressions to send
   const pendingIdsRef = useRef<Set<string>>(new Set());
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -79,14 +86,22 @@ export function useTrackImpressions() {
   const trackImpressions = useCallback((listingIds: string[]) => {
     if (!listingIds.length) return;
 
-    // Add to pending set (auto-deduplicates)
-    listingIds.forEach(id => pendingIdsRef.current.add(id));
+    // Filter out already-tracked impressions (session-level dedup)
+    const newIds = listingIds.filter(id => !trackedImpressionsRef.current.has(id));
+    
+    if (newIds.length === 0) return;
 
-    // Debounce: flush after 500ms of no new calls
+    // Mark as tracked
+    newIds.forEach(id => {
+      trackedImpressionsRef.current.add(id);
+      pendingIdsRef.current.add(id);
+    });
+
+    // Debounce: flush after 1s of no new calls (increased from 500ms)
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    timeoutRef.current = setTimeout(flushImpressions, 500);
+    timeoutRef.current = setTimeout(flushImpressions, 1000);
   }, [flushImpressions]);
 
   return { trackImpressions, flushImpressions };

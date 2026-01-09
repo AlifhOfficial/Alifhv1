@@ -12,10 +12,10 @@ import {
   User, 
   Building2, 
   Clock,
-  Mail,
   Phone,
   MapPin,
   ChevronRight,
+  Mail,
 } from 'lucide-react';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 
@@ -28,8 +28,8 @@ interface StaffProfile {
   isPrimaryContact: boolean;
   status: string;
   displayName: string | null;
-  workEmail: string | null;
   workPhone: string | null;
+  usePersonalPhone: boolean;
   joinedAt: string;
   partner: {
     id: string;
@@ -76,7 +76,7 @@ export function StaffOverview() {
     );
   }
 
-  const hasWorkProfile = staffProfile.displayName || staffProfile.workEmail || staffProfile.workPhone;
+  const hasWorkProfile = staffProfile.displayName || staffProfile.workPhone || staffProfile.usePersonalPhone;
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-16 space-y-16">
@@ -147,23 +147,17 @@ export function StaffOverview() {
               </div>
             )}
             
-            {staffProfile.workEmail && (
-              <div className="rounded-xl border border-border p-6 space-y-2">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Mail className="w-3.5 h-3.5" />
-                  <span>Work Email</span>
-                </div>
-                <p className="font-medium">{staffProfile.workEmail}</p>
-              </div>
-            )}
-
-            {staffProfile.workPhone && (
+            {(staffProfile.workPhone || staffProfile.usePersonalPhone) && (
               <div className="rounded-xl border border-border p-6 space-y-2">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Phone className="w-3.5 h-3.5" />
                   <span>Work Phone</span>
                 </div>
-                <p className="font-medium">{staffProfile.workPhone}</p>
+                <p className="font-medium">
+                  {staffProfile.usePersonalPhone 
+                    ? 'Using personal phone' 
+                    : staffProfile.workPhone}
+                </p>
               </div>
             )}
           </div>
