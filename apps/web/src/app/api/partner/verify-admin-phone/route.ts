@@ -10,9 +10,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { getPartnerProfileByUserId, updatePartnerProfile } from '@alifh/database';
+import { createRateLimiter, getIdentifier, rateLimitResponse } from '@/lib/rate-limit';
 import twilio from 'twilio';
 
 export const runtime = 'nodejs';
+
+// Rate limit: 5 attempts per 15 minutes per user
+const verifyLimiter = createRateLimiter({
+  points: 5,
+  duration: 15 * 60, // 15 minutes
+  keyPrefix: 'partner-admin-phone-verify',
+});
 
 const VerifySchema = z.object({
   phoneNumber: z.string().min(10),
@@ -24,6 +32,13 @@ export async function POST(request: NextRequest) {
     const sessionUser = await getSessionUser();
     if (!sessionUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Rate limit by user ID
+    const identifier = getIdentifier(request, sessionUser.id);
+    const rateLimitResult = await verifyLimiter.consume(identifier);
+    if (!rateLimitResult.success) {
+      return rateLimitResponse(rateLimitResult);
     }
 
     const body = await request.json();
