@@ -1,14 +1,6 @@
 /**
  * Booking Modal Component
- * 
- * A calendar-based booking modal for scheduling test drives.
- * Shows available dates and time slots for the selected listing.
- * 
- * Features:
- * - Date picker with available dates highlighted
- * - Time slot selection with 45-minute intervals
- * - Anti-abuse restrictions display
- * - Confirmation flow
+ * Clean, minimal design matching profile/settings views
  */
 
 'use client';
@@ -30,17 +22,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/forms/select';
-import { Button } from '@/components/ui/forms';
 import { 
-  Calendar, 
-  Clock, 
-  MapPin, 
-  Car, 
-  CheckCircle2, 
-  AlertCircle,
+  CarFront, 
+  CheckCircle2,
   ChevronLeft,
   ChevronRight,
-  Loader2
+  MapPin,
 } from 'lucide-react';
 import { cn } from '@/utils';
 
@@ -345,330 +332,349 @@ export function BookingModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl font-bold tracking-tight">
-            <Calendar className="w-5 h-5 text-primary" />
-            {step === 'success' ? 'Booking Confirmed' : 'Schedule Test Drive'}
-          </DialogTitle>
-          <DialogDescription className="text-[15px] font-medium text-muted-foreground/70">
-            {step === 'date' && 'Select a date to view available time slots'}
-            {step === 'time' && 'Choose a time slot for your test drive'}
-            {step === 'confirm' && 'Review and confirm your booking'}
-            {step === 'success' && 'Your test drive has been scheduled'}
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="max-w-lg max-h-[92vh] overflow-y-auto bg-background border-border/40 rounded-xl p-0">
+        {/* Header */}
+        <div className="px-6 pt-6 pb-4 border-b border-border/40">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold tracking-tight text-foreground">
+              {step === 'success' ? 'Booking Confirmed' : 'Schedule Test Drive'}
+            </DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground mt-1">
+              {step === 'date' && 'Select an available date'}
+              {step === 'time' && 'Choose your preferred time'}
+              {step === 'confirm' && 'Review your booking'}
+              {step === 'success' && 'Your appointment is confirmed'}
+            </DialogDescription>
+          </DialogHeader>
+        </div>
 
         {/* Listing Info */}
-        <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-xl border border-border/40">
-          {listingThumbnail && (
-            <img 
-              src={listingThumbnail} 
-              alt={listingTitle}
-              className="w-16 h-12 object-cover rounded-lg"
-            />
-          )}
+        <div className="mx-6 mt-5 flex items-center gap-4 p-4 rounded-xl border border-border/40 bg-sidebar">
+          <div className="w-14 h-10 rounded-lg overflow-hidden bg-muted/30 flex-shrink-0">
+            {listingThumbnail ? (
+              <img 
+                src={listingThumbnail} 
+                alt={listingTitle}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <CarFront className="w-5 h-5 text-muted-foreground/40" />
+              </div>
+            )}
+          </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[15px] font-semibold text-foreground truncate">{listingTitle}</p>
-            <p className="text-sm text-muted-foreground/70 font-medium">{partnerName}</p>
+            <p className="text-sm font-semibold text-foreground truncate">{listingTitle}</p>
+            <p className="text-xs text-muted-foreground/70 mt-0.5">{partnerName}</p>
           </div>
         </div>
 
-        {/* Error Display */}
-        {error && (
-          <div className="flex items-start gap-2 p-4 bg-destructive/10 text-destructive rounded-xl border border-destructive/20">
-            <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-            <p className="text-[15px] font-medium">{error}</p>
-          </div>
-        )}
-
-        {/* Loading */}
-        {isLoading && (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin text-primary" />
-          </div>
-        )}
-
-        {/* Step 1: Date Selection */}
-        {step === 'date' && !isLoading && !error && (
-          <div className="space-y-4">
-            {/* Month Navigation */}
-            <div className="flex items-center justify-between">
-              <button
-                onClick={goToPreviousMonth}
-                className="p-2 hover:bg-muted rounded-xl transition-colors"
-                disabled={currentMonth <= new Date()}
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <h3 className="text-[15px] font-bold tracking-tight">
-                {MONTH_NAMES[currentMonth.getMonth()]} {currentMonth.getFullYear()}
-              </h3>
-              <button
-                onClick={goToNextMonth}
-                className="p-2 hover:bg-muted rounded-xl transition-colors"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
+        {/* Content */}
+        <div className="px-6 pt-5 pb-6">
+          {/* Error Display */}
+          {error && (
+            <div className="p-4 mb-5 bg-destructive/10 rounded-xl border border-destructive/20">
+              <p className="text-sm font-medium text-destructive">{error}</p>
             </div>
+          )}
 
-            {/* Day Names */}
-            <div className="grid grid-cols-7 gap-1">
-              {DAY_NAMES.map(day => (
-                <div key={day} className="text-center text-xs font-medium text-muted-foreground py-2">
-                  {day}
-                </div>
-              ))}
+          {/* Loading */}
+          {isLoading && (
+            <div className="flex flex-col items-center justify-center py-16">
+              <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
+              <p className="text-sm text-muted-foreground/70 mt-4">Loading...</p>
             </div>
+          )}
 
-            {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-1">
-              {getCalendarDays().map((date, index) => {
-                if (!date) {
-                  return <div key={`empty-${index}`} className="aspect-square" />;
-                }
-
-                const isPast = isDatePast(date);
-                const isAvailable = !isPast && isDateAvailable(date);
-                const isSelected = selectedDate?.toDateString() === date.toDateString();
-                const isToday = date.toDateString() === new Date().toDateString();
-
-                return (
-                  <button
-                    key={date.toISOString()}
-                    onClick={() => isAvailable && setSelectedDate(date)}
-                    disabled={!isAvailable}
-                    className={cn(
-                      "aspect-square rounded-xl text-sm font-semibold transition-all",
-                      isSelected && "bg-primary text-primary-foreground shadow-sm",
-                      !isSelected && isAvailable && "hover:bg-primary/10 text-foreground",
-                      !isSelected && !isAvailable && "text-muted-foreground/40 cursor-not-allowed",
-                      isToday && !isSelected && "ring-2 ring-primary/50",
-                      isAvailable && !isSelected && "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300"
-                    )}
-                  >
-                    {date.getDate()}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Legend */}
-            <div className="flex items-center gap-4 justify-center text-xs text-muted-foreground pt-2">
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800" />
-                <span>Available</span>
+          {/* Step 1: Date Selection */}
+          {step === 'date' && !isLoading && !error && (
+            <div className="space-y-4">
+              {/* Month Navigation */}
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={goToPreviousMonth}
+                  className="p-2 hover:bg-muted/30 rounded-lg transition-colors disabled:opacity-30"
+                  disabled={currentMonth <= new Date()}
+                >
+                  <ChevronLeft className="w-4 h-4 text-muted-foreground" />
+                </button>
+                <h3 className="text-[15px] font-bold tracking-tight text-foreground">
+                  {MONTH_NAMES[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+                </h3>
+                <button
+                  onClick={goToNextMonth}
+                  className="p-2 hover:bg-muted/30 rounded-lg transition-colors"
+                >
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                </button>
               </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded bg-muted border border-border" />
-                <span>Unavailable</span>
-              </div>
-            </div>
-          </div>
-        )}
 
-        {/* Step 2: Time Selection */}
-        {step === 'time' && !isLoading && selectedDate && (
-          <div className="space-y-4">
-            <button
-              onClick={() => setStep('date')}
-              className="flex items-center gap-1.5 text-[15px] font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Back to calendar
-            </button>
-
-            <div className="flex items-center gap-2 text-[15px] font-semibold text-foreground">
-              <Calendar className="w-4 h-4 text-primary" />
-              <span>{formatDate(selectedDate)}</span>
-            </div>
-
-            {timeSlots.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <Clock className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                <p>No available slots for this date</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-3 gap-2">
-                {timeSlots.map(slot => (
-                  <button
-                    key={slot.id}
-                    onClick={() => slot.isAvailable && setSelectedSlot(slot)}
-                    disabled={!slot.isAvailable}
-                    className={cn(
-                      "py-3 px-3 rounded-xl text-sm font-semibold transition-all",
-                      selectedSlot?.id === slot.id && "bg-primary text-primary-foreground shadow-sm",
-                      selectedSlot?.id !== slot.id && slot.isAvailable && "bg-muted/50 hover:bg-primary/10 text-foreground border border-border/40",
-                      !slot.isAvailable && "bg-muted/30 text-muted-foreground/40 cursor-not-allowed line-through"
-                    )}
-                  >
-                    {formatTime(slot.startTime)}
-                  </button>
+              {/* Day Names */}
+              <div className="grid grid-cols-7 gap-1">
+                {DAY_NAMES.map(day => (
+                  <div key={day} className="text-center text-xs font-semibold text-muted-foreground/70 py-2">
+                    {day}
+                  </div>
                 ))}
               </div>
-            )}
 
-            {selectedSlot && (
-              <Button
-                onClick={() => setStep('confirm')}
-                className="w-full"
+              {/* Calendar Grid */}
+              <div className="grid grid-cols-7 gap-1">
+                {getCalendarDays().map((date, index) => {
+                  if (!date) {
+                    return <div key={`empty-${index}`} className="aspect-square" />;
+                  }
+
+                  const isPast = isDatePast(date);
+                  const isAvailable = !isPast && isDateAvailable(date);
+                  const isSelected = selectedDate?.toDateString() === date.toDateString();
+                  const isToday = date.toDateString() === new Date().toDateString();
+
+                  return (
+                    <button
+                      key={date.toISOString()}
+                      onClick={() => isAvailable && setSelectedDate(date)}
+                      disabled={!isAvailable}
+                      className={cn(
+                        "aspect-square rounded-lg text-sm font-medium transition-colors",
+                        isSelected && "bg-foreground text-background",
+                        !isSelected && isAvailable && "hover:bg-muted/50 text-foreground",
+                        !isSelected && !isAvailable && "text-muted-foreground/30 cursor-not-allowed",
+                        isToday && !isSelected && "ring-1 ring-border"
+                      )}
+                    >
+                      {date.getDate()}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Legend */}
+              <div className="flex items-center gap-4 justify-center text-xs text-muted-foreground/70 pt-2">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded bg-foreground" />
+                  <span>Selected</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded bg-muted/50" />
+                  <span>Available</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Time Selection */}
+          {step === 'time' && !isLoading && selectedDate && (
+            <div className="space-y-4">
+              <button
+                onClick={() => setStep('date')}
+                className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
-                Continue
-              </Button>
-            )}
-          </div>
-        )}
+                <ChevronLeft className="w-4 h-4" />
+                Back
+              </button>
 
-        {/* Step 3: Confirmation */}
-        {step === 'confirm' && selectedDate && selectedSlot && (
-          <div className="space-y-4">
-            <button
-              onClick={() => setStep('time')}
-              className="flex items-center gap-1.5 text-[15px] font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Change time
-            </button>
+              <div className="py-3 border-b border-border/20">
+                <p className="text-sm font-semibold text-muted-foreground/70">Selected Date</p>
+                <p className="text-sm font-medium text-foreground mt-0.5">{formatDate(selectedDate)}</p>
+              </div>
 
-            {/* Booking Summary */}
-            <div className="space-y-3 p-4 bg-muted/30 rounded-xl border border-border/40">
-              <div className="flex items-center gap-2 text-[15px] font-medium">
-                <Calendar className="w-4 h-4 text-primary" />
-                <span>{formatDate(selectedDate)}</span>
-              </div>
-              <div className="flex items-center gap-2 text-[15px] font-medium">
-                <Clock className="w-4 h-4 text-primary" />
-                <span>{formatTime(selectedSlot.startTime)} - {formatTime(selectedSlot.endTime)}</span>
-                <span className="text-muted-foreground/70">({selectedSlot.duration} min)</span>
-              </div>
-              {partnerAddress && (
-                <div className="flex items-start gap-2 text-[15px] font-medium">
-                  <MapPin className="w-4 h-4 text-primary mt-0.5" />
-                  <span>{partnerAddress}</span>
+              {timeSlots.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <p className="text-sm font-medium text-muted-foreground">No available times</p>
+                  <p className="text-xs text-muted-foreground/60 mt-1">Try a different date</p>
+                </div>
+              ) : (
+                <div>
+                  <p className="text-[15px] font-bold tracking-tight text-foreground mb-3">Available Times</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {timeSlots.map(slot => (
+                      <button
+                        key={slot.id}
+                        onClick={() => slot.isAvailable && setSelectedSlot(slot)}
+                        disabled={!slot.isAvailable}
+                        className={cn(
+                          "py-2.5 px-3 rounded-lg text-sm font-medium transition-colors",
+                          selectedSlot?.id === slot.id && "bg-foreground text-background",
+                          selectedSlot?.id !== slot.id && slot.isAvailable && "bg-sidebar border border-border/40 hover:border-border text-foreground",
+                          !slot.isAvailable && "bg-muted/20 text-muted-foreground/30 cursor-not-allowed line-through"
+                        )}
+                      >
+                        {formatTime(slot.startTime)}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
+
+              {selectedSlot && (
+                <button
+                  onClick={() => setStep('confirm')}
+                  className="w-full py-2.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold transition-colors"
+                >
+                  Continue
+                </button>
+              )}
             </div>
+          )}
 
-            {/* Optional Fields */}
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold tracking-tight text-foreground mb-2">
-                  Number of attendees
-                </label>
-                <Select value={attendees.toString()} onValueChange={(value) => setAttendees(parseInt(value))}>
-                  <SelectTrigger className="w-full h-12 px-4 bg-background border border-border rounded-xl text-[15px] font-medium">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[1, 2, 3, 4, 5].map(n => (
-                      <SelectItem key={n} value={n.toString()}>
-                        {n} {n === 1 ? 'person' : 'people'}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold tracking-tight text-foreground mb-2">
-                  Notes <span className="text-muted-foreground/60 font-medium">(optional)</span>
-                </label>
-                <textarea
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Any questions about the car?"
-                  rows={2}
-                  className="w-full px-4 py-3 bg-background border border-border rounded-xl text-[15px] font-medium resize-none focus:outline-none focus:border-primary transition-colors placeholder:text-muted-foreground/50"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold tracking-tight text-foreground mb-2">
-                  Special requests <span className="text-muted-foreground/60 font-medium">(optional)</span>
-                </label>
-                <textarea
-                  value={specialRequests}
-                  onChange={(e) => setSpecialRequests(e.target.value)}
-                  placeholder="Need financing info, test drive route preference..."
-                  rows={2}
-                  className="w-full px-4 py-3 bg-background border border-border rounded-xl text-[15px] font-medium resize-none focus:outline-none focus:border-primary transition-colors placeholder:text-muted-foreground/50"
-                />
-              </div>
-            </div>
-
-            {!isAuthenticated ? (
-              <Button onClick={onLoginRequired} className="w-full">
-                Sign in to Book
-              </Button>
-            ) : (
-              <Button
-                onClick={handleBooking}
-                disabled={isLoading}
-                className="w-full"
+          {/* Step 3: Confirmation */}
+          {step === 'confirm' && selectedDate && selectedSlot && (
+            <div className="space-y-5">
+              <button
+                onClick={() => setStep('time')}
+                className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Booking...
-                  </>
-                ) : (
-                  'Confirm Booking'
-                )}
-              </Button>
-            )}
-          </div>
-        )}
+                <ChevronLeft className="w-4 h-4" />
+                Back
+              </button>
 
-        {/* Step 4: Success */}
-        {step === 'success' && bookingResult && (
-          <div className="space-y-6 text-center py-4">
-            <div className="w-20 h-20 mx-auto bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center">
-              <CheckCircle2 className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
+              {/* Booking Summary - 2 columns */}
+              <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+                <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Booking Summary</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm font-semibold text-muted-foreground/70">Date</p>
+                    <p className="text-sm font-medium text-foreground mt-0.5">{formatDate(selectedDate)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-muted-foreground/70">Time</p>
+                    <p className="text-sm font-medium text-foreground mt-0.5">
+                      {formatTime(selectedSlot.startTime)} – {formatTime(selectedSlot.endTime)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-muted-foreground/70">Duration</p>
+                    <p className="text-sm font-medium text-foreground mt-0.5">{selectedSlot.duration} min</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-muted-foreground/70">Location</p>
+                    <p className="text-sm font-medium text-foreground mt-0.5">
+                      {partnerAddress || <span className="text-muted-foreground/60">Contact dealer</span>}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Optional Fields */}
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-semibold text-muted-foreground/70 mb-1.5 block">
+                    Attendees
+                  </label>
+                  <Select value={attendees.toString()} onValueChange={(value) => setAttendees(parseInt(value))}>
+                    <SelectTrigger className="w-full h-10 bg-muted/20 border-border/40 text-sm rounded-lg">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[1, 2, 3, 4, 5].map(n => (
+                        <SelectItem key={n} value={n.toString()}>
+                          {n} {n === 1 ? 'person' : 'people'}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="text-sm font-semibold text-muted-foreground/70 mb-1.5 block">
+                    Notes <span className="font-normal">(optional)</span>
+                  </label>
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Any questions about the car?"
+                    rows={2}
+                    className="w-full px-3 py-2.5 bg-muted/20 border border-border/40 rounded-lg text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-semibold text-muted-foreground/70 mb-1.5 block">
+                    Special requests <span className="font-normal">(optional)</span>
+                  </label>
+                  <textarea
+                    value={specialRequests}
+                    onChange={(e) => setSpecialRequests(e.target.value)}
+                    placeholder="Financing info, route preference..."
+                    rows={2}
+                    className="w-full px-3 py-2.5 bg-muted/20 border border-border/40 rounded-lg text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                  />
+                </div>
+              </div>
+
+              {!isAuthenticated ? (
+                <button 
+                  onClick={onLoginRequired} 
+                  className="w-full py-2.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold transition-colors"
+                >
+                  Sign in to Book
+                </button>
+              ) : (
+                <button
+                  onClick={handleBooking}
+                  disabled={isLoading}
+                  className="w-full py-2.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold transition-colors disabled:opacity-50"
+                >
+                  {isLoading ? 'Booking...' : 'Confirm Booking'}
+                </button>
+              )}
             </div>
+          )}
 
-            <div>
-              <h3 className="text-xl font-bold tracking-tight text-foreground">Test Drive Scheduled!</h3>
-              <p className="text-[15px] font-medium text-muted-foreground/70 mt-2">
-                Confirmation code: <span className="font-mono font-semibold text-foreground">{bookingResult.confirmationToken}</span>
+          {/* Step 4: Success */}
+          {step === 'success' && bookingResult && (
+            <div className="space-y-5">
+              <div className="flex flex-col items-center text-center py-4">
+                <CheckCircle2 className="w-12 h-12 text-green-500 mb-4" />
+                <h3 className="text-xl font-semibold tracking-tight text-foreground">Test Drive Scheduled</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Confirmation: <span className="font-mono font-semibold text-foreground">{bookingResult.confirmationToken}</span>
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm font-semibold text-muted-foreground/70">Vehicle</p>
+                    <p className="text-sm font-medium text-foreground mt-0.5 truncate">{listingTitle}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-muted-foreground/70">Dealer</p>
+                    <p className="text-sm font-medium text-foreground mt-0.5">{partnerName}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-muted-foreground/70">Date</p>
+                    <p className="text-sm font-medium text-foreground mt-0.5">{selectedDate && formatDate(selectedDate)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-muted-foreground/70">Time</p>
+                    <p className="text-sm font-medium text-foreground mt-0.5">{selectedSlot && `${formatTime(selectedSlot.startTime)} – ${formatTime(selectedSlot.endTime)}`}</p>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-sm text-muted-foreground/70 text-center">
+                A confirmation email has been sent. The dealer will confirm your booking shortly.
               </p>
-            </div>
 
-            <div className="space-y-3 p-4 bg-muted/30 rounded-xl border border-border/40 text-left">
-              <div className="flex items-center gap-2 text-[15px] font-medium">
-                <Car className="w-4 h-4 text-primary" />
-                <span>{listingTitle}</span>
-              </div>
-              <div className="flex items-center gap-2 text-[15px] font-medium">
-                <Calendar className="w-4 h-4 text-primary" />
-                <span>{selectedDate && formatDate(selectedDate)}</span>
-              </div>
-              <div className="flex items-center gap-2 text-[15px] font-medium">
-                <Clock className="w-4 h-4 text-primary" />
-                <span>{selectedSlot && `${formatTime(selectedSlot.startTime)} - ${formatTime(selectedSlot.endTime)}`}</span>
-              </div>
-              <div className="flex items-center gap-2 text-[15px] font-medium">
-                <MapPin className="w-4 h-4 text-primary" />
-                <span>{partnerName}</span>
+              <div className="flex gap-2 pt-2">
+                <button 
+                  onClick={onClose} 
+                  className="flex-1 py-2.5 rounded-lg border border-border/40 hover:bg-muted/30 text-sm font-semibold transition-colors"
+                >
+                  Close
+                </button>
+                <button 
+                  onClick={() => router.push('/user-dashboard/bookings')} 
+                  className="flex-1 py-2.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold transition-colors"
+                >
+                  View Bookings
+                </button>
               </div>
             </div>
-
-            <p className="text-sm font-medium text-muted-foreground/70">
-              You'll receive a confirmation email shortly. The dealer will confirm your booking.
-            </p>
-
-            <div className="flex gap-3">
-              <Button variant="outline" onClick={onClose} className="flex-1">
-                Close
-              </Button>
-              <Button 
-                onClick={() => router.push('/user-dashboard/bookings')} 
-                className="flex-1"
-              >
-                View Bookings
-              </Button>
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

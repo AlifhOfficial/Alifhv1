@@ -35,7 +35,12 @@ export function ListingForm({
   isStaff: _isStaff,
   partnerId,
 }: ListingFormProps) {
-  const [currentStep, setCurrentStep] = useState<FormStep>('vin');
+  // In edit mode, only allow details and publish steps (skip VIN)
+  const editableSteps = mode === 'edit' 
+    ? FORM_STEPS.filter(s => s.id !== 'vin') 
+    : FORM_STEPS;
+  
+  const [currentStep, setCurrentStep] = useState<FormStep>(mode === 'edit' ? 'details' : 'vin');
   const [formData, setFormData] = useState<Partial<ListingFormData>>(() => ({
     ...getDefaultFormValues(),
     ...initialData,
@@ -44,7 +49,7 @@ export function ListingForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const currentStepIndex = FORM_STEPS.findIndex(s => s.id === currentStep);
+  const currentStepIndex = editableSteps.findIndex(s => s.id === currentStep);
   
   const updateField = useCallback(<K extends keyof ListingFormData>(
     field: K, 
@@ -79,8 +84,8 @@ export function ListingForm({
   const handleNext = () => {
     if (validateCurrentStep()) {
       const nextIndex = currentStepIndex + 1;
-      if (nextIndex < FORM_STEPS.length) {
-        setCurrentStep(FORM_STEPS[nextIndex].id);
+      if (nextIndex < editableSteps.length) {
+        setCurrentStep(editableSteps[nextIndex].id);
       }
     }
   };
@@ -88,7 +93,7 @@ export function ListingForm({
   const handleBack = () => {
     const prevIndex = currentStepIndex - 1;
     if (prevIndex >= 0) {
-      setCurrentStep(FORM_STEPS[prevIndex].id);
+      setCurrentStep(editableSteps[prevIndex].id);
     }
   };
   
@@ -97,7 +102,9 @@ export function ListingForm({
       typeof formData.mileage === 'number' && formData.mileage < 5000 ? 'new' : 'used';
     const submitData = { ...formData, condition: derivedCondition };
 
-    for (const step of FORM_STEPS) {
+    // In edit mode, only validate editable steps (details & publish)
+    const stepsToValidate = mode === 'edit' ? editableSteps : FORM_STEPS;
+    for (const step of stepsToValidate) {
       const result = validateStep(step.id, submitData);
       if (!result.success) {
         setCurrentStep(step.id);
@@ -152,8 +159,9 @@ export function ListingForm({
         <div className="flex items-center justify-between mb-4">
           {/* Step Dots - left side */}
           <div className="flex items-center gap-2">
-            {FORM_STEPS.map((step, index) => {
+            {editableSteps.map((step, index) => {
               const isCompleted = index < currentStepIndex;
+              const isCurrent = index === currentStepIndex;
               
               return (
                 <button
@@ -166,7 +174,8 @@ export function ListingForm({
                     <CheckCircle2 className="w-5 h-5 text-green-500" />
                   ) : (
                     <span className={cn(
-                      "w-3 h-3 rounded-full transition-all bg-muted-foreground/30"
+                      "w-3 h-3 rounded-full transition-all",
+                      isCurrent ? "bg-blue-500" : "bg-muted-foreground/30"
                     )} />
                   )}
                 </button>
@@ -181,7 +190,7 @@ export function ListingForm({
               disabled={isSubmitting}
               className="text-sm font-medium text-red-500 hover:text-red-600 transition-colors"
             >
-              Cancel listing
+              Cancel
             </button>
           )}
         </div>
@@ -191,13 +200,13 @@ export function ListingForm({
           {mode === 'edit' ? 'Edit Listing' : stepTitles[currentStep]}
         </h1>
         <p className="text-sm text-muted-foreground mt-0.5">
-          Step {currentStepIndex + 1} of {FORM_STEPS.length}
+          Step {currentStepIndex + 1} of {editableSteps.length}
         </p>
       </header>
 
       {/* Form Content */}
       <main className="mb-8">
-        {currentStep === 'vin' && (
+        {currentStep === 'vin' && mode !== 'edit' && (
           <VINStep 
             data={formData} 
             updateField={updateField} 
@@ -256,7 +265,7 @@ export function ListingForm({
             </button>
           )}
           
-          {currentStepIndex < FORM_STEPS.length - 1 ? (
+          {currentStepIndex < editableSteps.length - 1 ? (
             <button
               type="button"
               onClick={handleNext}

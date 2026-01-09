@@ -23,9 +23,9 @@ import { ListingDetailSkeleton } from './listing-detail-skeleton';
 import { ChevronLeft, AlertTriangle, Loader2, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCreateConversation } from '@/hooks/messaging';
-import { useListingDetail, type SellerData } from '@/hooks/listings';
+import { useListingDetail, useTrackView, type SellerData } from '@/hooks/listings';
 import { useAuth } from '@/providers/auth-provider';
 
 // Re-export types for backwards compatibility
@@ -41,9 +41,17 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const { createConversation } = useCreateConversation();
   const { session: user } = useAuth();
+  const { trackView } = useTrackView();
   
   // Fetch listing data via hook
   const { listing, sellerData, isLoading, error } = useListingDetail(listingId);
+  
+  // Track view when listing loads successfully (fire-and-forget)
+  useEffect(() => {
+    if (listing?.id && listing.isPublic) {
+      trackView(listing.id);
+    }
+  }, [listing?.id, listing?.isPublic, trackView]);
   
   // Loading state
   if (isLoading) {

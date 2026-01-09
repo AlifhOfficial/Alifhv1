@@ -80,8 +80,9 @@ export default function FavoritesPage() {
   }, [listings]);
 
   // Filter to only IDs that have valid listing data (excludes deleted listings)
+  // Reverse order to show newest favorites first
   const validFavoriteIds = useMemo(() => 
-    favoriteIds.filter(id => listingsById.has(id)), 
+    favoriteIds.filter(id => listingsById.has(id)).reverse(), 
     [favoriteIds, listingsById]
   );
 

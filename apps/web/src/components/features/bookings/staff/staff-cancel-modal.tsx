@@ -38,13 +38,6 @@ export function StaffCancelModal({
     setMounted(true);
   }, []);
 
-  // Set default reason when modal opens
-  useEffect(() => {
-    if (isOpen && !reason) {
-      onReasonChange(DEFAULT_REASON);
-    }
-  }, [isOpen, reason, onReasonChange]);
-
   if (!isOpen || !mounted) return null;
 
   const modalContent = (
@@ -99,7 +92,7 @@ export function StaffCancelModal({
           </button>
           <button
             onClick={onSubmit}
-            disabled={isSubmitting || reason.trim().length === 0}
+            disabled={isSubmitting}
             className="flex-1 px-5 py-3 bg-destructive text-destructive-foreground rounded-full text-[15px] font-semibold tracking-tight hover:bg-destructive/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
           >
             {isSubmitting ? (

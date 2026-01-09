@@ -11,4 +11,5 @@ export * from './car-listing-context-query';
 export * from './mutations';
 export * from './cache-invalidation';
 export * from './sql-fragments';
+export * from './analytics';
 

@@ -57,10 +57,10 @@
     --background: 0 0% 0%;
     --foreground: 0 0% 98%;
     
-    /* Card & Popover */
-    --card: 0 0% 4%;
+    /* Card & Popover - Match sidebar styling */
+    --card: 0 0% 10%;
     --card-foreground: 0 0% 98%;
-    --popover: 0 0% 4%;
+    --popover: 0 0% 10%;
     --popover-foreground: 0 0% 98%;
     
     /* Primary (Blue) */

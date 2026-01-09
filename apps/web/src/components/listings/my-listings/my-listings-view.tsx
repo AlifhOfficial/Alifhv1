@@ -507,32 +507,37 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
             </button>
         </DashboardPageHeader>
 
-          {/* Status Pills */}
-          <div className="flex items-center gap-1.5 bg-sidebar p-1.5 rounded-xl overflow-x-auto border border-border/40">
+          {/* Status Tabs */}
+          <div className="flex items-center gap-8 overflow-x-auto pb-1">
               {statusTabs.map((tab) => {
                 const isActive = selectedStatus === tab.key;
+                // Color mapping for active tabs
+                const activeColorClass = 
+                  tab.key === 'active' ? 'text-emerald-500' :
+                  tab.key === 'public' ? 'text-blue-500' :
+                  tab.key === 'draft' ? 'text-amber-500' :
+                  tab.key === 'in_review' ? 'text-sky-500' :
+                  tab.key === 'rejected' ? 'text-red-500' :
+                  tab.key === 'archived' ? 'text-slate-400' :
+                  tab.key === 'sold' ? 'text-emerald-500' :
+                  tab.key === 'expired' ? 'text-orange-500' :
+                  tab.key === 'suspended' ? 'text-red-500' :
+                  'text-foreground';
+                
                 return (
                   <button
                     key={tab.key}
                     onClick={() => setSelectedStatus(tab.key)}
-                    className={`px-4 py-2 rounded-lg text-sm font-semibold tracking-tight transition-all whitespace-nowrap ${
+                    className={`text-[15px] font-bold tracking-tight transition-colors whitespace-nowrap ${
                       isActive
-                        ? 'bg-background text-foreground shadow-sm border border-border/40'
-                        : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
+                        ? activeColorClass
+                        : 'text-muted-foreground/50 hover:text-muted-foreground'
                     }`}
                   >
                     {tab.label}
                     {tab.count > 0 && (
-                      <span className={`ml-2 px-2 py-0.5 rounded-md text-xs font-bold ${
-                        isActive 
-                          ? `${tab.color === 'blue' ? 'bg-blue-500/10 text-blue-600' : 
-                              tab.color === 'green' ? 'bg-green-500/10 text-green-600' :
-                              tab.color === 'yellow' ? 'bg-amber-500/10 text-amber-600' :
-                              tab.color === 'red' ? 'bg-red-500/10 text-red-600' :
-                              tab.color === 'orange' ? 'bg-orange-500/10 text-orange-600' :
-                              tab.color === 'purple' ? 'bg-purple-500/10 text-purple-600' :
-                              'bg-muted text-muted-foreground'}`
-                          : 'bg-muted/50 text-muted-foreground/60'
+                      <span className={`ml-2 text-[13px] font-bold tabular-nums ${
+                        isActive ? activeColorClass : 'text-muted-foreground/40'
                       }`}>
                         {tab.count}
                       </span>
@@ -543,14 +548,14 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
           </div>
 
         {/* Toolbar */}
-        <div className="flex items-center gap-4 mb-8">
-          {/* Search */}
-          <div className="relative flex-1 max-w-sm">
+        <div className="flex items-center gap-3 mb-8">
+          {/* Search - Extended */}
+          <div className="relative flex-1">
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by make, model, or year..."
-              className="w-full h-10 px-4 rounded-xl bg-sidebar border border-border/40 text-sm font-medium placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+              className="w-full h-10 px-4 rounded-xl bg-sidebar border border-sidebar-border text-sm font-medium placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
             />
             {searchQuery && (
               <button 
@@ -562,23 +567,26 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
             )}
           </div>
 
-          <Select value={sort} onValueChange={(v) => setSort(v as ListingsSort)}>
-            <SelectTrigger className="h-10 w-32 border border-border/40 bg-sidebar rounded-xl text-sm font-medium">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">Newest</SelectItem>
-              <SelectItem value="oldest">Oldest</SelectItem>
-              <SelectItem value="updated">Updated</SelectItem>
-              <SelectItem value="expiring">Expiring</SelectItem>
-            </SelectContent>
-          </Select>
+          {/* Right side actions */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <Select value={sort} onValueChange={(v) => setSort(v as ListingsSort)}>
+              <SelectTrigger className="h-10 w-32 border border-sidebar-border bg-sidebar rounded-xl text-sm font-medium">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Newest</SelectItem>
+                <SelectItem value="oldest">Oldest</SelectItem>
+                <SelectItem value="updated">Updated</SelectItem>
+                <SelectItem value="expiring">Expiring</SelectItem>
+              </SelectContent>
+            </Select>
 
-          <Link href={newListingUrl}>
-            <button className="h-10 px-5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors">
-              + New Listing
-            </button>
-          </Link>
+            <Link href={newListingUrl}>
+              <button className="h-10 px-5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors whitespace-nowrap">
+                + New Listing
+              </button>
+            </Link>
+          </div>
         </div>
 
         {/* Section Header */}

@@ -1,20 +1,60 @@
 /**
  * Booking List Component
- * Following partner dashboard UI patterns
+ * macOS-inspired minimal design
  */
 
 'use client';
 
 import { useState } from 'react';
-import { Box, Loader2 } from 'lucide-react';
+import { Calendar, Loader2, Clock, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 import type { BookingData } from './types';
-import { STATUS_LABELS } from './types';
 import { BookingCard } from './booking-card';
+
+// Empty state config with colors
+const EMPTY_STATE_CONFIG: Record<string, { icon: React.ElementType; color: string; message: string; subMessage: string }> = {
+  all: { 
+    icon: Calendar, 
+    color: 'text-muted-foreground/40', 
+    message: 'No bookings yet', 
+    subMessage: 'Bookings will appear here' 
+  },
+  pending: { 
+    icon: Clock, 
+    color: 'text-amber-500/40', 
+    message: 'No pending bookings', 
+    subMessage: 'Bookings awaiting confirmation will appear here' 
+  },
+  confirmed: { 
+    icon: CheckCircle2, 
+    color: 'text-emerald-500/40', 
+    message: 'No confirmed bookings', 
+    subMessage: 'Upcoming test drives will appear here' 
+  },
+  completed: { 
+    icon: CheckCircle2, 
+    color: 'text-blue-500/40', 
+    message: 'No completed bookings', 
+    subMessage: 'Past test drives will appear here' 
+  },
+  cancelled: { 
+    icon: XCircle, 
+    color: 'text-red-500/40', 
+    message: 'No cancelled bookings', 
+    subMessage: 'Cancelled bookings will appear here' 
+  },
+  no_show: { 
+    icon: AlertCircle, 
+    color: 'text-slate-400/40', 
+    message: 'No missed bookings', 
+    subMessage: 'No-shows and expired bookings will appear here' 
+  },
+};
 
 interface BookingListProps {
   bookings: BookingData[];
   isLoading: boolean;
   selectedStatus: string;
+  searchQuery?: string;
   onAction: (bookingId: string, action: string, data?: Record<string, any>) => Promise<void>;
 }
 
@@ -22,6 +62,7 @@ export function BookingList({
   bookings, 
   isLoading, 
   selectedStatus,
+  searchQuery = '',
   onAction,
 }: BookingListProps) {
   const [expandedBooking, setExpandedBooking] = useState<string | null>(null);
@@ -36,34 +77,46 @@ export function BookingList({
     }
   }
 
-  // Show empty state only when not loading AND no bookings
-  if (!isLoading && bookings.length === 0) {
+  // Loading state
+  if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-center space-y-4">
-        <Box className="w-12 h-12 text-muted-foreground/40 stroke-[1.5]" />
-        <div>
-          <h3 className="font-medium text-foreground">
-            {selectedStatus === 'all' ? "No bookings yet" : "No bookings found"}
-          </h3>
-          <p className="text-sm text-muted-foreground mt-1">
-            {selectedStatus === 'all' 
-              ? "Bookings will appear here"
-              : `No ${STATUS_LABELS[selectedStatus]?.toLowerCase()} bookings`}
-          </p>
+      <div className="flex items-center justify-center py-20">
+        <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  // Empty state with colors
+  if (bookings.length === 0) {
+    const config = searchQuery 
+      ? { icon: Calendar, color: 'text-muted-foreground/40', message: 'No matches found', subMessage: 'Try adjusting your search' }
+      : (EMPTY_STATE_CONFIG[selectedStatus] || EMPTY_STATE_CONFIG.all);
+    const Icon = config.icon;
+    
+    return (
+      <div className="flex flex-col items-center justify-center py-24 text-center rounded-xl border border-sidebar-border bg-sidebar">
+        <div className="w-16 h-16 rounded-full bg-sidebar-accent/50 flex items-center justify-center mb-5">
+          <Icon className={`w-7 h-7 ${config.color}`} />
         </div>
+        <p className="text-[15px] font-bold tracking-tight text-foreground mb-1">
+          {config.message}
+        </p>
+        <p className="text-sm text-muted-foreground/70">
+          {config.subMessage}
+        </p>
       </div>
     );
   }
 
   return (
     <section className="space-y-4">
-      {isLoading && (
-        <div className="flex justify-center py-4">
-          <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-        </div>
-      )}
+      {/* Section Header */}
+      <p className="text-sm font-semibold text-muted-foreground/70">
+        {bookings.length} booking{bookings.length !== 1 ? 's' : ''}
+        {searchQuery && <span className="text-muted-foreground/50"> matching "{searchQuery}"</span>}
+      </p>
       
-      <div className="space-y-4">
+      <div className="space-y-3">
         {bookings.map(booking => (
           <BookingCard
             key={booking.id}

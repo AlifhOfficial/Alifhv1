@@ -226,10 +226,10 @@ export function ConversationList({
       <div className="p-4 border-b border-border/40 bg-background flex-shrink-0">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-[15px] font-bold tracking-tight text-foreground">Messages</h2>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {totalUnread > 0 && (
-              <span className="text-xs bg-blue-500 text-white font-semibold px-2 py-0.5 rounded-full min-w-[18px] text-center">
-                {totalUnread > 99 ? '99+' : totalUnread}
+              <span className="text-xs font-semibold text-red-500">
+                {totalUnread} unread
               </span>
             )}
             <button

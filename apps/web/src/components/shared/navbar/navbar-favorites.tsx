@@ -64,8 +64,8 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
       return;
     }
     
-    // Only fetch top 3
-    const topIds = favoriteIds.slice(0, 3);
+    // Only fetch top 3 (reversed to show newest first)
+    const topIds = [...favoriteIds].reverse().slice(0, 3);
     fetchListings(topIds);
   }, [isOpen, favoriteIds, fetchListings]);
 

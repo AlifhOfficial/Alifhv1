@@ -93,8 +93,9 @@ export default function SuperlikesPage() {
   }, [listings]);
 
   // Filter to only IDs that have valid listing data (excludes deleted listings)
+  // Reverse order to show newest superlikes first
   const validSuperlikeIds = useMemo(() => 
-    superlikeIds.filter(id => listingsById.has(id)), 
+    superlikeIds.filter(id => listingsById.has(id)).reverse(), 
     [superlikeIds, listingsById]
   );
 

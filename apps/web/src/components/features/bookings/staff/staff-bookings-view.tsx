@@ -5,12 +5,17 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { AlertCircle, RefreshCw, CheckCircle2, Settings } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { AlertCircle, RefreshCw, CheckCircle2, Settings, Search, X, ChevronDown } from 'lucide-react';
 import type { BookingData, BookingStats, AvailabilityRule, BookingSettings } from './types';
 import { BookingList } from './booking-list';
 import { AvailabilitySettings } from './availability-settings';
 import { StaffCancelModal } from './staff-cancel-modal';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
@@ -21,6 +26,7 @@ import {
 
 type TabType = 'bookings' | 'settings';
 type VerifyAction = 'check_in' | 'confirm' | 'complete' | 'no_show';
+type BookingSort = 'newest' | 'oldest';
 
 // Status tabs configuration
 const STATUS_TABS = [
@@ -51,6 +57,8 @@ export function StaffBookingsView() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>('confirmed');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sort, setSort] = useState<BookingSort>('newest');
   
   // Availability state
   const [availability, setAvailability] = useState<AvailabilityRule[]>([]);
@@ -70,6 +78,7 @@ export function StaffBookingsView() {
   const [verifyAction, setVerifyAction] = useState<VerifyAction>('check_in');
   const [isVerifying, setIsVerifying] = useState(false);
   const [verifyMessage, setVerifyMessage] = useState<string | null>(null);
+  const [quickCheckOpen, setQuickCheckOpen] = useState(false);
   
   // Abort controller for cancelling in-flight requests
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -105,10 +114,41 @@ export function StaffBookingsView() {
     }
   }, []); // No dependencies - only fetch on mount or manual refresh
 
-  // Client-side filtered bookings for instant status switching
-  const filteredBookings = selectedStatus === 'all' 
-    ? bookings 
-    : bookings.filter(b => b.status === selectedStatus);
+  // Client-side filtered bookings for instant status switching with search
+  const filteredBookings = useMemo(() => {
+    let filtered = bookings;
+
+    // Filter by status (note: 'no_show' tab includes 'expired' bookings)
+    if (selectedStatus !== 'all') {
+      if (selectedStatus === 'no_show') {
+        filtered = filtered.filter(b => b.status === 'no_show' || b.status === 'expired');
+      } else {
+        filtered = filtered.filter(b => b.status === selectedStatus);
+      }
+    }
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(booking =>
+        booking.listingTitle.toLowerCase().includes(query) ||
+        booking.userName.toLowerCase().includes(query) ||
+        booking.userEmail.toLowerCase().includes(query) ||
+        (booking.userPhone && booking.userPhone.toLowerCase().includes(query)) ||
+        booking.confirmationToken.toLowerCase().includes(query) ||
+        booking.scheduledDate.includes(query)
+      );
+    }
+
+    // Sort by scheduled date
+    const sorted = [...filtered].sort((a, b) => {
+      const dateA = new Date(`${a.scheduledDate}T${a.scheduledStartTime}`).getTime();
+      const dateB = new Date(`${b.scheduledDate}T${b.scheduledStartTime}`).getTime();
+      return sort === 'newest' ? dateB - dateA : dateA - dateB;
+    });
+
+    return sorted;
+  }, [bookings, selectedStatus, searchQuery, sort]);
 
   const fetchAvailability = useCallback(async () => {
     setAvailabilityLoading(true);
@@ -367,21 +407,23 @@ export function StaffBookingsView() {
       <div className="max-w-6xl mx-auto px-4 sm:px-8">
         {/* Header Section - Sticky */}
         <section className="space-y-4 sticky top-0 bg-background z-10 pt-8 sm:pt-12 pb-4">
-          <div className="flex items-start justify-between">
-            <div>
+          <div className="flex items-start justify-between gap-4">
+            {/* Left: Title */}
+            <div className="flex-shrink-0">
               <h1 className="text-2xl font-bold tracking-tight">Bookings</h1>
-              <p className="text-[15px] font-medium text-muted-foreground/70 mt-2">
+              <p className="text-[15px] font-medium text-muted-foreground/70 mt-1">
                 Manage test drive bookings
               </p>
             </div>
             
+            {/* Right: Settings & Refresh */}
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setActiveTab(activeTab === 'settings' ? 'bookings' : 'settings')}
                 className={`p-2 rounded-lg transition-colors ${
                   activeTab === 'settings' 
-                    ? 'bg-muted text-foreground' 
-                    : 'hover:bg-muted/40 text-muted-foreground'
+                    ? 'bg-sidebar-accent text-foreground' 
+                    : 'hover:bg-sidebar-accent/50 text-muted-foreground'
                 }`}
                 title="Settings"
               >
@@ -390,7 +432,7 @@ export function StaffBookingsView() {
               <button
                 onClick={activeTab === 'bookings' ? fetchBookings : fetchAvailability}
                 disabled={activeTab === 'bookings' ? isLoading : availabilityLoading}
-                className="p-2 hover:bg-muted/40 rounded-lg transition-colors disabled:opacity-50"
+                className="p-2 hover:bg-sidebar-accent/50 rounded-lg transition-colors disabled:opacity-50"
                 title="Refresh"
               >
                 <RefreshCw className="w-4 h-4 text-muted-foreground" />
@@ -398,70 +440,48 @@ export function StaffBookingsView() {
             </div>
           </div>
 
-          {/* Inline Verify by Code */}
-          {activeTab === 'bookings' && (
-            <div className="flex flex-wrap items-center gap-3 pt-4">
-              <input
-                value={verifyCode}
-                onChange={(e) => setVerifyCode(e.target.value.toUpperCase())}
-                placeholder="Enter booking code"
-                className="w-44 h-10 px-3 bg-secondary/30 border border-border/40 rounded-lg focus:border-foreground/40 focus:bg-secondary/50 outline-none transition-all text-sm font-mono placeholder:text-muted-foreground/50"
-                onKeyDown={(e) => e.key === 'Enter' && handleVerifyByCode()}
-              />
-              <Select value={verifyAction} onValueChange={(v) => setVerifyAction(v as VerifyAction)}>
-                <SelectTrigger className="w-32 h-10">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="check_in">Check-in</SelectItem>
-                  <SelectItem value="confirm">Confirm</SelectItem>
-                  <SelectItem value="complete">Complete</SelectItem>
-                  <SelectItem value="no_show">No-show</SelectItem>
-                </SelectContent>
-              </Select>
-              <button
-                onClick={handleVerifyByCode}
-                disabled={isVerifying || !verifyCode.trim()}
-                className="h-10 px-5 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-colors disabled:opacity-50"
-              >
-                {isVerifying ? '...' : 'Apply'}
-              </button>
-              {verifyMessage && (
-                <span className="flex items-center gap-1.5 text-sm text-green-600 dark:text-green-400">
-                  <CheckCircle2 className="w-4 h-4" />
-                  {verifyMessage}
-                </span>
-              )}
-            </div>
-          )}
-
           {/* Status Filter Tabs - Part of sticky header when in bookings mode */}
           {activeTab === 'bookings' && (
-            <div className="border-b border-border/40">
-              <div className="flex gap-1 overflow-x-auto pb-px">
-                {STATUS_TABS.map((tab) => {
-                  const count = tab.key === 'all' 
-                    ? bookings.length 
+            <div className="flex items-center gap-8 overflow-x-auto pb-1">
+              {STATUS_TABS.map((tab) => {
+                // Count includes expired under no_show tab
+                const count = tab.key === 'all' 
+                  ? bookings.length 
+                  : tab.key === 'no_show'
+                    ? bookings.filter(b => b.status === 'no_show' || b.status === 'expired').length
                     : bookings.filter(b => b.status === tab.key).length;
-                  
-                  return (
-                    <button
-                      key={tab.key}
-                      onClick={() => setSelectedStatus(tab.key)}
-                      className={`px-5 py-3.5 border-b-2 transition-colors whitespace-nowrap text-[15px] font-semibold tracking-tight ${
-                        selectedStatus === tab.key
-                          ? `border-transparent ${getColorClasses(tab.color)}`
-                          : 'border-transparent text-muted-foreground/70 hover:text-foreground'
-                      }`}
-                    >
-                      {tab.label}
-                      <span className={`ml-2 text-sm font-semibold tracking-tight ${selectedStatus === tab.key ? getColorClasses(tab.color) : 'text-muted-foreground/60'}`}>
+                const isActive = selectedStatus === tab.key;
+                
+                // Solid color mapping
+                const activeColorClass = 
+                  tab.key === 'confirmed' ? 'text-emerald-500' :
+                  tab.key === 'pending' ? 'text-amber-500' :
+                  tab.key === 'completed' ? 'text-blue-500' :
+                  tab.key === 'cancelled' ? 'text-red-500' :
+                  tab.key === 'no_show' ? 'text-slate-400' :
+                  'text-foreground';
+                
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => setSelectedStatus(tab.key)}
+                    className={`text-[15px] font-bold tracking-tight transition-colors whitespace-nowrap ${
+                      isActive
+                        ? activeColorClass
+                        : 'text-muted-foreground/50 hover:text-muted-foreground'
+                    }`}
+                  >
+                    {tab.label}
+                    {count > 0 && (
+                      <span className={`ml-2 text-[13px] font-bold tabular-nums ${
+                        isActive ? activeColorClass : 'text-muted-foreground/40'
+                      }`}>
                         {count}
                       </span>
-                    </button>
-                  );
-                })}
-              </div>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           )}
         </section>
@@ -478,12 +498,8 @@ export function StaffBookingsView() {
 
         {/* Settings Tab */}
         {activeTab === 'settings' && (
-          <div className="mt-6 pb-32">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-semibold">Availability Settings</h2>
-                <p className="text-sm text-muted-foreground mt-1">Configure booking slots and availability</p>
-              </div>
+          <div className="pb-32">
+            <div className="flex justify-end mb-4">
               <button
                 onClick={() => setActiveTab('bookings')}
                 className="text-sm text-muted-foreground hover:text-foreground"
@@ -506,12 +522,124 @@ export function StaffBookingsView() {
 
         {/* Bookings Tab */}
         {activeTab === 'bookings' && (
-          <div className="mt-6 pb-32">
+          <div className="mt-6 pb-32 space-y-6">
+            {/* Toolbar: Search + Sort + Quick Check-in */}
+            <div className="flex items-center gap-3">
+              {/* Search */}
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
+                <input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by customer, car, email, phone, code, or date..."
+                  className="w-full h-10 pl-10 pr-10 rounded-xl bg-sidebar border border-sidebar-border text-sm font-medium placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-muted transition-colors"
+                  >
+                    <X className="w-3 h-3 text-muted-foreground" />
+                  </button>
+                )}
+              </div>
+
+              {/* Sort */}
+              <Select value={sort} onValueChange={(v) => setSort(v as BookingSort)}>
+                <SelectTrigger className="h-10 w-28 border border-sidebar-border bg-sidebar rounded-xl text-sm font-medium flex-shrink-0">
+                  <SelectValue placeholder="Sort" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Newest</SelectItem>
+                  <SelectItem value="oldest">Oldest</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Quick Check-in Dropdown */}
+              <Popover open={quickCheckOpen} onOpenChange={setQuickCheckOpen}>
+                <PopoverTrigger asChild>
+                  <button className="h-10 px-4 rounded-xl bg-sidebar border border-sidebar-border hover:bg-sidebar-accent text-sm font-medium flex items-center gap-2 transition-colors flex-shrink-0">
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span className="hidden sm:inline">Check-in</span>
+                    <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-[320px] p-0" sideOffset={8}>
+                  <div className="p-4 border-b border-sidebar-border">
+                    <p className="text-sm font-semibold text-foreground">Quick Check-in</p>
+                    <p className="text-xs text-muted-foreground mt-1">Enter booking code to update status</p>
+                  </div>
+                  
+                  <div className="p-4 space-y-4">
+                    {/* Code Input */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-muted-foreground">Booking Code</label>
+                      <input
+                        value={verifyCode}
+                        onChange={(e) => setVerifyCode(e.target.value.toUpperCase())}
+                        placeholder="e.g. W5ZC2CD6"
+                        className="w-full h-10 px-3 bg-sidebar-accent border border-sidebar-border rounded-lg focus:border-foreground/30 outline-none transition-all text-sm font-mono placeholder:text-muted-foreground/40"
+                        onKeyDown={(e) => e.key === 'Enter' && handleVerifyByCode()}
+                        autoFocus
+                      />
+                    </div>
+                    
+                    {/* Action Buttons */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-muted-foreground">Action</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {[
+                          { value: 'check_in', label: 'Check-in' },
+                          { value: 'confirm', label: 'Confirm' },
+                          { value: 'complete', label: 'Complete' },
+                          { value: 'no_show', label: 'No-show' },
+                        ].map((action) => (
+                          <button
+                            key={action.value}
+                            onClick={() => setVerifyAction(action.value as VerifyAction)}
+                            className={`h-9 px-3 rounded-lg text-sm font-medium transition-colors ${
+                              verifyAction === action.value
+                                ? 'bg-primary text-primary-foreground'
+                                : 'bg-sidebar-accent border border-sidebar-border text-foreground hover:bg-muted'
+                            }`}
+                          >
+                            {action.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Footer */}
+                  <div className="p-4 border-t border-sidebar-border bg-sidebar-accent/30">
+                    <button
+                      onClick={() => {
+                        handleVerifyByCode();
+                        if (verifyCode.trim()) setQuickCheckOpen(false);
+                      }}
+                      disabled={isVerifying || !verifyCode.trim()}
+                      className="w-full h-10 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors disabled:opacity-50"
+                    >
+                      {isVerifying ? 'Processing...' : 'Apply Action'}
+                    </button>
+                    
+                    {verifyMessage && (
+                      <div className="flex items-center justify-center gap-1.5 text-xs text-emerald-500 font-medium mt-3">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        {verifyMessage}
+                      </div>
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+
             {/* Booking List - now with client-filtered bookings */}
             <BookingList
               bookings={filteredBookings}
               isLoading={isLoading}
               selectedStatus={selectedStatus}
+              searchQuery={searchQuery}
               onAction={handleBookingAction}
             />
           </div>

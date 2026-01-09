@@ -225,7 +225,9 @@ export interface ListingSummary {
   suspendedAt: string | null;
   thumbnail: string | null;
   viewCount: number;
+  impressionCount: number;
   favouriteCount: number;
+  superlikeCount: number;
   partnerId: string | null;
   createdAt: Date;
   updatedAt: Date;

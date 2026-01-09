@@ -5,9 +5,11 @@
 
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { CarCard, CarCardMinimal, CarListItem, CarCardSkeleton, CarListItemSkeleton } from '@/components/inventory';
 import { Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTrackImpressions } from '@/hooks/listings';
 import type { SearchResponse } from '@/lib/search-utils';
 
 interface ListingItem {
@@ -65,6 +67,33 @@ export function ListingsContent({
   clearFilters,
   loadMore,
 }: ListingsContentProps) {
+  const { trackImpressions, flushImpressions } = useTrackImpressions();
+  const trackedIdsRef = useRef<Set<string>>(new Set());
+
+  // Track impressions when new listings appear (including infinite scroll)
+  useEffect(() => {
+    if (listings.length > 0) {
+      // Find listings we haven't tracked yet
+      const newListingIds = listings
+        .map(l => l.id)
+        .filter(id => !trackedIdsRef.current.has(id));
+      
+      if (newListingIds.length > 0) {
+        // Mark as tracked
+        newListingIds.forEach(id => trackedIdsRef.current.add(id));
+        // Queue impressions (debounced)
+        trackImpressions(newListingIds);
+      }
+    }
+  }, [listings, trackImpressions]);
+
+  // Flush any pending impressions on unmount
+  useEffect(() => {
+    return () => {
+      flushImpressions();
+    };
+  }, [flushImpressions]);
+
   // Error state
   if (error) {
     return (
