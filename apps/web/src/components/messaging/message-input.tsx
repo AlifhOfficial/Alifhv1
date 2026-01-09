@@ -190,7 +190,7 @@ export function MessageInput({
 
   return (
     <div className={cn(
-      'border-t border-border/50 bg-background/95 backdrop-blur-sm',
+      'border-t border-border/40 bg-background',
       compact ? 'px-2.5 py-2' : 'px-4 py-3'
     )}>
       {/* Listing Preview Card */}
@@ -208,7 +208,7 @@ export function MessageInput({
                 <div className="w-12 h-12 bg-muted/40 rounded-md flex-shrink-0" />
               )}
               <div className="flex-1 min-w-0 flex items-center">
-                <p className="text-xs font-semibold text-foreground line-clamp-2">
+                <p className="text-xs font-bold text-foreground line-clamp-2">
                   {listingPreview.title}
                 </p>
               </div>
@@ -227,8 +227,8 @@ export function MessageInput({
       )}
       
       <div className={cn(
-        'flex items-center bg-muted/20 border border-border/40 rounded-2xl min-w-0 overflow-hidden w-full',
-        compact ? 'p-1' : 'p-1.5 lg:p-2'
+        'flex items-center bg-sidebar border border-border/40 rounded-xl min-w-0 overflow-hidden w-full',
+        compact ? 'p-1' : 'p-1.5'
       )}>
         {/* Text Input */}
         <textarea
@@ -242,7 +242,7 @@ export function MessageInput({
           autoFocus
           tabIndex={0}
           className={cn(
-            'flex-1 bg-transparent text-foreground placeholder:text-muted-foreground resize-none min-w-0 overflow-hidden focus:outline-none focus:ring-0',
+            'flex-1 bg-transparent text-foreground placeholder:text-muted-foreground/50 resize-none min-w-0 overflow-hidden focus:outline-none focus:ring-0 font-medium',
             compact ? 'max-h-16 text-[13px] py-1 px-2' : 'max-h-24 lg:max-h-32 text-sm py-1.5 lg:py-2 px-2 lg:px-3'
           )}
           style={{
@@ -257,23 +257,23 @@ export function MessageInput({
           onClick={handleSend}
           disabled={!text.trim() || disabled}
           className={cn(
-            'rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ml-1',
+            'rounded-lg transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed ml-1',
             compact ? 'p-1.5' : 'p-2',
             text.trim() && !disabled
               ? 'bg-blue-500 text-white hover:bg-blue-600'
-              : 'bg-muted text-muted-foreground'
+              : 'text-muted-foreground/50'
           )}
           aria-label="Send message"
         >
-          <Send className={compact ? 'w-4 h-4' : 'w-5 h-5'} />
+          <Send className={compact ? 'w-4 h-4' : 'w-[18px] h-[18px]'} />
         </button>
       </div>
 
       {/* Hint - hide in compact mode */}
       {!compact && (
-        <small className="text-xs text-muted-foreground/70 mt-2 px-1 block">
-          Press Enter to send, Shift + Enter for new line
-        </small>
+        <p className="text-xs font-medium text-muted-foreground/50 mt-2 px-1">
+          Enter to send · Shift+Enter for new line
+        </p>
       )}
     </div>
   );

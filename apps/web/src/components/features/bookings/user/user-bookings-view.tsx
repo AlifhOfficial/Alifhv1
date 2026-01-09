@@ -6,8 +6,8 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { AlertCircle, Package } from 'lucide-react';
-import { DashboardPageLayout } from '@/components/shared/layout';
+import { RefreshCw, Calendar } from 'lucide-react';
+import { DashboardPageWrapper, DashboardPageHeader } from '@/components/shared/layout/dashboard-page-wrapper';
 import type { UserBookingData } from './types';
 import { USER_BOOKING_STATUS_LABELS } from './types';
 import { UserBookingList } from './user-booking-list';
@@ -33,24 +33,12 @@ export function UserBookingsView() {
 
   // Status tabs configuration
   const statusTabs = [
-    { key: 'all', label: 'All', color: 'purple' },
-    { key: 'pending', label: 'Pending', color: 'yellow' },
-    { key: 'confirmed', label: 'Confirmed', color: 'green' },
-    { key: 'completed', label: 'Completed', color: 'blue' },
-    { key: 'cancelled', label: 'Cancelled', color: 'red' },
+    { key: 'all', label: 'All' },
+    { key: 'pending', label: 'Pending' },
+    { key: 'confirmed', label: 'Confirmed' },
+    { key: 'completed', label: 'Completed' },
+    { key: 'cancelled', label: 'Cancelled' },
   ];
-
-  const getColorClasses = (color?: string) => {
-    switch (color) {
-      case 'blue': return 'text-blue-600 dark:text-blue-400';
-      case 'green': return 'text-green-600 dark:text-green-400';
-      case 'yellow': return 'text-yellow-600 dark:text-yellow-400';
-      case 'red': return 'text-red-600 dark:text-red-400';
-      case 'purple': return 'text-purple-600 dark:text-purple-400';
-      case 'gray': return 'text-gray-600 dark:text-gray-400';
-      default: return 'text-foreground';
-    }
-  };
 
   const fetchBookings = useCallback(async () => {
     // Cancel any in-flight request to prevent race conditions
@@ -174,103 +162,101 @@ export function UserBookingsView() {
   }
 
   return (
-    <div className="min-h-full bg-background">
-      <div className="max-w-6xl mx-auto px-4 sm:px-8">
-        {/* Header Section - Sticky */}
-        <section className="space-y-4 sticky top-0 bg-background z-10 pt-8 sm:pt-12 pb-4">
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">My Bookings</h1>
-              <p className="text-[15px] font-medium text-muted-foreground/70 mt-2">
-                View and manage your booked test drives
-              </p>
-            </div>
+    <DashboardPageWrapper>
+      {/* Header */}
+      <DashboardPageHeader
+        title="My Bookings"
+        description="Your scheduled test drives"
+      >
+        <button
+          onClick={fetchBookings}
+          disabled={isLoading}
+          className="p-2 rounded-lg hover:bg-sidebar transition-colors disabled:opacity-50"
+          aria-label="Refresh"
+        >
+          <RefreshCw className={`w-4 h-4 text-muted-foreground ${isLoading ? 'animate-spin' : ''}`} />
+        </button>
+      </DashboardPageHeader>
+
+        {/* Status Pills */}
+        <div className="flex items-center gap-1.5 bg-sidebar p-1.5 rounded-xl border border-border/40">
+          {statusTabs.map((tab) => {
+            const count = tab.key === 'all' 
+              ? bookings.length 
+              : bookings.filter(b => b.status === tab.key).length;
+            const isActive = selectedStatus === tab.key;
             
-            <button
-              onClick={fetchBookings}
-              disabled={isLoading}
-              className="p-2 hover:bg-muted/40 rounded-lg transition-colors disabled:opacity-50"
-              title="Refresh"
-            >
-              <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Status Tabs */}
-          <div className="border-b border-border/40">
-            <div className="flex gap-1 overflow-x-auto pb-px">
-              {statusTabs.map((tab) => {
-                const count = tab.key === 'all' 
-                  ? bookings.length 
-                  : bookings.filter(b => b.status === tab.key).length;
-                
-                return (
-                  <button
-                    key={tab.key}
-                    onClick={() => setSelectedStatus(tab.key)}
-                    className={`px-5 py-3.5 border-b-2 transition-colors whitespace-nowrap text-[15px] font-semibold tracking-tight ${
-                      selectedStatus === tab.key
-                        ? `border-transparent ${getColorClasses(tab.color)}`
-                        : 'border-transparent text-muted-foreground/70 hover:text-foreground'
-                    }`}
-                  >
-                    {tab.label}
-                    <span className={`ml-2 text-sm font-semibold tracking-tight ${selectedStatus === tab.key ? getColorClasses(tab.color) : 'text-muted-foreground/60'}`}>
-                      {count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* Error Alert */}
-        {error && (
-          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6 mt-6">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
-              <p className="text-sm text-red-500">{error}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Bookings List */}
-        <div className="mt-6 pb-32">
-          <UserBookingList
-            bookings={bookings}
-            isLoading={isLoading}
-            selectedStatus={selectedStatus}
-            onCancel={(bookingId) => setCancelModal({ bookingId, isOpen: true })}
-            onOpenFeedback={(bookingId) => setFeedbackModal({ bookingId, isOpen: true })}
-          />
+            // Color mapping for counts
+            const getCountColor = () => {
+              if (!isActive) return 'bg-muted/50 text-muted-foreground/60';
+              switch (tab.key) {
+                case 'confirmed': return 'bg-green-500/10 text-green-600';
+                case 'pending': return 'bg-amber-500/10 text-amber-600';
+                case 'completed': return 'bg-blue-500/10 text-blue-600';
+                case 'cancelled': return 'bg-red-500/10 text-red-600';
+                default: return 'bg-purple-500/10 text-purple-600';
+              }
+            };
+            
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setSelectedStatus(tab.key)}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold tracking-tight transition-all ${
+                  isActive
+                    ? 'bg-background text-foreground shadow-sm border border-border/40'
+                    : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
+                }`}
+              >
+                {tab.label}
+                {count > 0 && (
+                  <span className={`ml-2 px-2 py-0.5 rounded-md text-xs font-bold ${getCountColor()}`}>
+                    {count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Modals */}
-        <FeedbackModal
-          isOpen={feedbackModal?.isOpen ?? false}
-          rating={feedbackRating}
-          comment={feedbackComment}
-          isSubmitting={isSubmittingFeedback}
-          onRatingChange={setFeedbackRating}
-          onCommentChange={setFeedbackComment}
-          onSubmit={handleSubmitFeedback}
-          onClose={handleCloseFeedback}
-        />
+      {/* Error */}
+      {error && (
+        <div className="mb-6 p-4 rounded-xl bg-red-500/5 border border-red-500/20">
+          <p className="text-sm text-red-500">{error}</p>
+        </div>
+      )}
 
-        <CancelBookingModal
-          isOpen={cancelModal?.isOpen ?? false}
-          reason={cancelReason}
-          notes={cancelNotes}
-          isSubmitting={isCancelling}
-          onReasonChange={setCancelReason}
-          onNotesChange={setCancelNotes}
-          onSubmit={handleSubmitCancel}
-          onClose={handleCloseCancel}
-        />
-      </div>
-    </div>
+      {/* Bookings List */}
+      <UserBookingList
+        bookings={bookings}
+        isLoading={isLoading}
+        selectedStatus={selectedStatus}
+        onCancel={(bookingId) => setCancelModal({ bookingId, isOpen: true })}
+        onOpenFeedback={(bookingId) => setFeedbackModal({ bookingId, isOpen: true })}
+      />
+
+      {/* Modals */}
+      <FeedbackModal
+        isOpen={feedbackModal?.isOpen ?? false}
+        rating={feedbackRating}
+        comment={feedbackComment}
+        isSubmitting={isSubmittingFeedback}
+        onRatingChange={setFeedbackRating}
+        onCommentChange={setFeedbackComment}
+        onSubmit={handleSubmitFeedback}
+        onClose={handleCloseFeedback}
+      />
+
+      <CancelBookingModal
+        isOpen={cancelModal?.isOpen ?? false}
+        reason={cancelReason}
+        notes={cancelNotes}
+        isSubmitting={isCancelling}
+        onReasonChange={setCancelReason}
+        onNotesChange={setCancelNotes}
+        onSubmit={handleSubmitCancel}
+        onClose={handleCloseCancel}
+      />
+    </DashboardPageWrapper>
   );
 }

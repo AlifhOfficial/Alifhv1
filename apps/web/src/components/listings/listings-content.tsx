@@ -5,7 +5,7 @@
 
 'use client';
 
-import { CarCard, CarListItem, CarCardSkeleton, CarListItemSkeleton } from '@/components/inventory';
+import { CarCard, CarCardMinimal, CarListItem, CarCardSkeleton, CarListItemSkeleton } from '@/components/inventory';
 import { Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { SearchResponse } from '@/lib/search-utils';
@@ -47,7 +47,7 @@ interface ListingsContentProps {
   /** Number of active filters */
   activeFilterCount: number;
   /** View mode */
-  viewMode: 'grid' | 'list';
+  viewMode: 'grid' | 'list' | 'minimal';
   /** Clear filters callback */
   clearFilters: () => void;
   /** Load more callback */
@@ -133,34 +133,56 @@ export function ListingsContent({
   // Results
   return (
     <>
-      {/* Mobile/Tablet: always grid */}
-      <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-        {listings.map((listing, index) => (
-          <CarCard
-            key={listing.id}
-            id={listing.id}
-            make={listing.make}
-            model={listing.model}
-            year={listing.year}
-            trim={listing.trim}
-            price={listing.price}
-            mileage={listing.mileage}
-            emirate={listing.emirate}
-            specs={listing.specs}
-            thumbnail={listing.thumbnail}
-            images={listing.images}
-            qiScore={listing.qiScore}
-            isBlkListing={listing.isBlkListing}
-            partnerName={listing.partnerName || undefined}
-            partnerLogo={listing.partnerLogo || undefined}
-            partnerVerified={listing.partnerVerified || undefined}
-            isBlackTierPartner={listing.isBlackTierPartner || undefined}
-            sellerName={listing.sellerName || undefined}
-            sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
-            kycVerified={listing.sellerKycVerified || undefined}
-            priority={index < 4}
-          />
-        ))}
+      {/* Mobile/Tablet: grid or minimal */}
+      <div className="lg:hidden">
+        {viewMode === 'minimal' ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+            {listings.map((listing, index) => (
+              <CarCardMinimal
+                key={listing.id}
+                id={listing.id}
+                make={listing.make}
+                model={listing.model}
+                thumbnail={listing.thumbnail}
+                images={listing.images}
+                partnerName={listing.partnerName || undefined}
+                partnerLogo={listing.partnerLogo || undefined}
+                sellerName={listing.sellerName || undefined}
+                sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
+                priority={index < 4}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+            {listings.map((listing, index) => (
+              <CarCard
+                key={listing.id}
+                id={listing.id}
+                make={listing.make}
+                model={listing.model}
+                year={listing.year}
+                trim={listing.trim}
+                price={listing.price}
+                mileage={listing.mileage}
+                emirate={listing.emirate}
+                specs={listing.specs}
+                thumbnail={listing.thumbnail}
+                images={listing.images}
+                qiScore={listing.qiScore}
+                isBlkListing={listing.isBlkListing}
+                partnerName={listing.partnerName || undefined}
+                partnerLogo={listing.partnerLogo || undefined}
+                partnerVerified={listing.partnerVerified || undefined}
+                isBlackTierPartner={listing.isBlackTierPartner || undefined}
+                sellerName={listing.sellerName || undefined}
+                sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
+                kycVerified={listing.sellerKycVerified || undefined}
+                priority={index < 4}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Desktop (lg+): respects viewMode */}
@@ -191,6 +213,24 @@ export function ListingsContent({
                 sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
                 kycVerified={listing.sellerKycVerified || undefined}
                 priority={index < 4}
+              />
+            ))}
+          </div>
+        ) : viewMode === 'minimal' ? (
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5">
+            {listings.map((listing, index) => (
+              <CarCardMinimal
+                key={listing.id}
+                id={listing.id}
+                make={listing.make}
+                model={listing.model}
+                thumbnail={listing.thumbnail}
+                images={listing.images}
+                partnerName={listing.partnerName || undefined}
+                partnerLogo={listing.partnerLogo || undefined}
+                sellerName={listing.sellerName || undefined}
+                sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
+                priority={index < 8}
               />
             ))}
           </div>

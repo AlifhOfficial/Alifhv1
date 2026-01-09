@@ -62,7 +62,6 @@ export type ExtendedUserProfile = {
   phoneVerified: boolean;
   // User table fields (for fallback in UI)
   userName: string | null;
-  userImage: string | null;
 };
 
 /**
@@ -102,9 +101,8 @@ export const getUserProfileByUserId = async (userId: string): Promise<ExtendedUs
       // Verification fields from user table
       emailVerified: user.emailVerified,
       phoneVerified: user.phoneVerified,
-      // Basic user info (for UI fallbacks - eliminates separate query)
+      // Basic user info (for fallback in UI)
       userName: user.name,
-      userImage: user.image,
     })
     .from(userProfile)
     .innerJoin(user, eq(user.id, userProfile.userId))

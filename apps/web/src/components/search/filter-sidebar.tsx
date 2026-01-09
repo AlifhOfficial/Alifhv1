@@ -39,7 +39,6 @@ export function FilterSidebar({
 }: FilterSidebarProps) {
   return (
     <div className="flex flex-col">
-      {/* Popular - Premium filters */}
       <FilterSection title="Popular" defaultOpen>
         <div className="flex flex-col gap-1">
           <button
@@ -47,13 +46,13 @@ export function FilterSidebar({
             onClick={() => onFilterChange({ condition: params.condition === 'new' ? undefined : 'new' })}
             className={cn(
               'flex items-center justify-between w-full py-2.5 px-3 rounded-lg',
-              'text-[15px] transition-all duration-150',
+              'text-sm transition-all duration-150',
               params.condition === 'new'
-                ? 'text-foreground font-semibold bg-muted/40'
-                : 'text-foreground/80 font-medium hover:text-foreground hover:bg-muted/20'
+                ? 'text-foreground font-bold bg-muted/50'
+                : 'text-muted-foreground font-semibold hover:text-foreground hover:bg-muted/30'
             )}
           >
-            <span className="tracking-tight">New Cars</span>
+            <span>New Cars</span>
             {params.condition === 'new' && <CheckCircle2 className="h-4 w-4 text-green-500" />}
           </button>
           <button
@@ -61,13 +60,13 @@ export function FilterSidebar({
             onClick={() => onFilterChange({ isBlkListing: params.isBlkListing ? undefined : true })}
             className={cn(
               'flex items-center justify-between w-full py-2.5 px-3 rounded-lg',
-              'text-[15px] transition-all duration-150',
+              'text-sm transition-all duration-150',
               params.isBlkListing
-                ? 'text-foreground font-semibold bg-muted/40'
-                : 'text-foreground/80 font-medium hover:text-foreground hover:bg-muted/20'
+                ? 'text-foreground font-bold bg-muted/50'
+                : 'text-muted-foreground font-semibold hover:text-foreground hover:bg-muted/30'
             )}
           >
-            <span className="tracking-tight">Black Listings</span>
+            <span>Black Listings</span>
             {params.isBlkListing && <CheckCircle2 className="h-4 w-4 text-green-500" />}
           </button>
           <button
@@ -75,13 +74,13 @@ export function FilterSidebar({
             onClick={() => onFilterChange({ isBlackTierPartner: params.isBlackTierPartner ? undefined : true })}
             className={cn(
               'flex items-center justify-between w-full py-2.5 px-3 rounded-lg',
-              'text-[15px] transition-all duration-150',
+              'text-sm transition-all duration-150',
               params.isBlackTierPartner
-                ? 'text-foreground font-semibold bg-muted/40'
-                : 'text-foreground/80 font-medium hover:text-foreground hover:bg-muted/20'
+                ? 'text-foreground font-bold bg-muted/50'
+                : 'text-muted-foreground font-semibold hover:text-foreground hover:bg-muted/30'
             )}
           >
-            <span className="tracking-tight">Black Members</span>
+            <span>Black Members</span>
             {params.isBlackTierPartner && <CheckCircle2 className="h-4 w-4 text-green-500" />}
           </button>
         </div>
@@ -145,13 +144,13 @@ export function FilterSidebar({
           type="button"
           onClick={() => onFilterChange({ isNegotiable: params.isNegotiable ? undefined : true })}
           className={cn(
-            'flex items-center justify-between w-full px-3 py-2.5 text-[15px] font-semibold rounded-lg transition-all',
+            'flex items-center justify-between w-full px-3 py-2.5 text-sm rounded-lg transition-all',
             params.isNegotiable
-              ? 'text-foreground bg-muted/40'
-              : 'bg-muted/20 text-foreground/80 hover:bg-muted/40 hover:text-foreground'
+              ? 'text-foreground font-bold bg-muted/50'
+              : 'bg-muted/30 text-muted-foreground font-semibold hover:bg-muted/50 hover:text-foreground'
           )}
         >
-          <span className="tracking-tight">Negotiable prices only</span>
+          <span>Negotiable prices only</span>
           {params.isNegotiable && <CheckCircle2 className="h-4 w-4 text-green-500" />}
         </button>
       </FilterSection>
@@ -182,10 +181,10 @@ interface FilterSectionProps {
 
 function FilterSection({ title, children, defaultOpen = false }: FilterSectionProps) {
   return (
-    <Collapsible defaultOpen={defaultOpen} className="group/collapsible border-b border-border/20">
-      <CollapsibleTrigger className="flex items-center justify-between w-full py-4 text-[15px] font-bold tracking-tight text-foreground hover:text-foreground transition-colors">
+    <Collapsible defaultOpen={defaultOpen} className="group/collapsible border-b border-border/30">
+      <CollapsibleTrigger className="flex items-center justify-between w-full py-4 text-sm font-bold text-foreground hover:text-foreground transition-colors">
         <span>{title}</span>
-        <ChevronDown className="size-4 text-muted-foreground/60 transition-transform duration-200 group-data-[state=closed]/collapsible:-rotate-90" />
+        <ChevronDown className="size-4 text-muted-foreground/50 transition-transform duration-200 group-data-[state=closed]/collapsible:-rotate-90" />
       </CollapsibleTrigger>
       <CollapsibleContent className="pb-5">
         {children}
@@ -236,7 +235,7 @@ function MultiSelectFilter({
 
   if (options.length === 0) {
     return (
-      <p className="text-xs text-muted-foreground/40 py-3">No options available</p>
+      <p className="text-sm text-muted-foreground/50 py-3 font-medium">No options available</p>
     );
   }
 
@@ -252,17 +251,17 @@ function MultiSelectFilter({
             onClick={() => toggleOption(option.value)}
             className={cn(
               'flex items-center justify-between w-full py-2.5 px-3 rounded-lg',
-              'text-[15px] transition-all duration-150',
+              'text-sm transition-all duration-150',
               isSelected
-                ? 'text-foreground font-semibold bg-muted/40'
-                : 'text-foreground/80 font-medium hover:text-foreground hover:bg-muted/20'
+                ? 'text-foreground font-bold bg-muted/50'
+                : 'text-muted-foreground font-semibold hover:text-foreground hover:bg-muted/30'
             )}
           >
-            <span className="tracking-tight">
+            <span>
               {option.label}
             </span>
             <div className="flex items-center gap-2.5">
-              <span className="text-sm text-muted-foreground/60 tabular-nums font-medium">{option.count}</span>
+              <span className="text-xs text-muted-foreground/50 tabular-nums font-semibold">{option.count}</span>
               {isSelected && <CheckCircle2 className="h-4 w-4 text-green-500" />}
             </div>
           </button>
@@ -361,10 +360,10 @@ function RangeFilter({
                 key={preset.label}
                 onClick={() => handlePresetClick(preset)}
                 className={cn(
-                  'px-3 py-1.5 text-sm font-semibold rounded-lg transition-all duration-150',
+                  'px-3 py-1.5 text-sm font-semibold rounded-full transition-all duration-150',
                   isActive
-                    ? 'bg-muted/40 text-foreground'
-                    : 'bg-muted/20 text-foreground/80 hover:text-foreground hover:bg-muted/40'
+                    ? 'bg-muted/50 text-foreground'
+                    : 'bg-muted/30 text-muted-foreground hover:text-foreground hover:bg-muted/50'
                 )}
               >
                 {preset.label}
@@ -388,7 +387,7 @@ function RangeFilter({
               step={step}
               className="flex-1 h-10"
             />
-            <span className="text-muted-foreground/30 text-sm font-medium">–</span>
+            <span className="text-muted-foreground/40 text-sm font-semibold">–</span>
           </>
         )}
         <Input
@@ -406,7 +405,7 @@ function RangeFilter({
       {/* Current range label */}
       {(minValue || maxValue) && (
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground/70 font-semibold">
+          <span className="text-muted-foreground font-semibold">
             {minValue && maxValue
               ? `${formatLabel(minValue)} - ${formatLabel(maxValue)}`
               : minValue
@@ -418,7 +417,7 @@ function RangeFilter({
           <button
             type="button"
             onClick={handleClear}
-            className="text-muted-foreground/60 hover:text-foreground transition-colors font-semibold"
+            className="text-muted-foreground/50 hover:text-foreground transition-colors font-semibold"
           >
             Clear
           </button>

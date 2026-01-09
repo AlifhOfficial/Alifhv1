@@ -22,7 +22,7 @@ import { ImageUpload } from '@/components/ui/forms/image-upload';
 
 function SectionHeader({ title }: { title: string }) {
   return (
-    <h3 className="text-lg font-medium text-foreground">{title}</h3>
+    <h3 className="text-[15px] font-bold tracking-tight text-foreground">{title}</h3>
   );
 }
 
@@ -42,17 +42,17 @@ function FieldWrapper({
   return (
     <div className="space-y-2">
       <div className="flex items-baseline justify-between">
-        <label className="text-base font-medium text-muted-foreground">
+        <label className="text-sm font-semibold text-muted-foreground/70">
           {label}
           {required && <span className="text-red-500 ml-0.5">*</span>}
         </label>
         {hint && !error && (
-          <span className="text-sm text-muted-foreground/60">{hint}</span>
+          <span className="text-xs text-muted-foreground/70">{hint}</span>
         )}
       </div>
       {children}
       {error && (
-        <p className="text-base font-medium text-red-500">{error}</p>
+        <p className="text-xs font-semibold text-red-500">{error}</p>
       )}
     </div>
   );
@@ -101,12 +101,13 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
   const negotiable = Boolean(data.isNegotiable);
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       {/* Pricing */}
-      <div className="space-y-6">
+      <section>
         <SectionHeader title="Pricing" />
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5 mt-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <FieldWrapper label="Price" required error={errors.price}>
             <div className="relative">
               <input
@@ -118,11 +119,11 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
                 min={0}
                 className={cn(
                   "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
-                  "outline-none transition-colors px-0 pr-14 text-base font-medium",
+                  "outline-none transition-colors px-0 pr-14 text-sm font-medium",
                   "placeholder:text-muted-foreground/40"
                 )}
               />
-              <span className="absolute right-0 top-1/2 -translate-y-1/2 text-sm text-muted-foreground/60">
+              <span className="absolute right-0 top-1/2 -translate-y-1/2 text-xs text-muted-foreground/70">
                 AED
               </span>
             </div>
@@ -134,7 +135,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               onClick={() => updateField('isNegotiable', !negotiable)}
               className={cn(
                 'flex items-center justify-between w-full h-12 px-0 transition-colors',
-                'text-base font-medium'
+                'text-sm font-medium'
               )}
             >
               <span className="text-foreground">Allow offers</span>
@@ -145,14 +146,16 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               )}
             </button>
           </FieldWrapper>
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Location */}
-      <div className="space-y-6">
+      <section>
         <SectionHeader title="Location" />
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5 mt-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <FieldWrapper label="Emirate" required error={errors.emirate}>
             <Combobox
               options={emirateOptions}
@@ -170,20 +173,23 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               placeholder="Jumeirah"
               className={cn(
                 "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
-                "outline-none transition-colors px-0 text-base font-medium",
+                "outline-none transition-colors px-0 text-sm font-medium",
                 "placeholder:text-muted-foreground/40"
               )}
             />
           </FieldWrapper>
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Photos */}
-      <div className="space-y-4">
-        <div className="flex items-baseline justify-between">
+      <section>
+        <div className="flex items-baseline justify-between mb-3">
           <SectionHeader title="Photos" />
-          <span className="text-sm text-muted-foreground/60">First = thumbnail</span>
+          <span className="text-xs text-muted-foreground/70">First = thumbnail</span>
         </div>
+        
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5">
         
         <ImageUpload
           value={imageKeys}
@@ -192,12 +198,15 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
           directory="listings"
           label={undefined}
         />
-        {errors.images && <p className="text-sm font-medium text-red-500">{errors.images}</p>}
-      </div>
+        {errors.images && <p className="text-xs font-semibold text-red-500 mt-3">{errors.images}</p>}
+        </div>
+      </section>
 
       {/* Description */}
-      <div className="space-y-6">
+      <section>
         <SectionHeader title="Description" />
+
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5 mt-3 space-y-6">
 
         <FieldWrapper label="Description" hint="Optional" error={errors.description}>
           <textarea
@@ -207,7 +216,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
             rows={5}
             className={cn(
               "w-full bg-transparent border-2 border-border/30 rounded-xl focus:border-blue-500",
-              "outline-none transition-colors px-4 py-3 text-base font-medium resize-none",
+              "outline-none transition-colors px-4 py-3 text-sm font-medium resize-none",
               "placeholder:text-muted-foreground/40"
             )}
           />
@@ -216,10 +225,10 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
         {/* Owner Notes */}
         <div className="space-y-4">
           <div className="flex items-baseline justify-between">
-            <label className="text-sm font-medium text-muted-foreground">
+            <label className="text-sm font-semibold text-muted-foreground/70">
               Owner Notes
             </label>
-            <span className="text-xs text-muted-foreground/60">max 10</span>
+            <span className="text-xs text-muted-foreground/70">max 10</span>
           </div>
           
           {/* Notes list */}
@@ -232,7 +241,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
                 >
                   <div className="flex items-center gap-3">
                     <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
-                    <p className="text-sm text-foreground">{note}</p>
+                    <p className="text-sm font-medium text-foreground">{note}</p>
                   </div>
                   <button
                     type="button"
@@ -262,7 +271,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               placeholder="Add a short note (e.g. Full service history)"
               className={cn(
                 "flex-1 h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
-                "outline-none transition-colors px-0 text-base font-medium",
+                "outline-none transition-colors px-0 text-sm font-medium",
                 "placeholder:text-muted-foreground/40"
               )}
             />
@@ -270,15 +279,16 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               type="button"
               onClick={addOwnerRemark}
               disabled={!noteDraft.trim() || ownerRemarks.length >= 10}
-              className="px-5 py-2.5 rounded-full bg-blue-500 text-white text-sm font-semibold hover:bg-blue-600 transition-colors disabled:opacity-40"
+              className="px-5 py-2.5 rounded-full bg-blue-500 text-white text-xs font-semibold hover:bg-blue-600 transition-colors disabled:opacity-40"
             >
               Add
             </button>
           </div>
 
-          {errors.ownerRemarks && <p className="text-sm font-medium text-red-500">{errors.ownerRemarks}</p>}
+          {errors.ownerRemarks && <p className="text-xs font-semibold text-red-500">{errors.ownerRemarks}</p>}
         </div>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }

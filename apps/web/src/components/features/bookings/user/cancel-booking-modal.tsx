@@ -7,7 +7,6 @@
 import { createPortal } from 'react-dom';
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
-import { cn } from '@/utils';
 
 const DEFAULT_REASON = 'Changed mind';
 
@@ -48,43 +47,37 @@ export function CancelBookingModal({
   if (!isOpen || !mounted) return null;
 
   const modalContent = (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 w-full max-w-md mx-4 shadow-2xl">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60">
+      <div className="bg-background border border-border/40 rounded-xl p-6 w-full max-w-sm mx-4 shadow-xl">
         {/* Header */}
         <div className="mb-6">
-          <h3 className="text-xl font-bold tracking-tight">Cancel Booking</h3>
-          <p className="text-[15px] font-medium text-muted-foreground mt-1.5">
-            Tell us why you're cancelling. This helps the dealer improve their service.
+          <h3 className="text-[15px] font-bold tracking-tight text-foreground">Cancel Booking</h3>
+          <p className="text-sm text-muted-foreground/70 mt-1">
+            Tell us why you're cancelling.
           </p>
         </div>
 
         {/* Reason Text Field */}
-        <div className="space-y-2 mb-5">
-          <label className="text-sm font-semibold tracking-tight">Reason</label>
+        <div className="mb-4">
+          <label className="text-sm font-semibold text-muted-foreground/70 mb-2 block">Reason</label>
           <input
             type="text"
             value={reason}
             onChange={(e) => onReasonChange(e.target.value)}
             placeholder={DEFAULT_REASON}
-            className="w-full px-4 py-3 bg-background border border-border rounded-xl text-[15px] font-medium placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+            className="w-full px-4 py-3 bg-muted/30 border border-border/40 rounded-xl text-sm placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
           />
         </div>
 
         {/* Notes Textarea */}
-        <div className="space-y-2 mb-6">
-          <label className="text-sm font-semibold tracking-tight">
-            Additional Notes{' '}
-            <span className="font-medium text-muted-foreground/60">(optional)</span>
-          </label>
+        <div className="mb-6">
+          <label className="text-sm font-semibold text-muted-foreground/70 mb-2 block">Additional Notes (optional)</label>
           <textarea
             value={notes}
             onChange={(e) => onNotesChange(e.target.value)}
             placeholder="Optional details..."
             rows={3}
-            className={cn(
-              'w-full px-4 py-3 bg-background border border-border rounded-xl text-[15px] font-medium resize-none placeholder:text-muted-foreground/50',
-              'focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors'
-            )}
+            className="w-full px-4 py-3 bg-muted/30 border border-border/40 rounded-xl text-sm resize-none placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
           />
         </div>
 
@@ -93,14 +86,14 @@ export function CancelBookingModal({
           <button
             onClick={onClose}
             disabled={isSubmitting}
-            className="flex-1 px-5 py-3 border border-border bg-background hover:bg-muted/50 rounded-full text-[15px] font-semibold tracking-tight transition-colors disabled:opacity-50"
+            className="flex-1 px-4 py-2.5 border border-border/40 hover:bg-muted/30 rounded-xl text-sm font-semibold transition-colors disabled:opacity-50"
           >
             Go Back
           </button>
           <button
             onClick={onSubmit}
             disabled={isSubmitting || reason.trim().length === 0}
-            className="flex-1 px-5 py-3 bg-destructive text-destructive-foreground rounded-full text-[15px] font-semibold tracking-tight hover:bg-destructive/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
+            className="flex-1 px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-600 rounded-xl text-sm font-semibold transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-2"
           >
             {isSubmitting ? (
               <>

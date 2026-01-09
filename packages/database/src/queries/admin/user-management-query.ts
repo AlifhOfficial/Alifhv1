@@ -21,7 +21,6 @@ export type AdminUserData = {
   id: string;
   name: string;
   email: string;
-  image: string | null;
   emailVerified: boolean;
   phoneVerified: boolean;
   phoneVerifiedAt: Date | null;
@@ -171,7 +170,6 @@ export const getAdminAllUsers = async (options?: {
       id: user.id,
       name: user.name,
       email: user.email,
-      image: user.image,
       emailVerified: user.emailVerified,
       phoneVerified: user.phoneVerified,
       phoneVerifiedAt: user.phoneVerifiedAt,
@@ -256,7 +254,6 @@ export const getAdminAllUsers = async (options?: {
     id: u.id,
     name: u.name,
     email: u.email,
-    image: u.image,
     emailVerified: u.emailVerified,
     phoneVerified: u.phoneVerified,
     phoneVerifiedAt: u.phoneVerifiedAt,
@@ -312,7 +309,6 @@ const userWithProfileFields = {
   id: user.id,
   name: user.name,
   email: user.email,
-  image: user.image,
   emailVerified: user.emailVerified,
   phoneVerified: user.phoneVerified,
   phoneVerifiedAt: user.phoneVerifiedAt,
@@ -378,7 +374,6 @@ async function buildAdminUserData(userData: typeof userWithProfileFields extends
     id: userData.id,
     name: userData.name,
     email: userData.email,
-    image: userData.image,
     emailVerified: userData.emailVerified,
     phoneVerified: userData.phoneVerified,
     phoneVerifiedAt: userData.phoneVerifiedAt,

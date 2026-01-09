@@ -45,21 +45,26 @@ export function ListingsSidebar({
   if (!sidebarOpen) return null;
 
   return (
-    <aside className={cn(
-      "hidden lg:block w-64 flex-shrink-0"
-    )}>
+    <aside className="hidden lg:block w-72 flex-shrink-0">
       <div className={cn(
         "sticky flex flex-col",
         embedded 
           ? "top-0 max-h-screen"
           : "top-14 sm:top-16 max-h-[calc(100vh-3.5rem)] sm:max-h-[calc(100vh-4rem)]"
       )}>
-        {/* Fixed Header with collapse button */}
-        <div className="flex items-center justify-between py-4 sm:py-6 pr-6 flex-shrink-0">
-          <h2 className="text-base font-semibold tracking-tight text-primary">Filters</h2>
+        {/* Header */}
+        <div className="flex items-center justify-between py-5 pr-6 flex-shrink-0 border-b border-border/40">
+          <div className="flex items-center gap-2">
+            <h2 className="text-[15px] font-bold tracking-tight text-foreground">Filters</h2>
+            {activeFilterCount > 0 && (
+              <span className="px-2 py-0.5 rounded-md text-xs font-bold bg-primary/10 text-primary">
+                {activeFilterCount}
+              </span>
+            )}
+          </div>
           <button
             onClick={() => onSidebarToggle(false)}
-            className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+            className="p-2 text-muted-foreground/70 hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors"
             title="Hide filters"
           >
             <PanelLeftClose className="h-4 w-4" />
@@ -67,7 +72,7 @@ export function ListingsSidebar({
         </div>
         
         {/* Scrollable Filter Content */}
-        <div className="flex-1 overflow-y-auto pr-6 pb-6">
+        <div className="flex-1 overflow-y-auto pr-6 py-4">
           <FilterSidebar
             params={params}
             facets={facets}

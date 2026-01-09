@@ -78,7 +78,7 @@ export function VINInput({ value, onChange, onDecode, disabled, excludeListingId
   return (
     <div className="space-y-3">
       {/* Label */}
-      <label className="text-sm font-medium text-muted-foreground">
+      <label className="text-sm font-semibold text-muted-foreground/70">
         Vehicle Identification Number
       </label>
       
@@ -120,12 +120,12 @@ export function VINInput({ value, onChange, onDecode, disabled, excludeListingId
       
       {/* Footer - Character count & status message */}
       <div className="flex items-center justify-between">
-        <p className="text-xs font-medium text-muted-foreground/50 tabular-nums">
+        <p className="text-[11px] font-semibold text-muted-foreground/70 tabular-nums">
           {value.length}/17
         </p>
         {message && (
           <p className={cn(
-            "text-sm font-medium",
+            "text-xs font-semibold",
             status === 'available' && "text-green-500",
             status === 'taken' && "text-red-500",
             status === 'error' && "text-yellow-500"

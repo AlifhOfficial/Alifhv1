@@ -5,8 +5,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Package } from 'lucide-react';
-import Link from 'next/link';
+import { Calendar } from 'lucide-react';
 import type { UserBookingData } from './types';
 import { USER_BOOKING_STATUS_LABELS } from './types';
 import { UserBookingCard } from './user-booking-card';
@@ -35,27 +34,41 @@ export function UserBookingList({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-16">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-foreground"></div>
+      <div className="flex items-center justify-center py-20">
+        <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
       </div>
     );
   }
 
   if (filteredBookings.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <Package className="w-12 h-12 text-muted-foreground/40 mb-4" />
-        <p className="text-lg font-medium text-muted-foreground">
+      <div className="flex flex-col items-center justify-center py-24 text-center rounded-xl border border-border/40 bg-sidebar">
+        <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-5">
+          <Calendar className="w-7 h-7 text-muted-foreground/40" />
+        </div>
+        <p className="text-[15px] font-bold tracking-tight text-foreground mb-1">
           {selectedStatus === 'all' 
-            ? "No test drives yet" 
+            ? 'No bookings yet' 
             : `No ${USER_BOOKING_STATUS_LABELS[selectedStatus]?.toLowerCase() || selectedStatus} bookings`}
+        </p>
+        <p className="text-sm text-muted-foreground/70">
+          {selectedStatus === 'all'
+            ? 'Your test drive bookings will appear here'
+            : `Bookings will appear here when they are ${USER_BOOKING_STATUS_LABELS[selectedStatus]?.toLowerCase() || selectedStatus}`}
         </p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div>
+      {/* Section Header */}
+      <p className="text-sm font-semibold text-muted-foreground/70 mb-4">
+        {filteredBookings.length} booking{filteredBookings.length !== 1 ? 's' : ''}
+      </p>
+
+      {/* List */}
+      <div className="space-y-3">
       {filteredBookings.map(booking => (
         <UserBookingCard
           key={booking.id}
@@ -69,6 +82,7 @@ export function UserBookingList({
           onLeaveFeedback={() => onOpenFeedback(booking.id)}
         />
       ))}
+      </div>
     </div>
   );
 }

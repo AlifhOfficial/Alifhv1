@@ -1,16 +1,16 @@
 /**
  * Staff Profile Component
  * Edit work identity - display name, work email, work phone
- * Following profile-view design system
+ * Minimal macOS-style design
  */
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
-import { User, Mail, Phone, Loader2, Info, ArrowLeft, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Loader2, RefreshCw, User, Mail, Phone, Briefcase } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import Link from 'next/link';
 
 interface StaffProfileData {
   id: string;
@@ -21,6 +21,13 @@ interface StaffProfileData {
   department: string | null;
   role: string;
 }
+
+// Role badge config
+const ROLE_CONFIG: Record<string, { color: string; bg: string }> = {
+  owner: { color: 'text-purple-600', bg: 'bg-purple-500/10' },
+  manager: { color: 'text-blue-600', bg: 'bg-blue-500/10' },
+  staff: { color: 'text-foreground', bg: 'bg-secondary' },
+};
 
 export function StaffProfile() {
   const { toast } = useToast();
@@ -34,7 +41,7 @@ export function StaffProfile() {
   });
 
   // Fetch current profile
-  const { data: profileData, isLoading } = useQuery({
+  const { data: profileData, isLoading, isRefetching, refetch } = useQuery({
     queryKey: ['staff', 'profile'],
     queryFn: async () => {
       const res = await fetch('/api/partner/staff/profile');
@@ -99,176 +106,195 @@ export function StaffProfile() {
     setEditing(false);
   };
 
+  const getRoleBadge = (role: string) => {
+    return ROLE_CONFIG[role] || ROLE_CONFIG.staff;
+  };
+
+  // Loading state
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="max-w-6xl mx-auto px-6 py-16">
+        <div className="flex flex-col items-center justify-center py-24">
+          <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
+          <p className="text-xs text-muted-foreground mt-4">Loading...</p>
+        </div>
       </div>
     );
   }
 
+  // Error state
   if (!profile) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <p className="text-muted-foreground">Unable to load profile</p>
+      <div className="max-w-6xl mx-auto px-6 py-16">
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <User className="w-10 h-10 text-muted-foreground/20 mb-4" />
+          <h3 className="text-lg font-medium tracking-tight">Unable to load profile</h3>
+          <p className="text-sm text-muted-foreground mt-1">Please try again later</p>
+        </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-background pb-32">
-      <div className="max-w-4xl mx-auto px-8 py-16 space-y-16">
-        
-        {/* Header */}
-        <div className="flex flex-col md:flex-row gap-8 items-start md:items-center justify-between">
-          <div className="flex items-start gap-3">
-            <Link
-              href="/partner-dashboard/staff"
-              className="p-2 hover:bg-secondary/50 rounded-lg transition-colors mt-0.5"
-            >
-              <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-            </Link>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Work Profile</h1>
-              <p className="text-sm sm:text-[15px] text-muted-foreground mt-1.5">
-                Set up your work identity for client interactions
-              </p>
-            </div>
-          </div>
+  const roleBadge = getRoleBadge(profile.role);
 
-          <div className="flex items-center gap-3 ml-12 md:ml-0">
+  return (
+    <div className="max-w-6xl mx-auto px-6 py-16">
+      {/* Back */}
+      <Link 
+        href="/partner-dashboard/staff"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+      >
+        <ArrowLeft className="w-3.5 h-3.5" />
+        Staff
+      </Link>
+
+      {/* Header */}
+      <header className="mb-16">
+        <div className="flex items-start justify-between mb-8">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">Work Profile</h1>
+            <p className="text-sm text-muted-foreground mt-2">
+              Your work identity for client interactions
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
             <button
-              onClick={() => queryClient.invalidateQueries({ queryKey: ['staff', 'profile'] })}
-              className="p-2 hover:bg-secondary/50 rounded-lg transition-colors"
-              title="Refresh"
+              onClick={() => refetch()}
+              disabled={isRefetching}
+              className="p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
+              aria-label="Refresh"
             >
-              <RefreshCw className="w-4 h-4 text-muted-foreground" />
+              <RefreshCw className={cn("w-4 h-4 text-muted-foreground", isRefetching && "animate-spin")} />
             </button>
             {editing ? (
               <>
                 <button
                   onClick={handleCancel}
                   disabled={updateMutation.isPending}
-                  className="px-4 py-2 text-[15px] font-semibold tracking-tight text-muted-foreground hover:text-foreground transition-colors"
+                  className="px-4 py-2 rounded-full text-sm hover:bg-secondary/50 transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={updateMutation.isPending}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-[15px] font-semibold tracking-tight transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-colors disabled:opacity-50"
                 >
                   {updateMutation.isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                  Save Changes
+                  Save
                 </button>
               </>
             ) : (
               <button
                 onClick={() => setEditing(true)}
-                className="px-5 py-2.5 rounded-full border border-border bg-background text-[15px] font-semibold tracking-tight hover:bg-secondary/50 transition-colors"
+                className="px-4 py-2 rounded-full bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-colors"
               >
-                Edit Profile
+                Edit
               </button>
             )}
           </div>
         </div>
 
-        {/* Info Banner */}
-        <div className="rounded-xl border border-border/40 p-6 bg-muted/30">
-          <div className="flex gap-3">
-            <Info className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
-            <div className="text-sm sm:text-[15px] space-y-2">
-              <p className="font-semibold text-foreground">Why separate work details?</p>
-              <p className="font-medium text-muted-foreground leading-relaxed">
-                Your display name will be shown to clients instead of your personal name. 
-                Work email and phone are used for business communications, keeping your personal contact private.
-              </p>
+        {/* Role Badge */}
+        <div className="flex items-center gap-3">
+          <span className={cn(
+            "px-2.5 py-1 rounded-md text-xs font-medium capitalize",
+            roleBadge.bg,
+            roleBadge.color
+          )}>
+            {profile.role}
+          </span>
+          {profile.title && (
+            <span className="text-xs text-muted-foreground">{profile.title}</span>
+          )}
+          {profile.department && (
+            <span className="text-xs text-muted-foreground">· {profile.department}</span>
+          )}
+        </div>
+      </header>
+
+      {/* Info Note */}
+      <div className="mb-12 p-4 rounded-xl bg-secondary/30">
+        <p className="text-xs text-muted-foreground">
+          Your display name is shown to clients instead of your personal name. Work email and phone are used for business communications.
+        </p>
+      </div>
+
+      {/* Form */}
+      <div className="space-y-8">
+        {/* Display Name */}
+        <div className="group p-4 -mx-4 rounded-xl hover:bg-secondary/30 transition-colors">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
+              <User className="w-4 h-4 text-muted-foreground" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <label className="text-xs text-muted-foreground">Display Name</label>
+              {editing ? (
+                <input
+                  value={formData.displayName}
+                  onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
+                  placeholder="e.g. Ahmed, Alex, Sarah"
+                  className="w-full mt-1 px-3 py-2 bg-secondary/50 rounded-lg text-sm font-medium border border-transparent focus:border-blue-500 focus:outline-none placeholder:text-muted-foreground/50"
+                />
+              ) : (
+                <p className="text-sm font-medium tracking-tight mt-1">
+                  {profile.displayName || <span className="text-muted-foreground">Not set</span>}
+                </p>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Form Sections */}
-        <div className="space-y-12">
-          
-          {/* Work Identity */}
-          <section className="space-y-6">
-            <div className="space-y-1.5">
-              <h3 className="text-lg sm:text-xl font-bold tracking-tight">Work Identity</h3>
-              <div className="h-px bg-border/40" />
+        {/* Work Email */}
+        <div className="group p-4 -mx-4 rounded-xl hover:bg-secondary/30 transition-colors">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
+              <Mail className="w-4 h-4 text-muted-foreground" />
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-              <div className="space-y-2">
-                <label className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Display Name</label>
-                <input
-                  value={formData.displayName}
-                  onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
-                  disabled={!editing}
-                  placeholder="e.g. Ahmed, Alex, Sarah"
-                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/30"
-                />
-                <p className="text-xs text-muted-foreground">
-                  This name will be shown to clients
-                </p>
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Work Email</label>
+            <div className="flex-1 min-w-0">
+              <label className="text-xs text-muted-foreground">Work Email</label>
+              {editing ? (
                 <input
                   type="email"
                   value={formData.workEmail}
                   onChange={(e) => setFormData({ ...formData, workEmail: e.target.value })}
-                  disabled={!editing}
                   placeholder="sales@company.ae"
-                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/30"
+                  className="w-full mt-1 px-3 py-2 bg-secondary/50 rounded-lg text-sm font-medium border border-transparent focus:border-blue-500 focus:outline-none placeholder:text-muted-foreground/50"
                 />
-                <p className="text-xs text-muted-foreground">
-                  Clients will contact you at this email
+              ) : (
+                <p className="text-sm font-medium tracking-tight mt-1">
+                  {profile.workEmail || <span className="text-muted-foreground">Not set</span>}
                 </p>
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Work Phone</label>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Work Phone */}
+        <div className="group p-4 -mx-4 rounded-xl hover:bg-secondary/30 transition-colors">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
+              <Phone className="w-4 h-4 text-muted-foreground" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <label className="text-xs text-muted-foreground">Work Phone</label>
+              {editing ? (
                 <input
                   type="tel"
                   value={formData.workPhone}
                   onChange={(e) => setFormData({ ...formData, workPhone: e.target.value })}
-                  disabled={!editing}
                   placeholder="+971 50 123 4567"
-                  className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/30"
+                  className="w-full mt-1 px-3 py-2 bg-secondary/50 rounded-lg text-sm font-medium border border-transparent focus:border-blue-500 focus:outline-none placeholder:text-muted-foreground/50"
                 />
-                <p className="text-xs text-muted-foreground">
-                  Your work number for client calls
+              ) : (
+                <p className="text-sm font-medium tracking-tight mt-1">
+                  {profile.workPhone || <span className="text-muted-foreground">Not set</span>}
                 </p>
-              </div>
+              )}
             </div>
-          </section>
-
-          {/* Role Information */}
-          <section className="space-y-6">
-            <div className="space-y-1.5">
-              <h3 className="text-lg sm:text-xl font-bold tracking-tight">Role Information</h3>
-              <div className="h-px bg-border/40" />
-            </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-3 border-y border-border/40 divide-x divide-border/40">
-              <div className="p-8 flex flex-col gap-2">
-                <small className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Role</small>
-                <h2 className="text-sm sm:text-[15px] font-medium text-foreground capitalize">{profile.role}</h2>
-              </div>
-              <div className="p-8 flex flex-col gap-2">
-                <small className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Title</small>
-                <h2 className="text-sm sm:text-[15px] font-medium text-foreground">{profile.title || 'Not set'}</h2>
-              </div>
-              <div className="p-8 flex flex-col gap-2">
-                <small className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Department</small>
-                <h2 className="text-sm sm:text-[15px] font-medium text-foreground">{profile.department || 'Not set'}</h2>
-              </div>
-            </div>
-          </section>
-
+          </div>
         </div>
-
       </div>
     </div>
   );

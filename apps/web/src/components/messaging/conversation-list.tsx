@@ -223,19 +223,19 @@ export function ConversationList({
       className
     )}>
       {/* Header */}
-      <div className="p-5 border-b border-border/50 bg-background/80 backdrop-blur-sm flex-shrink-0">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold tracking-tight">Messages</h2>
+      <div className="p-4 border-b border-border/40 bg-background flex-shrink-0">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-[15px] font-bold tracking-tight text-foreground">Messages</h2>
           <div className="flex items-center gap-2">
             {totalUnread > 0 && (
-              <small className="text-xs bg-red-500/90 text-white font-semibold px-2 py-0.5 rounded-full min-w-[18px] text-center">
+              <span className="text-xs bg-blue-500 text-white font-semibold px-2 py-0.5 rounded-full min-w-[18px] text-center">
                 {totalUnread > 99 ? '99+' : totalUnread}
-              </small>
+              </span>
             )}
             <button
               onClick={() => onListToggle(false)}
               className={cn(
-                "p-1.5 -mr-1 text-muted-foreground hover:text-foreground transition-all duration-200",
+                "p-1.5 -mr-1 text-muted-foreground/60 hover:text-foreground transition-all duration-200",
                 !listOpen && "opacity-0 pointer-events-none w-0 p-0 -mr-0"
               )}
               title="Hide messages"
@@ -253,10 +253,10 @@ export function ConversationList({
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
             <input
               type="text"
-              placeholder="Search conversations..."
+              placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-3 py-3 text-[15px] border border-border/40 bg-muted/20 text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 rounded-xl transition-all duration-200"
+              className="w-full pl-9 pr-3 py-2 text-sm font-medium border border-border/40 bg-sidebar text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-border rounded-lg transition-colors"
             />
           </div>
         )}
@@ -267,14 +267,16 @@ export function ConversationList({
         <div className="flex-1 min-h-0 overflow-y-auto">
         {isLoading ? (
           <div className="flex items-center justify-center h-32">
-            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+            <Loader2 className="w-5 h-5 animate-spin text-muted-foreground/50" />
           </div>
         ) : filteredConversations.length === 0 ? (
-          <div className="min-h-[400px] flex items-center justify-center">
-            <div className="text-center space-y-4">
-              <MessageCircle className="w-12 h-12 mx-auto text-muted-foreground/40 stroke-[1.5]" />
-              <p className="text-[15px] text-muted-foreground/40">
-                {searchQuery ? 'No conversations found' : 'No messages yet'}
+          <div className="flex items-center justify-center py-16">
+            <div className="text-center space-y-3">
+              <div className="w-12 h-12 mx-auto rounded-full bg-sidebar flex items-center justify-center">
+                <MessageCircle className="w-5 h-5 text-muted-foreground/40" />
+              </div>
+              <p className="text-sm font-medium text-muted-foreground/70">
+                {searchQuery ? 'No results' : 'No messages'}
               </p>
             </div>
           </div>

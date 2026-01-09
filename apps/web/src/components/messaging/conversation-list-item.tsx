@@ -66,9 +66,9 @@ export function ConversationListItem({
       className={cn(
         'w-full text-left transition-colors duration-150',
         isNested 
-          ? 'py-2.5 px-3 hover:bg-muted/20 rounded-xl' 
-          : 'py-3.5 px-4 hover:bg-muted/20 rounded-xl',
-        isActive && 'bg-muted/40'
+          ? 'py-2.5 px-3 hover:bg-sidebar rounded-lg' 
+          : 'py-3 px-3 hover:bg-sidebar rounded-xl',
+        isActive && 'bg-sidebar'
       )}
     >
       <div className="flex items-start overflow-hidden gap-3">
@@ -91,42 +91,42 @@ export function ConversationListItem({
 
         {/* Content */}
         <div className="flex-1 min-w-0 overflow-hidden">
-          <div className="flex items-center justify-between mb-1 overflow-hidden">
+          <div className="flex items-center justify-between mb-0.5 overflow-hidden">
             <h3
               className={cn(
-                'text-[15px] font-semibold tracking-tight truncate',
-                unreadCount > 0 ? 'text-foreground' : 'text-foreground/80'
+                'text-sm font-bold truncate',
+                unreadCount > 0 ? 'text-foreground' : 'text-foreground/90'
               )}
             >
               {displayName}
             </h3>
-            <small className="text-xs text-muted-foreground/60 ml-2 flex-shrink-0 font-medium">
-              {lastMessageDate ? formatDistanceToNow(lastMessageDate, { addSuffix: true }) : ''}
-            </small>
+            <span className="text-xs font-medium text-muted-foreground/50 ml-2 flex-shrink-0">
+              {lastMessageDate ? formatDistanceToNow(lastMessageDate, { addSuffix: false }) : ''}
+            </span>
           </div>
 
           {/* Listing Context (only for non-nested items) */}
           {showListingContext && (
-            <small className="text-xs text-muted-foreground/60 mb-0.5 truncate block">
+            <p className="text-xs font-medium text-muted-foreground/50 mb-0.5 truncate">
               Re: {listing.title}
-            </small>
+            </p>
           )}
 
           <div className="flex items-center justify-between overflow-hidden gap-2">
             <p
               className={cn(
-                'text-[15px] truncate min-w-0 flex-1 whitespace-nowrap overflow-hidden text-ellipsis',
+                'text-sm truncate min-w-0 flex-1',
                 unreadCount > 0
-                  ? 'text-foreground/70 font-semibold'
-                  : 'text-muted-foreground/70'
+                  ? 'text-foreground/80 font-semibold'
+                  : 'text-muted-foreground/70 font-medium'
               )}
             >
               {lastMessagePreview || 'No messages yet'}
             </p>
             {unreadCount > 0 && (
-              <small className="text-xs flex-shrink-0 px-2 py-0.5 font-semibold bg-red-500/90 text-white rounded-full min-w-[18px] text-center">
+              <span className="text-[11px] flex-shrink-0 px-1.5 py-0.5 font-semibold bg-blue-500 text-white rounded-full min-w-[18px] text-center">
                 {unreadCount > 9 ? '9+' : unreadCount}
-              </small>
+              </span>
             )}
           </div>
         </div>

@@ -8,6 +8,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { AlertTriangle, Package } from 'lucide-react';
+import { DashboardPageWrapper, DashboardPageHeader } from '@/components/shared/layout/dashboard-page-wrapper';
 import {
   Select,
   SelectContent,
@@ -479,164 +480,175 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
   // Filter: show always-visible tabs OR tabs with count > 0
   const statusTabs = allStatusTabs.filter(tab => tab.alwaysShow || tab.count > 0);
 
-  const getColorClasses = (color?: string) => {
-    switch (color) {
-      case 'blue': return 'text-blue-600 dark:text-blue-400';
-      case 'green': return 'text-green-600 dark:text-green-400';
-      case 'yellow': return 'text-yellow-600 dark:text-yellow-400';
-      case 'red': return 'text-red-600 dark:text-red-400';
-      case 'orange': return 'text-orange-600 dark:text-orange-400';
-      case 'purple': return 'text-purple-600 dark:text-purple-400';
-      case 'gray': return 'text-gray-600 dark:text-gray-400';
-      default: return 'text-muted-foreground';
-    }
-  };
-
   return (
-    <div className="min-h-full bg-background">
-      <div className="max-w-6xl mx-auto w-full px-4 sm:px-8">
-        {/* Header - Sticky */}
-        <section className="space-y-6 sticky top-0 bg-background z-10 pt-8 sm:pt-12 pb-4">
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">
-                {listingType === 'work' ? 'Inventory' : 'My Listings'}
-              </h1>
-              <p className="text-[15px] font-medium text-muted-foreground/70 mt-2">
-                {listingType === 'work' 
-                  ? 'Manage your dealership inventory' 
-                  : 'Manage your personal car listings'}
-              </p>
-            </div>
+    <DashboardPageWrapper>
+        {/* Header */}
+        <DashboardPageHeader
+          title={listingType === 'work' ? 'Inventory' : 'My Listings'}
+          description={listingType === 'work' 
+            ? 'Manage your dealership inventory' 
+            : 'Manage your personal car listings'}
+        >
+            {listingType === 'work' && blackQuota && (
+              <span className="text-xs text-muted-foreground">
+                BLK {blackQuota.activeBlackListingsCount}/{blackQuota.blackListingQuota}
+              </span>
+            )}
             
-            <div className="flex items-center gap-4">
-              {listingType === 'work' && blackQuota && (
-                <span className="text-sm font-semibold tracking-tight text-muted-foreground/70">
-                  BLK {blackQuota.activeBlackListingsCount}/{blackQuota.blackListingQuota}
-                </span>
-              )}
-              
+            <button 
+              onClick={() => fetchData()} 
+              disabled={isLoading}
+              className="p-2 hover:bg-sidebar rounded-lg transition-colors disabled:opacity-50"
+              title="Refresh"
+            >
+              <svg className={`w-4 h-4 text-muted-foreground ${isLoading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </button>
+        </DashboardPageHeader>
+
+          {/* Status Pills */}
+          <div className="flex items-center gap-1.5 bg-sidebar p-1.5 rounded-xl overflow-x-auto border border-border/40">
+              {statusTabs.map((tab) => {
+                const isActive = selectedStatus === tab.key;
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => setSelectedStatus(tab.key)}
+                    className={`px-4 py-2 rounded-lg text-sm font-semibold tracking-tight transition-all whitespace-nowrap ${
+                      isActive
+                        ? 'bg-background text-foreground shadow-sm border border-border/40'
+                        : 'text-muted-foreground/70 hover:text-foreground hover:bg-muted/30'
+                    }`}
+                  >
+                    {tab.label}
+                    {tab.count > 0 && (
+                      <span className={`ml-2 px-2 py-0.5 rounded-md text-xs font-bold ${
+                        isActive 
+                          ? `${tab.color === 'blue' ? 'bg-blue-500/10 text-blue-600' : 
+                              tab.color === 'green' ? 'bg-green-500/10 text-green-600' :
+                              tab.color === 'yellow' ? 'bg-amber-500/10 text-amber-600' :
+                              tab.color === 'red' ? 'bg-red-500/10 text-red-600' :
+                              tab.color === 'orange' ? 'bg-orange-500/10 text-orange-600' :
+                              tab.color === 'purple' ? 'bg-purple-500/10 text-purple-600' :
+                              'bg-muted text-muted-foreground'}`
+                          : 'bg-muted/50 text-muted-foreground/60'
+                      }`}>
+                        {tab.count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+          </div>
+
+        {/* Toolbar */}
+        <div className="flex items-center gap-4 mb-8">
+          {/* Search */}
+          <div className="relative flex-1 max-w-sm">
+            <input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by make, model, or year..."
+              className="w-full h-10 px-4 rounded-xl bg-sidebar border border-border/40 text-sm font-medium placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+            />
+            {searchQuery && (
               <button 
-                onClick={() => fetchData()} 
-                disabled={isLoading}
-                className="p-2 hover:bg-muted/40 rounded-lg transition-colors disabled:opacity-50"
-                title="Refresh"
+                onClick={() => setSearchQuery('')} 
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-muted text-xs text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
               >
-                <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
+                ✕
               </button>
-            </div>
+            )}
           </div>
 
-          {/* Status Tabs - Clean inline design */}
-          <div className="border-b border-border/40">
-            <div className="flex gap-1 overflow-x-auto pb-px">
-              {statusTabs.map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setSelectedStatus(tab.key)}
-                  className={`px-5 py-3.5 border-b-2 transition-colors whitespace-nowrap text-[15px] font-semibold tracking-tight ${
-                    selectedStatus === tab.key
-                      ? `border-transparent ${getColorClasses(tab.color)}`
-                      : 'border-transparent text-muted-foreground/70 hover:text-foreground'
-                  }`}
-                >
-                  {tab.label}
-                  <span className={`ml-2 text-sm font-semibold tracking-tight ${selectedStatus === tab.key ? getColorClasses(tab.color) : 'text-muted-foreground/60'}`}>
-                    {tab.count}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
+          <Select value={sort} onValueChange={(v) => setSort(v as ListingsSort)}>
+            <SelectTrigger className="h-10 w-32 border border-border/40 bg-sidebar rounded-xl text-sm font-medium">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="newest">Newest</SelectItem>
+              <SelectItem value="oldest">Oldest</SelectItem>
+              <SelectItem value="updated">Updated</SelectItem>
+              <SelectItem value="expiring">Expiring</SelectItem>
+            </SelectContent>
+          </Select>
 
-          {/* Search & Sort */}
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_14rem_auto] sm:items-center">
-            <div className="flex items-center gap-3">
-              <input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search make, model, year..."
-                className="flex-1 h-11 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-colors px-0 text-[15px] font-medium"
-              />
-              {searchQuery && (
-                <button 
-                  onClick={() => setSearchQuery('')} 
-                  className="text-sm font-semibold tracking-tight text-muted-foreground/70 hover:text-foreground transition-colors"
-                >
-                  Clear
-                </button>
-              )}
-            </div>
+          <Link href={newListingUrl}>
+            <button className="h-10 px-5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors">
+              + New Listing
+            </button>
+          </Link>
+        </div>
 
-            <Select value={sort} onValueChange={(v) => setSort(v as ListingsSort)}>
-              <SelectTrigger className="h-10 border-0 border-b border-border/40 rounded-none bg-transparent">
-                <SelectValue placeholder="Sort" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest">Newest published</SelectItem>
-                <SelectItem value="oldest">Oldest published</SelectItem>
-                <SelectItem value="updated">Recently updated</SelectItem>
-                <SelectItem value="expiring">Expiring soon</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Link href={newListingUrl}>
-              <button className="px-6 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold tracking-tight transition-colors">
-                New Listing
-              </button>
-            </Link>
-          </div>
-
-          <p className="text-[15px] font-medium text-muted-foreground/70">
-            Showing {filteredAndSortedListings.length} of {stats.all} listings
+        {/* Section Header */}
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-sm font-semibold text-muted-foreground/70">
+            {filteredAndSortedListings.length} listing{filteredAndSortedListings.length !== 1 ? 's' : ''}
+            {searchQuery && ` matching "${searchQuery}"`}
           </p>
           
-          {/* Bulk Clear Button - Show for clearable states with listings */}
+          {/* Bulk Clear Button */}
           {filteredAndSortedListings.length > 0 && 
            ['sold', 'archived', 'expired', 'rejected', 'suspended'].includes(selectedStatus) && (
             <button
               onClick={handleBulkClear}
-              className="px-4 py-2 text-sm font-semibold tracking-tight text-red-600 dark:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+              className="px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-500/10 rounded-lg transition-colors"
             >
-              Clear {filteredAndSortedListings.length} {statusTabs.find(t => t.key === selectedStatus)?.label.toLowerCase()}
+              Clear all {statusTabs.find(t => t.key === selectedStatus)?.label.toLowerCase()}
             </button>
           )}
-        </section>
+        </div>
 
         {/* Error */}
         {error && (
-          <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-5 mt-6">
-            <p className="text-sm font-medium text-red-500">{error}</p>
+          <div className="mb-6 p-4 rounded-xl bg-rose-500/5 border border-rose-500/20">
+            <p className="text-sm text-rose-500">{error}</p>
           </div>
         )}
 
         {/* Loading */}
         {isLoading && (
-          <div className="flex items-center justify-center py-16">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-foreground"></div>
+          <div className="flex items-center justify-center py-20">
+            <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
           </div>
         )}
 
         {/* Empty State */}
         {!isLoading && filteredAndSortedListings.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <Package className="w-12 h-12 text-muted-foreground/40 mb-4" />
-            <p className="text-[15px] font-medium text-muted-foreground">
+          <div className="flex flex-col items-center justify-center py-24 text-center rounded-xl border border-border/40 bg-sidebar">
+            <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-5">
+              <Package className="w-7 h-7 text-muted-foreground/40" />
+            </div>
+            <p className="text-[15px] font-bold tracking-tight text-foreground mb-1">
               {searchQuery 
-                ? 'No listings match your search' 
+                ? 'No results found' 
                 : selectedStatus === 'all'
                 ? 'Your garage is empty'
-                : `No ${statusTabs.find(t => t.key === selectedStatus)?.label.toLowerCase()} listings yet`
+                : `No ${statusTabs.find(t => t.key === selectedStatus)?.label.toLowerCase()} listings`
               }
             </p>
+            <p className="text-sm text-muted-foreground/70">
+              {searchQuery 
+                ? 'Try adjusting your search terms'
+                : selectedStatus === 'all'
+                ? 'Create your first listing to get started'
+                : `Listings will appear here when they are ${statusTabs.find(t => t.key === selectedStatus)?.label.toLowerCase()}`
+              }
+            </p>
+            {!searchQuery && selectedStatus === 'all' && (
+              <Link href={newListingUrl} className="mt-6">
+                <button className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors">
+                  Create Listing
+                </button>
+              </Link>
+            )}
           </div>
         )}
 
         {/* Listings */}
         {filteredAndSortedListings.length > 0 && (
-          <div className="space-y-4 mt-6 pb-32">
+          <div className="space-y-3">
             {filteredAndSortedListings.map((listing) => (
               <ListingCard
                 key={listing.id}
@@ -655,7 +667,6 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
             ))}
           </div>
         )}
-      </div>
 
       {/* Confirmation Modal */}
       <Dialog open={confirmModal.isOpen} onOpenChange={(open) => !open && !isConfirming && setConfirmModal({ ...confirmModal, isOpen: false })}>
@@ -677,20 +688,20 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
             <button 
               onClick={() => setConfirmModal({ ...confirmModal, isOpen: false })}
               disabled={isConfirming}
-              className="px-5 py-2 rounded-full border border-border/40 hover:bg-muted/40 text-sm font-medium transition-colors disabled:opacity-50"
+              className="px-4 py-2.5 rounded-lg border border-border hover:bg-sidebar text-sm font-medium transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               onClick={executeConfirmedAction}
               disabled={isConfirming}
-              className={`px-5 py-2 rounded-full text-white text-sm font-medium transition-colors disabled:opacity-50 ${
+              className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 ${
                 confirmModal.variant === 'destructive' 
-                  ? 'bg-destructive hover:bg-destructive/90 text-destructive-foreground' 
+                  ? 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-600' 
                   : confirmModal.variant === 'warning'
-                  ? 'bg-yellow-500 hover:bg-yellow-600 text-white'
+                  ? 'bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-600'
                   : confirmModal.variant === 'success'
-                  ? 'bg-green-500 hover:bg-green-600 text-white'
+                  ? 'bg-green-500/10 hover:bg-green-500/20 text-green-600'
                   : 'bg-primary hover:bg-primary/90 text-primary-foreground'
               }`}
             >
@@ -699,6 +710,6 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </DashboardPageWrapper>
   );
 }

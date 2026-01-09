@@ -360,6 +360,22 @@
     animation-delay: 0.5s;
   }
 
+  /* Instagram-style ripple animation */
+  @keyframes ripple {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(2.5);
+      opacity: 0;
+    }
+  }
+
+  .animate-ripple {
+    animation: ripple 0.4s ease-out forwards;
+  }
+
   .animate-accordion-down {
     animation: accordion-down 0.2s ease-out;
   }

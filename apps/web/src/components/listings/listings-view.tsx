@@ -19,12 +19,13 @@ interface ListingsViewProps {
 }
 
 export function ListingsView({ embedded = false }: ListingsViewProps) {
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid'); // Default to grid
+  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'minimal'>('grid'); // Default to grid
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   // Force grid view on screens smaller than lg (1024px)
   // List view is only available on desktop/large tablets
+  // Minimal view is allowed on all screen sizes
   useEffect(() => {
     const mediaQuery = window.matchMedia('(min-width: 1024px)');
     

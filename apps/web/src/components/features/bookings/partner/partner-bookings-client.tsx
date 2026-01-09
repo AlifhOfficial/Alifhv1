@@ -1,19 +1,20 @@
 /**
  * Partner Bookings Client Component
- * Displays partner's bookings with staff filtering and stats
- * Consistent with PartnerInventoryClient pattern
+ * Minimal macOS-inspired design with client-side filtering
  */
 
 'use client';
 
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
-import { Box, Users, Clock, RefreshCw } from "lucide-react";
+import { Combobox } from "@/components/ui/forms/combobox";
+import { Box, RefreshCw, Search, ChevronLeft, ChevronRight, Calendar, X } from "lucide-react";
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
+import { DashboardPageWrapper, DashboardPageHeader } from '@/components/shared/layout/dashboard-page-wrapper';
 
 interface PartnerBookingsClientProps {
   partnerId: string;
   partnerName: string;
-  userRole?: string; // owner | admin | staff
+  userRole?: string;
 }
 
 interface BookingData {
@@ -63,28 +64,51 @@ interface TeamMember {
   avatar: string | null;
 }
 
-const STATUS_COLORS: Record<string, { bg: string; text: string; label: string }> = {
-  pending: { bg: 'bg-yellow-500/10', text: 'text-yellow-500', label: 'Pending' },
-  confirmed: { bg: 'bg-green-500/10', text: 'text-green-500', label: 'Confirmed' },
-  completed: { bg: 'bg-blue-500/10', text: 'text-blue-500', label: 'Completed' },
-  cancelled: { bg: 'bg-red-500/10', text: 'text-red-500', label: 'Cancelled' },
-  no_show: { bg: 'bg-red-500/10', text: 'text-red-500', label: 'No Show' },
-  rejected: { bg: 'bg-red-500/10', text: 'text-red-500', label: 'Rejected' },
+type StatusFilter = 'all' | 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'no_show';
+
+// Normalize status values from API to our filter keys
+const normalizeStatus = (status: string): StatusFilter => {
+  const normalized = status.toLowerCase().replace(/[-\s]/g, '_');
+  if (['pending', 'confirmed', 'completed', 'cancelled', 'no_show'].includes(normalized)) {
+    return normalized as StatusFilter;
+  }
+  return 'pending'; // fallback
 };
+
+const STATUS_CONFIG: Record<StatusFilter, { label: string; color: string; bg: string }> = {
+  all: { label: 'All', color: 'text-foreground', bg: 'bg-secondary' },
+  pending: { label: 'Pending', color: 'text-yellow-600', bg: 'bg-yellow-500/10' },
+  confirmed: { label: 'Confirmed', color: 'text-green-600', bg: 'bg-green-500/10' },
+  completed: { label: 'Completed', color: 'text-blue-600', bg: 'bg-blue-500/10' },
+  cancelled: { label: 'Cancelled', color: 'text-red-600', bg: 'bg-red-500/10' },
+  no_show: { label: 'No Show', color: 'text-red-600', bg: 'bg-red-500/10' },
+};
+
+const ITEMS_PER_PAGE = 20;
 
 export function PartnerBookingsClient({ 
   partnerId, 
   partnerName,
   userRole,
 }: PartnerBookingsClientProps) {
+  // Data state
   const [allBookings, setAllBookings] = useState<BookingData[]>([]);
   const [stats, setStats] = useState<BookingStats | null>(null);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [ownerUserId, setOwnerUserId] = useState<string | null>(null);
+  
+  // Filter state (all client-side)
   const [selectedStaffFilter, setSelectedStaffFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  // UI state
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Refs
   const hasFetchedRef = useRef(false);
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -242,258 +266,377 @@ export function PartnerBookingsClient({
   // Derived values
   const allStaffForDisplay = allStaffData.allStaff;
 
-  // Filter bookings by selected staff
+  // Multi-filter bookings: staff + status + search (all client-side)
   const filteredBookings = useMemo(() => {
-    if (selectedStaffFilter === 'all') return allBookings;
-    return allBookings.filter(b => b.staffUserId === selectedStaffFilter);
-  }, [allBookings, selectedStaffFilter]);
+    let result = allBookings;
+    
+    // Staff filter
+    if (selectedStaffFilter !== 'all') {
+      result = result.filter(b => b.staffUserId === selectedStaffFilter);
+    }
+    
+    // Status filter - normalize status before comparing
+    if (statusFilter !== 'all') {
+      result = result.filter(b => normalizeStatus(b.status) === statusFilter);
+    }
+    
+    // Search filter (customer name, vehicle, email)
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      result = result.filter(b => 
+        b.userName.toLowerCase().includes(query) ||
+        b.userEmail.toLowerCase().includes(query) ||
+        b.listingTitle.toLowerCase().includes(query) ||
+        b.listingMake?.toLowerCase().includes(query) ||
+        b.listingModel?.toLowerCase().includes(query)
+      );
+    }
+    
+    return result;
+  }, [allBookings, selectedStaffFilter, statusFilter, searchQuery]);
+
+  // Pagination (client-side)
+  const totalPages = Math.ceil(filteredBookings.length / ITEMS_PER_PAGE);
+  const paginatedBookings = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredBookings.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredBookings, currentPage]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedStaffFilter, statusFilter, searchQuery]);
+
+  // Calculate status counts for filter badges - normalize status
+  const statusCounts = useMemo(() => {
+    const counts: Record<StatusFilter, number> = {
+      all: allBookings.length,
+      pending: 0,
+      confirmed: 0,
+      completed: 0,
+      cancelled: 0,
+      no_show: 0,
+    };
+    allBookings.forEach(b => {
+      const normalized = normalizeStatus(b.status);
+      if (normalized in counts && normalized !== 'all') {
+        counts[normalized]++;
+      }
+    });
+    return counts;
+  }, [allBookings]);
+
+  // Staff options for combobox
+  const staffOptions = useMemo(() => {
+    const options = [{ value: 'all', label: 'All Staff' }];
+    allStaffForDisplay.forEach(staff => {
+      options.push({
+        value: staff.staffUserId,
+        label: `${staff.staffName} (${staff.bookingCount})`,
+      });
+    });
+    return options;
+  }, [allStaffForDisplay]);
+
+  // Clear all filters
+  const clearFilters = useCallback(() => {
+    setSelectedStaffFilter('all');
+    setStatusFilter('all');
+    setSearchQuery('');
+    setCurrentPage(1);
+  }, []);
+
+  const hasActiveFilters = selectedStaffFilter !== 'all' || statusFilter !== 'all' || searchQuery.trim() !== '';
+
+  // Format date helper
+  const formatBookingDate = (date: Date) => {
+    const d = new Date(date);
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    if (d.toDateString() === today.toDateString()) {
+      return { label: 'Today', time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isToday: true };
+    }
+    if (d.toDateString() === tomorrow.toDateString()) {
+      return { label: 'Tomorrow', time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isToday: false };
+    }
+    return { 
+      label: d.toLocaleDateString([], { month: 'short', day: 'numeric' }), 
+      time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      isToday: false 
+    };
+  };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-16 space-y-16">
+    <DashboardPageWrapper>
       {/* Header */}
-      <section className="space-y-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Bookings</h1>
-            <p className="text-sm text-muted-foreground mt-2">
-              View and manage customer bookings for your dealership
-            </p>
-          </div>
-          <button
-            onClick={() => fetchData(true)}
-            disabled={isRefreshing}
-            className="p-2 rounded-full hover:bg-secondary/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Refresh"
-          >
-            <RefreshCw className="w-4 h-4" />
-          </button>
-        </div>
+      <DashboardPageHeader
+        title="Bookings"
+        description={partnerName}
+      >
+        <button
+          onClick={() => fetchData(true)}
+          disabled={isRefreshing}
+          className="p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
+          aria-label="Refresh"
+        >
+          <RefreshCw className={`w-4 h-4 text-muted-foreground ${isRefreshing ? 'animate-spin' : ''}`} />
+        </button>
+      </DashboardPageHeader>
 
         {/* Stats */}
         {stats && (
-          <div className="space-y-6">
-            {/* Primary Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border/40 divide-x divide-border/40">
-              <div className="p-8 text-center">
-                <p className="text-sm text-muted-foreground mb-2">Today</p>
-                <p className="text-2xl font-semibold text-yellow-500">{stats.todayBookings}</p>
-              </div>
-              <div className="p-8 text-center">
-                <p className="text-sm text-muted-foreground mb-2">Upcoming</p>
-                <p className="text-2xl font-semibold text-blue-500">{stats.upcomingBookings}</p>
-              </div>
-              <div className="p-8 text-center">
-                <p className="text-sm text-muted-foreground mb-2">Completed</p>
-                <p className="text-2xl font-semibold text-green-500">{stats.completedBookings}</p>
-              </div>
-              <div className="p-8 text-center">
-                <p className="text-sm text-muted-foreground mb-2">Total</p>
-                <p className="text-2xl font-semibold text-foreground">{stats.totalBookings}</p>
-              </div>
+          <div className="flex items-center gap-10">
+            <div>
+              <span className="text-xs text-muted-foreground">Today</span>
+              <p className="text-xl font-semibold tracking-tight mt-1 text-yellow-500">{stats.todayBookings}</p>
             </div>
-
-            {/* Secondary Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="p-5 rounded-xl border border-border/40 text-center">
-                <p className="text-sm text-muted-foreground mb-2">Pending</p>
-                <p className="text-xl font-semibold text-yellow-500">{stats.pendingBookings}</p>
-              </div>
-              <div className="p-5 rounded-xl border border-border/40 text-center">
-                <p className="text-sm text-muted-foreground mb-2">Confirmed</p>
-                <p className="text-xl font-semibold text-green-500">{stats.confirmedBookings}</p>
-              </div>
-              <div className="p-5 rounded-xl border border-border/40 text-center">
-                <p className="text-sm text-muted-foreground mb-2">Cancelled</p>
-                <p className="text-xl font-semibold text-red-500">{stats.cancelledBookings}</p>
-              </div>
-              <div className="p-5 rounded-xl border border-border/40 text-center">
-                <p className="text-sm text-muted-foreground mb-2">No Show</p>
-                <p className="text-xl font-semibold text-red-500">{stats.noShowBookings}</p>
-              </div>
+            <div>
+              <span className="text-xs text-muted-foreground">Upcoming</span>
+              <p className="text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.upcomingBookings}</p>
+            </div>
+            <div>
+              <span className="text-xs text-muted-foreground">Completed</span>
+              <p className="text-xl font-semibold tracking-tight mt-1 text-green-500">{stats.completedBookings}</p>
+            </div>
+            <div>
+              <span className="text-xs text-muted-foreground">Total</span>
+              <p className="text-xl font-semibold tracking-tight mt-1">{stats.totalBookings}</p>
             </div>
           </div>
         )}
 
-        {/* Staff Bookings */}
-        {allStaffForDisplay.length > 0 && (
-          <section className="space-y-8">
-            <div className="border-b border-border/40 pb-2">
-              <h3 className="text-lg font-medium tracking-tight">Staff Bookings</h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                Bookings received for each staff member's listings
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {allStaffForDisplay.map((staff) => (
-                <button
-                  key={staff.staffUserId}
-                  onClick={() => setSelectedStaffFilter(
-                    selectedStaffFilter === staff.staffUserId ? 'all' : staff.staffUserId
-                  )}
-                  className={`p-6 rounded-xl border border-border/40 text-left transition-all ${
-                    selectedStaffFilter === staff.staffUserId
-                      ? 'bg-secondary/50'
-                      : staff.isActive === false
-                        ? 'bg-red-500/5 hover:bg-red-500/10'
-                        : 'hover:bg-muted/15'
-                  }`}
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <UserAvatar
-                      size="md"
-                      src={staff.avatar}
-                      name={staff.staffName}
-                      className={staff.isActive === false ? 'opacity-60' : ''}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className={`text-sm font-medium truncate ${staff.isActive === false ? 'text-muted-foreground' : 'text-foreground'}`}>
-                          {staff.staffName}
-                        </p>
-                        {staff.isActive === false ? (
-                          <span className="px-2 py-0.5 rounded-md bg-red-500/10 text-red-500 text-xs font-medium">Resigned</span>
-                        ) : (
-                          <span className="px-2 py-0.5 rounded-md bg-green-500/10 text-green-500 text-xs font-medium">Active</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-baseline gap-2">
-                    <p className={`text-2xl font-semibold ${staff.isActive === false ? 'text-red-500' : 'text-primary'}`}>{staff.bookingCount}</p>
-                    <p className="text-xs text-muted-foreground">{staff.bookingCount === 1 ? 'booking' : 'bookings'}</p>
-                    {staff.isActive === false && staff.bookingCount > 0 && (
-                      <span className="text-xs text-red-500">needs attention</span>
-                    )}
-                  </div>
-                </button>
-              ))}
-            </div>
-          </section>
-        )}
-      </section>
+      {/* Toolbar */}
+      <div className="flex items-center gap-4 mb-8">
+        {/* Search */}
+        <div className="relative flex-1 max-w-xs">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full h-10 pl-10 pr-8 rounded-xl bg-secondary/50 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-secondary"
+            >
+              <X className="w-3.5 h-3.5 text-muted-foreground" />
+            </button>
+          )}
+        </div>
 
-      {/* Error State */}
+        {/* Status Pills */}
+        <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl">
+          {(['all', 'pending', 'confirmed', 'completed', 'cancelled'] as StatusFilter[]).map((status) => {
+            const config = STATUS_CONFIG[status];
+            const isActive = statusFilter === status;
+            const count = statusCounts[status];
+            return (
+              <button
+                key={status}
+                onClick={() => setStatusFilter(status)}
+                className={`px-3 py-1.5 rounded-lg text-xs transition-all ${
+                  isActive
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {config.label}
+                {status !== 'all' && count > 0 && (
+                  <span className="ml-1.5 text-muted-foreground">{count}</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Staff Combobox */}
+        {allStaffForDisplay.length > 0 && (
+          <div className="w-48">
+            <Combobox
+              options={staffOptions}
+              value={selectedStaffFilter}
+              onValueChange={setSelectedStaffFilter}
+              placeholder="All Staff"
+              searchPlaceholder="Search staff..."
+              className="h-10 rounded-xl bg-secondary/50 border-0"
+            />
+          </div>
+        )}
+
+        {hasActiveFilters && (
+          <button
+            onClick={clearFilters}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Reset
+          </button>
+        )}
+      </div>
+
+      {/* Error */}
       {error && (
-        <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
-          <p className="text-sm text-red-500">{error}</p>
+        <div className="mb-8 p-4 rounded-xl bg-secondary/50 text-sm">
+          {error}
         </div>
       )}
 
-      {/* Loading State */}
+      {/* Loading */}
       {isLoading && (
-        <div className="text-center py-16">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-sm text-muted-foreground">Loading bookings...</p>
+        <div className="flex flex-col items-center justify-center py-24">
+          <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
+          <p className="text-xs text-muted-foreground mt-4">Loading...</p>
         </div>
       )}
 
       {/* Bookings List */}
       {!isLoading && !error && filteredBookings.length > 0 && (
-        <section className="space-y-8">
-          <div className="border-b border-border/40 pb-2">
-            <h3 className="text-lg font-medium tracking-tight">Recent Bookings</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              {filteredBookings.length} {filteredBookings.length === 1 ? 'booking' : 'bookings'}
-              {selectedStaffFilter !== 'all' && ` for ${allStaffForDisplay.find(s => s.staffUserId === selectedStaffFilter)?.staffName}`}
+        <>
+          {/* Count */}
+          <div className="flex items-center justify-between mb-6">
+            <p className="text-xs text-muted-foreground">
+              {filteredBookings.length} booking{filteredBookings.length !== 1 ? 's' : ''}
             </p>
+            {totalPages > 1 && (
+              <p className="text-xs text-muted-foreground">{currentPage} / {totalPages}</p>
+            )}
           </div>
 
-          <div className="space-y-4">
-            {filteredBookings.map((booking) => {
-              const statusInfo = STATUS_COLORS[booking.status] || STATUS_COLORS.pending;
+          {/* List */}
+          <div className="space-y-1">
+            {paginatedBookings.map((booking) => {
+              const normalizedStatus = normalizeStatus(booking.status);
+              const statusLabel = STATUS_CONFIG[normalizedStatus]?.label || booking.status;
               const teamMember = booking.staffUserId ? teamMemberMap.get(booking.staffUserId) : null;
+              const dateInfo = formatBookingDate(booking.scheduledStartTime);
               
               return (
                 <div
                   key={booking.id}
-                  className="rounded-xl border border-border/40 p-6 hover:bg-secondary/50 transition-colors"
+                  className="group flex items-center gap-5 p-4 -mx-4 rounded-xl hover:bg-secondary/30 transition-colors cursor-pointer"
                 >
-                  <div className="flex gap-6">
-                    {/* Thumbnail */}
-                    <div className="w-32 h-24 bg-muted rounded-xl overflow-hidden flex-shrink-0">
-                      {booking.listingThumbnail ? (
-                        <img
-                          src={booking.listingThumbnail}
-                          alt={booking.listingTitle}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                          <span className="text-xs">No image</span>
-                        </div>
-                      )}
-                    </div>
+                  {/* Time */}
+                  <div className="w-20 flex-shrink-0">
+                    <p className="text-sm font-medium tracking-tight">{dateInfo.label}</p>
+                    <p className="text-xs text-muted-foreground">{dateInfo.time}</p>
+                  </div>
 
-                    {/* Details */}
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h4 className="text-base font-medium">{booking.listingTitle}</h4>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            Customer: {booking.userName}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {new Date(booking.scheduledStartTime).toLocaleString()}
-                          </p>
-                          
-                          {/* Staff Member Info */}
-                          {booking.staffName && (
-                            <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                              <UserAvatar
-                                size="xs"
-                                src={teamMember?.avatar || booking.staffAvatar}
-                                name={booking.staffName}
-                              />
-                              <span>
-                                Listing by <span className="font-medium text-foreground">{booking.staffName}</span>
-                                {teamMember?.status === 'left' && (
-                                  <span className="ml-1 text-red-500">(Resigned)</span>
-                                )}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusInfo.bg} ${statusInfo.text}`}>
-                          {statusInfo.label}
-                        </span>
+                  {/* Image */}
+                  <div className="w-14 h-10 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
+                    {booking.listingThumbnail ? (
+                      <img
+                        src={booking.listingThumbnail}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Box className="w-4 h-4 text-muted-foreground/30" />
                       </div>
-                    </div>
+                    )}
+                  </div>
+
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium tracking-tight truncate">{booking.listingTitle}</p>
+                    <p className="text-xs text-muted-foreground truncate mt-0.5">
+                      {booking.userName}
+                      {booking.staffName && (
+                        <span className={teamMember?.status === 'left' ? 'opacity-50' : ''}>
+                          {' · '}{booking.staffName}
+                        </span>
+                      )}
+                    </p>
+                  </div>
+
+                  {/* Status */}
+                  <div className="flex-shrink-0">
+                    <span className={`px-2.5 py-1 rounded-md text-xs font-medium ${STATUS_CONFIG[normalizedStatus]?.bg || 'bg-secondary/50'} ${STATUS_CONFIG[normalizedStatus]?.color || 'text-muted-foreground'}`}>
+                      {statusLabel}
+                    </span>
                   </div>
                 </div>
               );
             })}
           </div>
-        </section>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-1 mt-12">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="p-2 rounded-lg hover:bg-secondary/50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pageNum: number;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
+                
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`w-8 h-8 rounded-lg text-sm transition-colors ${
+                      currentPage === pageNum
+                        ? 'bg-secondary text-foreground font-medium'
+                        : 'text-muted-foreground hover:bg-secondary/50'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+              
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="p-2 rounded-lg hover:bg-secondary/50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+        </>
       )}
 
-      {/* Empty State - No bookings at all */}
+      {/* Empty - No Data */}
       {!isLoading && !error && allBookings.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-24 text-center space-y-4">
-          <Box className="w-12 h-12 text-muted-foreground/40 stroke-[1.5]" />
-          <div>
-            <h3 className="text-xl font-semibold text-foreground">No bookings yet</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Customer bookings will appear here
-            </p>
-          </div>
+        <div className="flex flex-col items-center justify-center py-32 text-center">
+          <Calendar className="w-10 h-10 text-muted-foreground/20 mb-4" />
+          <h3 className="text-lg font-medium tracking-tight">No bookings yet</h3>
+          <p className="text-sm text-muted-foreground mt-1">Customer appointments will appear here</p>
         </div>
       )}
 
-      {/* Empty State - No bookings in current filter */}
+      {/* Empty - No Results */}
       {!isLoading && !error && allBookings.length > 0 && filteredBookings.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-24 text-center space-y-4">
-          <Box className="w-12 h-12 text-muted-foreground/40 stroke-[1.5]" />
-          <div>
-            <h3 className="text-xl font-semibold text-foreground">No bookings found</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Try a different filter
-            </p>
-          </div>
+        <div className="flex flex-col items-center justify-center py-32 text-center">
+          <Search className="w-10 h-10 text-muted-foreground/20 mb-4" />
+          <h3 className="text-lg font-medium tracking-tight">No results</h3>
+          <p className="text-sm text-muted-foreground mt-1">Try a different search or filter</p>
+          <button
+            onClick={clearFilters}
+            className="mt-4 text-sm text-foreground hover:underline"
+          >
+            Clear filters
+          </button>
         </div>
       )}
-
-    </div>
+    </DashboardPageWrapper>
   );
 }

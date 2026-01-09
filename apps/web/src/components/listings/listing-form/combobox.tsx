@@ -60,7 +60,7 @@ export function Combobox({
           className={cn(
             "w-full h-12 flex items-center justify-between px-0 bg-transparent border-b-2 border-border/40",
             "transition-colors focus:outline-none focus:border-blue-500",
-            value ? "text-foreground text-base font-medium" : "text-muted-foreground/40 text-base",
+            value ? "text-foreground text-sm font-medium" : "text-muted-foreground/40 text-sm",
             disabled && "opacity-50 cursor-not-allowed"
           )}
         >

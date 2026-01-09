@@ -145,9 +145,10 @@ export function ListingForm({
   };
   
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
+    <div className="min-h-screen bg-background pb-16">
+      <div className="max-w-2xl mx-auto px-6 py-8">
       {/* Header with cancel and step dots */}
-      <header className="mb-10">
+      <header className="mb-8">
         <div className="flex items-center justify-between mb-4">
           {/* Step Dots - left side */}
           <div className="flex items-center gap-2">
@@ -186,13 +187,16 @@ export function ListingForm({
         </div>
         
         {/* Title - step specific */}
-        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
+        <h1 className="text-xl font-semibold tracking-tight">
           {mode === 'edit' ? 'Edit Listing' : stepTitles[currentStep]}
         </h1>
+        <p className="text-sm text-muted-foreground mt-0.5">
+          Step {currentStepIndex + 1} of {FORM_STEPS.length}
+        </p>
       </header>
 
       {/* Form Content */}
-      <main className="mb-10">
+      <main className="mb-8">
         {currentStep === 'vin' && (
           <VINStep 
             data={formData} 
@@ -210,11 +214,11 @@ export function ListingForm({
         
         {/* Error Summary */}
         {Object.keys(errors).length > 0 && (
-          <div className="mt-8 p-4 bg-red-500/10 rounded-xl">
-            <p className="text-sm font-semibold text-red-500 mb-2">Please fix:</p>
+          <div className="mt-6 p-4 rounded-xl border border-red-500/30 bg-red-500/5">
+            <p className="text-xs font-bold text-red-500 mb-2">Please fix:</p>
             <ul className="space-y-1">
               {Object.entries(errors).map(([field, error]) => (
-                <li key={field} className="text-sm text-red-500/90 flex items-center gap-2">
+                <li key={field} className="text-xs text-red-500/90 flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
                   {error}
                 </li>
@@ -225,14 +229,14 @@ export function ListingForm({
       </main>
 
       {/* Navigation Footer */}
-      <footer className="flex items-center justify-between pt-6 border-t border-border/20">
+      <footer className="flex items-center justify-between pt-6 border-t border-border/40">
         <div>
           {currentStepIndex > 0 && (
             <button
               type="button"
               onClick={handleBack}
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-full text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/20 transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/20 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               Back
@@ -246,7 +250,7 @@ export function ListingForm({
               type="button"
               onClick={handleSaveDraft}
               disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-full text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/20 transition-colors"
+              className="px-5 py-2.5 rounded-full text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/20 transition-colors"
             >
               Save Draft
             </button>
@@ -257,7 +261,7 @@ export function ListingForm({
               type="button"
               onClick={handleNext}
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-3 rounded-full bg-blue-500 text-white text-base font-semibold hover:bg-blue-600 transition-colors"
+              className="flex items-center gap-2 px-6 py-3 rounded-full bg-blue-500 text-white text-sm font-semibold hover:bg-blue-600 transition-colors"
             >
               Continue
               <ArrowRight className="w-4 h-4" />
@@ -267,7 +271,7 @@ export function ListingForm({
               type="button"
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-3 rounded-full bg-green-500 text-white text-base font-semibold hover:bg-green-600 transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-3 rounded-full bg-green-500 text-white text-sm font-semibold hover:bg-green-600 transition-colors disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>
@@ -283,6 +287,7 @@ export function ListingForm({
           )}
         </div>
       </footer>
+      </div>
     </div>
   );
 }

@@ -11,6 +11,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { TrendBadge, ProgressStat, TopListings, ColdListings } from './insight-components';
 import { Skeleton } from '@/components/ui/skeleton';
+import { DashboardPageWrapper, DashboardPageHeader } from '@/components/shared/layout/dashboard-page-wrapper';
 import {
   Tooltip,
   TooltipContent,
@@ -402,13 +403,17 @@ function StatLabel({ children, tooltip }: { children: React.ReactNode; tooltip: 
 
 function AdvancedStatsSkeleton() {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
+    <DashboardPageWrapper>
         {/* Header Skeleton */}
-        <div className="space-y-2">
-          <Skeleton className="h-8 w-48" />
-          <Skeleton className="h-5 w-64" />
-        </div>
+        <header>
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-48" />
+              <Skeleton className="h-5 w-64" />
+            </div>
+            <Skeleton className="h-6 w-32" />
+          </div>
+        </header>
 
         {/* Stats Grid Skeleton */}
         <div className="grid grid-cols-2 md:grid-cols-4 border border-border/40 rounded-xl divide-x divide-y md:divide-y-0 divide-border/40 bg-sidebar">
@@ -431,20 +436,75 @@ function AdvancedStatsSkeleton() {
               <Skeleton className="h-4 w-24 mb-3" />
               <Skeleton className="h-20 w-full" />
             </div>
+            <div className="rounded-xl border border-border/40 bg-sidebar p-5 flex-1">
+              <Skeleton className="h-4 w-20 mb-3" />
+              <Skeleton className="h-16 w-full" />
+            </div>
           </div>
         </div>
 
-        {/* Two Column Skeleton */}
-        <div className="grid md:grid-cols-2 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
+        {/* Inventory + Sales Row Skeleton */}
+        <div className="grid grid-cols-12 gap-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="col-span-12 sm:col-span-6 lg:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
               <Skeleton className="h-4 w-28" />
-              <Skeleton className="h-32 w-full" />
+              <Skeleton className="h-24 w-full" />
             </div>
           ))}
         </div>
-      </div>
-    </div>
+
+        {/* Monthly Trends Skeleton */}
+        <section className="space-y-4">
+          <Skeleton className="h-5 w-32" />
+          <div className="grid grid-cols-12 gap-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="col-span-12 md:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-20 w-full" />
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Composition Skeleton */}
+        <section className="space-y-4">
+          <Skeleton className="h-5 w-40" />
+          <div className="grid md:grid-cols-2 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
+                <Skeleton className="h-4 w-28" />
+                <div className="flex items-center gap-5">
+                  <Skeleton className="h-20 w-20 rounded-full" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-3 w-full" />
+                    <Skeleton className="h-3 w-full" />
+                    <Skeleton className="h-3 w-3/4" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Engagement Skeleton */}
+        <section className="space-y-4">
+          <Skeleton className="h-5 w-32" />
+          <div className="grid md:grid-cols-2 gap-4">
+            {[...Array(2)].map((_, i) => (
+              <div key={i} className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
+                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-32 w-full" />
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Footer Skeleton */}
+        <footer className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-6 border-t border-border/20">
+          <Skeleton className="h-4 w-48" />
+          <Skeleton className="h-4 w-32" />
+        </footer>
+    </DashboardPageWrapper>
   );
 }
 
@@ -959,24 +1019,16 @@ export function AdvancedStatsView() {
   }));
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
+    <DashboardPageWrapper>
 
         {/* Header */}
-        <header>
-          <div className="flex items-start justify-between gap-4">
-            <div className="space-y-1">
-              <h1 className="text-2xl font-bold tracking-tight">Analytics</h1>
-              <p className="text-sm text-muted-foreground/70">
-                Detailed performance metrics and insights
-              </p>
-            </div>
-            <div className="flex items-center gap-2 shrink-0 mt-1">
-              <Sparkles className="w-4 h-4 text-purple-500" />
-              <span className="text-sm"><span className="text-purple-600 dark:text-purple-400 font-bold">Experimental</span> <span className="text-muted-foreground font-medium">· Data may not be fully accurate</span></span>
-            </div>
-          </div>
-        </header>
+        <DashboardPageHeader
+          title="Analytics"
+          description="Detailed performance metrics and insights"
+        >
+          <Sparkles className="w-4 h-4 text-purple-500" />
+          <span className="text-sm"><span className="text-purple-600 dark:text-purple-400 font-bold">Experimental</span> <span className="text-muted-foreground font-medium">· Data may not be fully accurate</span></span>
+        </DashboardPageHeader>
         
         {/* Slowest Listing Alert */}
         {sales.slowestActiveListing && sales.slowestActiveListing.daysSincePublished > 30 && (
@@ -1420,7 +1472,6 @@ export function AdvancedStatsView() {
           </a>
         </footer>
 
-      </div>
-    </div>
+    </DashboardPageWrapper>
   );
 }

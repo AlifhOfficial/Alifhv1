@@ -56,9 +56,9 @@ interface ListingsHeaderProps {
   /** Toggle mobile filters */
   onMobileFiltersToggle: (open: boolean) => void;
   /** View mode */
-  viewMode: 'grid' | 'list';
+  viewMode: 'grid' | 'list' | 'minimal';
   /** Set view mode */
-  onViewModeChange: (mode: 'grid' | 'list') => void;
+  onViewModeChange: (mode: 'grid' | 'list' | 'minimal') => void;
   /** Set filters callback */
   setFilters: (filters: Partial<SearchParams>) => void;
   /** Clear filters callback */
@@ -213,7 +213,7 @@ export function ListingsHeader({
           </Sheet>
 
           {/* Results count - hidden on mobile, shows on larger screens */}
-          <span className="hidden sm:inline-block text-[15px] font-semibold text-muted-foreground tabular-nums whitespace-nowrap tracking-tight">
+          <span className="hidden sm:inline-block text-sm font-semibold text-muted-foreground/70 tabular-nums whitespace-nowrap">
             {isLoading ? '...' : `${meta?.total ?? 0} cars`}
           </span>
 
@@ -231,20 +231,20 @@ export function ListingsHeader({
           <div className="relative">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-1.5 px-4 py-2 text-[15px] font-semibold tracking-tight text-muted-foreground hover:text-foreground transition-colors">
+                <button className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-muted-foreground/70 hover:text-foreground transition-colors">
                   <span className="hidden sm:inline">{SORT_OPTIONS.find(s => s.value === params.sortBy)?.label || 'Sort'}</span>
                   <span className="sm:hidden">Sort</span>
-                  <ChevronDown className="size-4 text-muted-foreground/60" />
+                  <ChevronDown className="size-4 text-muted-foreground/50" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 bg-sidebar border-sidebar-border text-sidebar-foreground">
+              <DropdownMenuContent align="end" className="w-48 bg-sidebar border-border/40">
                 {SORT_OPTIONS.map((option) => (
                   <DropdownMenuItem
                     key={option.value}
                     onClick={() => setSort(option.value)}
                     className={cn(
-                      "text-[14px] font-medium tracking-tight cursor-pointer",
-                      params.sortBy === option.value ? "bg-sidebar-accent text-sidebar-foreground" : "hover:bg-sidebar-accent/50"
+                      "text-sm font-semibold cursor-pointer",
+                      params.sortBy === option.value ? "bg-muted/50 text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                     )}
                   >
                     {option.label}
@@ -254,23 +254,40 @@ export function ListingsHeader({
             </DropdownMenu>
           </div>
 
-          {/* View Toggle - Desktop/iPad only (lg+), switches between grid and list */}
-          <div className="hidden lg:flex items-center gap-1">
+          {/* View Toggle - Grid/Minimal on mobile, all three on desktop */}
+          <div className="flex items-center gap-1">
             <button
               onClick={() => onViewModeChange('grid')}
               className={cn(
                 "p-2 transition-colors rounded-md",
                 viewMode === 'grid' ? "text-foreground" : "text-muted-foreground/50 hover:text-foreground"
               )}
+              title="Grid view"
             >
               <LayoutGrid className="size-4" />
             </button>
             <button
-              onClick={() => onViewModeChange('list')}
+              onClick={() => onViewModeChange('minimal')}
               className={cn(
                 "p-2 transition-colors rounded-md",
+                viewMode === 'minimal' ? "text-foreground" : "text-muted-foreground/50 hover:text-foreground"
+              )}
+              title="Minimal view"
+            >
+              <svg className="size-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="1" y="1" width="6" height="6" rx="1" />
+                <rect x="9" y="1" width="6" height="6" rx="1" />
+                <rect x="1" y="9" width="6" height="6" rx="1" />
+                <rect x="9" y="9" width="6" height="6" rx="1" />
+              </svg>
+            </button>
+            <button
+              onClick={() => onViewModeChange('list')}
+              className={cn(
+                "hidden lg:block p-2 transition-colors rounded-md",
                 viewMode === 'list' ? "text-foreground" : "text-muted-foreground/50 hover:text-foreground"
               )}
+              title="List view"
             >
               <List className="size-4" />
             </button>
@@ -290,19 +307,19 @@ export function ListingsHeader({
         {breadcrumbItems.length > 1 && (
           <nav 
             className={cn(
-              "flex items-center gap-2 text-sm font-semibold tracking-tight py-3 overflow-x-auto scrollbar-hide mt-3",
+              "flex items-center gap-2 text-sm py-3 overflow-x-auto scrollbar-hide mt-3",
               sidebarOpen && "lg:pl-6"
             )}
           >
             {breadcrumbItems.map((item, index) => (
               <div key={item.href} className="flex items-center gap-2">
-                {index > 0 && <span className="text-muted-foreground/40">/</span>}
+                {index > 0 && <span className="text-muted-foreground/30">/</span>}
                 {index === breadcrumbItems.length - 1 ? (
-                  <span className="text-foreground whitespace-nowrap">{item.label}</span>
+                  <span className="font-bold text-foreground whitespace-nowrap">{item.label}</span>
                 ) : (
                   <Link 
                     href={item.href}
-                    className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
+                    className="font-semibold text-muted-foreground/70 hover:text-foreground transition-colors whitespace-nowrap"
                   >
                     {item.label}
                   </Link>
@@ -320,7 +337,7 @@ export function ListingsHeader({
               sidebarOpen && "lg:pl-6"
             )}
           >
-            <span className="text-[13px] font-medium text-muted-foreground/70 whitespace-nowrap shrink-0">
+            <span className="text-sm font-semibold text-muted-foreground/70 whitespace-nowrap shrink-0">
               Makes:
             </span>
             <div className="flex flex-wrap items-center gap-1.5">
@@ -328,16 +345,16 @@ export function ListingsHeader({
                 <button
                   key={make.value}
                   onClick={() => setFilters({ make: [make.value], model: undefined, trim: undefined })}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-semibold tracking-tight text-muted-foreground hover:text-foreground bg-muted/20 hover:bg-muted/40 rounded-full transition-all whitespace-nowrap"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-all whitespace-nowrap"
                 >
                   <span>{make.label}</span>
-                  <span className="text-[11px] text-muted-foreground/50 tabular-nums">{make.count}</span>
+                  <span className="text-xs text-muted-foreground/50 tabular-nums">{make.count}</span>
                 </button>
               ))}
               {(facets?.make ?? []).length > VISIBLE_COUNT && (
                 <button
                   onClick={() => setMakesModalOpen(true)}
-                  className="flex items-center gap-1 px-3 py-1.5 text-[13px] font-semibold tracking-tight text-primary hover:text-primary/80 transition-colors"
+                  className="flex items-center gap-1 px-3 py-1.5 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
                 >
                   View all
                   <ChevronRight className="size-3.5" />
@@ -349,9 +366,9 @@ export function ListingsHeader({
 
         {/* Makes Modal */}
         <Dialog open={makesModalOpen} onOpenChange={setMakesModalOpen}>
-          <DialogContent className="max-w-lg bg-sidebar border-sidebar-border p-0 gap-0">
-            <DialogHeader className="px-5 py-4 border-b border-sidebar-border">
-              <DialogTitle className="text-base font-semibold tracking-tight text-sidebar-foreground">
+          <DialogContent className="max-w-lg bg-sidebar border-border/40 p-0 gap-0">
+            <DialogHeader className="px-5 py-4 border-b border-border/40">
+              <DialogTitle className="text-[15px] font-bold tracking-tight text-foreground">
                 All Makes
               </DialogTitle>
             </DialogHeader>
@@ -363,10 +380,10 @@ export function ListingsHeader({
                     setFilters({ make: [make.value], model: undefined, trim: undefined });
                     setMakesModalOpen(false);
                   }}
-                  className="flex items-center justify-between gap-3 px-3.5 py-2.5 text-[14px] font-medium text-sidebar-foreground hover:bg-sidebar-accent rounded-lg transition-colors text-left"
+                  className="flex items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted/50 rounded-lg transition-colors text-left"
                 >
                   <span className="truncate">{make.label}</span>
-                  <span className="text-[12px] text-muted-foreground/70 tabular-nums flex-shrink-0">{make.count}</span>
+                  <span className="text-xs text-muted-foreground/70 tabular-nums flex-shrink-0">{make.count}</span>
                 </button>
               ))}
             </div>
@@ -382,7 +399,7 @@ export function ListingsHeader({
               sidebarOpen && "lg:pl-6"
             )}
           >
-            <span className="text-[13px] font-medium text-muted-foreground/70 whitespace-nowrap shrink-0">
+            <span className="text-sm font-semibold text-muted-foreground/70 whitespace-nowrap shrink-0">
               Models:
             </span>
             <div className="flex flex-wrap items-center gap-1.5">
@@ -390,16 +407,16 @@ export function ListingsHeader({
                 <button
                   key={model.value}
                   onClick={() => setFilters({ model: [model.value] })}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-semibold tracking-tight text-muted-foreground hover:text-foreground bg-muted/20 hover:bg-muted/40 rounded-full transition-all whitespace-nowrap"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-all whitespace-nowrap"
                 >
                   <span>{model.label}</span>
-                  <span className="text-[11px] text-muted-foreground/50 tabular-nums">{model.count}</span>
+                  <span className="text-xs text-muted-foreground/50 tabular-nums">{model.count}</span>
                 </button>
               ))}
               {(facets?.model ?? []).length > VISIBLE_COUNT && (
                 <button
                   onClick={() => setModelsModalOpen(true)}
-                  className="flex items-center gap-1 px-3 py-1.5 text-[13px] font-semibold tracking-tight text-primary hover:text-primary/80 transition-colors"
+                  className="flex items-center gap-1 px-3 py-1.5 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
                 >
                   View all
                   <ChevronRight className="size-3.5" />
@@ -411,9 +428,9 @@ export function ListingsHeader({
 
         {/* Models Modal */}
         <Dialog open={modelsModalOpen} onOpenChange={setModelsModalOpen}>
-          <DialogContent className="max-w-lg bg-sidebar border-sidebar-border p-0 gap-0">
-            <DialogHeader className="px-5 py-4 border-b border-sidebar-border">
-              <DialogTitle className="text-base font-semibold tracking-tight text-sidebar-foreground">
+          <DialogContent className="max-w-lg bg-sidebar border-border/40 p-0 gap-0">
+            <DialogHeader className="px-5 py-4 border-b border-border/40">
+              <DialogTitle className="text-[15px] font-bold tracking-tight text-foreground">
                 All Models
               </DialogTitle>
             </DialogHeader>
@@ -425,10 +442,10 @@ export function ListingsHeader({
                     setFilters({ model: [model.value] });
                     setModelsModalOpen(false);
                   }}
-                  className="flex items-center justify-between gap-3 px-3.5 py-2.5 text-[14px] font-medium text-sidebar-foreground hover:bg-sidebar-accent rounded-lg transition-colors text-left"
+                  className="flex items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted/50 rounded-lg transition-colors text-left"
                 >
                   <span className="truncate">{model.label}</span>
-                  <span className="text-[12px] text-muted-foreground/70 tabular-nums flex-shrink-0">{model.count}</span>
+                  <span className="text-xs text-muted-foreground/70 tabular-nums flex-shrink-0">{model.count}</span>
                 </button>
               ))}
             </div>
@@ -443,7 +460,7 @@ export function ListingsHeader({
               sidebarOpen && "lg:pl-6"
             )}
           >
-            <span className="text-[13px] font-medium text-muted-foreground/70 whitespace-nowrap shrink-0">
+            <span className="text-sm font-semibold text-muted-foreground/70 whitespace-nowrap shrink-0">
               Trims:
             </span>
             <div className="flex flex-wrap items-center gap-1.5">
@@ -451,16 +468,16 @@ export function ListingsHeader({
                 <button
                   key={trim.value}
                   onClick={() => setFilters({ trim: [trim.value] })}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-semibold tracking-tight text-muted-foreground hover:text-foreground bg-muted/20 hover:bg-muted/40 rounded-full transition-all whitespace-nowrap"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-all whitespace-nowrap"
                 >
                   <span>{trim.label}</span>
-                  <span className="text-[11px] text-muted-foreground/50 tabular-nums">{trim.count}</span>
+                  <span className="text-xs text-muted-foreground/50 tabular-nums">{trim.count}</span>
                 </button>
               ))}
               {(facets?.trim ?? []).length > VISIBLE_COUNT && (
                 <button
                   onClick={() => setTrimsModalOpen(true)}
-                  className="flex items-center gap-1 px-3 py-1.5 text-[13px] font-semibold tracking-tight text-primary hover:text-primary/80 transition-colors"
+                  className="flex items-center gap-1 px-3 py-1.5 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
                 >
                   View all
                   <ChevronRight className="size-3.5" />
@@ -472,9 +489,9 @@ export function ListingsHeader({
 
         {/* Trims Modal */}
         <Dialog open={trimsModalOpen} onOpenChange={setTrimsModalOpen}>
-          <DialogContent className="max-w-lg bg-sidebar border-sidebar-border p-0 gap-0">
-            <DialogHeader className="px-5 py-4 border-b border-sidebar-border">
-              <DialogTitle className="text-base font-semibold tracking-tight text-sidebar-foreground">
+          <DialogContent className="max-w-lg bg-sidebar border-border/40 p-0 gap-0">
+            <DialogHeader className="px-5 py-4 border-b border-border/40">
+              <DialogTitle className="text-[15px] font-bold tracking-tight text-foreground">
                 All Trims
               </DialogTitle>
             </DialogHeader>
@@ -486,10 +503,10 @@ export function ListingsHeader({
                     setFilters({ trim: [trim.value] });
                     setTrimsModalOpen(false);
                   }}
-                  className="flex items-center justify-between gap-3 px-3.5 py-2.5 text-[14px] font-medium text-sidebar-foreground hover:bg-sidebar-accent rounded-lg transition-colors text-left"
+                  className="flex items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted/50 rounded-lg transition-colors text-left"
                 >
                   <span className="truncate">{trim.label}</span>
-                  <span className="text-[12px] text-muted-foreground/70 tabular-nums flex-shrink-0">{trim.count}</span>
+                  <span className="text-xs text-muted-foreground/70 tabular-nums flex-shrink-0">{trim.count}</span>
                 </button>
               ))}
             </div>
@@ -504,21 +521,21 @@ export function ListingsHeader({
             sidebarOpen && "lg:pl-6"
           )}
         >
-          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {activeChips.map((chip) => (
               <button
                 key={chip.key}
                 onClick={() => handleChipRemove(chip.key)}
-                className="group flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs bg-secondary/50 hover:bg-secondary rounded-full transition-colors"
+                className="group flex items-center gap-1.5 px-3 py-1 text-xs font-semibold bg-muted/40 hover:bg-muted/60 rounded-full transition-colors"
               >
                 <span>{chip.label}</span>
-                <X className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-muted-foreground group-hover:text-foreground transition-colors" />
+                <X className="h-3 w-3 text-muted-foreground/70 group-hover:text-foreground transition-colors" />
               </button>
             ))}
             {activeChips.length > 0 && (
               <button
                 onClick={clearFilters}
-                className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs text-muted-foreground hover:text-foreground transition-colors"
+                className="px-2 py-1 text-xs font-semibold text-muted-foreground/70 hover:text-foreground transition-colors"
               >
                 Clear all
               </button>

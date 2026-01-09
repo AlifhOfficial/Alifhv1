@@ -40,8 +40,8 @@ import type { StepProps } from './types';
 function SectionHeader({ title, optional }: { title: string; optional?: boolean }) {
   return (
     <div className="flex items-baseline justify-between">
-      <h3 className="text-lg font-medium text-foreground">{title}</h3>
-      {optional && <span className="text-sm text-muted-foreground/60">Optional</span>}
+      <h3 className="text-[15px] font-bold tracking-tight text-foreground">{title}</h3>
+      {optional && <span className="text-xs text-muted-foreground/70">Optional</span>}
     </div>
   );
 }
@@ -59,13 +59,13 @@ function FieldWrapper({
 }) {
   return (
     <div className="space-y-2">
-      <label className="text-base font-medium text-muted-foreground">
+      <label className="text-sm font-semibold text-muted-foreground/70">
         {label}
         {required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
       {children}
       {error && (
-        <p className="text-base font-medium text-red-500">{error}</p>
+        <p className="text-xs font-semibold text-red-500">{error}</p>
       )}
     </div>
   );
@@ -88,7 +88,7 @@ function TogglePill({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        'inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-base font-medium transition-all duration-200',
+        'inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200',
         pressed
           ? 'bg-blue-500 text-white'
           : 'bg-muted/30 text-muted-foreground hover:bg-muted/50 hover:text-foreground',
@@ -178,12 +178,13 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
   };
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       {/* Essentials */}
-      <div className="space-y-6">
+      <section>
         <SectionHeader title="Essentials" />
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5 mt-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <FieldWrapper label="Mileage" required error={errors.mileage}>
             <div className="relative">
               <input
@@ -195,11 +196,11 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
                 min={0}
                 className={cn(
                   "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
-                  "outline-none transition-colors px-0 pr-12 text-base font-medium",
+                  "outline-none transition-colors px-0 pr-12 text-sm font-medium",
                   "placeholder:text-muted-foreground/40"
                 )}
               />
-              <span className="absolute right-0 top-1/2 -translate-y-1/2 text-sm text-muted-foreground/60">
+              <span className="absolute right-0 top-1/2 -translate-y-1/2 text-xs text-muted-foreground/70">
                 km
               </span>
             </div>
@@ -225,12 +226,15 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
           </FieldWrapper>
         </div>
       </div>
+      </section>
+     
 
       {/* Appearance */}
-      <div className="space-y-6">
+      <section>
         <SectionHeader title="Appearance" optional />
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5 mt-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <FieldWrapper label="Body Type">
             <Combobox
               options={bodyTypeOptions}
@@ -275,14 +279,16 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
               placeholder="Select seating"
             />
           </FieldWrapper>
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Powertrain */}
-      <div className="space-y-6">
+      <section>
         <SectionHeader title="Powertrain" optional />
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5 mt-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <FieldWrapper label="Fuel Type">
             <Combobox
               options={fuelOptions}
@@ -333,7 +339,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
               max={16}
               className={cn(
                 "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
-                "outline-none transition-colors px-0 text-base font-medium",
+                "outline-none transition-colors px-0 text-sm font-medium",
                 "placeholder:text-muted-foreground/40"
               )}
             />
@@ -356,7 +362,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
               placeholder="12 km/L"
               className={cn(
                 "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
-                "outline-none transition-colors px-0 text-base font-medium",
+                "outline-none transition-colors px-0 text-sm font-medium",
                 "placeholder:text-muted-foreground/40"
               )}
             />
@@ -370,19 +376,21 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
               placeholder="350 Nm"
               className={cn(
                 "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
-                "outline-none transition-colors px-0 text-base font-medium",
+                "outline-none transition-colors px-0 text-sm font-medium",
                 "placeholder:text-muted-foreground/40"
               )}
             />
           </FieldWrapper>
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Status */}
-      <div className="space-y-6">
+      <section>
         <SectionHeader title="Status" optional />
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5 mt-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <FieldWrapper label="Warranty">
             <Combobox
               options={warrantyOptions}
@@ -400,14 +408,16 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
               placeholder="Select export status"
             />
           </FieldWrapper>
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Extras */}
-      <div className="space-y-4">
+      <section>
         <SectionHeader title="Extras" optional />
         
-        <div className="flex flex-wrap gap-6">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5 mt-3">
+          <div className="flex flex-wrap gap-3">
           {VEHICLE_EXTRAS.map((extra) => {
             const isSelected = selectedExtras.includes(extra.value);
             return (
@@ -420,8 +430,10 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
                   updateField('extras', next);
                 }}
                 className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-muted transition-colors",
-                  isSelected ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                  "flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-semibold transition-colors border",
+                  isSelected 
+                    ? "bg-muted/40 text-foreground border-border/60" 
+                    : "bg-muted/30 text-foreground/90 border-border/40 hover:border-primary/40 hover:bg-muted/40"
                 )}
               >
                 {isSelected && <CheckCircle2 className="w-4 h-4 text-green-500" />}
@@ -429,18 +441,19 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
               </button>
             );
           })}
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Tags */}
-      <div className="space-y-4">
-        <div className="flex items-baseline justify-between">
+      <section>
+        <div className="flex items-baseline justify-between mb-3">
           <SectionHeader title="Tags" />
-          <span className="text-sm font-medium text-blue-500">max {MAX_LISTING_TAGS}</span>
+          <span className="text-xs font-semibold text-muted-foreground/70">{MAX_LISTING_TAGS} max</span>
         </div>
         
-        {/* All tags */}
-        <div className="flex flex-wrap gap-6">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+          <div className="flex flex-wrap gap-3">
           {LISTING_TAGS.map((tag) => {
             const isSelected = selectedTags.includes(tag.value);
             const disabled = !isSelected && selectedTags.length >= MAX_LISTING_TAGS;
@@ -459,8 +472,10 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
                   }
                 }}
                 className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-muted transition-colors",
-                  isSelected ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+                  "flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-semibold transition-colors border",
+                  isSelected 
+                    ? "bg-muted/40 text-foreground border-border/60" 
+                    : "bg-muted/30 text-foreground/90 border-border/40 hover:border-primary/40 hover:bg-muted/40",
                   disabled && "opacity-50 cursor-not-allowed"
                 )}
               >
@@ -469,9 +484,10 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
               </button>
             );
           })}
+          </div>
+          {errors.tags && <p className="text-xs font-semibold text-red-500 mt-3">{errors.tags}</p>}
         </div>
-        {errors.tags && <p className="text-sm font-medium text-red-500">{errors.tags}</p>}
-      </div>
+      </section>
     </div>
   );
 }

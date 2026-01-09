@@ -89,7 +89,6 @@ export interface UserSellerData {
     emailVerified: boolean;
     phoneVerified: boolean;
     userName: string | null;
-    userImage: string | null;
     userCreatedAt: Date | string;
   } | null;
 }

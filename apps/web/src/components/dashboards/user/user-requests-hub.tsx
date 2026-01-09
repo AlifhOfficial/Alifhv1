@@ -13,6 +13,7 @@ import { usePartnerRequest, usePartnerRequestDismiss, type PartnerRequest } from
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowRight, Loader2, ArrowLeft, RefreshCw, XCircle, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { DashboardPageWrapper, DashboardPageHeader } from '@/components/shared/layout/dashboard-page-wrapper';
 
 // ============================================================================
 // Types
@@ -144,16 +145,14 @@ export function UserRequestsHub() {
   const renderOverview = () => {
     if (isLoading) {
       return (
-        <div className="max-w-4xl mx-auto px-6 py-16">
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-          </div>
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
         </div>
       );
     }
 
     return (
-      <div className="max-w-3xl mx-auto px-6 py-12 space-y-10">
+      <div className="space-y-10">
         
         {/* Partner Application Section */}
         <section className="space-y-4">
@@ -232,53 +231,38 @@ export function UserRequestsHub() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <DashboardPageWrapper>
       
       {/* Page Header */}
       {activeTab === 'overview' ? (
-        <div className="max-w-3xl mx-auto px-6 pt-12 pb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <a
-                href="/user-dashboard"
-                className="p-2 hover:bg-muted/40 rounded-lg transition-colors"
-              >
-                <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-              </a>
-              <div>
-                <h1 className="text-2xl font-bold tracking-tight">Requests</h1>
-                <p className="text-[15px] font-medium text-muted-foreground/70 mt-1">
-                  Partner applications and staff invitations
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={() => {
-                queryClient.invalidateQueries({ queryKey: ['partner', 'request'] });
-                queryClient.invalidateQueries({ queryKey: ['user', 'staff-invites'] });
-              }}
-              className="p-2 hover:bg-muted/40 rounded-lg transition-colors"
-            >
-              <RefreshCw className="w-4 h-4 text-muted-foreground" />
-            </button>
-          </div>
-        </div>
+        <DashboardPageHeader
+          title="Requests"
+          description="Partner applications and staff invitations"
+        >
+          <button
+            onClick={() => {
+              queryClient.invalidateQueries({ queryKey: ['partner', 'request'] });
+              queryClient.invalidateQueries({ queryKey: ['user', 'staff-invites'] });
+            }}
+            className="p-2 hover:bg-muted/40 rounded-lg transition-colors"
+          >
+            <RefreshCw className="w-4 h-4 text-muted-foreground" />
+          </button>
+        </DashboardPageHeader>
       ) : (
-        <div className="max-w-3xl mx-auto px-6 py-8">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setActiveTab('overview')}
-              className="p-2 hover:bg-muted/40 rounded-lg transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-            </button>
-            <div className="flex items-center gap-2 text-sm">
-              <span className="font-medium text-muted-foreground/70">Requests</span>
-              <span className="text-muted-foreground/50">/</span>
-              <span className="font-semibold tracking-tight">
-                {activeTab === 'partner-application' ? 'Partner Application' : 'Staff Invitations'}
-              </span>
-            </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setActiveTab('overview')}
+            className="p-2 hover:bg-muted/40 rounded-lg transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 text-muted-foreground" />
+          </button>
+          <div className="flex items-center gap-2 text-sm">
+            <span className="font-medium text-muted-foreground/70">Requests</span>
+            <span className="text-muted-foreground/50">/</span>
+            <span className="font-semibold tracking-tight">
+              {activeTab === 'partner-application' ? 'Partner Application' : 'Staff Invitations'}
+            </span>
           </div>
         </div>
       )}
@@ -286,6 +270,6 @@ export function UserRequestsHub() {
       {/* Content */}
       {renderContent()}
 
-    </div>
+    </DashboardPageWrapper>
   );
 }

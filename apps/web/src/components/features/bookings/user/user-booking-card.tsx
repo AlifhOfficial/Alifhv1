@@ -9,13 +9,12 @@ import {
   Clock, 
   ChevronDown,
   Star,
-  Building2
+  Box
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/utils';
 import type { UserBookingData } from './types';
 import { USER_BOOKING_STATUS_COLORS, USER_BOOKING_STATUS_LABELS } from './types';
-import { BookingStatusIcon } from './booking-status-icon';
 
 interface UserBookingCardProps {
   booking: UserBookingData;
@@ -35,19 +34,25 @@ export function UserBookingCard({
   onLeaveFeedback,
 }: UserBookingCardProps) {
   const formatDate = (isoString: string) => {
-    return new Date(isoString).toLocaleDateString('en-AE', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    const d = new Date(isoString);
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    if (d.toDateString() === today.toDateString()) {
+      return 'Today';
+    }
+    if (d.toDateString() === tomorrow.toDateString()) {
+      return 'Tomorrow';
+    }
+    return d.toLocaleDateString('en-AE', { month: 'short', day: 'numeric' });
   };
 
   const formatTime = (isoString: string) => {
     return new Date(isoString).toLocaleTimeString('en-AE', {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true,
+      hour12: false,
     });
   };
 
@@ -60,147 +65,126 @@ export function UserBookingCard({
   };
 
   return (
-    <div className="rounded-xl border border-sidebar-border overflow-hidden bg-sidebar hover:bg-sidebar-accent/50 transition-colors">
-      {/* Booking Header */}
-      <div 
-        className="px-5 py-4 cursor-pointer"
+    <div className="rounded-xl border border-border/40 bg-sidebar hover:border-border/60 transition-all">
+      {/* Clickable Row */}
+      <div
+        className="flex items-center gap-4 p-4 cursor-pointer"
         onClick={onToggleExpand}
       >
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-start gap-4 min-w-0 flex-1">
-            {booking.listingThumbnail && (
-              <div className="relative w-28 h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0 border border-sidebar-border">
-                <img
-                  src={booking.listingThumbnail}
-                  alt={booking.listingTitle}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
-            <div className="min-w-0 space-y-2 flex-1">
-              <Link 
-                href={`/listings/${booking.listingId}`}
-                className="text-base font-semibold tracking-tight text-sidebar-foreground hover:text-primary transition-colors line-clamp-1 block"
-                onClick={e => e.stopPropagation()}
-              >
-                {booking.listingTitle}
-              </Link>
-              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                <Building2 className="w-3.5 h-3.5" />
-                <span>{booking.partnerName}</span>
-              </div>
-              <div className="flex flex-wrap items-center gap-4 text-sm">
-                <div className="flex items-center gap-2 text-sidebar-foreground/90">
-                  <Calendar className="w-4 h-4 text-muted-foreground/60" />
-                  <span className="font-medium">
-                    {formatDate(booking.scheduledStartTime)}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Clock className="w-4 h-4" />
-                  <span>
-                    {formatTime(booking.scheduledStartTime)} - {formatTime(booking.scheduledEndTime)}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 flex-shrink-0">
-            <span className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold tracking-tight",
-              USER_BOOKING_STATUS_COLORS[booking.status]
-            )}>
-              <BookingStatusIcon status={booking.status} />
-              {USER_BOOKING_STATUS_LABELS[booking.status]}
-            </span>
-            <ChevronDown className={cn(
-              "w-5 h-5 text-muted-foreground/60 transition-transform duration-200",
-              isExpanded && "rotate-180"
-            )} />
-          </div>
+        {/* Time */}
+        <div className="w-24 flex-shrink-0">
+          <p className="text-[15px] font-bold tracking-tight text-foreground">{formatDate(booking.scheduledStartTime)}</p>
+          <p className="text-sm font-semibold text-muted-foreground/70">{formatTime(booking.scheduledStartTime)}</p>
         </div>
+
+        {/* Image */}
+        <div className="w-20 h-14 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+          {booking.listingThumbnail ? (
+            <img
+              src={booking.listingThumbnail}
+              alt=""
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <Box className="w-5 h-5 text-muted-foreground/30" />
+            </div>
+          )}
+        </div>
+
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <Link 
+            href={`/listings/${booking.listingId}`}
+            className="text-[15px] font-bold tracking-tight text-foreground truncate block hover:text-primary transition-colors"
+            onClick={e => e.stopPropagation()}
+          >
+            {booking.listingTitle}
+          </Link>
+          <p className="text-sm text-muted-foreground/70 truncate mt-0.5">
+            {booking.partnerName}
+          </p>
+        </div>
+
+        {/* Status */}
+        <span className={cn(
+          "px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0",
+          USER_BOOKING_STATUS_COLORS[booking.status]
+        )}>
+          {USER_BOOKING_STATUS_LABELS[booking.status]}
+        </span>
+
+        {/* Chevron */}
+        <ChevronDown className={cn(
+          "w-4 h-4 text-muted-foreground/40 transition-transform flex-shrink-0",
+          isExpanded && "rotate-180"
+        )} />
       </div>
 
       {/* Expanded Details */}
       {isExpanded && (
-        <div className="border-t border-sidebar-border px-5 py-4 space-y-5">
+        <div className="px-4 pb-4 pt-0 space-y-4 border-t border-border/40">
           {/* Confirmation Token */}
           {booking.confirmationToken && (
-            <div className="rounded-lg bg-sidebar-accent/40 px-5 py-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-sidebar-accent flex items-center justify-center flex-shrink-0">
-                  <Calendar className="w-5 h-5 text-muted-foreground" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Confirmation Code</p>
-                  <p className="text-xl font-mono font-bold text-sidebar-foreground tracking-wider mt-1">{booking.confirmationToken}</p>
-                </div>
+            <div className="flex items-center gap-4 p-4 mt-4 rounded-xl bg-muted/30">
+              <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center flex-shrink-0">
+                <Calendar className="w-5 h-5 text-muted-foreground" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-muted-foreground/70">Confirmation Code</p>
+                <p className="text-[15px] font-mono font-bold tracking-wide text-foreground">{booking.confirmationToken}</p>
               </div>
             </div>
           )}
 
           {/* Details Grid */}
-          <div className="grid md:grid-cols-2 gap-5">
-            <div className="space-y-2.5">
-              <h4 className="text-base font-semibold tracking-tight text-sidebar-foreground">Booking Details</h4>
-              <div className="space-y-2 text-sm">
-                <p className="text-muted-foreground">
-                  <span className="text-sidebar-foreground/90 font-semibold">Attendees:</span>{' '}
-                  {booking.numberOfAttendees} {booking.numberOfAttendees === 1 ? 'person' : 'people'}
-                </p>
-                <p className="text-muted-foreground">
-                  <span className="text-sidebar-foreground/90 font-medium">Booked on:</span>{' '}
-                  {new Date(booking.createdAt).toLocaleDateString('en-AE')}
-                </p>
-                {booking.confirmedAt && (
-                  <p className="text-muted-foreground">
-                    <span className="text-sidebar-foreground/90 font-medium">Confirmed on:</span>{' '}
-                    {new Date(booking.confirmedAt).toLocaleDateString('en-AE')}
-                  </p>
-                )}
-              </div>
+          <div className="grid grid-cols-2 gap-4 pt-2">
+            <div>
+              <p className="text-sm font-semibold text-muted-foreground/70">Attendees</p>
+              <p className="text-[15px] font-bold text-foreground">{booking.numberOfAttendees} {booking.numberOfAttendees === 1 ? 'person' : 'people'}</p>
             </div>
-
-            {(booking.notes || booking.specialRequests) && (
-              <div className="space-y-3">
-                {booking.notes && (
-                  <div>
-                    <h4 className="text-base font-semibold tracking-tight text-sidebar-foreground">Your Notes</h4>
-                    <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{booking.notes}</p>
-                  </div>
-                )}
-                {booking.specialRequests && (
-                  <div>
-                    <h4 className="text-base font-semibold tracking-tight text-sidebar-foreground">Special Requests</h4>
-                    <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{booking.specialRequests}</p>
-                  </div>
-                )}
+            <div>
+              <p className="text-sm font-semibold text-muted-foreground/70">Booked</p>
+              <p className="text-[15px] font-bold text-foreground">{new Date(booking.createdAt).toLocaleDateString('en-AE', { month: 'short', day: 'numeric' })}</p>
+            </div>
+            {booking.confirmedAt && (
+              <div>
+                <p className="text-sm font-semibold text-muted-foreground/70">Confirmed</p>
+                <p className="text-[15px] font-bold text-foreground">{new Date(booking.confirmedAt).toLocaleDateString('en-AE', { month: 'short', day: 'numeric' })}</p>
               </div>
             )}
           </div>
+          
+          {booking.notes && (
+            <div className="pt-2">
+              <p className="text-sm font-semibold text-muted-foreground/70 mb-1">Notes</p>
+              <p className="text-sm text-foreground">{booking.notes}</p>
+            </div>
+          )}
+          {booking.specialRequests && (
+            <div className="pt-2">
+              <p className="text-sm font-semibold text-muted-foreground/70 mb-1">Special Requests</p>
+              <p className="text-sm text-foreground">{booking.specialRequests}</p>
+            </div>
+          )}
 
           {/* Cancellation Reason */}
           {booking.cancellationReason && (
-            <div className="rounded-lg bg-rose-500/10 px-5 py-4">
-              <p className="text-base font-semibold tracking-tight text-rose-500">Cancellation Reason</p>
-              <p className="text-sm text-muted-foreground mt-2 capitalize">
-                {booking.cancellationReason.replace(/_/g, ' ')}
-              </p>
+            <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/20">
+              <p className="text-sm font-semibold text-red-600 mb-1">Cancellation Reason</p>
+              <p className="text-sm text-foreground capitalize">{booking.cancellationReason.replace(/_/g, ' ')}</p>
               {booking.cancellationNotes && (
-                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                  {booking.cancellationNotes}
-                </p>
+                <p className="text-sm text-muted-foreground/70 mt-1">{booking.cancellationNotes}</p>
               )}
             </div>
           )}
 
           {/* Feedback Section */}
           {booking.status === 'completed' && (
-            <div className="pt-4 border-t border-sidebar-border">
+            <div className="pt-4 border-t border-border/40">
               {booking.feedbackRating ? (
-                <div className="space-y-2.5">
-                  <h4 className="text-base font-semibold tracking-tight text-sidebar-foreground">Your Feedback</h4>
-                  <div className="flex items-center gap-1.5">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map(star => (
                       <Star
                         key={star}
@@ -208,19 +192,20 @@ export function UserBookingCard({
                           "w-5 h-5",
                           star <= booking.feedbackRating!
                             ? "fill-yellow-500 text-yellow-500"
-                            : "text-muted-foreground/40"
+                            : "text-muted-foreground/30"
                         )}
                       />
                     ))}
+                    <span className="text-sm font-semibold text-muted-foreground/70 ml-2">Your rating</span>
                   </div>
                   {booking.feedbackComment && (
-                    <p className="text-sm text-muted-foreground leading-relaxed">{booking.feedbackComment}</p>
+                    <p className="text-sm text-muted-foreground/70">{booking.feedbackComment}</p>
                   )}
                 </div>
               ) : (
                 <button
                   onClick={onLeaveFeedback}
-                  className="px-5 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold tracking-tight transition-colors"
+                  className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors"
                 >
                   Leave Feedback
                 </button>
@@ -230,11 +215,11 @@ export function UserBookingCard({
 
           {/* Actions */}
           {canCancel() && (
-            <div className="flex gap-2 pt-4 border-t border-sidebar-border">
+            <div className="pt-4 border-t border-border/40">
               <button
                 onClick={onCancel}
                 disabled={isActionLoading}
-                className="px-5 py-2.5 rounded-lg bg-rose-500 hover:bg-rose-600 text-white text-sm font-semibold tracking-tight transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-5 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 text-sm font-semibold transition-colors disabled:opacity-50"
               >
                 Cancel Booking
               </button>

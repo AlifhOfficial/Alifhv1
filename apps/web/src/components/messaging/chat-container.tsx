@@ -107,14 +107,14 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
             <div className="min-h-[400px] flex items-center justify-center h-full w-full bg-background">
               <div className="text-center space-y-4">
                 <Loader2 className="w-8 h-8 mx-auto text-muted-foreground animate-spin" />
-                <p className="text-[15px] text-muted-foreground">Loading conversation...</p>
+                <p className="text-sm font-medium text-muted-foreground/70">Loading conversation...</p>
               </div>
             </div>
           ) : (
             <div className="min-h-[400px] flex items-center justify-center h-full w-full bg-background">
               <div className="text-center space-y-4">
                 <MessageCircle className="w-12 h-12 mx-auto text-muted-foreground/40 stroke-[1.5]" />
-                <p className="text-[15px] text-muted-foreground">such empty ZZZZ</p>
+                <p className="text-sm font-medium text-muted-foreground/70">Select a conversation</p>
               </div>
             </div>
           )}

@@ -157,7 +157,7 @@ function PricingInsights({ listing }: { listing: CarDetailedData }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70">
+        <p className="text-xs uppercase tracking-wider font-bold text-muted-foreground/70">
           AI Market Insights
         </p>
       </div>
@@ -165,7 +165,7 @@ function PricingInsights({ listing }: { listing: CarDetailedData }) {
       {/* Price Trend & Fair Value Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <p className="text-xs text-muted-foreground">Price Trend</p>
+          <p className="text-xs font-medium text-muted-foreground/70">Price Trend</p>
           <div className="relative h-14 bg-muted/30 rounded-lg p-3">
             <svg className="w-full h-full" viewBox="0 0 100 20" preserveAspectRatio="none">
               <path
@@ -195,7 +195,7 @@ function PricingInsights({ listing }: { listing: CarDetailedData }) {
         </div>
 
         <div className="space-y-2">
-          <p className="text-xs text-muted-foreground">Estimated Value</p>
+          <p className="text-xs font-medium text-muted-foreground/70">Estimated Value</p>
           <div className="h-14 bg-muted/30 rounded-lg flex items-center justify-center">
             <p className="text-lg font-bold tabular-nums text-foreground">
               {listing.fairValue ? formatPriceShort(listing.fairValue) : '—'}
@@ -207,8 +207,8 @@ function PricingInsights({ listing }: { listing: CarDetailedData }) {
       {/* Value Range */}
       <div className="p-4 bg-muted/30 rounded-xl border border-border/40 space-y-3">
         <div className="space-y-1">
-          <p className="text-xs text-muted-foreground">Market Range</p>
-          <p className="text-base font-semibold tabular-nums text-foreground">
+          <p className="text-xs font-medium text-muted-foreground/70">Market Range</p>
+          <p className="text-base font-bold tabular-nums text-foreground">
             {listing.estimateMin && listing.estimateMax 
               ? `${formatPrice(listing.estimateMin)} - ${formatPrice(listing.estimateMax)}`
               : '—'
@@ -217,8 +217,8 @@ function PricingInsights({ listing }: { listing: CarDetailedData }) {
         </div>
 
         <div className="flex justify-between pt-2 border-t border-border/40 text-xs">
-          <span className="text-muted-foreground">AI Confidence</span>
-          <span className="text-foreground font-medium">
+          <span className="font-medium text-muted-foreground/70">AI Confidence</span>
+          <span className="text-foreground font-bold">
             {listing.aiConfidenceScore ? `${Math.round(listing.aiConfidenceScore * 100)}%` : '—'}
           </span>
         </div>
@@ -227,7 +227,7 @@ function PricingInsights({ listing }: { listing: CarDetailedData }) {
       {/* Value Factors - Neutral, non-judgmental */}
       {hasValueFactors && (
         <div className="p-4 bg-muted/20 rounded-xl border border-border/30 space-y-3">
-          <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground/70 flex items-center gap-1.5">
+          <p className="text-xs uppercase tracking-wider font-bold text-muted-foreground/70 flex items-center gap-1.5">
             <Sparkles className="w-3 h-3" />
             Value Factors
           </p>
@@ -238,7 +238,7 @@ function PricingInsights({ listing }: { listing: CarDetailedData }) {
               {valueFactors.positives.map((factor, idx) => (
                 <div key={idx} className="flex items-start gap-2 text-sm">
                   <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground/80">{factor}</span>
+                  <span className="font-medium text-foreground/80">{factor}</span>
                 </div>
               ))}
             </div>
@@ -247,11 +247,11 @@ function PricingInsights({ listing }: { listing: CarDetailedData }) {
           {/* Considerations (neutral, not negatives) */}
           {valueFactors.considerations && valueFactors.considerations.length > 0 && (
             <div className="space-y-1.5 pt-2 border-t border-border/20">
-              <p className="text-[10px] text-muted-foreground/60 uppercase tracking-wider">Consider</p>
+              <p className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider">Consider</p>
               {valueFactors.considerations.map((factor, idx) => (
                 <div key={idx} className="flex items-start gap-2 text-sm">
                   <span className="text-muted-foreground mt-0.5">•</span>
-                  <span className="text-muted-foreground">{factor}</span>
+                  <span className="font-medium text-muted-foreground">{factor}</span>
                 </div>
               ))}
             </div>
@@ -259,7 +259,7 @@ function PricingInsights({ listing }: { listing: CarDetailedData }) {
           
           {/* Market Context */}
           {valueFactors.marketContext && (
-            <p className="text-xs text-muted-foreground/70 pt-2 border-t border-border/20">
+            <p className="text-xs font-medium text-muted-foreground/70 pt-2 border-t border-border/20">
               {valueFactors.marketContext}
             </p>
           )}
@@ -373,7 +373,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
       {/* Highlights - Clean minimal list */}
       {allHighlights.length > 0 && (
         <div className="space-y-3">
-          <p className="text-[13px] uppercase tracking-wider font-semibold text-muted-foreground">
+          <p className="text-[13px] uppercase tracking-wider font-bold text-muted-foreground/70">
             Highlights
           </p>
           <div className="flex flex-wrap gap-x-5 gap-y-2.5">
@@ -383,7 +383,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
                 className="flex items-center gap-1.5"
               >
                 <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
-                <span className="text-sm sm:text-[15px] font-medium text-foreground">{highlight}</span>
+                <span className="text-sm font-semibold text-foreground">{highlight}</span>
               </div>
             ))}
           </div>
@@ -395,7 +395,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
         {/* Title & Actions Row */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0 space-y-1.5">
-            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-foreground break-words">
+            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-foreground">
               {carTitle}
             </h1>
             
@@ -460,12 +460,12 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
         </div>
 
         {/* Quick Details */}
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm sm:text-[15px] text-muted-foreground">
-          <span className="font-semibold tabular-nums text-foreground/80">{formatMileage(listing.mileage)} km</span>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-muted-foreground">
+          <span className="font-bold tabular-nums text-foreground/80">{formatMileage(listing.mileage)} km</span>
           <span className="text-muted-foreground/40">•</span>
-          <span className="font-semibold text-foreground/80">{formatEnumValue(listing.specs)} Specs</span>
+          <span className="font-bold text-foreground/80">{formatEnumValue(listing.specs)} Specs</span>
           <span className="text-muted-foreground/40">•</span>
-          <span className="flex items-center gap-1.5 font-semibold text-foreground/80">
+          <span className="flex items-center gap-1.5 font-bold text-foreground/80">
             <MapPin className="w-4 h-4" />
             {listing.city ? `${listing.city}, ${formatEnumValue(listing.emirate)}` : formatEnumValue(listing.emirate)}
           </span>
@@ -474,8 +474,8 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
         {/* VIN */}
         {listing.vin && (
           <div className="flex items-baseline gap-2.5">
-            <span className="text-[11px] text-muted-foreground uppercase tracking-wider font-semibold">VIN</span>
-            <span className="font-mono text-sm text-muted-foreground/80">{listing.vin}</span>
+            <span className="text-[11px] uppercase tracking-wider font-bold text-muted-foreground/70">VIN</span>
+            <span className="font-mono text-sm font-medium text-muted-foreground/80">{listing.vin}</span>
           </div>
         )}
       </div>
@@ -483,10 +483,10 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
       {/* Description */}
       {listing.description && (
         <div className="space-y-3">
-          <p className="text-[13px] uppercase tracking-wider font-semibold text-muted-foreground">
+          <p className="text-[13px] uppercase tracking-wider font-bold text-muted-foreground/70">
             Description
           </p>
-          <p className="text-sm sm:text-[15px] text-muted-foreground leading-relaxed">
+          <p className="text-sm font-medium text-muted-foreground leading-relaxed">
             {listing.description}
           </p>
         </div>
@@ -494,7 +494,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
 
       {/* Specifications - Two Column with Label/Value rows */}
       <div className="space-y-4">
-        <p className="text-[13px] uppercase tracking-wider font-semibold text-muted-foreground">
+        <p className="text-[13px] uppercase tracking-wider font-bold text-muted-foreground/70">
           Specifications
         </p>
         
@@ -502,84 +502,84 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
           {/* Left Column */}
           <div className="space-y-0">
             <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm text-muted-foreground">Body Type</span>
-              <span className="text-sm font-medium text-foreground">{formatEnumValue(listing.bodyType)}</span>
+              <span className="text-sm font-medium text-muted-foreground/70">Body Type</span>
+              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.bodyType)}</span>
             </div>
             <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm text-muted-foreground">Engine</span>
-              <span className="text-sm font-medium text-foreground">{formatEnumValue(listing.engineSize)}</span>
+              <span className="text-sm font-medium text-muted-foreground/70">Engine</span>
+              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.engineSize)}</span>
             </div>
             <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm text-muted-foreground">Trim</span>
-              <span className="text-sm font-medium text-foreground">{listing.trim || '—'}</span>
+              <span className="text-sm font-medium text-muted-foreground/70">Trim</span>
+              <span className="text-sm font-semibold text-foreground">{listing.trim || '—'}</span>
             </div>
             <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm text-muted-foreground">Exterior Color</span>
-              <span className="text-sm font-medium text-foreground">{formatEnumValue(listing.exteriorColor)}</span>
+              <span className="text-sm font-medium text-muted-foreground/70">Exterior Color</span>
+              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.exteriorColor)}</span>
             </div>
             <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm text-muted-foreground">Cylinders</span>
-              <span className="text-sm font-medium text-foreground">{listing.cylinders || '—'}</span>
+              <span className="text-sm font-medium text-muted-foreground/70">Cylinders</span>
+              <span className="text-sm font-semibold text-foreground">{listing.cylinders || '—'}</span>
             </div>
             <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm text-muted-foreground">Doors</span>
-              <span className="text-sm font-medium text-foreground">{listing.doors || '—'}</span>
+              <span className="text-sm font-medium text-muted-foreground/70">Doors</span>
+              <span className="text-sm font-semibold text-foreground">{listing.doors || '—'}</span>
             </div>
             <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm text-muted-foreground">Seating Capacity</span>
-              <span className="text-sm font-medium text-foreground">{listing.seatingCapacity ? `${listing.seatingCapacity} Seater` : '—'}</span>
+              <span className="text-sm font-medium text-muted-foreground/70">Seating Capacity</span>
+              <span className="text-sm font-semibold text-foreground">{listing.seatingCapacity ? `${listing.seatingCapacity} Seater` : '—'}</span>
             </div>
             <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm text-muted-foreground">Steering Side</span>
-              <span className="text-sm font-medium text-foreground">{formatEnumValue(listing.steeringSide)}</span>
+              <span className="text-sm font-medium text-muted-foreground/70">Steering Side</span>
+              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.steeringSide)}</span>
             </div>
             <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm text-muted-foreground">Regional Specs</span>
-              <span className="text-sm font-medium text-foreground">{formatEnumValue(listing.specs)}</span>
+              <span className="text-sm font-medium text-muted-foreground/70">Regional Specs</span>
+              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.specs)}</span>
             </div>
           </div>
           
           {/* Right Column */}
           <div className="space-y-0">
             <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm text-muted-foreground">Transmission</span>
-              <span className="text-sm font-medium text-foreground">{formatEnumValue(listing.transmission)}</span>
+              <span className="text-sm font-medium text-muted-foreground/70">Transmission</span>
+              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.transmission)}</span>
             </div>
             <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm text-muted-foreground">Power</span>
-              <span className="text-sm font-medium text-foreground">{formatEnumValue(listing.powerRange)}</span>
+              <span className="text-sm font-medium text-muted-foreground/70">Power</span>
+              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.powerRange)}</span>
             </div>
             <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm text-muted-foreground">Fuel Type</span>
-              <span className="text-sm font-medium text-foreground">{formatEnumValue(listing.fuelType)}</span>
+              <span className="text-sm font-medium text-muted-foreground/70">Fuel Type</span>
+              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.fuelType)}</span>
             </div>
             <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm text-muted-foreground">Interior Color</span>
-              <span className="text-sm font-medium text-foreground">{formatEnumValue(listing.interiorColor)}</span>
+              <span className="text-sm font-medium text-muted-foreground/70">Interior Color</span>
+              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.interiorColor)}</span>
             </div>
             <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm text-muted-foreground">Warranty</span>
-              <span className="text-sm font-medium text-foreground">{formatEnumValue(listing.warrantyType)}</span>
+              <span className="text-sm font-medium text-muted-foreground/70">Warranty</span>
+              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.warrantyType)}</span>
             </div>
             <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm text-muted-foreground">Seller Type</span>
-              <span className="text-sm font-medium text-foreground">{formatEnumValue(listing.sellerType)}</span>
+              <span className="text-sm font-medium text-muted-foreground/70">Seller Type</span>
+              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.sellerType)}</span>
             </div>
             <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm text-muted-foreground">Export Status</span>
-              <span className="text-sm font-medium text-foreground">{formatEnumValue(listing.exportStatus)}</span>
+              <span className="text-sm font-medium text-muted-foreground/70">Export Status</span>
+              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.exportStatus)}</span>
             </div>
             <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm text-muted-foreground">Engine Type</span>
-              <span className="text-sm font-medium text-foreground">{formatEnumValue(listing.engineType)}</span>
+              <span className="text-sm font-medium text-muted-foreground/70">Engine Type</span>
+              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.engineType)}</span>
             </div>
             <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm text-muted-foreground">Torque</span>
-              <span className="text-sm font-medium text-foreground">{listing.torque || '—'}</span>
+              <span className="text-sm font-medium text-muted-foreground/70">Torque</span>
+              <span className="text-sm font-semibold text-foreground">{listing.torque || '—'}</span>
             </div>
             <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm text-muted-foreground">Fuel Economy</span>
-              <span className="text-sm font-medium text-foreground">{listing.fuelEconomy || '—'}</span>
+              <span className="text-sm font-medium text-muted-foreground/70">Fuel Economy</span>
+              <span className="text-sm font-semibold text-foreground">{listing.fuelEconomy || '—'}</span>
             </div>
           </div>
         </div>
@@ -588,14 +588,14 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
       {/* Extras / Features */}
       {listing.extras.length > 0 && (
         <div className="space-y-3">
-          <p className="text-[13px] uppercase tracking-wider font-semibold text-muted-foreground">
+          <p className="text-[13px] uppercase tracking-wider font-bold text-muted-foreground/70">
             Features
           </p>
           <div className="flex flex-wrap gap-2">
             {listing.extras.map((extra, idx) => (
               <span 
                 key={idx}
-                className="px-3 py-1.5 text-sm font-medium text-foreground/80 bg-muted/50 rounded-lg"
+                className="px-3 py-1.5 text-sm font-semibold text-foreground/80 bg-muted/50 rounded-lg"
               >
                 {extra}
               </span>
@@ -607,17 +607,17 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
       {/* Quick Notes / Owner Remarks */}
       {ownerRemarks.length > 0 && (
         <div className="space-y-3 pt-4">
-          <p className="text-[13px] uppercase tracking-wider font-semibold text-muted-foreground">
+          <p className="text-[13px] uppercase tracking-wider font-bold text-muted-foreground/70">
             Quick Notes
           </p>
           <ul className="space-y-2.5">
             {ownerRemarks.map((remark, idx) => (
               <li 
                 key={idx}
-                className="flex items-start gap-2.5 text-sm sm:text-[15px] text-muted-foreground"
+                className="flex items-start gap-2.5 text-sm text-muted-foreground"
               >
                 <span className="text-blue-500/60 mt-0.5">•</span>
-                <span className="font-medium">{remark}</span>
+                <span className="font-semibold">{remark}</span>
               </li>
             ))}
           </ul>
@@ -635,7 +635,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
           <div className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
             <Play className="w-5 h-5 text-primary ml-0.5" />
           </div>
-          <span className="text-sm sm:text-[15px] font-semibold tracking-tight text-foreground">Watch Video</span>
+          <span className="text-sm font-bold tracking-tight text-foreground">Watch Video</span>
         </a>
       )}
 
@@ -643,8 +643,8 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
       <div className="space-y-4">
         <div className="pt-4 border-t border-border/40 flex items-start gap-3">
           <Sparkles className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
-          <p className="text-sm sm:text-[15px] text-muted-foreground leading-relaxed font-medium">
-            <span className="font-semibold text-foreground">Experimental:</span> AI-generated insights are for reference only. <span className="text-red-500 font-semibold">Do not rely on this data.</span>
+          <p className="text-sm text-muted-foreground leading-relaxed font-medium">
+            <span className="font-bold text-foreground">Experimental:</span> AI-generated insights are for reference only. <span className="text-red-500 font-bold">Do not rely on this data.</span>
           </p>
         </div>
         <PricingInsights listing={listing} />

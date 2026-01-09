@@ -10,6 +10,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/providers/auth-provider';
+import { DashboardPageWrapper } from '@/components/shared/layout/dashboard-page-wrapper';
 import { 
   LayoutGrid, 
   TrendingUp, 
@@ -193,8 +194,7 @@ export function UserDashboardOverview() {
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
+    <DashboardPageWrapper>
 
         {/* Ban Notice */}
         {user?.banned && (user as any)?.banReason && (
@@ -204,9 +204,6 @@ export function UserDashboardOverview() {
             userId={user.id}
           />
         )}
-
-        {/* Partner Application Status */}
-        <PartnerApplicationStatus />
 
         {/* Header */}
         <header>
@@ -530,7 +527,6 @@ export function UserDashboardOverview() {
           </Link>
         </div>
 
-      </div>
-    </div>
+    </DashboardPageWrapper>
   );
 }

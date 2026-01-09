@@ -204,7 +204,7 @@ export function CarCard({
   }, [isSignedIn, superlike]);
 
   const confirmSuperlike = useCallback(() => {
-    // Show sparkles effect
+    // Show ripple effect
     setShowSparkles(true);
     
     // Trigger the toggle after a brief delay
@@ -213,10 +213,10 @@ export function CarCard({
     }, 100);
     timersRef.current.push(timer1);
     
-    // Hide sparkles after animation
+    // Hide ripple after animation
     const timer2 = setTimeout(() => {
       setShowSparkles(false);
-    }, 2000);
+    }, 400);
     timersRef.current.push(timer2);
   }, [superlike]);
 
@@ -228,12 +228,12 @@ export function CarCard({
       return;
     }
 
-    // Show hearts effect if adding to favorites (not removing)
+    // Show ripple effect if adding to favorites (not removing)
     if (!favorite.isFavorite) {
       setShowHearts(true);
       const timer1 = setTimeout(() => {
         setShowHearts(false);
-      }, 2000);
+      }, 400);
       timersRef.current.push(timer1);
     }
 
@@ -277,80 +277,71 @@ export function CarCard({
       </Link>
 
       {/* Content Section */}
-      <div className="flex flex-1 flex-col p-3 sm:p-4 space-y-2 sm:space-y-3">
+      <div className="flex flex-1 flex-col p-3 sm:p-4 gap-1.5">
         {/* Title with Year */}
-        <Link href={`/listings/${id}`} className="group/title space-y-1">
-          <div className="flex items-start justify-between gap-2">
+        <Link href={`/listings/${id}`} className="group/title">
+          <div className="flex items-baseline justify-between gap-3">
             <h3 className={cn(
-              "text-sm sm:text-[15px] font-semibold line-clamp-1 transition-colors flex-1",
+              "text-[15px] font-bold tracking-tight line-clamp-1 transition-colors flex-1",
               isBlkListing 
-                ? "text-white group-hover/title:text-zinc-200" 
-                : "text-sidebar-foreground group-hover/title:text-primary"
+                ? "text-white group-hover/title:text-zinc-300" 
+                : "text-foreground group-hover/title:text-primary"
             )}>
               {make} {model}
             </h3>
             <span className={cn(
-              "text-xs font-medium flex-shrink-0",
-              isBlkListing ? "text-zinc-400" : "text-muted-foreground"
+              "text-xs font-semibold tabular-nums flex-shrink-0",
+              isBlkListing ? "text-zinc-500" : "text-muted-foreground/70"
             )}>
               {year}
             </span>
           </div>
-          <p className={cn(
-            "text-xs font-medium line-clamp-1 min-h-[1rem]",
-            isBlkListing ? "text-zinc-400" : "text-muted-foreground"
-          )}>
-            {trim || '\u00A0'}
-          </p>
         </Link>
 
         {/* Price */}
         <p className={cn(
-          "text-base sm:text-lg font-semibold -mt-0.5",
+          "text-lg font-bold tracking-tight",
           isBlkListing ? "text-white" : "text-blue-600"
         )}>
           {formatPrice(price)}
         </p>
 
         {/* Stats Row */}
-        <div className="flex items-center gap-1.5 sm:gap-2.5 text-xs sm:text-sm">
+        <div className="flex items-center gap-1.5 text-xs">
           <span className={cn(
             "font-semibold",
-            isBlkListing ? "text-zinc-300" : "text-sidebar-foreground/80"
+            isBlkListing ? "text-zinc-500" : "text-muted-foreground/70"
           )}>
             {formatMileage(mileage)} km
           </span>
-          <span className={isBlkListing ? "text-zinc-600" : "text-sidebar-foreground/40"}>•</span>
+          <span className={isBlkListing ? "text-zinc-700" : "text-muted-foreground/30"}>·</span>
           <span className={cn(
             "font-semibold",
-            isBlkListing ? "text-zinc-300" : "text-sidebar-foreground/80"
+            isBlkListing ? "text-zinc-500" : "text-muted-foreground/70"
           )}>
             {displaySpecs}
           </span>
-          <span className={isBlkListing ? "text-zinc-600" : "text-sidebar-foreground/40"}>•</span>
+          <span className={isBlkListing ? "text-zinc-700" : "text-muted-foreground/30"}>·</span>
           <span className={cn(
             "font-semibold truncate",
-            isBlkListing ? "text-zinc-300" : "text-sidebar-foreground/80"
+            isBlkListing ? "text-zinc-500" : "text-muted-foreground/70"
           )}>
             {displayEmirate}
           </span>
         </div>
 
         {/* Bottom Section */}
-        <div className={cn(
-          "flex items-center justify-between pt-2 sm:pt-3 mt-auto border-t",
-          isBlkListing ? "border-zinc-800" : "border-sidebar-border"
-        )}>
+        <div className="flex items-center justify-between pt-3 mt-auto">
           {/* Left - Dealer */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 flex-1">
+          <div className="flex items-center gap-2.5 min-w-0">
             {isPartnerListing ? (
               <BrandAvatar
                 logoUrl={partnerLogo}
                 brandName={displaySellerName}
                 size="xs"
                 className={cn(
-                  "w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0",
-                  isBlkListing ? "bg-zinc-800 border-zinc-700" : "bg-sidebar-accent border-sidebar-border"
+                  "w-7 h-7 flex-shrink-0",
+                  isBlkListing ? "bg-zinc-800 border-zinc-700" : "bg-muted/40 border-border/40"
                 )}
               />
             ) : (
@@ -359,33 +350,30 @@ export function CarCard({
                 name={displaySellerName}
                 size="sm"
                 className={cn(
-                  "w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0",
-                  isBlkListing ? "bg-zinc-800 border-zinc-700 text-zinc-400" : "bg-sidebar-accent border-sidebar-border text-sidebar-foreground/70"
+                  "w-7 h-7 flex-shrink-0",
+                  isBlkListing ? "bg-zinc-800 border-zinc-700 text-zinc-500" : "bg-muted/40 border-border/40 text-muted-foreground/70"
                 )}
               />
             )}
-            <div className="flex items-center gap-1 sm:gap-1.5 min-w-0">
-              <span className={cn(
-                "text-xs sm:text-sm truncate",
-                isBlackTierPartner ? "font-semibold" : "font-medium",
-                isBlkListing ? "text-zinc-300" : "text-sidebar-foreground/80"
-              )}>
-                {displaySellerName}
-              </span>
-              {(partnerVerified || kycVerified) && (
-                <CheckCircle2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-blue-500 flex-shrink-0" aria-label="Verified" />
-              )}
-            </div>
+            <span className={cn(
+              "text-[13px] font-medium",
+              isBlkListing ? "text-zinc-200" : "text-foreground"
+            )}>
+              {displaySellerName}
+            </span>
+            {(partnerVerified || kycVerified) && (
+              <CheckCircle2 className="w-[18px] h-[18px] text-blue-500 flex-shrink-0 -ml-1" aria-label="Verified" />
+            )}
           </div>
 
           {/* Right - Actions */}
-          <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
+          <div className="flex items-center -mr-1.5 flex-shrink-0">
             <button 
               className={cn(
-                "rounded-full p-1.5 sm:p-2 transition-colors",
+                "rounded-full p-1.5 transition-colors",
                 isBlkListing 
-                  ? "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800" 
-                  : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+                  ? "text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/50" 
+                  : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50"
               )}
               aria-label="Share"
               onClick={(event) => {
@@ -394,21 +382,21 @@ export function CarCard({
                 handleShare();
               }}
             >
-              <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
+              <Share2 className="h-4 w-4" />
             </button>
             
             {/* Favorite Button */}
             <button 
               className={cn(
-                "relative rounded-full p-1.5 sm:p-2 transition-all active:scale-95",
+                "relative rounded-full p-1.5 transition-all active:scale-95",
                 favorite.isUpdating && "opacity-50 cursor-not-allowed",
                 favorite.isFavorite
                   ? isBlkListing 
-                    ? "text-rose-400 hover:bg-zinc-800" 
-                    : "text-rose-500 hover:bg-sidebar-accent"
+                    ? "text-rose-400 hover:bg-zinc-800/50" 
+                    : "text-rose-500 hover:bg-muted/50"
                   : isBlkListing 
-                    ? "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800" 
-                    : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+                    ? "text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/50" 
+                    : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50"
               )}
               aria-label={favorite.isFavorite ? "Remove favorite" : "Add to favorites"}
               aria-pressed={favorite.isFavorite}
@@ -419,12 +407,16 @@ export function CarCard({
                 handleFavoriteClick();
               }}
             >
+              {/* Ripple effect */}
+              {showHearts && (
+                <span className="absolute inset-0 rounded-full bg-rose-500/20 animate-ripple" />
+              )}
               <Heart
                 className={cn(
-                  "h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300",
-                  heartScale && "scale-150"
+                  "h-4 w-4 transition-transform duration-200",
+                  heartScale && "scale-[1.3]"
                 )}
-                strokeWidth={favorite.isFavorite ? 2.5 : 2}
+                strokeWidth={favorite.isFavorite ? 2.5 : 1.5}
                 fill={favorite.isFavorite ? "currentColor" : "none"}
               />
             </button>
@@ -432,15 +424,15 @@ export function CarCard({
             {/* Superlike Button */}
             <button
               className={cn(
-                "relative rounded-full p-1.5 sm:p-2 transition-all active:scale-95",
+                "relative rounded-full p-1.5 transition-all active:scale-95",
                 superlike.isUpdating && "opacity-50 cursor-not-allowed",
                 superlike.isSuperliked
                   ? isBlkListing 
-                    ? "text-yellow-400 hover:bg-zinc-800" 
-                    : "text-yellow-500 hover:bg-sidebar-accent"
+                    ? "text-yellow-400 hover:bg-zinc-800/50" 
+                    : "text-yellow-500 hover:bg-muted/50"
                   : isBlkListing 
-                    ? "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800" 
-                    : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+                    ? "text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/50" 
+                    : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50"
               )}
               aria-label={superlike.isSuperliked ? "Remove superlike" : "Superlike"}
               aria-pressed={superlike.isSuperliked}
@@ -451,9 +443,16 @@ export function CarCard({
                 handleSuperlikeClick();
               }}
             >
+              {/* Ripple effect */}
+              {showSparkles && (
+                <span className="absolute inset-0 rounded-full bg-yellow-500/20 animate-ripple" />
+              )}
               <Sparkles
-                className="h-4 w-4 sm:h-5 sm:w-5"
-                strokeWidth={superlike.isSuperliked ? 2.5 : 2}
+                className={cn(
+                  "h-4 w-4 transition-transform duration-200",
+                  showSparkles && "scale-[1.3]"
+                )}
+                strokeWidth={superlike.isSuperliked ? 2.5 : 1.5}
                 fill={superlike.isSuperliked ? "currentColor" : "none"}
               />
             </button>
@@ -492,59 +491,6 @@ export function CarCard({
         feature="superlikes"
       />
 
-      {/* Falling Sparkles Effect */}
-      {showSparkles && (
-        <div className="fixed inset-0 pointer-events-none overflow-hidden z-[9999]">
-          {Array.from({ length: 30 }, (_, i) => {
-            const left = (i * 3.33) + Math.random() * 2;
-            const delay = (i % 5) * 0.1;
-            const duration = 1.5 + (i % 3) * 0.3;
-            const size = 16 + (i % 4) * 4;
-            
-            return (
-              <span
-                key={i}
-                className="absolute animate-sparkle-fall"
-                style={{
-                  left: `${left}%`,
-                  animationDelay: `${delay}s`,
-                  animationDuration: `${duration}s`,
-                  fontSize: `${size}px`,
-                }}
-              >
-                {i % 3 === 0 ? '⭐' : i % 3 === 1 ? '✨' : '💫'}
-              </span>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Falling Hearts Effect */}
-      {showHearts && (
-        <div className="fixed inset-0 pointer-events-none overflow-hidden z-[9999]">
-          {Array.from({ length: 30 }, (_, i) => {
-            const left = (i * 3.33) + Math.random() * 2;
-            const delay = (i % 5) * 0.1;
-            const duration = 1.5 + (i % 3) * 0.3;
-            const size = 16 + (i % 4) * 4;
-            
-            return (
-              <span
-                key={i}
-                className="absolute animate-sparkle-fall"
-                style={{
-                  left: `${left}%`,
-                  animationDelay: `${delay}s`,
-                  animationDuration: `${duration}s`,
-                  fontSize: `${size}px`,
-                }}
-              >
-                {i % 3 === 0 ? '❤️' : i % 3 === 1 ? '💕' : '💖'}
-              </span>
-            );
-          })}
-        </div>
-      )}
     </div>
   );
 }

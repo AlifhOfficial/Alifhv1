@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Loader2, RefreshCw, Heart, Moon } from 'lucide-react';
+import { Loader2, RefreshCw, Heart } from 'lucide-react';
 import { CarCard } from '@/components/inventory';
 import { useFavoritesStatus } from '@/hooks/engagement';
+import { DashboardPageWrapper, DashboardPageHeader } from '@/components/shared/layout/dashboard-page-wrapper';
 
 type ListingPayload = {
   id: string;
@@ -92,58 +93,57 @@ export default function FavoritesPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12 space-y-16">
-        {/* Header */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="space-y-2">
-            <h1 className="text-2xl font-bold tracking-tight">Favorites</h1>
-            <p className="text-[15px] font-medium text-muted-foreground/70">
-              {validFavoriteIds.length} item{validFavoriteIds.length === 1 ? '' : 's'}
-            </p>
-          </div>
-          <button
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-            className="p-2 rounded-full hover:bg-secondary/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            aria-label="Refresh favorites"
-          >
-            <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
-          </button>
+    <DashboardPageWrapper>
+      {/* Header */}
+      <DashboardPageHeader
+        title="Favorites"
+        description={`${validFavoriteIds.length} saved`}
+      >
+        <button
+          onClick={handleRefresh}
+          disabled={isRefreshing}
+          className="p-2 rounded-lg hover:bg-sidebar transition-colors disabled:opacity-50"
+          aria-label="Refresh favorites"
+        >
+          <RefreshCw className={`h-4 w-4 text-muted-foreground ${isRefreshing ? 'animate-spin' : ''}`} />
+        </button>
+      </DashboardPageHeader>
+
+      {/* Loading State */}
+      {(isLoading || isLoadingListings) && (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
         </div>
+      )}
 
-        {/* Loading State */}
-        {(isLoading || isLoadingListings) && (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-6 w-6 animate-spin border-foreground" />
-          </div>
-        )}
+      {/* Error State */}
+      {favError && (
+        <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4">
+          <p className="text-sm text-red-500">
+            {favError?.message || 'Failed to load favorites'}
+          </p>
+        </div>
+      )}
 
-        {/* Error State */}
-        {favError && (
-          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
-            <p className="text-sm text-red-500">
-              {favError?.message || 'Failed to load favorites'}
-            </p>
-          </div>
-        )}
-
-        {/* Content */}
-        {!isLoading && !isLoadingListings && !favError && (
-          <>
-            {validFavoriteIds.length === 0 ? (
-              <div className="flex items-center justify-center py-24">
-                <div className="flex flex-col items-center text-center space-y-4 max-w-sm">
-                  <Moon className="w-16 h-16 text-muted-foreground/20" />
-                  <div className="space-y-2">
-                    <h2 className="text-lg font-semibold tracking-tight text-muted-foreground">Such empty here</h2>
-                    <p className="text-[15px] font-medium text-muted-foreground/60">
-                      Heart some cars and they'll appear here
-                    </p>
-                  </div>
+      {/* Content */}
+      {!isLoading && !isLoadingListings && !favError && (
+        <>
+          {validFavoriteIds.length === 0 ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="flex flex-col items-center text-center space-y-3">
+                <div className="w-12 h-12 rounded-full bg-sidebar flex items-center justify-center">
+                  <Heart className="w-5 h-5 text-muted-foreground/40" />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">No favorites yet</p>
+                  <p className="text-sm text-muted-foreground/60">
+                    Tap the heart on listings to save them here
+                  </p>
                 </div>
               </div>
-            ) : (
-              <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
+            </div>
+          ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3 sm:gap-4 lg:gap-5">
                 {validFavoriteIds.map((listingId) => {
                   const listing = listingsById.get(listingId)!;
                   
@@ -176,6 +176,6 @@ export default function FavoritesPage() {
             )}
           </>
         )}
-      </div>
+    </DashboardPageWrapper>
   );
 }

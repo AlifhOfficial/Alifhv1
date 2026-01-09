@@ -44,9 +44,9 @@ export function UserConversationGroup({
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className={cn(
-          'w-full py-3.5 px-4 text-left transition-colors duration-150 hover:bg-muted/25 rounded-xl',
+          'w-full py-3 px-3 text-left transition-colors duration-150 hover:bg-sidebar rounded-xl',
           'flex items-center gap-3',
-          hasActiveConversation && 'bg-muted/10'
+          hasActiveConversation && 'bg-sidebar'
         )}
       >
         {/* User Avatar */}
@@ -54,24 +54,24 @@ export function UserConversationGroup({
           src={user.avatarUrl}
           name={user.name || 'User'}
           size="md"
-          className="w-10 h-10 flex-shrink-0"
+          className="w-9 h-9 flex-shrink-0"
         />
         
         {/* User Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="text-[15px] font-semibold tracking-tight text-foreground truncate">
+            <h3 className="text-sm font-bold text-foreground truncate">
               {user.name || 'Unknown User'}
             </h3>
             {conversations.length > 1 && (
-              <small className="text-xs text-muted-foreground/70">
-                ({conversations.length})
-              </small>
+              <span className="text-xs font-medium text-muted-foreground/50">
+                {conversations.length}
+              </span>
             )}
             {totalUnread > 0 && (
-              <small className="text-xs flex-shrink-0 w-5 h-5 font-semibold bg-red-500 text-white rounded-full flex items-center justify-center ml-auto">
+              <span className="text-[11px] flex-shrink-0 px-1.5 py-0.5 font-semibold bg-blue-500 text-white rounded-full min-w-[18px] text-center ml-auto">
                 {totalUnread > 9 ? '9+' : totalUnread}
-              </small>
+              </span>
             )}
           </div>
         </div>

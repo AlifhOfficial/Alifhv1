@@ -102,7 +102,7 @@ export function ContactSection({
           onClick={handleChatClick}
           disabled={isStartingChat || isBlocked}
           className={cn(
-            "flex-1 min-w-[100px] py-3 px-4 rounded-full text-sm sm:text-[15px] font-semibold transition-colors flex items-center justify-center gap-2.5 whitespace-nowrap",
+            "flex-1 min-w-[100px] py-3 px-4 rounded-full text-sm font-bold transition-colors flex items-center justify-center gap-2.5 whitespace-nowrap",
             isBlocked
               ? "bg-muted text-muted-foreground cursor-not-allowed"
               : "bg-primary text-primary-foreground hover:bg-primary/90"
@@ -122,7 +122,7 @@ export function ContactSection({
         {phoneNumber && !isBlocked && (
           <a
             href={`tel:${phoneNumber}`}
-            className="flex-1 min-w-[100px] py-3 px-4 border border-border rounded-full text-sm sm:text-[15px] font-semibold text-foreground hover:bg-muted/50 transition-colors flex items-center justify-center gap-2.5 whitespace-nowrap"
+            className="flex-1 min-w-[100px] py-3 px-4 border border-border rounded-full text-sm font-bold text-foreground hover:bg-muted/50 transition-colors flex items-center justify-center gap-2.5 whitespace-nowrap"
           >
             <Phone className="w-5 h-5" />
             Call
@@ -133,7 +133,7 @@ export function ContactSection({
         {showBooking && onBookTestDrive && !isBlocked && (
           <button
             onClick={onBookTestDrive}
-            className="flex-1 min-w-[100px] py-3 px-4 bg-green-500 text-white rounded-full text-sm sm:text-[15px] font-semibold hover:bg-green-600 transition-colors flex items-center justify-center gap-2.5 whitespace-nowrap"
+            className="flex-1 min-w-[100px] py-3 px-4 bg-green-500 text-white rounded-full text-sm font-bold hover:bg-green-600 transition-colors flex items-center justify-center gap-2.5 whitespace-nowrap"
           >
             <Calendar className="w-5 h-5" />
             Book
@@ -145,14 +145,14 @@ export function ContactSection({
       {phoneNumber && showPhone && (
         <div className="py-3 border-y border-border">
           {contactName && (
-            <p className="text-[13px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">
+            <p className="text-[13px] text-muted-foreground/70 uppercase tracking-wider font-bold mb-1">
               {contactName}
             </p>
           )}
           <div className="flex items-center justify-between">
             <a
               href={`tel:${phoneNumber}`}
-              className="text-lg font-semibold text-foreground hover:text-primary transition-colors"
+              className="text-lg font-bold text-foreground hover:text-primary transition-colors"
             >
               {formatPhoneForDisplay(phoneNumber)}
             </a>
@@ -175,7 +175,7 @@ export function ContactSection({
       {phoneNumber && (
         <button
           onClick={() => setShowPhone(!showPhone)}
-          className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
         >
           {showPhone ? 'Hide phone number' : 'Show phone number'}
         </button>
@@ -183,7 +183,7 @@ export function ContactSection({
 
       {/* No phone available message */}
       {sellerData.type === 'user' && !phoneNumber && !showBooking && (
-        <p className="text-sm font-medium text-muted-foreground">
+        <p className="text-sm font-semibold text-muted-foreground">
           Seller prefers chat
         </p>
       )}

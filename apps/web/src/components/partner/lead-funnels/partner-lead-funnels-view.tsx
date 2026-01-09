@@ -6,19 +6,31 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { 
   Loader2,
   Inbox,
   RefreshCw,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ImageIcon,
+  Search,
+  X,
+  Filter,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { UserAvatar } from '@/components/ui/data-display/user-avatar';
+import { Combobox } from '@/components/ui/forms/combobox';
 import Image from 'next/image';
 import Link from 'next/link';
+import { DashboardPageWrapper, DashboardPageHeader } from '@/components/shared/layout/dashboard-page-wrapper';
+
+// ============================================================================
+// Constants
+// ============================================================================
+
+const ITEMS_PER_PAGE = 12;
 
 // ============================================================================
 // Types
@@ -74,7 +86,10 @@ interface PartnerLeadFunnelsViewProps {
 // ============================================================================
 
 export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFunnelsViewProps) {
+  // UI State
   const [selectedStaffFilter, setSelectedStaffFilter] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [expandedFunnels, setExpandedFunnels] = useState<Set<string>>(new Set());
 
@@ -88,7 +103,7 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
       if (!res.ok) throw new Error('Failed to fetch funnels');
       return res.json();
     },
-    staleTime: 0, // Always refetch on mount/focus
+    staleTime: 0,
     refetchOnMount: 'always',
     gcTime: 0,
   });
@@ -115,11 +130,60 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
     return Array.from(staffMap.values()).sort((a, b) => b.funnelCount - a.funnelCount);
   }, [funnels]);
 
-  // Filter funnels by staff
+  // Staff options for combobox
+  const staffOptions = useMemo(() => {
+    const options = [{ value: 'all', label: 'All Staff' }];
+    staffStats.forEach(staff => {
+      options.push({
+        value: staff.staffId,
+        label: `${staff.staffName} (${staff.funnelCount})`,
+      });
+    });
+    return options;
+  }, [staffStats]);
+
+  // Filter funnels by staff and search
   const filteredFunnels = useMemo(() => {
-    if (selectedStaffFilter === 'all') return funnels;
-    return funnels.filter(f => f.staffId === selectedStaffFilter);
-  }, [funnels, selectedStaffFilter]);
+    let result = funnels;
+    
+    // Staff filter
+    if (selectedStaffFilter !== 'all') {
+      result = result.filter(f => f.staffId === selectedStaffFilter);
+    }
+    
+    // Search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(f => 
+        f.name.toLowerCase().includes(query) ||
+        (f.staffName?.toLowerCase().includes(query)) ||
+        (f.description?.toLowerCase().includes(query))
+      );
+    }
+    
+    return result;
+  }, [funnels, selectedStaffFilter, searchQuery]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredFunnels.length / ITEMS_PER_PAGE);
+  const paginatedFunnels = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredFunnels.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredFunnels, currentPage]);
+
+  // Reset page when filters change
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [selectedStaffFilter, searchQuery]);
+
+  // Clear filters
+  const clearFilters = useCallback(() => {
+    setSelectedStaffFilter('all');
+    setSearchQuery('');
+    setCurrentPage(1);
+  }, []);
+
+  const hasActiveFilters = selectedStaffFilter !== 'all' || searchQuery.trim() !== '';
 
   // Handle refresh
   const handleRefresh = async () => {
@@ -142,128 +206,120 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-16 space-y-16">
+    <DashboardPageWrapper>
       {/* Header */}
-      <section className="space-y-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Lead Funnels</h1>
-            <p className="text-sm text-muted-foreground mt-2">
-              View all lead funnels across {partnerName}
-            </p>
-          </div>
-          <button
-            onClick={handleRefresh}
-            disabled={isRefreshing || isLoading}
-            className="p-2 rounded-full hover:bg-secondary/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Refresh"
-          >
-            <RefreshCw className={cn("w-4 h-4", isRefreshing && "animate-spin")} />
-          </button>
-        </div>
+      <DashboardPageHeader
+        title="Lead Funnels"
+        description={`View all lead funnels across ${partnerName}`}
+      >
+        <button
+          onClick={handleRefresh}
+          disabled={isRefreshing || isLoading}
+          className="p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
+          aria-label="Refresh"
+        >
+          <RefreshCw className={cn("w-4 h-4 text-muted-foreground", isRefreshing && "animate-spin")} />
+        </button>
+      </DashboardPageHeader>
 
         {/* Stats */}
         {!isLoading && funnels.length > 0 && (
-          <div className="grid grid-cols-2 border-y border-border/40 divide-x divide-border/40">
-            <div className="p-8 text-center">
-              <p className="text-sm text-muted-foreground mb-2">Total Funnels</p>
-              <p className="text-2xl font-semibold text-blue-500">{funnels.length}</p>
+          <div className="flex items-center gap-10">
+            <div>
+              <span className="text-xs text-muted-foreground">Total Funnels</span>
+              <p className="text-xl font-semibold tracking-tight mt-1 text-blue-500">{funnels.length}</p>
             </div>
-            <div className="p-8 text-center">
-              <p className="text-sm text-muted-foreground mb-2">Staff Members</p>
-              <p className="text-2xl font-semibold text-foreground">{staffStats.length}</p>
+            <div>
+              <span className="text-xs text-muted-foreground">Active</span>
+              <p className="text-xl font-semibold tracking-tight mt-1 text-green-500">
+                {funnels.filter(f => f.isActive).length}
+              </p>
+            </div>
+            <div>
+              <span className="text-xs text-muted-foreground">Staff Members</span>
+              <p className="text-xl font-semibold tracking-tight mt-1">{staffStats.length}</p>
             </div>
           </div>
         )}
 
-        {/* Staff Cards */}
-        {!isLoading && staffStats.length > 0 && (
-          <section className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium tracking-tight">Staff Funnels</h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                Lead funnels created by each team member
-              </p>
-            </div>
+      {/* Toolbar */}
+      <div className="flex items-center gap-4 mb-8">
+        {/* Search */}
+        <div className="relative flex-1 max-w-xs">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search funnels..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full h-10 pl-10 pr-8 rounded-xl bg-secondary/50 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-secondary"
+            >
+              <X className="w-3.5 h-3.5 text-muted-foreground" />
+            </button>
+          )}
+        </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {staffStats.map((staff) => (
-                <button
-                  key={staff.staffId}
-                  onClick={() => setSelectedStaffFilter(
-                    selectedStaffFilter === staff.staffId ? 'all' : staff.staffId
-                  )}
-                  className={cn(
-                    'p-6 rounded-xl border border-border/40 text-left transition-all',
-                    selectedStaffFilter === staff.staffId
-                      ? 'bg-secondary/50'
-                      : 'hover:bg-muted/15'
-                  )}
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <UserAvatar
-                      size="md"
-                      name={staff.staffName}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate text-foreground">
-                        {staff.staffName}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-baseline gap-2">
-                    <p className="text-2xl font-semibold text-primary">{staff.funnelCount}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {staff.funnelCount === 1 ? 'funnel' : 'funnels'}
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </section>
+        {/* Staff Combobox */}
+        {staffStats.length > 0 && (
+          <div className="w-48">
+            <Combobox
+              options={staffOptions}
+              value={selectedStaffFilter}
+              onValueChange={setSelectedStaffFilter}
+              placeholder="All Staff"
+              searchPlaceholder="Search staff..."
+              className="h-10 rounded-xl bg-secondary/50 border-0"
+            />
+          </div>
         )}
-      </section>
 
-      {/* Error State */}
+        {hasActiveFilters && (
+          <button
+            onClick={clearFilters}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Reset
+          </button>
+        )}
+      </div>
+
+      {/* Error */}
       {error && (
-        <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
-          <p className="text-sm text-red-500">Failed to load funnels. Please try again.</p>
+        <div className="mb-8 p-4 rounded-xl bg-secondary/50 text-sm">
+          Failed to load funnels. Please try again.
         </div>
       )}
 
-      {/* Loading State */}
+      {/* Loading */}
       {isLoading && (
-        <div className="text-center py-16">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-sm text-muted-foreground">Loading funnels...</p>
-        </div>
-      )}
-
-      {/* Empty State */}
-      {!isLoading && !error && funnels.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <Inbox className="w-12 h-12 text-muted-foreground/30 mb-4" strokeWidth={1.5} />
-          <h3 className="text-lg font-semibold tracking-tight mb-1">No Lead Funnels Yet</h3>
-          <p className="text-sm text-muted-foreground max-w-sm">
-            Staff members haven&apos;t created any lead funnels yet
-          </p>
+        <div className="flex flex-col items-center justify-center py-24">
+          <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
+          <p className="text-xs text-muted-foreground mt-4">Loading...</p>
         </div>
       )}
 
       {/* Funnels List */}
       {!isLoading && !error && filteredFunnels.length > 0 && (
-        <section className="space-y-6">
-          <div>
-            <h3 className="text-lg font-medium tracking-tight">
-              {selectedStaffFilter === 'all' ? 'All Funnels' : `Funnels by ${staffStats.find(s => s.staffId === selectedStaffFilter)?.staffName}`}
-            </h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              {filteredFunnels.length} {filteredFunnels.length === 1 ? 'funnel' : 'funnels'}
+        <>
+          {/* Count */}
+          <div className="flex items-center justify-between mb-6">
+            <p className="text-xs text-muted-foreground">
+              {filteredFunnels.length} funnel{filteredFunnels.length !== 1 ? 's' : ''}
+              {selectedStaffFilter !== 'all' && ` by ${staffStats.find(s => s.staffId === selectedStaffFilter)?.staffName}`}
             </p>
+            {totalPages > 1 && (
+              <p className="text-xs text-muted-foreground">{currentPage} / {totalPages}</p>
+            )}
           </div>
 
-          <div className="space-y-3">
-            {filteredFunnels.map((funnel) => (
+          {/* List */}
+          <div className="space-y-2">
+            {paginatedFunnels.map((funnel) => (
               <FunnelRow
                 key={funnel.id}
                 funnel={funnel}
@@ -272,9 +328,81 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
               />
             ))}
           </div>
-        </section>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-1 mt-12">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="p-2 rounded-lg hover:bg-secondary/50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pageNum: number;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
+                
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`w-8 h-8 rounded-lg text-sm transition-colors ${
+                      currentPage === pageNum
+                        ? 'bg-secondary text-foreground font-medium'
+                        : 'text-muted-foreground hover:bg-secondary/50'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+              
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="p-2 rounded-lg hover:bg-secondary/50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+        </>
       )}
-    </div>
+
+      {/* Empty - No Data */}
+      {!isLoading && !error && funnels.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-32 text-center">
+          <Filter className="w-10 h-10 text-muted-foreground/20 mb-4" />
+          <h3 className="text-lg font-medium tracking-tight">No lead funnels yet</h3>
+          <p className="text-sm text-muted-foreground mt-1">Staff members haven't created any lead funnels</p>
+        </div>
+      )}
+
+      {/* Empty - No Results */}
+      {!isLoading && !error && funnels.length > 0 && filteredFunnels.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-32 text-center">
+          <Search className="w-10 h-10 text-muted-foreground/20 mb-4" />
+          <h3 className="text-lg font-medium tracking-tight">No results</h3>
+          <p className="text-sm text-muted-foreground mt-1">Try a different search or filter</p>
+          <button
+            onClick={clearFilters}
+            className="mt-4 text-sm text-foreground hover:underline"
+          >
+            Clear filters
+          </button>
+        </div>
+      )}
+    </DashboardPageWrapper>
   );
 }
 
@@ -304,72 +432,97 @@ function FunnelRow({ funnel, isExpanded, onToggle }: FunnelRowProps) {
   });
 
   return (
-    <div className="rounded-xl border border-border/40 hover:bg-secondary/50 transition-colors">
+    <div className="rounded-xl hover:bg-secondary/30 transition-colors">
       {/* Funnel Header */}
       <button
         type="button"
         onClick={onToggle}
-        className="w-full p-6 text-left"
+        className="w-full p-4 -mx-4 text-left flex items-center gap-4"
       >
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            {/* Title */}
-            <h4 className="text-base font-semibold text-foreground truncate mb-1">
+        {/* Expand Icon */}
+        <ChevronDown className={cn(
+          "w-4 h-4 text-muted-foreground/50 transition-transform flex-shrink-0",
+          isExpanded && "rotate-180"
+        )} />
+
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-3">
+            <h4 className="text-sm font-medium tracking-tight text-foreground truncate">
               {funnel.name}
             </h4>
-
-            {/* Staff & Date */}
-            <p className="text-sm text-muted-foreground mb-3">
-              Created by <span className="font-medium text-foreground">{funnel.staffName || 'Unknown'}</span>
-              {' · '}
-              {new Date(funnel.createdAt).toLocaleDateString()}
-            </p>
-
-            {/* Filter Tags */}
-            <div className="flex flex-wrap gap-1.5">
-              {filterTags.length > 0 ? (
-                filterTags.slice(0, 6).map((tag, i) => (
-                  <span key={i} className="px-2 py-0.5 text-xs font-medium bg-secondary text-muted-foreground rounded-md">
-                    {tag}
-                  </span>
-                ))
-              ) : (
-                <span className="text-xs text-muted-foreground/50 italic">All vehicles</span>
-              )}
-              {filterTags.length > 6 && (
-                <span className="px-2 py-0.5 text-xs font-medium bg-secondary text-muted-foreground rounded-md">
-                  +{filterTags.length - 6} more
-                </span>
-              )}
-            </div>
+            {/* Status Badge */}
+            <span className={cn(
+              "px-2 py-0.5 rounded-md text-xs font-medium flex-shrink-0",
+              funnel.isActive 
+                ? "bg-green-500/10 text-green-600" 
+                : "bg-secondary text-muted-foreground"
+            )}>
+              {funnel.isActive ? 'Active' : 'Inactive'}
+            </span>
           </div>
+          
+          <p className="text-xs text-muted-foreground mt-1 truncate">
+            {funnel.staffName || 'Unknown'} · {new Date(funnel.createdAt).toLocaleDateString()}
+          </p>
+        </div>
 
-          {/* Expand Icon */}
-          <ChevronDown className={cn(
-            "w-5 h-5 text-muted-foreground/60 transition-transform flex-shrink-0 mt-1",
-            isExpanded && "rotate-180"
-          )} />
+        {/* Filter Tags (collapsed view) */}
+        <div className="hidden sm:flex items-center gap-1.5 flex-shrink-0 max-w-[300px]">
+          {filterTags.length > 0 ? (
+            <>
+              {filterTags.slice(0, 3).map((tag, i) => (
+                <span key={i} className="px-2 py-0.5 text-xs bg-secondary/80 text-muted-foreground rounded-md truncate max-w-[100px]">
+                  {tag}
+                </span>
+              ))}
+              {filterTags.length > 3 && (
+                <span className="text-xs text-muted-foreground">+{filterTags.length - 3}</span>
+              )}
+            </>
+          ) : (
+            <span className="text-xs text-muted-foreground/50">All vehicles</span>
+          )}
         </div>
       </button>
 
       {/* Expanded Preview */}
       {isExpanded && (
-        <div className="border-t border-border/40 p-6 bg-muted/20">
+        <div className="px-4 pb-4 pt-2 ml-8">
+          {/* All Filter Tags */}
+          {filterTags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mb-4">
+              {filterTags.map((tag, i) => (
+                <span key={i} className="px-2 py-0.5 text-xs bg-secondary text-muted-foreground rounded-md">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Description */}
+          {funnel.description && (
+            <p className="text-sm text-muted-foreground mb-4">{funnel.description}</p>
+          )}
+
+          {/* Preview Loading */}
           {previewLoading && (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+              <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
             </div>
           )}
 
+          {/* Preview Empty */}
           {!previewLoading && (!previewData?.listings || previewData.listings.length === 0) && (
             <div className="text-center py-8">
-              <Inbox className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">No matching listings found</p>
+              <Inbox className="w-6 h-6 text-muted-foreground/20 mx-auto mb-2" />
+              <p className="text-xs text-muted-foreground">No matching listings</p>
             </div>
           )}
 
+          {/* Preview Grid */}
           {!previewLoading && previewData?.listings && previewData.listings.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
               {previewData.listings.map((listing) => (
                 <Link
                   key={listing.id}
@@ -377,26 +530,26 @@ function FunnelRow({ funnel, isExpanded, onToggle }: FunnelRowProps) {
                   target="_blank"
                   className="group block"
                 >
-                  <div className="aspect-[4/3] relative rounded-lg overflow-hidden bg-muted mb-2">
+                  <div className="aspect-[4/3] relative rounded-lg overflow-hidden bg-secondary mb-2">
                     {listing.thumbnail ? (
                       <Image
                         src={listing.thumbnail}
-                        alt={`${listing.year} ${listing.make} ${listing.model}`}
+                        alt=""
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        sizes="(max-width: 768px) 50vw, 16vw"
+                        sizes="(max-width: 768px) 33vw, 16vw"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <ImageIcon className="w-6 h-6 text-muted-foreground/30" />
+                        <ImageIcon className="w-4 h-4 text-muted-foreground/20" />
                       </div>
                     )}
                   </div>
-                  <p className="text-xs font-medium text-foreground truncate group-hover:text-primary transition-colors">
-                    {listing.year} {listing.make} {listing.model}
+                  <p className="text-xs font-medium text-foreground truncate group-hover:text-blue-500 transition-colors">
+                    {listing.year} {listing.make}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    AED {listing.price.toLocaleString()}
+                    {listing.price.toLocaleString()} AED
                   </p>
                 </Link>
               ))}

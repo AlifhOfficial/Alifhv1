@@ -36,17 +36,17 @@ function FieldWrapper({
   return (
     <div className="space-y-2">
       <div className="flex items-baseline justify-between">
-        <label className="text-base font-medium text-muted-foreground">
+        <label className="text-sm font-semibold text-muted-foreground/70">
           {label}
           {required && <span className="text-red-500 ml-0.5">*</span>}
         </label>
         {hint && !error && (
-          <span className="text-sm text-muted-foreground/60">{hint}</span>
+          <span className="text-xs text-muted-foreground/70">{hint}</span>
         )}
       </div>
       {children}
       {error && (
-        <p className="text-base font-medium text-red-500">{error}</p>
+        <p className="text-xs font-semibold text-red-500">{error}</p>
       )}
     </div>
   );
@@ -118,71 +118,80 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
   }, [vinDecoded, data.trim, data.bodyType, data.doors, data.fuelType, data.transmission, data.engineSize, data.make]);
   
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       {/* VIN Entry Section */}
-      <div className="space-y-4">
-        <VINInput
-          value={data.vin || ''}
-          onChange={(v) => {
-            updateField('vin', v);
-            if (v.length < 17) setVinDecoded(false);
-          }}
-          onDecode={handleVINDecode}
-          excludeListingId={excludeListingId}
-        />
+      <section>
+        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Vehicle Identification</h3>
         
-        <div className="flex items-center gap-2 text-sm">
-          <AlertTriangle className="w-4 h-4 text-yellow-500" />
-          <span className="font-semibold text-yellow-500">Experimental</span>
-          <span className="text-muted-foreground font-medium">— Some VINs may not decode, especially Japanese-made vehicles.</span>
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
+          <VINInput
+            value={data.vin || ''}
+            onChange={(v) => {
+              updateField('vin', v);
+              if (v.length < 17) setVinDecoded(false);
+            }}
+            onDecode={handleVINDecode}
+            excludeListingId={excludeListingId}
+          />
+          
+          <div className="flex items-center gap-2 text-xs">
+            <AlertTriangle className="w-3.5 h-3.5 text-yellow-500" />
+            <span className="font-semibold text-yellow-500">Experimental</span>
+            <span className="text-muted-foreground/70">— Some VINs may not decode, especially Japanese-made vehicles.</span>
+          </div>
         </div>
-      </div>
+      </section>
       
       {/* Decoded Vehicle Preview */}
       {vinDecoded && data.make && (
-        <div className="space-y-6 p-5 bg-sidebar rounded-xl">
-          {/* Success indicator */}
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-500/10 rounded-full">
-              <CheckCircle2 className="w-5 h-5 text-green-500" />
+        <section>
+          <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Decoded Information</h3>
+          
+          <div className="rounded-xl border border-green-500/30 bg-sidebar p-5 space-y-5">
+            {/* Success indicator */}
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-green-500/10 rounded-full">
+                <CheckCircle2 className="w-5 h-5 text-green-500" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">
+                  {data.model ? 'Vehicle identified' : 'Partial match'}
+                </p>
+                <p className="text-xs text-muted-foreground/70">
+                  {data.model
+                    ? `${data.year} ${data.make} ${data.model}`
+                    : `${data.year} ${data.make} — select model below`}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-base font-semibold text-foreground">
-                {data.model ? 'Vehicle identified' : 'Partial match'}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {data.model
-                  ? `${data.year} ${data.make} ${data.model}`
-                  : `${data.year} ${data.make} — select model below`}
-              </p>
-            </div>
-          </div>
 
-          {/* Decoded specs grid */}
-          {decodedFields.length > 0 && (
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-4">
-              {decodedFields.map(({ label, value }) => (
-                <div key={label} className="space-y-1">
-                  <p className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wider">
-                    {label}
-                  </p>
-                  <p className="text-sm font-semibold text-foreground capitalize">
-                    {value}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+            {/* Decoded specs grid */}
+            {decodedFields.length > 0 && (
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-4 pt-3 border-t border-border/20">
+                {decodedFields.map(({ label, value }) => (
+                  <div key={label} className="space-y-1">
+                    <p className="text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-wider">
+                      {label}
+                    </p>
+                    <p className="text-sm font-medium text-foreground capitalize">
+                      {value}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
       )}
       
       {/* Manual Entry Fields */}
-      <div className="space-y-8">
-        <h3 className="text-lg font-medium text-foreground">
-          {vinDecoded ? 'Verify details' : 'Enter manually'}
+      <section>
+        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">
+          {vinDecoded ? 'Verify Details' : 'Enter Manually'}
         </h3>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {/* Make */}
           <FieldWrapper label="Make" required error={errors.make}>
             <Combobox
@@ -220,7 +229,7 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
               max={new Date().getFullYear() + 1}
               className={cn(
                 "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
-                "outline-none transition-colors px-0 text-base font-medium",
+                "outline-none transition-colors px-0 text-sm font-medium",
                 "placeholder:text-muted-foreground/40"
               )}
             />
@@ -235,13 +244,14 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
               placeholder="Sport, Limited, GT"
               className={cn(
                 "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
-                "outline-none transition-colors px-0 text-base font-medium",
+                "outline-none transition-colors px-0 text-sm font-medium",
                 "placeholder:text-muted-foreground/40"
               )}
             />
           </FieldWrapper>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

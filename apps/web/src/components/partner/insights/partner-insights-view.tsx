@@ -11,6 +11,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { TrendBadge } from './insight-components';
 import { Skeleton } from '@/components/ui/skeleton';
+import { DashboardPageWrapper } from '@/components/shared/layout/dashboard-page-wrapper';
 import {
   Tooltip,
   TooltipContent,
@@ -244,13 +245,17 @@ function ActivityDots({ activeDays, days = 28 }: { activeDays?: boolean[]; days?
 
 function InsightsSkeleton() {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
+    <DashboardPageWrapper>
         {/* Header Skeleton */}
-        <div className="space-y-2">
-          <Skeleton className="h-8 w-64" />
-          <Skeleton className="h-5 w-48" />
-        </div>
+        <header>
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-64" />
+              <Skeleton className="h-5 w-48" />
+            </div>
+            <Skeleton className="h-5 w-40" />
+          </div>
+        </header>
 
         {/* Stats Grid Skeleton */}
         <div className="grid grid-cols-2 md:grid-cols-4 border border-border/40 rounded-xl divide-x divide-y md:divide-y-0 divide-border/40 bg-sidebar">
@@ -262,11 +267,19 @@ function InsightsSkeleton() {
           ))}
         </div>
 
-        {/* Main Grid Skeleton */}
+        {/* Main Grid Skeleton - Row 1 */}
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-12 lg:col-span-8 rounded-xl border border-border/40 bg-sidebar p-6">
             <Skeleton className="h-4 w-24 mb-4" />
-            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-10 w-32 mb-4" />
+            <div className="mt-6 pt-4 border-t border-border/40 grid grid-cols-3 gap-4">
+              {[...Array(3)].map((_, i) => (
+                <div key={i}>
+                  <Skeleton className="h-3 w-16 mb-2" />
+                  <Skeleton className="h-6 w-20" />
+                </div>
+              ))}
+            </div>
           </div>
           <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 flex-1">
@@ -276,11 +289,71 @@ function InsightsSkeleton() {
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 flex-1">
               <Skeleton className="h-4 w-20 mb-3" />
               <Skeleton className="h-8 w-24" />
+              <Skeleton className="h-3 w-32 mt-2" />
             </div>
           </div>
         </div>
-      </div>
-    </div>
+
+        {/* Main Grid Skeleton - Row 2 */}
+        <div className="grid grid-cols-12 gap-4">
+          {[...Array(2)].map((_, i) => (
+            <div key={i} className="col-span-12 sm:col-span-6 lg:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
+              <Skeleton className="h-4 w-28" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-20 w-full" />
+            </div>
+          ))}
+          <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
+            <div className="rounded-xl border border-border/40 bg-sidebar p-5 flex-1">
+              <Skeleton className="h-4 w-24 mb-3" />
+              <Skeleton className="h-8 w-20" />
+            </div>
+            <div className="rounded-xl border border-border/40 bg-sidebar p-5 flex-1">
+              <Skeleton className="h-4 w-24 mb-3" />
+              <Skeleton className="h-8 w-20" />
+            </div>
+          </div>
+        </div>
+
+        {/* Month Comparison Skeleton */}
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+          <Skeleton className="h-4 w-40 mb-5" />
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i}>
+                <Skeleton className="h-6 w-16 mb-2" />
+                <Skeleton className="h-4 w-24 mb-1" />
+                <Skeleton className="h-3 w-28" />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* System Status Skeleton */}
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+          <Skeleton className="h-4 w-32 mb-4" />
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="flex items-center gap-2.5 p-3 rounded-lg bg-muted/10">
+                <Skeleton className="w-8 h-8 rounded-full" />
+                <div className="flex-1">
+                  <Skeleton className="h-3 w-12 mb-1" />
+                  <Skeleton className="h-3 w-16" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer Skeleton */}
+        <div className="flex items-center justify-between pt-2">
+          <Skeleton className="h-3 w-32" />
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-3 w-24" />
+          </div>
+        </div>
+    </DashboardPageWrapper>
   );
 }
 
@@ -410,8 +483,7 @@ export function PartnerInsightsView() {
 
   return (
     <>
-      <div className="min-h-screen bg-background">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
+      <DashboardPageWrapper>
 
           {/* Attention Banner - Top Priority */}
           {attentionItems.length > 0 && (
@@ -754,8 +826,7 @@ export function PartnerInsightsView() {
             </div>
           </div>
 
-        </div>
-      </div>
+        </DashboardPageWrapper>
     </>
   );
 }

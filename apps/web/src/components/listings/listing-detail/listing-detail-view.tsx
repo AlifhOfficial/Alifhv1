@@ -65,8 +65,8 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
         <main className="pt-20">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
-              <h1 className="text-2xl font-semibold text-foreground mb-2">Listing Not Found</h1>
-              <p className="text-muted-foreground mb-6">This listing may have been removed or is no longer available.</p>
+              <h1 className="text-2xl font-bold text-foreground mb-2">Listing Not Found</h1>
+              <p className="text-muted-foreground font-medium mb-6">This listing may have been removed or is no longer available.</p>
               <Link 
                 href="/listings" 
                 className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
@@ -93,8 +93,8 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
           <main className="pt-20">
             <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
               <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
-                <h1 className="text-2xl font-semibold text-foreground mb-2">Listing Not Available</h1>
-                <p className="text-muted-foreground mb-6">This listing is not currently public.</p>
+                <h1 className="text-2xl font-bold text-foreground mb-2">Listing Not Available</h1>
+                <p className="text-muted-foreground font-medium mb-6">This listing is not currently public.</p>
                 <Link 
                   href="/listings" 
                   className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
@@ -174,7 +174,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
       <main className="pt-20">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-sm font-semibold tracking-tight py-4 mb-4 sm:mb-6 overflow-x-auto scrollbar-hide">
+          <nav className="flex items-center gap-2 text-sm font-bold tracking-tight py-4 mb-4 sm:mb-6 overflow-x-auto scrollbar-hide">
             <Link 
               href="/listings" 
               className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
@@ -198,7 +198,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
             {listing.trim && (
               <>
                 <span className="text-muted-foreground/40">/</span>
-                <span className="text-foreground whitespace-nowrap">
+                <span className="text-foreground font-bold whitespace-nowrap">
                   {listing.trim}
                 </span>
               </>
@@ -262,10 +262,10 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
                   ) : (
                     <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
                   )}
-                  <p className="text-sm sm:text-[15px] text-muted-foreground leading-relaxed font-medium">
+                  <p className="text-sm text-muted-foreground leading-relaxed font-medium">
                     {isDealerListing 
                       ? 'We trust this dealer as a respected partner of Alifh.'
-                      : <><span className="font-semibold text-foreground">Safety Tip:</span> Meet in public places and verify the vehicle before payment.</>
+                      : <><span className="font-bold text-foreground">Safety Tip:</span> Meet in public places and verify the vehicle before payment.</>
                     }
                   </p>
                 </div>

@@ -7,7 +7,7 @@
 
 import { useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, X, Minus, Maximize2, Moon, Cloud } from 'lucide-react';
+import { Loader2, X, Minus, Maximize2 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 import { MessageBubble } from '@/components/messaging/message-bubble';
@@ -207,31 +207,25 @@ export function FloatingChatWindow({
             className="flex-1 min-w-0 text-left hover:opacity-80 transition-opacity"
           >
             <div className="flex items-center gap-2">
-              <h4 className="text-[15px] font-semibold truncate text-sidebar-foreground">
+              <h4 className="text-sm font-bold tracking-tight truncate text-sidebar-foreground">
                 {displayName}
               </h4>
-              {/* Activity indicator - synced with chat-window logic */}
+              {/* Activity indicator */}
               {isOtherOnline ? (
                 <div className="flex items-center gap-1 flex-shrink-0">
-                  <Moon className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
-                  <span className="text-[13px] text-rose-500 font-medium">now</span>
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                  <span className="text-xs font-semibold text-green-500">now</span>
                 </div>
               ) : lastActiveAt ? (
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  <Moon className="w-3.5 h-3.5 text-purple-500 fill-purple-500" />
-                  <span className="text-[13px] text-purple-500 font-medium">
-                    {formatTimeAgo(lastActiveAt)}
-                  </span>
-                </div>
+                <span className="text-xs font-medium text-muted-foreground/70 flex-shrink-0">
+                  {formatTimeAgo(lastActiveAt)}
+                </span>
               ) : (
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  <Cloud className="w-3.5 h-3.5 text-slate-500 fill-slate-400" />
-                  <span className="text-[13px] text-slate-500 font-medium">away</span>
-                </div>
+                <span className="text-xs font-medium text-muted-foreground/50 flex-shrink-0">away</span>
               )}
             </div>
             {!isMinimized && listing && (
-              <p className="text-[13px] text-muted-foreground/70 truncate mt-0.5">
+              <p className="text-xs font-medium text-muted-foreground/70 truncate mt-0.5">
                 {listing.title}
               </p>
             )}
@@ -291,14 +285,14 @@ export function FloatingChatWindow({
                 </div>
               ) : messages.length === 0 ? (
                 <div className="flex items-center justify-center h-full">
-                  <p className="text-[13px] text-muted-foreground">No messages yet</p>
+                  <p className="text-[13px] font-medium text-muted-foreground/70">No messages yet</p>
                 </div>
               ) : (
                 <div className="contents">
                   {isOtherTyping && (
                     <div key="typing" className="flex items-start gap-2 mb-1 px-1">
-                      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-muted rounded-xl rounded-tl-sm">
-                        <span className="text-[12px] text-muted-foreground italic">typing...</span>
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-sidebar border border-border/30 rounded-lg rounded-bl-sm">
+                        <span className="text-xs font-medium text-muted-foreground/70">typing...</span>
                       </div>
                     </div>
                   )}
@@ -318,7 +312,7 @@ export function FloatingChatWindow({
                       <div key={message.id}>
                         {showDateSeparator && (
                           <div className="flex justify-center py-2">
-                            <span className="text-[11px] text-muted-foreground/70 bg-muted px-2.5 py-1 rounded-full font-medium">
+                            <span className="text-[11px] text-muted-foreground/70 bg-muted/60 px-2.5 py-0.5 rounded-full font-semibold">
                               {format(messageDate, 'MMM d')}
                             </span>
                           </div>

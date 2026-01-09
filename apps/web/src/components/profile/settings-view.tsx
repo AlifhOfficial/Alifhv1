@@ -2,7 +2,7 @@
  * Settings View - Account Management
  * 
  * Privacy controls, preferences, and account deletion
- * Clean, Mobbin-inspired layout
+ * Minimal design system with tap-to-toggle pattern
  */
 
 'use client';
@@ -11,12 +11,79 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { useUserProfile, type UserProfileUpdate } from '@/hooks/profile';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CheckCircle2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
-import { useAuth } from '@/providers/auth-provider';
+
+// ============================================================================
+// Toggle Component
+// ============================================================================
+
+function Toggle({ 
+  enabled, 
+  onToggle, 
+  disabled = false 
+}: { 
+  enabled: boolean; 
+  onToggle: () => void; 
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      onClick={onToggle}
+      disabled={disabled}
+      className={cn(
+        "relative inline-flex h-[22px] w-[42px] shrink-0 cursor-pointer rounded-full transition-colors duration-200 focus:outline-none disabled:opacity-50",
+        enabled ? "bg-green-500" : "bg-muted-foreground/30"
+      )}
+      aria-label="Toggle"
+    >
+      <span
+        className={cn(
+          "pointer-events-none inline-block h-[18px] w-[18px] rounded-full bg-white shadow-md ring-0 transition-transform duration-200",
+          enabled ? "translate-x-[22px]" : "translate-x-[2px]",
+          "mt-[2px]"
+        )}
+      />
+    </button>
+  );
+}
+
+// ============================================================================
+// Setting Row Component
+// ============================================================================
+
+function SettingRow({ 
+  title, 
+  description, 
+  children,
+  isLast = false,
+}: { 
+  title: string; 
+  description: string; 
+  children: React.ReactNode;
+  isLast?: boolean;
+}) {
+  return (
+    <div 
+      className={cn(
+        "flex items-center justify-between py-3",
+        !isLast && "border-b border-border/20"
+      )}
+    >
+      <div className="flex-1 min-w-0 pr-4">
+        <p className="text-sm font-medium text-foreground">{title}</p>
+        <p className="text-xs text-muted-foreground/70 mt-0.5">{description}</p>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+// ============================================================================
+// Main Component
+// ============================================================================
 
 export function SettingsView() {
-  const { session: user } = useAuth();
   const { profile, updateProfile } = useUserProfile();
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
@@ -26,12 +93,10 @@ export function SettingsView() {
   const [savingField, setSavingField] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
 
-  // Prevent hydration mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Derive state directly from profile (no local state needed)
   const consignmentMode = profile?.consignmentMode ?? false;
   const showPhone = profile?.privacySettings?.showPhone ?? true;
   const useGeneratedAvatar = profile?.preferences?.useGeneratedAvatar ?? true;
@@ -48,13 +113,8 @@ export function SettingsView() {
       };
       
       await updateProfile(payload);
-      toast({ title: 'Setting updated' });
-    } catch (error) {
-      toast({ 
-        title: 'Failed to update', 
-        description: error instanceof Error ? error.message : 'Please try again',
-        variant: 'destructive' 
-      });
+    } catch {
+      toast({ title: 'Failed to update', variant: 'destructive' });
     } finally {
       setSavingField(null);
     }
@@ -77,193 +137,134 @@ export function SettingsView() {
     }
   };
 
+  const themes = [
+    { value: 'light', label: 'Light' },
+    { value: 'dark', label: 'Dark' },
+    { value: 'charcoal', label: 'Charcoal' },
+  ];
+
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8 sm:py-12">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">Settings</h1>
-        <p className="text-[15px] font-medium text-muted-foreground/60 mt-1.5">
-          Manage your preferences and account
-        </p>
-      </div>
+    <div className="min-h-screen bg-background pb-16">
+      <div className="max-w-2xl mx-auto px-6 py-8 space-y-8">
 
-      {/* Appearance Section */}
-      <section className="mb-10">
-        <h2 className="text-[15px] font-bold tracking-tight text-foreground mb-4">
-          Appearance
-        </h2>
-
-        <div className="space-y-0 border border-border/40 rounded-xl overflow-hidden bg-sidebar">
-          {/* Theme Selection */}
-          {[
-            { value: 'light', label: 'Light', description: 'Bright and clean' },
-            { value: 'dark', label: 'Dark', description: 'Deep black theme' },
-            { value: 'charcoal', label: 'Charcoal', description: 'Softer dark mode, easier on the eyes' }
-          ].map((themeOption, index, array) => (
-            <div 
-              key={themeOption.value}
-              className={cn(
-                "flex items-center justify-between px-5 py-4 hover:bg-muted/10 transition-colors cursor-pointer",
-                index < array.length - 1 && "border-b border-border/20"
-              )}
-              onClick={() => {
-                setTheme(themeOption.value);
-                toast({ title: `${themeOption.label} theme enabled` });
-              }}
-            >
-              <div className="flex-1 min-w-0 pr-4">
-                <p className="text-[15px] font-semibold tracking-tight text-foreground">
-                  {themeOption.label}
-                </p>
-                <p className="text-sm font-medium text-muted-foreground/60 mt-0.5">
-                  {themeOption.description}
-                </p>
-              </div>
-              {mounted && theme === themeOption.value && (
-                <CheckCircle2 className="size-5 text-primary flex-shrink-0" />
-              )}
-            </div>
-          ))}
+        {/* Header */}
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight">Settings</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Manage your preferences</p>
         </div>
-      </section>
 
-      {/* Preferences Section */}
-      <section className="mb-10">
-        <h2 className="text-[15px] font-bold tracking-tight text-foreground mb-4">
-          Preferences
-        </h2>
-
-        <div className="space-y-0 border border-border/40 rounded-xl overflow-hidden bg-sidebar">
-          {/* Consignment Mode */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-border/20 hover:bg-muted/10 transition-colors">
-            <div className="flex-1 min-w-0 pr-4">
-              <p className="text-[15px] font-semibold tracking-tight text-foreground">
-                Consignment Mode
-              </p>
-              <p className="text-sm font-medium text-muted-foreground/60 mt-0.5">
-                List vehicles on consignment
-              </p>
+        {/* Appearance */}
+        <section>
+          <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Appearance</h3>
+          
+          <div className="rounded-xl border border-border/40 bg-sidebar p-4">
+            <div className="flex items-center gap-2">
+              {themes.map((t) => (
+                <button
+                  key={t.value}
+                  onClick={() => setTheme(t.value)}
+                  className={cn(
+                    "flex-1 py-2.5 rounded-lg text-sm font-medium transition-all",
+                    mounted && theme === t.value 
+                      ? "bg-muted/50 text-foreground" 
+                      : "text-muted-foreground hover:bg-muted/30 hover:text-foreground"
+                  )}
+                >
+                  {t.label}
+                  {mounted && theme === t.value && (
+                    <CheckCircle2 className="w-3.5 h-3.5 text-green-500 inline ml-1.5" />
+                  )}
+                </button>
+              ))}
             </div>
-            <button
-              onClick={() => saveToggle('consignmentMode', consignmentMode)}
-              disabled={savingField === 'consignmentMode'}
-              className={cn(
-                "relative h-7 w-12 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 flex-shrink-0",
-                consignmentMode ? "bg-primary" : "bg-muted/40"
-              )}
-              aria-label="Toggle consignment mode"
-            >
-              <span
-                className={cn(
-                  "absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition-all duration-200",
-                  consignmentMode ? "left-6" : "left-1"
-                )}
-              />
-            </button>
           </div>
+        </section>
 
-          {/* Show Phone Number */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-border/20 hover:bg-muted/10 transition-colors">
-            <div className="flex-1 min-w-0 pr-4">
-              <p className="text-[15px] font-semibold tracking-tight text-foreground">
-                Show Phone Number
-              </p>
-              <p className="text-sm font-medium text-muted-foreground/60 mt-0.5">
-                Display your phone on public profile
-              </p>
-            </div>
-            <button
-              onClick={() => saveToggle('showPhone', showPhone)}
-              disabled={savingField === 'showPhone'}
-              className={cn(
-                "relative h-7 w-12 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 flex-shrink-0",
-                showPhone ? "bg-primary" : "bg-muted/40"
-              )}
-              aria-label="Toggle phone visibility"
+        {/* Privacy */}
+        <section>
+          <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Privacy</h3>
+          
+          <div className="rounded-xl border border-border/40 bg-sidebar p-4">
+            <SettingRow 
+              title="Show Phone Number" 
+              description="Display your phone on public profile"
             >
-              <span
-                className={cn(
-                  "absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition-all duration-200",
-                  showPhone ? "left-6" : "left-1"
-                )}
+              <Toggle 
+                enabled={showPhone} 
+                onToggle={() => saveToggle('showPhone', showPhone)}
+                disabled={savingField === 'showPhone'}
               />
-            </button>
-          </div>
-
-          {/* Generated Avatar */}
-          <div className="flex items-center justify-between px-5 py-4 hover:bg-muted/10 transition-colors">
-            <div className="flex-1 min-w-0 pr-4">
-              <p className="text-[15px] font-semibold tracking-tight text-foreground">
-                Generated Avatar
-              </p>
-              <p className="text-sm font-medium text-muted-foreground/60 mt-0.5">
-                Use robot avatar when no photo is set
-              </p>
-            </div>
-            <button
-              onClick={() => saveToggle('useGeneratedAvatar', useGeneratedAvatar)}
-              disabled={savingField === 'useGeneratedAvatar'}
-              className={cn(
-                "relative h-7 w-12 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 flex-shrink-0",
-                useGeneratedAvatar ? "bg-primary" : "bg-muted/40"
-              )}
-              aria-label="Toggle generated avatar"
+            </SettingRow>
+            
+            <SettingRow 
+              title="Generated Avatar" 
+              description="Use robot avatar when no photo is set"
+              isLast
             >
-              <span
-                className={cn(
-                  "absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition-all duration-200",
-                  useGeneratedAvatar ? "left-6" : "left-1"
-                )}
+              <Toggle 
+                enabled={useGeneratedAvatar} 
+                onToggle={() => saveToggle('useGeneratedAvatar', useGeneratedAvatar)}
+                disabled={savingField === 'useGeneratedAvatar'}
               />
-            </button>
+            </SettingRow>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Account Section */}
-      <section>
-        <h2 className="text-[15px] font-bold tracking-tight text-foreground mb-4">
-          Account
-        </h2>
+        {/* Selling */}
+        <section>
+          <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Selling</h3>
+          
+          <div className="rounded-xl border border-border/40 bg-sidebar p-4">
+            <SettingRow 
+              title="Consignment Mode" 
+              description="List vehicles on behalf of others"
+              isLast
+            >
+              <Toggle 
+                enabled={consignmentMode} 
+                onToggle={() => saveToggle('consignmentMode', consignmentMode)}
+                disabled={savingField === 'consignmentMode'}
+              />
+            </SettingRow>
+          </div>
+        </section>
 
-        <div className="border border-border/40 rounded-xl overflow-hidden bg-sidebar">
-          <div className="px-5 py-5">
-            <div className="space-y-3">
+        {/* Danger Zone */}
+        <section>
+          <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Danger Zone</h3>
+          
+          <div className="rounded-xl border border-destructive/30 bg-sidebar p-4">
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-[15px] font-semibold tracking-tight text-foreground">
-                  Delete Account
-                </p>
-                <p className="text-sm font-medium text-muted-foreground/60 mt-0.5">
-                  Permanently delete your account and all data after 6 months
+                <p className="text-sm font-medium text-foreground">Delete Account</p>
+                <p className="text-xs text-muted-foreground/70 mt-0.5">
+                  Permanently delete after 6 months
                 </p>
               </div>
               <button
                 onClick={() => setShowDeleteModal(true)}
-                className="px-5 py-2.5 rounded-full bg-red-500 text-white hover:bg-red-600 text-sm font-semibold tracking-tight transition-colors"
+                className="px-4 py-2 rounded-lg text-sm font-semibold text-destructive hover:bg-destructive/10 transition-colors"
               >
-                Delete Account
+                Delete
               </button>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+      </div>
 
       {/* Delete Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4">
-          <div className="bg-background/95 backdrop-blur-sm border border-border/30 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl">
-            <div className="space-y-5">
-              {/* Header */}
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-background border border-border/40 rounded-xl p-6 max-w-sm w-full shadow-xl">
+            <h2 className="text-lg font-semibold tracking-tight mb-2">Delete Account?</h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              This action cannot be undone. Your account will be permanently deleted after 6 months.
+            </p>
+            
+            <div className="space-y-3">
               <div>
-                <h2 className="text-xl font-bold tracking-tight text-foreground">Delete Account?</h2>
-                <p className="text-[15px] font-medium text-muted-foreground/70 mt-2 leading-relaxed">
-                  This action cannot be undone. Your account will be permanently deleted after 6 months.
-                </p>
-              </div>
-              
-              {/* Input */}
-              <div className="space-y-2.5">
-                <label className="text-sm font-semibold tracking-tight text-foreground block">
+                <label className="text-sm font-semibold text-muted-foreground/70 mb-1.5 block">
                   Type "DELETE" to confirm
                 </label>
                 <input
@@ -271,25 +272,24 @@ export function SettingsView() {
                   value={deleteText}
                   onChange={(e) => setDeleteText(e.target.value)}
                   placeholder="DELETE"
-                  className="w-full h-11 px-4 bg-muted/20 border border-border/40 rounded-xl text-[15px] font-medium tracking-tight focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all"
+                  className="w-full h-10 px-3 bg-muted/20 border border-border/40 rounded-lg text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30"
                 />
               </div>
 
-              {/* Actions */}
-              <div className="flex gap-3 pt-1">
+              <div className="flex gap-2 pt-2">
                 <button
                   onClick={() => {
                     setShowDeleteModal(false);
                     setDeleteText('');
                   }}
-                  className="flex-1 px-6 py-2.5 rounded-full border border-border/40 hover:bg-muted/40 text-sm font-semibold tracking-tight text-foreground transition-colors"
+                  className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={deleteAccount}
                   disabled={deleteText !== 'DELETE'}
-                  className="flex-1 px-6 py-2.5 rounded-full bg-red-500 text-white hover:bg-red-600 text-sm font-semibold tracking-tight disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-red-500/20"
+                  className="flex-1 py-2.5 rounded-lg bg-destructive text-destructive-foreground text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   Delete
                 </button>

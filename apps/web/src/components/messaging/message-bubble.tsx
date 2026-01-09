@@ -45,8 +45,8 @@ export function MessageBubble({
   // System message (centered, muted)
   if (isSystemMessage) {
     return (
-      <div className="flex justify-center py-3">
-        <small className="text-xs text-muted-foreground/70 px-4 py-2 bg-secondary/30 rounded-full">
+      <div className="flex justify-center py-2">
+        <small className="text-xs text-muted-foreground/70 px-3 py-1.5 bg-muted/40 rounded-full font-semibold">
           {text}
         </small>
       </div>
@@ -84,7 +84,7 @@ export function MessageBubble({
       )}>
         {/* Sender Name (only for received messages with avatar) */}
         {!isOwn && showAvatar && (
-          <small className="text-xs text-muted-foreground/70 mb-1 px-2 font-medium">
+          <small className="text-xs text-muted-foreground/70 mb-1 px-2 font-semibold">
             {sender.name || 'User'}
           </small>
         )}
@@ -102,7 +102,7 @@ export function MessageBubble({
               <div className="w-full aspect-[16/10] bg-muted/40" />
             )}
             <div className="p-3 bg-card">
-              <p className="text-sm font-semibold text-foreground">
+              <p className="text-sm font-bold text-foreground">
                 {listing.title}
               </p>
             </div>
@@ -114,12 +114,12 @@ export function MessageBubble({
           {/* Message Bubble */}
           <div
             className={cn(
-              'break-words shadow-sm transition-all duration-200',
-              compact ? 'rounded-xl px-3 py-2' : 'rounded-2xl px-4 py-3',
+              'break-words transition-all duration-200',
+              compact ? 'rounded-xl px-3 py-2' : 'rounded-[18px] px-4 py-2.5',
               isOwn
-                ? 'bg-blue-500 text-white rounded-tr-sm'
-                : 'bg-muted text-foreground rounded-tl-sm',
-              isOptimistic && 'scale-[0.98]'
+                ? 'bg-blue-500 text-white rounded-br-md'
+                : 'bg-sidebar border border-border/30 text-foreground rounded-bl-md',
+              isOptimistic && 'opacity-70'
             )}
           >
             {/* Media (if any) */}
@@ -135,8 +135,8 @@ export function MessageBubble({
             {/* Text */}
             {text && (
               <p className={cn(
-                'whitespace-pre-wrap',
-                compact ? 'text-[13px] leading-snug' : 'text-[15px] leading-relaxed'
+                'whitespace-pre-wrap font-medium',
+                compact ? 'text-[13px] leading-snug' : 'text-sm leading-relaxed'
               )}>
                 {text}
               </p>
