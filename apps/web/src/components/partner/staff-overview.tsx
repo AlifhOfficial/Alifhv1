@@ -119,12 +119,6 @@ export function StaffOverview() {
           <UserPlus className="w-4 h-4" />
           Manage Team
         </Link>
-        <Link
-          href="/partner-dashboard/staff/profile"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-secondary/50 text-sm font-medium hover:bg-secondary transition-colors"
-        >
-          Your Profile
-        </Link>
       </div>
 
       {/* Loading */}

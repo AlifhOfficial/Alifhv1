@@ -76,6 +76,12 @@ const PartnerProfileUpdateSchema = z.object({
   phone: z.string().min(1).optional(),
   website: z.string().url().nullable().optional(),
   
+  // Admin Contact (fallback when staff doesn't respond)
+  adminName: z.string().nullable().optional(),
+  adminPhone: z.string().nullable().optional(),
+  adminPhoneVerified: z.boolean().optional(),
+  tollNumber: z.string().nullable().optional(),
+  
   // Location
   address: z.string().nullable().optional(),
   emirate: z.string().nullable().optional(),

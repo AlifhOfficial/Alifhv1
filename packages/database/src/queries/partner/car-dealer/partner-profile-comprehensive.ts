@@ -78,6 +78,12 @@ export interface PartnerProfileComprehensive {
   phone: string;
   website: string | null;
   
+  // === Admin Contact (fallback when staff doesn't respond) ===
+  adminName: string | null;
+  adminPhone: string | null;
+  adminPhoneVerified: boolean;
+  tollNumber: string | null;
+  
   // === Location ===
   address: string | null;
   emirate: string | null;
@@ -140,6 +146,12 @@ export interface PartnerProfileUpdate {
   // Contact
   phone?: string;
   website?: string | null;
+  
+  // Admin Contact (fallback when staff doesn't respond)
+  adminName?: string | null;
+  adminPhone?: string | null;
+  adminPhoneVerified?: boolean;
+  tollNumber?: string | null;
   
   // Location
   address?: string | null;
@@ -212,6 +224,12 @@ export async function getPartnerProfileComprehensive(
       email: partner.email,
       phone: partner.phone,
       website: partner.website,
+      
+      // Admin Contact (fallback)
+      adminName: partner.adminName,
+      adminPhone: partner.adminPhone,
+      adminPhoneVerified: partner.adminPhoneVerified,
+      tollNumber: partner.tollNumber,
       
       // Location
       address: partner.address,

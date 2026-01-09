@@ -36,6 +36,7 @@ const navSections = [
     collapsible: { label: "Settings", icon: "settings" },
     items: [
       { label: "Business Profile", href: "/partner-dashboard/basic" },
+      { label: "Contact Settings", href: "/partner-dashboard/contact" },
       { label: "Account", href: "/partner-dashboard/profile" },
     ]
   },

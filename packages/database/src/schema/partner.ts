@@ -33,6 +33,13 @@ export const partner = pgTable('partner', {
   partnerType: partnerTypeEnum('partner_type').notNull(),
   email: text('email').notNull().unique(),
   phone: text('phone').notNull(),
+  
+  // Admin contact info (fallback when staff doesn't respond)
+  adminName: text('admin_name'),
+  adminPhone: text('admin_phone'),
+  adminPhoneVerified: boolean('admin_phone_verified').default(false).notNull(),
+  tollNumber: text('toll_number'), // Toll-free number, no verification needed
+  
   website: text('website'),
   address: text('address'),
   emirate: text('emirate'),
