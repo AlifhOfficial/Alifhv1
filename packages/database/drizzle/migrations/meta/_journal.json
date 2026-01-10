@@ -428,6 +428,13 @@
       "when": 1768081946699,
       "tag": "0060_colossal_payback",
       "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "7",
+      "when": 1768084840127,
+      "tag": "0061_add-passkey-table",
+      "breakpoints": true
     }
   ]
 }

@@ -3,7 +3,8 @@ import {
   user,
   account,
   session,
-  verification
+  verification,
+  passkey
 } from './auth';
 import {
   userProfile,
@@ -51,6 +52,7 @@ export const userRelations = relations(user, ({ many, one }) => ({
   // Auth
   sessions: many(session),
   accounts: many(account),
+  passkeys: many(passkey),
   
   // Profile
   profile: one(userProfile, {
@@ -210,6 +212,14 @@ export const sessionRelations = relations(session, ({ one }) => ({
   user: one(user, { 
     fields: [session.userId], 
     references: [user.id] 
+  }),
+}));
+
+// Passkey relations (many-to-one)
+export const passkeyRelations = relations(passkey, ({ one }) => ({
+  user: one(user, {
+    fields: [passkey.userId],
+    references: [user.id]
   }),
 }));
 

@@ -50,6 +50,7 @@ function getAuthClient() {
       plugins: [
         magicLinkClient(),
         phoneNumberClient(),
+        passkeyClient(),
         adminClient({
           ac,
           roles: {

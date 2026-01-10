@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, index, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, boolean, index, pgEnum, integer } from 'drizzle-orm/pg-core';
 
 export const platformRoleEnum = pgEnum('platform_role', ['user', 'admin', 'super_admin']);
 
@@ -59,4 +59,22 @@ export const verification = pgTable('verification', {
   updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
 }, (table) => [
   index('verification_identifier_idx').on(table.identifier)
+]);
+
+// Passkey table for WebAuthn authentication
+export const passkey = pgTable('passkey', {
+  id: text('id').primaryKey(),
+  name: text('name'),
+  publicKey: text('public_key').notNull(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  credentialID: text('credential_id').notNull().unique(),
+  counter: integer('counter').notNull(),
+  deviceType: text('device_type').notNull(),
+  backedUp: boolean('backed_up').notNull(),
+  transports: text('transports'),
+  createdAt: timestamp('created_at').defaultNow(),
+  aaguid: text('aaguid'),
+}, (table) => [
+  index('passkey_userId_idx').on(table.userId),
+  index('passkey_credentialID_idx').on(table.credentialID)
 ]);

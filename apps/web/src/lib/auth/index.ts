@@ -59,9 +59,11 @@ export const auth = betterAuth({
       account: schema.account,
       session: schema.session,
       verification: schema.verification,
+      passkey: schema.passkey,
       userRelations: schema.userRelations,
       accountRelations: schema.accountRelations,
       sessionRelations: schema.sessionRelations,
+      passkeyRelations: schema.passkeyRelations,
     }
   }),
 
@@ -319,6 +321,7 @@ export const auth = betterAuth({
         session,
       };
     }),
+    passkey(),
   ],
 
   socialProviders: {
