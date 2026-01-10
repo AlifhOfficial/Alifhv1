@@ -44,7 +44,7 @@ import { cn } from '@/utils/cn';
 // ============================================================================
 
 function StatusBadge({ status }: { status: KycRecordData['status'] }) {
-  const config = {
+  const configMap = {
     pending: {
       icon: Clock,
       color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
@@ -60,7 +60,18 @@ function StatusBadge({ status }: { status: KycRecordData['status'] }) {
       color: 'bg-red-500/10 text-red-600 dark:text-red-400',
       label: 'Rejected',
     },
-  }[status];
+    expired: {
+      icon: AlertTriangle,
+      color: 'bg-gray-500/10 text-gray-600 dark:text-gray-400',
+      label: 'Expired',
+    },
+  };
+
+  const config = configMap[status as keyof typeof configMap] || {
+    icon: AlertTriangle,
+    color: 'bg-gray-500/10 text-gray-600 dark:text-gray-400',
+    label: status || 'Unknown',
+  };
 
   const Icon = config.icon;
 

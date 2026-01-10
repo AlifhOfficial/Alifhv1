@@ -2,13 +2,20 @@
  * KYC Sync Endpoint
  * 
  * Manually sync KYC session data from Didit's API.
- * Use this to fetch verification data when webhooks can't reach localhost.
+ * Uses update-builder - shares logic with webhook handler.
  * 
- * POST /api/kyc/sync - Sync session data from Didit
+ * POST /api/kyc/sync - Sync session data from Didit (localhost dev fallback)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionDetails } from '@/lib/kyc/didit-client';
+import { checkDuplicateDocument } from '@/lib/kyc/duplicate-check';
+import { 
+  buildKycRecordUpdate, 
+  buildProfileUpdate,
+  buildDuplicateRejectionUpdate,
+  type DiditSessionData,
+} from '@/lib/kyc/update-builder';
 import { db, kycRecord, userProfile, eq, memoryCache, CacheKeys } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 
@@ -21,7 +28,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Find the user's pending KYC record
     const record = await db.query.kycRecord.findFirst({
       where: eq(kycRecord.userId, user.id),
       orderBy: (kycRecord, { desc }) => [desc(kycRecord.createdAt)],
@@ -35,22 +41,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No Didit session ID' }, { status: 400 });
     }
 
-    console.log(`[KYC/Sync] Syncing session ${record.diditSessionId} for user ${user.id}`);
-
     // Fetch session details from Didit
-    let sessionDetails;
+    let sessionDetails: DiditSessionData;
     try {
       sessionDetails = await getSessionDetails(record.diditSessionId);
-      console.log(`[KYC/Sync] Session status: ${sessionDetails.status}`);
     } catch (error) {
-      console.error(`[KYC/Sync] Failed to fetch session:`, error);
       return NextResponse.json({ 
         error: 'Failed to fetch session from Didit',
         details: error instanceof Error ? error.message : 'Unknown error'
       }, { status: 502 });
     }
 
-    // Check if session is completed or in review (both have data available)
     const status = sessionDetails.status?.toLowerCase();
     const isInReview = status === 'in review' || status === 'in_review';
     const isCompleted = status === 'approved' || status === 'declined';
@@ -64,146 +65,73 @@ export async function POST(req: NextRequest) {
     }
 
     const isApproved = status === 'approved';
-    // In Review keeps status as pending for admin review
     const newStatus = isApproved ? 'approved' : isInReview ? 'pending' : 'rejected';
 
-    // Extract all verification data
-    const idVerification = sessionDetails.id_verification;
-    const faceMatch = sessionDetails.face_match;
-    const liveness = sessionDetails.liveness;
-    const ipAnalysis = sessionDetails.ip_analysis;
-
-    // Build update object
-    const updateData: Record<string, any> = {
-      status: newStatus,
-      diditDecision: sessionDetails,
-      diditSessionNumber: sessionDetails.session_number,
-      verifiedAt: isApproved ? new Date() : null,
-      verifiedBy: isApproved ? 'didit-automated' : isInReview ? null : 'didit-automated',
-      rawResponse: JSON.stringify(sessionDetails),
-      updatedAt: new Date(),
-    };
-    
-    // Add in-review metadata
-    if (isInReview) {
-      updateData.metadata = {
-        diditStatus: 'In Review',
-        inReviewAt: new Date().toISOString(),
-        requiresManualReview: true,
-      };
-    }
-
-    // ID Verification data
-    if (idVerification) {
-      updateData.documentType = idVerification.document_type;
-      updateData.documentNumber = idVerification.document_number;
-      updateData.documentCountry = idVerification.issuing_state_name;
-      updateData.documentCountryCode = idVerification.issuing_state;
-      updateData.documentExpiryDate = idVerification.expiration_date;
-      updateData.documentIssueDate = idVerification.date_of_issue;
-      updateData.documentFrontUrl = idVerification.front_image;
-      updateData.documentBackUrl = idVerification.back_image;
-      updateData.selfieUrl = idVerification.portrait_image;
-      updateData.extractedFirstName = idVerification.first_name;
-      updateData.extractedLastName = idVerification.last_name;
-      updateData.extractedFullName = idVerification.full_name;
-      updateData.extractedDateOfBirth = idVerification.date_of_birth;
-      updateData.extractedAge = idVerification.age;
-      updateData.extractedGender = idVerification.gender;
-      updateData.extractedNationality = idVerification.nationality;
+    // DUPLICATE CHECK
+    if (isApproved && sessionDetails.id_verification?.document_number) {
+      const isDuplicate = await checkDuplicateDocument(
+        sessionDetails.id_verification.document_number, 
+        user.id
+      );
       
-      if (idVerification.warnings?.length) {
-        updateData.warnings = idVerification.warnings.map((w: any) => ({
-          risk: w.risk,
-          description: w.short_description,
-        }));
+      if (isDuplicate) {
+        const { kycUpdate, profileUpdate } = buildDuplicateRejectionUpdate(
+          sessionDetails.id_verification.document_number
+        );
+        
+        await Promise.all([
+          db.update(kycRecord).set(kycUpdate).where(eq(kycRecord.id, record.id)),
+          db.update(userProfile).set(profileUpdate).where(eq(userProfile.userId, user.id)),
+        ]);
+        
+        memoryCache.delete(CacheKeys.userProfile(user.id));
+        
+        return NextResponse.json({
+          success: false,
+          error: 'DUPLICATE_DOCUMENT',
+          message: 'This document has already been used to verify another account',
+        });
       }
     }
 
-    // Face Match data
-    if (faceMatch) {
-      updateData.faceMatchScore = faceMatch.score;
-      updateData.faceMatchStatus = faceMatch.status;
-      updateData.faceSourceImage = faceMatch.source_image;
-      updateData.faceTargetImage = faceMatch.target_image;
-    }
+    // Build updates using shared builder (skip R2 sync - images stay on S3 for dev)
+    const kycUpdate = await buildKycRecordUpdate({
+      userId: user.id,
+      sessionId: record.diditSessionId,
+      sessionData: sessionDetails,
+      status: newStatus as 'pending' | 'approved' | 'rejected',
+      verifiedBy: isApproved ? 'didit-automated' : undefined,
+      skipR2Sync: true,
+    });
 
-    // Liveness data
-    if (liveness) {
-      updateData.livenessScore = liveness.score;
-      updateData.livenessStatus = liveness.status;
-      updateData.livenessMethod = liveness.method;
-      updateData.livenessAgeEstimation = liveness.age_estimation;
-      updateData.livenessReferenceImage = liveness.reference_image;
-    }
+    const profileUpdate = buildProfileUpdate(
+      newStatus as 'pending' | 'approved' | 'rejected',
+      kycUpdate.documentExpiryDate
+    );
 
-    // IP Analysis data
-    if (ipAnalysis) {
-      updateData.ipAddress = ipAnalysis.ip_address;
-      updateData.ipCity = ipAnalysis.ip_city;
-      updateData.ipCountry = ipAnalysis.ip_country;
-      updateData.ipCountryCode = ipAnalysis.ip_country_code;
-      updateData.ipLatitude = ipAnalysis.latitude;
-      updateData.ipLongitude = ipAnalysis.longitude;
-      updateData.isVpnOrTor = ipAnalysis.is_vpn_or_tor;
-      updateData.isDataCenter = ipAnalysis.is_data_center;
-      updateData.devicePlatform = ipAnalysis.platform;
-      updateData.deviceBrand = ipAnalysis.device_brand;
-      updateData.deviceBrowser = ipAnalysis.browser_family;
-    }
+    // Execute updates in parallel
+    await Promise.all([
+      db.update(kycRecord).set(kycUpdate).where(eq(kycRecord.id, record.id)),
+      db.update(userProfile).set(profileUpdate).where(eq(userProfile.userId, user.id)),
+    ]);
 
-    // Rejection reason
-    if (!isApproved) {
-      const warnings = idVerification?.warnings?.map((w: any) => w.short_description).join(', ');
-      updateData.rejectionReason = warnings || 'Verification failed';
-    }
-
-    // Update KYC record
-    await db
-      .update(kycRecord)
-      .set(updateData)
-      .where(eq(kycRecord.id, record.id));
-
-    console.log(`[KYC/Sync] Updated KYC record with ${Object.keys(updateData).length} fields`);
-
-    // Update user profile with KYC status
-    const profileUpdate: Record<string, any> = {
-      kycStatus: newStatus,
-      updatedAt: new Date(),
-    };
-    
-    if (isApproved) {
-      profileUpdate.kycVerified = true;
-      profileUpdate.kycVerifiedAt = new Date();
-      profileUpdate.trustScore = 80;
-    }
-    
-    await db
-      .update(userProfile)
-      .set(profileUpdate)
-      .where(eq(userProfile.userId, user.id));
-
-    // Invalidate user profile cache so next fetch gets fresh data
     memoryCache.delete(CacheKeys.userProfile(user.id));
-
-    console.log(`[KYC/Sync] User ${user.id} profile updated with kycStatus: ${newStatus}`);
 
     return NextResponse.json({
       success: true,
       status: newStatus,
       extractedData: {
-        firstName: idVerification?.first_name,
-        lastName: idVerification?.last_name,
-        documentType: idVerification?.document_type,
-        faceMatchScore: faceMatch?.score,
-        livenessScore: liveness?.score,
+        firstName: sessionDetails.id_verification?.first_name,
+        lastName: sessionDetails.id_verification?.last_name,
+        documentType: sessionDetails.id_verification?.document_type,
+        faceMatchScore: sessionDetails.face_match?.score,
+        livenessScore: sessionDetails.liveness?.score,
       },
     });
 
-  } catch (error) {
-    console.error('[KYC/Sync] Error:', error);
+  } catch {
     return NextResponse.json(
-      { error: 'Sync failed', details: error instanceof Error ? error.message : 'Unknown' },
+      { error: 'Sync failed' },
       { status: 500 }
     );
   }

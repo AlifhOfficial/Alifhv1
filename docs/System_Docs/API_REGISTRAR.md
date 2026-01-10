@@ -40,8 +40,13 @@
 
 ## KYC APIs
 
-- `POST /api/kyc/submit` - Submit KYC documents for verification [Auth: Required]
-- `GET /api/kyc/requests` - Admin endpoint to view all KYC submissions [Auth: Required]
+- `POST /api/kyc/didit/session` - Create Didit verification session [Auth: Required]
+- `GET /api/kyc/didit/session` - Get current session status [Auth: Required]
+- `GET /api/kyc/webhook` - Didit iframe callback (internal) [Auth: None]
+- `POST /api/kyc/webhook` - Didit webhook receiver (internal) [Auth: Signature]
+- `POST /api/kyc/sync` - Manual sync for localhost dev [Auth: Required]
+- `POST /api/kyc/cancel` - Cancel pending KYC session [Auth: Required]
+- `GET /api/kyc/requests` - Admin endpoint to view all KYC submissions [Auth: Admin]
 
 ## Storage APIs
 

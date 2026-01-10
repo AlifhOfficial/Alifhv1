@@ -924,11 +924,7 @@ export function ProfileView() {
       <KycVerificationModal 
         isOpen={kycModalOpen}
         onClose={() => setKycModalOpen(false)}
-        onVerified={() => {
-          setKycModalOpen(false);
-          refresh();
-          toast({ title: 'Identity verified!', description: 'Your profile is now verified.' });
-        }}
+        onVerified={() => setKycModalOpen(false)}
       />
     </div>
   );

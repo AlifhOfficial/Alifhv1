@@ -7,11 +7,11 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { X, Loader2, CheckCircle2, ArrowRight, Shield, Lock, Clock } from 'lucide-react';
+import { X, Loader2, CheckCircle2, ArrowRight, Shield, Lock, Clock, AlertCircle } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { cn } from '@/utils/cn';
 
-type KycStatus = 'intro' | 'loading' | 'verifying' | 'in-review' | 'success' | 'failed';
+type KycStatus = 'intro' | 'loading' | 'verifying' | 'confirm-cancel' | 'in-review' | 'success' | 'failed' | 'duplicate';
 
 interface KycVerificationModalProps {
   isOpen: boolean;
@@ -38,103 +38,56 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
     }
   }, [isOpen]);
 
-  // Listen for completion message from callback page in iframe
+  /**
+   * Single event listener for webhook postMessage
+   * WEBHOOK ALREADY UPDATES DB - no need to call sync
+   * 
+   * Webhook sends these exact statuses:
+   * - 'approved' → success
+   * - 'rejected' → failed (with reason)
+   * - 'pending' → in-review
+   * - 'duplicate' → duplicate document
+   */
   useEffect(() => {
-    if (status !== 'verifying') return;
+    if (status !== 'verifying' && status !== 'confirm-cancel') return;
 
     const handleMessage = (event: MessageEvent) => {
-      console.log('[KYC Modal] Received message:', event.data, 'from origin:', event.origin);
-      
-      // Accept messages from our own origin OR from any origin if it's a kyc-complete message
-      // (The webhook HTML is served from our origin in the iframe)
-      if (event.data?.type === 'kyc-complete') {
-        console.log('[KYC Modal] KYC complete message received, status:', event.data.status);
-        if (event.data.status === 'approved') {
-          // Sync data from Didit API before marking as success
-          syncKycData().then(() => {
-            setStatus('success');
-            setTimeout(() => {
-              console.log('[KYC Modal] Calling onVerified callback');
-              onVerified?.();
-            }, 1500);
-          });
-        } else if (event.data.status === 'rejected') {
-          setStatus('failed');
-          setError('Verification was declined. Please try again with a valid ID.');
-          // Invalidate profile cache so rejected status shows
-          queryClient.invalidateQueries({ queryKey: ['user-profile'] });
-        } else if (event.data.status === 'pending') {
-          // "In Review" - manual review required
+      if (event.data?.type !== 'kyc-complete') return;
+
+      const { status: webhookStatus, reason } = event.data;
+
+      // Invalidate cache for all outcomes
+      queryClient.invalidateQueries({ queryKey: ['user-profile'] });
+
+      switch (webhookStatus) {
+        case 'approved':
+          setStatus('success');
+          setTimeout(() => onVerified?.(), 1500);
+          break;
+
+        case 'duplicate':
+          setStatus('duplicate');
+          setError(reason || 'This document has already been used to verify another account.');
+          break;
+
+        case 'pending':
           setStatus('in-review');
-          // Invalidate profile cache so in-review status shows
-          queryClient.invalidateQueries({ queryKey: ['user-profile'] });
-        }
+          break;
+
+        case 'rejected':
+          setStatus('failed');
+          setError(reason || 'Verification was declined. Please try again with a valid ID.');
+          break;
+
+        default:
+          // Unknown status - stay on current screen
+          break;
       }
     };
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [status, onVerified]);
-
-  // Sync KYC data from Didit API (since webhooks can't reach localhost)
-  const syncKycData = async () => {
-    try {
-      console.log('[KYC Modal] Syncing KYC data from Didit...');
-      const res = await fetch('/api/kyc/sync', { method: 'POST' });
-      const data = await res.json();
-      console.log('[KYC Modal] Sync result:', data);
-      
-      // Invalidate user profile cache so verified badge shows instantly
-      if (data.success) {
-        console.log('[KYC Modal] Invalidating profile cache...');
-        await queryClient.invalidateQueries({ queryKey: ['user-profile'] });
-      }
-      
-      return data;
-    } catch (err) {
-      console.error('[KYC Modal] Failed to sync KYC data:', err);
-      // Continue anyway - the GET callback already updated status
-    }
-  };
-
-  // Backup: check iframe URL changes
-  useEffect(() => {
-    if (status !== 'verifying' || !iframeRef.current) return;
-
-    const checkIframe = setInterval(() => {
-      try {
-        const iframeUrl = iframeRef.current?.contentWindow?.location.href;
-        if (iframeUrl?.includes('/api/kyc/webhook')) {
-          fetchStatus();
-          clearInterval(checkIframe);
-        }
-      } catch {
-        // Cross-origin - expected
-      }
-    }, 500);
-
-    return () => clearInterval(checkIframe);
-  }, [status]);
-
-  const fetchStatus = async () => {
-    try {
-      const res = await fetch('/api/kyc/didit/session');
-      const data = await res.json();
-      
-      if (data.status === 'approved') {
-        await syncKycData(); // Sync data before success
-        setStatus('success');
-        setTimeout(() => onVerified?.(), 1500);
-      } else if (data.status === 'rejected') {
-        setStatus('failed');
-        setError('Verification was declined.');
-        // Invalidate profile cache so rejected status shows
-        await queryClient.invalidateQueries({ queryKey: ['user-profile'] });
-      }
-    } catch (err) {
-      console.error('Failed to fetch status:', err);
-    }
-  };
+  }, [status, onVerified, queryClient]);
 
   const startVerification = async () => {
     try {
@@ -153,39 +106,59 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
       }
 
       if (data.verificationUrl) {
-        // Invalidate profile cache so "pending" status shows immediately
-        await queryClient.invalidateQueries({ queryKey: ['user-profile'] });
-        
+        // Cache invalidated by API after session creation
         setVerificationUrl(data.verificationUrl);
         setStatus('verifying');
+        queryClient.invalidateQueries({ queryKey: ['user-profile'] });
       }
     } catch (err) {
-      console.error('Failed to start verification:', err);
       setError(err instanceof Error ? err.message : 'Failed to start verification');
       setStatus('failed');
     }
   };
 
-  const cancelAndRetry = async () => {
+  /**
+   * Cancel current KYC session - only invalidates cache once at the end
+   */
+  const cancelSession = async () => {
     try {
-      setStatus('loading');
       await fetch('/api/kyc/cancel', { method: 'POST' });
-      setStatus('intro');
-    } catch (err) {
-      console.error('Failed to restart:', err);
-      setError('Failed to restart verification');
-      setStatus('failed');
+      // Single cache invalidation after cancel
+      queryClient.invalidateQueries({ queryKey: ['user-profile'] });
+    } catch {
+      // Silent fail - next session start will clean up anyway
     }
+  };
+
+  const cancelAndRetry = async () => {
+    setStatus('loading');
+    await cancelSession();
+    setStatus('intro');
+  };
+
+  const confirmCancel = async () => {
+    await cancelSession();
+    onClose();
   };
 
   const handleClose = () => {
     if (status === 'verifying') {
-      if (window.confirm('Cancel verification?')) {
-        onClose();
-      }
+      // Show custom confirmation instead of browser confirm
+      setStatus('confirm-cancel');
+    } else if (status === 'confirm-cancel') {
+      // Already showing confirm, do nothing on backdrop click
+      return;
     } else {
+      // If we were loading or in any non-success state, also cancel
+      if (status === 'loading' || verificationUrl) {
+        cancelSession();
+      }
       onClose();
     }
+  };
+
+  const resumeVerification = () => {
+    setStatus('verifying');
   };
 
   if (!isOpen) return null;
@@ -263,18 +236,18 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
               <div className="flex items-center justify-center gap-4 text-muted-foreground/60">
                 <div className="flex items-center gap-1.5">
                   <Lock className="w-3.5 h-3.5" />
-                  <span className="text-xs">256-bit encryption</span>
+                  <span className="text-xs">AES-256-GCM</span>
                 </div>
                 <span className="text-xs">•</span>
                 <div className="flex items-center gap-1.5">
                   <Shield className="w-3.5 h-3.5" />
-                  <span className="text-xs">GDPR compliant</span>
+                  <span className="text-xs">End-to-end encrypted</span>
                 </div>
               </div>
               <p className="text-center text-[11px] text-muted-foreground/50 mt-3">
-                Your data is securely processed and never stored on our servers.
+                Your ID data is encrypted at rest using military-grade AES-256.
                 <br />
-                Verification powered by Didit's certified identity platform.
+                Images compressed & stored securely. Verification by Didit.
               </p>
             </div>
           </div>
@@ -288,16 +261,67 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
           </div>
         )}
 
+        {/* Duplicate Document State */}
+        {status === 'duplicate' && (
+          <div className="flex flex-col items-center justify-center py-12 px-5 text-center">
+            <div className="w-14 h-14 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
+              <AlertCircle className="w-7 h-7 text-destructive" />
+            </div>
+            <h3 className="text-[15px] font-bold tracking-tight mb-2">Document Already Registered</h3>
+            <p className="text-sm text-muted-foreground mb-1">
+              This ID document is already linked to another account.
+            </p>
+            <p className="text-xs text-muted-foreground/70 mb-6">
+              Each document can only be used for one account. If you believe this is an error, please contact support.
+            </p>
+            <button
+              onClick={onClose}
+              className="px-5 py-2.5 bg-foreground text-background rounded-lg text-sm font-semibold hover:bg-foreground/90 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        )}
+
         {/* Verification iframe */}
-        {status === 'verifying' && verificationUrl && (
-          <div className="h-[calc(80vh-57px)]">
+        {(status === 'verifying' || status === 'confirm-cancel') && verificationUrl && (
+          <div className="relative h-[calc(80vh-57px)]">
             <iframe
               ref={iframeRef}
               src={verificationUrl}
-              className="w-full h-full border-0"
+              className={cn(
+                "w-full h-full border-0 transition-opacity",
+                status === 'confirm-cancel' && "opacity-30 pointer-events-none"
+              )}
               allow="camera; microphone"
               title="Identity Verification"
             />
+            
+            {/* Cancel Confirmation Overlay */}
+            {status === 'confirm-cancel' && (
+              <div className="absolute inset-0 flex items-center justify-center p-4">
+                <div className="bg-background rounded-xl border border-border/40 shadow-lg p-5 max-w-sm w-full animate-in fade-in-0 zoom-in-95 duration-200">
+                  <h3 className="text-[15px] font-bold tracking-tight mb-2">Cancel verification?</h3>
+                  <p className="text-sm text-muted-foreground mb-5">
+                    Your progress will be lost and you'll need to start over.
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={resumeVerification}
+                      className="flex-1 h-10 border border-border/40 rounded-lg text-sm font-semibold hover:bg-muted/30 transition-colors"
+                    >
+                      Continue
+                    </button>
+                    <button
+                      onClick={confirmCancel}
+                      className="flex-1 h-10 bg-destructive text-destructive-foreground rounded-lg text-sm font-semibold hover:bg-destructive/90 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

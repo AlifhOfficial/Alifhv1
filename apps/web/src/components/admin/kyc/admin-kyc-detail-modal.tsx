@@ -222,7 +222,7 @@ function CollapsibleSection({
 // ============================================================================
 
 function StatusBadge({ status }: { status: KycRecordData['status'] }) {
-  const config = {
+  const configMap = {
     pending: {
       icon: Clock,
       color: 'bg-amber-500/10 text-amber-500',
@@ -238,7 +238,18 @@ function StatusBadge({ status }: { status: KycRecordData['status'] }) {
       color: 'bg-red-500/10 text-red-500',
       label: 'Rejected',
     },
-  }[status];
+    expired: {
+      icon: AlertTriangle,
+      color: 'bg-gray-500/10 text-gray-500',
+      label: 'Expired',
+    },
+  };
+
+  const config = configMap[status as keyof typeof configMap] || {
+    icon: AlertTriangle,
+    color: 'bg-gray-500/10 text-gray-500',
+    label: status || 'Unknown',
+  };
 
   const Icon = config.icon;
 

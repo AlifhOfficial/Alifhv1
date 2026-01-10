@@ -9,7 +9,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { createVerificationSession, isDiditConfigured, getDiditConfig } from '@/lib/kyc/didit-client';
+import { createVerificationSession, isDiditConfigured } from '@/lib/kyc/didit-client';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_KYC } from '@/lib/rate-limit';
 import { 
   createKycRecord, 
@@ -27,30 +27,24 @@ const kycSessionLimiter = createRateLimiter(RATE_LIMITS_KYC.SUBMIT);
 
 export async function POST(req: NextRequest) {
   try {
-    // 1. Authenticate user
     const user = await getSessionUser();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 2. Check if Didit is configured
     if (!isDiditConfigured()) {
-      const config = getDiditConfig();
-      console.error('[KYC/Didit] Not configured:', config);
       return NextResponse.json(
         { error: 'KYC service not configured' },
         { status: 503 }
       );
     }
 
-    // 3. Rate limiting
     const identifier = getIdentifier(req, user.id);
     const rateLimitResult = await kycSessionLimiter.check(identifier);
     if (!rateLimitResult.success) {
       return rateLimitResponse(rateLimitResult);
     }
 
-    // 4. Check if user already has a pending or approved KYC
     const existingKyc = await getLatestKycRecordForUser(user.id);
     if (existingKyc) {
       if (existingKyc.status === 'approved') {
@@ -62,7 +56,6 @@ export async function POST(req: NextRequest) {
       
       // If there's a VALID pending Didit session (with session ID and URL), return it
       if (existingKyc.status === 'pending' && existingKyc.diditSessionId && existingKyc.diditSessionUrl) {
-        console.log(`[KYC/Didit] Returning existing session ${existingKyc.diditSessionId} for user ${user.id}`);
         return NextResponse.json({
           success: true,
           sessionId: existingKyc.diditSessionId,
@@ -73,11 +66,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 5. Get callback URL from request or environment
     const body = await req.json().catch(() => ({}));
     const callbackUrl = body.callbackUrl || process.env.NEXT_PUBLIC_DIDIT_CALLBACK_URL;
 
-    // 6. Create Didit verification session
     const session = await createVerificationSession({
       userId: user.id,
       callbackUrl,
@@ -87,8 +78,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // 7. Create KYC record in database
-    const kycRecord = await createKycRecord({
+    const newKycRecord = await createKycRecord({
       userId: user.id,
       type: 'full',
       diditSessionId: session.id,
@@ -98,7 +88,6 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // 8. Update user profile to show pending KYC status
     await db
       .update(userProfile)
       .set({
@@ -107,22 +96,18 @@ export async function POST(req: NextRequest) {
       })
       .where(eq(userProfile.userId, user.id));
 
-    // Invalidate user profile cache so next fetch gets fresh data
+    // Invalidate user profile cache
     memoryCache.delete(CacheKeys.userProfile(user.id));
 
-    console.log(`[KYC/Didit] Session created for user ${user.id}: ${session.id}`);
-
-    // 9. Return the verification URL
     return NextResponse.json({
       success: true,
       sessionId: session.id,
       verificationUrl: session.url,
-      recordId: kycRecord.id,
+      recordId: newKycRecord.id,
       status: 'created',
     });
 
-  } catch (error) {
-    console.error('[KYC/Didit] Session creation failed:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Failed to create verification session' },
       { status: 500 }
@@ -135,7 +120,7 @@ export async function POST(req: NextRequest) {
  * 
  * Get the current user's KYC status
  */
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const user = await getSessionUser();
     if (!user) {
@@ -162,8 +147,7 @@ export async function GET(req: NextRequest) {
       createdAt: kycRecord.createdAt,
     });
 
-  } catch (error) {
-    console.error('[KYC/Didit] Status check failed:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Failed to get KYC status' },
       { status: 500 }

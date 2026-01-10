@@ -177,15 +177,6 @@ export function isDiditConfigured(): boolean {
   return Boolean(DIDIT_API_KEY && DIDIT_WORKFLOW_ID);
 }
 
-export function getDiditConfig() {
-  return {
-    isConfigured: isDiditConfigured(),
-    hasApiKey: Boolean(DIDIT_API_KEY),
-    hasWorkflowId: Boolean(DIDIT_WORKFLOW_ID),
-    apiUrl: DIDIT_API_URL,
-  };
-}
-
 // ============================================================================
 // API Client
 // ============================================================================
@@ -211,9 +202,7 @@ async function diditFetch<T>(
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    console.error(`[Didit] API error: ${response.status}`, errorText);
-    throw new Error(`Didit API error: ${response.status} - ${errorText}`);
+    throw new Error(`Didit API error: ${response.status}`);
   }
 
   return response.json();
@@ -241,7 +230,6 @@ export async function createVerificationSession(
     vendor_data: params.userId,
     callback: callbackUrl,
     metadata: params.metadata,
-    // Skip Didit's intro/login screen
     features: {
       skip_intro: true,
       skip_welcome: true,
@@ -249,20 +237,13 @@ export async function createVerificationSession(
     },
   };
 
-  console.log(`[Didit] Creating session with:`, JSON.stringify(requestBody, null, 2));
-
   const response = await diditFetch<any>('/session/', {
     method: 'POST',
     body: JSON.stringify(requestBody),
   });
 
-  console.log(`[Didit] Raw response:`, JSON.stringify(response, null, 2));
-
-  // Didit returns session_id not id
   const sessionId = response.session_id || response.id;
   const sessionUrl = response.url || response.verification_url;
-  
-  console.log(`[Didit] Created session ${sessionId} for user ${params.userId}`);
   
   return {
     id: sessionId,
@@ -280,14 +261,6 @@ export async function getSessionDetails(sessionId: string): Promise<DiditSession
   return diditFetch<DiditSessionDetails>(`/session/${sessionId}/decision/`);
 }
 
-/**
- * Get session status only
- */
-export async function getSessionStatus(sessionId: string): Promise<DiditSessionStatus> {
-  const session = await getSessionDetails(sessionId);
-  return session.status as DiditSessionStatus;
-}
-
 // ============================================================================
 // Webhook Verification
 // ============================================================================
@@ -303,22 +276,22 @@ export async function verifyWebhookSignature(
   timestamp?: string
 ): Promise<boolean> {
   if (!DIDIT_WEBHOOK_SECRET) {
-    console.warn('[Didit] DIDIT_WEBHOOK_SECRET not configured, skipping signature verification');
-    return true; // In development, allow unverified webhooks
+    // In production this is a security risk - log as error
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[Didit] DIDIT_WEBHOOK_SECRET not configured in production!');
+      return false;
+    }
+    return true; // Allow in development only
   }
 
   // Validate timestamp (within 5 minutes)
   if (timestamp) {
     const currentTime = Math.floor(Date.now() / 1000);
     const incomingTime = parseInt(timestamp, 10);
-    if (Math.abs(currentTime - incomingTime) > 300) {
-      console.error('[Didit] Webhook timestamp is stale');
-      return false;
-    }
+    if (Math.abs(currentTime - incomingTime) > 300) return false;
   }
 
   try {
-    // Didit uses HMAC-SHA256 for webhook signatures
     const encoder = new TextEncoder();
     const key = await crypto.subtle.importKey(
       'raw',
@@ -336,24 +309,16 @@ export async function verifyWebhookSignature(
     
     const expectedSignature = Buffer.from(signatureBuffer).toString('hex');
     
-    // Constant-time comparison to prevent timing attacks
-    if (signature.length !== expectedSignature.length) {
-      console.error(`[Didit] Signature length mismatch: got ${signature.length}, expected ${expectedSignature.length}`);
-      return false;
-    }
+    // Constant-time comparison
+    if (signature.length !== expectedSignature.length) return false;
     
     let result = 0;
     for (let i = 0; i < signature.length; i++) {
       result |= signature.charCodeAt(i) ^ expectedSignature.charCodeAt(i);
     }
     
-    if (result !== 0) {
-      console.error(`[Didit] Signature mismatch: got ${signature}, expected ${expectedSignature}`);
-    }
-    
     return result === 0;
-  } catch (error) {
-    console.error('[Didit] Webhook signature verification failed:', error);
+  } catch {
     return false;
   }
 }
@@ -362,23 +327,7 @@ export async function verifyWebhookSignature(
  * Parse and validate a webhook payload (Didit v2 format)
  */
 export function parseWebhookPayload(body: unknown): DiditWebhookPayload | null {
-  try {
-    const payload = body as DiditWebhookPayload;
-    
-    // Didit v2 uses session_id, status, and vendor_data as core fields
-    if (!payload.session_id || !payload.status) {
-      console.error('[Didit] Invalid webhook payload: missing session_id or status');
-      return null;
-    }
-    
-    // vendor_data might be empty for some webhook types
-    if (!payload.vendor_data) {
-      console.warn('[Didit] Webhook missing vendor_data, will try to find user from session');
-    }
-    
-    return payload;
-  } catch (error) {
-    console.error('[Didit] Failed to parse webhook payload:', error);
-    return null;
-  }
+  const payload = body as DiditWebhookPayload;
+  if (!payload?.session_id || !payload?.status) return null;
+  return payload;
 }

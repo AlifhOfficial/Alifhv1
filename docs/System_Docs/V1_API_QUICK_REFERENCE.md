@@ -22,10 +22,13 @@ GET    /api/profile                    # Get current user profile
 PATCH  /api/profile                    # Update profile
 ```
 
-### 3. KYC DOMAIN ✅ (Already Implemented)
+### 3. KYC DOMAIN ✅ (Didit Integration)
 ```
-POST   /api/kyc/submit                 # Submit KYC documents
-GET    /api/kyc/requests               # List KYC submissions (admin)
+POST   /api/kyc/didit/session         # Create Didit verification session
+GET    /api/kyc/didit/session         # Get current session status
+POST   /api/kyc/cancel                # Cancel pending KYC session
+POST   /api/kyc/sync                  # Manual sync (localhost dev only)
+GET    /api/kyc/requests              # List KYC submissions (admin)
 ```
 
 ### 4. PARTNER DOMAIN ✅ (Already Implemented)

@@ -112,6 +112,7 @@ export const kycRecord = pgTable('kyc_record', {
   // Document info (from Didit id_verification)
   documentType: text('document_type'), // 'Driver\'s License', 'Passport', 'Identity Card'
   documentNumber: text('document_number'),
+  documentHash: text('document_hash'), // SHA-256 hash of normalized doc number for O(1) duplicate lookup
   documentCountry: text('document_country'), // issuing_state_name
   documentCountryCode: text('document_country_code'), // issuing_state (ARE, USA, etc.)
   documentExpiryDate: text('document_expiry_date'),
@@ -172,6 +173,7 @@ export const kycRecord = pgTable('kyc_record', {
   index('kyc_record_status_idx').on(table.status),
   index('kyc_record_status_createdAt_idx').on(table.status, table.createdAt.desc()),
   index('kyc_record_diditSessionId_idx').on(table.diditSessionId),
+  index('kyc_record_documentHash_idx').on(table.documentHash), // O(1) duplicate lookup
 ]);
 
 export const userFavorite = pgTable('user_favorite', {

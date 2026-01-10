@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { getKycRecordFull } from '@alifh/database';
 import { getKycImageSignedUrl } from '@/lib/kyc/image-sync';
+import { decryptSensitiveData, maskDocumentNumber } from '@/lib/kyc/encryption';
 
 export const runtime = 'nodejs';
 
@@ -43,10 +44,20 @@ export async function GET(req: NextRequest, { params }: Params) {
     }
 
     const { id } = await params;
+    const { searchParams } = new URL(req.url);
+    const unmask = searchParams.get('unmask') === 'true';
+    
     const record = await getKycRecordFull(id);
 
     if (!record) {
       return NextResponse.json({ error: 'KYC record not found' }, { status: 404 });
+    }
+
+    // Decrypt and optionally mask document number
+    let documentNumber = record.documentNumber;
+    if (documentNumber) {
+      const decrypted = decryptSensitiveData(documentNumber);
+      documentNumber = unmask ? decrypted : maskDocumentNumber(decrypted);
     }
 
     // Generate signed URLs for all images in parallel
@@ -69,6 +80,7 @@ export async function GET(req: NextRequest, { params }: Params) {
     return NextResponse.json({ 
       record: {
         ...record,
+        documentNumber, // Decrypted and optionally masked
         signedDocumentFrontUrl,
         signedDocumentBackUrl,
         signedSelfieUrl,
