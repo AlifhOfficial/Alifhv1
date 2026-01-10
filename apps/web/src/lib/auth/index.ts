@@ -22,6 +22,7 @@ import { magicLink } from "better-auth/plugins/magic-link";
 import { admin } from "better-auth/plugins/admin";
 import { phoneNumber } from "better-auth/plugins/phone-number";
 import { customSession } from "better-auth/plugins";
+import { passkey } from "@better-auth/passkey";
 import Twilio from "twilio";
 import { db, CacheKeys, CacheTTL, eq, and, setSessionCacheInvalidator, sessionCache, invalidateUserSessions } from "@alifh/database";
 import * as schema from "@alifh/database";
@@ -86,7 +87,6 @@ export const auth = betterAuth({
       await emailService.sendVerificationEmail({ user, url, token });
     },
     sendOnSignUp: AUTH_CONFIG.EMAIL_VERIFICATION.SEND_ON_SIGN_UP,
-    autoSignInAfterVerification: AUTH_CONFIG.EMAIL_VERIFICATION.AUTO_SIGN_IN_AFTER_VERIFICATION,
   },
 
   plugins: [

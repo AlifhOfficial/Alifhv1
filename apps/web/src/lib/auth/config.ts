@@ -31,7 +31,6 @@ export const AUTH_CONFIG = {
   /** Email verification behavior */
   EMAIL_VERIFICATION: {
     SEND_ON_SIGN_UP: true,
-    AUTO_SIGN_IN_AFTER_VERIFICATION: true,
   },
   
   /** Password validation rules */

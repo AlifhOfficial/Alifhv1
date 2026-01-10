@@ -76,21 +76,72 @@ export const signInWithEmail = async (
   }, "Sign in failed");
 };
 
-export const signInWithGoogle = async (callbackURL: string = "/"): Promise<AuthResult> => {
-  return safeAuthOperation(async () => {
-    const result = await authClient.signIn.social({
-      provider: "google",
-      callbackURL,
-    });
-
-    const authResult = handleAuthResult(result, "Google sign in failed");
-    if (authResult.success && result.data) {
-      const user = 'user' in result.data ? result.data.user : undefined;
-      return { success: true, user };
+/**
+ * Open Google OAuth in a popup window
+ * Returns a promise that resolves when auth completes (via postMessage)
+ */
+export const signInWithGooglePopup = (): Promise<AuthResult> => {
+  return new Promise((resolve) => {
+    // Popup dimensions
+    const width = 500;
+    const height = 600;
+    const left = window.screenX + (window.outerWidth - width) / 2;
+    const top = window.screenY + (window.outerHeight - height) / 2;
+    
+    // Open popup to our start page which initiates the OAuth flow
+    // This page calls signIn.social which redirects to Google
+    const popup = window.open(
+      '/auth/google/start',
+      'google-auth',
+      `width=${width},height=${height},left=${left},top=${top},popup=1`
+    );
+    
+    if (!popup) {
+      resolve({ success: false, error: "Popup was blocked. Please allow popups for this site." });
+      return;
     }
 
-    return authResult;
-  }, "Google sign in failed");
+    // Listen for postMessage from popup
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
+      if (event.data?.type !== 'google-auth-complete') return;
+      
+      window.removeEventListener('message', handleMessage);
+      clearInterval(pollTimer);
+      
+      if (event.data.success) {
+        resolve({ success: true });
+      } else {
+        resolve({ 
+          success: false, 
+          error: event.data.error === 'access_denied' 
+            ? 'Sign in was cancelled' 
+            : 'Google sign in failed'
+        });
+      }
+    };
+    
+    window.addEventListener('message', handleMessage);
+    
+    // Poll to check if popup was closed manually
+    const pollTimer = setInterval(() => {
+      if (popup.closed) {
+        clearInterval(pollTimer);
+        window.removeEventListener('message', handleMessage);
+        resolve({ success: false, error: "Sign in window was closed" });
+      }
+    }, 500);
+    
+    // Timeout after 5 minutes
+    setTimeout(() => {
+      clearInterval(pollTimer);
+      window.removeEventListener('message', handleMessage);
+      if (!popup.closed) {
+        popup.close();
+      }
+      resolve({ success: false, error: "Sign in timed out" });
+    }, 5 * 60 * 1000);
+  });
 };
 
 // Sign Up Handlers

@@ -13,6 +13,7 @@
 
 import { createAuthClient } from "better-auth/react";
 import { magicLinkClient, adminClient, customSessionClient, phoneNumberClient } from "better-auth/client/plugins";
+import { passkeyClient } from "@better-auth/passkey/client";
 import { ac, roles } from "@/lib/auth/permissions";
 import type { auth } from "@/lib/auth";
 

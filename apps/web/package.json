@@ -20,6 +20,7 @@
     "@alifh/database": "workspace:*",
     "@aws-sdk/client-s3": "3.954.0",
     "@aws-sdk/s3-request-presigner": "3.954.0",
+    "@better-auth/passkey": "1.4.10",
     "@better-fetch/fetch": "1.1.21",
     "@heroicons/react": "2.2.0",
     "@paralleldrive/cuid2": "2.2.2",

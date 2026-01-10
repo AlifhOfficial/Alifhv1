@@ -1,18 +1,17 @@
 /**
  * Auth Flow Controller - Business Logic Coordinator
  * 
- * Coordinates authentication flows using handlers and state management
- * Pure business logic without direct UI dependencies
- * 
- * Simplified: Removed complex AbortController logic in favor of simple boolean flags
+ * Simplified authentication flows:
+ * - Sign In: email/password or Google → feedback → success
+ * - Sign Up: email → verification email sent → done (user signs in after verifying)
+ * - Google: Popup-based flow for sign-in/sign-up (auto-creates account if new)
  */
 
 import { AUTH_CONFIG } from "@/lib/auth/config";
 import { 
   signInWithEmail, 
-  signInWithGoogle, 
+  signInWithGooglePopup, 
   signUpWithEmail, 
-  signUpWithGoogle,
   requestPasswordReset,
   sendMagicLink,
   AuthUser,
@@ -49,12 +48,14 @@ export class AuthFlowController {
 
   private async wait(ms: number): Promise<boolean> {
     if (ms <= 0) return true;
-    
     await new Promise(resolve => setTimeout(resolve, ms));
-    return this.isFlowActive; // Return whether flow is still active
+    return this.isFlowActive;
   }
 
-  // Sign In Flows
+  // ============================================================================
+  // SIGN IN FLOWS
+  // ============================================================================
+
   async handleSignIn(email: string, password: string) {
     this.startFlow(async () => {
       this.actions.setSignInSuccess(false);
@@ -75,7 +76,6 @@ export class AuthFlowController {
         this.callbacks.onSuccess?.(result.user);
         this.handleCloseAll();
       } else {
-        // Show error in auth error modal
         const errorMessage = parseAuthError(result.error);
         const errorInfo = getAuthErrorInfo(errorMessage);
         
@@ -86,16 +86,22 @@ export class AuthFlowController {
     });
   }
 
+  /**
+   * Google Sign In - Opens in popup window for better UX
+   * User stays on current page, popup handles OAuth flow
+   */
   async handleGoogleSignIn() {
     this.startFlow(async () => {
-      this.actions.setCurrentModal("google-redirect");
+      // Show loading state in current modal (don't switch to redirect modal)
       this.actions.setLoading(true);
       this.actions.setError(null);
 
-      const result = await signInWithGoogle();
+      // Open Google OAuth in popup - this awaits until popup completes/closes
+      const result = await signInWithGooglePopup();
       if (!this.isFlowActive) return;
 
       if (result.success) {
+        // Show success feedback briefly
         this.actions.setSignInSuccess(true);
         this.actions.setLoading(false);
         this.actions.setCurrentModal("signin-feedback");
@@ -106,7 +112,14 @@ export class AuthFlowController {
         this.callbacks.onSuccess?.(result.user);
         this.handleCloseAll();
       } else {
-        // Show error in auth error modal
+        // User cancelled or error occurred
+        // If just cancelled, close modal silently
+        if (result.error === "Sign in window was closed" || result.error === "Sign in was cancelled") {
+          this.actions.setLoading(false);
+          // Keep current modal open, user can try again
+          return;
+        }
+        
         const errorMessage = parseAuthError(result.error);
         const errorInfo = getAuthErrorInfo(errorMessage);
         
@@ -117,9 +130,11 @@ export class AuthFlowController {
     });
   }
 
-  // Sign Up Flows
+  // ============================================================================
+  // SIGN UP FLOWS (Simplified)
+  // ============================================================================
+
   async handleSignUp(name: string, email: string, password: string) {
-    // Validation
     if (password.length < AUTH_CONFIG.PASSWORD.MIN_LENGTH) {
       this.actions.setError(`Password must be at least ${AUTH_CONFIG.PASSWORD.MIN_LENGTH} characters long`);
       return;
@@ -131,20 +146,17 @@ export class AuthFlowController {
 
       this.actions.setLoading(true);
       this.actions.setError(null);
-      this.actions.setSignUpSource('email');
 
       const result = await signUpWithEmail(normalizedName, normalizedEmail, password);
       if (!this.isFlowActive) return;
 
       if (result.success) {
-        this.actions.setNewUserName(normalizedName);
-        this.actions.setIsNewUser(true);
-        this.actions.setLoading(false);
+        // Just show email sent modal - user will sign in after verifying
         const emailForState = result.user?.email || normalizedEmail;
         this.actions.setEmailSentData({ email: emailForState, type: "verification" });
+        this.actions.setLoading(false);
         this.actions.setCurrentModal("email-sent");
       } else {
-        // Show error in auth error modal
         const errorMessage = parseAuthError(result.error);
         const errorInfo = getAuthErrorInfo(errorMessage);
         
@@ -155,48 +167,15 @@ export class AuthFlowController {
     });
   }
 
+  // Google sign-up = Google sign-in (auto-creates account)
   async handleGoogleSignUp() {
-    this.startFlow(async () => {
-      this.actions.setCurrentModal("google-redirect");
-      this.actions.setLoading(true);
-      this.actions.setError(null);
-      this.actions.setSignUpSource('google');
-
-      const result = await signUpWithGoogle();
-      if (!this.isFlowActive) return;
-
-      if (result.success) {
-        const userName = result.user?.name || "New User";
-        this.actions.setNewUserName(userName);
-        this.actions.setIsNewUser(true);
-        this.actions.setLoading(false);
-        
-        // Skip feedback modal, go straight to welcome
-        this.actions.setCurrentModal("welcome");
-      } else {
-        // Show error in auth error modal
-        const errorMessage = parseAuthError(result.error);
-        const errorInfo = getAuthErrorInfo(errorMessage);
-        
-        this.actions.setAuthErrorInfo(errorInfo);
-        this.actions.setLoading(false);
-        this.actions.setCurrentModal("auth-error");
-      }
-    });
+    return this.handleGoogleSignIn();
   }
 
-  handleGoogleSignUpComplete() {
-    this.startFlow(async () => {
-      this.actions.setIsNewUser(true);
-      this.actions.setLoading(false);
-      this.actions.setSignUpSource('google');
-      
-      // Skip feedback, go straight to welcome
-      this.actions.setCurrentModal("welcome");
-    });
-  }
+  // ============================================================================
+  // OTHER AUTH FLOWS
+  // ============================================================================
 
-  // Other Auth Flows
   async handleForgotPassword(email: string) {
     this.startFlow(async () => {
       const normalizedEmail = email.trim().toLowerCase();
@@ -211,7 +190,6 @@ export class AuthFlowController {
         this.actions.setEmailSentData({ email: normalizedEmail, type: "reset" });
         this.actions.setCurrentModal("email-sent");
       } else {
-        // Show error in auth error modal
         const errorMessage = parseAuthError(result.error);
         const errorInfo = getAuthErrorInfo(errorMessage);
         
@@ -237,7 +215,6 @@ export class AuthFlowController {
         this.actions.setEmailSentData({ email: normalizedEmail, type: "magic-link" });
         this.actions.setCurrentModal("email-sent");
       } else {
-        // Show error in auth error modal
         const errorMessage = parseAuthError(result.error);
         const errorInfo = getAuthErrorInfo(errorMessage);
         
@@ -249,7 +226,10 @@ export class AuthFlowController {
     });
   }
 
-  // Modal Navigation
+  // ============================================================================
+  // MODAL NAVIGATION
+  // ============================================================================
+
   handleEmailSentClose() {
     this.actions.setCurrentModal("signin");
     this.actions.setEmailSentData(null);
@@ -269,52 +249,6 @@ export class AuthFlowController {
     this.actions.setEmailSentData(null);
   }
 
-  // Handle email verification completion (called when user clicks verification link)
-  handleEmailVerificationComplete() {
-    this.startFlow(async () => {
-      this.actions.setSignUpSuccess(true);
-      this.actions.setCurrentModal("signup-feedback");
-      this.actions.setEmailSentData(null);
-
-      const stillActive = await this.wait(AUTH_CONFIG.FEEDBACK_DELAYS.WELCOME_DISPLAY);
-      if (!stillActive) return;
-
-      this.actions.setCurrentModal("welcome");
-    });
-  }
-
-  // Handle magic link sign in completion (called when user clicks magic link)  
-  handleMagicLinkComplete() {
-    const email = this.state.emailSentData?.email || "";
-
-    this.startFlow(async () => {
-      this.actions.setSignInSuccess(true);
-      this.actions.setCurrentModal("signin-feedback");
-      this.actions.setEmailSentData(null);
-
-      const stillActive = await this.wait(AUTH_CONFIG.FEEDBACK_DELAYS.WELCOME_DISPLAY);
-      if (!stillActive) return;
-
-      this.callbacks.onSuccess?.({ 
-        id: 'magic-link-user', 
-        name: 'User',
-        email,
-      });
-      this.handleCloseAll();
-    });
-  }
-
-  handleWelcomeContinue() {
-    this.cancelCurrentFlow();
-    this.callbacks.onSuccess?.({ 
-      id: 'temp-user-id', // Will be updated when real user data is available
-      name: this.state.newUserName,
-      email: '' // Will be populated from auth context
-    });
-    this.handleCloseAll();
-  }
-
-  // Handle error modal actions
   handleErrorAction(action: AuthErrorAction) {
     this.cancelCurrentFlow();
     
@@ -330,13 +264,11 @@ export class AuthFlowController {
         break;
       
       case "RETRY":
-        // Go back to sign in by default
         this.actions.setCurrentModal("signin");
         this.actions.setAuthErrorInfo(null);
         break;
       
       case "CONTACT_SUPPORT":
-        // Close modal and let parent handle navigation
         this.handleCloseAll();
         if (typeof window !== 'undefined') {
           window.location.href = '/contact';

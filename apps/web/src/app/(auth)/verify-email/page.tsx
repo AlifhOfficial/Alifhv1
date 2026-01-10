@@ -45,10 +45,10 @@ function VerifyEmailForm() {
 
       setStatus('success');
 
-      // Auto-redirect after success
+      // Auto-redirect after success - prompt user to sign in
       setTimeout(() => {
         const destination = callbackURL.startsWith("/") ? callbackURL : `/${callbackURL}`;
-        router.push(`${destination}${destination.includes('?') ? '&' : '?'}verified=true`);
+        router.push(`${destination}${destination.includes('?') ? '&' : '?'}auth=signin`);
       }, 1500);
 
     } catch (err: any) {

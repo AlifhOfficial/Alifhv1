@@ -16,13 +16,8 @@ export type AuthModalType =
   | "magic-link" 
   | "email-sent"
   | "signin-feedback"
-  | "signup-feedback" 
-  | "welcome"
-  | "google-redirect"
-  | "magic-link-feedback"
-  | "password-reset-feedback"
-  | "auth-error" // New: Better Auth error modal
-  | "feedback" // Generic feedback modal
+  | "auth-error"
+  | "feedback"
   | null;
 
 export interface AuthState {
@@ -31,10 +26,6 @@ export interface AuthState {
   error: string | null;
   emailSentData: EmailData | null;
   signInSuccess: boolean;
-  signUpSuccess: boolean;
-  newUserName: string;
-  isNewUser: boolean;
-  signUpSource: 'email' | 'google' | null;
   // Auth error modal data
   authErrorInfo: AuthErrorInfo | null;
   // Generic feedback modal data
@@ -51,10 +42,6 @@ export interface AuthActions {
   setError: (error: string | null) => void;
   setEmailSentData: (data: EmailData | null) => void;
   setSignInSuccess: (success: boolean) => void;
-  setSignUpSuccess: (success: boolean) => void;
-  setNewUserName: (name: string) => void;
-  setIsNewUser: (isNew: boolean) => void;
-  setSignUpSource: (source: 'email' | 'google' | null) => void;
   setAuthErrorInfo: (info: AuthErrorInfo | null) => void;
   setFeedbackData: (data: { title?: string; message?: string; type?: 'success' | 'error' | 'info' } | null) => void;
   resetState: () => void;
@@ -71,10 +58,6 @@ const initialState: AuthState = {
   error: null,
   emailSentData: null,
   signInSuccess: false,
-  signUpSuccess: false,
-  newUserName: "",
-  isNewUser: false,
-  signUpSource: null,
   authErrorInfo: null,
   feedbackData: null,
 };
@@ -109,18 +92,6 @@ export function useAuthState(
     setSignInSuccess: (signInSuccess: boolean) => {
       setInternalState(prev => ({ ...prev, signInSuccess }));
     },
-    setSignUpSuccess: (signUpSuccess: boolean) => {
-      setInternalState(prev => ({ ...prev, signUpSuccess }));
-    },
-    setNewUserName: (newUserName: string) => {
-      setInternalState(prev => ({ ...prev, newUserName }));
-    },
-    setIsNewUser: (isNewUser: boolean) => {
-      setInternalState(prev => ({ ...prev, isNewUser }));
-    },
-    setSignUpSource: (signUpSource: 'email' | 'google' | null) => {
-      setInternalState(prev => ({ ...prev, signUpSource }));
-    },
     setAuthErrorInfo: (authErrorInfo: AuthErrorInfo | null) => {
       setInternalState(prev => ({ ...prev, authErrorInfo }));
     },
@@ -141,10 +112,6 @@ export function useAuthState(
     error: internalState.error,
     emailSentData: internalState.emailSentData,
     signInSuccess: internalState.signInSuccess,
-    signUpSuccess: internalState.signUpSuccess,
-    newUserName: internalState.newUserName,
-    isNewUser: internalState.isNewUser,
-    signUpSource: internalState.signUpSource,
     authErrorInfo: internalState.authErrorInfo,
     feedbackData: internalState.feedbackData,
   };

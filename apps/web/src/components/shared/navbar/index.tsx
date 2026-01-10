@@ -157,11 +157,7 @@ export function Navbar() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [currentAuthModal, setCurrentAuthModal] = useState<AuthModalType>(null);
-  const [triggerEmailVerification, setTriggerEmailVerification] = useState(false);
-  const [triggerGoogleOnboarding, setTriggerGoogleOnboarding] = useState(false);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const hasHandledVerifiedRef = useRef(false);
-  const hasHandledGoogleRef = useRef(false);
   const hasHandledAuthParamRef = useRef(false);
   const pendingRedirectRef = useRef<string | null>(null);
   
@@ -276,34 +272,6 @@ export function Navbar() {
     if (!searchParams) return;
     
     let rafId: number;
-    
-    // Handle email verification redirect
-    if (searchParams.get("verified") === "true" && !hasHandledVerifiedRef.current) {
-      hasHandledVerifiedRef.current = true;
-      rafId = requestAnimationFrame(() => {
-        setTriggerEmailVerification(true);
-      });
-
-      const params = new URLSearchParams(searchParams.toString());
-      params.delete("verified");
-      const queryString = params.toString();
-      router.replace(`${pathname}${queryString ? `?${queryString}` : ""}`, { scroll: false });
-      return () => cancelAnimationFrame(rafId);
-    }
-
-    // Handle Google OAuth redirect
-    if (searchParams.get("google") === "new" && isAuthenticated && !hasHandledGoogleRef.current) {
-      hasHandledGoogleRef.current = true;
-      rafId = requestAnimationFrame(() => {
-        setTriggerGoogleOnboarding(true);
-      });
-
-      const params = new URLSearchParams(searchParams.toString());
-      params.delete("google");
-      const queryString = params.toString();
-      router.replace(`${pathname}${queryString ? `?${queryString}` : ""}`, { scroll: false });
-      return () => cancelAnimationFrame(rafId);
-    }
 
     // Handle auth modal triggers from error page (?auth=signin or ?auth=signup)
     const authParam = searchParams.get("auth");
@@ -333,31 +301,7 @@ export function Navbar() {
       router.replace(`${pathname}${queryString ? `?${queryString}` : ""}`, { scroll: false });
       return () => cancelAnimationFrame(rafId);
     }
-  }, [searchParams, pathname, router, isAuthenticated]);
-
-  // Reset trigger after it fires so subsequent verifications can retrigger flow
-  useEffect(() => {
-    if (triggerEmailVerification) {
-      // Reset the handled ref so future verifications can trigger
-      hasHandledVerifiedRef.current = false;
-      const timeoutId = window.setTimeout(() => {
-        // Defer reset to the next tick so AuthManager can react to the change
-        // This avoids races where the flag flips back before the effect runs
-        requestAnimationFrame(() => setTriggerEmailVerification(false));
-      }, 200);
-      return () => window.clearTimeout(timeoutId);
-    }
-  }, [triggerEmailVerification]);
-
-  useEffect(() => {
-    if (triggerGoogleOnboarding) {
-      hasHandledGoogleRef.current = false;
-      const timeoutId = window.setTimeout(() => {
-        requestAnimationFrame(() => setTriggerGoogleOnboarding(false));
-      }, 0);
-      return () => window.clearTimeout(timeoutId);
-    }
-  }, [triggerGoogleOnboarding]);
+  }, [searchParams, pathname, router]);
 
   // Handle dropdown close with delay
   const handleDropdownClose = useCallback(() => {
@@ -546,8 +490,6 @@ export function Navbar() {
         currentModal={currentAuthModal}
         onModalChange={setCurrentAuthModal}
         onSuccess={() => refetchAuth()}
-        triggerEmailVerification={triggerEmailVerification}
-        triggerGoogleOnboarding={triggerGoogleOnboarding}
       />
     </>
   );

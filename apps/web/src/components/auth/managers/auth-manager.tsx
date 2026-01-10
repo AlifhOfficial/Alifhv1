@@ -1,21 +1,19 @@
 /**
- * Auth Manager - Modular Orchestrator
+ * Auth Manager - Simplified Orchestrator
  * 
- * Clean orchestrator that combines state management, flow control, and UI components
- * Follows props-based architecture with clear separation of concerns
+ * Clean orchestrator for authentication modals
+ * Simplified sign-up flow - no welcome modal, Google sign-up = sign-in
+ * Google auth uses popup window for better UX
  */
 
 "use client";
 
-import { useEffect } from "react";
 import { SignInModal } from "../modals/signin-modal";
 import { SignUpModal } from "../modals/signup-modal";
 import { ForgotPasswordModal } from "../modals/forgot-password-modal";
 import { MagicLinkModal } from "../modals/magic-link-modal";
 import { EmailSentModal } from "../feedback/email-sent-modal";
 import { SignInFeedbackModal } from "../feedback/sign-in-feedback-modal";
-import { WelcomeModal } from "../feedback/welcome-modal";
-import { GoogleRedirectModal } from "../feedback/google-redirect-modal";
 import { FeedbackModal } from "../feedback/feedback-modal";
 import { AuthErrorModal } from "../feedback/auth-error-modal";
 
@@ -30,10 +28,6 @@ interface AuthManagerProps {
   onModalChange?: (modal: AuthModalType) => void;
   onSuccess?: (user?: AuthUser) => void;
   onClose?: () => void;
-  // New props for external flow triggers
-  triggerEmailVerification?: boolean;
-  triggerMagicLinkComplete?: boolean;
-  triggerGoogleOnboarding?: boolean;
 }
 
 export function AuthManager({
@@ -42,33 +36,10 @@ export function AuthManager({
   onModalChange,
   onSuccess,
   onClose,
-  triggerEmailVerification,
-  triggerMagicLinkComplete,
-  triggerGoogleOnboarding,
 }: AuthManagerProps) {
   const { state, actions } = useAuthState(initialModal, externalCurrentModal, onModalChange);
   
-  // Create flow controller instance
   const flowController = new AuthFlowController(state, actions, { onSuccess, onClose });
-
-  // Handle external flow triggers
-  useEffect(() => {
-    if (triggerEmailVerification) {
-      flowController.handleEmailVerificationComplete();
-    }
-  }, [triggerEmailVerification]);
-
-  useEffect(() => {
-    if (triggerMagicLinkComplete) {
-      flowController.handleMagicLinkComplete();
-    }
-  }, [triggerMagicLinkComplete]);
-
-  useEffect(() => {
-    if (triggerGoogleOnboarding) {
-      flowController.handleGoogleSignUpComplete();
-    }
-  }, [triggerGoogleOnboarding]);
 
   return (
     <>
@@ -90,9 +61,7 @@ export function AuthManager({
         open={state.currentModal === "signup"}
         onOpenChange={(open) => !open && flowController.handleCloseAll()}
         onSwitchToSignIn={() => actions.setCurrentModal("signin")}
-        onSubmit={(name, email, password) => 
-          flowController.handleSignUp(name, email, password)
-        }
+        onSubmit={(name, email, password) => flowController.handleSignUp(name, email, password)}
         onGoogleSignUp={() => flowController.handleGoogleSignUp()}
         isLoading={state.isLoading}
         error={state.error}
@@ -139,19 +108,6 @@ export function AuthManager({
         error={state.error}
       />
 
-      {/* Welcome Modal */}
-      <WelcomeModal
-        open={state.currentModal === "welcome"}
-        userName={state.newUserName}
-        onContinue={() => flowController.handleWelcomeContinue()}
-      />
-
-      {/* Google Redirect Modal */}
-      <GoogleRedirectModal
-        open={state.currentModal === "google-redirect"}
-        onClose={() => actions.setCurrentModal("signin")}
-      />
-
       {/* Generic Feedback Modal */}
       <FeedbackModal
         open={state.currentModal === "feedback"}
@@ -164,7 +120,7 @@ export function AuthManager({
         success={state.feedbackData?.type === 'success'}
       />
 
-      {/* Auth Error Modal - Better Auth Errors */}
+      {/* Auth Error Modal */}
       <AuthErrorModal
         open={state.currentModal === "auth-error"}
         onClose={() => flowController.handleCloseAll()}

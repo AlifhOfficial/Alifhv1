@@ -7,9 +7,6 @@ export { MagicLinkModal } from './modals/magic-link-modal';
 // Feedback & Status Modals
 export { EmailSentModal } from './feedback/email-sent-modal';
 export { SignInFeedbackModal } from './feedback/sign-in-feedback-modal';
-export { SignUpFeedbackModal } from './feedback/sign-up-feedback-modal';
-export { WelcomeModal } from './feedback/welcome-modal';
-export { GoogleRedirectModal } from './feedback/google-redirect-modal';
 export { FeedbackModal } from './feedback/feedback-modal';
 export { AuthErrorModal } from './feedback/auth-error-modal';
 
