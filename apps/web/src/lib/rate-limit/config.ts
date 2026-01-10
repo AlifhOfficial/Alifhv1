@@ -489,11 +489,11 @@ export const RATE_LIMITS_ADMIN = {
 export const RATE_LIMITS_KYC = {
   /**
    * Submit KYC request
-   * 5 per day per user - multiple attempts allowed
+   * 20 per day per user - multiple attempts allowed
    */
   SUBMIT: {
     windowSeconds: 24 * 60 * 60,
-    maxRequests: 5,
+    maxRequests: 20,
     keyPrefix: 'kyc:submit',
     description: 'KYC submissions',
   },

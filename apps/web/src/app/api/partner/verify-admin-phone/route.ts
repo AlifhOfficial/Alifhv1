@@ -17,9 +17,10 @@ export const runtime = 'nodejs';
 
 // Rate limit: 5 attempts per 15 minutes per user
 const verifyLimiter = createRateLimiter({
-  points: 5,
-  duration: 15 * 60, // 15 minutes
-  keyPrefix: 'partner-admin-phone-verify',
+  windowSeconds: 15 * 60, // 15 minutes
+  maxRequests: 5,
+  keyPrefix: 'partner:admin-phone-verify',
+  description: 'Admin phone verification attempts',
 });
 
 const VerifySchema = z.object({
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     // Rate limit by user ID
     const identifier = getIdentifier(request, sessionUser.id);
-    const rateLimitResult = await verifyLimiter.consume(identifier);
+    const rateLimitResult = await verifyLimiter.check(identifier);
     if (!rateLimitResult.success) {
       return rateLimitResponse(rateLimitResult);
     }

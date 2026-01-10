@@ -53,7 +53,7 @@ export function ListingsSidebar({
           : "top-14 sm:top-16 max-h-[calc(100vh-3.5rem)] sm:max-h-[calc(100vh-4rem)]"
       )}>
         {/* Header */}
-        <div className="flex items-center justify-between py-5 pr-6 flex-shrink-0 border-b border-border/40">
+        <div className="flex items-center justify-between py-5 pr-6 flex-shrink-0">
           <div className="flex items-center gap-2">
             <h2 className="text-[15px] font-bold tracking-tight text-foreground">Filters</h2>
             {activeFilterCount > 0 && (

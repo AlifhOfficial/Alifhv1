@@ -1,0 +1,1 @@
+ALTER TABLE "user_profile" ADD COLUMN "kyc_status" text DEFAULT 'none' NOT NULL;

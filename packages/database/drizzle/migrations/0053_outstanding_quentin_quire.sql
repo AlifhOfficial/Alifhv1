@@ -1,0 +1,1 @@
+ALTER TABLE "kyc_record" ADD COLUMN "raw_response" text;

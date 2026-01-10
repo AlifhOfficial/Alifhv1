@@ -29,6 +29,9 @@ export interface UserProfile {
   privacySettings?: { showPhone?: boolean };
   preferences?: { theme?: string; language?: string; distanceUnit?: string; useGeneratedAvatar?: boolean };
   kycVerified?: boolean;
+  kycVerifiedAt?: Date | string | null;
+  kycExpiryDate?: Date | string | null;
+  kycStatus?: 'none' | 'pending' | 'approved' | 'rejected';
   badges?: string[];
   platformRating?: number | null;
   memberSince?: Date | string;

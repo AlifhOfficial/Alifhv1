@@ -18,3 +18,12 @@ export {
   type ListPartnersOptions,
   type SearchUsersOptions,
 } from './use-admin-users';
+
+export {
+  useAdminKyc,
+  useAdminKycRecord,
+  useAdminKycActions,
+  type KycRecordData,
+  type KycStats,
+  type UseAdminKycOptions,
+} from './use-admin-kyc';

@@ -54,6 +54,9 @@ export type ExtendedUserProfile = {
   preferences: { theme?: string; language?: string; distanceUnit?: string; useGeneratedAvatar?: boolean } | null;
   avatar: string | null;
   kycVerified: boolean;
+  kycVerifiedAt: Date | null;
+  kycExpiryDate: Date | null;
+  kycStatus: 'none' | 'pending' | 'approved' | 'rejected';
   badges: string[];
   platformRating: number | null;
   memberSince: Date | null;
@@ -94,6 +97,9 @@ export const getUserProfileByUserId = async (userId: string): Promise<ExtendedUs
       preferences: userProfile.preferences,
       avatar: userProfile.avatar,
       kycVerified: userProfile.kycVerified,
+      kycVerifiedAt: userProfile.kycVerifiedAt,
+      kycExpiryDate: userProfile.kycExpiryDate,
+      kycStatus: userProfile.kycStatus,
       badges: userProfile.badges,
       platformRating: userProfile.platformRating,
       memberSince: userProfile.memberSince,

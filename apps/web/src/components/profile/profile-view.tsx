@@ -17,9 +17,11 @@ import {
   Camera,
   CheckCircle2,
   Star,
-  X
+  X,
+  Clock
 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
+import { KycVerificationModal } from '@/components/kyc';
 import { cn } from '@/utils/cn';
 
 // ============================================================================
@@ -64,6 +66,9 @@ export function ProfileView() {
   const [otp, setOtp] = useState('');
   const [otpCountdown, setOtpCountdown] = useState(0);
   const [phoneJustVerified, setPhoneJustVerified] = useState(false);
+  
+  // KYC modal state
+  const [kycModalOpen, setKycModalOpen] = useState(false);
 
   const [form, setForm] = useState({
     firstName: '',
@@ -401,6 +406,14 @@ export function ProfileView() {
 
   const memberSinceYear = profile?.memberSince ? new Date(profile.memberSince).getFullYear() : null;
 
+  // KYC expiry logic
+  const kycExpiryDate = profile?.kycExpiryDate ? new Date(profile.kycExpiryDate) : null;
+  const now = new Date();
+  const isKycExpired = kycExpiryDate ? now > kycExpiryDate : false;
+  const daysUntilExpiry = kycExpiryDate ? Math.ceil((kycExpiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)) : null;
+  const showResubmit = daysUntilExpiry !== null && daysUntilExpiry <= 60; // 2 months = ~60 days
+  const isExpiringSoon = daysUntilExpiry !== null && daysUntilExpiry <= 30 && daysUntilExpiry > 0;
+
   // Loading state
   if (profileLoading) {
     return (
@@ -473,8 +486,11 @@ export function ProfileView() {
           <div className="flex-1 pt-2">
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-semibold tracking-tight">{displayName}</h1>
-              {profile?.kycVerified && (
-                <CheckCircle2 className="w-5 h-5 text-blue-500" />
+              {profile?.kycVerified && !isKycExpired && (
+                <CheckCircle2 className={cn(
+                  "w-5 h-5 text-blue-500 transition-opacity",
+                  isExpiringSoon && "opacity-50 animate-pulse"
+                )} />
               )}
             </div>
             <p className="text-sm text-muted-foreground mt-0.5">
@@ -483,14 +499,42 @@ export function ProfileView() {
             <p className="text-sm text-muted-foreground/70 mt-0.5">
               Member since {memberSinceYear ?? '—'}
             </p>
-            {!profile?.kycVerified && (
-              <a 
-                href="/kyc/verify" 
+            
+            {/* KYC Status Messages */}
+            {isKycExpired ? (
+              <button 
+                onClick={() => setKycModalOpen(true)}
+                className="text-xs text-red-500 hover:text-red-600 font-medium mt-2 inline-block"
+              >
+                Verification expired - Renew now
+              </button>
+            ) : profile?.kycStatus === 'pending' ? (
+              <div className="flex items-center gap-1.5 text-xs text-amber-500 font-medium mt-2">
+                <Clock className="w-3.5 h-3.5" />
+                Under Review
+              </div>
+            ) : profile?.kycStatus === 'rejected' ? (
+              <button 
+                onClick={() => setKycModalOpen(true)}
+                className="text-xs text-red-500 hover:text-red-600 font-medium mt-2 inline-block"
+              >
+                Verification failed - Try again
+              </button>
+            ) : !profile?.kycVerified ? (
+              <button 
+                onClick={() => setKycModalOpen(true)}
                 className="text-xs text-blue-500 hover:text-blue-600 font-medium mt-2 inline-block"
               >
                 Get verified
-              </a>
-            )}
+              </button>
+            ) : showResubmit ? (
+              <button 
+                onClick={() => setKycModalOpen(true)}
+                className="text-xs text-blue-500 hover:text-blue-600 font-medium mt-2 inline-block"
+              >
+                Renew verification
+              </button>
+            ) : null}
           </div>
         </div>
 
@@ -524,10 +568,25 @@ export function ProfileView() {
           <div className="p-5 flex flex-col gap-1">
             <span className="text-sm font-semibold text-muted-foreground/70">Status</span>
             <span className="text-xl font-bold text-foreground">
-              {profile?.kycVerified ? (
+              {profile?.kycVerified && !isKycExpired ? (
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-5 h-5 text-blue-500" />
-                  Verified
+                  <CheckCircle2 className={cn(
+                    "w-5 h-5 text-blue-500 transition-opacity",
+                    isExpiringSoon && "opacity-50"
+                  )} />
+                  <span className={cn(isExpiringSoon && "text-amber-500")}>
+                    {isExpiringSoon ? 'Expiring' : 'Verified'}
+                  </span>
+                </span>
+              ) : isKycExpired ? (
+                <span className="flex items-center gap-1.5 text-red-500">
+                  <X className="w-5 h-5" />
+                  Expired
+                </span>
+              ) : profile?.kycStatus === 'pending' ? (
+                <span className="flex items-center gap-1.5 text-amber-500">
+                  <Clock className="w-5 h-5" />
+                  In Review
                 </span>
               ) : (
                 <span className="text-muted-foreground">—</span>
@@ -823,7 +882,54 @@ export function ProfileView() {
           </div>
         </section>
 
+        {/* KYC Expiry Info - Bottom */}
+        {profile?.kycVerified && !isKycExpired && kycExpiryDate && (
+          <section>
+            <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className={cn(
+                    "w-5 h-5 text-blue-500",
+                    isExpiringSoon && "opacity-50"
+                  )} />
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">Identity Verified</p>
+                    <p className={cn(
+                      "text-xs font-medium mt-0.5",
+                      isExpiringSoon ? "text-amber-500" : "text-muted-foreground/70"
+                    )}>
+                      {isExpiringSoon 
+                        ? `Expires in ${daysUntilExpiry} day${daysUntilExpiry === 1 ? '' : 's'}` 
+                        : `Valid until ${kycExpiryDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+                      }
+                    </p>
+                  </div>
+                </div>
+                {showResubmit && (
+                  <button 
+                    onClick={() => setKycModalOpen(true)}
+                    className="text-xs text-blue-500 hover:text-blue-600 font-semibold px-4 py-2 rounded-lg bg-muted/30 hover:bg-muted/40 transition-colors"
+                  >
+                    Renew
+                  </button>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+
       </div>
+      
+      {/* KYC Verification Modal */}
+      <KycVerificationModal 
+        isOpen={kycModalOpen}
+        onClose={() => setKycModalOpen(false)}
+        onVerified={() => {
+          setKycModalOpen(false);
+          refresh();
+          toast({ title: 'Identity verified!', description: 'Your profile is now verified.' });
+        }}
+      />
     </div>
   );
 }

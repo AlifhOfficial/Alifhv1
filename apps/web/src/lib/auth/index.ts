@@ -117,17 +117,32 @@ export const auth = betterAuth({
       },
     }),
     phoneNumber({
-      // Use Twilio Verify for OTP - handles code generation, storage, and rate limiting
+      // Use Twilio Verify for OTP - WhatsApp first, SMS fallback
       sendOTP: async ({ phoneNumber, code }, ctx) => {
         // Twilio Verify generates its own code, so we ignore the `code` param
-        // and use Verify's built-in code management
+        // Try WhatsApp first (cheaper, no toll fraud, works on Wi-Fi)
+        try {
+          await twilioClient.verify.v2
+            .services(process.env.TWILIO_VERIFY_SERVICE_SID!)
+            .verifications.create({
+              to: phoneNumber,
+              channel: "whatsapp",
+            });
+          console.log("[PhoneVerify] OTP sent via WhatsApp");
+          return;
+        } catch (whatsappError: any) {
+          // WhatsApp failed - fall back to SMS
+          console.log("[PhoneVerify] WhatsApp failed, falling back to SMS:", whatsappError?.message);
+        }
+        
+        // Fallback to SMS
         await twilioClient.verify.v2
           .services(process.env.TWILIO_VERIFY_SERVICE_SID!)
           .verifications.create({
             to: phoneNumber,
             channel: "sms",
-            templateSid: "HJ152393dff43d3a2c1554ab0f28291dbe", // Template with security warning
           });
+        console.log("[PhoneVerify] OTP sent via SMS");
       },
       // Use Twilio Verify to validate OTP - bypasses Better Auth's internal verification
       verifyOTP: async ({ phoneNumber, code }, ctx) => {

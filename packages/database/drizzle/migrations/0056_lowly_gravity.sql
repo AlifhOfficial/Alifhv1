@@ -1,0 +1,1 @@
+ALTER TABLE "user_profile" ADD COLUMN "trust_score" integer DEFAULT 0;

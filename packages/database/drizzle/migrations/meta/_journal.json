@@ -365,6 +365,55 @@
       "when": 1767984947513,
       "tag": "0051_elite_silver_samurai",
       "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "7",
+      "when": 1767999776531,
+      "tag": "0052_abandoned_lockheed",
+      "breakpoints": true
+    },
+    {
+      "idx": 53,
+      "version": "7",
+      "when": 1768003867724,
+      "tag": "0053_outstanding_quentin_quire",
+      "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "7",
+      "when": 1768004869723,
+      "tag": "0054_useful_randall",
+      "breakpoints": true
+    },
+    {
+      "idx": 55,
+      "version": "7",
+      "when": 1768005659789,
+      "tag": "0055_glorious_sabretooth",
+      "breakpoints": true
+    },
+    {
+      "idx": 56,
+      "version": "7",
+      "when": 1768010655440,
+      "tag": "0056_lowly_gravity",
+      "breakpoints": true
+    },
+    {
+      "idx": 57,
+      "version": "7",
+      "when": 1768011995367,
+      "tag": "0057_late_nocturne",
+      "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "7",
+      "when": 1768012852235,
+      "tag": "0058_awesome_black_crow",
+      "breakpoints": true
     }
   ]
 }

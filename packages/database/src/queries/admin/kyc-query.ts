@@ -12,6 +12,7 @@ import { eq, desc, and, sql, isNull } from 'drizzle-orm';
 import { db } from '../../dbclient';
 import { kycRecord, userProfile } from '../../schema/profile';
 import { user } from '../../schema/auth';
+import { memoryCache, CacheKeys } from '../../caches/memory-cache';
 
 const KYC_ID_PREFIX = 'kyc_';
 const makeKycId = () => `${KYC_ID_PREFIX}${createId()}`;
@@ -30,6 +31,9 @@ export interface CreateKycRecordData {
   documentFrontUrl?: string;
   documentBackUrl?: string;
   selfieUrl?: string;
+  // Didit integration fields
+  diditSessionId?: string;
+  diditSessionUrl?: string;
   metadata?: Record<string, any>;
 }
 
@@ -100,6 +104,9 @@ export const createKycRecord = async (data: CreateKycRecordData): Promise<KycRec
       documentFrontUrl: data.documentFrontUrl,
       documentBackUrl: data.documentBackUrl,
       selfieUrl: data.selfieUrl,
+      // Didit integration fields
+      diditSessionId: data.diditSessionId,
+      diditSessionUrl: data.diditSessionUrl,
       metadata: data.metadata,
     })
     .returning();
@@ -196,95 +203,100 @@ export const getKycRequestsCount = async (status?: KycStatus): Promise<number> =
 
 /**
  * Approve a KYC request (admin action)
- * Uses transaction for atomic update of both KYC record and user profile
+ * Note: Neon HTTP driver doesn't support transactions, so we use sequential queries
  */
 export const approveKycRecord = async (
   id: string, 
   verifiedBy: string,
   expiresAt?: Date
 ): Promise<KycRecord | null> => {
-  return await db.transaction(async (tx) => {
-    const now = new Date();
+  const now = new Date();
+  
+  // Get KYC record first
+  const [existingKyc] = await db
+    .select()
+    .from(kycRecord)
+    .where(eq(kycRecord.id, id))
+    .limit(1);
     
-    // Get KYC record within transaction
-    const [existingKyc] = await tx
-      .select()
-      .from(kycRecord)
+  if (!existingKyc) return null;
+  
+  // Update KYC record and user profile in parallel
+  const [[result]] = await Promise.all([
+    db.update(kycRecord)
+      .set({
+        status: 'approved',
+        verifiedBy,
+        verifiedAt: now,
+        expiresAt: expiresAt ?? null,
+        updatedAt: now,
+      })
       .where(eq(kycRecord.id, id))
-      .limit(1);
+      .returning(),
       
-    if (!existingKyc) return null;
-    
-    // Update KYC record and user profile atomically
-    const [[result]] = await Promise.all([
-      tx.update(kycRecord)
-        .set({
-          status: 'approved',
-          verifiedBy,
-          verifiedAt: now,
-          expiresAt: expiresAt ?? null,
-          updatedAt: now,
-        })
-        .where(eq(kycRecord.id, id))
-        .returning(),
-        
-      tx.update(userProfile)
-        .set({
-          kycVerified: true,
-          kycVerifiedAt: now,
-          updatedAt: now,
-        })
-        .where(eq(userProfile.userId, existingKyc.userId)),
-    ]);
-    
-    return result ?? null;
-  });
+    db.update(userProfile)
+      .set({
+        kycVerified: true,
+        kycVerifiedAt: now,
+        kycStatus: 'approved',
+        trustScore: 80,
+        updatedAt: now,
+      })
+      .where(eq(userProfile.userId, existingKyc.userId)),
+  ]);
+  
+  // Invalidate user profile cache
+  memoryCache.delete(CacheKeys.userProfile(existingKyc.userId));
+  
+  return result ?? null;
 };
 
 /**
  * Reject a KYC request (admin action)
- * Uses transaction for atomic update
+ * Note: Neon HTTP driver doesn't support transactions, so we use sequential queries
  */
 export const rejectKycRecord = async (
   id: string,
   verifiedBy: string,
   rejectionReason: string
 ): Promise<KycRecord | null> => {
-  return await db.transaction(async (tx) => {
-    const now = new Date();
+  const now = new Date();
+  
+  // Get KYC record first
+  const [existingKyc] = await db
+    .select()
+    .from(kycRecord)
+    .where(eq(kycRecord.id, id))
+    .limit(1);
     
-    // Get KYC record within transaction
-    const [existingKyc] = await tx
-      .select()
-      .from(kycRecord)
+  if (!existingKyc) return null;
+  
+  // Update KYC record and user profile in parallel
+  const [[result]] = await Promise.all([
+    db.update(kycRecord)
+      .set({
+        status: 'rejected',
+        verifiedBy,
+        verifiedAt: now,
+        rejectionReason,
+        updatedAt: now,
+      })
       .where(eq(kycRecord.id, id))
-      .limit(1);
+      .returning(),
       
-    if (!existingKyc) return null;
-    
-    // Update KYC record and user profile atomically
-    const [[result]] = await Promise.all([
-      tx.update(kycRecord)
-        .set({
-          status: 'rejected',
-          verifiedBy,
-          verifiedAt: now,
-          rejectionReason,
-          updatedAt: now,
-        })
-        .where(eq(kycRecord.id, id))
-        .returning(),
-        
-      tx.update(userProfile)
-        .set({
-          kycVerified: false,
-          updatedAt: now,
-        })
-        .where(eq(userProfile.userId, existingKyc.userId)),
-    ]);
-    
-    return result ?? null;
-  });
+    db.update(userProfile)
+      .set({
+        kycVerified: false,
+        kycStatus: 'rejected',
+        updatedAt: now,
+      })
+      .where(eq(userProfile.userId, existingKyc.userId)),
+  ]);
+  
+  // Invalidate user profile cache
+  memoryCache.delete(CacheKeys.userProfile(existingKyc.userId));
+  
+  return result ?? null;
 };
 
 /**
@@ -316,4 +328,112 @@ export const isUserKycVerified = async (userId: string): Promise<boolean> => {
     .limit(1);
     
   return result?.kycVerified ?? false;
+};
+
+/**
+ * Get comprehensive KYC record with all Didit fields for admin review
+ */
+export interface KycRecordFull extends KycRecord {
+  userName: string | null;
+  userEmail: string;
+  userAvatar: string | null;
+}
+
+export const getKycRecordFull = async (id: string): Promise<KycRecordFull | null> => {
+  const [result] = await db
+    .select({
+      kyc: kycRecord,
+      userName: user.name,
+      userEmail: user.email,
+      userAvatar: userProfile.avatar,
+    })
+    .from(kycRecord)
+    .innerJoin(user, eq(user.id, kycRecord.userId))
+    .leftJoin(userProfile, eq(userProfile.userId, kycRecord.userId))
+    .where(eq(kycRecord.id, id))
+    .limit(1);
+
+  if (!result) return null;
+
+  return {
+    ...result.kyc,
+    userName: result.userName,
+    userEmail: result.userEmail,
+    userAvatar: result.userAvatar,
+  };
+};
+
+/**
+ * Get all KYC records with full Didit data for admin list view
+ */
+export const getAllKycRecordsFull = async (options: {
+  status?: KycStatus | 'all';
+  limit?: number;
+  offset?: number;
+}): Promise<{ records: KycRecordFull[]; total: number }> => {
+  const { status = 'all', limit = 20, offset = 0 } = options;
+  
+  const whereCondition = status !== 'all' 
+    ? eq(kycRecord.status, status) 
+    : undefined;
+
+  // Get total count
+  const [countResult] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(kycRecord)
+    .where(whereCondition);
+
+  const total = Number(countResult?.count ?? 0);
+
+  // Get records
+  const results = await db
+    .select({
+      kyc: kycRecord,
+      userName: user.name,
+      userEmail: user.email,
+      userAvatar: userProfile.avatar,
+    })
+    .from(kycRecord)
+    .innerJoin(user, eq(user.id, kycRecord.userId))
+    .leftJoin(userProfile, eq(userProfile.userId, kycRecord.userId))
+    .where(whereCondition)
+    .orderBy(desc(kycRecord.createdAt))
+    .limit(limit)
+    .offset(offset);
+
+  return {
+    records: results.map(r => ({
+      ...r.kyc,
+      userName: r.userName,
+      userEmail: r.userEmail,
+      userAvatar: r.userAvatar,
+    })),
+    total,
+  };
+};
+
+/**
+ * Get KYC stats for admin dashboard
+ */
+export const getKycStats = async (): Promise<{
+  total: number;
+  pending: number;
+  approved: number;
+  rejected: number;
+}> => {
+  const [stats] = await db
+    .select({
+      total: sql<number>`count(*)`,
+      pending: sql<number>`count(*) filter (where ${kycRecord.status} = 'pending')`,
+      approved: sql<number>`count(*) filter (where ${kycRecord.status} = 'approved')`,
+      rejected: sql<number>`count(*) filter (where ${kycRecord.status} = 'rejected')`,
+    })
+    .from(kycRecord);
+
+  return {
+    total: Number(stats?.total ?? 0),
+    pending: Number(stats?.pending ?? 0),
+    approved: Number(stats?.approved ?? 0),
+    rejected: Number(stats?.rejected ?? 0),
+  };
 };

@@ -181,7 +181,7 @@ interface FilterSectionProps {
 
 function FilterSection({ title, children, defaultOpen = false }: FilterSectionProps) {
   return (
-    <Collapsible defaultOpen={defaultOpen} className="group/collapsible border-b border-border/30">
+    <Collapsible defaultOpen={defaultOpen} className="group/collapsible">
       <CollapsibleTrigger className="flex items-center justify-between w-full py-4 text-sm font-bold text-foreground hover:text-foreground transition-colors">
         <span>{title}</span>
         <ChevronDown className="size-4 text-muted-foreground/50 transition-transform duration-200 group-data-[state=closed]/collapsible:-rotate-90" />

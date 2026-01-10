@@ -24,6 +24,8 @@ export const userProfile = pgTable('user_profile', {
   
   kycVerified: boolean('kyc_verified').default(false).notNull(),
   kycVerifiedAt: timestamp('kyc_verified_at'),
+  kycExpiryDate: timestamp('kyc_expiry_date'), // When KYC verification expires (1 year from verification)
+  kycStatus: text('kyc_status').$type<'none' | 'pending' | 'approved' | 'rejected'>().default('none').notNull(),
   
   badges: jsonb('badges').$type<string[]>().default([]),
   tags: jsonb('tags').$type<string[]>().default([]),
@@ -37,6 +39,7 @@ export const userProfile = pgTable('user_profile', {
   rating: doublePrecision('rating').default(0.0),
   platformRating: doublePrecision('platform_rating'),
   platformReviewCount: integer('platform_review_count').default(0).notNull(),
+  trustScore: integer('trust_score').default(0),
   
   avgResponseTime: integer('avg_response_time'),
   lastActiveAt: timestamp('last_active_at'),
@@ -96,18 +99,68 @@ export const kycRecord = pgTable('kyc_record', {
   id: text('id').primaryKey(),
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   
-  status: text('status').notNull(),
-  type: text('type').notNull(),
+  status: text('status').notNull(), // 'pending' | 'approved' | 'rejected' | 'expired'
+  type: text('type').notNull(), // 'manual' | 'didit'
   
-  documentType: text('document_type'),
+  // Didit integration fields
+  diditSessionId: text('didit_session_id'),
+  diditSessionUrl: text('didit_session_url'),
+  diditSessionNumber: integer('didit_session_number'),
+  diditDecision: jsonb('didit_decision').$type<Record<string, any>>(),
+  rawResponse: text('raw_response'), // Full webhook payload for debugging
+  
+  // Document info (from Didit id_verification)
+  documentType: text('document_type'), // 'Driver\'s License', 'Passport', 'Identity Card'
   documentNumber: text('document_number'),
+  documentCountry: text('document_country'), // issuing_state_name
+  documentCountryCode: text('document_country_code'), // issuing_state (ARE, USA, etc.)
+  documentExpiryDate: text('document_expiry_date'),
+  documentIssueDate: text('document_issue_date'),
   documentFrontUrl: text('document_front_url'),
   documentBackUrl: text('document_back_url'),
-  selfieUrl: text('selfie_url'),
+  selfieUrl: text('selfie_url'), // portrait_image
   
-  verifiedBy: text('verified_by'),
+  // Extracted personal data from document
+  extractedFirstName: text('extracted_first_name'),
+  extractedLastName: text('extracted_last_name'),
+  extractedFullName: text('extracted_full_name'),
+  extractedDateOfBirth: text('extracted_date_of_birth'),
+  extractedAge: integer('extracted_age'),
+  extractedGender: text('extracted_gender'),
+  extractedNationality: text('extracted_nationality'),
+  extractedNationalityCode: text('extracted_nationality_code'),
+  
+  // Face match verification (from Didit face_match)
+  faceMatchScore: doublePrecision('face_match_score'),
+  faceMatchStatus: text('face_match_status'),
+  faceSourceImage: text('face_source_image'),
+  faceTargetImage: text('face_target_image'),
+  
+  // Liveness check (from Didit liveness)
+  livenessScore: doublePrecision('liveness_score'),
+  livenessStatus: text('liveness_status'),
+  livenessMethod: text('liveness_method'), // 'PASSIVE' | 'ACTIVE'
+  livenessAgeEstimation: doublePrecision('liveness_age_estimation'),
+  livenessReferenceImage: text('liveness_reference_image'),
+  
+  // IP Analysis (from Didit ip_analysis)
+  ipAddress: text('ip_address'),
+  ipCity: text('ip_city'),
+  ipCountry: text('ip_country'),
+  ipCountryCode: text('ip_country_code'),
+  ipLatitude: doublePrecision('ip_latitude'),
+  ipLongitude: doublePrecision('ip_longitude'),
+  isVpnOrTor: boolean('is_vpn_or_tor'),
+  isDataCenter: boolean('is_data_center'),
+  devicePlatform: text('device_platform'), // 'desktop' | 'mobile'
+  deviceBrand: text('device_brand'),
+  deviceBrowser: text('device_browser'),
+  
+  // Verification status
+  verifiedBy: text('verified_by'), // 'didit-automated' | admin user id
   verifiedAt: timestamp('verified_at'),
   rejectionReason: text('rejection_reason'),
+  warnings: jsonb('warnings').$type<Array<{ risk: string; description: string }>>(),
   expiresAt: timestamp('expires_at'),
   
   metadata: jsonb('metadata').$type<Record<string, any>>(),
@@ -118,6 +171,7 @@ export const kycRecord = pgTable('kyc_record', {
   index('kyc_record_userId_idx').on(table.userId),
   index('kyc_record_status_idx').on(table.status),
   index('kyc_record_status_createdAt_idx').on(table.status, table.createdAt.desc()),
+  index('kyc_record_diditSessionId_idx').on(table.diditSessionId),
 ]);
 
 export const userFavorite = pgTable('user_favorite', {
