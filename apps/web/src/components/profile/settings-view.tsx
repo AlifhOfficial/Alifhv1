@@ -11,8 +11,9 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { useUserProfile, type UserProfileUpdate } from '@/hooks/profile';
 import { useToast } from '@/hooks/use-toast';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Key, Loader2, Trash2, Fingerprint } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { authClient } from '@/lib/auth/client';
 
 // ============================================================================
 // Toggle Component
@@ -92,10 +93,75 @@ export function SettingsView() {
   const [deleteText, setDeleteText] = useState('');
   const [savingField, setSavingField] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  
+  // Passkey state
+  const [passkeys, setPasskeys] = useState<Array<{ id: string; name: string | null; createdAt: Date | null }>>([]);
+  const [loadingPasskeys, setLoadingPasskeys] = useState(true);
+  const [addingPasskey, setAddingPasskey] = useState(false);
+  const [deletingPasskeyId, setDeletingPasskeyId] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Load passkeys on mount
+  useEffect(() => {
+    loadPasskeys();
+  }, []);
+
+  const loadPasskeys = async () => {
+    try {
+      setLoadingPasskeys(true);
+      const { data, error } = await authClient.passkey.listUserPasskeys();
+      if (data && !error) {
+        setPasskeys(data);
+      }
+    } catch (err) {
+      console.error('Failed to load passkeys:', err);
+    } finally {
+      setLoadingPasskeys(false);
+    }
+  };
+
+  const addPasskey = async () => {
+    try {
+      setAddingPasskey(true);
+      const { data, error } = await authClient.passkey.addPasskey({
+        name: `Passkey ${new Date().toLocaleDateString()}`,
+      });
+      
+      if (error) {
+        toast({ title: 'Failed to add passkey', description: error.message, variant: 'destructive' });
+        return;
+      }
+      
+      toast({ title: 'Passkey added!', description: 'You can now sign in with this device' });
+      await loadPasskeys();
+    } catch (err: any) {
+      toast({ title: 'Failed to add passkey', description: err.message || 'Unknown error', variant: 'destructive' });
+    } finally {
+      setAddingPasskey(false);
+    }
+  };
+
+  const deletePasskey = async (id: string) => {
+    try {
+      setDeletingPasskeyId(id);
+      const { error } = await authClient.passkey.deletePasskey({ id });
+      
+      if (error) {
+        toast({ title: 'Failed to delete passkey', variant: 'destructive' });
+        return;
+      }
+      
+      toast({ title: 'Passkey removed' });
+      setPasskeys(prev => prev.filter(p => p.id !== id));
+    } catch (err) {
+      toast({ title: 'Failed to delete passkey', variant: 'destructive' });
+    } finally {
+      setDeletingPasskeyId(null);
+    }
+  };
 
   const consignmentMode = profile?.consignmentMode ?? false;
   const showPhone = profile?.privacySettings?.showPhone ?? true;
@@ -226,6 +292,70 @@ export function SettingsView() {
                 disabled={savingField === 'consignmentMode'}
               />
             </SettingRow>
+          </div>
+        </section>
+
+        {/* Security - Passkeys */}
+        <section>
+          <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Security</h3>
+          
+          <div className="rounded-xl border border-border/40 bg-sidebar p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <p className="text-sm font-medium text-foreground">Passkeys</p>
+                <p className="text-xs text-muted-foreground/70">Sign in with biometrics or security key</p>
+              </div>
+              <button
+                onClick={addPasskey}
+                disabled={addingPasskey}
+                className="p-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors disabled:opacity-50"
+                aria-label="Add Passkey"
+              >
+                {addingPasskey ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Fingerprint className="w-4 h-4" />
+                )}
+              </button>
+            </div>
+            
+            {loadingPasskeys ? (
+              <div className="flex items-center justify-center py-4">
+                <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+              </div>
+            ) : passkeys.length === 0 ? (
+              <div className="text-center py-4 border-t border-border/20">
+                <p className="text-sm text-muted-foreground/70">No passkeys registered</p>
+                <p className="text-xs text-muted-foreground/50 mt-1">Add a passkey for passwordless sign-in</p>
+              </div>
+            ) : (
+              <div className="border-t border-border/20 pt-3 space-y-2">
+                {passkeys.map((pk) => (
+                  <div key={pk.id} className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/20">
+                    <div className="flex items-center gap-2">
+                      <Key className="w-4 h-4 text-muted-foreground" />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{pk.name || 'Passkey'}</p>
+                        <p className="text-xs text-muted-foreground/70">
+                          Added {pk.createdAt ? new Date(pk.createdAt).toLocaleDateString() : 'recently'}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => deletePasskey(pk.id)}
+                      disabled={deletingPasskeyId === pk.id}
+                      className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-50"
+                    >
+                      {deletingPasskeyId === pk.id ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </section>
 

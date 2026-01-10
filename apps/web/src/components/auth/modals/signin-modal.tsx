@@ -6,9 +6,10 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/utils/cn";
+import { authClient } from "@/lib/auth/client";
 
 interface SignInModalProps {
   open: boolean;
@@ -18,6 +19,7 @@ interface SignInModalProps {
   onSwitchToMagicLink?: () => void;
   onSubmit: (email: string, password: string) => Promise<void>;
   onGoogleSignIn?: () => Promise<void>;
+  onPasskeySuccess?: () => void;
   isLoading?: boolean;
   error?: string | null;
 }
@@ -30,12 +32,50 @@ export function SignInModal({
   onSwitchToMagicLink,
   onSubmit,
   onGoogleSignIn,
+  onPasskeySuccess,
   isLoading = false,
   error,
 }: SignInModalProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  // Chrome/cross-browser passkey autofill (conditional UI)
+  // Only shows passkeys in the input's autofill dropdown - no modal popup
+  useEffect(() => {
+    if (!open) return;
+    
+    let aborted = false;
+    const abortController = new AbortController();
+
+    const tryConditionalMediation = async () => {
+      try {
+        // This makes passkeys appear in autofill dropdown (Chrome needs this, Safari works without it)
+        // conditional: true = passive, only in autofill, no modal
+        const result = await authClient.signIn.passkey({ 
+          conditional: true,
+          fetchOptions: { signal: abortController.signal }
+        });
+        
+        // Success! Passkey authenticated
+        if (!aborted && result?.data && onPasskeySuccess) {
+          onPasskeySuccess();
+        }
+      } catch (error: any) {
+        // Silently ignore - user might not have passkeys, cancelled, or not supported
+        if (!aborted && error?.name !== 'AbortError') {
+          console.debug('[Passkey] Conditional UI not available:', error.message);
+        }
+      }
+    };
+
+    tryConditionalMediation();
+
+    return () => {
+      aborted = true;
+      abortController.abort();
+    };
+  }, [open, onPasskeySuccess]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,6 +170,7 @@ export function SignInModal({
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="username webauthn"
                   className="w-full h-10 px-3 bg-muted/20 border border-border/40 rounded-lg text-sm font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors disabled:opacity-50"
                   placeholder="you@example.com"
                   required

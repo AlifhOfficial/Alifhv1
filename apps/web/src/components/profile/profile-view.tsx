@@ -18,7 +18,11 @@ import {
   CheckCircle2,
   Star,
   X,
-  Clock
+  Clock,
+  Fingerprint,
+  Trash2,
+  Plus,
+  ShieldCheck
 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { KycVerificationModal } from '@/components/kyc';
@@ -69,6 +73,11 @@ export function ProfileView() {
   
   // KYC modal state
   const [kycModalOpen, setKycModalOpen] = useState(false);
+
+  // Passkey state
+  const [passkeys, setPasskeys] = useState<Array<{ id: string; name: string | null; createdAt: Date | null }>>([]);
+  const [loadingPasskeys, setLoadingPasskeys] = useState(false);
+  const [addingPasskey, setAddingPasskey] = useState(false);
 
   const [form, setForm] = useState({
     firstName: '',

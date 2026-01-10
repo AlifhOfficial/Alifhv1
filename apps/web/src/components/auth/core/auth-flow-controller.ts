@@ -10,7 +10,8 @@
 import { AUTH_CONFIG } from "@/lib/auth/config";
 import { 
   signInWithEmail, 
-  signInWithGooglePopup, 
+  signInWithGooglePopup,
+  signInWithPasskey,
   signUpWithEmail, 
   requestPasswordReset,
   sendMagicLink,
@@ -127,6 +128,26 @@ export class AuthFlowController {
         this.actions.setLoading(false);
         this.actions.setCurrentModal("auth-error");
       }
+    });
+  }
+
+  /**
+   * Passkey Sign In - Uses WebAuthn/biometric authentication
+   * User authenticates with fingerprint, face, or security key
+   * Note: For conditional mediation, auth already happened - just show success
+   */
+  async handlePasskeySignIn() {
+    this.startFlow(async () => {
+      // Auth already completed via conditional mediation, just show success feedback
+      this.actions.setSignInSuccess(true);
+      this.actions.setLoading(false);
+      this.actions.setCurrentModal("signin-feedback");
+
+      const stillActive = await this.wait(AUTH_CONFIG.FEEDBACK_DELAYS.SUCCESS_DISPLAY);
+      if (!stillActive) return;
+
+      this.callbacks.onSuccess?.();
+      this.handleCloseAll();
     });
   }
 

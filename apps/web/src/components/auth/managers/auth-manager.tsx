@@ -52,6 +52,7 @@ export function AuthManager({
         onSwitchToMagicLink={() => actions.setCurrentModal("magic-link")}
         onSubmit={(email, password) => flowController.handleSignIn(email, password)}
         onGoogleSignIn={() => flowController.handleGoogleSignIn()}
+        onPasskeySuccess={() => flowController.handlePasskeySignIn()}
         isLoading={state.isLoading}
         error={state.error}
       />

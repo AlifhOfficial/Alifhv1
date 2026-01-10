@@ -144,6 +144,33 @@ export const signInWithGooglePopup = (): Promise<AuthResult> => {
   });
 };
 
+/**
+ * Sign in with Passkey (WebAuthn)
+ * Uses the device's biometric/security key
+ */
+export const signInWithPasskey = async (): Promise<AuthResult> => {
+  return safeAuthOperation(async () => {
+    const result = await authClient.signIn.passkey();
+    
+    if (result.error) {
+      // Handle user cancellation gracefully
+      const errorMessage = result.error?.message?.toLowerCase() || '';
+      if (errorMessage.includes('cancel') || errorMessage.includes('aborted') || errorMessage.includes('not allowed')) {
+        return { success: false, error: "Passkey sign in was cancelled" };
+      }
+      return { success: false, error: result.error.message || "Passkey sign in failed" };
+    }
+
+    const authResult = handleAuthResult(result, "Passkey sign in failed");
+    if (authResult.success && result.data) {
+      const user = 'user' in result.data ? result.data.user : undefined;
+      return { success: true, user };
+    }
+
+    return authResult;
+  }, "Passkey sign in failed");
+};
+
 // Sign Up Handlers
 export const signUpWithEmail = async (
   name: string,
