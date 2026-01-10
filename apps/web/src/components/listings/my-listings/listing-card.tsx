@@ -1,8 +1,6 @@
 /**
  * Listing Card Component - Owner's View
- * 
- * macOS-inspired minimal design
- * Clean typography, subtle interactions
+ * Clean minimal design with expandable insights
  */
 
 'use client';
@@ -23,7 +21,6 @@ import {
   Plus, 
   Clock, 
   ChevronDown,
-  TrendingUp,
   BarChart3,
   Eye
 } from 'lucide-react';
@@ -180,54 +177,54 @@ export function ListingCard({
   const status = getStatus();
 
   return (
-    <div className="group relative rounded-xl bg-sidebar border border-sidebar-border overflow-hidden">
+    <div className="group relative rounded-xl bg-card border border-border/40 overflow-hidden hover:border-border/60 transition-colors">
       {/* Main Card Content */}
       <div className="flex flex-col sm:flex-row">
         {/* Image */}
-        <div className="p-3 sm:w-56 lg:w-64 flex-shrink-0">
+        <div className="p-2.5 sm:w-52 lg:w-56 flex-shrink-0">
           <Link 
             href={`/listings/${listing.id}`} 
-            className="relative aspect-[4/3] w-full overflow-hidden rounded-lg block bg-muted/20"
+            className="relative aspect-[4/3] w-full overflow-hidden rounded-lg block bg-muted/30"
           >
             <Image
               src={displayImage}
               alt={`${listing.year} ${listing.make} ${listing.model}`}
               fill
-              className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 224px, 256px"
+              className="object-cover"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 208px, 224px"
             />
             
             {listing.isBlkListing && (
-              <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-sm">
-                <span className="text-[10px] font-bold tracking-widest text-white">BLK</span>
+              <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black text-white">
+                <span className="text-[9px] font-bold tracking-widest">BLK</span>
               </div>
             )}
 
             {isExpiringSoon && daysRemaining !== null && (
-              <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-amber-500">
-                <span className="text-[10px] font-bold text-white">{daysRemaining}d left</span>
+              <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-amber-500 text-white">
+                <span className="text-[10px] font-bold">{daysRemaining}d left</span>
               </div>
             )}
           </Link>
         </div>
 
         {/* Content */}
-        <div className="flex-1 p-4 sm:py-4 sm:pr-4 sm:pl-1 flex flex-col min-w-0">
+        <div className="flex-1 p-3 sm:py-3 sm:pr-3 sm:pl-0.5 flex flex-col min-w-0">
           {/* Header */}
-          <div className="flex items-start justify-between gap-3 mb-2">
+          <div className="flex items-start justify-between gap-2 mb-1.5">
             <Link href={`/listings/${listing.id}`} className="flex-1 min-w-0">
-              <h3 className="text-[15px] font-bold tracking-tight text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+              <h3 className="text-sm font-semibold text-foreground line-clamp-1">
                 {listing.year} {listing.make} {listing.model}
               </h3>
               {listing.trim && (
-                <p className="text-sm text-muted-foreground/70 mt-0.5 line-clamp-1">{listing.trim}</p>
+                <p className="text-xs text-muted-foreground/60 mt-0.5 line-clamp-1">{listing.trim}</p>
               )}
             </Link>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="p-1.5 -m-1 rounded-md text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50 transition-colors">
-                  <MoreHorizontal className="w-5 h-5" />
+                <button className="w-7 h-7 -mr-1 flex items-center justify-center rounded-lg text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted/50 transition-colors">
+                  <MoreHorizontal className="w-4 h-4" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-44">
@@ -301,52 +298,52 @@ export function ListingCard({
           </div>
 
           {/* Price Row */}
-          <p className="text-lg font-bold text-blue-600 tabular-nums tracking-tight mb-auto">
-            {listing.price.toLocaleString()} <span className="text-sm font-semibold text-muted-foreground">AED</span>
+          <p className="text-base font-bold text-primary tabular-nums mb-auto">
+            {listing.price.toLocaleString()} <span className="text-xs font-semibold text-muted-foreground">AED</span>
           </p>
 
           {/* Status + Stats Row */}
-          <div className="flex items-center justify-between pt-3">
+          <div className="flex items-center justify-between pt-2 mt-2 border-t border-border/30">
             {/* Left: Status + Days Left + Hot */}
-            <div className="flex items-center gap-2">
-              <span className={cn("text-xs font-semibold", status.color)}>
+            <div className="flex items-center gap-1.5">
+              <span className={cn("text-[11px] font-semibold px-1.5 py-0.5 rounded", 
+                status.label === 'Live' ? 'bg-emerald-500/10 text-emerald-600' :
+                status.label === 'Sold' ? 'bg-emerald-500/10 text-emerald-600' :
+                status.label === 'Draft' ? 'bg-amber-500/10 text-amber-600' :
+                status.label === 'In Review' ? 'bg-blue-500/10 text-blue-600' :
+                status.label === 'Rejected' ? 'bg-red-500/10 text-red-600' :
+                status.label === 'Suspended' ? 'bg-red-500/10 text-red-600' :
+                status.label === 'Expired' ? 'bg-amber-500/10 text-amber-600' :
+                'bg-muted text-muted-foreground'
+              )}>
                 {status.label}
               </span>
-              {listing.isPublic && daysRemaining !== null && daysRemaining > 0 && (
-                <>
-                  <span className="text-muted-foreground/30">·</span>
-                  <span className={cn(
-                    "text-xs font-medium tabular-nums",
-                    isExpiringSoon ? "text-amber-600" : "text-muted-foreground/70"
-                  )}>
-                    {daysRemaining}d left
-                  </span>
-                </>
+              {listing.isPublic && daysRemaining !== null && daysRemaining > 0 && !isExpiringSoon && (
+                <span className="text-[11px] text-muted-foreground/60 tabular-nums">
+                  {daysRemaining}d
+                </span>
               )}
-              {hotScore >= 20 && (
-                <>
-                  <span className="text-muted-foreground/30">·</span>
-                  <span className={cn("flex items-center gap-1 text-xs font-semibold", hotLevel.color)}>
-                    {hotScore >= 40 && <Flame className="w-3.5 h-3.5" />}
-                    {hotLevel.label}
-                  </span>
-                </>
+              {hotScore >= 40 && (
+                <span className={cn("flex items-center gap-0.5 text-[11px] font-semibold", hotLevel.color)}>
+                  <Flame className="w-3 h-3" />
+                  {hotLevel.label}
+                </span>
               )}
             </div>
             
             {/* Right: Stats */}
-            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <div className="flex items-center gap-2.5 text-[11px] text-muted-foreground/60">
               <span className="flex items-center gap-1">
-                <TrendingUp className="w-3.5 h-3.5" />
-                <span className="font-semibold text-foreground tabular-nums">{views}</span>
+                <Eye className="w-3 h-3" />
+                <span className="font-semibold text-foreground/80 tabular-nums">{views}</span>
               </span>
               <span className="flex items-center gap-1">
-                <Heart className="w-3.5 h-3.5" strokeWidth={1.5} />
-                <span className="font-semibold text-foreground tabular-nums">{saves}</span>
+                <Heart className="w-3 h-3" strokeWidth={1.5} />
+                <span className="font-semibold text-foreground/80 tabular-nums">{saves}</span>
               </span>
               {superlikes > 0 && (
                 <span className="flex items-center gap-1 text-amber-500">
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <Sparkles className="w-3 h-3" />
                   <span className="font-semibold tabular-nums">{superlikes}</span>
                 </span>
               )}
@@ -359,33 +356,33 @@ export function ListingCard({
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className={cn(
-          "w-full flex items-center justify-between px-4 py-3 border-t border-sidebar-border/60 hover:bg-sidebar-accent/30 transition-colors",
-          isExpanded && "bg-sidebar-accent/20"
+          "w-full flex items-center justify-between px-3 py-2 border-t border-border/30 hover:bg-muted/30 transition-colors",
+          isExpanded && "bg-muted/20"
         )}
       >
-        <span className="text-xs font-medium text-muted-foreground">
-          {isExpanded ? 'Hide Insights' : 'View Insights'}
+        <span className="text-[11px] font-medium text-muted-foreground/60">
+          {isExpanded ? 'Hide insights' : 'View insights'}
         </span>
         <ChevronDown className={cn(
-          "w-4 h-4 text-muted-foreground/50 transition-transform duration-200",
+          "w-3.5 h-3.5 text-muted-foreground/40 transition-transform duration-200",
           isExpanded && "rotate-180"
         )} />
       </button>
 
       {/* Expanded Insights Panel - Full Width */}
       {isExpanded && (
-        <div className="px-4 pb-4 pt-3 bg-sidebar-accent/10 border-t border-sidebar-border/30 animate-in slide-in-from-top-2 duration-200">
+        <div className="px-3 pb-3 pt-2 bg-muted/10 animate-in slide-in-from-top-2 duration-200">
           {/* Metrics Grid */}
-          <div className="grid grid-cols-2 gap-6 mb-4">
+          <div className="grid grid-cols-2 gap-4 mb-3">
             {/* Click Rate */}
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium text-muted-foreground">Click Rate</span>
-                <span className="text-sm font-bold tabular-nums text-foreground">{ctr}%</span>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[11px] font-medium text-muted-foreground/60">Click Rate</span>
+                <span className="text-xs font-bold tabular-nums text-foreground">{ctr}%</span>
               </div>
-              <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
+              <div className="h-1.5 bg-muted/50 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-blue-500 rounded-full transition-all duration-500"
+                  className="h-full bg-primary rounded-full transition-all duration-500"
                   style={{ width: `${Math.min(parseFloat(ctr) * 10, 100)}%` }}
                 />
               </div>
@@ -393,11 +390,11 @@ export function ListingCard({
             
             {/* Engagement */}
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium text-muted-foreground">Engagement</span>
-                <span className={cn("text-sm font-bold tabular-nums", hotLevel.color)}>{hotScore}/100</span>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[11px] font-medium text-muted-foreground/60">Engagement</span>
+                <span className={cn("text-xs font-bold tabular-nums", hotLevel.color)}>{hotScore}/100</span>
               </div>
-              <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
+              <div className="h-1.5 bg-muted/50 rounded-full overflow-hidden">
                 <div 
                   className={cn(
                     "h-full rounded-full transition-all duration-500",
@@ -413,20 +410,20 @@ export function ListingCard({
           </div>
 
           {/* Additional Stats Row */}
-          <div className="flex items-center justify-between pt-3 border-t border-sidebar-border/30">
-            <div className="flex items-center gap-5 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1.5">
-                <BarChart3 className="w-3.5 h-3.5" />
-                <span className="font-semibold text-foreground tabular-nums">{impressions.toLocaleString()}</span>
-                impressions
+          <div className="flex items-center justify-between pt-2 border-t border-border/30">
+            <div className="flex items-center gap-4 text-[11px] text-muted-foreground/60">
+              <span className="flex items-center gap-1">
+                <BarChart3 className="w-3 h-3" />
+                <span className="font-semibold text-foreground/80 tabular-nums">{impressions.toLocaleString()}</span>
+                <span>impr</span>
               </span>
               {(listing.extensionCount ?? 0) > 0 && (
                 <span>
-                  Extended <span className="font-semibold text-foreground">{listing.extensionCount}×</span>
+                  Extended <span className="font-semibold text-foreground/80">{listing.extensionCount}×</span>
                 </span>
               )}
             </div>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-[11px] text-muted-foreground/50">
               {formatRelativeDate(listing.publishedAt || listing.createdAt)}
             </span>
           </div>
@@ -434,8 +431,8 @@ export function ListingCard({
           {/* Expiry Date */}
           {expiresAt && (
             <p className={cn(
-              "text-xs mt-3",
-              isExpiringSoon ? "text-amber-600 font-medium" : "text-muted-foreground/60"
+              "text-[11px] mt-2",
+              isExpiringSoon ? "text-amber-600 font-medium" : "text-muted-foreground/50"
             )}>
               Expires {formatDate(expiresAt)}
             </p>
@@ -445,10 +442,10 @@ export function ListingCard({
 
       {/* Delete Confirmation */}
       {deleteConfirm === listing.id && (
-        <div className="absolute inset-0 flex items-center justify-center bg-sidebar/95 backdrop-blur-sm rounded-xl z-10">
+        <div className="absolute inset-0 flex items-center justify-center bg-card/95 backdrop-blur-sm rounded-xl z-10">
           <div className="text-center px-6">
-            <p className="text-sm font-semibold text-foreground mb-4">Delete this listing?</p>
-            <div className="flex items-center justify-center gap-3">
+            <p className="text-sm font-semibold text-foreground mb-3">Delete this listing?</p>
+            <div className="flex items-center justify-center gap-2">
               <button 
                 onClick={onCancelDelete}
                 className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted/50 transition-colors"
@@ -457,7 +454,7 @@ export function ListingCard({
               </button>
               <button 
                 onClick={() => onDelete(listing.id)}
-                className="px-4 py-2 text-sm font-semibold text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-semibold text-white bg-destructive hover:bg-destructive/90 rounded-lg transition-colors"
               >
                 Delete
               </button>

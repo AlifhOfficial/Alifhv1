@@ -11,7 +11,7 @@ export function PartnerClosingSection() {
     <section>
       
       {/* Content */}
-      <div className="max-w-[1400px] mx-auto px-4 py-24">
+      <div className="max-w-[1600px] mx-auto px-4 py-24">
         <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
           Limited availability
         </p>

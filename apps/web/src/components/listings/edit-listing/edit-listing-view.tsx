@@ -81,7 +81,7 @@ export function EditListingView({ listing, userId, listingType = 'personal' }: E
       setError(null);
 
       // Transform images back to string[] for API
-      const apiData = {
+      const apiData: Record<string, unknown> = {
         ...data,
         images: data.images.map(img => img.key),
         // Map ownerRemarks back to specialNotes structure
@@ -90,6 +90,11 @@ export function EditListingView({ listing, userId, listingType = 'personal' }: E
           ownerRemarks: data.ownerRemarks,
         },
       };
+
+      // If the listing is a draft, submit it for review when saving
+      if (listing.moderationStatus === 'draft') {
+        apiData.status = 'published';
+      }
 
       const response = await fetch(`/api/listings/${listing.id}`, {
         method: 'PUT',

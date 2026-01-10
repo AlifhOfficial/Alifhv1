@@ -81,7 +81,7 @@ export function BookingList({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
       </div>
     );
   }
@@ -94,11 +94,11 @@ export function BookingList({
     const Icon = config.icon;
     
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-center rounded-xl border border-sidebar-border bg-sidebar">
-        <div className="w-16 h-16 rounded-full bg-sidebar-accent/50 flex items-center justify-center mb-5">
-          <Icon className={`w-7 h-7 ${config.color}`} />
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="w-14 h-14 rounded-full bg-muted/30 flex items-center justify-center mb-4">
+          <Icon className={`w-6 h-6 ${config.color}`} />
         </div>
-        <p className="text-[15px] font-bold tracking-tight text-foreground mb-1">
+        <p className="text-[15px] font-semibold text-foreground mb-1">
           {config.message}
         </p>
         <p className="text-sm text-muted-foreground/70">
@@ -109,14 +109,14 @@ export function BookingList({
   }
 
   return (
-    <section className="space-y-4">
+    <section className="space-y-3">
       {/* Section Header */}
-      <p className="text-sm font-semibold text-muted-foreground/70">
+      <p className="text-xs font-semibold text-muted-foreground/60">
         {bookings.length} booking{bookings.length !== 1 ? 's' : ''}
         {searchQuery && <span className="text-muted-foreground/50"> matching "{searchQuery}"</span>}
       </p>
       
-      <div className="space-y-3">
+      <div className="space-y-2">
         {bookings.map(booking => (
           <BookingCard
             key={booking.id}

@@ -10,7 +10,7 @@ export function ClosingSection() {
     <section>
       
       {/* Content */}
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
           Our promise
         </p>
@@ -62,7 +62,7 @@ export function ClosingSection() {
       </div>
 
       {/* Full Width Video */}
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] rounded-lg overflow-hidden">
           <video
             autoPlay

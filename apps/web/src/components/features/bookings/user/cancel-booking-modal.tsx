@@ -1,17 +1,13 @@
 /**
  * Cancel Booking Modal (User)
- * 
- * Clean, minimal design matching our modal patterns
+ * Clean centered modal design
  */
 
 'use client';
 
 import { createPortal } from 'react-dom';
 import { useEffect, useState } from 'react';
-import { Loader2, X, AlertTriangle } from 'lucide-react';
-import { cn } from '@/utils';
-
-const DEFAULT_REASON = 'Changed mind';
+import { Loader2, AlertTriangle } from 'lucide-react';
 
 interface CancelBookingModalProps {
   isOpen: boolean;
@@ -57,81 +53,71 @@ export function CancelBookingModal({
   if (!isOpen || !mounted) return null;
 
   const modalContent = (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={() => !isSubmitting && onClose()}
       />
 
       {/* Modal */}
-      <div className={cn(
-        "relative w-full max-w-md bg-background rounded-xl border border-border/40 shadow-lg overflow-hidden",
-        "animate-in fade-in-0 zoom-in-95 duration-200"
-      )}>
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border/40">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-destructive" />
-            <h2 className="text-[15px] font-bold tracking-tight">Cancel Booking</h2>
-          </div>
-          <button
-            onClick={onClose}
-            disabled={isSubmitting}
-            className="p-1.5 rounded-lg hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground disabled:opacity-50"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-
+      <div className="relative w-full max-w-xs rounded-xl border border-border/40 bg-card p-6 shadow-xl animate-in fade-in-0 zoom-in-95 duration-200">
         {/* Content */}
-        <div className="p-5">
-          <p className="text-sm text-muted-foreground mb-5">
-            Tell us why you're cancelling this booking.
-          </p>
-
-          {/* Reason Text Field */}
-          <div className="space-y-2 mb-4">
-            <label className="text-sm font-semibold text-muted-foreground/70">Reason</label>
-            <input
-              type="text"
-              value={reason}
-              onChange={(e) => onReasonChange(e.target.value)}
-              placeholder={DEFAULT_REASON}
-              disabled={isSubmitting}
-              className="w-full h-10 px-3 bg-muted/20 border border-border/40 rounded-lg text-sm font-medium placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors disabled:opacity-50"
-            />
+        <div className="flex flex-col items-center text-center space-y-4">
+          {/* Icon */}
+          <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
+            <AlertTriangle className="w-6 h-6 text-destructive" />
           </div>
 
-          {/* Notes Textarea */}
-          <div className="space-y-2 mb-6">
-            <label className="text-sm font-semibold text-muted-foreground/70">
-              Additional Notes{' '}
-              <span className="font-medium text-muted-foreground/50">(optional)</span>
-            </label>
-            <textarea
-              value={notes}
-              onChange={(e) => onNotesChange(e.target.value)}
-              placeholder="Optional details..."
-              rows={3}
-              disabled={isSubmitting}
-              className="w-full px-3 py-2.5 bg-muted/20 border border-border/40 rounded-lg text-sm font-medium resize-none placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors disabled:opacity-50"
-            />
+          {/* Title */}
+          <div className="space-y-1">
+            <h3 className="text-base font-semibold text-foreground">
+              Cancel Booking
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Tell us why you're cancelling
+            </p>
+          </div>
+
+          {/* Form Fields */}
+          <div className="w-full space-y-3 text-left">
+            {/* Reason */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-muted-foreground/70">
+                Reason <span className="font-normal text-muted-foreground/50">(optional)</span>
+              </label>
+              <input
+                type="text"
+                value={reason}
+                onChange={(e) => onReasonChange(e.target.value)}
+                placeholder="Changed mind"
+                disabled={isSubmitting}
+                className="w-full h-10 px-3 bg-muted/30 border border-border/40 rounded-lg text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 transition-all disabled:opacity-50"
+              />
+            </div>
+
+            {/* Notes */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-muted-foreground/70">
+                Notes <span className="font-normal text-muted-foreground/50">(optional)</span>
+              </label>
+              <textarea
+                value={notes}
+                onChange={(e) => onNotesChange(e.target.value)}
+                placeholder="Additional details..."
+                rows={2}
+                disabled={isSubmitting}
+                className="w-full px-3 py-2.5 bg-muted/30 border border-border/40 rounded-lg text-sm resize-none placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 transition-all disabled:opacity-50"
+              />
+            </div>
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3">
-            <button
-              onClick={onClose}
-              disabled={isSubmitting}
-              className="flex-1 h-11 border border-border/40 rounded-lg text-sm font-semibold hover:bg-muted/30 transition-colors disabled:opacity-50"
-            >
-              Go Back
-            </button>
+          <div className="flex flex-col w-full gap-2 pt-2">
             <button
               onClick={onSubmit}
               disabled={isSubmitting}
-              className="flex-1 h-11 bg-destructive text-destructive-foreground rounded-lg text-sm font-semibold hover:bg-destructive/90 transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-2"
+              className="w-full h-10 rounded-lg bg-destructive text-destructive-foreground text-sm font-semibold hover:bg-destructive/90 transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
@@ -141,6 +127,13 @@ export function CancelBookingModal({
               ) : (
                 'Cancel Booking'
               )}
+            </button>
+            <button
+              onClick={onClose}
+              disabled={isSubmitting}
+              className="w-full h-10 rounded-lg text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors disabled:opacity-50"
+            >
+              Go Back
             </button>
           </div>
         </div>

@@ -1,14 +1,14 @@
 /**
  * Auth Error Modal - Alifh Design System
  * 
- * Displays Better Auth errors in your branded modal UI/UX
- * Provides clear error messages and actionable next steps
+ * Displays auth errors with actionable next steps
  */
 
 "use client";
 
 import { useEffect, useState } from "react";
-import { AlertCircle, X, ArrowRight, Mail, RefreshCcw } from "lucide-react";
+import { XCircle, X } from "lucide-react";
+import { cn } from "@/utils/cn";
 import { AuthErrorInfo, AuthErrorAction } from "@/lib/auth/errors";
 
 interface AuthErrorModalProps {
@@ -28,7 +28,7 @@ export function AuthErrorModal({
 
   useEffect(() => {
     if (open) {
-      setTimeout(() => setShowContent(true), 150);
+      setTimeout(() => setShowContent(true), 100);
     } else {
       setShowContent(false);
     }
@@ -44,103 +44,78 @@ export function AuthErrorModal({
     }
   };
 
-  const getActionIcon = () => {
-    switch (errorInfo.action) {
-      case "SIGN_IN":
-      case "SIGN_UP":
-        return <ArrowRight className="w-4 h-4" />;
-      case "RETRY":
-        return <RefreshCcw className="w-4 h-4" />;
-      case "CONTACT_SUPPORT":
-        return <Mail className="w-4 h-4" />;
-      default:
-        return null;
-    }
-  };
-
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-black/60 flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div 
-        className={`max-w-md w-full bg-card border border-border rounded-2xl p-8 relative shadow-2xl transform transition-all duration-300 ${
-          showContent ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
-        }`}
+        className={cn(
+          "max-w-sm w-full bg-card border border-border/40 rounded-xl shadow-xl p-6 relative",
+          "transform transition-all duration-200",
+          showContent ? "scale-100 opacity-100" : "scale-95 opacity-0"
+        )}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-muted/50"
+          className="absolute top-4 right-4 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
           aria-label="Close"
         >
           <X className="w-4 h-4" />
         </button>
 
-        <div className="flex flex-col items-center space-y-6">
+        <div className="flex flex-col items-center space-y-4">
           {/* Error Icon */}
-          <div className="relative">
-            <div className="absolute inset-0 bg-red-500/20 rounded-full blur-xl animate-pulse"></div>
-            <div 
-              className={`relative bg-red-500/10 rounded-full p-4 transition-all duration-500 ${
-                showContent ? 'scale-100 rotate-0' : 'scale-0 rotate-180'
-              }`}
-            >
-              <AlertCircle className="w-8 h-8 text-red-500" />
-            </div>
+          <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
+            <XCircle className="w-6 h-6 text-destructive" />
           </div>
           
           {/* Content */}
-          <div 
-            className={`text-center space-y-3 transition-all duration-500 ${
-              showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            }`}
-          >
-            <h2 className="text-lg font-semibold text-foreground tracking-tight">
+          <div className="text-center space-y-1">
+            <h2 className="text-base font-semibold tracking-tight text-foreground">
               {errorInfo.title}
             </h2>
-            
-            <p className="text-sm text-muted-foreground/80 leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               {errorInfo.message}
             </p>
           </div>
 
           {/* Action Buttons */}
-          <div 
-            className={`w-full space-y-3 transition-all duration-500 delay-100 ${
-              showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            }`}
-          >
+          <div className="w-full space-y-2 pt-2">
             {errorInfo.action && (
               <button
                 onClick={handleAction}
-                className="w-full bg-foreground hover:bg-foreground/90 text-background font-medium py-3 px-4 rounded-xl transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+                className={cn(
+                  "w-full h-10 px-4 rounded-lg text-sm font-semibold transition-colors",
+                  "bg-primary text-primary-foreground hover:bg-primary/90"
+                )}
               >
-                <span>{errorInfo.actionLabel || "Continue"}</span>
-                {getActionIcon()}
+                {errorInfo.actionLabel || "Try again"}
               </button>
             )}
             
             <button
               onClick={onClose}
-              className="w-full bg-muted/50 hover:bg-muted text-foreground font-medium py-3 px-4 rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+              className={cn(
+                "w-full h-10 px-4 rounded-lg text-sm font-semibold transition-colors",
+                "bg-muted/30 text-foreground hover:bg-muted/50"
+              )}
             >
-              Close
+              {errorInfo.action ? "Cancel" : "Close"}
             </button>
           </div>
 
           {/* Support hint */}
-          <p className="text-xs text-muted-foreground/60 text-center">
-            If this problem persists, please{" "}
+          <p className="text-xs text-muted-foreground/60 text-center pt-1">
+            Need help?{" "}
             <a 
               href="/contact" 
-              className="text-foreground hover:underline font-medium"
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
+              className="font-medium text-foreground hover:text-primary transition-colors"
+              onClick={(e) => e.stopPropagation()}
             >
-              contact support
+              Contact support
             </a>
           </p>
         </div>

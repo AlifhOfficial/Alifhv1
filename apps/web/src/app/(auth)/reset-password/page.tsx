@@ -1,41 +1,32 @@
 /**
- * Reset Password Page - Alifh Design Philosophy
- * 
- * Premium, minimal password reset experience
- * Sophisticated design matching Alifh's luxury aesthetic
+ * Reset Password Page - Alifh Design System
  */
 
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Eye, EyeOff, Lock, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, Lock, ArrowLeft, X } from "lucide-react";
 import { authClient } from "@/lib/auth/client";
+import { cn } from "@/utils/cn";
+import { PageLoader } from "@/components/shared/page-loader";
 
 function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
-  const [formData, setFormData] = useState({
-    password: "",
-    confirmPassword: "",
-  });
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [isValidToken, setIsValidToken] = useState(false);
 
   useEffect(() => {
-    // Validate token on mount
     if (!token) {
       router.push("/");
       return;
     }
-    
-    // Token exists, assume it's valid for now
-    // Better Auth will validate during reset
     setIsValidToken(true);
   }, [token, router]);
 
@@ -43,13 +34,8 @@ function ResetPasswordForm() {
     e.preventDefault();
     if (!token || isLoading) return;
 
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords don't match");
-      return;
-    }
-
-    if (formData.password.length < 8) {
-      setError("Password must be at least 8 characters long");
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters");
       return;
     }
 
@@ -58,7 +44,7 @@ function ResetPasswordForm() {
 
     try {
       const result = await authClient.resetPassword({
-        newPassword: formData.password,
+        newPassword: password,
         token,
       });
 
@@ -67,7 +53,6 @@ function ResetPasswordForm() {
         return;
       }
 
-      // Success - redirect to sign in
       router.push("/?reset=success");
     } catch (error: any) {
       setError(error.message || "Password reset failed");
@@ -76,30 +61,36 @@ function ResetPasswordForm() {
     }
   };
 
+  // Invalid token state
   if (!isValidToken) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="max-w-md w-full bg-card border border-border/40 rounded-lg">
-            {/* Header */}
-            <div className="border-b border-border/40 p-6">
-              <Lock className="w-4 h-4 text-muted-foreground mb-4" />
-              <h2 className="text-xl font-medium text-foreground mb-2">Invalid Reset Link</h2>
-              <p className="text-sm text-muted-foreground">
-                This password reset link is invalid or has expired.
-              </p>
+      <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="max-w-sm w-full bg-card border border-border/40 rounded-xl shadow-xl p-6">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
+              <X className="h-6 w-6 text-destructive" />
             </div>
             
-            {/* Content */}
-            <div className="p-6">
-              <button
-                onClick={() => router.push("/")}
-                className="w-full h-10 px-4 border border-border/40 text-foreground text-sm font-medium rounded-lg hover:bg-muted/50 transition-colors flex items-center justify-center gap-2"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back to Sign In
-              </button>
+            <div className="text-center space-y-1">
+              <h1 className="text-base font-semibold text-foreground tracking-tight">
+                Invalid reset link
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                This link is invalid or has expired.
+              </p>
             </div>
+
+            <button
+              onClick={() => router.push("/")}
+              className={cn(
+                "w-full h-10 rounded-lg text-sm font-semibold transition-colors",
+                "bg-muted/30 text-foreground hover:bg-muted/50",
+                "flex items-center justify-center gap-2"
+              )}
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to sign in
+            </button>
           </div>
         </div>
       </div>
@@ -107,111 +98,81 @@ function ResetPasswordForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-card border border-border/40 rounded-lg">
-          {/* Header */}
-          <div className="border-b border-border/40 p-6">
-            <Lock className="w-4 h-4 text-muted-foreground mb-4" />
-            <h2 className="text-xl font-medium text-foreground mb-2">Reset Password</h2>
-            <p className="text-sm text-muted-foreground">
-              Enter your new password below
+    <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="max-w-sm w-full bg-card border border-border/40 rounded-xl shadow-xl">
+        {/* Header */}
+        <div className="p-6 relative">
+          <button
+            onClick={() => router.push("/")}
+            className="absolute top-4 left-4 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
+            aria-label="Back"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+
+          <div className="pt-6">
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">
+              Reset password
+            </h1>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Enter your new password
             </p>
           </div>
+        </div>
 
-          {/* Content */}
-          <div className="p-6 space-y-6">
-            {error && (
-              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
-                <p className="text-xs text-destructive leading-relaxed">
-                  {error}
-                </p>
+        {/* Content */}
+        <div className="px-6 pb-6 space-y-5">
+          {/* Error */}
+          {error && (
+            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+              <p className="text-sm text-destructive">{error}</p>
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <label htmlFor="password" className="text-sm font-semibold text-muted-foreground/70">
+                New password
+              </label>
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full h-10 px-3 pr-10 bg-muted/20 border border-border/40 rounded-lg text-sm font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors disabled:opacity-50"
+                  placeholder="••••••••"
+                  required
+                  disabled={isLoading}
+                  minLength={8}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
-            )}
-
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-medium text-foreground">
-                  New Password
-                </label>
-                <div className="relative">
-                  <input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    value={formData.password}
-                    onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                    className="w-full h-10 px-3 bg-background border border-border/40 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors disabled:opacity-50"
-                    placeholder="••••••••"
-                    required
-                    disabled={isLoading}
-                    minLength={8}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                  >
-                    {showPassword ? "Hide" : "Show"}
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">
-                  Confirm Password
-                </label>
-                <div className="relative">
-                  <input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    value={formData.confirmPassword}
-                    onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                    className="w-full h-10 px-3 bg-background border border-border/40 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors disabled:opacity-50"
-                    placeholder="••••••••"
-                    required
-                    disabled={isLoading}
-                    minLength={8}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-                  >
-                    {showConfirmPassword ? "Hide" : "Show"}
-                  </button>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={!formData.password || !formData.confirmPassword || isLoading}
-                className="w-full h-10 px-4 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {isLoading ? "Updating password..." : "Update Password"}
-              </button>
-            </form>
-
-            {/* Helper text */}
-            <div className="bg-muted/40 border border-border/40 rounded-lg p-3">
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Password must be at least 8 characters long.
+              <p className="text-xs text-muted-foreground">
+                Minimum 8 characters
               </p>
             </div>
-          </div>
 
-          {/* Footer */}
-          <div className="border-t border-border/40 p-6">
             <button
-              onClick={() => router.push("/")}
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 mx-auto"
+              type="submit"
+              disabled={!password || isLoading}
+              className={cn(
+                "w-full h-10 rounded-lg text-sm font-semibold transition-colors",
+                "bg-primary text-primary-foreground hover:bg-primary/90",
+                "disabled:opacity-50 disabled:cursor-not-allowed"
+              )}
             >
-              <ArrowLeft className="w-3 h-3" />
-              Back to sign in
+              {isLoading ? "Updating..." : "Update password"}
             </button>
-          </div>
+          </form>
         </div>
       </div>
     </div>
@@ -220,11 +181,7 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-50">
-        <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    }>
+    <Suspense fallback={<PageLoader />}>
       <ResetPasswordForm />
     </Suspense>
   );

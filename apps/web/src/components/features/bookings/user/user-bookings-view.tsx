@@ -27,7 +27,7 @@ export function UserBookingsView() {
   const [bookings, setBookings] = useState<UserBookingData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedStatus, setSelectedStatus] = useState<string>('confirmed');
+  const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sort, setSort] = useState<BookingSort>('newest');
   const [feedbackModal, setFeedbackModal] = useState<{ bookingId: string; isOpen: boolean } | null>(null);
@@ -217,7 +217,7 @@ export function UserBookingsView() {
         <button
           onClick={fetchBookings}
           disabled={isLoading}
-          className="p-2 rounded-lg hover:bg-sidebar transition-colors disabled:opacity-50"
+          className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-muted/50 transition-colors disabled:opacity-50"
           aria-label="Refresh"
         >
           <RefreshCw className={`w-4 h-4 text-muted-foreground ${isLoading ? 'animate-spin' : ''}`} />
@@ -225,7 +225,7 @@ export function UserBookingsView() {
       </DashboardPageHeader>
 
         {/* Status Tabs */}
-        <div className="flex items-center gap-8 overflow-x-auto pb-1">
+        <div className="flex items-center gap-1 overflow-x-auto pb-1 -mx-1 px-1">
           {statusTabs.map((tab) => {
             // Count includes expired under no_show tab
             const count = tab.key === 'all' 
@@ -235,29 +235,30 @@ export function UserBookingsView() {
                 : bookings.filter(b => b.status === tab.key).length;
             const isActive = selectedStatus === tab.key;
             
-            // Solid color mapping
-            const activeColorClass = 
-              tab.key === 'confirmed' ? 'text-emerald-500' :
-              tab.key === 'pending' ? 'text-amber-500' :
-              tab.key === 'completed' ? 'text-blue-500' :
-              tab.key === 'cancelled' ? 'text-red-500' :
-              tab.key === 'no_show' ? 'text-slate-400' :
-              'text-foreground';
+            // Color config for pill-style tabs
+            const colorConfig = {
+              all: { bg: 'bg-primary/10', text: 'text-primary', badge: 'bg-primary/20 text-primary' },
+              pending: { bg: 'bg-amber-500/10', text: 'text-amber-600', badge: 'bg-amber-500/20 text-amber-600' },
+              confirmed: { bg: 'bg-emerald-500/10', text: 'text-emerald-600', badge: 'bg-emerald-500/20 text-emerald-600' },
+              completed: { bg: 'bg-blue-500/10', text: 'text-blue-600', badge: 'bg-blue-500/20 text-blue-600' },
+              cancelled: { bg: 'bg-red-500/10', text: 'text-red-600', badge: 'bg-red-500/20 text-red-600' },
+              no_show: { bg: 'bg-muted', text: 'text-muted-foreground', badge: 'bg-muted text-muted-foreground' },
+            }[tab.key] || { bg: 'bg-muted', text: 'text-foreground', badge: 'bg-muted text-muted-foreground' };
             
             return (
               <button
                 key={tab.key}
                 onClick={() => setSelectedStatus(tab.key)}
-                className={`text-[15px] font-bold tracking-tight transition-colors whitespace-nowrap ${
+                className={`px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${
                   isActive
-                    ? activeColorClass
-                    : 'text-muted-foreground/50 hover:text-muted-foreground'
+                    ? `${colorConfig.bg} ${colorConfig.text}`
+                    : 'text-muted-foreground/60 hover:text-muted-foreground hover:bg-muted/30'
                 }`}
               >
                 {tab.label}
                 {count > 0 && (
-                  <span className={`ml-2 text-[13px] font-bold tabular-nums ${
-                    isActive ? activeColorClass : 'text-muted-foreground/40'
+                  <span className={`ml-1.5 px-1.5 py-0.5 rounded text-xs font-bold tabular-nums ${
+                    isActive ? colorConfig.badge : 'bg-muted/50 text-muted-foreground/50'
                   }`}>
                     {count}
                   </span>
@@ -270,18 +271,18 @@ export function UserBookingsView() {
         {/* Toolbar: Search + Sort */}
         <div className="flex items-center gap-3">
           {/* Search */}
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by car, dealer, code, or date..."
-              className="w-full h-10 pl-10 pr-10 rounded-xl bg-sidebar border border-sidebar-border text-sm font-medium placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+              placeholder="Search bookings..."
+              className="w-full h-10 pl-10 pr-9 rounded-lg bg-muted/30 border border-border/40 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 focus:bg-background transition-all"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-muted transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-muted/50 hover:bg-muted transition-colors"
               >
                 <X className="w-3 h-3 text-muted-foreground" />
               </button>
@@ -290,7 +291,7 @@ export function UserBookingsView() {
 
           {/* Sort */}
           <Select value={sort} onValueChange={(v) => setSort(v as BookingSort)}>
-            <SelectTrigger className="h-10 w-28 border border-sidebar-border bg-sidebar rounded-xl text-sm font-medium flex-shrink-0">
+            <SelectTrigger className="h-10 w-28 border border-border/40 bg-muted/30 rounded-lg text-sm font-medium flex-shrink-0 focus:ring-1 focus:ring-primary/30">
               <SelectValue placeholder="Sort" />
             </SelectTrigger>
             <SelectContent>
@@ -302,8 +303,11 @@ export function UserBookingsView() {
 
       {/* Error */}
       {error && (
-        <div className="mb-6 p-4 rounded-xl bg-red-500/5 border border-red-500/20">
-          <p className="text-sm text-red-500">{error}</p>
+        <div className="flex items-center gap-3 p-4 rounded-xl bg-destructive/5 border border-destructive/20">
+          <div className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center flex-shrink-0">
+            <X className="w-4 h-4 text-destructive" />
+          </div>
+          <p className="text-sm text-destructive">{error}</p>
         </div>
       )}
 

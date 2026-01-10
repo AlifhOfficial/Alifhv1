@@ -22,7 +22,7 @@ export function PartnerHeroSection() {
 
   return (
     <section className="pt-28 pb-20 px-4">
-      <div className="max-w-[1400px] mx-auto">
+      <div className="max-w-[1600px] mx-auto">
         
         {/* Brand & Tagline */}
         <div className="text-center mb-16 space-y-4">

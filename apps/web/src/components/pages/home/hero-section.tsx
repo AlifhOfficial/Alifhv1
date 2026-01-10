@@ -7,11 +7,19 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useAuth } from '@/providers/auth-provider';
 
 export function HeroSection() {
+  const { session } = useAuth();
+
+  // If signed in, go to new listing. Otherwise, trigger sign-in modal with redirect
+  const sellHref = session 
+    ? '/user-dashboard/listings/new' 
+    : '/?auth=signin&redirect=/user-dashboard/listings/new';
+
   return (
     <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-[1400px] mx-auto">
+      <div className="max-w-[1600px] mx-auto">
         
         {/* Brand & Tagline */}
         <div className="text-center mb-16 space-y-4">
@@ -37,7 +45,7 @@ export function HeroSection() {
             Browse Cars
           </Link>
           <Link
-            href="/sell"
+            href={sellHref}
             className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
           >
             Sell Your Car

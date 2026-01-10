@@ -80,7 +80,7 @@ function SettingRow({
     <div 
       className={cn(
         "flex items-center justify-between py-3",
-        !isLast && "border-b border-sidebar-border/40"
+        !isLast && "border-b border-border/30"
       )}
     >
       <div className="flex-1 min-w-0 pr-4">
@@ -120,26 +120,26 @@ export function AvailabilitySettings({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
       </div>
     );
   }
 
   if (availability.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-center rounded-xl border border-sidebar-border bg-sidebar">
-        <div className="w-16 h-16 rounded-full bg-sidebar-accent/50 flex items-center justify-center mb-5">
-          <Calendar className="w-7 h-7 text-muted-foreground/40" />
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="w-14 h-14 rounded-full bg-muted/30 flex items-center justify-center mb-4">
+          <Calendar className="w-6 h-6 text-muted-foreground/40" />
         </div>
-        <p className="text-[15px] font-bold tracking-tight text-foreground mb-1">
+        <p className="text-[15px] font-semibold text-foreground mb-1">
           No schedule configured
         </p>
-        <p className="text-sm text-muted-foreground/70 mb-6">
-          Set up your weekly availability for test drives
+        <p className="text-sm text-muted-foreground/70 mb-5">
+          Set up your weekly availability
         </p>
         <button
           onClick={onInitialize}
-          className="px-5 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors"
+          className="px-4 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors"
         >
           Set Up Schedule
         </button>
@@ -152,15 +152,15 @@ export function AvailabilitySettings({
   const allowSameDay = settings?.allowSameDay ?? true;
 
   return (
-    <div className="space-y-8 mt-6">
+    <div className="space-y-6 mt-4">
       {/* Booking Preferences */}
       <section>
         <div className="flex items-center gap-2 mb-3">
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground">Booking Preferences</h3>
+          <h3 className="text-[15px] font-semibold text-foreground">Booking Preferences</h3>
           {savingSettings && <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" />}
         </div>
         
-        <div className="rounded-xl border border-sidebar-border bg-sidebar p-4">
+        <div className="rounded-xl border border-border/40 bg-card p-4">
           <SettingRow 
             title="Accept Bookings" 
             description="Allow customers to book test drives"
@@ -199,9 +199,9 @@ export function AvailabilitySettings({
 
       {/* Booking Limits */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Booking Limits</h3>
+        <h3 className="text-[15px] font-semibold text-foreground mb-3">Booking Limits</h3>
         
-        <div className="rounded-xl border border-sidebar-border bg-sidebar p-4">
+        <div className="rounded-xl border border-border/40 bg-card p-4">
           <SettingRow 
             title="Minimum Lead Time" 
             description="How far in advance customers must book"
@@ -211,7 +211,7 @@ export function AvailabilitySettings({
               onValueChange={(v) => onUpdateSettings({ minLeadTimeHours: parseInt(v) })}
               disabled={savingSettings}
             >
-              <SelectTrigger className="w-28 h-9 text-sm bg-sidebar-accent border-sidebar-border">
+              <SelectTrigger className="w-28 h-9 text-sm bg-muted/30 border-border/40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -234,7 +234,7 @@ export function AvailabilitySettings({
               onValueChange={(v) => onUpdateSettings({ maxAdvanceBookingDays: parseInt(v) })}
               disabled={savingSettings}
             >
-              <SelectTrigger className="w-28 h-9 text-sm bg-sidebar-accent border-sidebar-border">
+              <SelectTrigger className="w-28 h-9 text-sm bg-muted/30 border-border/40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -250,9 +250,9 @@ export function AvailabilitySettings({
 
       {/* Weekly Schedule */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Weekly Schedule</h3>
+        <h3 className="text-[15px] font-semibold text-foreground mb-3">Weekly Schedule</h3>
         
-        <div className="rounded-xl border border-sidebar-border bg-sidebar overflow-hidden">
+        <div className="rounded-xl border border-border/40 bg-card overflow-hidden">
           {DAY_NAMES.map((day, idx) => {
             const rule = availability.find(r => r.dayOfWeek === idx);
             const isActive = rule?.isActive ?? false;
@@ -264,7 +264,7 @@ export function AvailabilitySettings({
                 key={idx}
                 className={cn(
                   "flex items-center justify-between px-4 py-3",
-                  !isLast && "border-b border-sidebar-border/40"
+                  !isLast && "border-b border-border/30"
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -297,7 +297,7 @@ export function AvailabilitySettings({
                       onValueChange={(v) => onUpdateDay(idx, { startTime: v })}
                       disabled={isSaving}
                     >
-                      <SelectTrigger className="w-[100px] h-8 text-xs bg-sidebar-accent border-sidebar-border">
+                      <SelectTrigger className="w-[100px] h-8 text-xs bg-muted/30 border-border/40">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -312,7 +312,7 @@ export function AvailabilitySettings({
                       onValueChange={(v) => onUpdateDay(idx, { endTime: v })}
                       disabled={isSaving}
                     >
-                      <SelectTrigger className="w-[100px] h-8 text-xs bg-sidebar-accent border-sidebar-border">
+                      <SelectTrigger className="w-[100px] h-8 text-xs bg-muted/30 border-border/40">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>

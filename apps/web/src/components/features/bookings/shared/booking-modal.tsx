@@ -332,349 +332,236 @@ export function BookingModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-lg max-h-[92vh] overflow-y-auto bg-background border-border/40 rounded-xl p-0">
-        {/* Header */}
-        <div className="px-6 pt-6 pb-4 border-b border-border/40">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-semibold tracking-tight text-foreground">
-              {step === 'success' ? 'Booking Confirmed' : 'Schedule Test Drive'}
-            </DialogTitle>
-            <DialogDescription className="text-sm text-muted-foreground mt-1">
-              {step === 'date' && 'Select an available date'}
-              {step === 'time' && 'Choose your preferred time'}
-              {step === 'confirm' && 'Review your booking'}
-              {step === 'success' && 'Your appointment is confirmed'}
-            </DialogDescription>
-          </DialogHeader>
-        </div>
-
-        {/* Listing Info */}
-        <div className="mx-6 mt-5 flex items-center gap-4 p-4 rounded-xl border border-border/40 bg-sidebar">
-          <div className="w-14 h-10 rounded-lg overflow-hidden bg-muted/30 flex-shrink-0">
-            {listingThumbnail ? (
-              <img 
-                src={listingThumbnail} 
-                alt={listingTitle}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <CarFront className="w-5 h-5 text-muted-foreground/40" />
-              </div>
-            )}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-foreground truncate">{listingTitle}</p>
-            <p className="text-xs text-muted-foreground/70 mt-0.5">{partnerName}</p>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="px-6 pt-5 pb-6">
-          {/* Error Display */}
-          {error && (
-            <div className="p-4 mb-5 bg-destructive/10 rounded-xl border border-destructive/20">
-              <p className="text-sm font-medium text-destructive">{error}</p>
-            </div>
-          )}
-
-          {/* Loading */}
-          {isLoading && (
-            <div className="flex flex-col items-center justify-center py-16">
-              <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
-              <p className="text-sm text-muted-foreground/70 mt-4">Loading...</p>
-            </div>
-          )}
-
-          {/* Step 1: Date Selection */}
-          {step === 'date' && !isLoading && !error && (
-            <div className="space-y-4">
-              {/* Month Navigation */}
-              <div className="flex items-center justify-between">
-                <button
-                  onClick={goToPreviousMonth}
-                  className="p-2 hover:bg-muted/30 rounded-lg transition-colors disabled:opacity-30"
-                  disabled={currentMonth <= new Date()}
-                >
-                  <ChevronLeft className="w-4 h-4 text-muted-foreground" />
-                </button>
-                <h3 className="text-[15px] font-bold tracking-tight text-foreground">
-                  {MONTH_NAMES[currentMonth.getMonth()]} {currentMonth.getFullYear()}
-                </h3>
-                <button
-                  onClick={goToNextMonth}
-                  className="p-2 hover:bg-muted/30 rounded-lg transition-colors"
-                >
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                </button>
-              </div>
-
-              {/* Day Names */}
-              <div className="grid grid-cols-7 gap-1">
-                {DAY_NAMES.map(day => (
-                  <div key={day} className="text-center text-xs font-semibold text-muted-foreground/70 py-2">
-                    {day}
-                  </div>
-                ))}
-              </div>
-
-              {/* Calendar Grid */}
-              <div className="grid grid-cols-7 gap-1">
-                {getCalendarDays().map((date, index) => {
-                  if (!date) {
-                    return <div key={`empty-${index}`} className="aspect-square" />;
-                  }
-
-                  const isPast = isDatePast(date);
-                  const isAvailable = !isPast && isDateAvailable(date);
-                  const isSelected = selectedDate?.toDateString() === date.toDateString();
-                  const isToday = date.toDateString() === new Date().toDateString();
-
-                  return (
-                    <button
-                      key={date.toISOString()}
-                      onClick={() => isAvailable && setSelectedDate(date)}
-                      disabled={!isAvailable}
-                      className={cn(
-                        "aspect-square rounded-lg text-sm font-medium transition-colors",
-                        isSelected && "bg-foreground text-background",
-                        !isSelected && isAvailable && "hover:bg-muted/50 text-foreground",
-                        !isSelected && !isAvailable && "text-muted-foreground/30 cursor-not-allowed",
-                        isToday && !isSelected && "ring-1 ring-border"
-                      )}
-                    >
-                      {date.getDate()}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Legend */}
-              <div className="flex items-center gap-4 justify-center text-xs text-muted-foreground/70 pt-2">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-2.5 h-2.5 rounded bg-foreground" />
-                  <span>Selected</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-2.5 h-2.5 rounded bg-muted/50" />
-                  <span>Available</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Step 2: Time Selection */}
-          {step === 'time' && !isLoading && selectedDate && (
-            <div className="space-y-4">
-              <button
-                onClick={() => setStep('date')}
-                className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+      <DialogContent className="max-w-sm bg-popover border-border/40 rounded-xl p-0 overflow-hidden">
+        
+        {/* Success State - Centered */}
+        {step === 'success' && bookingResult ? (
+          <div className="p-6 text-center">
+            <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto mb-4" />
+            <h2 className="text-lg font-semibold text-foreground mb-1">Booking Requested</h2>
+            <p className="text-sm text-muted-foreground/70 mb-1">{listingTitle}</p>
+            <p className="text-xs text-muted-foreground/50 mb-4">
+              {selectedDate && formatDate(selectedDate)} • {selectedSlot && formatTime(selectedSlot.startTime)}
+            </p>
+            <p className="text-xs text-muted-foreground/60 mb-4">The dealer will confirm your booking shortly.</p>
+            <p className="font-mono text-sm font-semibold text-foreground mb-6">{bookingResult.confirmationToken}</p>
+            
+            <div className="space-y-2">
+              <button 
+                onClick={() => router.push('/user-dashboard/bookings')} 
+                className="w-full h-11 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors"
               >
-                <ChevronLeft className="w-4 h-4" />
-                Back
+                View Bookings
               </button>
+              <button 
+                onClick={onClose} 
+                className="w-full h-11 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Header */}
+            <div className="px-6 pt-6 pb-4">
+              <DialogHeader>
+                <DialogTitle className="text-lg font-semibold text-foreground">
+                  {step === 'confirm' ? 'Confirm Booking' : 'Schedule Test Drive'}
+                </DialogTitle>
+                <DialogDescription className="text-sm text-muted-foreground/70">
+                  {listingTitle}
+                </DialogDescription>
+              </DialogHeader>
+            </div>
 
-              <div className="py-3 border-b border-border/20">
-                <p className="text-sm font-semibold text-muted-foreground/70">Selected Date</p>
-                <p className="text-sm font-medium text-foreground mt-0.5">{formatDate(selectedDate)}</p>
-              </div>
+            {/* Content */}
+            <div className="px-6 pb-6">
+              {/* Error */}
+              {error && (
+                <p className="text-sm text-destructive mb-4">{error}</p>
+              )}
 
-              {timeSlots.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <p className="text-sm font-medium text-muted-foreground">No available times</p>
-                  <p className="text-xs text-muted-foreground/60 mt-1">Try a different date</p>
+              {/* Loading */}
+              {isLoading && (
+                <div className="flex items-center justify-center py-12">
+                  <div className="w-5 h-5 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
                 </div>
-              ) : (
-                <div>
-                  <p className="text-[15px] font-bold tracking-tight text-foreground mb-3">Available Times</p>
-                  <div className="grid grid-cols-3 gap-2">
-                    {timeSlots.map(slot => (
-                      <button
-                        key={slot.id}
-                        onClick={() => slot.isAvailable && setSelectedSlot(slot)}
-                        disabled={!slot.isAvailable}
-                        className={cn(
-                          "py-2.5 px-3 rounded-lg text-sm font-medium transition-colors",
-                          selectedSlot?.id === slot.id && "bg-foreground text-background",
-                          selectedSlot?.id !== slot.id && slot.isAvailable && "bg-sidebar border border-border/40 hover:border-border text-foreground",
-                          !slot.isAvailable && "bg-muted/20 text-muted-foreground/30 cursor-not-allowed line-through"
-                        )}
-                      >
-                        {formatTime(slot.startTime)}
-                      </button>
+              )}
+
+              {/* Date Selection */}
+              {step === 'date' && !isLoading && !error && (
+                <div className="space-y-4">
+                  {/* Month Nav */}
+                  <div className="flex items-center justify-between">
+                    <button
+                      onClick={goToPreviousMonth}
+                      disabled={currentMonth <= new Date()}
+                      className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-muted/50 transition-colors disabled:opacity-30"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <span className="text-sm font-medium">
+                      {MONTH_NAMES[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+                    </span>
+                    <button
+                      onClick={goToNextMonth}
+                      className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-muted/50 transition-colors"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Day Headers */}
+                  <div className="grid grid-cols-7 gap-1">
+                    {DAY_NAMES.map(day => (
+                      <div key={day} className="text-center text-[11px] font-medium text-muted-foreground/50 py-1">
+                        {day}
+                      </div>
                     ))}
                   </div>
+
+                  {/* Calendar */}
+                  <div className="grid grid-cols-7 gap-1">
+                    {getCalendarDays().map((date, index) => {
+                      if (!date) return <div key={`empty-${index}`} className="aspect-square" />;
+                      
+                      const isPast = isDatePast(date);
+                      const isAvailable = !isPast && isDateAvailable(date);
+                      const isSelected = selectedDate?.toDateString() === date.toDateString();
+                      const isToday = date.toDateString() === new Date().toDateString();
+
+                      return (
+                        <button
+                          key={date.toISOString()}
+                          onClick={() => isAvailable && setSelectedDate(date)}
+                          disabled={!isAvailable}
+                          className={cn(
+                            "aspect-square rounded-lg text-sm transition-colors",
+                            isSelected && "bg-primary text-primary-foreground font-semibold",
+                            !isSelected && isAvailable && "hover:bg-muted/50 font-medium",
+                            !isSelected && !isAvailable && "text-muted-foreground/20",
+                            isToday && !isSelected && "text-primary font-semibold"
+                          )}
+                        >
+                          {date.getDate()}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 
-              {selectedSlot && (
-                <button
-                  onClick={() => setStep('confirm')}
-                  className="w-full py-2.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold transition-colors"
-                >
-                  Continue
-                </button>
-              )}
-            </div>
-          )}
+              {/* Time Selection */}
+              {step === 'time' && !isLoading && selectedDate && (
+                <div className="space-y-4">
+                  <button
+                    onClick={() => setStep('date')}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    ← {formatDate(selectedDate)}
+                  </button>
 
-          {/* Step 3: Confirmation */}
-          {step === 'confirm' && selectedDate && selectedSlot && (
-            <div className="space-y-5">
-              <button
-                onClick={() => setStep('time')}
-                className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                Back
-              </button>
-
-              {/* Booking Summary - 2 columns */}
-              <div className="rounded-xl border border-border/40 bg-sidebar p-5">
-                <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Booking Summary</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground/70">Date</p>
-                    <p className="text-sm font-medium text-foreground mt-0.5">{formatDate(selectedDate)}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground/70">Time</p>
-                    <p className="text-sm font-medium text-foreground mt-0.5">
-                      {formatTime(selectedSlot.startTime)} – {formatTime(selectedSlot.endTime)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground/70">Duration</p>
-                    <p className="text-sm font-medium text-foreground mt-0.5">{selectedSlot.duration} min</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground/70">Location</p>
-                    <p className="text-sm font-medium text-foreground mt-0.5">
-                      {partnerAddress || <span className="text-muted-foreground/60">Contact dealer</span>}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Optional Fields */}
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-semibold text-muted-foreground/70 mb-1.5 block">
-                    Attendees
-                  </label>
-                  <Select value={attendees.toString()} onValueChange={(value) => setAttendees(parseInt(value))}>
-                    <SelectTrigger className="w-full h-10 bg-muted/20 border-border/40 text-sm rounded-lg">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {[1, 2, 3, 4, 5].map(n => (
-                        <SelectItem key={n} value={n.toString()}>
-                          {n} {n === 1 ? 'person' : 'people'}
-                        </SelectItem>
+                  {timeSlots.length === 0 ? (
+                    <p className="text-sm text-muted-foreground/70 text-center py-8">No times available</p>
+                  ) : (
+                    <div className="grid grid-cols-3 gap-2">
+                      {timeSlots.map(slot => (
+                        <button
+                          key={slot.id}
+                          onClick={() => slot.isAvailable && setSelectedSlot(slot)}
+                          disabled={!slot.isAvailable}
+                          className={cn(
+                            "py-2 rounded-lg text-sm transition-colors",
+                            selectedSlot?.id === slot.id && "bg-primary text-primary-foreground font-semibold",
+                            selectedSlot?.id !== slot.id && slot.isAvailable && "hover:bg-muted/50 font-medium",
+                            !slot.isAvailable && "text-muted-foreground/20 line-through"
+                          )}
+                        >
+                          {formatTime(slot.startTime)}
+                        </button>
                       ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                    </div>
+                  )}
 
-                <div>
-                  <label className="text-sm font-semibold text-muted-foreground/70 mb-1.5 block">
-                    Notes <span className="font-normal">(optional)</span>
-                  </label>
-                  <textarea
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Any questions about the car?"
-                    rows={2}
-                    className="w-full px-3 py-2.5 bg-muted/20 border border-border/40 rounded-lg text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
-                  />
+                  {selectedSlot && (
+                    <button
+                      onClick={() => setStep('confirm')}
+                      className="w-full h-11 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors"
+                    >
+                      Continue
+                    </button>
+                  )}
                 </div>
+              )}
 
-                <div>
-                  <label className="text-sm font-semibold text-muted-foreground/70 mb-1.5 block">
-                    Special requests <span className="font-normal">(optional)</span>
-                  </label>
-                  <textarea
-                    value={specialRequests}
-                    onChange={(e) => setSpecialRequests(e.target.value)}
-                    placeholder="Financing info, route preference..."
-                    rows={2}
-                    className="w-full px-3 py-2.5 bg-muted/20 border border-border/40 rounded-lg text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
-                  />
+              {/* Confirmation */}
+              {step === 'confirm' && selectedDate && selectedSlot && (
+                <div className="space-y-4">
+                  <button
+                    onClick={() => setStep('time')}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    ← Change time
+                  </button>
+
+                  <div className="py-3 space-y-1 border-b border-border/30">
+                    <p className="text-sm font-medium">{formatDate(selectedDate)}</p>
+                    <p className="text-sm text-muted-foreground/70">
+                      {formatTime(selectedSlot.startTime)} – {formatTime(selectedSlot.endTime)} • {selectedSlot.duration} min
+                    </p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground/70 mb-1.5 block">Attendees</label>
+                      <Select value={attendees.toString()} onValueChange={(value) => setAttendees(parseInt(value))}>
+                        <SelectTrigger className="w-full h-10 border-border/30 text-sm rounded-lg">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[1, 2, 3, 4, 5].map(n => (
+                            <SelectItem key={n} value={n.toString()}>{n} {n === 1 ? 'person' : 'people'}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground/70 mb-1.5 block">
+                        Notes <span className="text-muted-foreground/40">(optional)</span>
+                      </label>
+                      <textarea
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        placeholder="Questions or requests..."
+                        rows={2}
+                        className="w-full px-3 py-2 border border-border/30 rounded-lg text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/40"
+                      />
+                    </div>
+                  </div>
+
+                  {!isAuthenticated ? (
+                    <button 
+                      onClick={onLoginRequired} 
+                      className="w-full h-11 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors"
+                    >
+                      Sign in to Book
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleBooking}
+                      disabled={isLoading}
+                      className="w-full h-11 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors disabled:opacity-50"
+                    >
+                      {isLoading ? 'Booking...' : 'Confirm Booking'}
+                    </button>
+                  )}
                 </div>
-              </div>
-
-              {!isAuthenticated ? (
-                <button 
-                  onClick={onLoginRequired} 
-                  className="w-full py-2.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold transition-colors"
-                >
-                  Sign in to Book
-                </button>
-              ) : (
-                <button
-                  onClick={handleBooking}
-                  disabled={isLoading}
-                  className="w-full py-2.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold transition-colors disabled:opacity-50"
-                >
-                  {isLoading ? 'Booking...' : 'Confirm Booking'}
-                </button>
               )}
             </div>
-          )}
-
-          {/* Step 4: Success */}
-          {step === 'success' && bookingResult && (
-            <div className="space-y-5">
-              <div className="flex flex-col items-center text-center py-4">
-                <CheckCircle2 className="w-12 h-12 text-green-500 mb-4" />
-                <h3 className="text-xl font-semibold tracking-tight text-foreground">Test Drive Scheduled</h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Confirmation: <span className="font-mono font-semibold text-foreground">{bookingResult.confirmationToken}</span>
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-border/40 bg-sidebar p-5">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground/70">Vehicle</p>
-                    <p className="text-sm font-medium text-foreground mt-0.5 truncate">{listingTitle}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground/70">Dealer</p>
-                    <p className="text-sm font-medium text-foreground mt-0.5">{partnerName}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground/70">Date</p>
-                    <p className="text-sm font-medium text-foreground mt-0.5">{selectedDate && formatDate(selectedDate)}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-muted-foreground/70">Time</p>
-                    <p className="text-sm font-medium text-foreground mt-0.5">{selectedSlot && `${formatTime(selectedSlot.startTime)} – ${formatTime(selectedSlot.endTime)}`}</p>
-                  </div>
-                </div>
-              </div>
-
-              <p className="text-sm text-muted-foreground/70 text-center">
-                A confirmation email has been sent. The dealer will confirm your booking shortly.
-              </p>
-
-              <div className="flex gap-2 pt-2">
-                <button 
-                  onClick={onClose} 
-                  className="flex-1 py-2.5 rounded-lg border border-border/40 hover:bg-muted/30 text-sm font-semibold transition-colors"
-                >
-                  Close
-                </button>
-                <button 
-                  onClick={() => router.push('/user-dashboard/bookings')} 
-                  className="flex-1 py-2.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold transition-colors"
-                >
-                  View Bookings
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );

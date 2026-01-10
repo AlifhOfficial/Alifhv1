@@ -683,11 +683,13 @@ export async function checkUserBookingRestrictions(userId: string): Promise<Book
 
     const activeBookings = result[0]?.activeBookings ?? 0;
     const recentCancellations = result[0]?.recentCancellations ?? 0;
-    const latestCancel = result[0]?.latestCancel;
+    const latestCancelRaw = result[0]?.latestCancel;
 
     // Check cooldown after cancellation
     let cooldownUntil: Date | undefined;
-    if (latestCancel) {
+    if (latestCancelRaw) {
+      // SQL returns date as string, convert to Date object
+      const latestCancel = new Date(latestCancelRaw);
       const cooldownEnd = new Date(latestCancel.getTime() + COOLDOWN_HOURS_AFTER_CANCEL * 60 * 60 * 1000);
       if (cooldownEnd > now) {
         cooldownUntil = cooldownEnd;

@@ -1,15 +1,14 @@
 /**
- * Sign-In Feedback Modal - Alifh Design Philosophy
+ * Sign-In Feedback Modal - Alifh Design System
  * 
- * Premium, minimal feedback experience
- * Sophisticated animations and micro-interactions
- * Reflects luxury vehicle marketplace aesthetic
+ * Clean, minimal feedback for sign-in flow
  */
 
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Loader2, X, CheckCircle2 } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { cn } from "@/utils/cn";
 
 interface SignInFeedbackModalProps {
   open: boolean;
@@ -29,10 +28,8 @@ export function SignInFeedbackModal({
   const [showContent, setShowContent] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const contentTimeoutRef = useRef<number | null>(null);
-  const successTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
-    // Clear any existing timeouts when open changes
     if (contentTimeoutRef.current) {
       clearTimeout(contentTimeoutRef.current);
       contentTimeoutRef.current = null;
@@ -43,110 +40,79 @@ export function SignInFeedbackModal({
       return;
     }
 
-    // Slight delay for entrance animation
-    contentTimeoutRef.current = window.setTimeout(() => setShowContent(true), 150);
+    contentTimeoutRef.current = window.setTimeout(() => setShowContent(true), 100);
 
     return () => {
       if (contentTimeoutRef.current) {
         clearTimeout(contentTimeoutRef.current);
-        contentTimeoutRef.current = null;
       }
     };
   }, [open]);
 
   useEffect(() => {
-    // Show success state reliably when success becomes true while modal is open.
-    // Clear previous success timeout to avoid race conditions.
-    if (successTimeoutRef.current) {
-      clearTimeout(successTimeoutRef.current);
-      successTimeoutRef.current = null;
-    }
-
     if (success && open) {
-      // ensure content is visible before showing success (avoids flash)
       setShowContent(true);
-      // Immediately show success state - no delay needed since the icon animation handles the visual transition
       setShowSuccess(true);
     } else if (!success) {
-      // Reset success state when success becomes false
       setShowSuccess(false);
     }
-
-    return () => {
-      if (successTimeoutRef.current) {
-        clearTimeout(successTimeoutRef.current);
-        successTimeoutRef.current = null;
-      }
-    };
   }, [success, open]);
 
   if (!open) return null;
 
+  const isError = !!error;
+
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-black/60 flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div 
-        className={`max-w-sm w-full bg-card border border-border rounded-2xl p-8 relative shadow-2xl transform transition-all duration-300 ${
-          showContent ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
-        }`}
+        className={cn(
+          "max-w-xs w-full bg-card border border-border/40 rounded-xl shadow-xl p-6",
+          "transform transition-all duration-200",
+          showContent ? "scale-100 opacity-100" : "scale-95 opacity-0"
+        )}
         onClick={(e) => e.stopPropagation()}
       >
-        
-        <div className="flex flex-col items-center space-y-6">
-          {/* Loading/Success/Error Icon */}
-          <div className="relative">
-            {error ? (
-              <div className="animate-in zoom-in duration-500">
-                <X className="w-8 h-8 text-red-500" />
-              </div>
+        <div className="flex flex-col items-center space-y-4">
+          {/* Icon */}
+          <div className={cn(
+            "w-12 h-12 rounded-full flex items-center justify-center",
+            isError ? "bg-destructive/10" : showSuccess ? "bg-green-500/10" : "bg-muted/30"
+          )}>
+            {isError ? (
+              <XCircle className="w-6 h-6 text-destructive" />
             ) : showSuccess ? (
-              <div className="animate-in zoom-in duration-500">
-                <CheckCircle2 className="w-8 h-8 text-emerald-500" />
-              </div>
+              <CheckCircle2 className="w-6 h-6 text-green-500" />
             ) : (
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-xl animate-pulse"></div>
-                <Loader2 className="w-8 h-8 text-blue-500 animate-spin relative z-10" />
-              </div>
+              <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
             )}
           </div>
           
           {/* Content */}
-          <div 
-            className={`text-center space-y-3 transition-all duration-500 ${
-              showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            }`}
-          >
-            <h2 className="text-lg font-semibold text-foreground tracking-tight">
-              {error ? 'Sign in failed' : showSuccess ? 'Welcome back' : 'Authenticating'}
+          <div className="text-center space-y-1">
+            <h2 className="text-base font-semibold tracking-tight text-foreground">
+              {isError ? "Sign in failed" : showSuccess ? "Welcome back" : "Signing in"}
             </h2>
             
-            <p className="text-sm text-muted-foreground/80 leading-relaxed">
-              {error ? (
-                error
-              ) : showSuccess ? (
-                'Successfully signed in'
-              ) : (
-                <>
-                  Verifying your credentials
-                  <span className="inline-flex ml-1">
-                    <span className="animate-bounce opacity-60" style={{ animationDelay: '0ms', animationDuration: '1.2s' }}>.</span>
-                    <span className="animate-bounce opacity-60" style={{ animationDelay: '200ms', animationDuration: '1.2s' }}>.</span>
-                    <span className="animate-bounce opacity-60" style={{ animationDelay: '400ms', animationDuration: '1.2s' }}>.</span>
-                  </span>
-                </>
-              )}
+            <p className="text-sm text-muted-foreground">
+              {isError ? error : showSuccess ? "Redirecting you now..." : "Verifying credentials..."}
             </p>
-            
-            {/* Progress indicator for loading state */}
-            {!showSuccess && !error && (
-              <div className="w-full bg-muted/20 rounded-full h-1 overflow-hidden">
-                <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-full rounded-full animate-pulse"></div>
-              </div>
-            )}
           </div>
+
+          {/* Error action */}
+          {isError && onClose && (
+            <button
+              onClick={onClose}
+              className={cn(
+                "w-full h-9 px-4 rounded-lg text-sm font-semibold transition-colors",
+                "bg-muted/30 text-foreground hover:bg-muted/50"
+              )}
+            >
+              Try again
+            </button>
+          )}
         </div>
       </div>
     </div>

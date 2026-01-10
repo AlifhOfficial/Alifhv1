@@ -118,13 +118,8 @@ export class AuthFlowController {
   }
 
   // Sign Up Flows
-  async handleSignUp(name: string, email: string, password: string, confirmPassword: string) {
+  async handleSignUp(name: string, email: string, password: string) {
     // Validation
-    if (password !== confirmPassword) {
-      this.actions.setError("Passwords do not match");
-      return;
-    }
-
     if (password.length < AUTH_CONFIG.PASSWORD.MIN_LENGTH) {
       this.actions.setError(`Password must be at least ${AUTH_CONFIG.PASSWORD.MIN_LENGTH} characters long`);
       return;
@@ -174,21 +169,10 @@ export class AuthFlowController {
         const userName = result.user?.name || "New User";
         this.actions.setNewUserName(userName);
         this.actions.setIsNewUser(true);
-        this.actions.setSignUpSuccess(true);
         this.actions.setLoading(false);
-        this.actions.setCurrentModal("signup-feedback");
-
-        const stillActive = await this.wait(AUTH_CONFIG.FEEDBACK_DELAYS.WELCOME_DISPLAY);
-        if (!stillActive) return;
-
-        try {
-          const destination = new URL('/', window.location.origin);
-          destination.searchParams.set('google', 'new');
-          window.location.assign(destination.toString());
-        } catch (error) {
-          console.error('[AuthFlowController] Failed to redirect after Google sign up', error);
-          this.actions.setCurrentModal("welcome");
-        }
+        
+        // Skip feedback modal, go straight to welcome
+        this.actions.setCurrentModal("welcome");
       } else {
         // Show error in auth error modal
         const errorMessage = parseAuthError(result.error);
@@ -203,14 +187,11 @@ export class AuthFlowController {
 
   handleGoogleSignUpComplete() {
     this.startFlow(async () => {
-      this.actions.setSignUpSuccess(true);
-      this.actions.setCurrentModal("signup-feedback");
+      this.actions.setIsNewUser(true);
       this.actions.setLoading(false);
       this.actions.setSignUpSource('google');
-
-      const stillActive = await this.wait(AUTH_CONFIG.FEEDBACK_DELAYS.ERROR_DISPLAY);
-      if (!stillActive) return;
-
+      
+      // Skip feedback, go straight to welcome
       this.actions.setCurrentModal("welcome");
     });
   }

@@ -84,12 +84,12 @@ export function AuthErrorView() {
       />
       
       {/* Background content - shown when modal is closed */}
-      <div className="pt-32 px-4 max-w-2xl mx-auto text-center">
-        <div className="space-y-4 opacity-50">
-          <h1 className="text-2xl font-bold text-foreground">
+      <div className="pt-32 px-4 max-w-md mx-auto text-center">
+        <div className="space-y-2">
+          <h1 className="text-xl font-semibold text-foreground">
             Authentication Error
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             We encountered a problem during authentication.
           </p>
         </div>

@@ -163,6 +163,7 @@ export function Navbar() {
   const hasHandledVerifiedRef = useRef(false);
   const hasHandledGoogleRef = useRef(false);
   const hasHandledAuthParamRef = useRef(false);
+  const pendingRedirectRef = useRef<string | null>(null);
   
   const pathname = usePathname();
   const router = useRouter();
@@ -258,10 +259,17 @@ export function Navbar() {
     // Use requestAnimationFrame to defer the state update
     const rafId = requestAnimationFrame(() => {
       setCurrentAuthModal(null);
+      
+      // Handle pending redirect after successful auth
+      if (pendingRedirectRef.current) {
+        const redirectTo = pendingRedirectRef.current;
+        pendingRedirectRef.current = null;
+        router.push(redirectTo);
+      }
     });
     
     return () => cancelAnimationFrame(rafId);
-  }, [isAuthenticated, currentAuthModal]);
+  }, [isAuthenticated, currentAuthModal, router]);
 
   // Detect verification redirect (?verified=true) and trigger welcome flow
   useEffect(() => {
@@ -299,14 +307,28 @@ export function Navbar() {
 
     // Handle auth modal triggers from error page (?auth=signin or ?auth=signup)
     const authParam = searchParams.get("auth");
+    const redirectParam = searchParams.get("redirect");
+    
+    // Reset the ref when there's no auth param (allows re-triggering on new navigations)
+    if (!authParam) {
+      hasHandledAuthParamRef.current = false;
+    }
+    
     if ((authParam === "signin" || authParam === "signup") && !hasHandledAuthParamRef.current) {
       hasHandledAuthParamRef.current = true;
+      
+      // Store redirect for after auth success
+      if (redirectParam) {
+        pendingRedirectRef.current = redirectParam;
+      }
+      
       rafId = requestAnimationFrame(() => {
         setCurrentAuthModal(authParam);
       });
 
       const params = new URLSearchParams(searchParams.toString());
       params.delete("auth");
+      params.delete("redirect");
       const queryString = params.toString();
       router.replace(`${pathname}${queryString ? `?${queryString}` : ""}`, { scroll: false });
       return () => cancelAnimationFrame(rafId);
@@ -359,11 +381,8 @@ export function Navbar() {
 
   return (
     <>
-      <nav
-        className="fixed top-0 left-0 right-0 z-50 bg-background"
-      >
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-14 sm:h-16">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background">
+        <div className="flex items-center justify-between h-14 sm:h-16 max-w-[1600px] mx-auto px-4 sm:px-6">
             {/* Logo */}
             <Link href="/" className="flex items-center z-50 mr-8">
               <Image
@@ -485,7 +504,6 @@ export function Navbar() {
               </button>
             </div>
           </div>
-        </div>
       </nav>
 
       {/* Mega Dropdown */}

@@ -106,14 +106,8 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
     switch (action) {
       case 'cancel': {
         const { reason, notes } = data;
-        if (!reason) {
-          return NextResponse.json(
-            { error: 'Cancellation reason is required' },
-            { status: 400 }
-          );
-        }
 
-        const result = await cancelBooking(id, 'user', user.id, reason, notes);
+        const result = await cancelBooking(id, 'user', user.id, reason || 'other', notes);
         if (!result.success) {
           return NextResponse.json({ error: result.error }, { status: 400 });
         }

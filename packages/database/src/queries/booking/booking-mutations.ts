@@ -400,41 +400,40 @@ export async function createBooking(input: CreateBookingInput): Promise<BookingR
   const autoConfirm = settings?.autoConfirm ?? false;
 
   try {
-    // ⚡ PHASE 4: Insert slot + booking in parallel
-    await Promise.all([
-      db.insert(bookingSlot).values({
-        id: slotId,
-        partnerId,
-        listingId: input.listingId,
-        startTime: input.scheduledStartTime,
-        endTime: input.scheduledEndTime,
-        duration: BOOKING_MUTATION_CONFIG.DEFAULT_SLOT_DURATION,
-        status: 'booked',
-        maxBookings: 1,
-        currentBookings: 1,
-      }),
-      db.insert(booking).values({
-        id: bookingId,
-        userId: input.userId,
-        partnerId,
-        listingId: input.listingId,
-        slotId,
-        status: autoConfirm ? 'confirmed' : 'pending',
-        source: input.source ?? 'web',
-        scheduledDate: slotDay,
-        scheduledStartTime: input.scheduledStartTime,
-        scheduledEndTime: input.scheduledEndTime,
-        confirmationToken,
-        userPhone,
-        userEmail: userData.email,
-        userName: userData.name || 'User',
-        notes: input.notes,
-        specialRequests: input.specialRequests,
-        numberOfAttendees: input.numberOfAttendees ?? 1,
-        confirmedAt: autoConfirm ? new Date() : null,
-        expiresAt: autoConfirm ? null : new Date(now.getTime() + BOOKING_MUTATION_CONFIG.PENDING_BOOKING_EXPIRY_HOURS * 60 * 60 * 1000),
-      }),
-    ]);
+    // ⚡ PHASE 4: Insert slot first (booking has FK to slot_id), then booking
+    await db.insert(bookingSlot).values({
+      id: slotId,
+      partnerId,
+      listingId: input.listingId,
+      startTime: input.scheduledStartTime,
+      endTime: input.scheduledEndTime,
+      duration: BOOKING_MUTATION_CONFIG.DEFAULT_SLOT_DURATION,
+      status: 'booked',
+      maxBookings: 1,
+      currentBookings: 1,
+    });
+
+    await db.insert(booking).values({
+      id: bookingId,
+      userId: input.userId,
+      partnerId,
+      listingId: input.listingId,
+      slotId,
+      status: autoConfirm ? 'confirmed' : 'pending',
+      source: input.source ?? 'web',
+      scheduledDate: slotDay,
+      scheduledStartTime: input.scheduledStartTime,
+      scheduledEndTime: input.scheduledEndTime,
+      confirmationToken,
+      userPhone,
+      userEmail: userData.email,
+      userName: userData.name || 'User',
+      notes: input.notes,
+      specialRequests: input.specialRequests,
+      numberOfAttendees: input.numberOfAttendees ?? 1,
+      confirmedAt: autoConfirm ? new Date() : null,
+      expiresAt: autoConfirm ? null : new Date(now.getTime() + BOOKING_MUTATION_CONFIG.PENDING_BOOKING_EXPIRY_HOURS * 60 * 60 * 1000),
+    });
 
     // ⚡ PHASE 5: Post-insert verification (2 queries → 1 round trip)
     const [postInsertOverlapCount, postInsertListingOverlap] = await Promise.all([

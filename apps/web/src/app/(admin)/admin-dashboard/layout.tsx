@@ -50,7 +50,10 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
   }
   
   if (!session) {
-    return null;
+    if (typeof window !== 'undefined') {
+      window.location.href = '/access-denied?reason=not-authenticated';
+    }
+    return <PageLoader />;
   }
 
   return (

@@ -1,6 +1,5 @@
 /**
  * Custom Global Error Page - Alifh Design System
- * Minimalist error page for runtime errors
  */
 
 'use client';
@@ -8,6 +7,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { AlertTriangle, Home, RefreshCcw } from 'lucide-react';
+import { cn } from '@/utils/cn';
 
 export default function Error({
   error,
@@ -17,53 +17,57 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log error to error reporting service
     console.error('Error:', error);
   }, [error]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="max-w-2xl w-full text-center space-y-8">
+      <div className="max-w-sm w-full text-center space-y-6">
         {/* Error Icon */}
         <div className="flex justify-center">
-          <div className="rounded-full bg-destructive/10 p-6">
-            <AlertTriangle className="h-12 w-12 text-destructive" />
+          <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
+            <AlertTriangle className="h-6 w-6 text-destructive" />
           </div>
         </div>
 
         {/* Message */}
-        <div className="space-y-3">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
+        <div className="space-y-1">
+          <h1 className="text-xl font-semibold text-foreground tracking-tight">
             Something went wrong
-          </h2>
-          <p className="text-base text-muted-foreground/70 max-w-md mx-auto">
-            We're sorry, but something unexpected happened. Please try again.
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            An unexpected error occurred. Please try again.
           </p>
           
-          {/* Error Digest (for debugging) */}
           {error.digest && (
             <p className="text-xs text-muted-foreground/50 font-mono pt-2">
-              Error ID: {error.digest}
+              {error.digest}
             </p>
           )}
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
+        <div className="flex flex-col gap-2 pt-2">
           <button
             onClick={reset}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-6 py-3 text-sm font-semibold hover:opacity-90 transition-opacity w-full sm:w-auto"
+            className={cn(
+              "h-10 inline-flex items-center justify-center gap-2 rounded-lg text-sm font-semibold transition-colors",
+              "bg-primary text-primary-foreground hover:bg-primary/90"
+            )}
           >
             <RefreshCcw className="h-4 w-4" />
-            Try Again
+            Try again
           </button>
           
           <Link
             href="/"
-            className="inline-flex items-center justify-center gap-2 rounded-lg border border-border/40 bg-card hover:bg-muted/20 px-6 py-3 text-sm font-semibold transition-colors w-full sm:w-auto"
+            className={cn(
+              "h-10 inline-flex items-center justify-center gap-2 rounded-lg text-sm font-semibold transition-colors",
+              "bg-muted/30 text-foreground hover:bg-muted/50"
+            )}
           >
             <Home className="h-4 w-4" />
-            Go Home
+            Go home
           </Link>
         </div>
       </div>

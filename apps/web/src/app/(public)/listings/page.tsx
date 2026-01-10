@@ -18,7 +18,7 @@ export default function InventoryPage() {
 function PageSkeleton() {
   return (
     <div className="min-h-screen bg-background pt-16 sm:pt-20">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex gap-0">
           <div className="w-64 flex-shrink-0 hidden lg:block" />
           <main className="flex-1 min-w-0 lg:pl-8">

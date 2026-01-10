@@ -46,7 +46,8 @@
 - `POST /api/kyc/webhook` - Didit webhook receiver (internal) [Auth: Signature]
 - `POST /api/kyc/sync` - Manual sync for localhost dev [Auth: Required]
 - `POST /api/kyc/cancel` - Cancel pending KYC session [Auth: Required]
-- `GET /api/kyc/requests` - Admin endpoint to view all KYC submissions [Auth: Admin]
+- `GET /api/admin/kyc` - List all KYC submissions [Auth: Admin]
+- `GET /api/admin/kyc/[id]` - Get KYC record details with signed URLs [Auth: Admin]
 
 ## Storage APIs
 

@@ -404,45 +404,44 @@ export function StaffBookingsView() {
 
   return (
     <div className="min-h-full bg-background">
-      <div className="max-w-6xl mx-auto px-4 sm:px-8">
-        {/* Header Section - Sticky */}
-        <section className="space-y-4 sticky top-0 bg-background z-10 pt-8 sm:pt-12 pb-4">
-          <div className="flex items-start justify-between gap-4">
-            {/* Left: Title */}
-            <div className="flex-shrink-0">
-              <h1 className="text-2xl font-bold tracking-tight">Bookings</h1>
-              <p className="text-[15px] font-medium text-muted-foreground/70 mt-1">
-                Manage test drive bookings
-              </p>
-            </div>
-            
-            {/* Right: Settings & Refresh */}
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setActiveTab(activeTab === 'settings' ? 'bookings' : 'settings')}
-                className={`p-2 rounded-lg transition-colors ${
-                  activeTab === 'settings' 
-                    ? 'bg-sidebar-accent text-foreground' 
-                    : 'hover:bg-sidebar-accent/50 text-muted-foreground'
-                }`}
-                title="Settings"
-              >
-                <Settings className="w-4 h-4" />
-              </button>
-              <button
-                onClick={activeTab === 'bookings' ? fetchBookings : fetchAvailability}
-                disabled={activeTab === 'bookings' ? isLoading : availabilityLoading}
-                className="p-2 hover:bg-sidebar-accent/50 rounded-lg transition-colors disabled:opacity-50"
-                title="Refresh"
-              >
-                <RefreshCw className="w-4 h-4 text-muted-foreground" />
-              </button>
-            </div>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
+        {/* Header Section */}
+        <header className="flex items-start justify-between gap-4">
+          {/* Left: Title */}
+          <div className="space-y-1.5">
+            <h1 className="text-2xl font-bold tracking-tight">Bookings</h1>
+            <p className="text-[15px] font-medium text-muted-foreground/70">
+              Manage test drive bookings
+            </p>
           </div>
+          
+          {/* Right: Settings & Refresh */}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setActiveTab(activeTab === 'settings' ? 'bookings' : 'settings')}
+              className={`w-9 h-9 flex items-center justify-center rounded-lg transition-colors ${
+                activeTab === 'settings' 
+                  ? 'bg-primary/10 text-primary' 
+                  : 'hover:bg-muted/50 text-muted-foreground'
+              }`}
+              title="Settings"
+            >
+              <Settings className="w-4 h-4" />
+            </button>
+            <button
+              onClick={activeTab === 'bookings' ? fetchBookings : fetchAvailability}
+              disabled={activeTab === 'bookings' ? isLoading : availabilityLoading}
+              className="w-9 h-9 flex items-center justify-center hover:bg-muted/50 rounded-lg transition-colors disabled:opacity-50"
+              title="Refresh"
+            >
+              <RefreshCw className={`w-4 h-4 text-muted-foreground ${(activeTab === 'bookings' ? isLoading : availabilityLoading) ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
+        </header>
 
-          {/* Status Filter Tabs - Part of sticky header when in bookings mode */}
+          {/* Status Filter Tabs */}
           {activeTab === 'bookings' && (
-            <div className="flex items-center gap-8 overflow-x-auto pb-1">
+            <div className="flex items-center gap-1 overflow-x-auto pb-1 -mx-1 px-1">
               {STATUS_TABS.map((tab) => {
                 // Count includes expired under no_show tab
                 const count = tab.key === 'all' 
@@ -452,29 +451,30 @@ export function StaffBookingsView() {
                     : bookings.filter(b => b.status === tab.key).length;
                 const isActive = selectedStatus === tab.key;
                 
-                // Solid color mapping
-                const activeColorClass = 
-                  tab.key === 'confirmed' ? 'text-emerald-500' :
-                  tab.key === 'pending' ? 'text-amber-500' :
-                  tab.key === 'completed' ? 'text-blue-500' :
-                  tab.key === 'cancelled' ? 'text-red-500' :
-                  tab.key === 'no_show' ? 'text-slate-400' :
-                  'text-foreground';
+                // Color config for pill-style tabs
+                const colorConfig = {
+                  all: { bg: 'bg-primary/10', text: 'text-primary', badge: 'bg-primary/20 text-primary' },
+                  pending: { bg: 'bg-amber-500/10', text: 'text-amber-600', badge: 'bg-amber-500/20 text-amber-600' },
+                  confirmed: { bg: 'bg-emerald-500/10', text: 'text-emerald-600', badge: 'bg-emerald-500/20 text-emerald-600' },
+                  completed: { bg: 'bg-blue-500/10', text: 'text-blue-600', badge: 'bg-blue-500/20 text-blue-600' },
+                  cancelled: { bg: 'bg-red-500/10', text: 'text-red-600', badge: 'bg-red-500/20 text-red-600' },
+                  no_show: { bg: 'bg-muted', text: 'text-muted-foreground', badge: 'bg-muted text-muted-foreground' },
+                }[tab.key] || { bg: 'bg-muted', text: 'text-foreground', badge: 'bg-muted text-muted-foreground' };
                 
                 return (
                   <button
                     key={tab.key}
                     onClick={() => setSelectedStatus(tab.key)}
-                    className={`text-[15px] font-bold tracking-tight transition-colors whitespace-nowrap ${
+                    className={`px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${
                       isActive
-                        ? activeColorClass
-                        : 'text-muted-foreground/50 hover:text-muted-foreground'
+                        ? `${colorConfig.bg} ${colorConfig.text}`
+                        : 'text-muted-foreground/60 hover:text-muted-foreground hover:bg-muted/30'
                     }`}
                   >
                     {tab.label}
                     {count > 0 && (
-                      <span className={`ml-2 text-[13px] font-bold tabular-nums ${
-                        isActive ? activeColorClass : 'text-muted-foreground/40'
+                      <span className={`ml-1.5 px-1.5 py-0.5 rounded text-xs font-bold tabular-nums ${
+                        isActive ? colorConfig.badge : 'bg-muted/50 text-muted-foreground/50'
                       }`}>
                         {count}
                       </span>
@@ -484,29 +484,26 @@ export function StaffBookingsView() {
               })}
             </div>
           )}
-        </section>
 
         {/* Error Alert */}
         {error && (
-          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6 mt-6">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
-              <p className="text-sm text-red-500">{error}</p>
+          <div className="flex items-center gap-3 p-4 rounded-xl bg-destructive/5 border border-destructive/20">
+            <div className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center flex-shrink-0">
+              <AlertCircle className="w-4 h-4 text-destructive" />
             </div>
+            <p className="text-sm text-destructive">{error}</p>
           </div>
         )}
 
         {/* Settings Tab */}
         {activeTab === 'settings' && (
           <div className="pb-32">
-            <div className="flex justify-end mb-4">
-              <button
-                onClick={() => setActiveTab('bookings')}
-                className="text-sm text-muted-foreground hover:text-foreground"
-              >
-                ← Back to bookings
-              </button>
-            </div>
+            <button
+              onClick={() => setActiveTab('bookings')}
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-4"
+            >
+              ← Back to bookings
+            </button>
             <AvailabilitySettings
               availability={availability}
               settings={settings}
@@ -522,22 +519,22 @@ export function StaffBookingsView() {
 
         {/* Bookings Tab */}
         {activeTab === 'bookings' && (
-          <div className="mt-6 pb-32 space-y-6">
+          <div className="space-y-6">
             {/* Toolbar: Search + Sort + Quick Check-in */}
             <div className="flex items-center gap-3">
               {/* Search */}
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
                 <input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search by customer, car, email, phone, code, or date..."
-                  className="w-full h-10 pl-10 pr-10 rounded-xl bg-sidebar border border-sidebar-border text-sm font-medium placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                  placeholder="Search bookings..."
+                  className="w-full h-10 pl-10 pr-9 rounded-lg bg-muted/30 border border-border/40 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 focus:bg-background transition-all"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-muted transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-muted/50 hover:bg-muted transition-colors"
                   >
                     <X className="w-3 h-3 text-muted-foreground" />
                   </button>
@@ -546,7 +543,7 @@ export function StaffBookingsView() {
 
               {/* Sort */}
               <Select value={sort} onValueChange={(v) => setSort(v as BookingSort)}>
-                <SelectTrigger className="h-10 w-28 border border-sidebar-border bg-sidebar rounded-xl text-sm font-medium flex-shrink-0">
+                <SelectTrigger className="h-10 w-28 border border-border/40 bg-muted/30 rounded-lg text-sm font-medium flex-shrink-0 focus:ring-1 focus:ring-primary/30">
                   <SelectValue placeholder="Sort" />
                 </SelectTrigger>
                 <SelectContent>
@@ -558,27 +555,27 @@ export function StaffBookingsView() {
               {/* Quick Check-in Dropdown */}
               <Popover open={quickCheckOpen} onOpenChange={setQuickCheckOpen}>
                 <PopoverTrigger asChild>
-                  <button className="h-10 px-4 rounded-xl bg-sidebar border border-sidebar-border hover:bg-sidebar-accent text-sm font-medium flex items-center gap-2 transition-colors flex-shrink-0">
+                  <button className="h-10 px-4 rounded-lg bg-muted/30 border border-border/40 hover:bg-muted/50 text-sm font-medium flex items-center gap-2 transition-colors flex-shrink-0">
                     <CheckCircle2 className="w-4 h-4" />
                     <span className="hidden sm:inline">Check-in</span>
                     <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
                   </button>
                 </PopoverTrigger>
-                <PopoverContent align="end" className="w-[320px] p-0" sideOffset={8}>
-                  <div className="p-4 border-b border-sidebar-border">
+                <PopoverContent align="end" className="w-[280px] p-0" sideOffset={8}>
+                  <div className="p-3 border-b border-border/40">
                     <p className="text-sm font-semibold text-foreground">Quick Check-in</p>
-                    <p className="text-xs text-muted-foreground mt-1">Enter booking code to update status</p>
+                    <p className="text-xs text-muted-foreground/70 mt-0.5">Enter code to update status</p>
                   </div>
                   
-                  <div className="p-4 space-y-4">
+                  <div className="p-3 space-y-3">
                     {/* Code Input */}
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-muted-foreground">Booking Code</label>
+                      <label className="text-xs font-semibold text-muted-foreground/70">Booking Code</label>
                       <input
                         value={verifyCode}
                         onChange={(e) => setVerifyCode(e.target.value.toUpperCase())}
                         placeholder="e.g. W5ZC2CD6"
-                        className="w-full h-10 px-3 bg-sidebar-accent border border-sidebar-border rounded-lg focus:border-foreground/30 outline-none transition-all text-sm font-mono placeholder:text-muted-foreground/40"
+                        className="w-full h-10 px-3 bg-muted/30 border border-border/40 rounded-lg focus:ring-1 focus:ring-primary/30 focus:border-primary/40 outline-none transition-all text-sm font-mono placeholder:text-muted-foreground/50"
                         onKeyDown={(e) => e.key === 'Enter' && handleVerifyByCode()}
                         autoFocus
                       />
@@ -586,8 +583,8 @@ export function StaffBookingsView() {
                     
                     {/* Action Buttons */}
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-muted-foreground">Action</label>
-                      <div className="grid grid-cols-2 gap-2">
+                      <label className="text-xs font-semibold text-muted-foreground/70">Action</label>
+                      <div className="grid grid-cols-2 gap-1.5">
                         {[
                           { value: 'check_in', label: 'Check-in' },
                           { value: 'confirm', label: 'Confirm' },
@@ -597,10 +594,10 @@ export function StaffBookingsView() {
                           <button
                             key={action.value}
                             onClick={() => setVerifyAction(action.value as VerifyAction)}
-                            className={`h-9 px-3 rounded-lg text-sm font-medium transition-colors ${
+                            className={`h-8 px-2.5 rounded-lg text-xs font-semibold transition-colors ${
                               verifyAction === action.value
                                 ? 'bg-primary text-primary-foreground'
-                                : 'bg-sidebar-accent border border-sidebar-border text-foreground hover:bg-muted'
+                                : 'bg-muted/50 border border-border/40 text-foreground hover:bg-muted'
                             }`}
                           >
                             {action.label}
@@ -611,7 +608,7 @@ export function StaffBookingsView() {
                   </div>
                   
                   {/* Footer */}
-                  <div className="p-4 border-t border-sidebar-border bg-sidebar-accent/30">
+                  <div className="p-3 border-t border-border/40 bg-muted/20">
                     <button
                       onClick={() => {
                         handleVerifyByCode();
@@ -624,7 +621,7 @@ export function StaffBookingsView() {
                     </button>
                     
                     {verifyMessage && (
-                      <div className="flex items-center justify-center gap-1.5 text-xs text-emerald-500 font-medium mt-3">
+                      <div className="flex items-center justify-center gap-1.5 text-xs text-emerald-500 font-medium mt-2">
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         {verifyMessage}
                       </div>

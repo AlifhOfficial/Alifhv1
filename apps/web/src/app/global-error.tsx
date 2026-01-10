@@ -1,12 +1,12 @@
 /**
  * Custom Global Error Page - Alifh Design System
- * Handles critical errors that occur in the root layout
+ * Handles critical errors in root layout (can't use CSS vars)
  */
 
 'use client';
 
 import { useEffect } from 'react';
-import { AlertTriangle, Home } from 'lucide-react';
+import { AlertTriangle, Home, RefreshCcw } from 'lucide-react';
 
 export default function GlobalError({
   error,
@@ -22,46 +22,47 @@ export default function GlobalError({
   return (
     <html lang="en">
       <body>
-        <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black px-4">
-          <div className="max-w-2xl w-full text-center space-y-8">
+        <div className="min-h-screen flex items-center justify-center bg-white dark:bg-neutral-950 px-4">
+          <div className="max-w-sm w-full text-center space-y-6">
             {/* Error Icon */}
             <div className="flex justify-center">
-              <div className="rounded-full bg-red-100 dark:bg-red-950 p-6">
-                <AlertTriangle className="h-12 w-12 text-red-600 dark:text-red-400" />
+              <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950 flex items-center justify-center">
+                <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400" />
               </div>
             </div>
 
             {/* Message */}
-            <div className="space-y-3">
-              <h2 className="text-2xl md:text-3xl font-bold text-black dark:text-white tracking-tight">
-                Critical Error
-              </h2>
-              <p className="text-base text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-                A critical error occurred. Please refresh the page or return home.
+            <div className="space-y-1">
+              <h1 className="text-xl font-semibold text-neutral-900 dark:text-white tracking-tight">
+                Something went wrong
+              </h1>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                A critical error occurred. Please try again.
               </p>
               
               {error.digest && (
-                <p className="text-xs text-gray-500 font-mono pt-2">
-                  Error ID: {error.digest}
+                <p className="text-xs text-neutral-400 dark:text-neutral-500 font-mono pt-2">
+                  {error.digest}
                 </p>
               )}
             </div>
 
             {/* Actions */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
+            <div className="flex flex-col gap-2 pt-2">
               <button
                 onClick={reset}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 text-white px-6 py-3 text-sm font-semibold hover:opacity-90 transition-opacity w-full sm:w-auto"
+                className="h-10 inline-flex items-center justify-center gap-2 rounded-lg bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-sm font-semibold hover:opacity-90 transition-opacity"
               >
-                Try Again
+                <RefreshCcw className="h-4 w-4" />
+                Try again
               </button>
               
               <a
                 href="/"
-                className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-black hover:bg-gray-50 dark:hover:bg-gray-900 px-6 py-3 text-sm font-semibold transition-colors w-full sm:w-auto"
+                className="h-10 inline-flex items-center justify-center gap-2 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white text-sm font-semibold hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
               >
                 <Home className="h-4 w-4" />
-                Go Home
+                Go home
               </a>
             </div>
           </div>

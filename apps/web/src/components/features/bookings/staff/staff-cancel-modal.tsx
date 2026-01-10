@@ -8,7 +8,7 @@
 
 import { createPortal } from 'react-dom';
 import { useEffect, useState } from 'react';
-import { Loader2, X, AlertTriangle } from 'lucide-react';
+import { Loader2, AlertTriangle } from 'lucide-react';
 import { cn } from '@/utils';
 
 const DEFAULT_REASON = 'Busy';
@@ -66,72 +66,57 @@ export function StaffCancelModal({
 
       {/* Modal */}
       <div className={cn(
-        "relative w-full max-w-md bg-background rounded-xl border border-border/40 shadow-lg overflow-hidden",
+        "relative w-full max-w-xs bg-background rounded-xl border border-border/40 shadow-lg overflow-hidden",
         "animate-in fade-in-0 zoom-in-95 duration-200"
       )}>
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border/40">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-destructive" />
-            <h2 className="text-[15px] font-bold tracking-tight">Cancel Booking</h2>
+        {/* Content - Centered Layout */}
+        <div className="p-6 text-center">
+          {/* Icon Circle */}
+          <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-4">
+            <AlertTriangle className="w-5 h-5 text-destructive" />
           </div>
-          <button
-            onClick={onClose}
-            disabled={isSubmitting}
-            className="p-1.5 rounded-lg hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground disabled:opacity-50"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="p-5">
-          <p className="text-sm text-muted-foreground mb-5">
-            Enter a reason for cancelling this booking. The customer will be notified.
+          
+          <h2 className="text-lg font-semibold text-foreground mb-1.5">Cancel Booking</h2>
+          <p className="text-sm text-muted-foreground/70 mb-5">
+            Enter a reason. The customer will be notified.
           </p>
 
           {/* Reason Text Field */}
-          <div className="space-y-2 mb-4">
-            <label className="text-sm font-semibold text-muted-foreground/70">Reason</label>
+          <div className="space-y-1.5 mb-3 text-left">
+            <label className="text-xs font-semibold text-muted-foreground/70">
+              Reason <span className="font-medium text-muted-foreground/50">(optional)</span>
+            </label>
             <input
               type="text"
               value={reason}
               onChange={(e) => onReasonChange(e.target.value)}
               placeholder={DEFAULT_REASON}
               disabled={isSubmitting}
-              className="w-full h-10 px-3 bg-muted/20 border border-border/40 rounded-lg text-sm font-medium placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors disabled:opacity-50"
+              className="w-full h-10 px-3 bg-muted/30 border border-border/40 rounded-lg text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 transition-all disabled:opacity-50"
             />
           </div>
 
           {/* Notes Textarea */}
-          <div className="space-y-2 mb-6">
-            <label className="text-sm font-semibold text-muted-foreground/70">
-              Additional Notes{' '}
-              <span className="font-medium text-muted-foreground/50">(optional)</span>
+          <div className="space-y-1.5 mb-5 text-left">
+            <label className="text-xs font-semibold text-muted-foreground/70">
+              Notes <span className="font-medium text-muted-foreground/50">(optional)</span>
             </label>
             <textarea
               value={notes}
               onChange={(e) => onNotesChange(e.target.value)}
-              placeholder="Optional details for the customer..."
-              rows={3}
+              placeholder="Additional details..."
+              rows={2}
               disabled={isSubmitting}
-              className="w-full px-3 py-2.5 bg-muted/20 border border-border/40 rounded-lg text-sm font-medium resize-none placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors disabled:opacity-50"
+              className="w-full px-3 py-2.5 bg-muted/30 border border-border/40 rounded-lg text-sm resize-none placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 transition-all disabled:opacity-50"
             />
           </div>
 
-          {/* Actions */}
-          <div className="flex gap-3">
-            <button
-              onClick={onClose}
-              disabled={isSubmitting}
-              className="flex-1 h-11 border border-border/40 rounded-lg text-sm font-semibold hover:bg-muted/30 transition-colors disabled:opacity-50"
-            >
-              Go Back
-            </button>
+          {/* Actions - Stacked */}
+          <div className="space-y-2">
             <button
               onClick={onSubmit}
               disabled={isSubmitting}
-              className="flex-1 h-11 bg-destructive text-destructive-foreground rounded-lg text-sm font-semibold hover:bg-destructive/90 transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-2"
+              className="w-full h-11 bg-destructive text-destructive-foreground rounded-lg text-sm font-semibold hover:bg-destructive/90 transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
@@ -141,6 +126,13 @@ export function StaffCancelModal({
               ) : (
                 'Cancel Booking'
               )}
+            </button>
+            <button
+              onClick={onClose}
+              disabled={isSubmitting}
+              className="w-full h-11 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/30 rounded-lg transition-colors disabled:opacity-50"
+            >
+              Go Back
             </button>
           </div>
         </div>

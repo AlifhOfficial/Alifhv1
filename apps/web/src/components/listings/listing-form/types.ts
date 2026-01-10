@@ -13,6 +13,22 @@
  */
 
 import { z } from 'zod';
+import {
+  SPECS_TYPE_VALUES,
+  STEERING_SIDE_VALUES,
+  BODY_TYPE_VALUES,
+  EXTERIOR_COLOR_VALUES,
+  INTERIOR_COLOR_VALUES,
+  DOORS_VALUES,
+  SEATING_CAPACITY_VALUES,
+  FUEL_TYPE_VALUES,
+  TRANSMISSION_TYPE_VALUES,
+  ENGINE_SIZE_VALUES,
+  ENGINE_TYPE_VALUES,
+  POWER_RANGE_VALUES,
+  WARRANTY_TYPE_VALUES,
+  EXPORT_STATUS_VALUES,
+} from '@alifh/database/listing-constants';
 
 // ============================================================================
 // CONSTANTS
@@ -84,29 +100,29 @@ export const detailsStepSchema = z.object({
     .int('Mileage must be a whole number')
     .min(0, 'Mileage cannot be negative')
     .max(999999, 'Mileage seems too high'),
-  specs: z.enum(['gcc', 'american', 'european', 'japanese', 'chinese', 'korean', 'canadian', 'other']),
-  steeringSide: z.enum(['left', 'right']),
+  specs: z.enum(SPECS_TYPE_VALUES),
+  steeringSide: z.enum(STEERING_SIDE_VALUES),
   
   // Body & Appearance
-  bodyType: z.enum(['sedan', 'suv', 'coupe', 'convertible', 'hatchback', 'wagon', 'pickup', 'van', 'sports', 'luxury', 'other']).optional().nullable(),
-  exteriorColor: z.enum(['white', 'black', 'silver', 'grey', 'blue', 'red', 'green', 'brown', 'beige', 'gold', 'orange', 'yellow', 'purple', 'other']).optional().nullable(),
-  interiorColor: z.enum(['black', 'beige', 'brown', 'tan', 'grey', 'white', 'red', 'burgundy', 'other']).optional().nullable(),
-  doors: z.enum(['2', '3', '4', '5', '6']).optional().nullable(),
-  seatingCapacity: z.enum(['2', '4', '5', '6', '7', '8', '9_plus']).optional().nullable(),
+  bodyType: z.enum(BODY_TYPE_VALUES).optional().nullable(),
+  exteriorColor: z.enum(EXTERIOR_COLOR_VALUES).optional().nullable(),
+  interiorColor: z.enum(INTERIOR_COLOR_VALUES).optional().nullable(),
+  doors: z.enum(DOORS_VALUES).optional().nullable(),
+  seatingCapacity: z.enum(SEATING_CAPACITY_VALUES).optional().nullable(),
   
   // Engine & Performance
-  fuelType: z.enum(['petrol', 'diesel', 'electric', 'hybrid', 'plugin_hybrid', 'hydrogen']).optional().nullable(),
-  transmission: z.enum(['automatic', 'manual', 'cvt', 'dct', 'semi_automatic']).optional().nullable(),
-  engineSize: z.enum(['under_1.5L', '1.5L_2.0L', '2.0L_2.5L', '2.5L_3.0L', '3.0L_4.0L', '4.0L_5.0L', '5.0L_6.0L', 'over_6.0L', 'electric']).optional().nullable(),
-  engineType: z.enum(['inline-3', 'inline-4', 'inline-6', 'v6', 'v8', 'v10', 'v12', 'w12', 'electric', 'hybrid', 'other']).optional().nullable(),
+  fuelType: z.enum(FUEL_TYPE_VALUES).optional().nullable(),
+  transmission: z.enum(TRANSMISSION_TYPE_VALUES).optional().nullable(),
+  engineSize: z.enum(ENGINE_SIZE_VALUES).optional().nullable(),
+  engineType: z.enum(ENGINE_TYPE_VALUES).optional().nullable(),
   cylinders: z.number().int().min(0).max(16).optional().nullable(),
-  powerRange: z.enum(['under_100', '100_200', '200_300', '300_400', '400_500', '500_600', '600_700', '700_plus', 'unknown']).optional().nullable(),
+  powerRange: z.enum(POWER_RANGE_VALUES).optional().nullable(),
   torque: z.string().optional().nullable(),
   fuelEconomy: z.string().optional().nullable(),
   
   // Status
-  warrantyType: z.enum(['none', 'manufacturer', 'extended', 'dealer', 'other']).optional().nullable(),
-  exportStatus: z.enum(['local_only', 'gcc', 'international', 'restricted']).optional().nullable(),
+  warrantyType: z.enum(WARRANTY_TYPE_VALUES).optional().nullable(),
+  exportStatus: z.enum(EXPORT_STATUS_VALUES).optional().nullable(),
   
   // Extras & Tags
   extras: z.array(z.string()).default([]),

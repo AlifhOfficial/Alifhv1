@@ -1,19 +1,20 @@
 /**
  * SignUpModal Component - Alifh Design System
  * Production-ready sign-up modal with Better Auth features
- * Props-based pattern for clean separation of concerns
+ * Matches profile-view and settings-view UI/UX patterns
  */
 
 "use client";
 
 import { useState } from "react";
-import { UserPlus } from "lucide-react";
+import { X } from "lucide-react";
+import { cn } from "@/utils/cn";
 
 interface SignUpModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSwitchToSignIn: () => void;
-  onSubmit: (name: string, email: string, password: string, confirmPassword: string) => Promise<void>;
+  onSubmit: (name: string, email: string, password: string) => Promise<void>;
   onGoogleSignUp?: () => Promise<void>;
   isLoading?: boolean;
   error?: string | null;
@@ -31,13 +32,11 @@ export function SignUpModal({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSubmit(name, email, password, confirmPassword);
+    await onSubmit(name, email, password);
   };
 
   const handleGoogleSignUp = async () => {
@@ -58,200 +57,196 @@ export function SignUpModal({
       onClick={() => onOpenChange(false)}
     >
       <div 
-        className="max-w-4xl w-full bg-card border border-border/40 rounded-lg flex overflow-hidden max-h-[90vh]"
+        className="max-w-4xl w-full bg-card border border-border/40 rounded-xl shadow-xl flex overflow-hidden max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Left Image Side */}
-        <div className="hidden md:flex md:w-1/2 relative bg-gradient-to-br from-emerald-50 to-green-100">
+        <div className="hidden md:flex md:w-1/2 relative bg-card">
           <img 
             src="/Images/sign_up.png" 
             alt="Sign up illustration"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
           
           {/* Alifh Logo - Top Left */}
-          <div className="absolute top-4 left-4">
+          <div className="absolute top-5 left-5">
             <img 
               src="/assets/Alifh_logo_White.svg" 
               alt="Alifh"
-              className="h-6 w-auto opacity-90"
+              className="h-6 w-auto"
             />
           </div>
           
-          {/* Automotive Excellence - Bottom Left */}
-          <div className="absolute bottom-4 left-4">
-            <p className="text-white/90 text-xs font-light tracking-wide">
+          {/* Tagline - Bottom Left */}
+          <div className="absolute bottom-5 left-5">
+            <p className="text-white/90 text-xs font-medium tracking-wide">
               Automotive Excellence
             </p>
           </div>
         </div>
 
         {/* Right Form Side */}
-        <div className="w-full md:w-1/2 flex flex-col">
+        <div className="w-full md:w-1/2 flex flex-col bg-card">
           {/* Header */}
-          <div className="border-b border-border/40 p-6 relative">
+          <div className="p-6 relative">
+            {/* Close Button */}
+            <button
+              onClick={() => onOpenChange(false)}
+              className="absolute top-4 right-4 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4" />
+            </button>
             
-            <UserPlus className="w-4 h-4 text-muted-foreground mb-4" />
-            <h2 className="text-xl font-medium text-foreground mb-2">Create Account</h2>
-            <p className="text-sm text-muted-foreground">
-              Join Alifh and start your journey
+            <h2 className="text-xl font-semibold tracking-tight text-foreground">Join Alifh</h2>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Create your account in seconds
             </p>
           </div>
 
           {/* Content */}
-          <div className="p-6 space-y-6 flex-1 overflow-y-auto">
-          {error && (
-            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
-              <p className="text-xs text-destructive leading-relaxed">
-                {error}
-              </p>
-            </div>
-          )}
-
-          {/* Sign Up Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-medium text-foreground">
-                Full name
-              </label>
-              <input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full h-10 px-3 bg-background border border-border/40 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors disabled:opacity-50"
-                placeholder="Enter your full name"
-                required
+          <div className="px-6 pb-6 space-y-5 flex-1 overflow-y-auto">
+            {/* Google Sign Up - First for frictionless experience */}
+            {onGoogleSignUp && (
+              <button
+                onClick={handleGoogleSignUp}
                 disabled={isLoading}
-              />
+                className={cn(
+                  "w-full h-11 px-4 rounded-lg text-sm font-semibold transition-colors",
+                  "border border-border/40 bg-muted/30 text-foreground",
+                  "hover:bg-muted/50 disabled:opacity-50",
+                  "flex items-center justify-center gap-3"
+                )}
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24">
+                  <path
+                    fill="#4285F4"
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                  />
+                  <path
+                    fill="#EA4335"
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                  />
+                </svg>
+                Continue with Google
+              </button>
+            )}
+
+            {/* Divider */}
+            <div className="flex items-center gap-3">
+              <div className="flex-1 border-t border-border/40" />
+              <span className="text-xs font-medium text-muted-foreground/70">or with email</span>
+              <div className="flex-1 border-t border-border/40" />
             </div>
 
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-foreground">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full h-10 px-3 bg-background border border-border/40 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors disabled:opacity-50"
-                placeholder="you@example.com"
-                required
-                disabled={isLoading}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium text-foreground">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full h-10 px-3 bg-background border border-border/40 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors disabled:opacity-50"
-                  placeholder="••••••••"
-                  required
-                  disabled={isLoading}
-                  minLength={8}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? "Hide" : "Show"}
-                </button>
+            {/* Error Message */}
+            {error && (
+              <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+                <p className="text-sm text-destructive leading-relaxed">
+                  {error}
+                </p>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Must be at least 8 characters long
-              </p>
-            </div>
+            )}
 
-            <div className="space-y-2">
-              <label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">
-                Confirm password
-              </label>
-              <div className="relative">
-                <input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full h-10 px-3 bg-background border border-border/40 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors disabled:opacity-50"
-                  placeholder="••••••••"
-                  required
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-                >
-                  {showConfirmPassword ? "Hide" : "Show"}
-                </button>
+            {/* Sign Up Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Name & Email in a row on larger screens */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label htmlFor="name" className="text-sm font-semibold text-muted-foreground/70">
+                    Name
+                  </label>
+                  <input
+                    id="name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full h-10 px-3 bg-muted/20 border border-border/40 rounded-lg text-sm font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors disabled:opacity-50"
+                    placeholder="Your name"
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label htmlFor="email" className="text-sm font-semibold text-muted-foreground/70">
+                    Email
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full h-10 px-3 bg-muted/20 border border-border/40 rounded-lg text-sm font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors disabled:opacity-50"
+                    placeholder="you@example.com"
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
               </div>
-            </div>
 
-            <button
-              type="submit"
-              disabled={isLoading || !name || !email || !password || !confirmPassword}
-              className="w-full h-10 px-4 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {isLoading ? "Creating account..." : "Create Account"}
-            </button>
-          </form>
+              <div className="space-y-1.5">
+                <label htmlFor="password" className="text-sm font-semibold text-muted-foreground/70">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full h-10 px-3 pr-14 bg-muted/20 border border-border/40 rounded-lg text-sm font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors disabled:opacity-50"
+                    placeholder="8+ characters"
+                    required
+                    disabled={isLoading}
+                    minLength={8}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
+                </div>
+              </div>
 
-          {/* Divider */}
-          <div className="flex items-center">
-            <div className="flex-1 border-t border-border/40"></div>
-            <span className="px-3 text-xs text-muted-foreground">or</span>
-            <div className="flex-1 border-t border-border/40"></div>
-          </div>
+              <button
+                type="submit"
+                disabled={isLoading || !name || !email || !password}
+                className={cn(
+                  "w-full h-10 px-4 rounded-lg text-sm font-semibold transition-colors",
+                  "bg-primary text-primary-foreground hover:bg-primary/90",
+                  "disabled:opacity-50 disabled:cursor-not-allowed"
+                )}
+              >
+                {isLoading ? "Creating account..." : "Create Account"}
+              </button>
+            </form>
 
-          {/* Google Sign Up */}
-          {onGoogleSignUp && (
-            <button
-              onClick={handleGoogleSignUp}
-              disabled={isLoading}
-              className="w-full h-10 px-4 border border-border/40 text-foreground text-sm font-medium rounded-lg hover:bg-muted/50 disabled:opacity-50 transition-colors flex items-center justify-center gap-3"
-            >
-              <svg className="w-4 h-4" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                />
-              </svg>
-              Continue with Google
-            </button>
-          )}
+            {/* Terms hint */}
+            <p className="text-xs text-muted-foreground/60 text-center leading-relaxed">
+              By signing up, you agree to our Terms of Service and Privacy Policy
+            </p>
           </div>
 
           {/* Footer */}
           <div className="border-t border-border/40 p-6">
-            <p className="text-xs text-muted-foreground text-center">
+            <p className="text-sm text-muted-foreground text-center">
               Already have an account?{" "}
               <button
                 onClick={handleSwitchToSignIn}
-                className="text-primary hover:underline font-medium"
+                className="font-semibold text-foreground hover:text-primary transition-colors"
               >
                 Sign in
               </button>

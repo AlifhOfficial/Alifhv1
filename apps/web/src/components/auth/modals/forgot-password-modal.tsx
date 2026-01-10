@@ -1,13 +1,13 @@
 /**
  * Forgot Password Modal - Alifh Design System
- * Production-ready forgot password modal with Better Auth features
- * Props-based pattern for clean separation of concerns
+ * Clean, minimal password reset flow
  */
 
 "use client";
 
 import { useState } from "react";
-import { Mail, ArrowLeft, X } from "lucide-react";
+import { Mail, ArrowLeft, X, CheckCircle2 } from "lucide-react";
+import { cn } from "@/utils/cn";
 
 interface ForgotPasswordModalProps {
   open: boolean;
@@ -47,35 +47,43 @@ export function ForgotPasswordModal({
         onClick={() => onOpenChange(false)}
       >
         <div 
-          className="max-w-md w-full bg-card border border-border/40 rounded-lg"
+          className="max-w-sm w-full bg-card border border-border/40 rounded-xl shadow-xl p-6"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Header */}
-          <div className="border-b border-border/40 p-6 relative">
-            
-            <div className="w-12 h-12 bg-emerald-500/10 rounded-full flex items-center justify-center mb-4">
-              <Mail className="w-5 h-5 text-emerald-500" />
+          <div className="flex flex-col items-center space-y-4">
+            {/* Success Icon */}
+            <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center">
+              <CheckCircle2 className="w-6 h-6 text-green-500" />
             </div>
-            <h2 className="text-xl font-medium text-foreground mb-2">Check Your Email</h2>
-            <p className="text-sm text-muted-foreground">
-              We've sent password reset instructions to {successEmail}
-            </p>
-          </div>
 
-          {/* Content */}
-          <div className="p-6 space-y-6">
-            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4">
-              <p className="text-sm text-emerald-700 dark:text-emerald-300 leading-relaxed">
-                Check your email and follow the instructions to reset your password. The link will expire in 1 hour.
+            {/* Content */}
+            <div className="text-center space-y-1">
+              <h2 className="text-base font-semibold tracking-tight text-foreground">
+                Check your email
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                We sent reset instructions to <span className="font-medium text-foreground">{successEmail}</span>
               </p>
             </div>
 
+            {/* Info */}
+            <div className="w-full rounded-xl border border-border/40 bg-muted/20 p-4">
+              <p className="text-xs text-muted-foreground text-center">
+                The link expires in 1 hour. Check spam if you don't see it.
+              </p>
+            </div>
+
+            {/* Back button */}
             <button
               onClick={onBackToSignIn}
-              className="w-full h-10 px-4 border border-border/40 text-foreground text-sm font-medium rounded-lg hover:bg-muted/50 transition-colors flex items-center justify-center gap-2"
+              className={cn(
+                "w-full h-10 px-4 rounded-lg text-sm font-semibold transition-colors",
+                "bg-muted/30 text-foreground hover:bg-muted/50",
+                "flex items-center justify-center gap-2"
+              )}
             >
               <ArrowLeft className="w-4 h-4" />
-              Back to Sign In
+              Back to sign in
             </button>
           </div>
         </div>
@@ -89,49 +97,48 @@ export function ForgotPasswordModal({
       onClick={() => onOpenChange(false)}
     >
       <div 
-        className="max-w-md w-full bg-card border border-border/40 rounded-lg"
+        className="max-w-sm w-full bg-card border border-border/40 rounded-xl shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="border-b border-border/40 p-6 relative">
-          
+        <div className="p-6 relative">
           <button
             onClick={onBackToSignIn}
-            className="absolute top-4 left-4 p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20"
+            className="absolute top-4 left-4 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
             aria-label="Back"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
           
-          <Mail className="w-4 h-4 text-muted-foreground mb-4" />
-          <h2 className="text-xl font-medium text-foreground mb-2">Reset Password</h2>
-          <p className="text-sm text-muted-foreground">
-            Enter your email to receive reset instructions
-          </p>
+          <button
+            onClick={() => onOpenChange(false)}
+            className="absolute top-4 right-4 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
+            aria-label="Close"
+          >
+            <X className="w-4 h-4" />
+          </button>
+
+          <div className="pt-6">
+            <h2 className="text-xl font-semibold tracking-tight text-foreground">Reset password</h2>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Enter your email to receive reset instructions
+            </p>
+          </div>
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-6">
+        <div className="px-6 pb-6 space-y-5">
+          {/* Error */}
           {error && (
-            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
-              <div className="flex items-start space-x-3">
-                <div className="flex-shrink-0">
-                  <X className="w-5 h-5 text-destructive mt-0.5" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-destructive">Password Reset Failed</p>
-                  <p className="text-xs text-destructive/80 mt-1 leading-relaxed">
-                    {error}
-                  </p>
-                </div>
-              </div>
+            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+              <p className="text-sm text-destructive">{error}</p>
             </div>
           )}
 
-          {/* Reset Form */}
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-foreground">
+            <div className="space-y-1.5">
+              <label htmlFor="email" className="text-sm font-semibold text-muted-foreground/70">
                 Email
               </label>
               <input
@@ -139,7 +146,7 @@ export function ForgotPasswordModal({
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full h-10 px-3 bg-background border border-border/40 rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors disabled:opacity-50"
+                className="w-full h-10 px-3 bg-muted/20 border border-border/40 rounded-lg text-sm font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors disabled:opacity-50"
                 placeholder="you@example.com"
                 required
                 disabled={isLoading}
@@ -149,17 +156,15 @@ export function ForgotPasswordModal({
             <button
               type="submit"
               disabled={isLoading || !email}
-              className="w-full h-10 px-4 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className={cn(
+                "w-full h-10 px-4 rounded-lg text-sm font-semibold transition-colors",
+                "bg-primary text-primary-foreground hover:bg-primary/90",
+                "disabled:opacity-50 disabled:cursor-not-allowed"
+              )}
             >
-              {isLoading ? "Sending instructions..." : "Send Reset Instructions"}
+              {isLoading ? "Sending..." : "Send reset link"}
             </button>
           </form>
-
-          <div className="bg-muted/40 border border-border/40 rounded-lg p-3">
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              We'll email you instructions to reset your password. Check your spam folder if you don't see it.
-            </p>
-          </div>
         </div>
       </div>
     </div>

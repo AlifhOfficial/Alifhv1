@@ -17,10 +17,13 @@ import { memoryCache, CacheKeys } from '../../caches/memory-cache';
 const KYC_ID_PREFIX = 'kyc_';
 const makeKycId = () => `${KYC_ID_PREFIX}${createId()}`;
 
+// Constants
+export const KYC_VERIFIED_TRUST_SCORE = 80;
+
 // Types
 export type KycRecord = typeof kycRecord.$inferSelect;
 export type KycRecordInsert = typeof kycRecord.$inferInsert;
-export type KycStatus = 'pending' | 'approved' | 'rejected';
+export type KycStatus = 'pending' | 'approved' | 'rejected' | 'expired' | 'cancelled';
 export type KycType = 'basic' | 'full';
 
 export interface CreateKycRecordData {

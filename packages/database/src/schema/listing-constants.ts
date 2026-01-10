@@ -255,6 +255,7 @@ export const ENGINE_TYPES = [
   { value: 'inline-3', label: 'Inline-3' },
   { value: 'inline-4', label: 'Inline-4' },
   { value: 'inline-6', label: 'Inline-6' },
+  { value: 'v4', label: 'V4' },
   { value: 'v6', label: 'V6' },
   { value: 'v8', label: 'V8' },
   { value: 'v10', label: 'V10' },

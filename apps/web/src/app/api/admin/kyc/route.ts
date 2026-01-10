@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
   try {
     // Check admin auth
     const user = await getSessionUser();
-    if (!user || user.role !== 'admin') {
+    if (!user || (user.role !== 'admin' && user.role !== 'super_admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

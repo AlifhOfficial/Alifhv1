@@ -51,6 +51,16 @@ export function ListingForm({
   
   const currentStepIndex = editableSteps.findIndex(s => s.id === currentStep);
   
+  // Check if draft can be saved (DB requires make, model, year, mileage, price, emirate)
+  const canSaveDraft = Boolean(
+    formData.make && 
+    formData.model && 
+    formData.year && 
+    typeof formData.mileage === 'number' && 
+    typeof formData.price === 'number' && 
+    formData.emirate
+  );
+  
   const updateField = useCallback(<K extends keyof ListingFormData>(
     field: K, 
     value: ListingFormData[K]
@@ -254,7 +264,7 @@ export function ListingForm({
         </div>
         
         <div className="flex items-center gap-3">
-          {onSaveDraft && (
+          {onSaveDraft && canSaveDraft && (
             <button
               type="button"
               onClick={handleSaveDraft}

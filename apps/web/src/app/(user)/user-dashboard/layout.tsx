@@ -4,7 +4,7 @@ import { DashboardLayout, DashboardContent } from "@/components/shared/layout/da
 import { AppSidebar } from "@/components/shared/layout/app-sidebar";
 import { PageLoader } from "@/components/shared/page-loader";
 import { useAuth } from "@/providers/auth-provider";
-import { redirect, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 const navSections = [
@@ -46,24 +46,27 @@ const navSections = [
 export default function UserDashboardLayout({ children }: { children: React.ReactNode }) {
   const { session: user, isLoading } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
   
   // Check if user is banned - must be before any conditional returns
   const isBanned = user ? (user as any).isBanned === true : false;
   const isOnBannedPage = pathname === '/user-dashboard/banned';
   
-  // useEffect must be called unconditionally (before any returns)
+  // Handle redirects properly in client component
   useEffect(() => {
-    if (user && isBanned && !isOnBannedPage) {
-      redirect('/user-dashboard/banned');
+    if (!isLoading && !user) {
+      router.push('/access-denied?reason=not-authenticated');
+    } else if (user && isBanned && !isOnBannedPage) {
+      router.push('/user-dashboard/banned');
     }
-  }, [user, isBanned, isOnBannedPage]);
+  }, [user, isBanned, isOnBannedPage, isLoading, router]);
   
   if (isLoading) {
     return <PageLoader />;
   }
   
   if (!user) {
-    redirect('/');
+    return <PageLoader />;
   }
 
   // If banned and not on banned page, show loader while redirecting

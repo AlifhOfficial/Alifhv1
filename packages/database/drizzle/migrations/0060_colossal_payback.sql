@@ -1,0 +1,1 @@
+ALTER TYPE "public"."engine_type" ADD VALUE 'v4' BEFORE 'v6';

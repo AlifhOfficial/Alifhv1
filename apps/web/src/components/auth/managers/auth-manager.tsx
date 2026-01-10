@@ -14,7 +14,6 @@ import { ForgotPasswordModal } from "../modals/forgot-password-modal";
 import { MagicLinkModal } from "../modals/magic-link-modal";
 import { EmailSentModal } from "../feedback/email-sent-modal";
 import { SignInFeedbackModal } from "../feedback/sign-in-feedback-modal";
-import { SignUpFeedbackModal } from "../feedback/sign-up-feedback-modal";
 import { WelcomeModal } from "../feedback/welcome-modal";
 import { GoogleRedirectModal } from "../feedback/google-redirect-modal";
 import { FeedbackModal } from "../feedback/feedback-modal";
@@ -91,8 +90,8 @@ export function AuthManager({
         open={state.currentModal === "signup"}
         onOpenChange={(open) => !open && flowController.handleCloseAll()}
         onSwitchToSignIn={() => actions.setCurrentModal("signin")}
-        onSubmit={(name, email, password, confirmPassword) => 
-          flowController.handleSignUp(name, email, password, confirmPassword)
+        onSubmit={(name, email, password) => 
+          flowController.handleSignUp(name, email, password)
         }
         onGoogleSignUp={() => flowController.handleGoogleSignUp()}
         isLoading={state.isLoading}
@@ -138,15 +137,6 @@ export function AuthManager({
         success={state.signInSuccess}
         isLoading={state.isLoading}
         error={state.error}
-      />
-
-      {/* Sign Up Feedback Modal */}
-      <SignUpFeedbackModal
-        open={state.currentModal === "signup-feedback"}
-        success={state.signUpSuccess}
-        isLoading={state.isLoading}
-        error={state.error}
-        variant={state.signUpSource}
       />
 
       {/* Welcome Modal */}

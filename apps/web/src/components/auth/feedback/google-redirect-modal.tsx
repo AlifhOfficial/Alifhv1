@@ -1,14 +1,13 @@
 /**
- * Google Redirect Modal - Pure UI Component
- * Follows Alifh Design Philosophy: minimal, clean, premium
+ * Google Redirect Modal - Alifh Design System
  * 
- * Shows a loading state while redirecting to Google OAuth
+ * Shows loading state while redirecting to Google OAuth
  */
 
 "use client";
 
-import { useEffect } from "react";
-
+import { useEffect, useState } from "react";
+import { cn } from "@/utils/cn";
 
 interface GoogleRedirectModalProps {
   open: boolean;
@@ -16,9 +15,12 @@ interface GoogleRedirectModalProps {
 }
 
 export function GoogleRedirectModal({ open, onClose }: GoogleRedirectModalProps) {
-  // Handle escape key
+  const [showContent, setShowContent] = useState(false);
+
   useEffect(() => {
     if (!open) return;
+    
+    const timer = setTimeout(() => setShowContent(true), 100);
     
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && onClose) {
@@ -27,25 +29,31 @@ export function GoogleRedirectModal({ open, onClose }: GoogleRedirectModalProps)
     };
     
     window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('keydown', handleEscape);
+    };
   }, [open, onClose]);
 
   if (!open) return null;
 
   return (
     <div 
-      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div 
-        className="max-w-md w-full bg-card border border-border rounded-lg p-6 relative"
+        className={cn(
+          "max-w-xs w-full bg-card border border-border/40 rounded-xl shadow-xl p-6",
+          "transform transition-all duration-200",
+          showContent ? "scale-100 opacity-100" : "scale-95 opacity-0"
+        )}
         onClick={(e) => e.stopPropagation()}
       >
-        
-        <div className="space-y-6">
-          {/* Google Logo - Top Left (4x4 as per philosophy) */}
-          <div className="w-4 h-4 animate-spin">
-            <svg className="w-4 h-4" viewBox="0 0 24 24">
+        <div className="flex flex-col items-center space-y-4">
+          {/* Google Icon in circle */}
+          <div className="w-12 h-12 rounded-full bg-muted/30 flex items-center justify-center">
+            <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -65,14 +73,19 @@ export function GoogleRedirectModal({ open, onClose }: GoogleRedirectModalProps)
             </svg>
           </div>
 
-          {/* Message */}
-          <div className="space-y-2">
-            <h2 className="text-xl font-medium text-foreground">
-              Communicating with Google<span className="animate-pulse">...</span>
+          {/* Content */}
+          <div className="text-center space-y-1">
+            <h2 className="text-base font-semibold tracking-tight text-foreground">
+              Connecting to Google
             </h2>
             <p className="text-sm text-muted-foreground">
-              Please wait a moment
+              You'll be redirected shortly...
             </p>
+          </div>
+
+          {/* Simple loading bar */}
+          <div className="w-full h-1 bg-muted/30 rounded-full overflow-hidden">
+            <div className="h-full w-1/2 bg-muted-foreground/40 rounded-full animate-pulse" />
           </div>
         </div>
       </div>

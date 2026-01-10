@@ -28,7 +28,8 @@ POST   /api/kyc/didit/session         # Create Didit verification session
 GET    /api/kyc/didit/session         # Get current session status
 POST   /api/kyc/cancel                # Cancel pending KYC session
 POST   /api/kyc/sync                  # Manual sync (localhost dev only)
-GET    /api/kyc/requests              # List KYC submissions (admin)
+GET    /api/admin/kyc                 # List KYC submissions (admin)
+GET    /api/admin/kyc/[id]            # Get KYC details with signed URLs (admin)
 ```
 
 ### 4. PARTNER DOMAIN ✅ (Already Implemented)

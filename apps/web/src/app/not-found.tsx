@@ -1,58 +1,61 @@
 /**
  * Custom 404 Not Found Page - Alifh Design System
- * Minimalist error page following "Less is More" principle
  */
 
 'use client';
 
 import Link from 'next/link';
 import { Home, Search, ArrowLeft } from 'lucide-react';
+import { cn } from '@/utils/cn';
 
 export default function NotFound() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="max-w-2xl w-full text-center space-y-8">
+      <div className="max-w-sm w-full text-center space-y-6">
         {/* Error Code */}
-        <div className="space-y-3">
-          <h1 className="text-8xl md:text-9xl font-bold text-foreground/10 tracking-tighter">
+        <div className="space-y-4">
+          <p className="text-6xl font-bold text-muted-foreground/20 tracking-tighter">
             404
-          </h1>
-          <div className="h-px w-24 mx-auto bg-border/40" />
-        </div>
-
-        {/* Message */}
-        <div className="space-y-3">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
-            Page Not Found
-          </h2>
-          <p className="text-base text-muted-foreground/70 max-w-md mx-auto">
-            The page you're looking for doesn't exist or has been moved.
           </p>
+          <div className="space-y-1">
+            <h1 className="text-xl font-semibold text-foreground tracking-tight">
+              Page not found
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              This page doesn't exist or has been moved.
+            </p>
+          </div>
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
+        <div className="flex flex-col gap-2 pt-2">
           <Link
             href="/"
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-6 py-3 text-sm font-semibold hover:opacity-90 transition-opacity w-full sm:w-auto"
+            className={cn(
+              "h-10 inline-flex items-center justify-center gap-2 rounded-lg text-sm font-semibold transition-colors",
+              "bg-primary text-primary-foreground hover:bg-primary/90"
+            )}
           >
             <Home className="h-4 w-4" />
-            Go Home
+            Go home
           </Link>
           
           <Link
             href="/listings"
-            className="inline-flex items-center justify-center gap-2 rounded-lg border border-border/40 bg-card hover:bg-muted/20 px-6 py-3 text-sm font-semibold transition-colors w-full sm:w-auto"
+            className={cn(
+              "h-10 inline-flex items-center justify-center gap-2 rounded-lg text-sm font-semibold transition-colors",
+              "bg-muted/30 text-foreground hover:bg-muted/50"
+            )}
           >
             <Search className="h-4 w-4" />
-            Browse Vehicles
+            Browse vehicles
           </Link>
         </div>
 
         {/* Back Link */}
         <button
           onClick={() => window.history.back()}
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground/70 hover:text-foreground transition-colors mt-8"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Go back
