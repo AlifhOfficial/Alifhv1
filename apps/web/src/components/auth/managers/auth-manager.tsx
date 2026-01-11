@@ -12,6 +12,7 @@ import { SignInModal } from "../modals/signin-modal";
 import { SignUpModal } from "../modals/signup-modal";
 import { ForgotPasswordModal } from "../modals/forgot-password-modal";
 import { MagicLinkModal } from "../modals/magic-link-modal";
+import { OTPVerificationModal } from "../modals/otp-verification-modal";
 import { EmailSentModal } from "../feedback/email-sent-modal";
 import { SignInFeedbackModal } from "../feedback/sign-in-feedback-modal";
 import { FeedbackModal } from "../feedback/feedback-modal";
@@ -90,6 +91,18 @@ export function AuthManager({
         error={state.error}
         success={state.emailSentData?.type === "magic-link"}
         email={state.emailSentData?.email}
+      />
+
+      {/* OTP Verification Modal */}
+      <OTPVerificationModal
+        open={state.currentModal === "otp-verification"}
+        onOpenChange={(open) => !open && flowController.handleCloseAll()}
+        onVerify={(otp) => flowController.handleVerifyOTP(otp)}
+        onResend={() => flowController.handleResendOTP()}
+        onBack={() => flowController.handleOTPBack()}
+        email={state.otpData?.email || ""}
+        isLoading={state.isLoading}
+        error={state.error}
       />
 
       {/* Email Sent Modal */}

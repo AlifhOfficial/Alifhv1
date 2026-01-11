@@ -68,6 +68,52 @@ export function clearSentEmails() {
  */
 export const mockEmailService = {
   /**
+   * Mock OTP verification email
+   */
+  sendVerificationOTP: async (data: { email: string; otp: string; type: "sign-in" | "email-verification" | "forget-password" }) => {
+    const { email, otp, type } = data;
+    const userName = email.split('@')[0];
+    
+    const typeMessages = {
+      "sign-in": "sign in to your Alifh account",
+      "email-verification": "verify your email address",
+      "forget-password": "reset your password",
+    };
+    
+    const action = typeMessages[type];
+    
+    await sendEmailMock({
+      to: email,
+      subject: `[MOCK] Your Alifh verification code: ${otp}`,
+      html: `
+        <div style="max-width: 600px; margin: 0 auto; font-family: system-ui, sans-serif;">
+          <h2>Your verification code</h2>
+          <p>Hi ${userName},</p>
+          <p>Use the following code to ${action}:</p>
+          <div style="margin: 32px 0; text-align: center;">
+            <div style="
+              background: #f4f4f5;
+              border-radius: 12px;
+              padding: 24px 32px;
+              display: inline-block;
+              font-size: 32px;
+              font-weight: 700;
+              letter-spacing: 8px;
+              color: #000;
+            ">
+              ${otp}
+            </div>
+          </div>
+          <p style="color: #71717a; font-size: 14px;">This code expires in 10 minutes.</p>
+          <p><strong>Mock Mode:</strong> This is a development email.</p>
+          <p>Best regards,<br>The Alifh Team (Dev Mode)</p>
+        </div>
+      `,
+      text: `[MOCK] Your Alifh verification code is: ${otp}. Use this code to ${action}. Expires in 10 minutes.`,
+    });
+  },
+
+  /**
    * Mock email verification
    */
   sendVerificationEmail: async (data: { user: any; url: string; token: string }) => {

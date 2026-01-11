@@ -3,7 +3,7 @@
  * 
  * Simplified authentication flows:
  * - Sign In: email/password or Google → feedback → success
- * - Sign Up: email → verification email sent → done (user signs in after verifying)
+ * - Sign Up: email → OTP verification → auto sign-in → success
  * - Google: Popup-based flow for sign-in/sign-up (auto-creates account if new)
  */
 
@@ -15,6 +15,8 @@ import {
   signUpWithEmail, 
   requestPasswordReset,
   sendMagicLink,
+  verifyEmailWithOTP,
+  resendVerificationOTP,
   AuthUser,
 } from "./auth-handlers";
 import { AuthState, AuthActions, AuthCallbacks } from "./auth-state";
@@ -172,11 +174,11 @@ export class AuthFlowController {
       if (!this.isFlowActive) return;
 
       if (result.success) {
-        // Just show email sent modal - user will sign in after verifying
-        const emailForState = result.user?.email || normalizedEmail;
-        this.actions.setEmailSentData({ email: emailForState, type: "verification" });
+        // Show OTP verification modal - user stays in same browser tab!
+        // Store password so we can auto sign-in after OTP verification
+        this.actions.setOtpData({ email: normalizedEmail, type: "email-verification", password });
         this.actions.setLoading(false);
-        this.actions.setCurrentModal("email-sent");
+        this.actions.setCurrentModal("otp-verification");
       } else {
         const errorMessage = parseAuthError(result.error);
         const errorInfo = getAuthErrorInfo(errorMessage);
@@ -245,6 +247,102 @@ export class AuthFlowController {
 
       this.actions.setLoading(false);
     });
+  }
+
+  // ============================================================================
+  // OTP VERIFICATION FLOW
+  // ============================================================================
+
+  /**
+   * Verify OTP code after sign-up
+   * On success, user is verified and automatically signed in
+   */
+  async handleVerifyOTP(otp: string) {
+    const otpData = this.state.otpData;
+    if (!otpData) return;
+
+    this.startFlow(async () => {
+      this.actions.setLoading(true);
+      this.actions.setError(null);
+
+      const result = await verifyEmailWithOTP(otpData.email, otp);
+      if (!this.isFlowActive) return;
+
+      if (result.success) {
+        // Email verified! Now sign the user in automatically
+        if (otpData.password) {
+          // Sign in with stored credentials
+          const signInResult = await signInWithEmail(otpData.email, otpData.password);
+          if (!this.isFlowActive) return;
+
+          if (signInResult.success) {
+            // Success! Show feedback and close
+            this.actions.setSignInSuccess(true);
+            this.actions.setLoading(false);
+            this.actions.setCurrentModal("signin-feedback");
+
+            const stillActive = await this.wait(AUTH_CONFIG.FEEDBACK_DELAYS.SUCCESS_DISPLAY);
+            if (!stillActive) return;
+
+            this.actions.setOtpData(null);
+            this.callbacks.onSuccess?.(signInResult.user);
+            this.handleCloseAll();
+          } else {
+            // Sign-in failed, but email is verified - let user sign in manually
+            this.actions.setOtpData(null);
+            this.actions.setLoading(false);
+            this.actions.setCurrentModal("signin");
+          }
+        } else {
+          // No password stored, just show success and let user sign in
+          this.actions.setSignInSuccess(true);
+          this.actions.setLoading(false);
+          this.actions.setCurrentModal("signin-feedback");
+
+          const stillActive = await this.wait(AUTH_CONFIG.FEEDBACK_DELAYS.SUCCESS_DISPLAY);
+          if (!stillActive) return;
+
+          this.actions.setOtpData(null);
+          this.callbacks.onSuccess?.();
+          this.handleCloseAll();
+        }
+      } else {
+        // Show error inline in the OTP modal
+        this.actions.setError(result.error || "Verification failed");
+        this.actions.setLoading(false);
+      }
+    });
+  }
+
+  /**
+   * Resend OTP code
+   */
+  async handleResendOTP() {
+    const otpData = this.state.otpData;
+    if (!otpData) return;
+
+    this.actions.setLoading(true);
+    this.actions.setError(null);
+
+    const result = await resendVerificationOTP(otpData.email, otpData.type);
+    
+    this.actions.setLoading(false);
+    
+    if (!result.success) {
+      this.actions.setError(result.error || "Failed to resend code");
+    }
+    
+    return result.success;
+  }
+
+  /**
+   * Go back from OTP verification to sign-up
+   */
+  handleOTPBack() {
+    this.cancelCurrentFlow();
+    this.actions.setOtpData(null);
+    this.actions.setError(null);
+    this.actions.setCurrentModal("signup");
   }
 
   // ============================================================================

@@ -78,8 +78,7 @@ export function SignInFeedbackModal({
         <div className="flex flex-col items-center space-y-4">
           {/* Icon */}
           <div className={cn(
-            "w-12 h-12 rounded-full flex items-center justify-center",
-            isError ? "bg-destructive/10" : showSuccess ? "bg-green-500/10" : "bg-muted/30"
+            "w-12 h-12 rounded-full flex items-center justify-center"
           )}>
             {isError ? (
               <XCircle className="w-6 h-6 text-destructive" />

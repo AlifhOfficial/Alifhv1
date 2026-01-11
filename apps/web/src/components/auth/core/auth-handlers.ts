@@ -292,3 +292,57 @@ export const sendMagicLink = async (
     return { success: true };
   }, "Failed to send magic link");
 };
+
+// ============================================================================
+// EMAIL OTP HANDLERS
+// ============================================================================
+
+/**
+ * Verify email using OTP code
+ * Used after sign-up to verify email address
+ */
+export const verifyEmailWithOTP = async (
+  email: string,
+  otp: string
+): Promise<AuthResult> => {
+  return safeAuthOperation(async () => {
+    const result = await authClient.emailOtp.verifyEmail({
+      email: normalizeEmail(email),
+      otp,
+    });
+
+    if (result.error) {
+      const errorMessage = result.error.message?.toLowerCase() || '';
+      if (errorMessage.includes('invalid') || errorMessage.includes('expired')) {
+        return { success: false, error: "Invalid or expired code. Please try again." };
+      }
+      if (errorMessage.includes('too_many_attempts') || errorMessage.includes('attempts')) {
+        return { success: false, error: "Too many attempts. Please request a new code." };
+      }
+      return { success: false, error: result.error.message || "Verification failed" };
+    }
+
+    return { success: true };
+  }, "Email verification failed");
+};
+
+/**
+ * Resend OTP verification code
+ */
+export const resendVerificationOTP = async (
+  email: string,
+  type: "email-verification" | "sign-in" | "forget-password" = "email-verification"
+): Promise<{ success: boolean; error?: string }> => {
+  return safeAuthOperation(async () => {
+    const result = await authClient.emailOtp.sendVerificationOtp({
+      email: normalizeEmail(email),
+      type,
+    });
+
+    if (result.error) {
+      return { success: false, error: result.error.message || "Failed to resend code" };
+    }
+
+    return { success: true };
+  }, "Failed to resend verification code");
+};

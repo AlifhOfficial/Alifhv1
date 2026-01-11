@@ -6,8 +6,8 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { useState } from "react";
+import { X, Fingerprint, Loader2 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { authClient } from "@/lib/auth/client";
 
@@ -39,43 +39,26 @@ export function SignInModal({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isPasskeyLoading, setIsPasskeyLoading] = useState(false);
 
-  // Chrome/cross-browser passkey autofill (conditional UI)
-  // Only shows passkeys in the input's autofill dropdown - no modal popup
-  useEffect(() => {
-    if (!open) return;
+  // Handle passkey sign-in when user clicks the fingerprint icon
+  const handlePasskeySignIn = async () => {
+    if (isPasskeyLoading || isLoading) return;
     
-    let aborted = false;
-    const abortController = new AbortController();
-
-    const tryConditionalMediation = async () => {
-      try {
-        // This makes passkeys appear in autofill dropdown (Chrome needs this, Safari works without it)
-        // conditional: true = passive, only in autofill, no modal
-        const result = await authClient.signIn.passkey({ 
-          conditional: true,
-          fetchOptions: { signal: abortController.signal }
-        });
-        
-        // Success! Passkey authenticated
-        if (!aborted && result?.data && onPasskeySuccess) {
-          onPasskeySuccess();
-        }
-      } catch (error: any) {
-        // Silently ignore - user might not have passkeys, cancelled, or not supported
-        if (!aborted && error?.name !== 'AbortError') {
-          console.debug('[Passkey] Conditional UI not available:', error.message);
-        }
+    setIsPasskeyLoading(true);
+    try {
+      const result = await authClient.signIn.passkey();
+      
+      if (result?.data && onPasskeySuccess) {
+        onPasskeySuccess();
       }
-    };
-
-    tryConditionalMediation();
-
-    return () => {
-      aborted = true;
-      abortController.abort();
-    };
-  }, [open, onPasskeySuccess]);
+    } catch (error: any) {
+      // User cancelled or passkey not available - silently ignore
+      console.debug('[Passkey] Sign in cancelled or not available:', error.message);
+    } finally {
+      setIsPasskeyLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -165,17 +148,34 @@ export function SignInModal({
                 <label htmlFor="email" className="text-sm font-semibold text-muted-foreground/70">
                   Email
                 </label>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="username webauthn"
-                  className="w-full h-10 px-3 bg-muted/20 border border-border/40 rounded-lg text-sm font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors disabled:opacity-50"
-                  placeholder="you@example.com"
-                  required
-                  disabled={isLoading}
-                />
+                <div className="relative">
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="username webauthn"
+                    className="w-full h-10 px-3 pr-10 bg-muted/20 border border-border/40 rounded-lg text-sm font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors disabled:opacity-50"
+                    placeholder="you@example.com"
+                    required
+                    disabled={isLoading || isPasskeyLoading}
+                  />
+                  {/* Passkey fingerprint icon - subtle, inside input */}
+                  <button
+                    type="button"
+                    onClick={handlePasskeySignIn}
+                    disabled={isLoading || isPasskeyLoading}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-md text-muted-foreground/50 hover:text-primary hover:bg-primary/10 transition-colors disabled:opacity-50"
+                    aria-label="Sign in with passkey"
+                    title="Sign in with passkey"
+                  >
+                    {isPasskeyLoading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Fingerprint className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
               </div>
 
               <div className="space-y-1.5">
@@ -191,7 +191,7 @@ export function SignInModal({
                     className="w-full h-10 px-3 pr-14 bg-muted/20 border border-border/40 rounded-lg text-sm font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors disabled:opacity-50"
                     placeholder="••••••••"
                     required
-                    disabled={isLoading}
+                    disabled={isLoading || isPasskeyLoading}
                   />
                   <button
                     type="button"
@@ -217,7 +217,7 @@ export function SignInModal({
 
               <button
                 type="submit"
-                disabled={isLoading || !email || !password}
+                disabled={isLoading || isPasskeyLoading || !email || !password}
                 className={cn(
                   "w-full h-10 px-4 rounded-lg text-sm font-semibold transition-colors",
                   "bg-primary text-primary-foreground hover:bg-primary/90",

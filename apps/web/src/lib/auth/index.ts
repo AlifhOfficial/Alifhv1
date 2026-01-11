@@ -21,6 +21,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { magicLink } from "better-auth/plugins/magic-link";
 import { admin } from "better-auth/plugins/admin";
 import { phoneNumber } from "better-auth/plugins/phone-number";
+import { emailOTP } from "better-auth/plugins/email-otp";
 import { customSession } from "better-auth/plugins";
 import { passkey } from "@better-auth/passkey";
 import Twilio from "twilio";
@@ -84,14 +85,21 @@ export const auth = betterAuth({
     },
   },
 
-  emailVerification: {
-    sendVerificationEmail: async ({ user, url, token }, request) => {
-      await emailService.sendVerificationEmail({ user, url, token });
-    },
-    sendOnSignUp: AUTH_CONFIG.EMAIL_VERIFICATION.SEND_ON_SIGN_UP,
-  },
+  // NOTE: emailVerification is disabled - we use emailOTP plugin instead
+  // This solves cross-browser session issues by keeping user in same tab
+  // emailVerification: { ... }
 
   plugins: [
+    // Email OTP for verification (solves cross-browser issue)
+    emailOTP({
+      otpLength: 6,
+      expiresIn: 600, // 10 minutes
+      sendVerificationOnSignUp: true,
+      overrideDefaultEmailVerification: true,
+      async sendVerificationOTP({ email, otp, type }) {
+        await emailService.sendVerificationOTP({ email, otp, type });
+      },
+    }),
     magicLink({
       sendMagicLink: async ({ email, url, token }) => {
         await emailService.sendMagicLink({ 
