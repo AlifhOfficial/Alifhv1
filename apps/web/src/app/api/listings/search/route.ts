@@ -51,9 +51,10 @@ const searchLimiter = createRateLimiter({
 const SEARCH_CACHE_TTL = 600; // 10 minutes for search results (invalidated on listing changes)
 const FACET_CACHE_TTL = 900; // 15 minutes for facets (invalidated on listing changes)
 
-// CDN cache headers - 2min for search results
+// No browser/CDN caching - server handles caching with proper invalidation
 const CDN_CACHE_HEADERS = {
-  'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=300',
+  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
+  'Pragma': 'no-cache',
 } as const;
 
 /**

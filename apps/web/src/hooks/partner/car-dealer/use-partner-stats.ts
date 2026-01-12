@@ -15,7 +15,6 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
-import { CACHE_BEHAVIORS } from '@/lib/cache-config';
 
 // ============================================================================
 // Types
@@ -53,8 +52,6 @@ export function usePartnerStats(partnerId: string | null | undefined) {
     queryKey: ['partner-stats', partnerId],
     queryFn: () => fetchPartnerStats(partnerId!),
     enabled: !!partnerId,
-    staleTime: 5 * 60 * 1000, // 5min - these are expensive queries
-    gcTime: 10 * 60 * 1000, // 10min
     refetchOnWindowFocus: false, // Don't refetch on focus - expensive
   });
 

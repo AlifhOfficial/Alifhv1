@@ -7,6 +7,7 @@ import {
   doublePrecision,
   jsonb,
   index,
+  uniqueIndex,
   pgEnum,
 } from 'drizzle-orm/pg-core';
 import { user } from './auth';
@@ -270,6 +271,21 @@ export const carListing = pgTable('car_listing', {
   lastModeratedAt: timestamp('last_moderated_at'),
   needsRemoderation: boolean('needs_remoderation').default(false).notNull(),
   publishedAt: timestamp('published_at'),
+  
+  /**
+   * Original first-publish timestamp - Anti-abuse protection
+   * 
+   * This timestamp is set the FIRST time a VIN is published by a user.
+   * If the same user deletes and reposts the same VIN, this date is preserved
+   * to prevent "bump to top" abuse.
+   * 
+   * Used for sorting "newest" listings instead of publishedAt.
+   * - Same VIN, same user = inherit originalPublishedAt from previous listing
+   * - Same VIN, different user = fresh originalPublishedAt (ownership transfer)
+   * - Different VIN = fresh originalPublishedAt (genuinely new car)
+   */
+  originalPublishedAt: timestamp('original_published_at'),
+  
   expiresAt: timestamp('expires_at'),
   extensionCount: integer('extension_count').default(0).notNull(),
   extensionHistory: jsonb('extension_history').$type<Array<{
@@ -326,6 +342,17 @@ export const carListing = pgTable('car_listing', {
     table.needsRemoderation, 
     table.publishedAt.desc()
   ),
+  
+  // Public search with originalPublishedAt sorting (anti-abuse: prevents repost bump)
+  index('car_listing_public_search_originalPublishedAt_idx').on(
+    table.moderationStatus, 
+    table.lifecycleStatus, 
+    table.needsRemoderation, 
+    table.originalPublishedAt.desc()
+  ),
+  
+  // Original publish date index (for "newest" sort that prevents abuse)
+  index('car_listing_originalPublishedAt_idx').on(table.originalPublishedAt.desc()),
   
   index('car_listing_make_idx').on(table.make),
   index('car_listing_model_idx').on(table.model),
@@ -392,4 +419,49 @@ export const listingView = pgTable('listing_view', {
   index('listing_view_userId_idx').on(table.userId),
   index('listing_view_createdAt_idx').on(table.createdAt),
   index('listing_view_sessionId_idx').on(table.sessionId),
+]);
+
+/**
+ * VIN Publication History - Anti-abuse tracking
+ * 
+ * Tracks when a VIN was first published by each user to prevent
+ * delete-and-repost abuse where users bump their listings to the top.
+ * 
+ * Key behaviors:
+ * - Same VIN + same user: Inherit originalPublishedAt from history
+ * - Same VIN + different user: Fresh timestamp (ownership transfer is legitimate)
+ * - Different VIN: Fresh timestamp (genuinely new car)
+ */
+export const vinPublicationHistory = pgTable('vin_publication_history', {
+  id: text('id').primaryKey(),
+  vin: text('vin').notNull(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  
+  /** The timestamp when this VIN was FIRST published by this user */
+  originalPublishedAt: timestamp('original_published_at').notNull(),
+  
+  /** The current/latest listing ID for this VIN (null if deleted) */
+  currentListingId: text('current_listing_id').references(() => carListing.id, { onDelete: 'set null' }),
+  
+  /** Array of all listing IDs that have used this VIN (for audit trail) */
+  listingHistory: jsonb('listing_history').$type<Array<{
+    listingId: string;
+    publishedAt: string;
+    deletedAt?: string;
+    soldAt?: string;
+  }>>().default([]).notNull(),
+  
+  /** How many times this VIN has been reposted by this user */
+  repostCount: integer('repost_count').default(0).notNull(),
+  
+  /** Last time this record was updated */
+  updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => [
+  // UNIQUE constraint for ON CONFLICT upsert: one record per VIN+user
+  uniqueIndex('vin_publication_history_vin_userId_unique').on(table.vin, table.userId),
+  // Find all history for a VIN (across all users)
+  index('vin_publication_history_vin_idx').on(table.vin),
+  // Find all VINs a user has published
+  index('vin_publication_history_userId_idx').on(table.userId),
 ]);

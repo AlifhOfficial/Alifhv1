@@ -128,7 +128,6 @@ export function usePartnerRequest() {
   return useQuery<PartnerRequest | null>({
     queryKey: ['partner-request'],
     queryFn: fetchPartnerRequest,
-    staleTime: 30000, // 30s
     refetchOnWindowFocus: true,
   });
 }

@@ -30,7 +30,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { expireAllExpiredListings, memoryCache } from '@alifh/database';
+import { expireAllExpiredListings, invalidateSearchCaches } from '@alifh/database';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -81,8 +81,7 @@ export async function GET(req: NextRequest) {
 
     // Invalidate listing caches if any listings were expired
     if (totalExpired > 0) {
-      memoryCache.deleteByPrefix('listings:cards:');
-      memoryCache.deleteByPrefix('listings:partner:');
+      invalidateSearchCaches();
       console.log(`[cron/expire-listings] Invalidated caches after expiring ${totalExpired} listings`);
     }
 

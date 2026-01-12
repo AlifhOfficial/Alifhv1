@@ -29,10 +29,13 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
   const [listings, setListings] = useState<ListingPayload[]>([]);
   const [isLoadingListings, setIsLoadingListings] = useState(false);
   
-  // Only fetch favorites when dropdown is opened
-  const { data: favoritesData, isLoading } = useFavoritesStatus({ enabled: isOpen });
+  // LAZY: Only fetch favorites when dropdown is clicked open
+  const { data: favoritesData, isLoading: isLoadingFavorites } = useFavoritesStatus({ 
+    enabled: isOpen 
+  });
 
   const favoriteIds = useMemo(() => favoritesData?.favorites || [], [favoritesData?.favorites]);
+  const hasFavorites = favoriteIds.length > 0;
 
   // Fetch listings function
   const fetchListings = useCallback(async (ids: string[]) => {
@@ -55,19 +58,23 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
     }
   }, []);
 
-  // Load listing details only when dropdown is open and favorites change
+  // TWO-STEP LOADING:
+  // Step 1: Load favorite IDs (lightweight)
+  // Step 2: Only if favorites exist, load car card details (heavy)
   useEffect(() => {
     if (!isOpen) return;
     
-    if (!favoriteIds.length) {
+    // Early return: No favorites = no need to fetch listings
+    if (!hasFavorites) {
       setListings([]);
+      setIsLoadingListings(false);
       return;
     }
     
     // Only fetch top 3 (reversed to show newest first)
     const topIds = [...favoriteIds].reverse().slice(0, 3);
     fetchListings(topIds);
-  }, [isOpen, favoriteIds, fetchListings]);
+  }, [isOpen, hasFavorites, favoriteIds, fetchListings]);
 
   // Close on outside click
   useEffect(() => {
@@ -136,11 +143,7 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
 
           {/* Content */}
           <div className="max-h-[360px] overflow-y-auto">
-            {isLoading || isLoadingListings ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-              </div>
-            ) : listings.length === 0 ? (
+            {!hasFavorites ? (
               <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
                 <Moon className="w-12 h-12 text-muted-foreground/40 mb-3" />
                 <p className="text-[15px] font-semibold text-foreground/80">No favorites yet</p>
@@ -148,7 +151,11 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
                   Heart some cars and they&apos;ll appear here
                 </p>
               </div>
-            ) : (
+            ) : isLoadingListings ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : listings.length > 0 ? (
               <div className="py-1.5">
                 {listings.map((listing) => (
                   <FavoritePreviewItem
@@ -158,6 +165,14 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
                     onClose={() => setIsOpen(false)}
                   />
                 ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                <Moon className="w-12 h-12 text-muted-foreground/40 mb-3" />
+                <p className="text-[15px] font-semibold text-foreground/80">No favorites yet</p>
+                <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+                  Heart some cars and they&apos;ll appear here
+                </p>
               </div>
             )}
           </div>

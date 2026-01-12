@@ -123,10 +123,6 @@ export interface UseMyListingsOptions {
   enabled?: boolean;
 }
 
-// Cache durations
-const STALE_TIME = 15_000; // 15s - data freshness balance
-const CACHE_TIME = 60_000; // 1min - keep in cache
-
 // ============================================================================
 // API Function
 // ============================================================================
@@ -216,8 +212,8 @@ export function useMyListings(options: UseMyListingsOptions = {}) {
         limit,
         offset,
       }),
-    staleTime: STALE_TIME,
-    gcTime: CACHE_TIME,
+    staleTime: 0, // Always fetch fresh - server handles caching
+    gcTime: 0, // No client-side caching
     enabled,
     refetchOnWindowFocus: true,
   });

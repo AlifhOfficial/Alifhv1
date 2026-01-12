@@ -11,8 +11,9 @@
 
 import { eq } from 'drizzle-orm';
 import { db } from '../../../dbclient';
-import { memoryCache, CacheKeys } from '../../../caches/memory-cache';
+import { memoryCache, CacheKeys, invalidateUserSessions } from '../../../caches/memory-cache';
 import { partner } from '../../../schema/partner';
+import { partnerStaff } from '../../../schema/partner';
 
 export interface UpdateDealerBaseProfileData {
   // Basic Information
@@ -116,6 +117,17 @@ export async function updateDealerBaseProfile(
 
   // Invalidate cache after update
   memoryCache.delete(CacheKeys.partnerMiniProfile(partnerId));
+  
+  // Invalidate session cache for all staff if brand-related fields changed
+  if (data.brandName || data.logo) {
+    const staff = await db.query.partnerStaff.findMany({
+      where: eq(partnerStaff.partnerId, partnerId),
+      columns: { userId: true },
+    });
+    for (const s of staff) {
+      invalidateUserSessions(s.userId);
+    }
+  }
 
   return result;
 }

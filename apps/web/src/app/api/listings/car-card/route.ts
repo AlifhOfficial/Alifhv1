@@ -41,9 +41,10 @@ export const dynamic = "force-dynamic";
 const listingBrowseLimiter = createRateLimiter(RATE_LIMITS_LISTINGS.BROWSE);
 export const revalidate = 0;
 
-// CDN caching for public feed - 5min cache for near-zero latency
+// No browser/CDN caching - server handles caching with proper invalidation
 const CDN_CACHE_HEADERS = {
-  'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
+  'Pragma': 'no-cache',
 } as const;
 
 // For personalized/batch requests (favorites, superlikes) - no CDN cache

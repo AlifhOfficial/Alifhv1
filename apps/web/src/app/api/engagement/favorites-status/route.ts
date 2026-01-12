@@ -25,6 +25,7 @@ import { getSessionUser } from '@/lib/auth/session-context';
 import {
   getFavoriteStatusForListings,
   getSuperlikeQuotaForUser,
+  memoryCache,
 } from '@alifh/database';
 import {
   createRateLimiter,
@@ -39,9 +40,17 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0; // User-specific data must bypass CDN caching
 
+// Cache TTL: 5 minutes (invalidated on favorite/superlike toggle)
+const FAVORITES_CACHE_TTL = 300;
+
 const CACHE_HEADERS_NO_CACHE = {
   'Cache-Control': 'private, no-store',
 } as const;
+
+// Helper to generate cache key for user's favorites status
+function getFavoritesStatusCacheKey(userId: string): string {
+  return `favorites:status:${userId}`;
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -73,6 +82,17 @@ export async function GET(req: NextRequest) {
       return rateLimitResponse(rateLimitResult);
     }
 
+    // Check cache first
+    const cacheKey = getFavoritesStatusCacheKey(user.id);
+    const cached = memoryCache.get(cacheKey);
+    if (cached) {
+      const response = NextResponse.json(cached);
+      Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
+        response.headers.set(key, value)
+      );
+      return response;
+    }
+
     // Fetch all data in parallel (single round trip)
     const [statusData, quota] = await Promise.all([
       getFavoriteStatusForListings(user.id),
@@ -81,7 +101,7 @@ export async function GET(req: NextRequest) {
 
     const remaining = (quota.maxSuperlikesPerMonth + (quota.premiumSuperlikesBonus || 0)) - quota.currentMonthSuperlikesUsed;
 
-    const response = NextResponse.json({
+    const responseData = {
       favorites: statusData.favorites,
       superlikes: statusData.superlikes,
       quota: {
@@ -92,7 +112,12 @@ export async function GET(req: NextRequest) {
         periodEndDate: quota.periodEndDate,
         periodStartDate: quota.periodStartDate,
       },
-    });
+    };
+
+    // Cache for 5 minutes (invalidated on favorite/superlike toggle)
+    memoryCache.set(cacheKey, responseData, FAVORITES_CACHE_TTL);
+
+    const response = NextResponse.json(responseData);
     
     Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
       response.headers.set(key, value)

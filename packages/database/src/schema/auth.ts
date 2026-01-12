@@ -10,13 +10,16 @@ export const user = pgTable('user', {
   image: text('image'), // Profile picture URL from OAuth providers
   phoneNumber: text('phone_number'), // Better Auth phone plugin field
   phoneNumberVerified: boolean('phone_number_verified').default(false).notNull(), // Better Auth phone plugin field
+  stripeCustomerId: text('stripe_customer_id'), // Stripe customer ID for payment integration
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
   role: platformRoleEnum('role').default('user').notNull(),
   banned: boolean('banned').default(false),
   banReason: text('ban_reason'),
   banExpires: timestamp('ban_expires'),
-});
+}, (table) => [
+  index('user_stripeCustomerId_idx').on(table.stripeCustomerId),
+]);
 
 export const session = pgTable('session', {
   id: text('id').primaryKey(),

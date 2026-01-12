@@ -24,6 +24,7 @@ import { phoneNumber } from "better-auth/plugins/phone-number";
 import { emailOTP } from "better-auth/plugins/email-otp";
 import { customSession } from "better-auth/plugins";
 import { passkey } from "@better-auth/passkey";
+import { stripe } from "@better-auth/stripe";
 import Twilio from "twilio";
 import { db, CacheKeys, CacheTTL, eq, and, setSessionCacheInvalidator, sessionCache, invalidateUserSessions } from "@alifh/database";
 import * as schema from "@alifh/database";
@@ -31,6 +32,10 @@ import { UserRole } from "@/types/auth";
 import { emailService } from "@/lib/email";
 import { ac, roles } from "@/lib/auth/permissions";
 import { AUTH_CONFIG } from "./config";
+import { getStripeClient, getStripePlans } from "@/lib/stripe/config";
+
+// Check if Stripe is configured
+const isStripeConfigured = !!(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET);
 
 // Twilio Verify client for phone OTP
 const twilioClient = Twilio(
@@ -61,19 +66,23 @@ export const auth = betterAuth({
       session: schema.session,
       verification: schema.verification,
       passkey: schema.passkey,
+      subscription: schema.subscription,
       userRelations: schema.userRelations,
       accountRelations: schema.accountRelations,
       sessionRelations: schema.sessionRelations,
       passkeyRelations: schema.passkeyRelations,
+      subscriptionRelations: schema.subscriptionRelations,
     }
   }),
 
   session: {
     expiresIn: AUTH_CONFIG.SESSION.EXPIRES_IN,
     updateAge: AUTH_CONFIG.SESSION.UPDATE_AGE,
+    // NOTE: cookieCache disabled - we use server-side sessionCache in proxy.ts instead
+    // This ensures session data is always fresh after subscription/role changes
+    // The proxy caches by token with proper invalidation via invalidateUserSessions()
     cookieCache: {
-      enabled: true,
-      maxAge: 60, // 1 minute - in-memory cache for v1
+      enabled: false,
     },
   },
 
@@ -248,6 +257,7 @@ export const auth = betterAuth({
                 status: true,
                 tier: true,
                 logo: true,
+                subscriptionTier: true,
               },
             },
           },
@@ -255,7 +265,7 @@ export const auth = betterAuth({
           id: string;
           role: string;
           permissions: unknown;
-          partner: { id: string; brandName: string; status: string; tier: string | null; logo: string | null };
+          partner: { id: string; brandName: string; status: string; tier: string | null; logo: string | null; subscriptionTier: string | null };
         }>>,
       ]);
 
@@ -276,6 +286,7 @@ export const auth = betterAuth({
         partnerName: m.partner.brandName,
         partnerLogo: m.partner.logo,
         partnerTier: m.partner.tier,
+        subscriptionTier: m.partner.subscriptionTier,
         staffRole: m.role,
         permissions: m.permissions,
       }));
@@ -330,6 +341,105 @@ export const auth = betterAuth({
       };
     }),
     passkey(),
+    // Stripe integration for partner subscriptions (only if configured)
+    ...(isStripeConfigured ? [stripe({
+      stripeClient: getStripeClient(),
+      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
+      createCustomerOnSignUp: true, // Auto-create Stripe customer for new users
+      onCustomerCreate: async ({ stripeCustomer, user }) => {
+        console.log(`[Stripe] Customer ${stripeCustomer.id} created for user ${user.id}`);
+      },
+      subscription: {
+        enabled: true,
+        plans: getStripePlans(),
+        // Only partner owners can manage subscriptions
+        authorizeReference: async ({ user, referenceId, action }) => {
+          console.log(`[Stripe] authorizeReference called: user=${user.id}, referenceId=${referenceId}, action=${action}`);
+          
+          // referenceId is partner.id - verify user is owner of this partner
+          const ownership = await db.query.partnerStaff.findFirst({
+            where: and(
+              eq(schema.partnerStaff.userId, user.id),
+              eq(schema.partnerStaff.partnerId, referenceId),
+              eq(schema.partnerStaff.isOwner, true),
+              eq(schema.partnerStaff.status, 'active')
+            ),
+          });
+          
+          console.log(`[Stripe] Ownership check result:`, ownership ? 'found' : 'not found');
+          
+          if (!ownership) {
+            console.warn(`[Stripe] Unauthorized: User ${user.id} is not owner of partner ${referenceId}`);
+            return false;
+          }
+          
+          return true;
+        },
+        onSubscriptionComplete: async ({ subscription, plan }) => {
+          // Update partner tier based on subscription plan
+          const partnerId = subscription.referenceId;
+          const newTier = plan.name === 'black' ? 'black' : 'standard';
+          
+          await db.update(schema.partner)
+            .set({ 
+              subscriptionTier: plan.name,
+              tier: newTier as any,
+              updatedAt: new Date(),
+            })
+            .where(eq(schema.partner.id, partnerId));
+          
+          console.log(`[Stripe] Partner ${partnerId} subscribed to ${plan.name} plan`);
+          
+          // Invalidate session cache for all partner staff so they get fresh data
+          const staff = await db.query.partnerStaff.findMany({
+            where: eq(schema.partnerStaff.partnerId, partnerId),
+            columns: { userId: true },
+          });
+          for (const s of staff) {
+            invalidateUserSessions(s.userId);
+          }
+          console.log(`[Stripe] Invalidated ${staff.length} user sessions for partner ${partnerId}`);
+        },
+        onSubscriptionUpdate: async ({ subscription }) => {
+          console.log(`[Stripe] Subscription ${subscription.id} updated: ${subscription.status}`);
+          
+          // Invalidate sessions when subscription status changes
+          const partnerId = subscription.referenceId;
+          if (partnerId) {
+            const staff = await db.query.partnerStaff.findMany({
+              where: eq(schema.partnerStaff.partnerId, partnerId),
+              columns: { userId: true },
+            });
+            for (const s of staff) {
+              invalidateUserSessions(s.userId);
+            }
+          }
+        },
+        onSubscriptionCancel: async ({ subscription }) => {
+          // Downgrade partner to basic tier on cancellation
+          const partnerId = subscription.referenceId;
+          
+          await db.update(schema.partner)
+            .set({ 
+              subscriptionTier: 'basic',
+              tier: 'standard',
+              updatedAt: new Date(),
+            })
+            .where(eq(schema.partner.id, partnerId));
+          
+          console.log(`[Stripe] Partner ${partnerId} subscription cancelled`);
+          
+          // Invalidate session cache for all partner staff
+          const staff = await db.query.partnerStaff.findMany({
+            where: eq(schema.partnerStaff.partnerId, partnerId),
+            columns: { userId: true },
+          });
+          for (const s of staff) {
+            invalidateUserSessions(s.userId);
+          }
+        },
+      },
+    })] : []),
   ],
 
   socialProviders: {
@@ -394,6 +504,8 @@ export type Session = typeof auth.$Infer.Session & {
       partnerId: string;
       partnerName: string;
       partnerLogo: string | null;
+      partnerTier: string | null;
+      subscriptionTier: string | null;
       staffRole: string;
     }>;
   };
@@ -407,6 +519,8 @@ export type AuthUser = typeof auth.$Infer.Session.user & {
     partnerId: string;
     partnerName: string;
     partnerLogo: string | null;
+    partnerTier: string | null;
+    subscriptionTier: string | null;
     staffRole: string;
   }>;
 };

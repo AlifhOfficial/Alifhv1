@@ -13,6 +13,8 @@ interface ListingTimestampProps {
   createdAt: Date | string;
   updatedAt?: Date | string;
   publishedAt?: Date | string | null;
+  originalPublishedAt?: Date | string | null;
+  lastEditedAt?: Date | string | null;
   className?: string;
 }
 
@@ -47,11 +49,16 @@ export function ListingTimestamp({
   createdAt, 
   updatedAt, 
   publishedAt,
+  originalPublishedAt,
+  lastEditedAt,
   className 
 }: ListingTimestampProps) {
-  const postedDate = toDate(publishedAt || createdAt);
-  const updatedDateObj = updatedAt ? toDate(updatedAt) : null;
-  const wasUpdated = updatedDateObj && updatedDateObj.getTime() > postedDate.getTime() + 60000;
+  // Use originalPublishedAt for display (anti-abuse: shows true first listing date)
+  // Fall back to publishedAt, then createdAt
+  const postedDate = toDate(originalPublishedAt || publishedAt || createdAt);
+  // Use lastEditedAt for "updated" display if available, otherwise updatedAt
+  const editedDateObj = lastEditedAt ? toDate(lastEditedAt) : (updatedAt ? toDate(updatedAt) : null);
+  const wasUpdated = editedDateObj && editedDateObj.getTime() > postedDate.getTime() + 60000;
 
   return (
     <div className={cn("py-4 border-y border-border", className)}>
@@ -63,7 +70,7 @@ export function ListingTimestamp({
           </span>
           {wasUpdated && (
             <span className="text-sm text-muted-foreground font-semibold">
-              • Updated {formatTimeAgo(updatedDateObj)}
+              • Updated {formatTimeAgo(editedDateObj)}
             </span>
           )}
         </div>

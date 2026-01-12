@@ -8,7 +8,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useUserProfile, type UserProfileUpdate, useUserStats } from '@/hooks/profile';
+import { useUserProfile, type UserProfileUpdate } from '@/hooks/profile';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/providers/auth-provider';
 import { authClient } from '@/lib/auth/client';
@@ -57,8 +57,7 @@ type EditingField = null | 'firstName' | 'lastName' | 'phone' | 'bio' | 'tags';
 
 export function ProfileView() {
   const { session: user } = useAuth();
-  const { profile, updateProfile, refresh, isLoading: profileLoading } = useUserProfile();
-  const { stats } = useUserStats();
+  const { profile, updateProfile, refresh, isLoading: profileLoading, stats } = useUserProfile();
   const { toast } = useToast();
 
   const [editingField, setEditingField] = useState<EditingField>(null);

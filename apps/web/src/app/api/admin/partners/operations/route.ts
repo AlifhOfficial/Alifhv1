@@ -30,7 +30,11 @@ import {
   addPartnerBadge,
   removePartnerBadge,
   adminDeletePartner,
+  invalidateUserSessions,
+  db,
+  eq,
 } from '@alifh/database';
+import * as schema from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_ADMIN } from '@/lib/rate-limit';
 
@@ -213,6 +217,18 @@ export async function POST(req: NextRequest) {
           { error: 'Invalid operation' },
           { status: 400 }
         );
+    }
+
+    // Invalidate session cache for all staff of this partner
+    const partnerId = 'partnerId' in validated ? validated.partnerId : null;
+    if (partnerId) {
+      const staff = await db.query.partnerStaff.findMany({
+        where: eq(schema.partnerStaff.partnerId, partnerId),
+        columns: { userId: true },
+      });
+      for (const s of staff) {
+        invalidateUserSessions(s.userId);
+      }
     }
 
     return NextResponse.json({

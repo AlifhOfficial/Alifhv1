@@ -137,7 +137,6 @@ export function useMessages(conversationId: string, userId?: string, options: Us
     queryFn: ({ pageParam }) => fetchMessages(conversationId, pageParam),
     getNextPageParam: (page) => page.nextCursor,
     initialPageParam: undefined as string | undefined,
-    staleTime: 5 * 60 * 1000,
     enabled: !!conversationId && !!userId,
   });
 

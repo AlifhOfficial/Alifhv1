@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db, carListing, inArray, invalidateSearchCaches } from '@alifh/database';
+import { db, carListing, inArray, invalidateListingCaches } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 
 export async function POST(req: NextRequest) {
@@ -58,8 +58,13 @@ export async function POST(req: NextRequest) {
       })
       .where(inArray(carListing.id, listingIds));
 
-    // Invalidate search caches to reflect deleted listings
-    invalidateSearchCaches();
+    // Invalidate caches for each deleted listing
+    // Group by partnerId to avoid redundant partner inventory invalidations
+    const partnerIds = new Set<string>();
+    listingsToDelete.forEach(listing => {
+      invalidateListingCaches(listing.id, listing.partnerId || undefined);
+      if (listing.partnerId) partnerIds.add(listing.partnerId);
+    });
 
     return NextResponse.json({
       success: true,

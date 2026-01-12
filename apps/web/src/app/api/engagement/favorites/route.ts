@@ -8,7 +8,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { toggleFavoriteForUser } from '@alifh/database';
+import { toggleFavoriteForUser, invalidateFavoritesCache } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_ENGAGEMENT } from '@/lib/rate-limit';
 
@@ -54,6 +54,9 @@ export async function POST(req: NextRequest) {
 
     const { listingId, addedFrom } = result.data;
     const status = await toggleFavoriteForUser(user.id, listingId, addedFrom);
+
+    // Invalidate user's favorites cache
+    invalidateFavoritesCache(user.id);
 
     return NextResponse.json({ status });
   } catch (error) {

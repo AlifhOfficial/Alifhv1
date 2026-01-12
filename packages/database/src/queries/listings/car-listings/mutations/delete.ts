@@ -9,10 +9,12 @@
 import { eq, and, lte, isNull, isNotNull } from 'drizzle-orm';
 import { db } from '../../../../dbclient';
 import { carListing } from '../../../../schema/listing';
+import { updateVinHistoryOnDelete } from './vin-history';
 
 /**
  * Soft delete a car listing (set lifecycleStatus to 'deleted')
  * Supports both direct ownership (userId) and partner ownership (partnerId)
+ * Also updates VIN publication history for anti-abuse tracking.
  */
 export async function deleteCarListing(
   listingId: string,
@@ -21,9 +23,13 @@ export async function deleteCarListing(
 ): Promise<boolean> {
   const now = new Date();
   
-  // First verify ownership
+  // First verify ownership and get VIN for history tracking
   const listing = await db
-    .select({ userId: carListing.userId, partnerId: carListing.partnerId })
+    .select({ 
+      userId: carListing.userId, 
+      partnerId: carListing.partnerId,
+      vin: carListing.vin,
+    })
     .from(carListing)
     .where(eq(carListing.id, listingId))
     .limit(1);
@@ -45,6 +51,22 @@ export async function deleteCarListing(
     })
     .where(eq(carListing.id, listingId))
     .returning({ id: carListing.id });
+
+  if (result.length > 0 && listing[0].vin) {
+    // Update VIN history to mark this listing as deleted
+    // Non-blocking but logged - VIN history is important for anti-abuse
+    try {
+      await updateVinHistoryOnDelete({
+        vin: listing[0].vin,
+        userId: listing[0].userId!,
+        listingId,
+        deletedAt: now,
+      });
+    } catch (err) {
+      // Log error but don't fail the delete operation
+      console.error('[vin-history] Failed to update VIN history on delete:', err);
+    }
+  }
 
   return result.length > 0;
 }

@@ -230,9 +230,10 @@ async function getListingCardsInternal(
   }
 
   // 2-STEP PATTERN: Browse/search with pagination
+  // Use originalPublishedAt for public browsing to prevent repost "bump to top" abuse
   const prefersPublishedOrder = needsPublicConditions;
   const orderByNewest = prefersPublishedOrder
-    ? [sql`${carListing.publishedAt} desc nulls last`, desc(carListing.createdAt)]
+    ? [sql`${carListing.originalPublishedAt} desc nulls last`, desc(carListing.createdAt)]
     : [desc(carListing.createdAt)];
 
   // STEP 1: Get IDs only with filtering and pagination (fast, index-driven)

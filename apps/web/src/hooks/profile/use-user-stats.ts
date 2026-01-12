@@ -15,7 +15,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/providers/auth-provider';
 import { queryKeys } from '@/lib/query-keys';
-import { CACHE_BEHAVIORS } from '@/lib/cache-config';
 
 // ============================================================================
 // Types
@@ -53,7 +52,6 @@ export function useUserStats() {
   const query = useQuery({
     queryKey: queryKeys.user.stats(),
     queryFn: fetchUserStats,
-    ...CACHE_BEHAVIORS.EXPENSIVE,
     enabled: isAuthenticated,
   });
 

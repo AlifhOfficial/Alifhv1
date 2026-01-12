@@ -101,7 +101,6 @@ export function useConversations(options: UseConversationsOptions = {}) {
   const query = useQuery({
     queryKey,
     queryFn: () => fetchConversations(options.scope),
-    staleTime: 5 * 60 * 1000,
     enabled: !!options.userId,
   });
 

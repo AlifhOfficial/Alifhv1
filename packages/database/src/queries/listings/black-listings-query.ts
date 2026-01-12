@@ -220,7 +220,8 @@ export async function getPublicBlackListings(options?: {
         sql`${carListing.expiresAt} > ${now}`
       )
     )
-    .orderBy(desc(carListing.publishedAt), desc(carListing.createdAt))
+    // Use originalPublishedAt to prevent repost "bump to top" abuse
+    .orderBy(sql`${carListing.originalPublishedAt} desc nulls last`, desc(carListing.createdAt))
     .limit(limit)
     .offset(offset);
 

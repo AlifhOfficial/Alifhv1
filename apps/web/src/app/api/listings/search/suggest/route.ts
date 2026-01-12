@@ -35,8 +35,10 @@ const suggestLimiter = createRateLimiter({
 const CACHE_TTL = 60_000; // 60 seconds
 const POPULAR_CACHE_TTL = 120_000; // 2 minutes for popular makes
 
+// No browser/CDN caching - server handles caching with proper invalidation
 const CDN_CACHE_HEADERS = {
-  'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=300',
+  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
+  'Pragma': 'no-cache',
 } as const;
 
 export async function GET(req: NextRequest) {

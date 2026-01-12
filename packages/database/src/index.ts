@@ -69,3 +69,6 @@ export * from './queries/conversation';
 
 // Explicit consignment query exports (required for proper bundling)
 export * from './queries/consignment/funnel-queries';
+
+// Explicit user stats query exports (required for proper bundling)
+export * from './queries/user-stats';

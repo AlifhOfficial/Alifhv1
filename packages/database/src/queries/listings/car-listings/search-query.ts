@@ -225,15 +225,25 @@ function buildSearchConditions(params: SearchParams, now: Date): SQL[] {
 
 /**
  * Build ORDER BY clause
+ * 
+ * For "newest" and "relevance" sorts, we use originalPublishedAt instead of publishedAt
+ * to prevent "bump to top" abuse where users delete and repost to get a fresh date.
+ * 
+ * Uses COALESCE to fall back to publishedAt if originalPublishedAt is NULL
+ * (handles edge cases where anti-abuse wasn't triggered)
  */
 function buildOrderBy(params: SearchParams): SQL[] {
   const { sortBy = 'newest', sortOrder } = params;
 
+  // COALESCE ensures we have a valid date even if originalPublishedAt is NULL
+  const sortDateCol = sql`COALESCE(${carListing.originalPublishedAt}, ${carListing.publishedAt})`;
+
   switch (sortBy) {
     case 'newest':
-      return [sql`${carListing.publishedAt} desc nulls last`, desc(carListing.createdAt)];
+      // Use originalPublishedAt to prevent repost abuse (falls back to createdAt if null)
+      return [sql`${sortDateCol} desc`, desc(carListing.createdAt)];
     case 'oldest':
-      return [sql`${carListing.publishedAt} asc nulls last`, asc(carListing.createdAt)];
+      return [sql`${sortDateCol} asc`, asc(carListing.createdAt)];
     case 'price_low':
       return [asc(carListing.price), desc(carListing.createdAt)];
     case 'price_high':
@@ -252,8 +262,8 @@ function buildOrderBy(params: SearchParams): SQL[] {
     case 'relevance':
     default:
       // If text search, relevance would be based on match quality
-      // For now, default to newest
-      return [sql`${carListing.publishedAt} desc nulls last`, desc(carListing.createdAt)];
+      // For now, default to originalPublishedAt (prevents abuse)
+      return [sql`${sortDateCol} desc`, desc(carListing.createdAt)];
   }
 }
 
@@ -429,7 +439,118 @@ const emirateLabelMap = Object.fromEntries(UAE_EMIRATES.map(e => [e.value, e.lab
 const sellerTypeLabelMap = { dealer: 'Dealer', private: 'Private Seller' };
 
 /**
- * Get all facets in parallel
+ * Get all enum facets in a single optimized query
+ * 
+ * Instead of 9 separate queries, we use a UNION ALL approach to get all
+ * field/value/count combinations in one database round-trip.
+ * 
+ * This reduces DB queries from 13 to 5:
+ * - 1 for make facets (special filter handling)
+ * - 1 for model facets (special filter handling)  
+ * - 1 for trim facets (special filter handling)
+ * - 1 for ranges (already single query)
+ * - 1 for all 9 enum facets (consolidated here)
+ */
+async function getAllEnumFacets(
+  params: SearchParams, 
+  now: Date
+): Promise<{
+  emirate: FacetBucket[];
+  specs: FacetBucket[];
+  bodyType: FacetBucket[];
+  fuelType: FacetBucket[];
+  transmission: FacetBucket[];
+  engineSize: FacetBucket[];
+  exteriorColor: FacetBucket[];
+  interiorColor: FacetBucket[];
+  sellerType: FacetBucket[];
+}> {
+  // Base conditions for public listings
+  const baseConditions = buildPublicBaseConditions(now);
+  
+  // Build a UNION ALL query for all enum fields
+  // Each subquery groups by one field and returns field name, value, and count
+  // IMPORTANT: Cast all enum columns to TEXT for UNION compatibility
+  const result = await db.execute(sql`
+    WITH base AS (
+      SELECT * FROM car_listing 
+      WHERE ${and(...baseConditions)}
+    )
+    SELECT 'emirate' as field, emirate::text as value, count(*)::int as count FROM base WHERE emirate IS NOT NULL GROUP BY emirate
+    UNION ALL
+    SELECT 'specs' as field, specs::text as value, count(*)::int as count FROM base WHERE specs IS NOT NULL GROUP BY specs
+    UNION ALL
+    SELECT 'bodyType' as field, body_type::text as value, count(*)::int as count FROM base WHERE body_type IS NOT NULL GROUP BY body_type
+    UNION ALL
+    SELECT 'fuelType' as field, fuel_type::text as value, count(*)::int as count FROM base WHERE fuel_type IS NOT NULL GROUP BY fuel_type
+    UNION ALL
+    SELECT 'transmission' as field, transmission::text as value, count(*)::int as count FROM base WHERE transmission IS NOT NULL GROUP BY transmission
+    UNION ALL
+    SELECT 'engineSize' as field, engine_size::text as value, count(*)::int as count FROM base WHERE engine_size IS NOT NULL GROUP BY engine_size
+    UNION ALL
+    SELECT 'exteriorColor' as field, exterior_color::text as value, count(*)::int as count FROM base WHERE exterior_color IS NOT NULL GROUP BY exterior_color
+    UNION ALL
+    SELECT 'interiorColor' as field, interior_color::text as value, count(*)::int as count FROM base WHERE interior_color IS NOT NULL GROUP BY interior_color
+    UNION ALL
+    SELECT 'sellerType' as field, seller_type::text as value, count(*)::int as count FROM base WHERE seller_type IS NOT NULL GROUP BY seller_type
+  `);
+
+  // Parse rows into facet buckets grouped by field
+  const rows = (result as any).rows ?? result;
+  const facetMap: Record<string, FacetBucket[]> = {
+    emirate: [],
+    specs: [],
+    bodyType: [],
+    fuelType: [],
+    transmission: [],
+    engineSize: [],
+    exteriorColor: [],
+    interiorColor: [],
+    sellerType: [],
+  };
+
+  const labelMaps: Record<string, Record<string, string>> = {
+    emirate: emirateLabelMap,
+    specs: specsLabelMap,
+    bodyType: bodyTypeLabelMap,
+    fuelType: fuelTypeLabelMap,
+    transmission: transmissionLabelMap,
+    engineSize: engineSizeLabelMap,
+    exteriorColor: exteriorColorLabelMap,
+    interiorColor: interiorColorLabelMap,
+    sellerType: sellerTypeLabelMap,
+  };
+
+  for (const row of rows) {
+    const field = row.field as string;
+    const value = String(row.value);
+    const count = Number(row.count);
+    const labelMap = labelMaps[field];
+    
+    if (facetMap[field]) {
+      facetMap[field].push({
+        value,
+        label: labelMap?.[value] || value,
+        count,
+      });
+    }
+  }
+
+  // Sort each facet by count descending
+  for (const key of Object.keys(facetMap)) {
+    facetMap[key].sort((a, b) => b.count - a.count);
+  }
+
+  return facetMap as any;
+}
+
+/**
+ * Get all facets with optimized query strategy
+ * 
+ * Reduced from 13 parallel queries to 5:
+ * - Make, Model, Trim: 3 separate queries (need special filter exclusion)
+ * - Ranges: 1 query (min/max aggregates)
+ * - All enum facets: 1 consolidated UNION query
  */
 async function getAllFacets(params: SearchParams, now: Date): Promise<SearchFacets> {
   const [
@@ -437,29 +558,13 @@ async function getAllFacets(params: SearchParams, now: Date): Promise<SearchFace
     model,
     trim,
     ranges,
-    emirate,
-    specs,
-    bodyType,
-    fuelType,
-    transmission,
-    engineSize,
-    exteriorColor,
-    interiorColor,
-    sellerType,
+    enumFacets,
   ] = await Promise.all([
     getMakeFacets(params, now),
     getModelFacets(params, now),
     getTrimFacets(params, now),
     getRangeFacets(params, now),
-    getFacetCounts('emirate', params, now, emirateLabelMap),
-    getFacetCounts('specs', params, now, specsLabelMap),
-    getFacetCounts('bodyType', params, now, bodyTypeLabelMap),
-    getFacetCounts('fuelType', params, now, fuelTypeLabelMap),
-    getFacetCounts('transmission', params, now, transmissionLabelMap),
-    getFacetCounts('engineSize', params, now, engineSizeLabelMap),
-    getFacetCounts('exteriorColor', params, now, exteriorColorLabelMap),
-    getFacetCounts('interiorColor', params, now, interiorColorLabelMap),
-    getFacetCounts('sellerType', params, now, sellerTypeLabelMap),
+    getAllEnumFacets(params, now),
   ]);
 
   return {
@@ -469,15 +574,15 @@ async function getAllFacets(params: SearchParams, now: Date): Promise<SearchFace
     yearRange: ranges.yearRange,
     priceRange: ranges.priceRange,
     mileageRange: ranges.mileageRange,
-    emirate,
-    specs,
-    bodyType,
-    fuelType,
-    transmission,
-    engineSize,
-    exteriorColor,
-    interiorColor,
-    sellerType,
+    emirate: enumFacets.emirate,
+    specs: enumFacets.specs,
+    bodyType: enumFacets.bodyType,
+    fuelType: enumFacets.fuelType,
+    transmission: enumFacets.transmission,
+    engineSize: enumFacets.engineSize,
+    exteriorColor: enumFacets.exteriorColor,
+    interiorColor: enumFacets.interiorColor,
+    sellerType: enumFacets.sellerType,
   };
 }
 

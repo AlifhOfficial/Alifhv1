@@ -14,7 +14,7 @@
 import { createId } from '@paralleldrive/cuid2';
 import { eq } from 'drizzle-orm';
 import { db } from '../../../dbclient';
-import { memoryCache, CacheKeys, CacheTTL } from '../../../caches/memory-cache';
+import { memoryCache, CacheKeys, CacheTTL, invalidateUserSessions } from '../../../caches/memory-cache';
 import { userProfile } from '../../../schema/profile';
 import { user } from '../../../schema/auth';
 
@@ -175,8 +175,9 @@ export const updateUserProfileByUserId = async (
     .set({ ...cleanUpdates, updatedAt: new Date() })
     .where(eq(userProfile.userId, userId));
 
-  // Invalidate cache once after all updates complete
+  // Invalidate both profile cache and session cache (session contains profile data)
   memoryCache.delete(CacheKeys.userProfile(userId));
+  invalidateUserSessions(userId);
 
   // Return fresh profile
   return getUserProfileByUserId(userId);

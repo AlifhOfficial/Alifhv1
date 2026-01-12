@@ -22,7 +22,6 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
-import { CACHE_STALE_TIME } from '@/lib/cache-config';
 import { optimisticUpdate, invalidateQueries } from '@/lib/cache-patterns';
 import { useState } from 'react';
 
@@ -110,7 +109,6 @@ export function useFavoritesStatus(options?: { enabled?: boolean }) {
   return useQuery<FavoritesStatusData>({
     queryKey: ['favorites-status'],
     queryFn: fetchFavoritesStatus,
-    staleTime: 30000, // 30s - balance between freshness and performance
     refetchOnWindowFocus: true,
     enabled: options?.enabled ?? true, // Allow disabling the query
   });
@@ -127,7 +125,6 @@ export function useFavorite(listingId: string) {
   const { data } = useQuery<FavoritesStatusData>({
     queryKey: ['favorites-status'],
     queryFn: fetchFavoritesStatus,
-    staleTime: 30000,
   });
 
   const isFavorite = data?.favorites.includes(listingId) || false;
@@ -197,7 +194,6 @@ export function useSuperlike(listingId: string) {
   const { data } = useQuery<FavoritesStatusData>({
     queryKey: ['favorites-status'],
     queryFn: fetchFavoritesStatus,
-    staleTime: 30000,
   });
 
   const isSuperliked = data?.superlikes.includes(listingId) || false;

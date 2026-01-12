@@ -169,7 +169,6 @@ export function usePartnerRequestsAdmin(options: ListPartnerRequestsOptions = {}
   return useQuery({
     queryKey,
     queryFn: () => fetchPartnerRequestsAdmin(options),
-    staleTime: 30000, // 30s
     refetchOnWindowFocus: true,
   });
 }
@@ -186,7 +185,6 @@ export function usePartnerRequestById(requestId: string | null) {
       return fetchPartnerRequestById(requestId);
     },
     enabled: !!requestId,
-    staleTime: 30000,
   });
 }
 
@@ -235,7 +233,6 @@ export function usePartnerRequestCounts() {
     queryKey: ['partner-request-counts'],
     queryFn: () => fetchPartnerRequestsAdmin({ includeCounts: true, limit: 1 }),
     select: (data) => data.counts,
-    staleTime: 60000, // 60s - counts don't change as frequently
     refetchOnWindowFocus: true,
   });
 }

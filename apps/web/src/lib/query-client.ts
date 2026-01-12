@@ -1,18 +1,18 @@
 import { QueryClient, isServer } from '@tanstack/react-query';
-import { CACHE_STALE_TIME } from './cache-config';
 
 /**
  * Query Client Factory - Standardized Configuration
  * 
- * Creates React Query clients with consistent defaults.
- * Uses centralized cache configuration from cache-config.ts
+ * Creates React Query clients with server-side only caching.
+ * No client-side caching - server handles all caching with proper invalidation.
  */
 function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
-        // Default stale time - 1 minute for most queries
-        staleTime: CACHE_STALE_TIME.DEFAULT,
+        // No client-side caching - server handles caching with proper invalidation
+        staleTime: 0,
+        gcTime: 0,
         
         // Don't refetch on window focus by default (opt-in per query)
         refetchOnWindowFocus: false,

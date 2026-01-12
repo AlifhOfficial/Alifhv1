@@ -317,7 +317,6 @@ export function useAdminUsers(options: ListUsersOptions = {}) {
   const query = useQuery({
     queryKey: ADMIN_KEYS.usersList(options),
     queryFn: () => fetchAdminUsers(options),
-    staleTime: 30000, // 30 seconds
   });
 
   return {
@@ -343,7 +342,6 @@ export function useAdminUserByEmail(email: string | null, enabled: boolean = tru
     queryKey: ADMIN_KEYS.userSearch({ email: email || undefined }),
     queryFn: () => searchAdminUsers({ email: email! }),
     enabled: enabled && !!email,
-    staleTime: 30000,
   });
 
   return {
@@ -368,7 +366,6 @@ export function useAdminUserByPhone(phone: string | null, enabled: boolean = tru
     queryKey: ADMIN_KEYS.userSearch({ phone: phone || undefined }),
     queryFn: () => searchAdminUsers({ phone: phone! }),
     enabled: enabled && !!phone,
-    staleTime: 30000,
   });
 
   return {
@@ -398,7 +395,6 @@ export function useAdminUserSearch(
     queryKey: ADMIN_KEYS.userSearch({ query: query || undefined, limit }),
     queryFn: () => searchAdminUsers({ query: query!, limit }),
     enabled: enabled && !!query && query.length >= 2,
-    staleTime: 10000, // 10 seconds for autocomplete
   });
 
   return {
@@ -419,7 +415,6 @@ export function useAdminPartners(options: ListPartnersOptions = {}) {
   const query = useQuery({
     queryKey: ADMIN_KEYS.partnersList(options),
     queryFn: () => fetchAdminPartners(options),
-    staleTime: 30000,
   });
 
   return {
@@ -442,7 +437,6 @@ export function useAdminStats() {
   const query = useQuery({
     queryKey: ADMIN_KEYS.stats(),
     queryFn: fetchAdminStats,
-    staleTime: 60000, // 1 minute
   });
 
   return {

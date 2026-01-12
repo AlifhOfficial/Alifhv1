@@ -13,6 +13,7 @@ import {
   addDays, 
   DEFAULT_LISTING_EXPIRY_DAYS 
 } from './helpers';
+import { recordVinPublication, updateVinHistoryCurrentListing } from './vin-history';
 import type { CreateCarListingInput } from './types';
 import type { 
   ListingModerationStatus, 
@@ -22,6 +23,9 @@ import type {
 /**
  * Create a new car listing
  * Returns the created listing ID
+ * 
+ * Anti-abuse: If the same user reposts the same VIN, the originalPublishedAt
+ * is preserved from the first publication to prevent "bump to top" abuse.
  */
 export async function createCarListing(input: CreateCarListingInput): Promise<string> {
   const listingId = makeListingId();
@@ -41,6 +45,40 @@ export async function createCarListing(input: CreateCarListingInput): Promise<st
   const approvedAt = moderationStatus === 'approved' ? now : null;
   const lastModeratedAt = moderationStatus === 'draft' ? null : now;
   const needsRemoderation = moderationStatus === 'submitted' || moderationStatus === 'pending_review';
+  
+  // Determine originalPublishedAt based on VIN history (anti-abuse)
+  // If the same user has previously published the same VIN, we inherit
+  // the original publish date to prevent "bump to top" abuse.
+  // Exception: if the cooldown period (24 days) has passed, user gets a fresh date.
+  let originalPublishedAt: Date | null = null;
+  let publishedAt: Date | null = null;
+  
+  if (shouldBePublicNow) {
+    publishedAt = now;
+    
+    if (input.vin) {
+      // Check VIN history - this will inherit originalPublishedAt if reposting
+      const vinResult = await recordVinPublication({
+        vin: input.vin,
+        userId: input.userId,
+        listingId,
+        publishedAt: now,
+      });
+      originalPublishedAt = vinResult.originalPublishedAt;
+      
+      // Log repost detection for monitoring
+      if (vinResult.isRepost) {
+        if (vinResult.cooldownReset) {
+          console.log(`[anti-abuse] VIN repost after cooldown: ${input.vin} by user ${input.userId}. Fresh date granted.`);
+        } else {
+          console.log(`[anti-abuse] VIN repost detected: ${input.vin} by user ${input.userId}. Using original date: ${originalPublishedAt.toISOString()}`);
+        }
+      }
+    } else {
+      // No VIN provided - use current timestamp
+      originalPublishedAt = now;
+    }
+  }
   
   const insertData = {
     // Core identification
@@ -137,7 +175,10 @@ export async function createCarListing(input: CreateCarListingInput): Promise<st
     needsRemoderation,
 
     // Publishing & expiry (only when it becomes public)
-    publishedAt: shouldBePublicNow ? now : null,
+    // publishedAt = current publish time (can be refreshed)
+    // originalPublishedAt = first-ever publish time for this VIN (anti-abuse, used for sorting)
+    publishedAt,
+    originalPublishedAt,
     expiresAt: shouldBePublicNow ? addDays(now, DEFAULT_LISTING_EXPIRY_DAYS) : null,
 
     extensionCount: 0,
@@ -147,6 +188,15 @@ export async function createCarListing(input: CreateCarListingInput): Promise<st
   } as const;
 
   await db.insert(carListing).values(insertData as any);
+
+  // Update VIN history with current_listing_id now that the listing exists
+  if (shouldBePublicNow && input.vin) {
+    await updateVinHistoryCurrentListing({
+      vin: input.vin,
+      userId: input.userId,
+      listingId,
+    });
+  }
 
   return listingId;
 }

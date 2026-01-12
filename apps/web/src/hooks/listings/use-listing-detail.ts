@@ -14,7 +14,6 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
-import { CACHE_STALE_TIME } from '@/lib/cache-config';
 import type { CarDetailedData } from '@alifh/database';
 
 // ============================================================================
@@ -143,8 +142,8 @@ export function useListingDetail(
     queryKey: ['listing', 'detail', id],
     queryFn: () => fetchListingDetail(id!),
     enabled: !!id && enabled,
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    gcTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 0, // Always fetch fresh - caching is server-side only
+    gcTime: 0, // No client-side caching
     retry: 1,
   });
 

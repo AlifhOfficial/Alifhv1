@@ -254,6 +254,8 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
                   createdAt={listing.createdAt}
                   updatedAt={listing.updatedAt}
                   publishedAt={listing.publishedAt}
+                  originalPublishedAt={listing.originalPublishedAt}
+                  lastEditedAt={listing.lastEditedAt}
                 />
 
                 {/* 4. EMI Calculator */}

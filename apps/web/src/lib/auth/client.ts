@@ -14,6 +14,7 @@
 import { createAuthClient } from "better-auth/react";
 import { magicLinkClient, adminClient, customSessionClient, phoneNumberClient, emailOTPClient } from "better-auth/client/plugins";
 import { passkeyClient } from "@better-auth/passkey/client";
+import { stripeClient } from "@better-auth/stripe/client";
 import { ac, roles } from "@/lib/auth/permissions";
 import type { auth } from "@/lib/auth";
 
@@ -60,6 +61,9 @@ function getAuthClient() {
           },
         }),
         customSessionClient<typeof auth>(),
+        stripeClient({
+          subscription: true, // Enable subscription management
+        }),
       ]
     });
   }

@@ -1,6 +1,5 @@
 /**
- * Become a Partner Page - Redirects to application form
- * Users must be logged in to apply
+ * Become a Partner Page - Marketing page with CTA to pricing and application
  */
 
 import { Metadata } from 'next';
@@ -47,12 +46,20 @@ export default function BecomePartnerPage() {
                 <span>Dedicated Support</span>
               </div>
             </div>
-            <Link
-              href="/user-dashboard/partner-application"
-              className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-primary-foreground rounded-lg text-lg font-semibold hover:bg-primary/90 transition-colors"
-            >
-              Apply Now
-            </Link>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Link
+                href="/pricing"
+                className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-primary text-primary-foreground rounded-lg text-lg font-semibold hover:bg-primary/90 transition-colors"
+              >
+                View Plans & Pricing
+              </Link>
+              <Link
+                href="/user-dashboard/partner-application"
+                className="inline-flex items-center justify-center gap-2 px-8 py-3 border border-primary text-primary rounded-lg text-lg font-semibold hover:bg-primary/10 transition-colors"
+              >
+                Apply Now
+              </Link>
+            </div>
           </div>
         </div>
       </section>

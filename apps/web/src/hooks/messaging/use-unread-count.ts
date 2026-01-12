@@ -21,7 +21,6 @@ export function useUnreadCount(userId?: string, activeConversationId?: string) {
   const query = useQuery({
     queryKey: ['unread-count'],
     queryFn: fetchUnreadCount,
-    staleTime: 60 * 1000,
     refetchInterval: 2 * 60 * 1000,
     enabled: !!userId,
   });

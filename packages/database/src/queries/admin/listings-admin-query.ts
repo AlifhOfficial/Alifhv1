@@ -12,6 +12,7 @@ import { carListing } from '../../schema/listing';
 import { user } from '../../schema/auth';
 import { partner } from '../../schema/partner';
 import { getListingModerationContext, type ListingModerationContext } from '../listings/car-listings/car-listing-context-query';
+import { recordVinPublication } from '../listings/car-listings/mutations/vin-history';
 
 export type AdminListingTypeFilter = 'user' | 'partner';
 
@@ -265,8 +266,11 @@ export async function approveListingAsAdmin(listingId: string, adminUserId: stri
   const existing = await db
     .select({
       id: carListing.id,
+      userId: carListing.userId,
+      vin: carListing.vin,
       lifecycleStatus: carListing.lifecycleStatus,
       publishedAt: carListing.publishedAt,
+      originalPublishedAt: carListing.originalPublishedAt,
       expiresAt: carListing.expiresAt,
     })
     .from(carListing)
@@ -288,8 +292,38 @@ export async function approveListingAsAdmin(listingId: string, adminUserId: stri
   };
 
   if (shouldPublishNow) {
-    if (!row.publishedAt) updateData.publishedAt = now;
+    const publishedAt = row.publishedAt ?? now;
+    if (!row.publishedAt) updateData.publishedAt = publishedAt;
     if (!row.expiresAt) updateData.expiresAt = new Date(now.getTime() + 24 * 24 * 60 * 60 * 1000);
+    
+    // Anti-abuse: Set originalPublishedAt from VIN history if not already set
+    if (!row.originalPublishedAt) {
+      if (row.vin) {
+        try {
+          const vinResult = await recordVinPublication({
+            vin: row.vin,
+            userId: row.userId,
+            listingId,
+            publishedAt,
+          });
+          updateData.originalPublishedAt = vinResult.originalPublishedAt;
+          
+          if (vinResult.isRepost) {
+            if (vinResult.cooldownReset) {
+              console.log(`[anti-abuse] Admin approve - VIN repost after cooldown: ${row.vin}. Fresh date granted.`);
+            } else {
+              console.log(`[anti-abuse] Admin approve - VIN repost detected: ${row.vin}. Using original date: ${vinResult.originalPublishedAt.toISOString()}`);
+            }
+          }
+        } catch (error) {
+          console.error(`[approveListingAsAdmin] VIN history lookup failed:`, error);
+          updateData.originalPublishedAt = publishedAt;
+        }
+      } else {
+        // No VIN - use current publish time
+        updateData.originalPublishedAt = publishedAt;
+      }
+    }
   }
 
   const updated = await db

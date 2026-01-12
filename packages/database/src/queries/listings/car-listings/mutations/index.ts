@@ -74,6 +74,18 @@ export {
   expireAllExpiredListings,
 } from './lifecycle';
 
+// VIN History operations (anti-abuse)
+export {
+  lookupVinHistory,
+  recordVinPublication,
+  updateVinHistoryOnDelete,
+  updateVinHistoryOnSold,
+  getVinPublicationStats,
+  makeVinHistoryId,
+  VIN_REPOST_COOLDOWN_DAYS,
+  type VinHistoryLookupResult,
+} from './vin-history';
+
 // AI Valuation operations
 export {
   updateListingAIValuation,

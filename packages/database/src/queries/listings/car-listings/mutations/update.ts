@@ -16,6 +16,7 @@ import {
   isListingPublic,
   DEFAULT_LISTING_EXPIRY_DAYS 
 } from './helpers';
+import { recordVinPublication, updateVinHistoryCurrentListing } from './vin-history';
 import type { 
   UpdateCarListingInput, 
   CONTENT_EDIT_KEYS 
@@ -143,21 +144,66 @@ function applyModerationUpdates(
 
 /**
  * Ensure publish fields are set when listing becomes public
+ * Also sets originalPublishedAt for anti-abuse sorting if not already set
+ * 
+ * IMPORTANT: When originalPublishedAt is not set, we check VIN history to
+ * inherit the original publication date (anti-abuse: prevents delete & repost to bump)
  */
-function ensurePublishFields(
+async function ensurePublishFields(
   updateData: Record<string, any>,
   currentPublishedAt: Date | null,
+  currentOriginalPublishedAt: Date | null,
   currentExpiresAt: Date | null,
   nextModerationStatus: ListingModerationStatus,
   nextLifecycleStatus: ListingLifecycleStatus,
-  now: Date
-): void {
+  now: Date,
+  listingId: string,
+  userId: string,
+  vin: string | null
+): Promise<void> {
   const willBePublic = nextModerationStatus === 'approved' && nextLifecycleStatus === 'active';
 
-  if (willBePublic && (!currentPublishedAt || !currentExpiresAt)) {
+  if (willBePublic && (!currentPublishedAt || !currentExpiresAt || !currentOriginalPublishedAt)) {
     const publishedAt = currentPublishedAt ?? now;
     if (!currentPublishedAt) updateData.publishedAt = publishedAt;
     if (!currentExpiresAt) updateData.expiresAt = addDays(publishedAt, DEFAULT_LISTING_EXPIRY_DAYS);
+    
+    // Set originalPublishedAt for anti-abuse sorting
+    // Check VIN history to inherit original date (prevents delete & repost abuse)
+    if (!currentOriginalPublishedAt) {
+      if (vin) {
+        try {
+          const vinResult = await recordVinPublication({
+            vin,
+            userId,
+            listingId,
+            publishedAt,
+          });
+          updateData.originalPublishedAt = vinResult.originalPublishedAt;
+          
+          // Update VIN history with current listing ID (listing exists in updates)
+          await updateVinHistoryCurrentListing({
+            vin,
+            userId,
+            listingId,
+          });
+          
+          if (vinResult.isRepost) {
+            if (vinResult.cooldownReset) {
+              console.log(`[anti-abuse] VIN repost after cooldown: ${vin} by user ${userId}. Fresh date granted.`);
+            } else {
+              console.log(`[anti-abuse] VIN repost detected on update: ${vin} by user ${userId}. Using original date: ${vinResult.originalPublishedAt.toISOString()}`);
+            }
+          }
+        } catch (error) {
+          console.error(`[ensurePublishFields] VIN history lookup failed:`, error);
+          updateData.originalPublishedAt = publishedAt;
+        }
+      } else {
+        // No VIN - use current publish time
+        updateData.originalPublishedAt = publishedAt;
+      }
+    }
   }
 }
 
@@ -181,8 +227,10 @@ export async function updateCarListing(
       moderationStatus: carListing.moderationStatus,
       lifecycleStatus: carListing.lifecycleStatus,
       publishedAt: carListing.publishedAt,
+      originalPublishedAt: carListing.originalPublishedAt,
       expiresAt: carListing.expiresAt,
       price: carListing.price,
+      vin: carListing.vin,
     })
     .from(carListing)
     .where(and(eq(carListing.id, listingId), eq(carListing.userId, userId)))
@@ -228,13 +276,17 @@ export async function updateCarListing(
   // Ensure publish fields are set the first time it becomes public.
   const nextModerationStatus = (updateData.moderationStatus ?? current.moderationStatus) as ListingModerationStatus;
   const nextLifecycleStatus = (updateData.lifecycleStatus ?? current.lifecycleStatus) as ListingLifecycleStatus;
-  ensurePublishFields(
+  await ensurePublishFields(
     updateData,
     current.publishedAt,
+    current.originalPublishedAt,
     current.expiresAt,
     nextModerationStatus,
     nextLifecycleStatus,
-    now
+    now,
+    listingId,
+    userId,
+    input.vin ?? current.vin
   );
 
   // Staff/admin-controlled timestamp overrides (ignored for user-posted listings).
@@ -287,12 +339,15 @@ export async function updateCarListingByStaff(
   const existing = await db
     .select({
       id: carListing.id,
+      userId: carListing.userId,
       postedByRole: carListing.postedByRole,
       moderationStatus: carListing.moderationStatus,
       lifecycleStatus: carListing.lifecycleStatus,
       publishedAt: carListing.publishedAt,
+      originalPublishedAt: carListing.originalPublishedAt,
       expiresAt: carListing.expiresAt,
       price: carListing.price,
+      vin: carListing.vin,
     })
     .from(carListing)
     .where(eq(carListing.id, listingId))
@@ -336,13 +391,17 @@ export async function updateCarListingByStaff(
   // Ensure publish fields are set the first time it becomes public.
   const nextModerationStatus = (updateData.moderationStatus ?? current.moderationStatus) as ListingModerationStatus;
   const nextLifecycleStatus = (updateData.lifecycleStatus ?? current.lifecycleStatus) as ListingLifecycleStatus;
-  ensurePublishFields(
+  await ensurePublishFields(
     updateData,
     current.publishedAt,
+    current.originalPublishedAt,
     current.expiresAt,
     nextModerationStatus,
     nextLifecycleStatus,
-    now
+    now,
+    listingId,
+    current.userId,
+    input.vin ?? current.vin
   );
 
   // Explicit overrides (admin/system)

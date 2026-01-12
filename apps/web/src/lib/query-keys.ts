@@ -141,6 +141,13 @@ export const queryKeys = {
      * @param partnerId - Partner ID
      */
     stats: (partnerId: string) => [...queryKeys.partner.all, 'stats', partnerId] as const,
+
+    /**
+     * Partner billing (subscription + invoices)
+     * Cached for 6 hours - changes once a month
+     * @param partnerId - Partner ID
+     */
+    billing: (partnerId: string) => [...queryKeys.partner.all, 'billing', partnerId] as const,
   },
 
   // ==========================================================================

@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { hardDeleteDeletedCarListingsForUser, memoryCache } from '@alifh/database';
+import { hardDeleteDeletedCarListingsForUser, invalidateSearchCaches } from '@alifh/database';
 
 export const runtime = 'nodejs';
 
@@ -42,10 +42,8 @@ export async function POST(req: NextRequest) {
       listingType,
     });
 
-    memoryCache.deleteByPrefix('listings:cards:');
-    memoryCache.deleteByPrefix('listings:partner:');
-    memoryCache.deleteByPrefix('listing:');
-    memoryCache.deleteByPrefix('listing:detailed:');
+    // Single source of truth for cache invalidation
+    invalidateSearchCaches();
 
     return NextResponse.json({ success: true, count });
   } catch (error) {

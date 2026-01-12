@@ -41,10 +41,12 @@ import {
 const readLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_PUBLIC);
 const updateLimiter = createRateLimiter(RATE_LIMITS_PARTNER.PROFILE_UPDATE);
 
-export const revalidate = 300; // Cache for 5 minutes
+export const revalidate = 0;
 
+// No browser/CDN caching - server handles caching with proper invalidation
 const CACHE_HEADERS_PUBLIC = {
-  'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
+  'Pragma': 'no-cache',
 } as const;
 
 const CACHE_HEADERS_NO_CACHE = {

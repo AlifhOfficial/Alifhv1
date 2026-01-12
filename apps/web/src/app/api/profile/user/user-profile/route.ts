@@ -23,7 +23,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from 'zod';
-import { getUserProfileByUserId, updateUserProfileByUserId, ensureUserProfile, invalidateUserSession } from "@alifh/database";
+import { getUserProfileByUserId, updateUserProfileByUserId, ensureUserProfile, invalidateUserSession, memoryCache, invalidateUserProfile, calculateUserStats, db, passkey, eq } from "@alifh/database";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { deleteFile } from "@/lib/storage";
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_GENERAL } from '@/lib/rate-limit';
@@ -33,13 +33,19 @@ export const dynamic = 'force-dynamic';
 
 const profileUpdateLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
 
+// Server-side cache TTL: 5 minutes
+const USER_PROFILE_CACHE_TTL = 300;
+
+// No browser caching - server handles caching
 const CACHE_HEADERS_PRIVATE = {
-  'Cache-Control': 'private, max-age=3600, stale-while-revalidate=1800', // 1hr cache, 30min stale
+  'Cache-Control': 'private, no-store, no-cache, must-revalidate',
+  'Pragma': 'no-cache',
   'Vary': 'Cookie, Authorization',
 } as const;
 
 const CACHE_HEADERS_FRESH = {
-  'Cache-Control': 'private, max-age=60, stale-while-revalidate=30', // 1min cache after update
+  'Cache-Control': 'private, no-store, no-cache, must-revalidate',
+  'Pragma': 'no-cache',
   'Vary': 'Cookie, Authorization',
 } as const;
 
@@ -95,6 +101,17 @@ export async function GET(req: NextRequest) {
       return response;
     }
 
+    // Check server-side cache
+    const cacheKey = `user:profile:${user.id}`;
+    const cached = memoryCache.get(cacheKey);
+    if (cached) {
+      const response = NextResponse.json(cached);
+      Object.entries(CACHE_HEADERS_PRIVATE).forEach(([key, value]) => 
+        response.headers.set(key, value)
+      );
+      return response;
+    }
+
     let profile = await getUserProfileByUserId(user.id);
     
     if (!profile) {
@@ -103,7 +120,29 @@ export async function GET(req: NextRequest) {
 
     const profileWithAvatar = await attachAvatarUrl(profile);
 
-    const response = NextResponse.json({ profile: profileWithAvatar });
+    // Fetch stats and passkeys in parallel
+    const [stats, passkeys] = await Promise.all([
+      calculateUserStats(user.id),
+      db.select({
+        id: passkey.id,
+        name: passkey.name,
+        createdAt: passkey.createdAt,
+      })
+      .from(passkey)
+      .where(eq(passkey.userId, user.id))
+      .orderBy(passkey.createdAt),
+    ]);
+
+    const responseData = {
+      profile: profileWithAvatar,
+      stats,
+      passkeys,
+    };
+
+    // Cache the result
+    memoryCache.set(cacheKey, responseData, USER_PROFILE_CACHE_TTL);
+
+    const response = NextResponse.json(responseData);
     Object.entries(CACHE_HEADERS_PRIVATE).forEach(([key, value]) => 
       response.headers.set(key, value)
     );
@@ -167,6 +206,9 @@ export async function PATCH(req: NextRequest) {
       });
     }
 
+    // Invalidate server-side profile cache
+    invalidateUserProfile(user.id);
+    
     // Invalidate session cache so sidebar/navbar get fresh data
     if ('avatar' in result.data || 'firstName' in result.data || 'lastName' in result.data || 'preferences' in result.data) {
       invalidateUserSession(user.id);

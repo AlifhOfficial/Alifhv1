@@ -40,10 +40,18 @@ const navSections = [
       { label: "Account", href: "/partner-dashboard/profile" },
     ]
   },
+  {
+    items: [
+      { label: "Billing", href: "/partner-dashboard/subscription", icon: "credit-card" },
+    ]
+  },
 ];
 
 export default function PartnerDashboardLayout({ children }: { children: React.ReactNode }) {
   const { session: user, isLoading } = useAuth();
+
+  // Get partner membership (owner)
+  const partnerMembership = (user as any)?.partnerMemberships?.find((m: any) => m.staffRole === 'owner');
   
   if (isLoading) {
     return <PageLoader />;
@@ -53,14 +61,14 @@ export default function PartnerDashboardLayout({ children }: { children: React.R
     redirect('/');
   }
 
-  // Get partner membership (owner)
-  const partnerMembership = (user as any).partnerMemberships?.find((m: any) => m.staffRole === 'owner');
-  if (!partnerMembership) redirect('/access-denied?reason=not-partner-owner');
+  if (!partnerMembership) {
+    redirect('/access-denied?reason=not-partner-owner');
+  }
 
   // Get company info for sidebar
   const staffOverride = {
-    companyLogo: partnerMembership.partnerLogo,
-    companyName: partnerMembership.partnerName,
+    companyLogo: partnerMembership?.partnerLogo,
+    companyName: partnerMembership?.partnerName || 'Partner',
   };
 
   return (

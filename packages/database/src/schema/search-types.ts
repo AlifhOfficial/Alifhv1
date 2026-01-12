@@ -104,8 +104,8 @@ export interface SearchParams extends BasicSearchParams, MediumFilterParams, Adv
 
 export type SearchSortOption = 
   | 'relevance'      // Default for text search
-  | 'newest'         // publishedAt desc
-  | 'oldest'         // publishedAt asc  
+  | 'newest'         // originalPublishedAt desc (anti-abuse: prevents repost bumping)
+  | 'oldest'         // originalPublishedAt asc  
   | 'price_low'      // price asc
   | 'price_high'     // price desc
   | 'mileage_low'    // mileage asc

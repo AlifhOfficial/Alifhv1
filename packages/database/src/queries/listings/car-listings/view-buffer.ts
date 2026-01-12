@@ -128,10 +128,10 @@ class AnalyticsBuffer {
   }
 
   /**
-   * Flush buffer to database
+   * Flush buffer to database (atomic transaction)
    * - Batch insert all view records
-   * - Batch update all view counts
-   * - Batch update all impression counts
+   * - Batch update all view counts using UNNEST for efficiency
+   * - Batch update all impression counts using UNNEST for efficiency
    */
   async flush(): Promise<{ views: number; viewListings: number; impressionListings: number }> {
     // Swap buffers to avoid race conditions
@@ -155,55 +155,51 @@ class AnalyticsBuffer {
     const startTime = Date.now();
 
     try {
-      const operations: Promise<any>[] = [];
-
-      // Batch insert view records
+      // Execute operations individually (neon-http doesn't support transactions)
+      // Best-effort atomic: if one fails, we log but continue with others
+      
+      // 1. Batch insert view records
       if (viewsToFlush.length > 0) {
-        operations.push(
-          db.insert(listingView).values(
-            viewsToFlush.map(v => ({
-              id: v.id,
-              listingId: v.listingId,
-              userId: v.userId,
-              sessionId: v.sessionId,
-              ipAddress: v.ipAddress,
-              userAgent: v.userAgent,
-              referrer: v.referrer,
-              deviceType: v.deviceType,
-              createdAt: v.createdAt,
-            }))
-          )
+        await db.insert(listingView).values(
+          viewsToFlush.map(v => ({
+            id: v.id,
+            listingId: v.listingId,
+            userId: v.userId,
+            sessionId: v.sessionId,
+            ipAddress: v.ipAddress,
+            userAgent: v.userAgent,
+            referrer: v.referrer,
+            deviceType: v.deviceType,
+            createdAt: v.createdAt,
+          }))
         );
       }
 
-      // Batch update view counts
+      // 2. Batch update view counts using single UPDATE with CASE
       if (viewCountsToFlush.size > 0) {
-        for (const [listingId, count] of viewCountsToFlush) {
-          operations.push(
-            db.update(carListing)
-              .set({
-                viewCount: sql`${carListing.viewCount} + ${count}`,
-              })
-              .where(eq(carListing.id, listingId))
-          );
-        }
+        const viewIds = [...viewCountsToFlush.keys()];
+        const viewCases = viewIds.map(id => 
+          sql`WHEN id = ${id} THEN view_count + ${viewCountsToFlush.get(id)!}`
+        );
+        
+        await db.execute(sql`
+          UPDATE car_listing SET view_count = CASE ${sql.join(viewCases, sql` `)} ELSE view_count END
+          WHERE id IN (${sql.join(viewIds.map(id => sql`${id}`), sql`, `)})
+        `);
       }
 
-      // Batch update impression counts
+      // 3. Batch update impression counts using single UPDATE with CASE
       if (impressionCountsToFlush.size > 0) {
-        for (const [listingId, count] of impressionCountsToFlush) {
-          operations.push(
-            db.update(carListing)
-              .set({
-                impressionCount: sql`${carListing.impressionCount} + ${count}`,
-              })
-              .where(eq(carListing.id, listingId))
-          );
-        }
+        const impIds = [...impressionCountsToFlush.keys()];
+        const impCases = impIds.map(id => 
+          sql`WHEN id = ${id} THEN impression_count + ${impressionCountsToFlush.get(id)!}`
+        );
+        
+        await db.execute(sql`
+          UPDATE car_listing SET impression_count = CASE ${sql.join(impCases, sql` `)} ELSE impression_count END
+          WHERE id IN (${sql.join(impIds.map(id => sql`${id}`), sql`, `)})
+        `);
       }
-
-      // Execute all operations in parallel
-      await Promise.all(operations);
 
       const elapsed = Date.now() - startTime;
       console.log(

@@ -22,8 +22,6 @@ import {
   type SearchSortOption,
 } from '@/lib/search-utils';
 
-const SEARCH_STALE_TIME = 15_000; // 15 seconds
-
 interface UseSearchOptions {
   /** Initial search params (overridden by URL params) */
   initialParams?: Partial<SearchParams>;
@@ -122,8 +120,8 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
   } = useQuery({
     queryKey,
     queryFn: () => fetchSearch(params),
-    staleTime: SEARCH_STALE_TIME,
-    gcTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 0, // Always fetch fresh - server handles caching
+    gcTime: 0, // No client-side caching
     refetchOnWindowFocus: false,
   });
 
@@ -270,8 +268,8 @@ export function useQuickSearch(
       return response.json();
     },
     enabled,
-    staleTime: query ? 60_000 : 120_000, // 1 min for queries, 2 min for popular
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 0, // Always fetch fresh - server handles caching
+    gcTime: 0, // No client-side caching
   });
 
   return {

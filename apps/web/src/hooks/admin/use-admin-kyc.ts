@@ -159,7 +159,6 @@ export function useAdminKyc(options: UseAdminKycOptions = {}) {
         stats: KycStats;
       }>;
     },
-    staleTime: 30 * 1000, // 30 seconds
   });
 
   return {
@@ -194,7 +193,6 @@ export function useAdminKycRecord(id: string | null) {
       return data.record as KycRecordData;
     },
     enabled: !!id,
-    staleTime: 30 * 1000,
   });
 
   return {

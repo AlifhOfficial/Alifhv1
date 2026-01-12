@@ -85,7 +85,7 @@ function SettingRow({
 // ============================================================================
 
 export function SettingsView() {
-  const { profile, updateProfile } = useUserProfile();
+  const { profile, updateProfile, passkeys: hookPasskeys, refresh } = useUserProfile();
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
 
@@ -96,7 +96,6 @@ export function SettingsView() {
   
   // Passkey state
   const [passkeys, setPasskeys] = useState<Array<{ id: string; name: string | null; createdAt: Date | null }>>([]);
-  const [loadingPasskeys, setLoadingPasskeys] = useState(true);
   const [addingPasskey, setAddingPasskey] = useState(false);
   const [deletingPasskeyId, setDeletingPasskeyId] = useState<string | null>(null);
 
@@ -104,24 +103,10 @@ export function SettingsView() {
     setMounted(true);
   }, []);
 
-  // Load passkeys on mount
+  // Sync passkeys from hook
   useEffect(() => {
-    loadPasskeys();
-  }, []);
-
-  const loadPasskeys = async () => {
-    try {
-      setLoadingPasskeys(true);
-      const { data, error } = await authClient.passkey.listUserPasskeys();
-      if (data && !error) {
-        setPasskeys(data);
-      }
-    } catch (err) {
-      console.error('Failed to load passkeys:', err);
-    } finally {
-      setLoadingPasskeys(false);
-    }
-  };
+    setPasskeys(hookPasskeys);
+  }, [hookPasskeys]);
 
   const addPasskey = async () => {
     try {
@@ -136,7 +121,7 @@ export function SettingsView() {
       }
       
       toast({ title: 'Passkey added!', description: 'You can now sign in with this device' });
-      await loadPasskeys();
+      await refresh(); // Refresh to get updated passkeys
     } catch (err: any) {
       toast({ title: 'Failed to add passkey', description: err.message || 'Unknown error', variant: 'destructive' });
     } finally {
@@ -155,6 +140,7 @@ export function SettingsView() {
       }
       
       toast({ title: 'Passkey removed' });
+      // Optimistically update local state
       setPasskeys(prev => prev.filter(p => p.id !== id));
     } catch (err) {
       toast({ title: 'Failed to delete passkey', variant: 'destructive' });
@@ -319,11 +305,7 @@ export function SettingsView() {
               </button>
             </div>
             
-            {loadingPasskeys ? (
-              <div className="flex items-center justify-center py-4">
-                <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-              </div>
-            ) : passkeys.length === 0 ? (
+            {passkeys.length === 0 ? (
               <div className="text-center py-4 border-t border-border/20">
                 <p className="text-sm text-muted-foreground/70">No passkeys registered</p>
                 <p className="text-xs text-muted-foreground/50 mt-1">Add a passkey for passwordless sign-in</p>

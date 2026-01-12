@@ -9,7 +9,6 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
-import { CACHE_STALE_TIME } from '@/lib/cache-config';
 
 // ============================================================================
 // Types
@@ -139,8 +138,6 @@ export function usePartnerProfile(partnerId: string | null | undefined) {
     queryKey: ['partner-profile', partnerId],
     queryFn: () => fetchPartnerProfile(partnerId!),
     enabled: !!partnerId,
-    staleTime: 30 * 1000, // 30s
-    gcTime: 5 * 60 * 1000, // 5min
   });
 
   const mutation = useMutation({

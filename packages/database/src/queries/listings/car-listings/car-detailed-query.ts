@@ -162,6 +162,7 @@ export interface CarDetailedData {
   lastModeratedAt: Date | null;
   needsRemoderation: boolean;
   publishedAt: Date | null;
+  originalPublishedAt: Date | null;
   expiresAt: Date | null;
   extensionCount: number;
   extensionHistory: Array<{
@@ -254,6 +255,7 @@ function buildDetailedSelectFields(includeExpiry: boolean) {
     lastModeratedAt: carListing.lastModeratedAt,
     needsRemoderation: carListing.needsRemoderation,
     publishedAt: carListing.publishedAt,
+    originalPublishedAt: carListing.originalPublishedAt,
     expiresAt: includeExpiry ? carListing.expiresAt : sql<null>`null`,
     extensionCount: includeExpiry ? carListing.extensionCount : sql<number>`0`,
     extensionHistory: includeExpiry ? carListing.extensionHistory : sql<any>`'[]'::jsonb`,

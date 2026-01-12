@@ -13,7 +13,6 @@ import {
   getFunnelMatchingListings,
 } from '@alifh/database';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_GENERAL } from '@/lib/rate-limit';
-import { API_CACHE_HEADERS } from '@/lib/cache-config';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -86,7 +85,7 @@ export async function GET(
         hasMore: offset + listings.length < total,
       },
       {
-        headers: API_CACHE_HEADERS.NO_STORE, // No cache - data changes frequently
+        headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, private', 'Pragma': 'no-cache' },
       }
     );
   } catch (error) {

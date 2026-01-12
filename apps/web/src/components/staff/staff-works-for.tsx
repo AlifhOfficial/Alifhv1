@@ -26,7 +26,7 @@ export function StaffWorksFor() {
 
   // Get session from AuthProvider (fetched ONCE, no polling)
   const { session, isLoading: sessionLoading } = useAuth();
-  const user = session as ExtendedUser | null;
+  const user = session as unknown as ExtendedUser | null;
   const membership = user?.partnerMemberships?.[0];
 
   const { data: worksForData, isLoading: profileLoading, error } = useQuery<PartnerSellerData>({

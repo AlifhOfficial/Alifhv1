@@ -1,95 +1,35 @@
 /**
- * Listing Cache Invalidation - Production
+ * Listing Cache Invalidation - DEPRECATED
  * 
- * Helper functions to invalidate listing caches when data changes.
- * Use these after any CREATE, UPDATE, DELETE operations on listings.
+ * This file is kept for backward compatibility.
+ * Import from @alifh/database instead:
  * 
- * USAGE:
- * - After listing update → invalidateListingDetail(id)
- * - After listing publish → invalidateListingCaches(id, partnerId)
- * - After listing delete → invalidateListingCaches(id, partnerId)
- * - After partner tier change → invalidatePartnerInventory(partnerId)
- * - After any listing change → invalidateSearchCaches() (smart: uses prefix)
+ * import {
+ *   invalidateSearchCaches,
+ *   invalidateListingCaches,
+ *   invalidateListingDetail,
+ *   invalidatePartnerInventory
+ * } from '@alifh/database';
  * 
- * @module queries/listings/cache-invalidation
+ * @deprecated Use @alifh/database/caches instead
  */
 
-import { memoryCache, CacheKeys, CachePrefixes } from '../../../caches';
+import { memoryCache, CacheKeys } from '../../../caches/memory-cache';
+import { 
+  invalidateListingDetail,
+  invalidateListingCaches,
+  invalidateSearchCaches,
+  invalidatePartnerInventory,
+} from '../../../caches/invalidation';
 
-/**
- * Invalidate all search-related caches
- * Use after: listing create, update, delete, status change
- * 
- * This clears all cached search results and facet counts so that
- * new/modified listings appear immediately.
- */
-export function invalidateSearchCaches(): void {
-  const deletedResults = memoryCache.deleteByPrefix(CachePrefixes.searchResults);
-  const deletedFacets = memoryCache.deleteByPrefix(CachePrefixes.searchFacets);
-  const deletedBlack = memoryCache.deleteByPrefix('listings:black:');
-  
-  if (deletedResults > 0 || deletedFacets > 0 || deletedBlack > 0) {
-    console.log(`[cache] Invalidated search caches: ${deletedResults} results, ${deletedFacets} facets, ${deletedBlack} black`);
-  }
-}
+// Re-export from centralized location
+export {
+  invalidateSearchCaches,
+  invalidateListingDetail,
+  invalidateListingCaches,
+  invalidatePartnerInventory,
+} from '../../../caches/invalidation';
 
-/**
- * Invalidate single listing detail cache
- * Use after: listing update, status change, engagement metrics update
- */
-export function invalidateListingDetail(listingId: string): void {
-  const key = CacheKeys.listingDetail(listingId);
-  // Also clear legacy detailed API key to avoid stale responses.
-  const legacyDetailedKey = `listing:detailed:${listingId}`;
-  memoryCache.delete(key, legacyDetailedKey);
-}
-
-/**
- * Invalidate all caches for a specific listing
- * Use after: major listing updates, publish, archive, delete
- */
-export function invalidateListingCaches(listingId: string, partnerId?: string): void {
-  // Invalidate detail cache
-  invalidateListingDetail(listingId);
-  
-  // Invalidate partner inventory if partnerId provided
-  if (partnerId) {
-    invalidatePartnerInventory(partnerId);
-  }
-  
-  // Always invalidate search caches when a listing changes
-  // This ensures search results stay fresh
-  invalidateSearchCaches();
-}
-
-/**
- * Invalidate partner inventory caches
- * Use after: new listing published, listing archived, partner tier change
- */
-export function invalidatePartnerInventory(partnerId: string): void {
-  // Note: In production with Redis, use pattern matching to delete all keys
-  // For memory cache, we track keys that need manual invalidation
-  
-  // Invalidate common status variations
-  const statuses = ['all', 'public', 'draft', 'archived', 'sold', 'expired', 'pending'];
-  const keys = statuses.map(status => 
-    CacheKeys.partnerInventory(partnerId, status === 'all' ? undefined : status)
-  );
-  
-  memoryCache.delete(...keys);
-}
-
-/**
- * Invalidate all listing card caches
- * Use after: bulk operations, data migrations, major updates
- * WARNING: Heavy operation - use sparingly
- */
-export function invalidateAllListingCards(): void {
-  // In production with Redis, use SCAN with pattern matching
-  // For memory cache, this requires clearing all listing-related keys
-  memoryCache.clear();
-  console.warn('[cache] Cleared ALL cache (heavy operation)');
-}
 
 /**
  * Invalidate batch listing cache by IDs

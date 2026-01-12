@@ -435,6 +435,13 @@
       "when": 1768084840127,
       "tag": "0061_add-passkey-table",
       "breakpoints": true
+    },
+    {
+      "idx": 62,
+      "version": "7",
+      "when": 1768235807251,
+      "tag": "0062_exotic_redwing",
+      "breakpoints": true
     }
   ]
 }

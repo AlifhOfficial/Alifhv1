@@ -10,6 +10,7 @@ import { eq, and, isNotNull, lte, inArray, sql } from 'drizzle-orm';
 import { db } from '../../../../dbclient';
 import { carListing } from '../../../../schema/listing';
 import { addDays, EXTENSION_WINDOW_MS } from './helpers';
+import { updateVinHistoryOnSold } from './vin-history';
 
 /**
  * Expire all published listings for a specific user
@@ -59,6 +60,7 @@ export async function expirePublishedListingsForPartner(partnerId: string): Prom
  * Extend a car listing's expiry date
  * Supports both direct ownership (userId) and partner ownership (partnerId)
  * Only available within 2 days of expiry
+ * Uses optimistic locking via extensionCount to prevent race conditions
  */
 export async function extendCarListingExpiry(input: {
   listingId: string;
@@ -66,6 +68,11 @@ export async function extendCarListingExpiry(input: {
   partnerId?: string;
   days: 7 | 14;
 }): Promise<{ success: true; expiresAt: Date } | { success: false; error: string }> {
+  // Validate days at runtime
+  if (input.days !== 7 && input.days !== 14) {
+    return { success: false, error: 'Extension days must be 7 or 14' };
+  }
+
   const now = new Date();
 
   const record = await db
@@ -75,6 +82,7 @@ export async function extendCarListingExpiry(input: {
       partnerId: carListing.partnerId,
       lifecycleStatus: carListing.lifecycleStatus,
       expiresAt: carListing.expiresAt,
+      extensionCount: carListing.extensionCount,
     })
     .from(carListing)
     .where(eq(carListing.id, input.listingId))
@@ -83,6 +91,7 @@ export async function extendCarListingExpiry(input: {
   if (record.length === 0) return { success: false, error: 'Listing not found' };
 
   const listing = record[0];
+  const currentExtensionCount = listing.extensionCount ?? 0;
   
   // Verify ownership
   const isDirectOwner = listing.userId === input.userId;
@@ -112,7 +121,9 @@ export async function extendCarListingExpiry(input: {
     extendedBy: input.userId,
   };
 
-  const [updated] = await db
+  // Use optimistic locking: only update if extensionCount hasn't changed
+  // This prevents double-extension race conditions
+  const updated = await db
     .update(carListing)
     .set({
       expiresAt: newExpiresAt,
@@ -124,17 +135,28 @@ export async function extendCarListingExpiry(input: {
       updatedAt: now,
       lastEditedAt: now,
     })
-    .where(eq(carListing.id, input.listingId))
+    .where(
+      and(
+        eq(carListing.id, input.listingId),
+        // Optimistic lock: only proceed if count matches what we read
+        eq(carListing.extensionCount, currentExtensionCount)
+      )
+    )
     .returning({ expiresAt: carListing.expiresAt });
 
-  if (!updated?.expiresAt) return { success: false, error: 'Failed to extend listing' };
-  return { success: true, expiresAt: updated.expiresAt };
+  if (updated.length === 0) {
+    // Either listing was deleted or another request already extended it
+    return { success: false, error: 'Extension failed - listing may have been modified' };
+  }
+
+  return { success: true, expiresAt: updated[0].expiresAt };
 }
 
 /**
  * Mark a car listing as sold
  * Supports both direct ownership (userId) and partner ownership (partnerId)
  * If soldPrice is not provided, defaults to the listing's current price
+ * Also updates VIN publication history for anti-abuse tracking.
  */
 export async function markCarListingSold(input: {
   listingId: string;
@@ -150,6 +172,7 @@ export async function markCarListingSold(input: {
       partnerId: carListing.partnerId,
       userId: carListing.userId,
       price: carListing.price,
+      vin: carListing.vin,
     })
     .from(carListing)
     .where(eq(carListing.id, input.listingId))
@@ -185,6 +208,23 @@ export async function markCarListingSold(input: {
     .returning({ id: carListing.id });
 
   if (updated.length === 0) return { success: false, error: 'Failed to update listing' };
+  
+  // Update VIN history to mark as sold
+  // This allows the VIN to be reposted by a NEW owner without abuse concern
+  if (listing.vin && listing.userId) {
+    try {
+      await updateVinHistoryOnSold({
+        vin: listing.vin,
+        userId: listing.userId,
+        listingId: input.listingId,
+        soldAt: now,
+      });
+    } catch (err) {
+      // Log error but don't fail the sold operation
+      console.error('[vin-history] Failed to update VIN history on sold:', err);
+    }
+  }
+  
   return { success: true, soldPrice: finalSoldPrice };
 }
 
