@@ -1,17 +1,24 @@
 /**
  * About Us Page - Alifh
- * Learn about Alifh's mission and values
+ * Philosophical. Clean. Mystique.
  */
 
-import Image from 'next/image';
 import { Metadata } from 'next';
+import {
+  AboutHeroSection,
+  AboutTeamSection,
+  AboutStorySection,
+  AboutPrinciplesSection,
+  AboutVisionSection,
+  AboutClosingSection,
+} from '@/components/pages/about';
 
 export const metadata: Metadata = {
   title: 'About Us - Alifh',
-  description: 'Learn about Alifh - The UAE\'s most transparent car marketplace.',
+  description: 'We got tired of complaining. So we built something. The clean, honest automotive ecosystem the UAE should have had years ago.',
   openGraph: {
     title: 'About Us - Alifh',
-    description: 'Learn about Alifh - The UAE\'s most transparent car marketplace.',
+    description: 'We got tired of complaining. So we built something. The clean, honest automotive ecosystem the UAE should have had years ago.',
     type: 'website',
   },
 };
@@ -19,22 +26,12 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section with Image */}
-      <section className="relative w-full h-[60vh] min-h-[400px] max-h-[800px] mt-14 sm:mt-16">
-        <Image
-          src="/Images/alifh4.png"
-          alt="Alifh - About Us"
-          fill
-          className="object-cover"
-          priority
-        />
-      </section>
-
-      {/* Future sections can be added here */}
-      {/* <section className="container mx-auto px-4 py-16">
-        <h1 className="text-4xl font-bold mb-6">About Alifh</h1>
-        <p className="text-lg text-muted-foreground">Your content here...</p>
-      </section> */}
+      <AboutHeroSection />
+      <AboutTeamSection />
+      <AboutStorySection />
+      <AboutPrinciplesSection />
+      <AboutVisionSection />
+      <AboutClosingSection />
     </div>
   );
 }

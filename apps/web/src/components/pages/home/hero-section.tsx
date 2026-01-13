@@ -27,12 +27,12 @@ export function HeroSection() {
             Alifh
           </p>
           <h1 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
-            Buy and sell cars.
+            List your car. For free.
             <br />
-            <span className="text-muted-foreground/70">Done right.</span>
+            <span className="text-muted-foreground/70">Like it should be.</span>
           </h1>
           <p className="text-sm text-muted-foreground leading-relaxed max-w-xl mx-auto pt-2">
-            Browse listings. Book test drives. List your car—free.
+            Browse. Book test drives. Sell. No fees. No ads. No catch.
           </p>
         </div>
 
@@ -67,15 +67,15 @@ export function HeroSection() {
         {/* Trust Indicators */}
         <div className="flex items-center justify-center gap-12 md:gap-20 pt-8 border-t border-border/40">
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-foreground">Free</div>
-            <div className="text-xs text-muted-foreground">List unlimited</div>
+            <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">Free</div>
+            <div className="text-xs text-muted-foreground">For individuals</div>
           </div>
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-foreground">VIN</div>
+            <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">VIN</div>
             <div className="text-xs text-muted-foreground">Every listing</div>
           </div>
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-foreground">Book</div>
+            <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">Book</div>
             <div className="text-xs text-muted-foreground">Test drives</div>
           </div>
         </div>

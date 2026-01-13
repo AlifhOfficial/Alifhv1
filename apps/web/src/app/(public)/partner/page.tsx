@@ -1,20 +1,28 @@
 /**
  * Partner Page - Alifh Marketing
- * Public-facing partner page with value proposition
+ * Public-facing partner page with compelling value proposition
+ * One flat fee. Everything included. No games.
  */
 
-import { PartnerHeroSection } from '@/components/partner/partner-hero-section';
-import { PartnerValueSection } from '@/components/partner/partner-value-section';
-import { PartnerClosingSection } from '@/components/partner/partner-closing-section';
-import { Footer } from '@/components/pages/home/footer';
+import {
+  PartnerHeroSection,
+  PartnerPainPointSection,
+  PartnerFlatFeeSection,
+  PartnerToolsSection,
+  PartnerRolesSection,
+  PartnerBrandSection,
+  PartnerCompareSection,
+  PartnerPhilosophySection,
+  PartnerClosingSection,
+} from '@/components/pages/partner';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Partner With Us - Alifh',
-  description: 'Join the UAE\'s most transparent automotive marketplace. We don\'t compete with you—we help you grow. No commissions. No games. Just results.',
+  description: 'One flat fee. Everything included. No commission. No credits. No per-day fees. No upsells. We don\'t compete with you—we help you grow.',
   openGraph: {
     title: 'Partner With Us - Alifh',
-    description: 'Join the UAE\'s most transparent automotive marketplace. We don\'t compete with you—we help you grow. No commissions. No games. Just results.',
+    description: 'One flat fee. Everything included. No commission. No credits. No per-day fees. No upsells. We don\'t compete with you—we help you grow.',
     type: 'website',
   },
 };
@@ -23,9 +31,14 @@ export default function PartnerPage() {
   return (
     <div className="min-h-screen bg-background">
       <PartnerHeroSection />
-      <PartnerValueSection />
+      <PartnerPainPointSection />
+      <PartnerFlatFeeSection />
+      <PartnerToolsSection />
+      <PartnerRolesSection />
+      <PartnerBrandSection />
+      <PartnerCompareSection />
+      <PartnerPhilosophySection />
       <PartnerClosingSection />
-      <Footer />
     </div>
   );
 }

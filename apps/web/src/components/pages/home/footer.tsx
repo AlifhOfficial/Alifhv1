@@ -1,6 +1,6 @@
 /**
  * Footer - Alifh
- * Clean, minimal footer with logo
+ * Minimal, clean footer
  */
 
 'use client';
@@ -18,90 +18,78 @@ export function Footer() {
     setMounted(true);
   }, []);
 
-  // Use black logo as default, switch after mount to avoid hydration mismatch
   const logoSrc = mounted && (resolvedTheme === 'dark' || resolvedTheme === 'charcoal')
     ? "/assets/Alifh_logo_White.svg" 
     : "/assets/Alifh_logo_Black.svg";
 
   return (
-    <footer className="border-t border-border/40 bg-background">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <footer className="bg-background">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-20">
         
-        <div className="flex flex-col md:flex-row justify-between gap-12">
+        {/* Top Section */}
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-12 mb-16">
           
-          {/* Logo & Tagline */}
-          <div className="space-y-4">
+          {/* Brand */}
+          <div className="space-y-4 max-w-sm">
             <Link href="/" className="inline-block">
               <Image
                 src={logoSrc}
                 alt="Alifh"
-                width={80}
-                height={24}
+                width={100}
+                height={30}
                 className="h-6 w-auto"
               />
             </Link>
-            <p className="text-sm text-muted-foreground/70 max-w-xs">
-              The UAE's most transparent car marketplace. No fees. No ads. Just cars.
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Where quality beats ads.
             </p>
           </div>
 
           {/* Links */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8">
-            <div className="space-y-3">
-              <p className="text-sm font-medium text-foreground">Browse</p>
-              <div className="space-y-2">
-                <Link href="/listings" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  All Cars
-                </Link>
-                <Link href="/listings?type=new" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  New Cars
-                </Link>
-                <Link href="/listings?type=used" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Used Cars
-                </Link>
+          <div className="flex flex-wrap gap-x-16 gap-y-8">
+            <div className="space-y-4">
+              <p className="text-xs uppercase tracking-widest text-muted-foreground">Browse</p>
+              <div className="flex flex-col gap-2">
+                <Link href="/listings" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">All Cars</Link>
+                <Link href="/user-dashboard/listings/new" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Sell Your Car</Link>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <p className="text-xs uppercase tracking-widest text-muted-foreground">For Dealers</p>
+              <div className="flex flex-col gap-2">
+                <Link href="/partner" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Partner With Us</Link>
+                <Link href="/pricing" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Pricing</Link>
               </div>
             </div>
 
-            <div className="space-y-3">
-              <p className="text-sm font-medium text-foreground">Company</p>
-              <div className="space-y-2">
-                <Link href="/about" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  About
-                </Link>
-                <Link href="/partner" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Partners
-                </Link>
-                <Link href="/contact" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Contact
-                </Link>
+            <div className="space-y-4">
+              <p className="text-xs uppercase tracking-widest text-muted-foreground">Company</p>
+              <div className="flex flex-col gap-2">
+                <Link href="/about" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">About</Link>
+                <Link href="/contact" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Contact</Link>
               </div>
             </div>
-
-            <div className="space-y-3">
-              <p className="text-sm font-medium text-foreground">Legal</p>
-              <div className="space-y-2">
-                <Link href="/privacy" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Privacy
-                </Link>
-                <Link href="/terms" className="block text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Terms
-                </Link>
+            
+            <div className="space-y-4">
+              <p className="text-xs uppercase tracking-widest text-muted-foreground">Legal</p>
+              <div className="flex flex-col gap-2">
+                <Link href="/privacy" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Privacy</Link>
+                <Link href="/terms" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Terms</Link>
               </div>
             </div>
           </div>
-
         </div>
 
         {/* Bottom */}
-        <div className="mt-12 pt-8 border-t border-border/40 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-8 border-t border-border/40">
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} Alifh. All rights reserved.
           </p>
           <p className="text-xs text-muted-foreground">
-            Made in the UAE 🇦🇪
+            Dubai, UAE 🇦🇪
           </p>
         </div>
-
       </div>
     </footer>
   );

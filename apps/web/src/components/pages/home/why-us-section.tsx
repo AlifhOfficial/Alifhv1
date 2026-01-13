@@ -1,103 +1,392 @@
 /**
  * Why Us Section - Alifh Home Page
- * Bold, unapologetic value proposition
+ * Consistent with Hero Section design patterns
  */
 
 import Image from 'next/image';
+import { Banknote, FileText, Calendar, Sparkles, Clock, PenLine, Zap, Timer, CheckCircle2 } from 'lucide-react';
 
 export function WhyUsSection() {
   return (
-    <section className="py-24 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-[1600px] mx-auto">
+    <section className="relative bg-background">
 
-        {/* Header - Left Aligned */}
-        <div className="mb-16">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
-            How we're different
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight mb-4">
-            Built for clarity.
-            <br />
-            <span className="text-muted-foreground/70">Not complexity.</span>
-          </h2>
-          <p className="text-sm text-muted-foreground max-w-xl">
-            We stripped away everything that makes buying cars confusing.
-          </p>
-        </div>
-
-        {/* Comparison Table */}
-        <div className="mb-20">
-          <div className="border border-border/40 rounded-lg overflow-hidden">
-            {/* Table Header */}
-            <div className="grid grid-cols-3 bg-muted/30">
-              <div className="p-4 border-r border-border/40">
-                <p className="text-sm font-medium text-muted-foreground">Feature</p>
-              </div>
-              <div className="p-4 border-r border-border/40 text-center">
-                <p className="text-sm font-medium text-muted-foreground">Others</p>
-              </div>
-              <div className="p-4 text-center">
-                <p className="text-sm font-medium text-foreground">Alifh</p>
+      {/* Section 1: The Problem */}
+      <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            
+            {/* Content */}
+            <div className="space-y-6">
+              <p className="text-xs uppercase tracking-widest text-muted-foreground">
+                Why Alifh exists
+              </p>
+              
+              <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+                Most UAE platforms charge to list.
+                <br />
+                <span className="text-muted-foreground/70">We never will.</span>
+              </h2>
+              
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
+                Other platforms charge listing fees—some over AED 1,000. They run ads everywhere. 
+                Anyone can pay to rank first. VIN numbers are optional. Listings stay up forever. 
+                You can't book test drives online.
+              </p>
+              
+              <div className="flex items-center gap-8 pt-4 border-t border-border/40">
+                <div className="text-center space-y-1">
+                  <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">AED 0</div>
+                  <div className="text-xs text-muted-foreground">Listing fees</div>
+                </div>
+                <div className="text-center space-y-1">
+                  <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">100%</div>
+                  <div className="text-xs text-muted-foreground">VIN verified</div>
+                </div>
+                <div className="text-center space-y-1">
+                  <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">24/7</div>
+                  <div className="text-xs text-muted-foreground">Online booking</div>
+                </div>
               </div>
             </div>
             
-            {/* Table Rows */}
-            {[
-              { feature: 'Listing fees', others: 'Pay per listing', alifh: 'Free forever' },
-              { feature: 'Premium spots', others: 'Pay to be seen', alifh: 'Quality earns visibility' },
-              { feature: 'Ads', others: 'Everywhere', alifh: 'Zero. None. Ever.' },
-              { feature: 'VIN history', others: 'Optional or hidden', alifh: 'Required on every car' },
-              { feature: 'Test drives', others: 'Call and negotiate', alifh: 'Book online instantly' },
-              { feature: 'Hidden fees', others: 'Surprise charges', alifh: 'What you see is what you get' },
-            ].map((row, i) => (
-              <div key={i} className="grid grid-cols-3 border-t border-border/40">
-                <div className="p-4 border-r border-border/40">
-                  <p className="text-sm text-foreground">{row.feature}</p>
-                </div>
-                <div className="p-4 border-r border-border/40 text-center">
-                  <p className="text-sm text-muted-foreground">{row.others}</p>
-                </div>
-                <div className="p-4 text-center">
-                  <p className="text-sm text-foreground">{row.alifh}</p>
-                </div>
-              </div>
-            ))}
+            {/* Abstract Image */}
+            <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
+              <Image
+                src="/Abstract/rs1.png"
+                alt="Abstract"
+                fill
+                className="object-cover"
+              />
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Flow: Our Standards */}
-        <div className="mb-20">
-          <div className="text-center mb-12">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
-              Simple process
+      {/* Section 2: What We Do Different */}
+      <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto">
+          
+          <div className="text-center mb-16 space-y-4">
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">
+              What makes us different
             </p>
             <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
-              Three steps.
+              Human first.
               <br />
-              <span className="text-muted-foreground/70">That's it.</span>
+              <span className="text-muted-foreground/70">Not corporate first.</span>
             </h2>
           </div>
-          
-          <div className="max-w-2xl mx-auto space-y-6">
-            {[
-              { step: '01', title: 'Every car has a VIN', desc: 'Full history before you visit. No surprises.' },
-              { step: '02', title: 'Book test drives online', desc: '3 AM? No problem. Pick a slot, show up.' },
-              { step: '03', title: 'Honest listings only', desc: 'Scratches? Disclosed. History? Shown.' },
-            ].map((item, i) => (
-              <div key={i} className="flex gap-4">
-                <div className="w-10 h-10 rounded-full border border-border/60 flex items-center justify-center flex-shrink-0 bg-background">
-                  <span className="text-xs font-medium text-muted-foreground">{item.step}</span>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground mb-1">{item.title}</p>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
-                </div>
-              </div>
-            ))}
+
+          {/* Mix & Match Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            {/* Image Card - Standalone */}
+            <div className="lg:col-span-2 aspect-[4/3] rounded-lg overflow-hidden">
+              <Image
+                src="/Abstract/rs2.png"
+                alt="Abstract design"
+                fill
+                className="object-cover !relative"
+              />
+            </div>
+
+            {/* Quality Card */}
+            <div className="lg:col-span-2 p-8 rounded-lg border border-border/40 bg-background flex flex-col justify-center">
+              <h3 className="text-2xl font-semibold text-foreground mb-3 tracking-tight">
+                Ranking that makes sense
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Listings rank by photo quality, description completeness, response time, and seller rating. Not who pays the most.
+              </p>
+            </div>
+
+            {/* Feature Cards Row */}
+            <div className="p-6 rounded-lg border border-border/40 bg-background">
+              <Banknote className="w-5 h-5 text-[#0066FF] mb-3" />
+              <h3 className="text-sm font-medium text-foreground mb-1">No listing fee</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Not now. Not ever. Not even later.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-lg border border-border/40 bg-background">
+              <FileText className="w-5 h-5 text-[#0066FF] mb-3" />
+              <h3 className="text-sm font-medium text-foreground mb-1">VIN is public</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Because hiding it is sketchy.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-lg border border-border/40 bg-background">
+              <Calendar className="w-5 h-5 text-[#0066FF] mb-3" />
+              <h3 className="text-sm font-medium text-foreground mb-1">Test drives book themselves</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                No haggling over WhatsApp at 11 PM.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-lg bg-[#0066FF] text-white">
+              <Sparkles className="w-5 h-5 text-white/80 mb-3" />
+              <h3 className="text-sm font-medium mb-1">No ads. Zero clutter.</h3>
+              <p className="text-sm text-white/70 leading-relaxed">
+                Clean, fast, focused experience.
+              </p>
+            </div>
           </div>
         </div>
-
       </div>
+
+      {/* Section 3: Industry Standard */}
+      <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto">
+          
+          <div className="grid lg:grid-cols-2 gap-16 items-center mb-16">
+            {/* Image Side */}
+            <div className="relative aspect-[4/3] rounded-lg overflow-hidden order-2 lg:order-1">
+              <Image
+                src="/Abstract/rs4.png"
+                alt="Abstract"
+                fill
+                className="object-cover"
+              />
+            </div>
+            
+            {/* Content Side */}
+            <div className="space-y-6 order-1 lg:order-2">
+              <p className="text-xs uppercase tracking-widest text-muted-foreground">
+                Industry standard
+              </p>
+              <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+                How car listings usually work.
+                <br />
+                <span className="text-muted-foreground/70">Tiers. Add-ons. Extras.</span>
+              </h2>
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
+                Most platforms offer a free tier with limits. Photos, visibility, contact buttons—all behind paywalls.
+              </p>
+            </div>
+          </div>
+
+          {/* Typical Pricing Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            {/* Typical Free Tier */}
+            <div className="p-6 rounded-lg border border-border/40 bg-background">
+              <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Typical free tier</p>
+              <p className="text-2xl font-semibold text-foreground mb-4">AED 0</p>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p>• Limited photos</p>
+                <p>• 1 active listing</p>
+                <p>• Basic visibility</p>
+                <p>• No contact shortcuts</p>
+              </div>
+            </div>
+
+            {/* Typical Paid Tier */}
+            <div className="p-6 rounded-lg border border-border/40 bg-background">
+              <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Typical paid tier</p>
+              <p className="text-2xl font-semibold text-foreground mb-4">AED 99+ <span className="text-sm font-normal text-muted-foreground">+ VAT</span></p>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p>• More photos</p>
+                <p>• Featured placement</p>
+                <p>• Contact buttons</p>
+                <p>• Special badges</p>
+              </div>
+            </div>
+
+            {/* Common Add-ons */}
+            <div className="p-6 rounded-lg border border-border/40 bg-background">
+              <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Common add-ons</p>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-lg font-semibold text-foreground">AED 2–10/day</p>
+                  <p className="text-sm text-muted-foreground">Daily boost fees</p>
+                </div>
+                <div>
+                  <p className="text-lg font-semibold text-foreground">AED 200+</p>
+                  <p className="text-sm text-muted-foreground">Spotlight packages</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Blue Alifh Card */}
+            <div className="p-6 rounded-lg bg-[#0066FF] text-white">
+              <p className="text-xs uppercase tracking-widest text-white/60 mb-3">Alifh</p>
+              <p className="text-2xl font-semibold mb-4">AED 0</p>
+              <div className="space-y-2 text-sm text-white/80">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-white/60" />
+                  <span>Unlimited photos</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-white/60" />
+                  <span>No listing limits</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-white/60" />
+                  <span>Quality-based ranking</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-white/60" />
+                  <span>No add-ons needed</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Stat Row */}
+          <div className="flex items-center justify-center gap-12 pt-12 mt-12 border-t border-border/40">
+            <div className="text-center space-y-1">
+              <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">AED 0</div>
+              <div className="text-xs text-muted-foreground">To list</div>
+            </div>
+            <div className="text-center space-y-1">
+              <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">AED 0</div>
+              <div className="text-xs text-muted-foreground">To boost</div>
+            </div>
+            <div className="text-center space-y-1">
+              <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">AED 0</div>
+              <div className="text-xs text-muted-foreground">To feature</div>
+            </div>
+            <div className="text-center space-y-1">
+              <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">AED 0</div>
+              <div className="text-xs text-muted-foreground">Period.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Section 4: Simple Comparison */}
+      <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto">
+          
+          <div className="text-center mb-16 space-y-4">
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">
+              Side by side
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+              What you get elsewhere.
+              <br />
+              <span className="text-muted-foreground/70">What you get here.</span>
+            </h2>
+          </div>
+
+          {/* Comparison Grid */}
+          <div className="grid sm:grid-cols-2 gap-px bg-border/40 rounded-lg overflow-hidden border border-border/40 max-w-4xl mx-auto">
+            
+            {/* Others Column */}
+            <div className="p-8 bg-background">
+              <p className="text-xs uppercase tracking-widest text-muted-foreground mb-8">Typical UAE Platforms</p>
+              <div className="space-y-6">
+                {[
+                  { label: 'Listing cost', value: 'Up to AED 1,000+' },
+                  { label: 'Visibility', value: 'Pay to appear first' },
+                  { label: 'Experience', value: 'Ads everywhere' },
+                  { label: 'Transparency', value: 'VIN optional' },
+                  { label: 'Test drives', value: 'Call and negotiate' },
+                  { label: 'Stale listings', value: 'Stay up forever' },
+                ].map((item, i) => (
+                  <div key={i} className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">{item.label}</span>
+                    <span className="text-sm text-foreground/60">{item.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Alifh Column */}
+            <div className="p-8 bg-[#0066FF] text-white">
+              <p className="text-xs uppercase tracking-widest text-white/60 mb-8">Alifh</p>
+              <div className="space-y-6">
+                {[
+                  { label: 'Listing cost', value: 'Free for individuals' },
+                  { label: 'Visibility', value: 'Photos + response time' },
+                  { label: 'Experience', value: 'Zero ads, ever' },
+                  { label: 'Transparency', value: 'VIN required' },
+                  { label: 'Test drives', value: 'Book online 24/7' },
+                  { label: 'Stale listings', value: 'Auto-expire' },
+                ].map((item, i) => (
+                  <div key={i} className="flex justify-between items-center">
+                    <span className="text-sm text-white/70">{item.label}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">{item.value}</span>
+                      <CheckCircle2 className="w-4 h-4 text-white/60" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Section 4: Features */}
+      <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto">
+          
+          <div className="text-center mb-16 space-y-4">
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">
+              Built in Dubai
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+              Everything you need.
+              <br />
+              <span className="text-muted-foreground/70">Nothing you don't.</span>
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-xl mx-auto pt-2">
+              Local team. Clean experience. Every feature designed with purpose.
+            </p>
+          </div>
+
+          {/* Features Grid - Mix & Match */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            {/* Image Card - Standalone */}
+            <div className="sm:col-span-2 lg:col-span-2 aspect-[16/9] rounded-lg overflow-hidden">
+              <Image
+                src="/Abstract/rs5.png"
+                alt=""
+                fill
+                className="object-cover !relative"
+              />
+            </div>
+
+            {/* Security Card - Separate */}
+            <div className="sm:col-span-2 lg:col-span-2 p-8 rounded-lg border border-border/40 bg-background flex flex-col justify-center">
+              <h3 className="text-2xl font-semibold text-foreground mb-3 tracking-tight">Your data stays yours</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                End-to-end encryption. No data sold. Ever.
+              </p>
+            </div>
+
+            {/* Small Feature Cards */}
+            <div className="p-6 rounded-lg border border-border/40 bg-background">
+              <Clock className="w-5 h-5 text-[#0066FF] mb-3" />
+              <h3 className="text-sm font-medium text-foreground mb-1">Book anytime</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">Found your car at 2 AM? Book a test drive instantly.</p>
+            </div>
+
+            <div className="p-6 rounded-lg border border-border/40 bg-background">
+              <PenLine className="w-5 h-5 text-[#0066FF] mb-3" />
+              <h3 className="text-sm font-medium text-foreground mb-1">Unlimited edits</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">Update your listing anytime. No restrictions.</p>
+            </div>
+
+            <div className="p-6 rounded-lg border border-border/40 bg-background">
+              <Zap className="w-5 h-5 text-[#0066FF] mb-3" />
+              <h3 className="text-sm font-medium text-foreground mb-1">Actually fast</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">Not "loading spinner" fast. Actually fast.</p>
+            </div>
+
+            <div className="p-6 rounded-lg border border-border/40 bg-background">
+              <Timer className="w-5 h-5 text-[#0066FF] mb-3" />
+              <h3 className="text-sm font-medium text-foreground mb-1">Auto-expire after 24 days</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">No messaging about cars that sold 3 months ago.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </section>
   );
 }

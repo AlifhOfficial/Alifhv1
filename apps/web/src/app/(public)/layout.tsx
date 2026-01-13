@@ -1,10 +1,11 @@
 /**
  * Public Layout
- * Wraps all public-facing pages with navbar
+ * Wraps all public-facing pages with navbar and footer
  */
 
 import { Suspense } from 'react';
 import { Navbar } from '@/components/shared/navbar';
+import { Footer } from '@/components/pages/home/footer';
 
 export default function PublicLayout({
   children,
@@ -17,6 +18,7 @@ export default function PublicLayout({
         <Navbar />
       </Suspense>
       {children}
+      <Footer />
     </>
   );
 }

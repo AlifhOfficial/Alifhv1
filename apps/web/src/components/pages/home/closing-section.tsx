@@ -1,78 +1,99 @@
 /**
  * Closing Section - Alifh Home Page
- * Unapologetic trust statement with full-width video
+ * Consistent with Hero Section design patterns
  */
 
-import Link from 'next/link';
+'use client';
+
+import Image from 'next/image';
+import { CheckCircle2 } from 'lucide-react';
 
 export function ClosingSection() {
   return (
-    <section>
-      
-      {/* Content */}
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
-          Our promise
-        </p>
-        <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight mb-4 max-w-2xl">
-          Transparency first.
-          <br />
-          <span className="text-muted-foreground/70">Always.</span>
-        </h2>
-        
-        <p className="text-sm text-muted-foreground max-w-xl mb-8 leading-relaxed">
-          What you see is what you get. Full vehicle history, honest pricing, real availability. 
-          We believe buying or selling a car should be simple—not a negotiation game.
-        </p>
+    <section className="relative bg-background">
 
-        <div className="flex flex-col sm:flex-row gap-3 mb-16">
-          <Link
-            href="/listings"
-            className="h-11 px-8 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
-          >
-            Start Browsing
-          </Link>
-          <Link
-            href="/partner"
-            className="h-11 px-8 bg-muted text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
-          >
-            Partner With Us
-          </Link>
-        </div>
+      {/* Section 1: Philosophy with Side Image */}
+      <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            
+            {/* Image Side */}
+            <div className="relative order-2 lg:order-1">
+              <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
+                <Image
+                  src="/Abstract/rs6.png"
+                  alt="Abstract design"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
-          <div>
-            <p className="text-2xl font-semibold text-foreground">100%</p>
-            <p className="text-xs text-muted-foreground">VIN verified</p>
-          </div>
-          <div>
-            <p className="text-2xl font-semibold text-foreground">0</p>
-            <p className="text-xs text-muted-foreground">Listing fees</p>
-          </div>
-          <div>
-            <p className="text-2xl font-semibold text-foreground">0</p>
-            <p className="text-xs text-muted-foreground">Ads. Ever.</p>
-          </div>
-          <div>
-            <p className="text-2xl font-semibold text-foreground">24/7</p>
-            <p className="text-xs text-muted-foreground">Online booking</p>
+            {/* Content Side */}
+            <div className="order-1 lg:order-2 space-y-6">
+              <p className="text-xs uppercase tracking-widest text-muted-foreground">
+                What we stand for
+              </p>
+              
+              <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+                Built by car people.
+                <br />
+                <span className="text-muted-foreground/70">For car people.</span>
+              </h2>
+              
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
+                We're the same people at track days, car meets, late-night debates about the E46 M3. 
+                We built this because listing fees never made sense to us. VIN upfront. Free listings. 
+                Online booking. No ads. That's the standard we think should exist.
+              </p>
+
+              {/* Principles */}
+              <div className="pt-4 border-t border-border/40 space-y-3">
+                {[
+                  { title: 'Clarity over noise', desc: 'Simple beats flashy' },
+                  { title: 'Honesty over pressure', desc: 'No fake urgency' },
+                  { title: 'Quality over volume', desc: 'Standards matter' },
+                  { title: 'People over profits', desc: 'We answer to users, not investors' },
+                ].map((principle, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <CheckCircle2 className="w-4 h-4 text-[#0066FF] shrink-0" />
+                    <span className="text-sm font-medium text-foreground">{principle.title}</span>
+                    <span className="text-xs text-muted-foreground">— {principle.desc}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Full Width Video */}
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-        <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] rounded-lg overflow-hidden">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-          >
-            <source src="/video/hero1x.mp4" type="video/mp4" />
-          </video>
+      {/* Section 2: Video Showcase */}
+      <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto">
+          
+          <div className="text-center mb-16 space-y-4">
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">
+              How it works
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+              Browse. Book. Done.
+              <br />
+              <span className="text-muted-foreground/70">No friction.</span>
+            </h2>
+          </div>
+
+          {/* Video Container */}
+          <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] overflow-hidden rounded-lg">
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="absolute inset-0 w-full h-full object-cover"
+            >
+              <source src="/video/hero1x.mp4" type="video/mp4" />
+            </video>
+          </div>
         </div>
       </div>
 

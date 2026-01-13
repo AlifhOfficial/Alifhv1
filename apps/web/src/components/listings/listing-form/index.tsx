@@ -185,7 +185,7 @@ export function ListingForm({
                   ) : (
                     <span className={cn(
                       "w-3 h-3 rounded-full transition-all",
-                      isCurrent ? "bg-blue-500" : "bg-muted-foreground/30"
+                      isCurrent ? "bg-muted-foreground" : "bg-muted-foreground/30"
                     )} />
                   )}
                 </button>
