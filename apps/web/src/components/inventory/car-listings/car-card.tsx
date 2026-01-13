@@ -307,7 +307,7 @@ export function CarCard({
         </p>
 
         {/* Stats Row */}
-        <div className="flex items-center gap-1.5 text-xs">
+        <div className="flex items-center gap-1.5 text-sm">
           <span className={cn(
             "font-semibold",
             isBlkListing ? "text-zinc-500" : "text-muted-foreground/70"

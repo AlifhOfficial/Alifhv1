@@ -17,8 +17,8 @@ import {
   db,
   userProfile,
   eq,
-  memoryCache,
-  CacheKeys,
+  invalidateUserProfile,
+  invalidateUserSession,
 } from '@alifh/database';
 
 export const runtime = 'nodejs';
@@ -97,7 +97,8 @@ export async function POST(req: NextRequest) {
       .where(eq(userProfile.userId, user.id));
 
     // Invalidate user profile cache
-    memoryCache.delete(CacheKeys.userProfile(user.id));
+    invalidateUserProfile(user.id);
+    invalidateUserSession(user.id);
 
     return NextResponse.json({
       success: true,

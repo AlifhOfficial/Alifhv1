@@ -8,7 +8,7 @@
 
 import { NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { db, kycRecord, userProfile, eq, and, memoryCache, CacheKeys } from '@alifh/database';
+import { db, kycRecord, userProfile, eq, and, invalidateUserProfile, invalidateUserSession } from '@alifh/database';
 
 export const runtime = 'nodejs';
 
@@ -53,7 +53,8 @@ export async function POST() {
       .where(eq(userProfile.userId, user.id));
 
     // Invalidate cache
-    memoryCache.delete(CacheKeys.userProfile(user.id));
+    invalidateUserProfile(user.id);
+    invalidateUserSession(user.id);
 
     return NextResponse.json({ 
       success: true,

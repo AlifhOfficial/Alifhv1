@@ -60,6 +60,7 @@ export interface CarCardData {
   sellerName: string | null;
   sellerAvatarUrl: string | null;
   sellerKycVerified: boolean | null;
+  sellerUseGeneratedAvatar: boolean | null;
 }
 
 /**
@@ -90,6 +91,7 @@ function buildCardSelectFields(now: Date) {
     sellerName: user.name,
     sellerAvatarUrl: userProfile.avatar,
     sellerKycVerified: userProfile.kycVerified,
+    sellerUseGeneratedAvatar: sql<boolean | null>`(${userProfile.preferences}->>'useGeneratedAvatar')::boolean`,
   } as const;
 }
 

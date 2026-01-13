@@ -23,7 +23,7 @@ import {
   buildDuplicateRejectionUpdate,
   type DiditSessionData,
 } from '@/lib/kyc/update-builder';
-import { db, kycRecord, userProfile, eq, memoryCache, CacheKeys } from '@alifh/database';
+import { db, kycRecord, userProfile, eq, invalidateUserProfile, invalidateUserSession } from '@alifh/database';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -132,7 +132,8 @@ async function processCallbackSession(sessionId: string, status: string | null) 
           db.update(userProfile).set(profileUpdate).where(eq(userProfile.userId, record.userId)),
         ]);
         
-        memoryCache.delete(CacheKeys.userProfile(record.userId));
+        invalidateUserProfile(record.userId);
+        invalidateUserSession(record.userId);
         return createResultHtml('duplicate', sessionId);
       }
     }
@@ -170,7 +171,8 @@ async function processCallbackSession(sessionId: string, status: string | null) 
     }
     await Promise.all(dbPromises);
 
-    memoryCache.delete(CacheKeys.userProfile(record.userId));
+    invalidateUserProfile(record.userId);
+    invalidateUserSession(record.userId);
     return createResultHtml(newStatus, sessionId, rejectionReason);
 
   } catch {
@@ -254,7 +256,8 @@ async function handleSessionCompleted(payload: DiditWebhookPayload) {
         db.update(userProfile).set(profileUpdate).where(eq(userProfile.userId, userId)),
       ]);
       
-      memoryCache.delete(CacheKeys.userProfile(userId));
+      invalidateUserProfile(userId);
+      invalidateUserSession(userId);
       return; // Exit early - don't process as approved
     }
   }
@@ -285,7 +288,7 @@ async function handleSessionCompleted(payload: DiditWebhookPayload) {
   ]);
 
   if (userId) {
-    memoryCache.delete(CacheKeys.userProfile(userId));
+    invalidateUserProfile(userId);
   }
 }
 
@@ -318,7 +321,8 @@ async function handleSessionInReview(payload: DiditWebhookPayload) {
   ]);
 
   if (userId) {
-    memoryCache.delete(CacheKeys.userProfile(userId));
+    invalidateUserProfile(userId);
+    invalidateUserSession(userId);
   }
 }
 

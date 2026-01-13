@@ -718,6 +718,10 @@ export async function searchListings(
   if (!skipTotalCount) {
     const totalResult = results[resultIdx] as Array<{ count: number }>;
     total = Number(totalResult[0]?.count || 0);
+  } else {
+    // When skipping total count, estimate from current batch
+    // This prevents showing "0 cars" when facets are cached
+    total = offset + searchResult.listings.length + (searchResult.hasMoreFromFetch ? 1 : 0);
   }
 
   const took = Date.now() - startTime;

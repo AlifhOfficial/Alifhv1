@@ -24,14 +24,17 @@
     "sessions:clear": "cd apps/web && bun ../../scripts/clear-sessions.ts"
   },
   "workspaces": [
-    "apps/*",
+    "apps/web",
+    "apps/mobile",
+    "apps/ws",
     "packages/*"
   ],
   "devDependencies": {
     "@types/node": "20.19.27",
     "@types/pg": "8.16.0",
-    "@types/react": "19.2.7",
+    "@types/react": "~19.1.10",
     "@types/react-dom": "19.2.3",
+    "babel-preset-expo": "~14.0.0",
     "eslint": "9.28.0",
     "pg": "8.16.3",
     "prettier": "3.5.3",
@@ -39,7 +42,7 @@
     "typescript": "5.9.3"
   },
   "overrides": {
-    "@types/react": "19.2.7",
+    "@types/react": "~19.1.10",
     "@types/react-dom": "19.2.3",
     "drizzle-orm": "0.45.1"
   },
