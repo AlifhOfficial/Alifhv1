@@ -23,6 +23,7 @@ import {
   getDealerBaseProfile, 
   getUserProfileByUserId,
   getStaffEffectivePhone,
+  calculateUserStats,
 } from "@alifh/database";
 import { calculatePartnerStats } from "@alifh/database/server";
 import {
@@ -77,10 +78,22 @@ async function fetchSellerData(listing: ListingResult) {
       } : null,
     };
   } else {
-    // User listing - single query gets profile + extended user info
-    const userProfile = await getUserProfileByUserId(listing.userId);
-    console.log(`[fetchSellerData] user (getUserProfileByUserId): ${(performance.now() - start).toFixed(0)}ms`);
-    return { type: 'user' as const, userProfile };
+    // User listing - fetch profile and stats in parallel
+    const [userProfile, stats] = await Promise.all([
+      getUserProfileByUserId(listing.userId),
+      calculateUserStats(listing.userId),
+    ]);
+    console.log(`[fetchSellerData] user (getUserProfileByUserId + calculateUserStats): ${(performance.now() - start).toFixed(0)}ms`);
+    
+    // Merge stats into userProfile for component compatibility
+    const enrichedUserProfile = userProfile ? {
+      ...userProfile,
+      inventoryCount: stats?.listingsCount ?? 0,
+      // Map responseRate (already a percentage) to field expected by component
+      responseRate: stats?.responseRate ?? null,
+    } : null;
+    
+    return { type: 'user' as const, userProfile: enrichedUserProfile };
   }
 }
 

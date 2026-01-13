@@ -8,7 +8,7 @@
  */
 
 import { useState, useCallback, useMemo } from 'react';
-import { CheckCircle2, AlertTriangle } from 'lucide-react';
+import { CheckCircle2, Sparkles } from 'lucide-react';
 import { cn } from '@/utils';
 import { Combobox } from '../combobox';
 import { VINInput } from '../vin-input';
@@ -135,8 +135,8 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
           />
           
           <div className="flex items-center gap-2 text-xs">
-            <AlertTriangle className="w-3.5 h-3.5 text-yellow-500" />
-            <span className="font-semibold text-yellow-500">Experimental</span>
+            <Sparkles className="w-3.5 h-3.5 text-purple-500" />
+            <span className="font-semibold text-purple-500">Experimental</span>
             <span className="text-muted-foreground/70">— Some VINs may not decode, especially Japanese-made vehicles.</span>
           </div>
         </div>

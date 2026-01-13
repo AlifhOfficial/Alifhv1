@@ -87,7 +87,7 @@ export interface UserSellerData {
     rating: number | null;
     platformRating: number | null;
     platformReviewCount: number;
-    avgResponseTime: number | null;
+    responseRate: number | null; // Updated: was avgResponseTime
     privacySettings: { showPhone?: boolean; showEmail?: boolean };
     memberSince: Date | string;
     emailVerified: boolean;

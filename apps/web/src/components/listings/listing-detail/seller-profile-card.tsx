@@ -497,14 +497,14 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
           <p className="text-lg font-bold tabular-nums text-foreground">{profile?.inventoryCount ?? 0}</p>
         </div>
 
-        {/* Response Time */}
-        {profile?.avgResponseTime && (
+        {/* Response Rate */}
+        {profile?.responseRate !== null && profile?.responseRate !== undefined && (
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-muted-foreground" />
+              <MessageCircle className="w-4 h-4 text-muted-foreground" />
               <span className="text-sm font-semibold text-muted-foreground/70">Response</span>
             </div>
-            <p className="text-lg font-bold tabular-nums text-foreground">{formatResponseTime(profile.avgResponseTime)}</p>
+            <p className="text-lg font-bold tabular-nums text-foreground">{profile.responseRate}%</p>
           </div>
         )}
 
