@@ -14,6 +14,9 @@
 
 import { memoryCache, CacheKeys, CachePrefixes } from './memory-cache';
 
+// Re-export CacheKeys for use in other modules
+export { CacheKeys };
+
 // ============================================================================
 // LISTINGS
 // ============================================================================
@@ -57,9 +60,10 @@ export function invalidateListingCaches(listingId: string, partnerId?: string, u
     invalidatePartnerInventory(partnerId);
   }
   
-  // Invalidate user stats if listing is personal (affects listings count, sold count)
+  // Invalidate user's personal my-listings cache and stats
   if (userId) {
     invalidateUserStats(userId);
+    invalidateUserMyListings(userId);
   }
   
   invalidateSearchCaches();
@@ -77,6 +81,29 @@ export function invalidatePartnerInventory(partnerId: string): void {
   memoryCache.delete(...keys);
 }
 
+/**
+ * Invalidate user's personal "my listings" cache
+ * Use after: listing create, update, delete, status change
+ */
+export function invalidateUserMyListings(userId: string): void {
+  // Delete all my-listings cache entries for this user (prefix-based)
+  const deleted = memoryCache.deleteByPrefix(`user:${userId}:my-listings`);
+  if (deleted > 0) {
+    console.log(`[cache] Invalidated my-listings for user: ${userId} (${deleted} entries)`);
+  }
+}
+
+/**
+ * Invalidate user's bookings cache
+ * Use after: booking create, cancel, reschedule, status change
+ */
+export function invalidateUserBookings(userId: string): void {
+  const deleted = memoryCache.deleteByPrefix(`user:${userId}:bookings`);
+  if (deleted > 0) {
+    console.log(`[cache] Invalidated bookings for user: ${userId} (${deleted} entries)`);
+  }
+}
+
 // ============================================================================
 // FAVORITES & ENGAGEMENT
 // ============================================================================
@@ -89,6 +116,20 @@ export function invalidateFavoritesCache(userId: string): void {
   const key = `favorites:status:${userId}`;
   memoryCache.delete(key);
   console.log(`[cache] Invalidated favorites for user: ${userId}`);
+}
+
+// ============================================================================
+// MESSAGING
+// ============================================================================
+
+/**
+ * Invalidate user's unread message count cache
+ * Use after: new message sent, conversation marked as read
+ */
+export function invalidateUnreadCount(userId: string): void {
+  const key = CacheKeys.userUnreadCount(userId);
+  memoryCache.delete(key);
+  console.log(`[cache] Invalidated unread count for user: ${userId}`);
 }
 
 // ============================================================================

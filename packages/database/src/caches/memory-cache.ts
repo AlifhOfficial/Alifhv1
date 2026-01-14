@@ -342,6 +342,9 @@ export const CacheKeys = {
   userById: (userId: string) => `user:${userId}:data`,
   userSession: (userId: string) => `user:${userId}:session`,
   userProfile: (userId: string) => `user:${userId}:profile`,
+  userUnreadCount: (userId: string) => `user:${userId}:unread-count`,
+  userMyListings: (userId: string) => `user:${userId}:my-listings`,
+  userBookings: (userId: string) => `user:${userId}:bookings`,
   
   // Listing data
   listingDetail: (listingId: string) => `listing:${listingId}:detail`,
@@ -374,6 +377,9 @@ export const CacheTTL = {
   userById: 300, // 5 minutes - user record (invalidate on updates)
   userSession: 300, // 5 minutes - session data (role, partner memberships)
   userProfile: 300, // 5 minutes - user profile (invalidate on updates)
+  userUnreadCount: 60, // 1 minute - unread message count (invalidated on new message/read)
+  userMyListings: 120, // 2 minutes - user's personal listings (invalidated on create/update/delete)
+  userBookings: 120, // 2 minutes - user's bookings (invalidated on create/cancel/update)
   
   // Listing data - invalidated on any listing mutation
   listingDetail: 600, // 10 minutes - full listing details

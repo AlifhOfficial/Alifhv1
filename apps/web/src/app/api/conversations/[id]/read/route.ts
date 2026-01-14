@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { markConversationAsRead, getConversationParticipants } from '@alifh/database/server';
+import { markConversationAsRead, getConversationParticipants, invalidateUnreadCount } from '@alifh/database/server';
 import {
   createRateLimiter,
   getIdentifier,
@@ -45,6 +45,9 @@ export async function PATCH(
     const { id } = await params;
     const lastReadAt = new Date().toISOString();
     await markConversationAsRead(id, user.id);
+    
+    // Invalidate unread count cache for this user
+    invalidateUnreadCount(user.id);
 
     // Broadcast read receipt to each participant's user channel
     try {

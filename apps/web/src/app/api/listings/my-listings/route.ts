@@ -31,6 +31,7 @@ import {
   getListingsByPartnerId,
   getListingsByUserId,
   memoryCache,
+  CacheTTL,
 } from '@alifh/database';
 import {
   createRateLimiter,
@@ -88,6 +89,12 @@ export async function GET(req: NextRequest) {
       100
     );
     const offset = parseInt(searchParams.get('offset') || '0');
+    const partnerIdParam = searchParams.get('partnerId') || undefined;
+
+    // Build cache key from all query params (for personal listings only)
+    // Work listings use partner inventory cache instead
+    const cacheKeyParams = `${status || ''}-${moderationStatus || ''}-${lifecycleStatus || ''}-${listingType || ''}-${q || ''}-${sort || ''}-${limit}-${offset}-${includeStats}`;
+    const myCacheKey = `user:${user.id}:my-listings:${cacheKeyParams}`;
 
     // Validate status if provided
     const validLegacyStatuses = [
@@ -272,6 +279,25 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    // ⚡ OPTIMIZATION: Check cache first for personal listings
+    // Work listings are handled separately above and use partner inventory cache
+    type CachedResponse = { listings: unknown[]; stats?: unknown };
+    const cached = memoryCache.get<CachedResponse>(myCacheKey);
+    if (cached) {
+      logTiming('cache-hit');
+      return NextResponse.json({
+        success: true,
+        data: cached.listings,
+        listings: cached.listings,
+        stats: cached.stats,
+        meta: {
+          count: cached.listings.length,
+          limit,
+          offset,
+        },
+      });
+    }
+
     // ⚡ OPTIMIZATION: Fire-and-forget maintenance (don't block on expiry update)
     const maintenanceKey = `maintenance:expire:user:${user.id}`;
     if (!memoryCache.get<boolean>(maintenanceKey)) {
@@ -319,6 +345,9 @@ export async function GET(req: NextRequest) {
     // Wait for both in parallel
     const [listings, statsToUse] = await Promise.all([listingsPromise, statsPromise]);
     logTiming('queries-done');
+
+    // Cache the result for personal listings (2 min TTL)
+    memoryCache.set(myCacheKey, { listings, stats: statsToUse }, CacheTTL.userMyListings);
 
     return NextResponse.json({
       success: true,

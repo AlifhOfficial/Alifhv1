@@ -23,6 +23,7 @@ import {
   createCarListing,
   getActivePartnerStaffMembershipByUserIdAndPartnerId,
   invalidateSearchCaches,
+  invalidateUserMyListings,
   db,
   carListing,
   updateListingAIValuation,
@@ -399,6 +400,7 @@ export async function POST(req: NextRequest) {
 
     // Invalidate listing caches so new inventory reflects immediately
     invalidateSearchCaches();
+    invalidateUserMyListings(user.id);
 
     return NextResponse.json(
       {

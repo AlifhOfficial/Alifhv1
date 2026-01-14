@@ -89,6 +89,7 @@ interface UseConversationsOptions {
   userId?: string;
   scope?: 'personal' | 'staff';
   limit?: number; // Not used in query key, just for API
+  enabled?: boolean; // Control whether to fetch (defaults to true when userId is present)
 }
 
 export function useConversations(options: UseConversationsOptions = {}) {
@@ -101,7 +102,7 @@ export function useConversations(options: UseConversationsOptions = {}) {
   const query = useQuery({
     queryKey,
     queryFn: () => fetchConversations(options.scope),
-    enabled: !!options.userId,
+    enabled: !!options.userId && (options.enabled !== false),
   });
 
   // WebSocket updates

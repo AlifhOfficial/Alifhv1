@@ -40,3 +40,20 @@ export {
   type MessageWithSender,
   type SendMessageParams,
 } from './queries/message';
+
+// Cache exports for server-side usage
+export { memoryCache, CacheKeys, CacheTTL, CachePrefixes } from './caches/memory-cache';
+export { 
+  invalidateUnreadCount,
+  invalidateSearchCaches,
+  invalidateListingDetail,
+  invalidateListingCaches,
+  invalidateFavoritesCache,
+  invalidatePartnerProfile,
+  invalidatePartnerInventory,
+  invalidateUserProfile,
+  invalidateUserStats,
+  invalidateUserMyListings,
+  invalidateUserBookings,
+  invalidateAllCaches,
+} from './caches/invalidation';

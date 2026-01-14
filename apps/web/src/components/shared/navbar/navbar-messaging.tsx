@@ -22,10 +22,17 @@ interface NavbarMessagingProps {
 export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
   const [isOpen, setIsOpen] = useState(false);
   
-  // Always fetch conversations (not just when open) for real-time updates
-  const { conversations, isLoading, totalUnread } = useConversations({ userId, scope: 'personal', limit: 50 });
-  // Use totalUnread from conversations hook (includes real-time updates)
-  const unreadCount = totalUnread;
+  // Lightweight unread count - always fetched for badge display
+  // Uses WebSocket for real-time updates without polling
+  const { unreadCount } = useUnreadCount(userId);
+  
+  // Full conversations list - only fetched when dropdown is open
+  const { conversations, isLoading } = useConversations({ 
+    userId, 
+    scope: 'personal', 
+    limit: 50,
+    enabled: isOpen,
+  });
 
   // Close on outside click
   useEffect(() => {

@@ -51,6 +51,13 @@ invalidateListingCaches(id, partnerId); // Auto-clears search too
 ### Engagement
 - `invalidateFavoritesCache(userId)` - User's favorites/superlikes
 
+### Messaging
+- `invalidateUnreadCount(userId)` - User's unread message count (called on new message, mark as read)
+
+### User Dashboard Data
+- `invalidateUserMyListings(userId)` - User's personal listings cache (called on create/update/delete)
+- `invalidateUserBookings(userId)` - User's bookings cache (called on create/cancel/reschedule)
+
 ### Profiles & Stats
 - `invalidatePartnerProfile(partnerId)` - Partner profile
 - `invalidatePartnerStats(partnerId)` - Partner stats (inventory, sales, response rate/time)
@@ -63,9 +70,12 @@ invalidateListingCaches(id, partnerId); // Auto-clears search too
 ## ⚙️ Cache TTLs
 
 ```typescript
-CacheTTL.userSession    // 5 min - auth sessions
-CacheTTL.listingDetail  // 10 min - listing data
-CacheTTL.searchResults  // 10 min - search queries
+CacheTTL.userSession      // 5 min - auth sessions
+CacheTTL.userUnreadCount  // 1 min - unread message count
+CacheTTL.userMyListings   // 2 min - user's personal listings
+CacheTTL.userBookings     // 2 min - user's bookings
+CacheTTL.listingDetail    // 10 min - listing data
+CacheTTL.searchResults    // 10 min - search queries
 ```
 
 ## 🚫 What NOT to Do

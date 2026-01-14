@@ -15,6 +15,8 @@ import {
   runBookingMaintenance,
   memoryCache,
   getPartnerBookingSettingsBatch,
+  CacheTTL,
+  invalidateUserBookings,
   type BookingStatus,
 } from '@alifh/database';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_BOOKINGS } from '@/lib/rate-limit';
@@ -50,6 +52,17 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
 
+    // Build cache key from query params
+    const cacheKeyParams = `${status?.join(',') || 'all'}-${upcoming}-${limit}-${offset}`;
+    const bookingsCacheKey = `user:${user.id}:bookings:${cacheKeyParams}`;
+
+    // Check cache first
+    type CachedBookings = { bookings: unknown[]; total: number };
+    const cached = memoryCache.get<CachedBookings>(bookingsCacheKey);
+    if (cached) {
+      return NextResponse.json(cached);
+    }
+
     const result = await getUserBookings(user.id, {
       status,
       limit,
@@ -80,10 +93,14 @@ export async function GET(req: NextRequest) {
       };
     });
 
-    return NextResponse.json({
+    // Cache the result (2 min TTL)
+    const response = {
       bookings: enrichedBookings,
       total: result.total,
-    });
+    };
+    memoryCache.set(bookingsCacheKey, response, CacheTTL.userBookings);
+
+    return NextResponse.json(response);
   } catch (error) {
     console.error('Error fetching user bookings:', error);
     return NextResponse.json(
@@ -156,6 +173,9 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Invalidate user's bookings cache
+    invalidateUserBookings(user.id);
 
     return NextResponse.json({
       success: true,

@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { getTotalUnreadCount } from '@alifh/database/server';
+import { getTotalUnreadCount, memoryCache, CacheKeys, CacheTTL } from '@alifh/database/server';
 import {
   createRateLimiter,
   getIdentifier,
@@ -39,7 +39,16 @@ export async function GET(req: NextRequest) {
       return rateLimitResponse(rateLimitResult);
     }
 
+    // Check cache first
+    const cacheKey = CacheKeys.userUnreadCount(user.id);
+    const cached = memoryCache.get<number>(cacheKey);
+    if (cached !== null) {
+      return NextResponse.json({ unreadCount: cached });
+    }
+
+    // Fetch from database and cache
     const unreadCount = await getTotalUnreadCount(user.id);
+    memoryCache.set(cacheKey, unreadCount, CacheTTL.userUnreadCount);
 
     return NextResponse.json({ unreadCount });
   } catch (error) {
