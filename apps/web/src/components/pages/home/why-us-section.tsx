@@ -22,9 +22,9 @@ export function WhyUsSection() {
               </p>
               
               <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
-                Most UAE platforms charge to list.
+                Most UAE Platforms Charge to List.
                 <br />
-                <span className="text-muted-foreground/70">We never will.</span>
+                <span className="text-muted-foreground/70">We Never Will.</span>
               </h2>
               
               <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
@@ -52,7 +52,7 @@ export function WhyUsSection() {
             {/* Abstract Image */}
             <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
               <Image
-                src="/Abstract/rs1.png"
+                src="/Abstract/rsx7.png"
                 alt="Abstract"
                 fill
                 className="object-cover"
@@ -71,9 +71,9 @@ export function WhyUsSection() {
               What makes us different
             </p>
             <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
-              Human first.
+              Human First.
               <br />
-              <span className="text-muted-foreground/70">Not corporate first.</span>
+              <span className="text-muted-foreground/70">Not Corporate First.</span>
             </h2>
           </div>
 
@@ -83,7 +83,7 @@ export function WhyUsSection() {
             {/* Image Card - Standalone */}
             <div className="lg:col-span-2 aspect-[4/3] rounded-lg overflow-hidden">
               <Image
-                src="/Abstract/rs2.png"
+                src="/Abstract/rsx3.png"
                 alt="Abstract design"
                 fill
                 className="object-cover !relative"
@@ -141,29 +141,29 @@ export function WhyUsSection() {
         <div className="max-w-[1600px] mx-auto">
           
           <div className="grid lg:grid-cols-2 gap-16 items-center mb-16">
+            {/* Content Side */}
+            <div className="space-y-6">
+              <p className="text-xs uppercase tracking-widest text-muted-foreground">
+                Industry standard
+              </p>
+              <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+                How Car Listings Usually Work.
+                <br />
+                <span className="text-muted-foreground/70">Tiers. Add-Ons. Extras.</span>
+              </h2>
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
+                Most platforms offer a free tier with limits. Photos, visibility, contact buttons—all behind paywalls.
+              </p>
+            </div>
+            
             {/* Image Side */}
-            <div className="relative aspect-[4/3] rounded-lg overflow-hidden order-2 lg:order-1">
+            <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
               <Image
                 src="/Abstract/rs4.png"
                 alt="Abstract"
                 fill
                 className="object-cover"
               />
-            </div>
-            
-            {/* Content Side */}
-            <div className="space-y-6 order-1 lg:order-2">
-              <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                Industry standard
-              </p>
-              <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
-                How car listings usually work.
-                <br />
-                <span className="text-muted-foreground/70">Tiers. Add-ons. Extras.</span>
-              </h2>
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
-                Most platforms offer a free tier with limits. Photos, visibility, contact buttons—all behind paywalls.
-              </p>
             </div>
           </div>
 
@@ -198,6 +198,10 @@ export function WhyUsSection() {
             <div className="p-6 rounded-lg border border-border/40 bg-background">
               <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Common add-ons</p>
               <div className="space-y-3">
+                <div>
+                  <p className="text-lg font-semibold text-foreground">AED 30+</p>
+                  <p className="text-sm text-muted-foreground">Basic tags</p>
+                </div>
                 <div>
                   <p className="text-lg font-semibold text-foreground">AED 2–10/day</p>
                   <p className="text-sm text-muted-foreground">Daily boost fees</p>
@@ -265,9 +269,9 @@ export function WhyUsSection() {
               Side by side
             </p>
             <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
-              What you get elsewhere.
+              What You Get Elsewhere.
               <br />
-              <span className="text-muted-foreground/70">What you get here.</span>
+              <span className="text-muted-foreground/70">What You Get Here.</span>
             </h2>
           </div>
 
@@ -329,9 +333,9 @@ export function WhyUsSection() {
               Built in Dubai
             </p>
             <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
-              Everything you need.
+              Everything You Need.
               <br />
-              <span className="text-muted-foreground/70">Nothing you don't.</span>
+              <span className="text-muted-foreground/70">Nothing You Don't.</span>
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xl mx-auto pt-2">
               Local team. Clean experience. Every feature designed with purpose.
@@ -344,7 +348,7 @@ export function WhyUsSection() {
             {/* Image Card - Standalone */}
             <div className="sm:col-span-2 lg:col-span-2 aspect-[16/9] rounded-lg overflow-hidden">
               <Image
-                src="/Abstract/rs5.png"
+                src="/Abstract/rsxx.png"
                 alt=""
                 fill
                 className="object-cover !relative"

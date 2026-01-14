@@ -6,7 +6,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { MessageCircle, PanelLeft, Loader2 } from 'lucide-react';
 import { ConversationList } from './conversation-list';
 import { ChatWindow } from './chat-window';
@@ -21,6 +21,8 @@ interface ChatContainerProps {
 
 function ChatContainerInner({ userId, inbox = 'personal', className }: ChatContainerProps) {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const urlConversationId = searchParams?.get('conversationId');
   
   // Derive selected ID from URL, with local override for user selection
@@ -52,6 +54,11 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
     setLocalSelectedId(undefined);
     setShowMobileOverride(false);
     setListOpen(true); // Reopen the list when closing chat
+    
+    // Clear URL param if present (otherwise close button won't work when opened via URL)
+    if (urlConversationId && pathname) {
+      router.replace(pathname, { scroll: false });
+    }
   };
 
   return (
@@ -72,7 +79,14 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
             activeConversationId={selectedId}
             listOpen={listOpen}
             onListToggle={setListOpen}
-            onSelectConversation={(id) => { setLocalSelectedId(id); setShowMobileOverride(true); }}
+            onSelectConversation={(id) => {
+              setLocalSelectedId(id);
+              setShowMobileOverride(true);
+              // Update URL for consistency (back button, refresh, sharing)
+              if (pathname) {
+                router.replace(`${pathname}?conversationId=${id}`, { scroll: false });
+              }
+            }}
           />
         </div>
 

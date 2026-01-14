@@ -19,7 +19,8 @@ import { invalidateUserData } from '@/lib/cache-patterns';
 export interface UserStats {
   listingsCount: number;
   soldCount: number;
-  responseRate: number | null;
+  responseTime: number | null; // Minutes (business hours only)
+  responseRate: number | null; // Percentage (0-100)
 }
 
 export interface UserPasskey {
@@ -136,7 +137,7 @@ export function useUserProfile() {
     onSuccess: async (updatedProfile, variables) => {
       // Update the profile within the cached response
       queryClient.setQueryData<UserProfileResponse | null>(['user-profile'], (old) => {
-        if (!old) return { profile: updatedProfile, stats: { listingsCount: 0, soldCount: 0, responseRate: null }, passkeys: [] };
+        if (!old) return { profile: updatedProfile, stats: { listingsCount: 0, soldCount: 0, responseTime: null, responseRate: null }, passkeys: [] };
         return { ...old, profile: updatedProfile };
       });
       

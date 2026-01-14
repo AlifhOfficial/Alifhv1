@@ -135,8 +135,7 @@ import {
   Globe,
   Sparkles,
   Award,
-  Car,
-  TrendingUp,
+  Package,
   MessageCircle
 } from 'lucide-react';
 import { cn } from '@/utils';
@@ -292,42 +291,14 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
           </p>
         </div>
 
-        {/* Platform Rating */}
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-            <span className="text-sm font-semibold text-muted-foreground/70">Alifh</span>
-          </div>
-          <p className="text-lg font-bold tabular-nums text-foreground">
-            {partner.platformRating !== null && partner.platformRating !== undefined
-              ? <>{partner.platformRating.toFixed(1)}<span className="text-sm font-medium text-muted-foreground ml-1">({partner.platformReviewCount ?? 0})</span></>
-              : <span className="text-muted-foreground">N/A</span>
-            }
-          </p>
-        </div>
-
         {/* Inventory */}
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <Car className="w-4 h-4 text-muted-foreground" />
+            <Package className="w-4 h-4 text-muted-foreground" />
             <span className="text-sm font-semibold text-muted-foreground/70">Inventory</span>
           </div>
           <p className="text-lg font-bold tabular-nums text-foreground">
             {stats?.inventoryCount ?? <span className="text-muted-foreground">N/A</span>}
-          </p>
-        </div>
-
-        {/* Total Sales */}
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm font-semibold text-muted-foreground/70">Sales</span>
-          </div>
-          <p className="text-lg font-bold tabular-nums text-foreground">
-            {stats?.totalSales !== null && stats?.totalSales !== undefined && stats.totalSales > 0
-              ? stats.totalSales.toLocaleString()
-              : <span className="text-muted-foreground">N/A</span>
-            }
           </p>
         </div>
 
@@ -491,18 +462,29 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
         {/* Inventory */}
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <Car className="w-4 h-4 text-muted-foreground" />
+            <Package className="w-4 h-4 text-muted-foreground" />
             <span className="text-sm font-semibold text-muted-foreground/70">Inventory</span>
           </div>
           <p className="text-lg font-bold tabular-nums text-foreground">{profile?.inventoryCount ?? 0}</p>
         </div>
+
+        {/* Response Time */}
+        {profile?.responseTime !== null && profile?.responseTime !== undefined && (
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm font-semibold text-muted-foreground/70">Response</span>
+            </div>
+            <p className="text-lg font-bold tabular-nums text-foreground">{formatResponseTime(profile.responseTime)}</p>
+          </div>
+        )}
 
         {/* Response Rate */}
         {profile?.responseRate !== null && profile?.responseRate !== undefined && (
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <MessageCircle className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-semibold text-muted-foreground/70">Response</span>
+              <span className="text-sm font-semibold text-muted-foreground/70">Rate</span>
             </div>
             <p className="text-lg font-bold tabular-nums text-foreground">{profile.responseRate}%</p>
           </div>

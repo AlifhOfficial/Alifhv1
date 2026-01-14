@@ -365,13 +365,13 @@ export function Navbar() {
 
             {/* Right Actions */}
             <div className="flex items-center gap-2">
-              {/* Messaging - Only show when authenticated */}
-              {isAuthenticated && user?.id && (
+              {/* Messaging - Only show when authenticated and mounted (prevents hydration mismatch) */}
+              {mounted && isAuthenticated && user?.id && (
                 <NavbarMessaging userId={user.id} onOpenChat={openChat} />
               )}
 
-              {/* Favorites - Only show when authenticated */}
-              {isAuthenticated && user?.id && (
+              {/* Favorites - Only show when authenticated and mounted (prevents hydration mismatch) */}
+              {mounted && isAuthenticated && user?.id && (
                 <NavbarFavorites userId={user.id} />
               )}
 

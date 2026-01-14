@@ -47,7 +47,7 @@ export function PartnerHeroSection() {
         {/* Hero Image */}
         <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] overflow-hidden rounded-lg mb-16">
           <Image
-            src="/Abstract/rs2.png"
+            src="/Abstract/rsxx2.png"
             alt="Partner with Alifh"
             fill
             priority

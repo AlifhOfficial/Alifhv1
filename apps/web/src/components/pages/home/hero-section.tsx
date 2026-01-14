@@ -27,9 +27,9 @@ export function HeroSection() {
             Alifh
           </p>
           <h1 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
-            List your car. For free.
+            List Your Car. For Free.
             <br />
-            <span className="text-muted-foreground/70">Like it should be.</span>
+            <span className="text-muted-foreground/70">Like It Should Be.</span>
           </h1>
           <p className="text-sm text-muted-foreground leading-relaxed max-w-xl mx-auto pt-2">
             Browse. Book test drives. Sell. No fees. No ads. No catch.

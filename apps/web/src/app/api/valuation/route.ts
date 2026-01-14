@@ -3,15 +3,26 @@
  * 
  * POST /api/valuation
  * Uses AI to generate market value estimates
+ * Authentication: Required - protects AI credits from abuse
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { generateValuation, type ValuationInput } from '@alifh/ai/valuation';
+import { getSessionUser } from '@/lib/auth/session-context';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
+  // Authentication required - protect AI credits from abuse
+  const user = await getSessionUser();
+  if (!user) {
+    return NextResponse.json(
+      { error: 'Authentication required' },
+      { status: 401 }
+    );
+  }
+
   try {
     const body = await request.json();
     

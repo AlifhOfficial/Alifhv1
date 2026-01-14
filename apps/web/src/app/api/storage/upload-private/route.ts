@@ -24,8 +24,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from 'zod';
 import sharp from "sharp";
 import { uploadPrivateFile } from "@/lib/storage";
-import { auth } from "@/lib/auth";
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
+import { getSessionUser } from "@/lib/auth/session-context";
+import { createRateLimiter, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 
 export const runtime = "nodejs"; // Sharp requires Node.js runtime
 
@@ -39,15 +39,15 @@ const privateUploadLimiter = createRateLimiter(RATE_LIMITS_STORAGE.UPLOAD_PRIVAT
 
 export async function POST(req: NextRequest) {
   try {
-    // Verify authentication
-    const session = await auth.api.getSession({ headers: req.headers });
+    // Verify authentication - uses proxy-cached session
+    const user = await getSessionUser();
     
-    if (!session?.user) {
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Rate limiting: 20 private file uploads per hour
-    const identifier = getIdentifier(req, session.user.id);
+    // Rate limiting: 20 private file uploads per hour per user
+    const identifier = user.id;
     const rateLimitResult = await privateUploadLimiter.check(identifier);
     if (!rateLimitResult.success) {
       return rateLimitResponse(rateLimitResult);
@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
       directory: typeof directory === "string" ? directory : undefined,
       fileName: typeof finalFileName === "string" ? finalFileName : undefined,
       metadata: {
-        uploadedBy: session.user.id,
+        uploadedBy: user.id,
         uploadedAt: new Date().toISOString(),
       },
     });

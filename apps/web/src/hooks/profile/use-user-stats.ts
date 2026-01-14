@@ -7,7 +7,8 @@
  * Metrics:
  * - listingsCount: Total listings count
  * - soldCount: Completed sales count
- * - responseRate: % of inquiries responded to
+ * - responseTime: Avg minutes to first response (business hours only, min 5 inquiries)
+ * - responseRate: % of inquiries responded to (min 5 inquiries)
  */
 
 'use client';
@@ -23,6 +24,7 @@ import { queryKeys } from '@/lib/query-keys';
 export interface UserStats {
   listingsCount: number;
   soldCount: number;
+  responseTime: number | null; // Minutes (business hours only)
   responseRate: number | null; // Percentage (0-100)
 }
 

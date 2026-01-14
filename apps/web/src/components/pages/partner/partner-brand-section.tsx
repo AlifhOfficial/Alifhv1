@@ -13,20 +13,8 @@ export function PartnerBrandSection() {
         
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           
-          {/* Image Side */}
-          <div className="relative order-2 lg:order-1">
-            <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
-              <Image
-                src="/Abstract/rs6.png"
-                alt="Abstract design"
-                fill
-                className="object-cover"
-              />
-            </div>
-          </div>
-
           {/* Content Side */}
-          <div className="order-1 lg:order-2 space-y-6">
+          <div className="space-y-6">
             <p className="text-xs uppercase tracking-widest text-muted-foreground">
               Your brand
             </p>
@@ -74,6 +62,18 @@ export function PartnerBrandSection() {
                   <span className="text-muted-foreground"> — Google Reviews integrated</span>
                 </p>
               </div>
+            </div>
+          </div>
+
+          {/* Image Side */}
+          <div className="relative">
+            <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
+              <Image
+                src="/Abstract/rs6.png"
+                alt="Abstract design"
+                fill
+                className="object-cover"
+              />
             </div>
           </div>
         </div>

@@ -12,18 +12,8 @@ export function PartnerPhilosophySection() {
       <div className="max-w-[1600px] mx-auto">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           
-          {/* Image Side */}
-          <div className="relative aspect-[4/3] rounded-lg overflow-hidden order-2 lg:order-1">
-            <Image
-              src="/Marketing_Assets/A3.png"
-              alt="Abstract"
-              fill
-              className="object-cover"
-            />
-          </div>
-
           {/* Content Side */}
-          <div className="order-1 lg:order-2 space-y-6">
+          <div className="space-y-6">
             <p className="text-xs uppercase tracking-widest text-muted-foreground">
               Our philosophy
             </p>
@@ -52,6 +42,16 @@ export function PartnerPhilosophySection() {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Image Side */}
+          <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
+            <Image
+              src="/Marketing_Assets/A3.png"
+              alt="Abstract"
+              fill
+              className="object-cover"
+            />
           </div>
         </div>
       </div>

@@ -17,50 +17,39 @@ export function ClosingSection() {
         <div className="max-w-[1600px] mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             
-            {/* Image Side */}
-            <div className="relative order-2 lg:order-1">
-              <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
-                <Image
-                  src="/Abstract/rs6.png"
-                  alt="Abstract design"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            </div>
-
             {/* Content Side */}
-            <div className="order-1 lg:order-2 space-y-6">
+            <div className="space-y-6">
               <p className="text-xs uppercase tracking-widest text-muted-foreground">
                 What we stand for
               </p>
               
               <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
-                Built by car people.
+                Built by Car People.
                 <br />
-                <span className="text-muted-foreground/70">For car people.</span>
+                <span className="text-muted-foreground/70">For Car People.</span>
               </h2>
               
               <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
-                We're the same people at track days, car meets, late-night debates about the E46 M3. 
-                We built this because listing fees never made sense to us. VIN upfront. Free listings. 
-                Online booking. No ads. That's the standard we think should exist.
+                We're the same people at track days and car meets. We built this because listing fees never made sense to us.
               </p>
 
-              {/* Principles */}
-              <div className="pt-4 border-t border-border/40 space-y-3">
-                {[
-                  { title: 'Clarity over noise', desc: 'Simple beats flashy' },
-                  { title: 'Honesty over pressure', desc: 'No fake urgency' },
-                  { title: 'Quality over volume', desc: 'Standards matter' },
-                  { title: 'People over profits', desc: 'We answer to users, not investors' },
-                ].map((principle, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <CheckCircle2 className="w-4 h-4 text-[#0066FF] shrink-0" />
-                    <span className="text-sm font-medium text-foreground">{principle.title}</span>
-                    <span className="text-xs text-muted-foreground">— {principle.desc}</span>
-                  </div>
-                ))}
+              {/* Principles - Simplified */}
+              <div className="pt-4 border-t border-border/40 flex flex-wrap gap-x-6 gap-y-2">
+                <span className="text-sm text-foreground flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#0066FF]" />Clarity over noise</span>
+                <span className="text-sm text-foreground flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#0066FF]" />Honesty over pressure</span>
+                <span className="text-sm text-foreground flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#0066FF]" />Quality over volume</span>
+              </div>
+            </div>
+
+            {/* Image Side */}
+            <div className="relative">
+              <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
+                <Image
+                  src="/Abstract/rsx6.png"
+                  alt="Abstract design"
+                  fill
+                  className="object-cover"
+                />
               </div>
             </div>
           </div>
@@ -78,7 +67,7 @@ export function ClosingSection() {
             <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
               Browse. Book. Done.
               <br />
-              <span className="text-muted-foreground/70">No friction.</span>
+              <span className="text-muted-foreground/70">No Friction.</span>
             </h2>
           </div>
 

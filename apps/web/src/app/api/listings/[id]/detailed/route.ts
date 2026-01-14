@@ -89,7 +89,8 @@ async function fetchSellerData(listing: ListingResult) {
     const enrichedUserProfile = userProfile ? {
       ...userProfile,
       inventoryCount: stats?.listingsCount ?? 0,
-      // Map responseRate (already a percentage) to field expected by component
+      // Map stats to fields expected by component
+      responseTime: stats?.responseTime ?? null,
       responseRate: stats?.responseRate ?? null,
     } : null;
     

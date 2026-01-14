@@ -61,7 +61,7 @@ export async function proxy(request: NextRequest) {
     let user: ExtendedUser | null = await sessionCache.get<ExtendedUser>(tokenKey);
     
     if (!user) {
-      // Cache miss - fetch from Better Auth (which has its own userId-based cache)
+      // Cache miss - fetch from Better Auth
       const session = await auth.api.getSession({
         headers: request.headers,
       });

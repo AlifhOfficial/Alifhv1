@@ -26,7 +26,7 @@ import { customSession } from "better-auth/plugins";
 import { passkey } from "@better-auth/passkey";
 import { stripe } from "@better-auth/stripe";
 import Twilio from "twilio";
-import { db, CacheKeys, CacheTTL, eq, and, setSessionCacheInvalidator, sessionCache, invalidateUserSessions } from "@alifh/database";
+import { db, CacheKeys, CacheTTL, eq, and, sql, setSessionCacheInvalidator, sessionCache, invalidateUserSessions } from "@alifh/database";
 import * as schema from "@alifh/database";
 import { UserRole } from "@/types/auth";
 import { emailService } from "@/lib/email";
@@ -58,6 +58,7 @@ setSessionCacheInvalidator((key) => {
 });
 
 export const auth = betterAuth({
+  baseURL: process.env.BETTER_AUTH_URL || process.env.NEXTAUTH_URL || "http://localhost:3000",
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
@@ -78,9 +79,9 @@ export const auth = betterAuth({
   session: {
     expiresIn: AUTH_CONFIG.SESSION.EXPIRES_IN,
     updateAge: AUTH_CONFIG.SESSION.UPDATE_AGE,
-    // NOTE: cookieCache disabled - we use server-side sessionCache in proxy.ts instead
-    // This ensures session data is always fresh after subscription/role changes
-    // The proxy caches by token with proper invalidation via invalidateUserSessions()
+    // Cookie cache disabled - follows "Single Source of Truth = Server Memory Cache" philosophy
+    // Server-side sessionCache handles caching with proper invalidation
+    // See: packages/database/src/caches/README.md
     cookieCache: {
       enabled: false,
     },
@@ -216,71 +217,75 @@ export const auth = betterAuth({
         };
       }
 
-      // Run all queries in parallel for faster execution
-      const [userRecord, profileRecord, memberships] = await Promise.all([
-        // 1. Basic user data (PK lookup)
-        db.query.user.findFirst({
-          where: eq(schema.user.id, user.id),
-          columns: {
-            id: true,
-            role: true,
-            banned: true,
-          },
-        }),
-        // 2. Profile data (unique index lookup)
-        db.query.userProfile.findFirst({
-          where: eq(schema.userProfile.userId, user.id),
-          columns: {
-            avatar: true,
-            firstName: true,
-            lastName: true,
-            preferences: true,
-            updatedAt: true, // Needed for avatar cache busting
-          },
-        }),
-        // 3. Partner memberships with partner info (indexed)
-        db.query.partnerStaff.findMany({
-          where: and(
-            eq(schema.partnerStaff.userId, user.id),
-            eq(schema.partnerStaff.status, "active")
-          ),
-          columns: {
-            id: true,
-            role: true,
-            permissions: true,
-          },
-          with: {
-            partner: {
-              columns: {
-                id: true,
-                brandName: true,
-                status: true,
-                tier: true,
-                logo: true,
-                subscriptionTier: true,
-              },
-            },
-          },
-        }) as unknown as Promise<Array<{
-          id: string;
-          role: string;
-          permissions: unknown;
-          partner: { id: string; brandName: string; status: string; tier: string | null; logo: string | null; subscriptionTier: string | null };
-        }>>,
-      ]);
-
-      if (!userRecord) {
+      // OPTIMIZED: Single SQL query with LEFT JOINs instead of 3 parallel queries
+      // This reduces 3 HTTP round-trips to Neon down to 1
+      const result = await db.execute<{
+        role: string;
+        banned: boolean;
+        avatar: string | null;
+        first_name: string | null;
+        last_name: string | null;
+        preferences: unknown | null;
+        updated_at: Date | null;
+        staff_id: string | null;
+        staff_role: string | null;
+        partner_id: string | null;
+        brand_name: string | null;
+        partner_status: string | null;
+        tier: string | null;
+        logo: string | null;
+        subscription_tier: string | null;
+      }>(sql`
+        SELECT 
+          u.role, u.banned,
+          p.avatar, p.first_name, p.last_name, p.preferences, p.updated_at,
+          ps.id as staff_id, ps.role as staff_role,
+          pt.id as partner_id, pt.brand_name, pt.status as partner_status, 
+          pt.tier, pt.logo, pt.subscription_tier
+        FROM "user" u
+        LEFT JOIN user_profile p ON p.user_id = u.id
+        LEFT JOIN partner_staff ps ON ps.user_id = u.id AND ps.status = 'active'
+        LEFT JOIN partner pt ON pt.id = ps.partner_id AND pt.status = 'active'
+        WHERE u.id = ${user.id}
+      `);
+      
+      const rows = result.rows;
+      if (!rows || rows.length === 0) {
         return { user, session };
       }
+      
+      // First row has user + profile data
+      const firstRow = rows[0];
+      const userRecord = { role: firstRow.role, banned: firstRow.banned };
+      const profileRecord = firstRow.avatar !== undefined ? {
+        avatar: firstRow.avatar,
+        firstName: firstRow.first_name,
+        lastName: firstRow.last_name,
+        preferences: firstRow.preferences,
+        updatedAt: firstRow.updated_at,
+      } : null;
+      
+      // Build memberships from all rows (each row is a different partnership)
+      // Already filtered by status = 'active' in SQL query
+      const memberships = rows
+        .filter(row => row.staff_id !== null && row.partner_id !== null)
+        .map(row => ({
+          id: row.staff_id!,
+          role: row.staff_role!,
+          partner: {
+            id: row.partner_id!,
+            brandName: row.brand_name!,
+            status: row.partner_status!,
+            tier: row.tier,
+            logo: row.logo,
+            subscriptionTier: row.subscription_tier,
+          },
+        }));
 
-      const activePartnerships = (memberships || []).filter(
-        m => m.partner.status === 'active'
-      );
-
-      const hasPartnerAccess = activePartnerships.length > 0;
+      const hasPartnerAccess = memberships.length > 0;
       const isAlifhAdmin = ['admin', 'super_admin'].includes(userRecord.role || 'user');
       
-      const partnerMemberships = activePartnerships.map(m => ({
+      const partnerMemberships = memberships.map(m => ({
         staffId: m.id,
         partnerId: m.partner.id,
         partnerName: m.partner.brandName,
@@ -288,7 +293,6 @@ export const auth = betterAuth({
         partnerTier: m.partner.tier,
         subscriptionTier: m.partner.subscriptionTier,
         staffRole: m.role,
-        permissions: m.permissions,
       }));
 
       // Get avatar URL if avatar exists - use public URL (no signing needed)
@@ -446,6 +450,7 @@ export const auth = betterAuth({
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      prompt: "select_account", // Always show account picker
     },
   },
 
@@ -456,23 +461,26 @@ export const auth = betterAuth({
     },
   },
 
-  // Block banned users from signing in
+  // Block banned users - uses cached session data from customSession
+  // The actual ban check happens in customSession which already queries user.banned
+  // This hook runs AFTER session creation, so we check sessionCache for efficiency
   denyList: {
     async check({ userId }) {
       if (!userId) return false;
       
-      const userRecord = await db.query.user.findFirst({
-        where: eq(schema.user.id, userId),
-        columns: { banned: true, banReason: true },
-      });
+      // Check session cache first (populated by customSession)
+      const cacheKey = CacheKeys.userSession(userId);
+      const cached = sessionCache.get<{ banned: boolean; banReason?: string }>(cacheKey);
       
-      if (userRecord?.banned) {
+      if (cached?.banned) {
         return {
           blocked: true,
-          message: userRecord.banReason || "Your account has been suspended.",
+          message: "Your account has been suspended.",
         };
       }
       
+      // No cache = first sign-in, customSession will handle it
+      // The proxy will block banned users on subsequent requests
       return false;
     },
   },
@@ -493,6 +501,15 @@ export const auth = betterAuth({
     "http://192.168.1.14:8081",
     "exp://192.168.1.14:8081",
   ].filter(Boolean),
+
+  advanced: {
+    // Use 'lax' for OAuth state cookies to work with popup windows
+    // 'strict' can cause state_mismatch errors with OAuth flows
+    defaultCookieAttributes: {
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+    },
+  },
 });
 
 export type Session = typeof auth.$Infer.Session & {

@@ -11,16 +11,16 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getPrivateSignedUrl } from "@/lib/storage";
-import { auth } from "@/lib/auth";
+import { getSessionUser } from "@/lib/auth/session-context";
 
 export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
   try {
-    // Verify authentication
-    const session = await auth.api.getSession({ headers: req.headers });
+    // Verify authentication - uses proxy-cached session
+    const user = await getSessionUser();
     
-    if (!session?.user) {
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

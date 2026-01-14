@@ -3,7 +3,7 @@
  * POST /api/storage/upload
  * 
  * Purpose: Upload files to storage provider
- * Authentication: Public (no auth required)
+ * Authentication: Required - only authenticated users can upload
  * 
  * Request Body (multipart/form-data):
  * - file: File blob (required)
@@ -15,6 +15,7 @@
  * Returns: { key, url, etag }
  * 
  * Standards:
+ * - Returns 401 for unauthenticated requests
  * - Returns 400 for invalid file payload
  * - Returns 500 for server errors
  */
@@ -23,6 +24,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from 'zod';
 import { uploadFile } from "@/lib/storage";
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
+import { getSessionUser } from "@/lib/auth/session-context";
 
 export const runtime = "nodejs";
 
@@ -36,8 +38,14 @@ const FileUploadSchema = z.object({
 const uploadLimiter = createRateLimiter(RATE_LIMITS_STORAGE.UPLOAD_GENERAL);
 
 export async function POST(req: NextRequest) {
-  // Rate limiting: 50 uploads per hour per IP
-  const identifier = getIdentifier(req);
+  // Authentication required - prevent anonymous uploads
+  const user = await getSessionUser();
+  if (!user) {
+    return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+  }
+
+  // Rate limiting: 50 uploads per hour per user
+  const identifier = user.id;
   const rateLimitResult = await uploadLimiter.check(identifier);
   if (!rateLimitResult.success) {
     return rateLimitResponse(rateLimitResult);

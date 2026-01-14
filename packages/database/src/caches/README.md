@@ -45,15 +45,17 @@ invalidateListingCaches(id, partnerId); // Auto-clears search too
 ### Listings
 - `invalidateSearchCaches()` - All search results
 - `invalidateListingDetail(id)` - Single listing
-- `invalidateListingCaches(id, partnerId?)` - Full listing + search
+- `invalidateListingCaches(id, partnerId?, userId?)` - Full listing + search + stats
 - `invalidatePartnerInventory(partnerId)` - Partner's listings
 
 ### Engagement
 - `invalidateFavoritesCache(userId)` - User's favorites/superlikes
 
-### Profiles
+### Profiles & Stats
 - `invalidatePartnerProfile(partnerId)` - Partner profile
+- `invalidatePartnerStats(partnerId)` - Partner stats (inventory, sales, response rate/time)
 - `invalidateUserProfile(userId)` - User profile
+- `invalidateUserStats(userId)` - User stats (via profile)
 
 ### Nuclear
 - `invalidateAllCaches()` - Clear everything (use sparingly)
