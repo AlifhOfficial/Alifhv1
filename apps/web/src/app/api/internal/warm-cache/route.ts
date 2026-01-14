@@ -33,17 +33,28 @@ const INTERNAL_SECRET = process.env.INTERNAL_API_SECRET || process.env.CRON_SECR
 const SEARCH_CACHE_TTL = 600; // 10 minutes
 const FACET_CACHE_TTL = 900; // 15 minutes
 
-// Popular searches to warm
+// Common pagination variants that frontend might send
+// Must match EXACTLY what the frontend sends to get cache hits
+const PAGINATION_VARIANTS = [
+  { limit: 30, offset: 0 },  // Most common - listings page default
+  { limit: 20, offset: 0 },  // Alternative default
+  {},                        // No pagination (some clients)
+];
+
+// Popular searches to warm (with all pagination variants for cache hits)
+// Note: make must be an array to match the search API's IN clause
 const SEARCHES_TO_WARM = [
-  // Default homepage (most important)
-  {},
+  // Default homepage - all pagination variants
+  ...PAGINATION_VARIANTS,
   // Conditions
-  { condition: 'new' as const },
-  { condition: 'used' as const },
+  ...PAGINATION_VARIANTS.map(p => ({ condition: 'new' as const, ...p })),
+  ...PAGINATION_VARIANTS.map(p => ({ condition: 'used' as const, ...p })),
   // Black listings
-  { isBlkListing: true },
-  // All popular makes
-  ...UAE_POPULAR_MAKES.map(make => ({ make })),
+  ...PAGINATION_VARIANTS.map(p => ({ isBlkListing: true, ...p })),
+  // All popular makes - with pagination variants (make as array for IN clause)
+  ...UAE_POPULAR_MAKES.flatMap(make => 
+    PAGINATION_VARIANTS.map(p => ({ make: [make], ...p }))
+  ),
 ];
 
 function generateCacheKey(params: Record<string, any>, prefix: string): string {

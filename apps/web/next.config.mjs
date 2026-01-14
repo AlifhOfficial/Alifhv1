@@ -10,9 +10,6 @@ const nextConfig = {
   // Disable React Strict Mode to prevent double rendering in development
   reactStrictMode: false,
   
-  // Output configuration for Vercel
-  output: 'standalone',
-  
   transpilePackages: ['@alifh/shared', '@alifh/database'],
   serverExternalPackages: ['better-auth', '@node-rs/argon2', '@node-rs/bcrypt'],
   

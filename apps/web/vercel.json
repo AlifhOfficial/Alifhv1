@@ -10,6 +10,10 @@
     {
       "path": "/api/cron/sync-google-reviews",
       "schedule": "0 0 1,16 * *"
+    },
+    {
+      "path": "/api/internal/warm-cache",
+      "schedule": "*/10 * * * *"
     }
   ]
 }
