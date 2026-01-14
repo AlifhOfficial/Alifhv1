@@ -36,20 +36,17 @@ export function StaffWorksFor() {
         throw new Error('No partner membership found');
       }
       
-      // Fetch partner profile and stats (same endpoints as listing detail page)
-      const [profileRes, statsRes] = await Promise.all([
-        fetch(`/api/partners/${membership.partnerId}/dealer-profile`),
-        fetch(`/api/partners/${membership.partnerId}/stats`)
-      ]);
+      // Fetch partner profile only (stats are loaded lazily by SellerProfileCard)
+      const profileRes = await fetch(`/api/partners/${membership.partnerId}/dealer-profile`);
       
       if (!profileRes.ok) throw new Error(`Failed to fetch partner profile: ${profileRes.status}`);
       
       const profile = await profileRes.json();
-      const stats = statsRes.ok ? await statsRes.json() : null;
       
-      // Transform to PartnerSellerData structure
+      // Transform to PartnerSellerData structure (stats loaded separately by component)
       return {
         type: 'partner' as const,
+        partnerId: membership.partnerId,
         partner: {
           id: profile.id,
           companyNameLegal: profile.companyNameLegal,
@@ -81,12 +78,8 @@ export function StaffWorksFor() {
           badges: profile.badges ?? [],
           tags: profile.tags ?? [],
         },
-        partnerStats: stats ?? {
-          inventoryCount: 0,
-          totalSales: 0,
-          responseRate: null,
-          responseTime: null,
-        },
+        // Stats loaded separately by SellerProfileCard via useSellerStats hook
+        partnerStats: null,
       };
     },
     enabled: !!membership?.partnerId,

@@ -136,12 +136,14 @@ import {
   Sparkles,
   Award,
   Package,
-  MessageCircle
+  MessageCircle,
+  Loader2
 } from 'lucide-react';
 import { cn } from '@/utils';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 import { BrandHero } from '@/components/partner/car-dealer/ui/brand-hero';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
+import { useSellerStats } from '@/hooks/listings';
 import type { SellerData, PartnerSellerData, UserSellerData } from '@/hooks/listings';
 
 interface SellerProfileCardProps {
@@ -165,8 +167,10 @@ function formatResponseTime(minutes: number): string {
 
 function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
   const partner = sellerData.partner;
-  const stats = sellerData.partnerStats;
   const staffContact = sellerData.staffContact;
+  
+  // Load stats lazily
+  const { stats, isLoading: statsLoading } = useSellerStats('partner', sellerData.partnerId);
   
   if (!partner) return null;
 
@@ -298,7 +302,13 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
             <span className="text-sm font-semibold text-muted-foreground/70">Inventory</span>
           </div>
           <p className="text-lg font-bold tabular-nums text-foreground">
-            {stats?.inventoryCount ?? <span className="text-muted-foreground">N/A</span>}
+            {statsLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+            ) : stats && 'inventoryCount' in stats ? (
+              stats.inventoryCount
+            ) : (
+              <span className="text-muted-foreground">N/A</span>
+            )}
           </p>
         </div>
 
@@ -309,7 +319,13 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
             <span className="text-sm font-semibold text-muted-foreground/70">Response</span>
           </div>
           <p className="text-lg font-bold tabular-nums text-foreground">
-            {stats?.responseTime ? formatResponseTime(stats.responseTime) : <span className="text-muted-foreground">N/A</span>}
+            {statsLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+            ) : stats?.responseTime ? (
+              formatResponseTime(stats.responseTime)
+            ) : (
+              <span className="text-muted-foreground">N/A</span>
+            )}
           </p>
         </div>
 
@@ -320,7 +336,13 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
             <span className="text-sm font-semibold text-muted-foreground/70">Rate</span>
           </div>
           <p className="text-lg font-bold tabular-nums text-foreground">
-            {stats?.responseRate ? `${stats.responseRate}%` : <span className="text-muted-foreground">N/A</span>}
+            {statsLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+            ) : stats?.responseRate ? (
+              `${stats.responseRate}%`
+            ) : (
+              <span className="text-muted-foreground">N/A</span>
+            )}
           </p>
         </div>
       </div>
@@ -360,6 +382,9 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
 
 function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
   const profile = sellerData.userProfile;
+  
+  // Load stats lazily
+  const { stats, isLoading: statsLoading } = useSellerStats('user', sellerData.userId);
   
   if (!profile) return null;
 
@@ -465,30 +490,50 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
             <Package className="w-4 h-4 text-muted-foreground" />
             <span className="text-sm font-semibold text-muted-foreground/70">Inventory</span>
           </div>
-          <p className="text-lg font-bold tabular-nums text-foreground">{profile?.inventoryCount ?? 0}</p>
+          <p className="text-lg font-bold tabular-nums text-foreground">
+            {statsLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+            ) : stats && 'listingsCount' in stats ? (
+              stats.listingsCount
+            ) : (
+              0
+            )}
+          </p>
         </div>
 
         {/* Response Time */}
-        {profile?.responseTime !== null && profile?.responseTime !== undefined && (
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-semibold text-muted-foreground/70">Response</span>
-            </div>
-            <p className="text-lg font-bold tabular-nums text-foreground">{formatResponseTime(profile.responseTime)}</p>
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <Clock className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm font-semibold text-muted-foreground/70">Response</span>
           </div>
-        )}
+          <p className="text-lg font-bold tabular-nums text-foreground">
+            {statsLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+            ) : stats?.responseTime ? (
+              formatResponseTime(stats.responseTime)
+            ) : (
+              <span className="text-muted-foreground">N/A</span>
+            )}
+          </p>
+        </div>
 
         {/* Response Rate */}
-        {profile?.responseRate !== null && profile?.responseRate !== undefined && (
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <MessageCircle className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-semibold text-muted-foreground/70">Rate</span>
-            </div>
-            <p className="text-lg font-bold tabular-nums text-foreground">{profile.responseRate}%</p>
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <MessageCircle className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm font-semibold text-muted-foreground/70">Rate</span>
           </div>
-        )}
+          <p className="text-lg font-bold tabular-nums text-foreground">
+            {statsLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+            ) : stats?.responseRate ? (
+              `${stats.responseRate}%`
+            ) : (
+              <span className="text-muted-foreground">N/A</span>
+            )}
+          </p>
+        </div>
 
         {/* Rating */}
         {hasRating && (

@@ -37,6 +37,17 @@ export type {
   UseListingDetailOptions,
 } from './use-listing-detail';
 
+// Seller stats hook (lazy loaded)
+export {
+  useSellerStats,
+} from './use-seller-stats';
+
+export type {
+  PartnerStats,
+  UserStats,
+  SellerStats,
+} from './use-seller-stats';
+
 // Mutation hooks
 export {
   useDeleteListing,

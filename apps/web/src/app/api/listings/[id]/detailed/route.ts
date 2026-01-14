@@ -2,13 +2,17 @@
  * API: Detailed Car Listing Endpoint
  * GET /api/listings/[id]/detailed
  * 
- * Purpose: Fetch comprehensive listing data with seller info for detailed view pages
+ * Purpose: Fetch comprehensive listing data with seller profile for detailed view pages
  * Authentication: None required (public endpoint)
  * 
  * Features:
  * - Full specifications, features, and pricing insights
- * - Seller data (partner profile + stats OR user profile)
- * - CDN-friendly caching (2min cache, 5min stale-while-revalidate)
+ * - Seller profile data (partner OR user) - NO stats (loaded separately via /api/sellers/stats)
+ * - CDN-friendly caching (10min cache)
+ * 
+ * Performance:
+ * - Stats are fetched separately to avoid blocking listing load
+ * - Use /api/sellers/stats?type=partner|user&id=xxx for stats
  * 
  * Standards:
  * - Returns 404 for non-existent listings
@@ -23,9 +27,7 @@ import {
   getDealerBaseProfile, 
   getUserProfileByUserId,
   getStaffEffectivePhone,
-  calculateUserStats,
 } from "@alifh/database";
-import { calculatePartnerStats } from "@alifh/database/server";
 import {
   createRateLimiter,
   getIdentifier,
@@ -56,21 +58,22 @@ async function fetchSellerData(listing: ListingResult) {
   const start = performance.now();
   
   if (listing.partnerId) {
-    // Partner listing - fetch dealer profile, stats, and staff phone if applicable
-    const [partnerProfile, partnerStats, staffContact] = await Promise.all([
+    // Partner listing - fetch dealer profile and staff phone (NO stats - loaded separately)
+    const [partnerProfile, staffContact] = await Promise.all([
       getDealerBaseProfile(listing.partnerId),
-      calculatePartnerStats(listing.partnerId),
       // Get contact info for currently assigned staff (userId is updated when reassigned)
       listing.postedByRole === 'staff' && listing.userId
         ? getStaffEffectivePhone(listing.userId, listing.partnerId)
         : Promise.resolve(null),
     ]);
-    console.log(`[fetchSellerData] partner (getDealerBaseProfile + calculatePartnerStats + staffPhone): ${(performance.now() - start).toFixed(0)}ms`);
+    console.log(`[fetchSellerData] partner (getDealerBaseProfile + staffPhone): ${(performance.now() - start).toFixed(0)}ms`);
     
     return { 
       type: 'partner' as const, 
+      partnerId: listing.partnerId,
       partner: partnerProfile, 
-      partnerStats,
+      // Stats loaded separately via /api/sellers/stats
+      partnerStats: null,
       // Staff contact info (phone priority: staff work → company → staff personal)
       staffContact: staffContact ? {
         phone: staffContact.phone,
@@ -78,23 +81,15 @@ async function fetchSellerData(listing: ListingResult) {
       } : null,
     };
   } else {
-    // User listing - fetch profile and stats in parallel
-    const [userProfile, stats] = await Promise.all([
-      getUserProfileByUserId(listing.userId),
-      calculateUserStats(listing.userId),
-    ]);
-    console.log(`[fetchSellerData] user (getUserProfileByUserId + calculateUserStats): ${(performance.now() - start).toFixed(0)}ms`);
+    // User listing - fetch profile only (NO stats - loaded separately)
+    const userProfile = await getUserProfileByUserId(listing.userId);
+    console.log(`[fetchSellerData] user (getUserProfileByUserId): ${(performance.now() - start).toFixed(0)}ms`);
     
-    // Merge stats into userProfile for component compatibility
-    const enrichedUserProfile = userProfile ? {
-      ...userProfile,
-      inventoryCount: stats?.listingsCount ?? 0,
-      // Map stats to fields expected by component
-      responseTime: stats?.responseTime ?? null,
-      responseRate: stats?.responseRate ?? null,
-    } : null;
-    
-    return { type: 'user' as const, userProfile: enrichedUserProfile };
+    return { 
+      type: 'user' as const, 
+      userId: listing.userId,
+      userProfile,
+    };
   }
 }
 

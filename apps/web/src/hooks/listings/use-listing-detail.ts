@@ -22,6 +22,7 @@ import type { CarDetailedData } from '@alifh/database';
 
 export interface PartnerSellerData {
   type: 'partner';
+  partnerId: string;
   partner: {
     id: string;
     companyNameLegal: string;
@@ -53,12 +54,13 @@ export interface PartnerSellerData {
     badges: string[] | null;
     tags: string[] | null;
   } | null;
-  partnerStats?: {
+  /** Stats loaded separately via useSellerStats hook */
+  partnerStats: {
     inventoryCount: number;
     totalSales: number;
     responseTime: number | null;
     responseRate: number | null;
-  };
+  } | null;
   /** Staff contact info if listing was posted by staff */
   staffContact?: {
     phone: string | null;
@@ -68,6 +70,7 @@ export interface PartnerSellerData {
 
 export interface UserSellerData {
   type: 'user';
+  userId: string;
   userProfile: {
     id: string;
     userId: string;
@@ -83,18 +86,22 @@ export interface UserSellerData {
     locationLng: number | null;
     locationCity: string | null;
     locationEmirate: string | null;
-    inventoryCount: number;
     rating: number | null;
     platformRating: number | null;
     platformReviewCount: number;
-    responseTime: number | null; // Minutes (business hours only, min 5 inquiries)
-    responseRate: number | null; // Percentage (0-100, min 5 inquiries)
     privacySettings: { showPhone?: boolean; showEmail?: boolean };
     memberSince: Date | string;
     emailVerified: boolean;
     phoneNumberVerified: boolean;
     userName: string | null;
     userCreatedAt: Date | string;
+  } | null;
+  /** Stats loaded separately via useSellerStats hook */
+  userStats?: {
+    listingsCount: number;
+    soldCount: number;
+    responseTime: number | null;
+    responseRate: number | null;
   } | null;
 }
 
