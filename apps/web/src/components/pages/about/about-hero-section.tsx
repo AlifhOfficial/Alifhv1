@@ -30,7 +30,7 @@ export function AboutHeroSection() {
         {/* Hero Image */}
         <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] overflow-hidden rounded-lg">
           <Image
-            src="/Images/Alifh.png"
+            src="/Images/Alifh2.png"
             alt="Alifh"
             fill
             priority

@@ -106,6 +106,32 @@ export function invalidatePartnerProfile(partnerId: string): void {
 }
 
 /**
+ * Invalidate dealer base profile cache
+ * Use after: dealer profile update (logo, brand, contact, etc.)
+ */
+export function invalidateDealerBaseProfile(partnerId: string): void {
+  const key = CacheKeys.dealerBaseProfile(partnerId);
+  const miniKey = CacheKeys.partnerMiniProfile(partnerId);
+  memoryCache.delete(key, miniKey);
+  console.log(`[cache] Invalidated dealer base profile: ${partnerId}`);
+}
+
+/**
+ * Invalidate comprehensive partner profile cache
+ * Use after: any partner profile update (dashboard form, settings, etc.)
+ * Also invalidates dealer base profile and mini profile for consistency
+ */
+export function invalidatePartnerProfileComprehensive(partnerId: string): void {
+  const keys = [
+    CacheKeys.partnerProfileComprehensive(partnerId),
+    CacheKeys.dealerBaseProfile(partnerId),
+    CacheKeys.partnerMiniProfile(partnerId),
+  ];
+  memoryCache.delete(...keys);
+  console.log(`[cache] Invalidated partner profile comprehensive: ${partnerId}`);
+}
+
+/**
  * Invalidate user profile cache
  * Use after: user profile update, stats change, passkeys change
  */

@@ -356,6 +356,9 @@ export const CacheKeys = {
   // Partner data
   partnerInventory: (partnerId: string, status?: string) => `listings:partner:${partnerId}:${status || 'all'}`,
   partnerMiniProfile: (partnerId: string) => `partner:${partnerId}:mini`,
+  dealerBaseProfile: (partnerId: string) => `partner:${partnerId}:dealer-base`,
+  partnerProfileComprehensive: (partnerId: string) => `partner:${partnerId}:profile-comprehensive`,
+  userToPartnerId: (userId: string) => `user:${userId}:partnerId`,
   partnerStats: (partnerId: string) => `partner:${partnerId}:stats`,
 } as const;
 
@@ -385,6 +388,9 @@ export const CacheTTL = {
   // Partner data - invalidated on partner/listing changes
   partnerInventory: 300, // 5 minutes - partner inventory pages
   partnerMiniProfile: 300, // 5 minutes - partner mini profile
+  dealerBaseProfile: 300, // 5 minutes - dealer base profile (invalidated on profile updates)
+  partnerProfileComprehensive: 300, // 5 minutes - full partner profile (invalidated on profile updates)
+  userToPartnerId: 600, // 10 minutes - user to partner mapping (rarely changes)
   partnerStats: 600, // 10 minutes - partner stats (expensive aggregation)
 } as const;
 

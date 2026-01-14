@@ -21,7 +21,11 @@
     "users:seed": "cd apps/web && bun ../../scripts/create-test-users.ts",
     "users:clear": "cd apps/web && bun ../../scripts/clear-users.ts",
     "partners:setup": "cd apps/web && bun ../../scripts/setup-partners-and-staff.ts",
-    "sessions:clear": "cd apps/web && bun ../../scripts/clear-sessions.ts"
+    "sessions:clear": "cd apps/web && bun ../../scripts/clear-sessions.ts",
+    "bench": "bun scripts/api-bench.ts",
+    "bench:public": "bun scripts/api-bench.ts --only-public",
+    "bench:verbose": "bun scripts/api-bench.ts --verbose",
+    "bench:heavy": "bun scripts/api-bench.ts --concurrency=50,100,200 --rounds=5"
   },
   "workspaces": [
     "apps/web",

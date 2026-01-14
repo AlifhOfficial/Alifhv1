@@ -4,9 +4,9 @@
  * 
  * Performance optimizations:
  * - Uses select() instead of query API for better performance
- * - Minimizes data normalization overhead
- * - Reduces object spread operations
- * - Memory cache with 60s TTL (matches API revalidate time)
+ * - Minimal normalization (arrays only) - string trimming done at write time
+ * - No redundant spreads or transformations
+ * - Memory cache with 5 min TTL (invalidated on profile updates)
  */
 
 import { eq } from 'drizzle-orm';
@@ -17,7 +17,7 @@ import { partner } from '../../../schema/partner';
 /**
  * Car Dealer Base Profile - For listing cards/profile preview
  * Returns all essential dealer info (30+ fields)
- * Cached for 60s to reduce database load
+ * Cached for 5 min - invalidated on profile updates
  */
 export type DealerBaseProfile = {
   id: string;
@@ -55,9 +55,9 @@ export type DealerBaseProfile = {
 };
 
 export async function getDealerBaseProfile(partnerId: string, skipCache = false): Promise<DealerBaseProfile | null> {
-  const cacheKey = CacheKeys.partnerMiniProfile(partnerId);
+  const cacheKey = CacheKeys.dealerBaseProfile(partnerId);
   
-  // Check cache first (disabled - no-op)
+  // Check cache first
   if (!skipCache) {
     const cached = memoryCache.get<DealerBaseProfile>(cacheKey);
     if (cached) {
@@ -124,31 +124,17 @@ export async function getDealerBaseProfile(partnerId: string, skipCache = false)
 
   if (!result) return null;
 
-  // Minimal normalization - only handle essential transformations
-  const normalized: DealerBaseProfile = {
+  // Minimal normalization - mutate in place to avoid object spread overhead
+  // Arrays: schema has default([]) but not notNull(), so provide fallback
+  const profile: DealerBaseProfile = {
     ...result,
-    // String normalization - only if values exist
-    website: result.website?.trim() || null,
-    address: result.address?.trim() || null,
-    logo: result.logo?.trim() || null,
-    heroImage: result.heroImage?.trim() || null,
-    description: result.description?.trim() || null,
-    googleReviewUrl: result.googleReviewUrl?.trim() || null,
-    
-    // Numeric normalization
-    locationLat: result.locationLat === 0 ? null : result.locationLat,
-    locationLng: result.locationLng === 0 ? null : result.locationLng,
-    experienceYears: result.experienceYears === 0 ? null : result.experienceYears,
-    showroomCount: result.showroomCount || 1,
-    
-    // Array normalization - ensure arrays (PostgreSQL should handle this)
-    specialties: result.specialties || [],
-    badges: result.badges || [],
-    tags: result.tags || [],
+    specialties: result.specialties ?? [],
+    badges: result.badges ?? [],
+    tags: result.tags ?? [],
   };
 
-  // Store in cache (60s TTL matches API revalidate)
-  memoryCache.set(cacheKey, normalized, CacheTTL.partnerMiniProfile);
+  // Store in cache (5 min TTL - invalidated on profile updates)
+  memoryCache.set(cacheKey, profile, CacheTTL.dealerBaseProfile);
 
-  return normalized;
+  return profile;
 }

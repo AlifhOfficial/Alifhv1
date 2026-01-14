@@ -45,6 +45,106 @@ type EditingField =
   | 'emirate'
   | 'specialties';
 
+// ============================================================================
+// EditableField Component (moved outside to prevent re-creation on every render)
+// ============================================================================
+
+interface EditableFieldProps {
+  field: EditingField;
+  label: string;
+  value: string | number | null;
+  placeholder: string;
+  type?: 'text' | 'number' | 'url';
+  multiline?: boolean;
+  isEditing: boolean;
+  isUpdating: boolean;
+  onStartEdit: () => void;
+  onChange: (value: string | number | null) => void;
+  onSave: () => void;
+  onCancel: () => void;
+}
+
+const EditableField = React.memo(function EditableField({
+  field,
+  label,
+  value,
+  placeholder,
+  type = 'text',
+  multiline = false,
+  isEditing,
+  isUpdating,
+  onStartEdit,
+  onChange,
+  onSave,
+  onCancel,
+}: EditableFieldProps) {
+  return (
+    <div 
+      className={cn(
+        "py-3 border-b border-border/20 last:border-0",
+        !isEditing && "cursor-pointer hover:bg-muted/30 -mx-5 px-5 transition-colors"
+      )}
+      onClick={() => !isEditing && onStartEdit()}
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-muted-foreground/70 mb-1">{label}</p>
+          {isEditing ? (
+            <div className="flex items-center gap-2">
+              {multiline ? (
+                <textarea
+                  autoFocus
+                  value={String(value || '')}
+                  onChange={(e) => onChange(e.target.value)}
+                  placeholder={placeholder}
+                  rows={3}
+                  className="flex-1 bg-muted/20 rounded-lg p-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 resize-none placeholder:text-muted-foreground/50"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Escape') onCancel();
+                  }}
+                />
+              ) : (
+                <input
+                  autoFocus
+                  type={type}
+                  value={String(value || '')}
+                  onChange={(e) => {
+                    const val = type === 'number' ? (parseInt(e.target.value) || null) : e.target.value;
+                    onChange(val);
+                  }}
+                  placeholder={placeholder}
+                  className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') onSave();
+                    if (e.key === 'Escape') onCancel();
+                  }}
+                />
+              )}
+              <button
+                onClick={(e) => { e.stopPropagation(); onSave(); }}
+                disabled={isUpdating}
+                className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+              >
+                {isUpdating ? '...' : 'Save'}
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); onCancel(); }}
+                className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <p className="text-sm font-medium text-foreground">
+              {value || <span className="text-muted-foreground/50">Tap to add</span>}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+});
+
 export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormProps) {
   const { toast } = useToast();
   const { profile, isLoading, updateProfile, isUpdating, refetchFresh } = usePartnerProfile(partnerId);
@@ -318,90 +418,16 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
     }
   };
 
-  // Editable field component
-  const EditableField = ({ 
-    field, 
-    label, 
-    value, 
-    placeholder,
-    type = 'text',
-    multiline = false,
-  }: { 
-    field: EditingField; 
-    label: string; 
-    value: string | number | null; 
-    placeholder: string;
-    type?: 'text' | 'number' | 'url';
-    multiline?: boolean;
-  }) => {
-    const isEditing = editingField === field;
-    
-    return (
-      <div 
-        className={cn(
-          "py-3 border-b border-border/20 last:border-0",
-          !isEditing && "cursor-pointer hover:bg-muted/30 -mx-5 px-5 transition-colors"
-        )}
-        onClick={() => !isEditing && setEditingField(field)}
-      >
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-muted-foreground/70 mb-1">{label}</p>
-            {isEditing ? (
-              <div className="flex items-center gap-2">
-                {multiline ? (
-                  <textarea
-                    autoFocus
-                    value={String(value || '')}
-                    onChange={(e) => updateField({ [field as string]: e.target.value })}
-                    placeholder={placeholder}
-                    rows={3}
-                    className="flex-1 bg-muted/20 rounded-lg p-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 resize-none placeholder:text-muted-foreground/50"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Escape') cancelEdit();
-                    }}
-                  />
-                ) : (
-                  <input
-                    autoFocus
-                    type={type}
-                    value={String(value || '')}
-                    onChange={(e) => {
-                      const val = type === 'number' ? (parseInt(e.target.value) || null) : e.target.value;
-                      updateField({ [field as string]: val });
-                    }}
-                    placeholder={placeholder}
-                    className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') saveField(field);
-                      if (e.key === 'Escape') cancelEdit();
-                    }}
-                  />
-                )}
-                <button
-                  onClick={(e) => { e.stopPropagation(); saveField(field); }}
-                  disabled={isUpdating}
-                  className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
-                >
-                  {isUpdating ? '...' : 'Save'}
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
-                  className="text-xs text-muted-foreground hover:text-foreground font-semibold"
-                >
-                  Cancel
-                </button>
-              </div>
-            ) : (
-              <p className="text-sm font-medium text-foreground">
-                {value || <span className="text-muted-foreground/50">Tap to add</span>}
-              </p>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  };
+  // Helper to create props for EditableField
+  const getEditableFieldProps = (field: NonNullable<EditingField>) => ({
+    field,
+    isEditing: editingField === field,
+    isUpdating,
+    onStartEdit: () => setEditingField(field),
+    onChange: (val: string | number | null) => updateField({ [field]: val }),
+    onSave: () => saveField(field),
+    onCancel: cancelEdit,
+  });
 
   // Loading
   if (isLoading) {
@@ -598,20 +624,20 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
         <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">About</h3>
         <div className="rounded-xl border border-border/40 bg-sidebar p-5">
           <EditableField 
-            field="brandName" 
+            {...getEditableFieldProps('brandName')}
             label="Business name" 
             value={form.brandName} 
             placeholder="Your business name"
           />
           <EditableField 
-            field="description" 
+            {...getEditableFieldProps('description')}
             label="Bio" 
             value={form.description} 
             placeholder="Tell customers about your dealership"
             multiline
           />
           <EditableField 
-            field="website" 
+            {...getEditableFieldProps('website')}
             label="Website" 
             value={form.website} 
             placeholder="https://example.com"
@@ -625,14 +651,14 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
         <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Details</h3>
         <div className="rounded-xl border border-border/40 bg-sidebar p-5">
           <EditableField 
-            field="experienceYears" 
+            {...getEditableFieldProps('experienceYears')}
             label="Years of experience" 
-            value={form.experienceYears ? `${form.experienceYears} years` : null} 
+            value={form.experienceYears} 
             placeholder="0"
             type="number"
           />
           <EditableField 
-            field="foundedYear" 
+            {...getEditableFieldProps('foundedYear')}
             label="Founded" 
             value={form.foundedYear} 
             placeholder={new Date().getFullYear().toString()}
@@ -703,7 +729,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
         
         <div className="rounded-xl border border-border/40 bg-sidebar p-5">
           <EditableField 
-            field="googleReviewUrl" 
+            {...getEditableFieldProps('googleReviewUrl')}
             label="Google Maps URL" 
             value={form.googleReviewUrl} 
             placeholder="https://maps.google.com/?cid=..."
@@ -749,13 +775,13 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
         <div className="rounded-xl border border-border/40 bg-sidebar p-5">
           <div className="grid grid-cols-2 gap-4 mb-4">
             <EditableField 
-              field="city" 
+              {...getEditableFieldProps('city')}
               label="City" 
               value={form.city} 
               placeholder="Dubai"
             />
             <EditableField 
-              field="emirate" 
+              {...getEditableFieldProps('emirate')}
               label="Emirate" 
               value={form.emirate} 
               placeholder="Dubai"
