@@ -175,7 +175,7 @@ export const CAR_MODELS: Record<string, readonly string[]> = {
   'Dodge': ['Challenger', 'Charger', 'Durango', 'Hornet', 'Ram'],
   'Ferrari': ['296 GTB', '296 GTS', '488', '812', 'F8', 'Portofino', 'Purosangue', 'Roma', 'SF90'],
   'Fiat': ['500', '500X', 'Panda', 'Tipo'],
-  'Ford': ['Bronco', 'Edge', 'Escape', 'Expedition', 'Explorer', 'F-150', 'Fiesta', 'Focus', 'Fusion', 'Kuga', 'Mustang', 'Mustang Mach-E', 'Ranger', 'Raptor', 'Territory', 'Transit'],
+  'Ford': ['Bronco', 'Edge', 'Escape', 'Expedition', 'Explorer', 'F-150', 'F-250', 'F-350', 'F-450', 'F-550', 'Fiesta', 'Focus', 'Fusion', 'Kuga', 'Mustang', 'Mustang Mach-E', 'Ranger', 'Raptor', 'Territory', 'Transit'],
   'GAC': ['Aion LX', 'Aion S', 'Aion V', 'Aion Y', 'Empow', 'GS3', 'GS4', 'GS8'],
   'Geely': ['Azkarra', 'Coolray', 'Emgrand', 'Geometry C', 'Monjaro', 'Okavango', 'Preface', 'Tugella'],
   'Genesis': ['G70', 'G80', 'G90', 'GV60', 'GV70', 'GV80'],

@@ -139,7 +139,8 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
         inReview: visibleListings.filter((l: ListingData) => l.moderationStatus === 'pending_review' || l.moderationStatus === 'submitted').length,
         draft: visibleListings.filter((l: ListingData) => l.moderationStatus === 'draft').length,
         rejected: visibleListings.filter((l: ListingData) => l.moderationStatus === 'rejected').length,
-        archived: visibleListings.filter((l: ListingData) => l.lifecycleStatus === 'archived').length,
+        // Exclude rejected and suspended from archived count - they should only count in their own tabs
+        archived: visibleListings.filter((l: ListingData) => l.lifecycleStatus === 'archived' && l.moderationStatus !== 'rejected' && l.suspendedAt === null).length,
         suspended: visibleListings.filter((l: ListingData) => l.suspendedAt !== null).length,
         sold: visibleListings.filter((l: ListingData) => l.lifecycleStatus === 'sold').length,
         expired: visibleListings.filter((l: ListingData) => l.lifecycleStatus === 'expired').length,
@@ -212,7 +213,8 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
           case 'rejected':
             return listing.moderationStatus === 'rejected';
           case 'archived':
-            return listing.lifecycleStatus === 'archived';
+            // Exclude rejected and suspended listings from archived - they should only show in their own tabs
+            return listing.lifecycleStatus === 'archived' && listing.moderationStatus !== 'rejected' && listing.suspendedAt === null;
           case 'sold':
             return listing.lifecycleStatus === 'sold';
           case 'expired':

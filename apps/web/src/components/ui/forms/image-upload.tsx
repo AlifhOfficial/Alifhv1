@@ -16,6 +16,22 @@ interface ImageUploadProps {
   directory?: string;
   label?: string;
   description?: string;
+  /**
+   * Use optimized listing image endpoint with Sharp/WebP conversion
+   * When true, uses /api/storage/upload-listing-image for better quality & smaller files
+   */
+  optimized?: boolean;
+  /**
+   * Delete images from storage when removed from the list
+   * When true, calls DELETE /api/storage/delete to remove from R2
+   * @default true for optimized uploads
+   */
+  deleteOnRemove?: boolean;
+  /**
+   * VIN for organizing images in R2 storage
+   * Required for optimized uploads - images stored under listings/{vin}-xxx/
+   */
+  vin?: string;
 }
 
 export function ImageUpload({ 
@@ -24,9 +40,13 @@ export function ImageUpload({
   maxImages = 10,
   directory = 'listings',
   label = 'Upload Images',
-  description = 'Add up to ' + maxImages + ' images'
+  description = 'Add up to ' + maxImages + ' images',
+  optimized = false,
+  deleteOnRemove = true,
+  vin,
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
+  const [deleting, setDeleting] = useState<number | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -41,12 +61,15 @@ export function ImageUpload({
 
     const filesToUpload = Array.from(files).slice(0, remainingSlots);
     
-    // Validate file types
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    // Validate file types - optimized endpoint supports more formats
+    const validTypes = optimized 
+      ? ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/heic', 'image/heif']
+      : ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     const invalidFiles = filesToUpload.filter(f => !validTypes.includes(f.type));
     
     if (invalidFiles.length > 0) {
-      alert('Only JPG, PNG, and WebP images are allowed');
+      const allowedFormats = optimized ? 'JPG, PNG, WebP, or HEIC' : 'JPG, PNG, and WebP';
+      alert(`Only ${allowedFormats} images are allowed`);
       return;
     }
 
@@ -65,17 +88,34 @@ export function ImageUpload({
       const uploadPromises = filesToUpload.map(async (file) => {
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('directory', directory);
-        formData.append('contentType', file.type);
-        formData.append('cacheControl', 'public, max-age=31536000, immutable');
+        
+        // Use optimized endpoint for listing images (Sharp/WebP conversion)
+        // Falls back to generic upload for non-listing images
+        const endpoint = optimized 
+          ? '/api/storage/upload-listing-image'
+          : '/api/storage/upload';
+        
+        if (optimized && vin) {
+          // Pass VIN for organized storage: listings/{vin}-xxx/
+          formData.append('vin', vin);
+        }
+        
+        if (!optimized) {
+          // Only needed for generic endpoint
+          formData.append('directory', directory);
+          formData.append('contentType', file.type);
+          formData.append('cacheControl', 'public, max-age=31536000, immutable');
+        }
 
-        const response = await fetch('/api/storage/upload', {
+        const response = await fetch(endpoint, {
           method: 'POST',
           body: formData,
+          credentials: 'include', // Include auth cookies for optimized endpoint
         });
 
         if (!response.ok) {
-          throw new Error(`Upload failed: ${response.statusText}`);
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || `Upload failed: ${response.statusText}`);
         }
 
         const data = await response.json();
@@ -115,9 +155,42 @@ export function ImageUpload({
     }
   };
 
-  const removeImage = (index: number) => {
+  const removeImage = async (index: number) => {
+    const imageUrl = value[index];
+    
+    // Update UI immediately for responsiveness
     const newImages = value.filter((_, i) => i !== index);
     onChange(newImages);
+    
+    // Delete from R2 storage if enabled
+    if (deleteOnRemove && imageUrl) {
+      setDeleting(index);
+      try {
+        // Extract key from URL or use as-is if already a key
+        let key = imageUrl;
+        if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+          try {
+            const url = new URL(imageUrl);
+            key = url.pathname.replace(/^\//, '');
+          } catch {
+            // If URL parsing fails, use as-is
+          }
+        }
+        
+        await fetch('/api/storage/delete', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ key }),
+        });
+        // Silently handle deletion - don't block UI on failure
+      } catch (error) {
+        console.warn('Failed to delete image from storage:', error);
+        // Don't alert user - image is already removed from UI
+      } finally {
+        setDeleting(null);
+      }
+    }
   };
 
   const handleClick = () => {
@@ -178,7 +251,10 @@ export function ImageUpload({
             ref={inputRef}
             type="file"
             multiple
-            accept="image/jpeg,image/jpg,image/png,image/webp"
+            accept={optimized 
+              ? "image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif" 
+              : "image/jpeg,image/jpg,image/png,image/webp"
+            }
             onChange={(e) => handleFiles(e.target.files)}
             className="hidden"
             disabled={uploading}

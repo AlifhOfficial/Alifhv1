@@ -43,6 +43,7 @@ export function Combobox({
   placeholder = "Select",
   searchPlaceholder = "Search...",
   disabled = false,
+  className,
 }: ComboboxProps) {
   const [open, setOpen] = useState(false);
   const listId = useId();
@@ -61,7 +62,8 @@ export function Combobox({
             "w-full h-12 flex items-center justify-between px-0 bg-transparent border-b-2 border-border/40",
             "transition-colors focus:outline-none focus:border-blue-500",
             value ? "text-foreground text-sm font-medium" : "text-muted-foreground/40 text-sm",
-            disabled && "opacity-50 cursor-not-allowed"
+            disabled && "opacity-50 cursor-not-allowed",
+            className
           )}
         >
           <span className="flex items-center gap-2 truncate">

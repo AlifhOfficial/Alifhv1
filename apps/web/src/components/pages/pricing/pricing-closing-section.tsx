@@ -32,7 +32,7 @@ export function PricingClosingSection() {
             </Link>
             <Link
               href="/become-partner?plan=black"
-              className="w-full sm:w-auto h-11 px-8 bg-foreground text-background text-sm font-medium rounded-lg hover:bg-foreground/90 transition-colors flex items-center justify-center"
+              className="w-full sm:w-auto h-11 px-8 bg-muted border border-border/40 text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
             >
               Apply for Black — starts at AED 21K/mo
             </Link>

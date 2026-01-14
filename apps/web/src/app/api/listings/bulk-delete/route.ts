@@ -1,11 +1,13 @@
 /**
  * Bulk Delete Listings API
  * DELETE multiple listings at once
+ * Also cleans up images from R2 storage
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { db, carListing, inArray, invalidateListingCaches } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
+import { deleteMultipleListingsImages } from '@/lib/storage/listing-image-cleanup';
 
 export async function POST(req: NextRequest) {
   try {
@@ -25,9 +27,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Cannot delete more than 100 listings at once' }, { status: 400 });
     }
 
-    // Verify ownership - user can only bulk delete their own listings
+    // Verify ownership and get images - user can only bulk delete their own listings
     const listingsToDelete = await db
-      .select({ id: carListing.id, userId: carListing.userId, partnerId: carListing.partnerId })
+      .select({ 
+        id: carListing.id, 
+        userId: carListing.userId, 
+        partnerId: carListing.partnerId,
+        images: carListing.images,
+      })
       .from(carListing)
       .where(inArray(carListing.id, listingIds));
 
@@ -49,6 +56,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Collect all images from all listings for cleanup
+    const allImages: string[][] = [];
+    listingsToDelete.forEach(listing => {
+      const images = listing.images as string[] | null;
+      if (images && images.length > 0) {
+        allImages.push(images);
+      }
+    });
+
     // Soft delete (set lifecycleStatus to 'deleted')
     await db
       .update(carListing)
@@ -58,12 +74,21 @@ export async function POST(req: NextRequest) {
       })
       .where(inArray(carListing.id, listingIds));
 
+    // Clean up images from R2 storage (async, don't wait)
+    if (allImages.length > 0) {
+      deleteMultipleListingsImages(allImages).catch(err => {
+        console.error('[Bulk Delete Listings] Failed to cleanup images:', err);
+      });
+    }
+
     // Invalidate caches for each deleted listing
-    // Group by partnerId to avoid redundant partner inventory invalidations
-    const partnerIds = new Set<string>();
+    // Include userId for personal listings to update user stats
     listingsToDelete.forEach(listing => {
-      invalidateListingCaches(listing.id, listing.partnerId || undefined);
-      if (listing.partnerId) partnerIds.add(listing.partnerId);
+      invalidateListingCaches(
+        listing.id, 
+        listing.partnerId || undefined,
+        !listing.partnerId ? listing.userId : undefined // Pass userId for personal listings
+      );
     });
 
     return NextResponse.json({

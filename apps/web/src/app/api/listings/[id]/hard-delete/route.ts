@@ -3,6 +3,7 @@
  * DELETE /api/listings/[id]/hard-delete
  *
  * Permanent delete. Use sparingly.
+ * Also cleans up associated images from R2 storage.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -13,6 +14,7 @@ import {
   hardDeleteCarListing,
   getListingModerationContext,
   invalidateListingCaches,
+  getListingImagesForCleanup,
 } from '@alifh/database';
 import { getClientIp } from '@/lib/utils/get-client-ip';
 import {
@@ -21,6 +23,7 @@ import {
   rateLimitResponse,
   RATE_LIMITS_LISTINGS,
 } from '@/lib/rate-limit';
+import { deleteListingImages } from '@/lib/storage/listing-image-cleanup';
 
 const deleteLimiter = createRateLimiter(RATE_LIMITS_LISTINGS.DELETE);
 
@@ -75,6 +78,9 @@ export async function DELETE(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
+    // Get images BEFORE deleting the listing (for R2 cleanup)
+    const images = await getListingImagesForCleanup(id);
+
     const ok = await hardDeleteCarListing({ 
       listingId: id, 
       userId: user.id,
@@ -85,8 +91,20 @@ export async function DELETE(
       return NextResponse.json({ error: 'Listing not found or unauthorized' }, { status: 404 });
     }
 
+    // Delete images from R2 storage (async, don't block response)
+    if (images && images.length > 0) {
+      void deleteListingImages(images).catch((error) => {
+        console.error('[hard-delete] Failed to cleanup images:', error);
+      });
+    }
+
     // Invalidate all listing caches using centralized function
-    invalidateListingCaches(id, before?.partnerId || undefined);
+    // Pass userId for personal listings to update user stats
+    invalidateListingCaches(
+      id, 
+      before?.partnerId || undefined,
+      !before?.partnerId ? user.id : undefined
+    );
 
     void createAuditLogEntry({
       action: 'listing.hard_delete',

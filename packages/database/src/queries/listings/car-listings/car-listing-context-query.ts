@@ -51,3 +51,26 @@ export async function getListingModerationContext(
 
   return result[0] ?? null;
 }
+/**
+ * Get listing images for cleanup (before hard delete)
+ * Returns array of image URLs/keys to be deleted from storage
+ */
+export async function getListingImagesForCleanup(
+  listingId: string
+): Promise<string[]> {
+  const result = await db
+    .select({
+      images: carListing.images,
+    })
+    .from(carListing)
+    .where(eq(carListing.id, listingId))
+    .limit(1);
+
+  if (!result[0]) return [];
+  
+  // Images are stored as string[] in JSONB
+  const images = result[0].images;
+  if (!Array.isArray(images)) return [];
+  
+  return images.filter((img): img is string => typeof img === 'string' && img.length > 0);
+}

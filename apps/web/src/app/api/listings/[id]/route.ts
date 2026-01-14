@@ -21,6 +21,7 @@ import {
   createAuditLogEntry,
   getActivePartnerStaffMembershipByUserIdAndPartnerId,
   getListingModerationContext,
+  getListingImagesForCleanup,
   updateCarListing,
   updateCarListingByStaff,
   deleteCarListing,
@@ -35,6 +36,7 @@ import { getClientIp } from '@/lib/utils/get-client-ip';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_LISTINGS, RATE_LIMITS_GENERAL } from '@/lib/rate-limit';
 import { moderateListing, type ModerationInput } from '@alifh/ai/moderation';
 import { generateValuation, type ValuationInput } from '@alifh/ai/valuation';
+import { deleteListingImages } from '@/lib/storage/listing-image-cleanup';
 
 export const runtime = 'nodejs';
 
@@ -669,6 +671,9 @@ export async function DELETE(
       );
     }
 
+    // Get images BEFORE any delete operation for R2 cleanup
+    const imagesToDelete = await getListingImagesForCleanup(id);
+
     // Check if user is admin/super_admin
     let success: boolean;
     
@@ -690,8 +695,21 @@ export async function DELETE(
       );
     }
 
+    // Delete images from R2 storage for ALL deletes (soft and hard)
+    // Images are no longer needed once listing is deleted
+    if (imagesToDelete.length > 0) {
+      void deleteListingImages(imagesToDelete).catch((error) => {
+        console.error('[listing-delete] Failed to cleanup images:', error);
+      });
+    }
+
     // Invalidate listing caches so removal reflects immediately
-    invalidateListingCaches(id, listing.partnerId || undefined);
+    // Pass userId for personal listings to update user stats
+    invalidateListingCaches(
+      id, 
+      listing.partnerId || undefined,
+      !listing.partnerId ? listing.userId : undefined
+    );
 
     void createAuditLogEntry({
       action: isAdmin ? 'listing.hard_delete' : 'listing.delete',

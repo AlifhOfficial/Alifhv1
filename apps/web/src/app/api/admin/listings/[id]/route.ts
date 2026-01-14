@@ -9,13 +9,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { getClientIp } from '@/lib/utils/get-client-ip';
-import { createAuditLogEntry, deleteListingAsAdmin, getListingModerationContext, invalidateListingCaches } from '@alifh/database';
+import { createAuditLogEntry, deleteListingAsAdmin, getListingModerationContext, getListingImagesForCleanup, invalidateListingCaches } from '@alifh/database';
 import {
   createRateLimiter,
   getIdentifier,
   rateLimitResponse,
   RATE_LIMITS_ADMIN,
 } from '@/lib/rate-limit';
+import { deleteListingImages } from '@/lib/storage/listing-image-cleanup';
 
 const adminDeleteLimiter = createRateLimiter(RATE_LIMITS_ADMIN.OPS);
 
@@ -47,15 +48,30 @@ export async function DELETE(
     const { id } = await params;
 
     const before = await getListingModerationContext(id);
+    
+    // Get images BEFORE delete for R2 cleanup
+    const imagesToDelete = await getListingImagesForCleanup(id);
 
-    // Delete the listing
+    // Delete the listing (soft delete - sets lifecycleStatus to 'deleted')
     const ok = await deleteListingAsAdmin(id);
     if (!ok) {
       return NextResponse.json({ error: 'Listing not found' }, { status: 404 });
     }
 
+    // Delete images from R2 storage (async, don't block response)
+    if (imagesToDelete.length > 0) {
+      void deleteListingImages(imagesToDelete).catch((error) => {
+        console.error('[admin-delete] Failed to cleanup images:', error);
+      });
+    }
+
     // Invalidate all listing caches using centralized function
-    invalidateListingCaches(id, before?.partnerId || undefined);
+    // Pass userId for personal listings to update user stats
+    invalidateListingCaches(
+      id, 
+      before?.partnerId || undefined,
+      !before?.partnerId ? before?.userId : undefined
+    );
 
     void createAuditLogEntry({
       action: 'listing.hard_delete',

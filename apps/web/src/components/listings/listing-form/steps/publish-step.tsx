@@ -197,6 +197,9 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
           maxImages={20}
           directory="listings"
           label={undefined}
+          optimized={true}
+          deleteOnRemove={true}
+          vin={data.vin}
         />
         {errors.images && <p className="text-xs font-semibold text-red-500 mt-3">{errors.images}</p>}
         </div>

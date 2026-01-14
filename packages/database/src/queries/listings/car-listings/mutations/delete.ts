@@ -117,14 +117,16 @@ export async function hardDeleteCarListing(input: {
 }
 
 /**
+/**
  * Hard delete all soft-deleted listings for a user
  * Optionally filter by age and listing type
+ * Returns count of deleted listings and their images for cleanup
  */
 export async function hardDeleteDeletedCarListingsForUser(input: {
   userId: string;
   olderThanDays?: number;
   listingType?: 'personal' | 'work';
-}): Promise<number> {
+}): Promise<{ count: number; images: string[][] }> {
   const now = new Date();
   const olderThanDays = input.olderThanDays ?? 0;
   const cutoff =
@@ -140,12 +142,23 @@ export async function hardDeleteDeletedCarListingsForUser(input: {
   if (input.listingType === 'work') whereConditions.push(isNotNull(carListing.partnerId));
   if (cutoff) whereConditions.push(lte(carListing.deletedAt, cutoff));
 
+  // First, get images from listings that will be deleted
+  const listingsToDelete = await db
+    .select({ images: carListing.images })
+    .from(carListing)
+    .where(and(...whereConditions));
+
+  const images = listingsToDelete
+    .map(l => l.images)
+    .filter((imgs): imgs is string[] => Array.isArray(imgs) && imgs.length > 0);
+
+  // Now delete the listings
   const deleted = await db
     .delete(carListing)
     .where(and(...whereConditions))
     .returning({ id: carListing.id });
 
-  return deleted.length;
+  return { count: deleted.length, images };
 }
 
 /**

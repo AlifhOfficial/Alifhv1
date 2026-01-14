@@ -88,7 +88,7 @@ export function AdvancedFilters({
     <Sheet open={isOpen} onOpenChange={setIsOpen} modal={true}>
       <SheetTrigger asChild>
         {children || (
-          <button type="button" className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-sm sm:text-[15px] transition-colors text-blue-600 font-semibold hover:text-blue-700 whitespace-nowrap">
+          <button type="button" className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-sm sm:text-[15px] transition-colors text-primary font-semibold hover:text-primary/90 whitespace-nowrap">
             <span className="hidden sm:inline">Advanced Filters</span>
             <span className="sm:hidden">Filters</span>
             {advancedCount > 0 && (
@@ -223,7 +223,7 @@ export function AdvancedFilters({
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 px-4 py-2.5 text-[15px] font-semibold bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90 rounded-full transition-colors"
+              className="flex-1 px-4 py-2.5 text-[15px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 rounded-full transition-colors"
             >
               Close
             </button>

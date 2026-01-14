@@ -84,11 +84,16 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
           const matchedModel = models.find(
             m => m.toLowerCase() === decoded.model.toLowerCase()
           );
-          updateField('model', matchedModel || decoded.model);
+          // Only set model if it's in our predefined list
+          // Otherwise user must select manually
+          if (matchedModel) {
+            updateField('model', matchedModel);
+          }
+          // If model not found, leave empty - user will see warning to select manually
         }
       } else {
         updateField('make', decoded.make);
-        if (decoded.model) updateField('model', decoded.model);
+        // Don't set model if make isn't matched - they need to select both manually
       }
       
       updateField('year', decoded.year);
@@ -222,15 +227,21 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
             />
           </FieldWrapper>
           
-          {/* Model */}
-          <FieldWrapper label="Model" required error={errors.model}>
+          {/* Model - highlight if VIN decoded but model is missing */}
+          <FieldWrapper 
+            label="Model" 
+            required 
+            error={errors.model}
+            hint={vinDecoded && !data.model ? '⚠️ Select model manually' : undefined}
+          >
             <Combobox
               options={modelOptions}
               value={data.model || ''}
               onValueChange={(v) => updateField('model', v)}
-              placeholder="Select model"
+              placeholder={vinDecoded && !data.model ? 'Model required - select one' : 'Select model'}
               searchPlaceholder="Search models..."
               disabled={!data.make}
+              className={vinDecoded && !data.model ? 'ring-2 ring-amber-500/50' : undefined}
             />
           </FieldWrapper>
           

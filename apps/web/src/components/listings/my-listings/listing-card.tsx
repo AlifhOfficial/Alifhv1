@@ -145,11 +145,12 @@ export function ListingCard({
   const isArchived = listing.lifecycleStatus === 'archived';
 
   // Permissions
-  const canArchiveToggle = (listing.lifecycleStatus === 'active' || listing.lifecycleStatus === 'archived') && !isSuspended && !(isRejected && listing.lifecycleStatus === 'archived');
+  // Rejected listings can only be deleted - no archive, edit, or other actions
+  const canArchiveToggle = (listing.lifecycleStatus === 'active' || listing.lifecycleStatus === 'archived') && !isSuspended && !isRejected;
   const canDelete = listing.lifecycleStatus !== 'deleted';
   const isDeepInventory = isDeleted || isSold || isExpired || isSuspended;
-  const canEdit = !isSuspended && !isDeepInventory;
-  const canMarkSold = listing.isPublic && listing.lifecycleStatus === 'active';
+  const canEdit = !isSuspended && !isDeepInventory && !isRejected;
+  const canMarkSold = listing.isPublic && listing.lifecycleStatus === 'active' && !isRejected;
 
   // Metrics
   const views = listing.viewCount ?? 0;
@@ -273,23 +274,12 @@ export function ListingCard({
                     </DropdownMenuItem>
                   </>
                 )}
-                {canDelete && !isDeepInventory && (
+                {canDelete && (!isDeepInventory || isRejected || isSuspended) && (
                   <>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => onDelete(listing.id)} className="flex items-center gap-2 text-red-600 focus:text-red-600">
                       <Trash2 className="w-4 h-4" />
                       Delete
-                    </DropdownMenuItem>
-                  </>
-                )}
-                {isSuspended && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild className="text-primary">
-                      <Link href={newListingUrl} className="flex items-center gap-2">
-                        <Plus className="w-4 h-4" />
-                        Create New
-                      </Link>
                     </DropdownMenuItem>
                   </>
                 )}
@@ -349,6 +339,24 @@ export function ListingCard({
               )}
             </div>
           </div>
+
+          {/* Rejection Reason */}
+          {isRejected && listing.rejectionReason && (
+            <div className="mt-2 px-2 py-1.5 rounded-md bg-red-500/5 border border-red-500/10">
+              <p className="text-[11px] text-red-600 line-clamp-2">
+                <span className="font-semibold">Reason:</span> {listing.rejectionReason}
+              </p>
+            </div>
+          )}
+
+          {/* Suspension Reason */}
+          {isSuspended && listing.suspensionReason && (
+            <div className="mt-2 px-2 py-1.5 rounded-md bg-red-500/5 border border-red-500/10">
+              <p className="text-[11px] text-red-600 line-clamp-2">
+                <span className="font-semibold">Reason:</span> {listing.suspensionReason}
+              </p>
+            </div>
+          )}
         </div>
       </div>
 

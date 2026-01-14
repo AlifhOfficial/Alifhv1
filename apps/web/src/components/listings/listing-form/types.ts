@@ -81,7 +81,9 @@ export const vinStepSchema = z.object({
     .regex(VIN_PATTERN, 'Invalid VIN (cannot contain I, O, or Q)')
     .transform(v => v.toUpperCase()),
   make: z.string().min(1, 'Make is required'),
-  model: z.string().min(1, 'Model is required'),
+  model: z.string()
+    .min(1, 'Model is required')
+    .refine(v => v.trim().length > 0, 'Model is required'),
   year: z.number()
     .int()
     .min(1990, 'Year must be 1990 or later')

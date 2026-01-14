@@ -495,7 +495,7 @@ export function SearchBar({
                       )}
                     </div>
                   </div>
-                  {!['vin_listing', 'vin_decode', 'vin_partial'].includes(suggestion.type) && (
+                  {!['vin_listing', 'vin_decode', 'vin_partial'].includes(suggestion.type) && suggestion.count >= 0 && (
                     <span className="text-sm font-semibold text-muted-foreground/70 tabular-nums">
                       {suggestion.count} {suggestion.count === 1 ? 'car' : 'cars'}
                     </span>

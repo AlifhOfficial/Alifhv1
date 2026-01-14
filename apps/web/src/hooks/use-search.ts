@@ -240,22 +240,31 @@ interface QuickSearchResult {
   isLoading: boolean;
 }
 
+// Static popular makes for instant display (no API call)
+// Only show top 3 to avoid cluttering the dropdown
+const TOP_POPULAR_MAKES = ['Audi', 'BMW', 'Tesla'] as const;
+
+const STATIC_POPULAR_SUGGESTIONS = TOP_POPULAR_MAKES.map(make => ({
+  type: 'make' as const,
+  text: make,
+  make: make,
+  count: -1, // -1 signals "don't show count" in UI
+}));
+
 export function useQuickSearch(
   query: string, 
   enabled = true,
   context?: { make?: string; model?: string }
 ): QuickSearchResult {
+  // Only call API when user has typed 2+ chars
+  const shouldFetchFromApi = query.length >= 2;
+  
   const { data, isLoading } = useQuery({
-    queryKey: ['listings', 'suggest', query || 'popular', context?.make, context?.model],
+    queryKey: ['listings', 'suggest', query, context?.make, context?.model],
     queryFn: async () => {
       // Build query params
       const params = new URLSearchParams();
-      
-      if (query.length >= 2) {
-        params.set('q', query);
-      } else {
-        params.set('popular', 'true');
-      }
+      params.set('q', query);
       
       // Add context for hierarchical search
       if (context?.make) params.set('make', context.make);
@@ -267,13 +276,16 @@ export function useQuickSearch(
       if (!response.ok) return { suggestions: [] };
       return response.json();
     },
-    enabled,
+    enabled: enabled && shouldFetchFromApi,
     staleTime: 0, // Always fetch fresh - server handles caching
     gcTime: 0, // No client-side caching
   });
 
+  // Return static suggestions when no query, API suggestions when typing
   return {
-    suggestions: data?.suggestions ?? [],
-    isLoading,
+    suggestions: shouldFetchFromApi 
+      ? (data?.suggestions ?? [])
+      : STATIC_POPULAR_SUGGESTIONS,
+    isLoading: shouldFetchFromApi ? isLoading : false,
   };
 }

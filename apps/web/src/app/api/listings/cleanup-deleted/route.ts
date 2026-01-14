@@ -3,11 +3,13 @@
  * POST /api/listings/cleanup-deleted
  *
  * Permanently deletes listings that are already soft-deleted.
+ * Also cleans up associated images from R2 storage.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { hardDeleteDeletedCarListingsForUser, invalidateSearchCaches } from '@alifh/database';
+import { deleteMultipleListingsImages } from '@/lib/storage/listing-image-cleanup';
 
 export const runtime = 'nodejs';
 
@@ -36,7 +38,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const count = await hardDeleteDeletedCarListingsForUser({
+    const result = await hardDeleteDeletedCarListingsForUser({
       userId: user.id,
       olderThanDays: olderThanDays ?? 0,
       listingType,
@@ -45,7 +47,14 @@ export async function POST(req: NextRequest) {
     // Single source of truth for cache invalidation
     invalidateSearchCaches();
 
-    return NextResponse.json({ success: true, count });
+    // Delete images from R2 storage (async, don't block response)
+    if (result.images.length > 0) {
+      void deleteMultipleListingsImages(result.images).catch((error) => {
+        console.error('[cleanup-deleted] Failed to cleanup images:', error);
+      });
+    }
+
+    return NextResponse.json({ success: true, count: result.count });
   } catch (error) {
     console.error('Error cleaning up deleted listings:', error);
     return NextResponse.json(
