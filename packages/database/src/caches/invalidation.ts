@@ -158,6 +158,23 @@ export function invalidateDealerBaseProfile(partnerId: string): void {
 }
 
 /**
+ * Invalidate search caches when partner profile changes affect their listings
+ * Use after: logo change, brandName change (partner info visible in car cards)
+ * 
+ * Similar to invalidateUserListingsInSearch but for partner/dealer profiles.
+ * Listing search results join partner data (logo, brandName) and cache the result.
+ */
+export function invalidatePartnerListingsInSearch(partnerId: string): void {
+  // Clear all search caches since we don't know which contain this partner's listings
+  invalidateSearchCaches();
+  
+  // Also clear partner inventory caches
+  invalidatePartnerInventory(partnerId);
+  
+  console.log(`[cache] Invalidated search caches for partner profile change: ${partnerId}`);
+}
+
+/**
  * Invalidate comprehensive partner profile cache
  * Use after: any partner profile update (dashboard form, settings, etc.)
  * Also invalidates dealer base profile and mini profile for consistency
@@ -180,6 +197,26 @@ export function invalidateUserProfile(userId: string): void {
   const key = `user:profile:${userId}`;
   memoryCache.delete(key);
   console.log(`[cache] Invalidated user profile: ${userId}`);
+}
+
+/**
+ * Invalidate search caches when user profile changes affect their listings
+ * Use after: avatar change, name change, phone change (seller info visible in cards)
+ * 
+ * This is necessary because listing search results join user profile data
+ * (sellerAvatarUrl, sellerName, etc.) and cache the combined result.
+ * When profile changes, cached listings show stale seller info.
+ */
+export function invalidateUserListingsInSearch(userId: string): void {
+  // Clear all search caches since we don't know which contain this user's listings
+  // This is a bit aggressive but ensures freshness for seller info changes
+  invalidateSearchCaches();
+  
+  // Also clear listing detail caches that might show seller info
+  const deletedDetails = memoryCache.deleteByPrefix('listing:detail:');
+  const deletedDetailed = memoryCache.deleteByPrefix('listing:detailed:');
+  
+  console.log(`[cache] Invalidated search caches for user profile change: ${userId} (cleared ${deletedDetails + deletedDetailed} detail entries)`);
 }
 
 /**

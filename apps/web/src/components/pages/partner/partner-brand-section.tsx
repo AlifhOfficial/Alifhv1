@@ -4,7 +4,7 @@
  */
 
 import Image from 'next/image';
-import { Star, MapPin, Clock, Package, TrendingUp, BadgeCheck } from 'lucide-react';
+import { Star, Clock, Package, TrendingUp, CheckCircle2 } from 'lucide-react';
 
 export function PartnerBrandSection() {
   return (
@@ -54,14 +54,10 @@ export function PartnerBrandSection() {
             </div>
 
             {/* Trust Badge */}
-            <div className="p-4 rounded-lg bg-[#0066FF]/5 border border-[#0066FF]/20">
-              <div className="flex items-center gap-2">
-                <BadgeCheck className="w-4 h-4 text-[#0066FF]" />
-                <p className="text-sm text-foreground">
-                  <span className="font-medium">Verified Partner</span>
-                  <span className="text-muted-foreground"> — Google Reviews integrated</span>
-                </p>
-              </div>
+            <div className="flex items-center gap-3 pt-2">
+              <CheckCircle2 className="w-4 h-4 text-[#0066FF] shrink-0" />
+              <span className="text-sm font-medium text-foreground">Google Reviews sync</span>
+              <span className="text-xs text-muted-foreground">— One tap. We handle the rest.</span>
             </div>
           </div>
 
@@ -69,7 +65,7 @@ export function PartnerBrandSection() {
           <div className="relative">
             <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
               <Image
-                src="/Abstract/rs6.png"
+                src="/Abstract/rs22.png"
                 alt="Abstract design"
                 fill
                 className="object-cover"

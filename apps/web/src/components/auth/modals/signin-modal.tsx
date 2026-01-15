@@ -89,7 +89,7 @@ export function SignInModal({
         {/* Left Image Side */}
         <div className="hidden md:flex md:w-1/2 relative bg-card">
           <img 
-            src="/Images/Sign_in.png" 
+            src="/Images/sign.png" 
             alt="Sign in illustration"
             className="w-full h-full object-cover"
           />

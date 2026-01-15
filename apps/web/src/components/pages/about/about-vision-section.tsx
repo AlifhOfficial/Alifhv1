@@ -35,7 +35,7 @@ export function AboutVisionSection() {
         {/* Image */}
         <div className="relative w-full aspect-[16/9] sm:aspect-[3/1] overflow-hidden rounded-lg mb-16">
           <Image
-            src="/Images/d3.png"
+            src="/abstract/rsxx9.png"
             alt="Alifh Vision"
             fill
             className="object-cover"

@@ -103,10 +103,14 @@ export function SettingsView() {
     setMounted(true);
   }, []);
 
-  // Sync passkeys from hook
+  // Sync passkeys from hook (compare by IDs to avoid infinite loop)
   useEffect(() => {
-    setPasskeys(hookPasskeys);
-  }, [hookPasskeys]);
+    const currentIds = passkeys.map(p => p.id).join(',');
+    const newIds = hookPasskeys.map(p => p.id).join(',');
+    if (currentIds !== newIds) {
+      setPasskeys(hookPasskeys);
+    }
+  }, [hookPasskeys, passkeys]);
 
   const addPasskey = async () => {
     try {
@@ -149,7 +153,7 @@ export function SettingsView() {
     }
   };
 
-  const consignmentMode = profile?.consignmentMode ?? false;
+  const consignmentMode = profile?.consignmentMode ?? true;
   const showPhone = profile?.privacySettings?.showPhone ?? true;
   const useGeneratedAvatar = profile?.preferences?.useGeneratedAvatar ?? true;
 
@@ -182,7 +186,9 @@ export function SettingsView() {
       const data = await res.json();
       if (res.ok) {
         toast({ title: 'Account marked for deletion' });
-        setTimeout(() => window.location.href = '/', 2000);
+        // Sign out and redirect - session is already invalidated server-side
+        await authClient.signOut();
+        window.location.href = '/';
       } else throw new Error(data.error);
     } catch (e) {
       toast({ title: 'Error', description: e instanceof Error ? e.message : 'Failed', variant: 'destructive' });
@@ -269,7 +275,7 @@ export function SettingsView() {
           <div className="rounded-xl border border-border/40 bg-sidebar p-4">
             <SettingRow 
               title="Consignment Mode" 
-              description="List vehicles on behalf of others"
+              description="Receive offers from qualified partners"
               isLast
             >
               <Toggle 

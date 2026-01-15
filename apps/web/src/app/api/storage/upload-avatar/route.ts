@@ -41,7 +41,6 @@ export async function POST(req: NextRequest) {
   try {
     // Require authentication
     const user = await getSessionUser();
-    console.log("[upload-avatar] User:", user?.id);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -55,8 +54,7 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
     const file = formData.get("file");
-    const previousKey = formData.get("previousKey") as string | null; // Old avatar to delete
-    console.log("[upload-avatar] File received:", file instanceof File ? `${file.name} (${file.size} bytes)` : "none");
+    const previousKey = formData.get("previousKey") as string | null;
     
     if (!(file instanceof File)) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
@@ -79,44 +77,33 @@ export async function POST(req: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Process image with Sharp
-    // - Resize to max 512x512 (preserving aspect ratio)
-    // - Convert to WebP
-    // - Compress with quality 80
-    const processedBuffer = await sharp(buffer)
+    // Process image with Sharp - optimized pipeline
+    const processedBuffer = await sharp(buffer, { failOnError: false })
       .resize(OUTPUT_SIZE, OUTPUT_SIZE, {
-        fit: "cover", // Crop to square for avatars
+        fit: "cover",
         position: "center",
+        fastShrinkOnLoad: true, // Fast shrink for large images
       })
-      .webp({ quality: OUTPUT_QUALITY })
+      .webp({ quality: OUTPUT_QUALITY, effort: 2 }) // effort 2 = faster encoding
       .toBuffer();
 
-    // Generate unique key with timestamp to bust CDN cache
-    // Each upload creates a NEW cache entry in Cloudflare R2 edge
-    // Old avatars will be deleted (if previousKey provided) or orphaned for cleanup
+    // Generate unique key with timestamp
     const timestamp = Date.now();
     const key = `avatars/${user.id}-${timestamp}.webp`;
-    console.log("[upload-avatar] Uploading to key:", key, "Size:", processedBuffer.length);
 
-    // IMPORTANT: Long cache since each upload creates a unique path
-    // No need for must-revalidate since path changes on each upload
+    // Upload to public R2 bucket
     const result = await uploadFile({
       data: processedBuffer,
       contentType: "image/webp",
-      key, // Unique key per upload
-      cacheControl: "public, max-age=31536000, immutable", // 1 year cache (immutable)
+      key,
+      cacheControl: "public, max-age=31536000, immutable",
     });
-    
-    console.log("[upload-avatar] Upload result:", result);
 
-    // Delete old avatar if provided (async, don't block response)
+    // Delete old avatar in background (don't await)
     if (previousKey && previousKey.startsWith("avatars/")) {
-      deleteFile(previousKey).catch((err) => {
-        console.warn(`[upload-avatar] Failed to delete old avatar: ${previousKey}`, err);
-      });
+      deleteFile(previousKey).catch(() => {});
     }
 
-    // Return the new key - caller must save this to profile.avatar
     return NextResponse.json({
       key: result.key,
       url: result.url,
@@ -124,7 +111,7 @@ export async function POST(req: NextRequest) {
       updatedAt: timestamp,
     });
   } catch (error) {
-    console.error("[storage/upload-avatar] POST failed", error);
+    console.error("[upload-avatar] Failed:", error);
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }

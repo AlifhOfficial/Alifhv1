@@ -28,7 +28,7 @@ export function PartnerFlatFeeSection() {
           {/* Image Card */}
           <div className="lg:col-span-2 aspect-[4/3] rounded-lg overflow-hidden">
             <Image
-              src="/Abstract/rs4.png"
+              src="/Abstract/rsxx13.png"
               alt="Abstract design"
               fill
               className="object-cover !relative"

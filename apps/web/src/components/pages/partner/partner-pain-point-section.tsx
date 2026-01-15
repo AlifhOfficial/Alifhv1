@@ -16,7 +16,7 @@ export function PartnerPainPointSection() {
           {/* Image Side */}
           <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
             <Image
-              src="/Abstract/rs1.png"
+              src="/Abstract/rs20.png"
               alt="Abstract"
               fill
               className="object-cover"

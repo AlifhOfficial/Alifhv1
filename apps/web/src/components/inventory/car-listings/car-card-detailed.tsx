@@ -78,71 +78,84 @@ const formatEnumValue = (value: string | null): string => {
 
 function ImageGallery({ images, title }: { images: string[]; title: string }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const validImages = images.filter(img => img && typeof img === 'string' && img.trim().length > 0);
   const allImages = validImages.length > 0 ? validImages : ['/assets/cars/placeholder.avif'];
 
   const next = () => setCurrentIndex((i) => (i + 1) % allImages.length);
   const prev = () => setCurrentIndex((i) => (i - 1 + allImages.length) % allImages.length);
 
+  const openLightbox = (index?: number) => {
+    if (typeof index === 'number') {
+      setCurrentIndex(index);
+    }
+    setIsLightboxOpen(true);
+  };
+
   return (
-    <div className="space-y-3">
-      {/* Main Image */}
-      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-muted/20">
-        <Image
-          src={allImages[currentIndex]}
-          alt={title}
-          fill
-          className="object-cover"
-          sizes="(max-width: 1024px) 100vw, 66vw"
-          priority
-        />
-        
-        {/* Navigation Arrows */}
+    <>
+      <div className="space-y-3">
+        {/* Main Image */}
+        <div 
+          className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-muted/20 cursor-pointer group"
+          onClick={() => openLightbox()}
+        >
+          <Image
+            src={allImages[currentIndex]}
+            alt={title}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            sizes="(max-width: 1024px) 100vw, 66vw"
+            priority
+          />
+          
+          {/* Navigation Arrows */}
+          {allImages.length > 1 && (
+            <>
+              <button
+                onClick={(e) => { e.stopPropagation(); prev(); }}
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center transition-colors"
+                aria-label="Previous image"
+              >
+                <ChevronLeft className="w-4 h-4 text-neutral-800" />
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); next(); }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center transition-colors"
+                aria-label="Next image"
+              >
+                <ChevronRight className="w-4 h-4 text-neutral-800" />
+              </button>
+            </>
+          )}
+
+          {/* Image Counter */}
+          <div className="absolute bottom-3 right-3 px-2.5 py-1 bg-black/70 text-white text-xs font-medium tabular-nums rounded">
+            {currentIndex + 1}/{allImages.length}
+          </div>
+        </div>
+
+        {/* Thumbnails */}
         {allImages.length > 1 && (
-          <>
-            <button
-              onClick={prev}
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center transition-colors"
-              aria-label="Previous image"
-            >
-              <ChevronLeft className="w-4 h-4 text-neutral-800" />
-            </button>
-            <button
-              onClick={next}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center transition-colors"
-              aria-label="Next image"
-            >
-              <ChevronRight className="w-4 h-4 text-neutral-800" />
-            </button>
-          </>
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin min-w-0">
+            {allImages.map((img, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentIndex(idx)}
+                className={cn(
+                  "relative w-16 h-12 flex-shrink-0 rounded-lg overflow-hidden transition-all",
+                  idx === currentIndex 
+                    ? "ring-2 ring-primary ring-offset-1" 
+                    : "opacity-60 hover:opacity-100"
+                )}
+              >
+                <Image src={img} alt={`View ${idx + 1}`} fill className="object-cover" sizes="64px" />
+              </button>
+            ))}
+          </div>
         )}
-
-        {/* Image Counter */}
-        <div className="absolute bottom-3 right-3 px-2.5 py-1 bg-black/70 text-white text-xs font-medium tabular-nums rounded">
-          {currentIndex + 1}/{allImages.length}
-        </div>
       </div>
-
-      {/* Thumbnails */}
-      {allImages.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin min-w-0">
-          {allImages.map((img, idx) => (
-            <button
-              key={idx}
-              onClick={() => setCurrentIndex(idx)}
-              className={cn(
-                "relative w-16 h-12 flex-shrink-0 rounded-lg overflow-hidden transition-all",
-                idx === currentIndex 
-                  ? "ring-2 ring-primary ring-offset-1" 
-                  : "opacity-60 hover:opacity-100"
-              )}
-            >
-              <Image src={img} alt={`View ${idx + 1}`} fill className="object-cover" sizes="64px" />
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+    </>
   );
 }
 

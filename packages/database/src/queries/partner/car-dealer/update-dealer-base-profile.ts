@@ -12,7 +12,7 @@
 import { eq } from 'drizzle-orm';
 import { db } from '../../../dbclient';
 import { invalidateUserSessions } from '../../../caches/memory-cache';
-import { invalidateDealerBaseProfile } from '../../../caches/invalidation';
+import { invalidateDealerBaseProfile, invalidatePartnerListingsInSearch } from '../../../caches/invalidation';
 import { partner } from '../../../schema/partner';
 import { partnerStaff } from '../../../schema/partner';
 
@@ -141,6 +141,12 @@ export async function updateDealerBaseProfile(
 
   // Invalidate dealer profile cache after update
   invalidateDealerBaseProfile(partnerId);
+  
+  // Invalidate search caches when partner-visible fields change
+  // This ensures car cards show updated partner logo/name
+  if (data.brandName !== undefined || data.logo !== undefined) {
+    invalidatePartnerListingsInSearch(partnerId);
+  }
   
   // Invalidate session cache for all staff if brand-related fields changed
   if (data.brandName || data.logo) {

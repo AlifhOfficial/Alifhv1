@@ -20,7 +20,7 @@ import { eq } from 'drizzle-orm';
 import { db } from '../../../dbclient';
 import { partner, partnerStaff } from '../../../schema/partner';
 import { memoryCache, CacheKeys, CacheTTL } from '../../../caches/memory-cache';
-import { invalidatePartnerProfileComprehensive } from '../../../caches/invalidation';
+import { invalidatePartnerProfileComprehensive, invalidatePartnerListingsInSearch } from '../../../caches/invalidation';
 
 // ============================================================================
 // Types
@@ -429,6 +429,12 @@ export async function updatePartnerProfile(
     
     // Invalidate all related caches
     invalidatePartnerProfileComprehensive(partnerId);
+    
+    // Invalidate search caches when partner-visible fields change
+    // This ensures car cards show updated partner logo/name
+    if (cleanUpdates.brandName !== undefined || cleanUpdates.logo !== undefined) {
+      invalidatePartnerListingsInSearch(partnerId);
+    }
     
   } catch (updateError) {
     console.error(`[updatePartnerProfile] Update FAILED for ${partnerId.slice(0, 8)}...`, updateError);

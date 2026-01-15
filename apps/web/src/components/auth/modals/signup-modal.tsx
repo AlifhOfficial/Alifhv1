@@ -63,7 +63,7 @@ export function SignUpModal({
         {/* Left Image Side */}
         <div className="hidden md:flex md:w-1/2 relative bg-card">
           <img 
-            src="/Images/sign_up.png" 
+            src="/Images/up.png" 
             alt="Sign up illustration"
             className="w-full h-full object-cover"
           />

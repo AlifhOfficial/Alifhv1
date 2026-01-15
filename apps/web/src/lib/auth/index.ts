@@ -139,6 +139,7 @@ export const auth = betterAuth({
     phoneNumber({
       // Use Twilio Verify for OTP - WhatsApp first, SMS fallback
       sendOTP: async ({ phoneNumber, code }, ctx) => {
+        console.log("[PhoneVerify] sendOTP called for:", phoneNumber);
         // Twilio Verify generates its own code, so we ignore the `code` param
         // Try WhatsApp first (cheaper, no toll fraud, works on Wi-Fi)
         try {
@@ -148,7 +149,7 @@ export const auth = betterAuth({
               to: phoneNumber,
               channel: "whatsapp",
             });
-          console.log("[PhoneVerify] OTP sent via WhatsApp");
+          console.log("[PhoneVerify] OTP sent via WhatsApp to:", phoneNumber);
           return;
         } catch (whatsappError: any) {
           // WhatsApp failed - fall back to SMS
@@ -162,10 +163,11 @@ export const auth = betterAuth({
             to: phoneNumber,
             channel: "sms",
           });
-        console.log("[PhoneVerify] OTP sent via SMS");
+        console.log("[PhoneVerify] OTP sent via SMS to:", phoneNumber);
       },
       // Use Twilio Verify to validate OTP - bypasses Better Auth's internal verification
       verifyOTP: async ({ phoneNumber, code }, ctx) => {
+        console.log("[PhoneVerify] verifyOTP called for:", phoneNumber, "code:", code);
         try {
           const check = await twilioClient.verify.v2
             .services(process.env.TWILIO_VERIFY_SERVICE_SID!)
@@ -173,9 +175,15 @@ export const auth = betterAuth({
               to: phoneNumber,
               code,
             });
+          console.log("[PhoneVerify] Verification result:", check.status, "for:", phoneNumber);
           return check.status === "approved";
-        } catch (error) {
-          console.error("[PhoneVerify] Twilio Verify error:", error);
+        } catch (error: any) {
+          // 20404 = Verification not found (expired, already verified, or too many attempts)
+          if (error?.code === 20404) {
+            console.warn("[PhoneVerify] Verification expired or not found for:", phoneNumber);
+          } else {
+            console.error("[PhoneVerify] Twilio Verify error:", error);
+          }
           return false;
         }
       },

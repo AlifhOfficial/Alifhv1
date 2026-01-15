@@ -818,16 +818,20 @@ export function ProfileView() {
                   <textarea
                     autoFocus
                     value={form.bio}
-                    onChange={(e) => updateField({ bio: e.target.value })}
-                    placeholder="Tell others about yourself..."
+                    onChange={(e) => {
+                      const value = e.target.value.slice(0, 700).toLowerCase();
+                      updateField({ bio: value });
+                    }}
+                    placeholder="tell others about yourself..."
                     rows={4}
+                    maxLength={700}
                     className="w-full p-4 bg-muted/20 rounded-xl border border-border/40 focus:ring-1 focus:ring-primary/30 outline-none resize-none placeholder:text-muted-foreground/50 text-foreground font-medium"
                     onKeyDown={(e) => {
                       if (e.key === 'Escape') cancelEdit();
                     }}
                   />
                   <div className="flex items-center justify-between">
-                    <p className="text-xs text-muted-foreground/70">{form.bio.length} characters</p>
+                    <p className={cn("text-xs", form.bio.length >= 700 ? "text-destructive" : "text-muted-foreground/70")}>{form.bio.length}/700 characters</p>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={(e) => { e.stopPropagation(); saveField('bio'); }}
@@ -848,10 +852,10 @@ export function ProfileView() {
               ) : (
                 <>
                   <p className="text-sm font-medium text-foreground whitespace-pre-wrap">
-                    {form.bio || <span className="text-muted-foreground/50">Tap to add bio</span>}
+                    {form.bio || <span className="text-muted-foreground/50">tap to add bio</span>}
                   </p>
                   {form.bio && (
-                    <p className="text-xs text-muted-foreground/70 mt-2">{form.bio.length} characters</p>
+                    <p className="text-xs text-muted-foreground/70 mt-2">{form.bio.length}/700 characters</p>
                   )}
                 </>
               )}

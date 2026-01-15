@@ -8,8 +8,15 @@
  * 
  * Flow:
  * 1. Marks profile status as 'pending_deletion'
- * 2. Calculates deletion date (6 months from now)
- * 3. Returns confirmation with deletion date
+ * 2. Deletes all account credentials (email/password, OAuth) - prevents future sign-in
+ * 3. Deletes all sessions (force logout from all devices)
+ * 4. Invalidates session cache
+ * 5. Returns confirmation with deletion date
+ * 
+ * Data Retention:
+ * - User record is kept for legal purposes (6 months)
+ * - User cannot sign in (no credentials) but data is preserved
+ * - No "banned" messaging - appears as normal auth failure
  * 
  * Standards:
  * - Returns 401 for unauthenticated requests
@@ -19,17 +26,17 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUser } from '@/lib/auth/session-context';
-import { updateUserProfileByUserId } from "@alifh/database";
+import { updateUserProfileByUserId, db, session, account, eq, invalidateUserSessions } from "@alifh/database";
 import {
   createRateLimiter,
   getIdentifier,
   rateLimitResponse,
 } from '@/lib/rate-limit';
 
-// Very restrictive - 1 per day (prevent accidents/abuse)
+// Very restrictive - 3 per day in dev, 1 in prod (prevent accidents/abuse)
 const deleteAccountLimiter = createRateLimiter({
   windowSeconds: 24 * 60 * 60, // 1 day
-  maxRequests: 1,
+  maxRequests: process.env.NODE_ENV === 'development' ? 3 : 1,
   keyPrefix: 'delete-account',
   description: 'Account deletion requests',
 });
@@ -60,6 +67,16 @@ export async function POST(req: NextRequest) {
     if (!updated) {
       return NextResponse.json({ error: "Failed to mark account for deletion" }, { status: 500 });
     }
+
+    // Delete all account credentials (email/password, OAuth) - prevents future sign-in
+    // User record is kept for legal/data retention, but can't authenticate
+    await db.delete(account).where(eq(account.userId, user.id));
+
+    // Delete all sessions from database (force logout from all devices)
+    await db.delete(session).where(eq(session.userId, user.id));
+    
+    // Invalidate session cache
+    invalidateUserSessions(user.id);
 
     return NextResponse.json({
       success: true,

@@ -27,8 +27,7 @@ export function PricingFaqSection() {
     },
     {
       q: 'What if I only have 5 cars right now?',
-      a: 'We get it. Flow is built for established showrooms. If you\'re just starting out, check out Alifh Next—a program designed for smaller dealers to grow with us. Learn more →',
-      link: '/become-partner?plan=next',
+      a: 'Start with Flow. Same tools, same price. You\'re paying for infrastructure—not per listing. Grow into it.',
     },
     {
       q: 'Is there a free trial?',

@@ -39,7 +39,7 @@ export function AboutStorySection() {
         {/* Image */}
         <div className="relative w-full aspect-[16/9] sm:aspect-[3/1] overflow-hidden rounded-lg mb-20">
           <Image
-            src="/Images/al5.png"
+            src="/abstract/rsxx8.png"
             alt="Alifh"
             fill
             className="object-cover"

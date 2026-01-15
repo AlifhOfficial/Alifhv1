@@ -28,7 +28,7 @@ export function PartnerToolsSection() {
           {/* Image Card */}
           <div className="sm:col-span-2 lg:col-span-2 aspect-[16/9] rounded-lg overflow-hidden">
             <Image
-              src="/Abstract/rs5.png"
+              src="/Abstract/rs21.png"
               alt=""
               fill
               className="object-cover !relative"

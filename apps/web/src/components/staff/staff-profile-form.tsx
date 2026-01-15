@@ -10,7 +10,6 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { useUserProfile } from '@/hooks/profile';
-import { authClient } from '@/lib/auth/client';
 import { Loader2, CheckCircle2, Info } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
@@ -59,10 +58,12 @@ export function StaffProfileForm() {
   // Populate form when data loads
   useEffect(() => {
     if (profile) {
+      // If work phone is not verified, force usePersonalPhone to true
+      const forcePersonal = !profile.workPhoneVerified;
       setForm({
         displayName: profile.displayName || '',
         workPhone: profile.workPhone?.replace(/^\+971/, '') || '',
-        usePersonalPhone: profile.usePersonalPhone ?? false,
+        usePersonalPhone: forcePersonal ? true : (profile.usePersonalPhone ?? true),
       });
     }
   }, [profile]);
@@ -108,7 +109,15 @@ export function StaffProfileForm() {
           break;
         case 'workPhone':
           const cleanPhone = form.workPhone.replace(/[^\d]/g, '');
-          payload.workPhone = cleanPhone ? `+971${cleanPhone}` : null;
+          const newPhone = cleanPhone ? `+971${cleanPhone}` : null;
+          payload.workPhone = newPhone;
+          // Reset verification if phone number changed
+          if (newPhone !== profile?.workPhone) {
+            payload.workPhoneVerified = false;
+            payload.usePersonalPhone = true; // Auto-fallback to personal phone
+            setPhoneJustVerified(false);
+            updateField({ usePersonalPhone: true }); // Sync local state
+          }
           break;
       }
 
@@ -134,8 +143,20 @@ export function StaffProfileForm() {
     setEditingField(null);
   };
 
-  // Toggle use personal phone
+  // Toggle use personal phone - only allowed if work phone is verified
   const toggleUsePersonalPhone = async () => {
+    const isWorkPhoneVerified = profile?.workPhoneVerified || phoneJustVerified;
+    
+    if (!isWorkPhoneVerified) {
+      // Can't toggle at all if work phone not verified
+      toast({ 
+        title: 'Verify work phone first', 
+        description: 'Add and verify a work phone to toggle',
+        variant: 'destructive' 
+      });
+      return;
+    }
+    
     const newValue = !form.usePersonalPhone;
     updateField({ usePersonalPhone: newValue });
     
@@ -148,7 +169,7 @@ export function StaffProfileForm() {
     }
   };
 
-  // Send phone OTP
+  // Send phone OTP for work phone
   const sendPhoneOTP = async () => {
     const cleanPhone = form.workPhone.replace(/[^\d]/g, '');
     if (cleanPhone.length !== 9) {
@@ -160,20 +181,24 @@ export function StaffProfileForm() {
     setPhoneVerifyStep('verifying');
     
     try {
-      const { error } = await authClient.phoneNumber.sendOtp({
-        phoneNumber: fullPhone,
+      const res = await fetch('/api/staff/verify-work-phone', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'send', phoneNumber: fullPhone }),
       });
 
-      if (error) {
-        const errorMsg = error.message?.toLowerCase() || '';
-        if (errorMsg.includes('blocked') || errorMsg.includes('fraud') || errorMsg.includes('60410')) {
+      const data = await res.json();
+
+      if (!res.ok) {
+        const errorMsg = data.error?.toLowerCase() || '';
+        if (errorMsg.includes('blocked') || errorMsg.includes('fraud')) {
           toast({ 
             title: 'Number temporarily blocked', 
-            description: 'This phone number has been temporarily blocked by our SMS provider. Please try a different number or contact support.',
+            description: 'This phone number has been temporarily blocked. Please try a different number or contact support.',
             variant: 'destructive' 
           });
         } else {
-          toast({ title: 'Failed to send code', description: error.message, variant: 'destructive' });
+          toast({ title: 'Failed to send code', description: data.error, variant: 'destructive' });
         }
         setPhoneVerifyStep('idle');
         return;
@@ -183,21 +208,12 @@ export function StaffProfileForm() {
       setOtpCountdown(60);
       toast({ title: 'Code sent!', description: 'Check your phone' });
     } catch (err: any) {
-      const errorMsg = err.message?.toLowerCase() || '';
-      if (errorMsg.includes('blocked') || errorMsg.includes('fraud') || errorMsg.includes('60410')) {
-        toast({ 
-          title: 'Number temporarily blocked', 
-          description: 'This phone number has been temporarily blocked by our SMS provider. Please try a different number or contact support.',
-          variant: 'destructive' 
-        });
-      } else {
-        toast({ title: 'Error', description: err.message || 'Failed to send code', variant: 'destructive' });
-      }
+      toast({ title: 'Error', description: err.message || 'Failed to send code', variant: 'destructive' });
       setPhoneVerifyStep('idle');
     }
   };
 
-  // Verify phone OTP (for work phone - would need backend support)
+  // Verify phone OTP for work phone
   const verifyPhoneOTP = async () => {
     if (otp.length !== 6) {
       toast({ title: 'Invalid code', description: 'Enter 6-digit code', variant: 'destructive' });
@@ -209,20 +225,33 @@ export function StaffProfileForm() {
     setPhoneVerifyStep('verifying');
 
     try {
-      const { error } = await authClient.phoneNumber.verify({
-        phoneNumber: fullPhone,
-        code: otp,
-        updatePhoneNumber: false, // Don't update user's personal phone
+      const res = await fetch('/api/staff/verify-work-phone', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'verify', phoneNumber: fullPhone, code: otp }),
       });
 
-      if (error) {
-        toast({ title: 'Invalid code', description: error.message, variant: 'destructive' });
-        setPhoneVerifyStep('otp');
+      const data = await res.json();
+
+      if (!res.ok) {
+        const errorMsg = data.error?.toLowerCase() || '';
+        if (errorMsg.includes('expired') || errorMsg.includes('not found')) {
+          toast({ 
+            title: 'Code expired', 
+            description: 'Please request a new code', 
+            variant: 'destructive' 
+          });
+          setPhoneVerifyStep('idle');
+          setOtp('');
+        } else {
+          toast({ title: 'Invalid code', description: 'Check the code and try again', variant: 'destructive' });
+          setPhoneVerifyStep('otp');
+        }
         return;
       }
 
-      // Mark work phone as verified
-      await updateMutation.mutateAsync({ workPhoneVerified: true } as any);
+      // Refresh profile data
+      queryClient.invalidateQueries({ queryKey: ['staff-profile'] });
       
       toast({ title: 'Work phone verified!' });
       setPhoneJustVerified(true);
@@ -344,47 +373,61 @@ export function StaffProfileForm() {
           <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
             
             {/* Use personal phone toggle */}
-            {personalPhone && (
-              <div 
-                className="flex items-center justify-between py-3 cursor-pointer hover:bg-muted/30 -mx-5 px-5 transition-colors rounded"
-                onClick={toggleUsePersonalPhone}
-              >
-                <div>
-                  <p className="text-sm font-medium text-foreground">Use my personal phone</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    +971 {personalPhone} {isPersonalPhoneVerified && '(verified)'}
-                  </p>
-                </div>
-                <div className={cn(
-                  "w-10 h-6 rounded-full transition-colors relative",
-                  form.usePersonalPhone ? "bg-green-500" : "bg-muted"
-                )}>
+            {personalPhone && (() => {
+              const isWorkVerified = profile?.workPhoneVerified || phoneJustVerified;
+              const canToggle = isWorkVerified;
+              
+              return (
+                <div 
+                  className={cn(
+                    "flex items-center justify-between py-3 -mx-5 px-5 transition-colors rounded",
+                    canToggle ? "cursor-pointer hover:bg-muted/30" : "cursor-not-allowed opacity-60"
+                  )}
+                  onClick={toggleUsePersonalPhone}
+                >
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Use my personal phone</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      +971 {personalPhone} {isPersonalPhoneVerified && '(verified)'}
+                    </p>
+                    {!canToggle && (
+                      <p className="text-xs text-muted-foreground/60 mt-1">
+                        Verify a work phone to toggle
+                      </p>
+                    )}
+                  </div>
                   <div className={cn(
-                    "absolute top-1 w-4 h-4 rounded-full bg-white transition-transform",
-                    form.usePersonalPhone ? "translate-x-5" : "translate-x-1"
-                  )} />
+                    "w-10 h-6 rounded-full transition-colors relative",
+                    form.usePersonalPhone ? "bg-green-500" : "bg-muted"
+                  )}>
+                    <div className={cn(
+                      "absolute top-1 w-4 h-4 rounded-full bg-white transition-transform",
+                      form.usePersonalPhone ? "translate-x-5" : "translate-x-1"
+                    )} />
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
-            {/* Divider if both options shown */}
-            {personalPhone && !form.usePersonalPhone && (
+            {/* Divider */}
+            {personalPhone && (
               <div className="border-t border-border/20" />
             )}
 
-            {/* Work phone input - only show if not using personal phone */}
-            {!form.usePersonalPhone && (
-              <div className="py-3">
-                <div className="flex items-center justify-between mb-1">
-                  <p className="text-xs font-medium text-muted-foreground/70">Separate work number</p>
-                  {(profile?.workPhoneVerified || phoneJustVerified) ? (
-                    <CheckCircle2 className="w-4 h-4 text-green-500" />
-                  ) : form.workPhone && phoneVerifyStep === 'idle' ? (
-                    <button
-                      onClick={sendPhoneOTP}
-                      className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
-                    >
-                      Verify
+            {/* Work phone input - always show so they can add/verify a work phone */}
+            <div className="py-3">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs font-medium text-muted-foreground/70">
+                  {form.usePersonalPhone ? 'Or add a separate work number' : 'Separate work number'}
+                </p>
+                {(profile?.workPhoneVerified || phoneJustVerified) ? (
+                  <CheckCircle2 className="w-4 h-4 text-green-500" />
+                ) : form.workPhone && phoneVerifyStep === 'idle' ? (
+                  <button
+                    onClick={sendPhoneOTP}
+                    className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                  >
+                    Verify
                     </button>
                   ) : null}
                 </div>
@@ -482,7 +525,6 @@ export function StaffProfileForm() {
                   </div>
                 )}
               </div>
-            )}
 
             {/* Note about phone usage */}
             <p className="text-xs text-muted-foreground border-t border-border/20 pt-3">
