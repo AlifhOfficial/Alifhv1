@@ -124,25 +124,12 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
   
   return (
     <div className="space-y-8">
-      {/* Why VIN is needed - Buyer Protection */}
-      <div className="rounded-xl border border-green-500/30 bg-sidebar p-5">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-green-500/10 rounded-full">
-            <CheckCircle2 className="w-5 h-5 text-green-500" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-foreground">Why do we need the VIN?</p>
-            <p className="text-xs text-muted-foreground/70">
-              To protect buyers. Would you buy a car without asking for the VIN? 
-              The VIN verifies vehicle history, authenticity, and specs.
-            </p>
-          </div>
-        </div>
-      </div>
-
       {/* VIN Entry Section */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Vehicle Identification</h3>
+        <div className="flex items-baseline justify-between mb-3">
+          <h3 className="text-[15px] font-bold tracking-tight text-foreground">Vehicle Identification</h3>
+          <span className="text-xs text-muted-foreground/70">Protects buyers & verifies specs</span>
+        </div>
         
         <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
           <VINInput
@@ -255,7 +242,7 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
               min={1990}
               max={new Date().getFullYear() + 1}
               className={cn(
-                "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
+                "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-primary",
                 "outline-none transition-colors px-0 text-sm font-medium",
                 "placeholder:text-muted-foreground/40"
               )}
@@ -270,7 +257,7 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
               onChange={(e) => updateField('trim', e.target.value)}
               placeholder="Sport, Limited, GT"
               className={cn(
-                "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
+                "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-primary",
                 "outline-none transition-colors px-0 text-sm font-medium",
                 "placeholder:text-muted-foreground/40"
               )}

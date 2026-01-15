@@ -161,8 +161,8 @@ export async function POST(
       return NextResponse.json({ error: 'Listing not found' }, { status: 404 });
     }
 
-    // Invalidate caches
-    invalidateListingCaches(id, before?.partnerId || undefined);
+    // Invalidate caches - include userId to clear user's my-listings cache
+    invalidateListingCaches(id, before?.partnerId || undefined, before?.userId || undefined);
 
     // Create audit log entry
     void createAuditLogEntry({

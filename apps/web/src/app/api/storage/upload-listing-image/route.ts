@@ -6,8 +6,11 @@
  * Authentication: Required (user must be logged in)
  * 
  * Request Body (multipart/form-data):
- * - file: Image file (JPEG, PNG, WebP, HEIC)
- * - listingId: Optional listing ID (for updating existing listing)
+ * - file: Image file (JPEG, PNG, WebP)
+ * - vin: Vehicle VIN (required for organizing images)
+ * 
+ * Note: HEIC/HEIF not supported - requires libvips with heif codec.
+ * iPhone users should use "Most Compatible" camera setting.
  * 
  * Processing:
  * - Converts to WebP format using Sharp
@@ -32,8 +35,10 @@ import { createId } from "@paralleldrive/cuid2";
 
 export const runtime = "nodejs"; // Sharp requires Node.js runtime
 
-// Supported input formats (HEIC/HEIF require libvips with heif support)
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"];
+// Supported input formats
+// Note: HEIC/HEIF requires libvips compiled with heif support (not available on all systems)
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const HEIC_TYPES = ["image/heic", "image/heif"];
 const MAX_SIZE = 10 * 1024 * 1024; // 10MB per image
 
 // Output configuration - optimized for listing photos
@@ -99,9 +104,15 @@ export async function POST(req: NextRequest) {
     }
 
     // Validate file type
+    if (HEIC_TYPES.includes(file.type)) {
+      return NextResponse.json({ 
+        error: "HEIC/HEIF not supported. Please convert to JPEG first (use iPhone's 'Most Compatible' camera setting)" 
+      }, { status: 400 });
+    }
+    
     if (!ALLOWED_TYPES.includes(file.type)) {
       return NextResponse.json({ 
-        error: "Invalid file type. Allowed: JPEG, PNG, WebP, HEIC" 
+        error: "Invalid file type. Allowed: JPEG, PNG, WebP" 
       }, { status: 400 });
     }
 

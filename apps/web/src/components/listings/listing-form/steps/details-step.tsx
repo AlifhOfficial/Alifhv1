@@ -4,7 +4,7 @@
  * Details Step - Clean Style with Color Accents
  * 
  * Larger typography, colored toggle pills.
- * Blue-500 for selected states.
+ * Primary for selected states.
  */
 
 import { useMemo } from 'react';
@@ -90,7 +90,7 @@ function TogglePill({
       className={cn(
         'inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200',
         pressed
-          ? 'bg-blue-500 text-white'
+          ? 'bg-primary text-primary-foreground'
           : 'bg-muted/30 text-muted-foreground hover:bg-muted/50 hover:text-foreground',
         disabled && 'opacity-40 cursor-not-allowed hover:bg-muted/30 hover:text-muted-foreground'
       )}
@@ -195,7 +195,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
                 placeholder="45,000"
                 min={0}
                 className={cn(
-                  "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
+                  "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-primary",
                   "outline-none transition-colors px-0 pr-12 text-sm font-medium",
                   "placeholder:text-muted-foreground/40"
                 )}
@@ -338,7 +338,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
               min={0}
               max={16}
               className={cn(
-                "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
+                "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-primary",
                 "outline-none transition-colors px-0 text-sm font-medium",
                 "placeholder:text-muted-foreground/40"
               )}
@@ -361,7 +361,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
               onChange={(e) => updateField('fuelEconomy', e.target.value)}
               placeholder="12 km/L"
               className={cn(
-                "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
+                "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-primary",
                 "outline-none transition-colors px-0 text-sm font-medium",
                 "placeholder:text-muted-foreground/40"
               )}
@@ -375,7 +375,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
               onChange={(e) => updateField('torque', e.target.value)}
               placeholder="350 Nm"
               className={cn(
-                "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
+                "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-primary",
                 "outline-none transition-colors px-0 text-sm font-medium",
                 "placeholder:text-muted-foreground/40"
               )}

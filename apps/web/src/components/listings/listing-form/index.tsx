@@ -10,7 +10,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Loader2, ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Loader2, ArrowLeft, ArrowRight, CheckCircle2, Fingerprint, SlidersHorizontal, Camera } from 'lucide-react';
 import { cn } from '@/utils';
 import {
   type FormStep,
@@ -160,32 +160,40 @@ export function ListingForm({
     details: 'Add Specifications',
     publish: 'Set Price & Photos',
   };
+
+  // Step icons
+  const stepIcons = {
+    vin: Fingerprint,
+    details: SlidersHorizontal,
+    publish: Camera,
+  };
   
   return (
     <div className="min-h-screen bg-background pb-16">
       <div className="max-w-2xl mx-auto px-6 py-8">
-      {/* Header with cancel and step dots */}
+      {/* Header with cancel and step icons */}
       <header className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          {/* Step Dots - left side */}
-          <div className="flex items-center gap-2">
+          {/* Step Icons - left side */}
+          <div className="flex items-center gap-4">
             {editableSteps.map((step, index) => {
               const isCompleted = index < currentStepIndex;
               const isCurrent = index === currentStepIndex;
+              const StepIcon = stepIcons[step.id];
               
               return (
                 <button
                   key={step.id}
                   onClick={() => index < currentStepIndex && setCurrentStep(step.id)}
                   disabled={index > currentStepIndex}
-                  className="flex items-center gap-1"
+                  className="transition-opacity"
                 >
                   {isCompleted ? (
                     <CheckCircle2 className="w-5 h-5 text-green-500" />
                   ) : (
-                    <span className={cn(
-                      "w-3 h-3 rounded-full transition-all",
-                      isCurrent ? "bg-muted-foreground" : "bg-muted-foreground/30"
+                    <StepIcon className={cn(
+                      "w-5 h-5 transition-colors",
+                      isCurrent ? "text-foreground" : "text-muted-foreground/40"
                     )} />
                   )}
                 </button>
@@ -280,7 +288,7 @@ export function ListingForm({
               type="button"
               onClick={handleNext}
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-3 rounded-full bg-blue-500 text-white text-sm font-semibold hover:bg-blue-600 transition-colors"
+              className="flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
             >
               Continue
               <ArrowRight className="w-4 h-4" />

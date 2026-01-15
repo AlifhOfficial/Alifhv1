@@ -78,10 +78,29 @@ const navItems: NavItem[] = [
   {
     label: "Partners",
     href: "/partner",
+    submenu: [
+      {
+        title: "For Dealers",
+        items: [
+          { label: "Partner with Alifh", href: "/partner" },
+          { label: "Pricing", href: "/pricing" },
+          { label: "Become a Partner", href: "/become-partner" },
+        ],
+      },
+    ],
   },
   {
     label: "About",
     href: "/about",
+    submenu: [
+      {
+        title: "Company",
+        items: [
+          { label: "About Alifh", href: "/about" },
+          { label: "Badges", href: "/badges" },
+        ],
+      },
+    ],
   },
   {
     label: "Car Tools",

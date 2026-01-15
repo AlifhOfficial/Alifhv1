@@ -4,11 +4,11 @@
  * Publish Step - Clean Style with Color Accents
  * 
  * Larger typography, green success states.
- * Blue-500 for focus, green-500 for CheckCircle2.
+ * Primary for focus, green-500 for CheckCircle2.
  */
 
 import { useMemo, useState } from 'react';
-import { X, CheckCircle2 } from 'lucide-react';
+import { X, CheckCircle2, Sparkles } from 'lucide-react';
 import { cn } from '@/utils';
 import { Combobox } from '../combobox';
 import { UAE_EMIRATES } from '../constants';
@@ -62,6 +62,99 @@ function mapKeysToImages(keys: string[]): ListingImage[] {
   return keys
     .filter((k) => typeof k === 'string' && k.trim().length > 0)
     .map((key, order) => ({ key, order }));
+}
+
+// Remove emojis and normalize text (prevent shouting)
+function normalizeText(text: string): string {
+  // Remove emojis
+  const noEmoji = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}]/gu, '');
+  
+  // Convert to lowercase first, then capitalize first letter of each sentence
+  const lower = noEmoji.toLowerCase();
+  
+  // Capitalize first letter of text and after sentence endings
+  return lower.replace(/(^|[.!?]\s*)([a-z])/g, (_, prefix, letter) => {
+    return prefix + letter.toUpperCase();
+  });
+}
+
+// Auto-generate description from listing data
+function generateDescription(data: Partial<import('../types').ListingFormData>): string {
+  const parts: string[] = [];
+  
+  // Opening with year, make, model
+  if (data.year && data.make && data.model) {
+    const trim = data.trim ? ` ${data.trim}` : '';
+    parts.push(`${data.year} ${data.make} ${data.model}${trim}.`);
+  }
+  
+  // Mileage
+  if (data.mileage !== undefined && data.mileage !== null) {
+    const mileageStr = data.mileage.toLocaleString();
+    if (data.mileage < 30000) {
+      parts.push(`Low mileage at ${mileageStr} km.`);
+    } else if (data.mileage < 80000) {
+      parts.push(`${mileageStr} km on the odometer.`);
+    } else {
+      parts.push(`Well-maintained with ${mileageStr} km.`);
+    }
+  }
+  
+  // Specs origin
+  if (data.specs) {
+    const specsMap: Record<string, string> = {
+      gcc: 'GCC specification',
+      american: 'American import',
+      european: 'European specification',
+      japanese: 'Japanese import',
+      korean: 'Korean specification',
+      chinese: 'Chinese specification',
+      other: 'International specification',
+    };
+    if (specsMap[data.specs]) {
+      parts.push(`${specsMap[data.specs]}.`);
+    }
+  }
+  
+  // Key features
+  const features: string[] = [];
+  if (data.exteriorColor) features.push(`${data.exteriorColor} exterior`);
+  if (data.interiorColor) features.push(`${data.interiorColor} interior`);
+  if (data.transmission) features.push(data.transmission === 'automatic' ? 'automatic' : 'manual');
+  if (data.fuelType && data.fuelType !== 'petrol') features.push(data.fuelType);
+  
+  if (features.length > 0) {
+    parts.push(`Features ${features.join(', ')}.`);
+  }
+  
+  // Engine info
+  if (data.engineSize || data.cylinders) {
+    const engine: string[] = [];
+    if (data.engineSize) engine.push(data.engineSize);
+    if (data.cylinders) engine.push(`${data.cylinders}-cylinder`);
+    if (engine.length > 0) {
+      parts.push(`${engine.join(' ')} engine.`);
+    }
+  }
+  
+  // Warranty
+  if (data.warrantyType && data.warrantyType !== 'none') {
+    const warrantyMap: Record<string, string> = {
+      manufacturer: 'Under manufacturer warranty',
+      extended: 'Extended warranty included',
+      third_party: 'Third-party warranty available',
+    };
+    if (warrantyMap[data.warrantyType]) {
+      parts.push(`${warrantyMap[data.warrantyType]}.`);
+    }
+  }
+  
+  // Closing
+  if (data.isNegotiable) {
+    parts.push('Open to reasonable offers.');
+  }
+  
+  return parts.join(' ');
 }
 
 // ============================================================================
@@ -118,7 +211,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
                 placeholder="85,000"
                 min={0}
                 className={cn(
-                  "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
+                  "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-primary",
                   "outline-none transition-colors px-0 pr-14 text-sm font-medium",
                   "placeholder:text-muted-foreground/40"
                 )}
@@ -172,7 +265,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               onChange={(e) => updateField('city', e.target.value)}
               placeholder="Jumeirah"
               className={cn(
-                "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
+                "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-primary",
                 "outline-none transition-colors px-0 text-sm font-medium",
                 "placeholder:text-muted-foreground/40"
               )}
@@ -211,18 +304,32 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
 
         <div className="rounded-xl border border-border/40 bg-sidebar p-5 mt-3 space-y-6">
 
-        <FieldWrapper label="Description" hint="Optional" error={errors.description}>
-          <textarea
-            value={data.description || ''}
-            onChange={(e) => updateField('description', e.target.value)}
-            placeholder="Describe maintenance, modifications, and anything a buyer should know."
-            rows={5}
-            className={cn(
-              "w-full bg-transparent border-2 border-border/30 rounded-xl focus:border-blue-500",
-              "outline-none transition-colors px-4 py-3 text-sm font-medium resize-none",
-              "placeholder:text-muted-foreground/40"
-            )}
-          />
+        <FieldWrapper label="Description" hint={`${(data.description || '').length}/750`} error={errors.description}>
+          <div className="space-y-3">
+            <button
+              type="button"
+              onClick={() => {
+                const generated = generateDescription(data);
+                if (generated) updateField('description', generated);
+              }}
+              className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+            >
+              <Sparkles className="w-4 h-4" />
+              Auto-generate for me
+            </button>
+            <textarea
+              value={data.description || ''}
+              onChange={(e) => updateField('description', normalizeText(e.target.value))}
+              placeholder="Share what makes your car special — maintenance history, upgrades, or why you loved driving it. Auto-formatted for readability."
+              rows={5}
+              maxLength={750}
+              className={cn(
+                "w-full bg-transparent border-2 border-border/30 rounded-xl focus:border-primary",
+                "outline-none transition-colors px-4 py-3 text-sm font-medium resize-none",
+                "placeholder:text-muted-foreground/40"
+              )}
+            />
+          </div>
         </FieldWrapper>
 
         {/* Owner Notes */}
@@ -264,7 +371,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
             <input
               type="text"
               value={noteDraft}
-              onChange={(e) => setNoteDraft(e.target.value)}
+              onChange={(e) => setNoteDraft(normalizeText(e.target.value))}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
@@ -273,7 +380,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               }}
               placeholder="Add a short note (e.g. Full service history)"
               className={cn(
-                "flex-1 h-12 bg-transparent border-b-2 border-border/40 focus:border-blue-500",
+                "flex-1 h-12 bg-transparent border-b-2 border-border/40 focus:border-primary",
                 "outline-none transition-colors px-0 text-sm font-medium",
                 "placeholder:text-muted-foreground/40"
               )}
@@ -282,7 +389,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               type="button"
               onClick={addOwnerRemark}
               disabled={!noteDraft.trim() || ownerRemarks.length >= 10}
-              className="px-5 py-2.5 rounded-full bg-blue-500 text-white text-xs font-semibold hover:bg-blue-600 transition-colors disabled:opacity-40"
+              className="px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors disabled:opacity-40"
             >
               Add
             </button>
