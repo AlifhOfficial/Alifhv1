@@ -47,7 +47,7 @@ export function PricingHeroSection() {
           </div>
           <div className="p-6 rounded-lg border border-border/40 bg-background text-center">
             <div className="text-2xl font-semibold tracking-tight text-foreground mb-1">∞</div>
-            <div className="text-xs text-muted-foreground">Listings</div>
+            <div className="text-xs text-muted-foreground">Listings per showroom</div>
           </div>
           <div className="p-6 rounded-lg border border-border/40 bg-background text-center">
             <div className="text-2xl font-semibold tracking-tight text-foreground mb-1">0</div>

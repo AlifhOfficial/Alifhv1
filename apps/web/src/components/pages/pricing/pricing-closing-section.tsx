@@ -56,7 +56,7 @@ export function PricingClosingSection() {
           </div>
           <div className="text-center space-y-1">
             <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">∞</div>
-            <div className="text-xs text-muted-foreground">Listings</div>
+            <div className="text-xs text-muted-foreground">Per showroom</div>
           </div>
           <div className="text-center space-y-1">
             <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">0</div>

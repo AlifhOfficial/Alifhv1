@@ -49,7 +49,7 @@ export function PartnerFlatFeeSection() {
           {/* Feature Cards */}
           <div className="p-6 rounded-lg border border-border/40 bg-background">
             <CheckCircle2 className="w-5 h-5 text-[#0066FF] mb-3" />
-            <h3 className="text-sm font-medium text-foreground mb-1">Unlimited listings</h3>
+            <h3 className="text-sm font-medium text-foreground mb-1">Unlimited listings per showroom</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
               10 or 1,000. Same price.
             </p>

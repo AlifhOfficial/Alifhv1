@@ -28,7 +28,7 @@ export function PricingCompareSection() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto mb-20">
           {[
             { title: 'Zero commission', desc: 'Not 1%. Not "just this time." Never.' },
-            { title: 'Unlimited listings', desc: '10 cars or 500. Same price.' },
+            { title: 'Unlimited listings', desc: 'Per showroom. 10 cars or 500.' },
             { title: 'No per-listing fees', desc: 'No credits. No tokens. No daily charges.' },
             { title: 'All features included', desc: 'Booking, leads, analytics, messaging.' },
             { title: 'Quality-based ranking', desc: 'Visibility is earned, not bought.' },
@@ -84,7 +84,7 @@ export function PricingCompareSection() {
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-white/60" />
-                <span className="text-sm">Flat fee. That's it.</span>
+                <span className="text-sm">Flat fee per showroom</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-white/60" />
@@ -92,7 +92,7 @@ export function PricingCompareSection() {
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-white/60" />
-                <span className="text-sm">Unlimited listings</span>
+                <span className="text-sm">Unlimited listings per showroom</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-white/60" />
@@ -105,7 +105,7 @@ export function PricingCompareSection() {
             </div>
             <div className="pt-6 mt-6 border-t border-white/20">
               <p className="text-2xl font-semibold tracking-tight">AED 7,000</p>
-              <p className="text-sm text-white/70">/month. Period.</p>
+              <p className="text-sm text-white/70">/month · launch pricing</p>
             </div>
           </div>
         </div>

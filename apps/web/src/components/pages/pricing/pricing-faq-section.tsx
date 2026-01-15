@@ -5,19 +5,30 @@
 
 'use client';
 
+import Link from 'next/link';
+
 export function PricingFaqSection() {
-  const faqs = [
+  const faqs: { q: string; a: string; link?: string }[] = [
+    {
+      q: 'What counts as a "showroom"?',
+      a: 'One physical location with one inventory. If you have multiple branches, each needs its own subscription. This keeps pricing fair for everyone.',
+    },
+    {
+      q: 'We have multiple branches. Can we use one subscription?',
+      a: 'Each showroom location requires its own Flow subscription. Contact us for multi-location pricing if you operate 3+ branches.',
+    },
+    {
+      q: 'Will the price stay at AED 7,000?',
+      a: 'This is launch pricing. It may change in the future as we add more features. Early partners will be grandfathered at favorable rates.',
+    },
     {
       q: 'Can I switch between Flow and Black?',
       a: 'Yes. Month-to-month. Upgrade or downgrade anytime. No penalties.',
     },
     {
       q: 'What if I only have 5 cars right now?',
-      a: 'Flow still makes sense. You\'re paying for the infrastructure, not per-car. As you grow, the value compounds.',
-    },
-    {
-      q: 'Do you offer discounts for annual contracts?',
-      a: 'Not right now. We prefer month-to-month flexibility. No lock-ins. No games.',
+      a: 'We get it. Flow is built for established showrooms. If you\'re just starting out, check out Alifh Next—a program designed for smaller dealers to grow with us. Learn more →',
+      link: '/become-partner?plan=next',
     },
     {
       q: 'Is there a free trial?',
@@ -54,7 +65,14 @@ export function PricingFaqSection() {
           {faqs.map((faq, i) => (
             <div key={i} className="p-6 rounded-lg border border-border/40 bg-background">
               <h3 className="text-sm font-medium text-foreground mb-2">{faq.q}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {faq.a.replace(' Learn more →', '')}
+              </p>
+              {faq.link && (
+                <Link href={faq.link} className="inline-block mt-3 text-sm text-[#0066FF] hover:underline font-medium">
+                  Learn more →
+                </Link>
+              )}
             </div>
           ))}
         </div>

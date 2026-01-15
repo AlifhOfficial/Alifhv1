@@ -50,7 +50,7 @@ export function PartnerCompareSection() {
             <div className="space-y-6">
               {[
                 { label: 'Commission', value: 'Zero. Forever.' },
-                { label: 'Listings', value: 'Unlimited' },
+                { label: 'Listings', value: 'Unlimited per showroom' },
                 { label: 'Visibility', value: 'Quality-based' },
                 { label: 'Features', value: 'All included' },
                 { label: 'Our inventory', value: 'We don\'t sell cars' },

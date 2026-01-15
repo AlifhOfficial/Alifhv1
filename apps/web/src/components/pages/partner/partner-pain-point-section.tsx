@@ -82,7 +82,7 @@ export function PartnerPainPointSection() {
               {[
                 'Zero commission',
                 'No credits, no tokens',
-                'Unlimited listings',
+                'Unlimited listings per showroom',
                 'Quality earns visibility',
                 'We never sell cars',
               ].map((item, i) => (

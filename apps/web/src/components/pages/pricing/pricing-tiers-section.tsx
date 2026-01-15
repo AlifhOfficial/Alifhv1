@@ -36,12 +36,13 @@ export function PricingTiersSection() {
                 Recommended
               </span>
             </div>
-            <div className="flex items-baseline gap-2 mb-3">
+            <div className="flex items-baseline gap-2 mb-1">
               <span className="text-4xl font-semibold tracking-tight">AED 7,000</span>
               <span className="text-sm text-white/60">/month</span>
             </div>
+            <p className="text-xs text-white/50 mb-3">Launch pricing · per showroom</p>
             <p className="text-sm text-white/70 leading-relaxed mb-6">
-              Everything you need. No limitations. No upsells. What 95% of dealers choose.
+              Everything you need for one showroom location. No limitations. No upsells. What 95% of dealers choose.
             </p>
             <Link
               href="/become-partner?plan=flow"
@@ -54,7 +55,7 @@ export function PricingTiersSection() {
 
           {/* Flow Features - Grid */}
           {[
-            { title: 'Unlimited listings', desc: '10 cars or 1,000. Same price.' },
+            { title: 'Unlimited listings', desc: 'Per showroom. 10 cars or 1,000.' },
             { title: 'Test drive booking', desc: 'Customers book directly.' },
             { title: 'Lead management', desc: 'Track every inquiry.' },
             { title: 'Listing messaging', desc: 'In-platform communication.' },
