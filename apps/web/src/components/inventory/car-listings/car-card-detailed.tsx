@@ -162,17 +162,17 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
             <>
               <button
                 onClick={(e) => { e.stopPropagation(); prev(); }}
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center transition-colors"
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30 rounded-full flex items-center justify-center transition-all shadow-lg"
                 aria-label="Previous image"
               >
-                <ChevronLeft className="w-4 h-4 text-neutral-800" />
+                <ChevronLeft className="w-4 h-4 text-white drop-shadow-md" />
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); next(); }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30 rounded-full flex items-center justify-center transition-all shadow-lg"
                 aria-label="Next image"
               >
-                <ChevronRight className="w-4 h-4 text-neutral-800" />
+                <ChevronRight className="w-4 h-4 text-white drop-shadow-md" />
               </button>
             </>
           )}
@@ -193,8 +193,8 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
                 className={cn(
                   "relative w-16 h-12 flex-shrink-0 overflow-hidden transition-all rounded-md",
                   idx === currentIndex 
-                    ? "ring-2 ring-primary ring-offset-2 ring-offset-background" 
-                    : "opacity-70 hover:opacity-100"
+                    ? "opacity-100 scale-105" 
+                    : "opacity-50 hover:opacity-80"
                 )}
               >
                 <Image 
