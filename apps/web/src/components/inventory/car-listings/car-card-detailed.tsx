@@ -162,17 +162,17 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
             <>
               <button
                 onClick={(e) => { e.stopPropagation(); prev(); }}
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30 rounded-full flex items-center justify-center transition-all shadow-lg"
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/70 hover:bg-white/90 backdrop-blur-md border border-white/40 rounded-full flex items-center justify-center transition-all shadow-lg"
                 aria-label="Previous image"
               >
-                <ChevronLeft className="w-4 h-4 text-white drop-shadow-md" />
+                <ChevronLeft className="w-4 h-4 text-black" />
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); next(); }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30 rounded-full flex items-center justify-center transition-all shadow-lg"
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/70 hover:bg-white/90 backdrop-blur-md border border-white/40 rounded-full flex items-center justify-center transition-all shadow-lg"
                 aria-label="Next image"
               >
-                <ChevronRight className="w-4 h-4 text-white drop-shadow-md" />
+                <ChevronRight className="w-4 h-4 text-black" />
               </button>
             </>
           )}
