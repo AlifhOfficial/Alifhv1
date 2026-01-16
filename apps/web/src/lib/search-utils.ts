@@ -111,7 +111,7 @@ export interface SearchResultItem {
   emirate: string;
   specs: string | null;
   thumbnail: string | null;
-  images: string[];
+  // NOTE: images array excluded from search results for performance - use detail endpoint
   qiScore: number | null;
   isBlkListing: boolean;
   sellerType: 'dealer' | 'private';

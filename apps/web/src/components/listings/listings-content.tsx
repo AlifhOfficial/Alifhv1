@@ -23,7 +23,7 @@ interface ListingItem {
   emirate: string;
   specs: string;
   thumbnail?: string | null;
-  images?: string[] | null;
+  // NOTE: images array excluded from search results for performance - use detail endpoint
   qiScore?: number | null;
   isBlkListing?: boolean | null;
   partnerName?: string | null;
@@ -173,7 +173,6 @@ export function ListingsContent({
                 make={listing.make}
                 model={listing.model}
                 thumbnail={listing.thumbnail}
-                images={listing.images}
                 partnerName={listing.partnerName || undefined}
                 partnerLogo={listing.partnerLogo || undefined}
                 sellerName={listing.sellerName || undefined}
@@ -197,7 +196,6 @@ export function ListingsContent({
                 emirate={listing.emirate}
                 specs={listing.specs}
                 thumbnail={listing.thumbnail}
-                images={listing.images}
                 qiScore={listing.qiScore}
                 isBlkListing={listing.isBlkListing}
                 partnerName={listing.partnerName || undefined}
@@ -231,7 +229,6 @@ export function ListingsContent({
                 emirate={listing.emirate}
                 specs={listing.specs}
                 thumbnail={listing.thumbnail}
-                images={listing.images}
                 qiScore={listing.qiScore}
                 isBlkListing={listing.isBlkListing}
                 partnerName={listing.partnerName || undefined}
@@ -254,7 +251,6 @@ export function ListingsContent({
                 make={listing.make}
                 model={listing.model}
                 thumbnail={listing.thumbnail}
-                images={listing.images}
                 partnerName={listing.partnerName || undefined}
                 partnerLogo={listing.partnerLogo || undefined}
                 sellerName={listing.sellerName || undefined}
@@ -278,7 +274,6 @@ export function ListingsContent({
                 emirate={listing.emirate}
                 specs={listing.specs}
                 thumbnail={listing.thumbnail}
-                images={listing.images}
                 qiScore={listing.qiScore}
                 isBlkListing={listing.isBlkListing}
                 partnerName={listing.partnerName || undefined}

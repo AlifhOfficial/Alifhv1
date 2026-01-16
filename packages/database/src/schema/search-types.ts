@@ -211,7 +211,8 @@ export interface SearchResultItem {
   emirate: string;
   specs: string | null;
   thumbnail: string | null;
-  images: string[];
+  // NOTE: images array intentionally excluded from search results for performance
+  // Use detail endpoint to get full images array
   qiScore: number | null;
   isBlkListing: boolean;
   

@@ -662,7 +662,7 @@ export async function searchListings(
           emirate: carListing.emirate,
           specs: carListing.specs,
           thumbnail: carListing.thumbnail,
-          images: carListing.images,
+          // NOTE: images array intentionally excluded - only thumbnail needed for listings page
           qiScore: carListing.qiScore,
           isBlkListing: isBlkListingSql(),
           sellerType: carListing.sellerType,
@@ -685,10 +685,7 @@ export async function searchListings(
       listings.sort((a, b) => (idOrder.get(a.id) ?? 0) - (idOrder.get(b.id) ?? 0));
 
       return {
-        listings: listings.map(l => ({
-          ...l,
-          images: l.images || [],
-        })) as SearchResultItem[],
+        listings: listings as SearchResultItem[],
         hasMoreFromFetch,
       };
     })(),
