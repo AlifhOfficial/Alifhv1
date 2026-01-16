@@ -10,7 +10,7 @@
  * @module queries/listings/car-listings/search-query
  */
 
-import { eq, and, desc, inArray, SQL, sql, or, gte, lte, ilike, isNotNull, gt, asc, count } from 'drizzle-orm';
+import { eq, and, desc, inArray, SQL, sql, or, gte, lte, ilike, isNotNull, isNull, gt, asc, count } from 'drizzle-orm';
 import { db } from '../../../dbclient';
 import { carListing } from '../../../schema/listing';
 import { user } from '../../../schema/auth';
@@ -177,6 +177,12 @@ function buildSearchConditions(params: SearchParams, now: Date): SQL[] {
   // Partner ID
   if (params.partnerId) {
     conditions.push(eq(carListing.partnerId, params.partnerId));
+  }
+
+  // Private seller ID (userId)
+  if (params.sellerId) {
+    conditions.push(eq(carListing.userId, params.sellerId));
+    conditions.push(isNull(carListing.partnerId)); // Ensure it's a private listing
   }
 
   // Partner verified

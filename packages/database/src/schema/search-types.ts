@@ -82,6 +82,9 @@ export interface AdvancedFilterParams {
   partnerId?: string;
   partnerVerified?: boolean;
   isBlackTierPartner?: boolean;
+  
+  // Private seller specific
+  sellerId?: string;
 }
 
 /**
@@ -319,6 +322,7 @@ export function searchParamsToUrl(params: SearchParams): URLSearchParams {
   // Seller
   if (params.sellerType) urlParams.set('seller', params.sellerType);
   if (params.partnerId) urlParams.set('partnerId', params.partnerId);
+  if (params.sellerId) urlParams.set('sellerId', params.sellerId);
   
   // Pagination & Sort
   if (params.limit) urlParams.set('limit', String(params.limit));
@@ -382,6 +386,7 @@ export function urlToSearchParams(urlParams: URLSearchParams): SearchParams {
     
     sellerType: urlParams.get('seller') as SearchParams['sellerType'],
     partnerId: urlParams.get('partnerId') || undefined,
+    sellerId: urlParams.get('sellerId') || undefined,
     
     limit: parseNumber('limit'),
     offset: parseNumber('offset'),

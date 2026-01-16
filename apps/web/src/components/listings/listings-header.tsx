@@ -104,6 +104,8 @@ export function ListingsHeader({
     // Handle compound filters that need multiple params cleared
     if (chipKey === 'partnerId') {
       setFilters({ partnerId: undefined, partnerName: undefined });
+    } else if (chipKey === 'sellerId') {
+      setFilters({ sellerId: undefined });
     } else if (chipKey === 'priceMin') {
       setFilters({ priceMin: undefined, priceMax: undefined });
     } else if (chipKey === 'yearMin') {
@@ -625,6 +627,9 @@ function getActiveFilterChips(
     const partnerNameFromListings = listings?.find(l => l.partnerName)?.partnerName;
     const label = params.partnerName || partnerNameFromListings || 'Partner';
     chips.push({ key: 'partnerId', label });
+  }
+  if (params.sellerId) {
+    chips.push({ key: 'sellerId', label: 'Private Seller' });
   }
 
   return chips;

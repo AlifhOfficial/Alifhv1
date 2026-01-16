@@ -6,6 +6,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { X, Clock } from 'lucide-react';
 import { ListingForm } from '@/components/listings/listing-form';
 import type { ListingFormData } from '@/components/listings/listing-form/types';
 
@@ -13,10 +14,64 @@ interface NewListingViewProps {
   userId: string;
 }
 
+// Submission success modal - clean minimal design
+function SubmissionModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div 
+      className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div 
+        className="w-full max-w-sm bg-card border border-border/40 rounded-xl shadow-xl overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="p-6 pb-4 relative">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+          
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center">
+              <Clock className="w-5 h-5 text-amber-500" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-foreground">Sit Tight!</h2>
+              <p className="text-xs text-muted-foreground">Listing submitted</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="px-6 pb-4">
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Most listings go live within <span className="font-semibold text-foreground">5 minutes</span>. 
+            If manual review is needed, we'll check within 24 hours.
+          </p>
+        </div>
+
+        {/* Footer */}
+        <div className="border-t border-border/40 p-4">
+          <button
+            onClick={onClose}
+            className="w-full h-10 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
+          >
+            View My Listings
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function NewListingView({ userId }: NewListingViewProps) {
   void userId;
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleSubmit = async (data: ListingFormData) => {
     try {
@@ -51,12 +106,17 @@ export function NewListingView({ userId }: NewListingViewProps) {
 
       const result = await response.json();
       
-      // Redirect to my listings - submitted for review
-      router.push('/user-dashboard/listings/my-listings?tab=in_review');
+      // Show success modal for user listings
+      setShowSuccessModal(true);
     } catch (err) {
       console.error('Error creating listing:', err);
       setError(err instanceof Error ? err.message : 'Failed to create listing');
     }
+  };
+
+  const handleModalClose = () => {
+    setShowSuccessModal(false);
+    router.push('/user-dashboard/listings/my-listings?tab=in_review');
   };
 
   const handleSaveDraft = async (data: Partial<ListingFormData>) => {
@@ -100,6 +160,9 @@ export function NewListingView({ userId }: NewListingViewProps) {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Success Modal */}
+      {showSuccessModal && <SubmissionModal onClose={handleModalClose} />}
+
       {/* Error Message */}
       {error && (
         <div className="max-w-4xl mx-auto px-6 mt-6">

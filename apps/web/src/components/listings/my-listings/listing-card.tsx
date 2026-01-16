@@ -349,6 +349,15 @@ export function ListingCard({
             </div>
           )}
 
+          {/* AI Moderation Reason for Pending Review */}
+          {isInReview && listing.aiModeration?.reasoning && (
+            <div className="mt-2 px-2 py-1.5 rounded-md bg-blue-500/5 border border-blue-500/10">
+              <p className="text-[11px] text-blue-600 line-clamp-2">
+                <span className="font-semibold">Under Review:</span> {listing.aiModeration.reasoning}
+              </p>
+            </div>
+          )}
+
           {/* Suspension Reason */}
           {isSuspended && listing.suspensionReason && (
             <div className="mt-2 px-2 py-1.5 rounded-md bg-red-500/5 border border-red-500/10">

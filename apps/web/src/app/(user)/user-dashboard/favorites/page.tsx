@@ -64,6 +64,7 @@ export default function FavoritesPage() {
 
     fetch(`/api/listings/car-card?ids=${encodeURIComponent(favoriteIds.join(','))}`, {
       credentials: 'include',
+      cache: 'no-store', // Prevent Safari caching issues
     })
       .then(res => res.json())
       .then((data: CarCardResponse) => setListings(data.data || []))
@@ -80,9 +81,9 @@ export default function FavoritesPage() {
   }, [listings]);
 
   // Filter to only IDs that have valid listing data (excludes deleted listings)
-  // Reverse order to show newest favorites first
+  // LIFO - newest favorites first (API returns in this order)
   const validFavoriteIds = useMemo(() => 
-    favoriteIds.filter(id => listingsById.has(id)).reverse(), 
+    favoriteIds.filter(id => listingsById.has(id)), 
     [favoriteIds, listingsById]
   );
 

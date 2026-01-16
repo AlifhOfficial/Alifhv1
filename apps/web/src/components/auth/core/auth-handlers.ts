@@ -16,6 +16,34 @@ import {
 } from "@/utils/auth";
 import { AUTH_CONFIG } from "@/lib/auth/config";
 
+/**
+ * Clears stale OAuth state cookies before starting any auth flow.
+ * This prevents state_mismatch errors when old cookies exist from previous sessions.
+ */
+function clearStaleOAuthCookies() {
+  if (typeof document === 'undefined') return;
+  
+  const cookies = document.cookie.split(";");
+  for (const cookie of cookies) {
+    const [name] = cookie.split("=");
+    const trimmedName = name.trim();
+    // Clear any state-related cookies (oauth state, pkce verifier, etc.)
+    if (
+      trimmedName.includes("state") || 
+      trimmedName.includes("pkce") || 
+      trimmedName.includes("oauth") ||
+      trimmedName.includes("code_verifier") ||
+      (trimmedName.startsWith("better-auth.") && !trimmedName.includes("session"))
+    ) {
+      const paths = ["/", "/api", "/api/auth", "/auth"];
+      for (const path of paths) {
+        document.cookie = `${trimmedName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}`;
+        document.cookie = `${trimmedName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}; secure`;
+      }
+    }
+  }
+}
+
 export interface AuthUser {
   id: string;
   name?: string;
@@ -39,6 +67,9 @@ export const signInWithEmail = async (
   email: string, 
   password: string
 ): Promise<AuthResult> => {
+  // Clear stale OAuth cookies before any auth flow
+  clearStaleOAuthCookies();
+  
   return safeAuthOperation(async () => {
     const validation = validateEmail(email);
     if (!validation.valid) {
@@ -81,6 +112,9 @@ export const signInWithEmail = async (
  * Returns a promise that resolves when auth completes (via postMessage)
  */
 export const signInWithGooglePopup = (): Promise<AuthResult> => {
+  // Clear stale OAuth cookies before Google auth
+  clearStaleOAuthCookies();
+  
   return new Promise((resolve) => {
     // Popup dimensions
     const width = 500;
@@ -177,6 +211,9 @@ export const signUpWithEmail = async (
   email: string, 
   password: string
 ): Promise<AuthResult> => {
+  // Clear stale OAuth cookies before any auth flow
+  clearStaleOAuthCookies();
+  
   return safeAuthOperation(async () => {
     const normalizedName = normalizeName(name);
     
@@ -210,6 +247,9 @@ export const signUpWithEmail = async (
 };
 
 export const signUpWithGoogle = async (callbackURL: string = "/"): Promise<AuthResult> => {
+  // Clear stale OAuth cookies before Google auth
+  clearStaleOAuthCookies();
+  
   return safeAuthOperation(async () => {
     const result = await authClient.signIn.social({
       provider: "google",

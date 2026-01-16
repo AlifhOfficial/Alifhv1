@@ -378,8 +378,8 @@ export const CacheTTL = {
   userSession: 300, // 5 minutes - session data (role, partner memberships)
   userProfile: 300, // 5 minutes - user profile (invalidate on updates)
   userUnreadCount: 60, // 1 minute - unread message count (invalidated on new message/read)
-  userMyListings: 120, // 2 minutes - user's personal listings (invalidated on create/update/delete)
-  userBookings: 120, // 2 minutes - user's bookings (invalidated on create/cancel/update)
+  userMyListings: 0, // disabled - no caching
+  userBookings: 0, // disabled - no caching
   
   // Listing data - invalidated on any listing mutation
   listingDetail: 600, // 10 minutes - full listing details

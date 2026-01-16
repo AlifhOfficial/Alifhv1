@@ -223,6 +223,12 @@ export interface ListingSummary {
   rejectionReason: string | null;
   suspensionReason: string | null;
   suspendedAt: string | null;
+  /** AI moderation info for pending review listings */
+  aiModeration?: {
+    reasoning?: string;
+    flags?: string[];
+    confidence?: number;
+  } | null;
   thumbnail: string | null;
   viewCount: number;
   impressionCount: number;

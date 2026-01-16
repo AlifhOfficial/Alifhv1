@@ -230,14 +230,12 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
         </div>
 
         {/* Logo - Uses BrandAvatar component for R2 URL resolution */}
-        <Link href={`/listings?partnerId=${partner.id}&partnerName=${encodeURIComponent(partner.brandName)}`} className="flex-shrink-0">
-          <BrandAvatar 
-            logoUrl={partner.logo}
-            brandName={partner.brandName}
-            size="md"
-            className="rounded-none w-16 h-16 transition-opacity hover:opacity-80 cursor-pointer"
-          />
-        </Link>
+        <BrandAvatar 
+          logoUrl={partner.logo}
+          brandName={partner.brandName}
+          size="md"
+          className="rounded-none w-16 h-16 flex-shrink-0"
+        />
       </div>
 
       {/* Website Link */}
@@ -365,13 +363,22 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
       )}
 
       {/* View Showroom Link - Inline text link */}
-      <Link
-        href={`/showrooms/${partner.id}`}
-        className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-primary/80 transition-colors"
-      >
-        View full showroom
-        <ExternalLink className="w-4 h-4" />
-      </Link>
+      <div className="flex flex-col gap-2">
+        <Link
+          href={`/listings?partnerId=${partner.id}&partnerName=${encodeURIComponent(partner.brandName)}`}
+          className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-primary/80 transition-colors"
+        >
+          View all cars
+          <ExternalLink className="w-4 h-4" />
+        </Link>
+        <Link
+          href={`/showrooms/${partner.id}`}
+          className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors"
+        >
+          View showroom profile
+          <ExternalLink className="w-4 h-4" />
+        </Link>
+      </div>
     </div>
   );
 }
@@ -566,6 +573,15 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
           </div>
         </div>
       )}
+
+      {/* View all listings by this seller */}
+      <Link
+        href={`/listings?sellerId=${sellerData.userId}`}
+        className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-primary/80 transition-colors"
+      >
+        View all cars by this seller
+        <ExternalLink className="w-4 h-4" />
+      </Link>
     </div>
   );
 }

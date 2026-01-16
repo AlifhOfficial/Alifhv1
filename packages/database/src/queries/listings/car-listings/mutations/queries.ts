@@ -167,6 +167,10 @@ function getListingSummaryFields(now: Date) {
     rejectionReason: carListing.rejectionReason,
     suspensionReason: suspensionReasonSql(),
     suspendedAt: suspendedAtSql(),
+    // AI moderation info for pending listings
+    aiModeration: sql<{ reasoning?: string; flags?: string[]; confidence?: number } | null>`
+      ${carListing.specialNotes} -> 'aiModeration'
+    `,
     thumbnail: carListing.thumbnail,
     viewCount: carListing.viewCount,
     impressionCount: carListing.impressionCount,

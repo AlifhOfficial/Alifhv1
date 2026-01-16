@@ -17,6 +17,12 @@ export interface ListingData {
   rejectionReason?: string | null;
   suspensionReason?: string | null;
   suspendedAt?: string | null;
+  /** AI moderation info for pending review listings */
+  aiModeration?: {
+    reasoning?: string;
+    flags?: string[];
+    confidence?: number;
+  } | null;
   expiresAt?: Date | string | null;
   extensionCount?: number;
   lastExtendedAt?: Date | string | null;

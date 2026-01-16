@@ -64,7 +64,7 @@ export interface ModerationInput {
   ownerRemarks?: string[] | null;
 }
 
-export type ModerationDecision = 'approve' | 'flag' | 'reject';
+export type ModerationDecision = 'approve' | 'flag';
 
 export interface ModerationFlag {
   code: string;
@@ -97,8 +97,7 @@ const MODERATION_SYSTEM_PROMPT = `You are a car listing moderation AI for a UAE 
 
 Your job is to quickly sanity-check user-submitted listings and decide:
 - APPROVE: Listing looks legitimate and complete
-- FLAG: Uncertain or minor issues - send to human review
-- REJECT: Clear policy violation or obvious spam/scam
+- FLAG: Any concerns or issues - send to human review (humans will decide to reject)
 
 APPROVE if:
 - Vehicle info makes sense (year/make/model are plausible)
@@ -108,16 +107,13 @@ APPROVE if:
 
 FLAG if:
 - Price seems unusually low or high for the vehicle
-- Some data seems inconsistent but not clearly wrong
-- Description has minor issues
+- Some data seems inconsistent
+- Description has any issues (spam, contact info, inappropriate)
 - Missing important optional info
+- Any suspicious patterns or red flags
+- Anything you're uncertain about
 
-REJECT if:
-- Clear spam or scam indicators
-- Hate speech, inappropriate content
-- Contact info in description (phone/email/WhatsApp)
-- Obvious fake data (e.g., 2030 model year, AED 100 Ferrari)
-- Multiple clear policy violations
+IMPORTANT: You cannot reject listings. Only humans can reject. When in doubt, FLAG for human review.
 
 IMPORTANT GUIDELINES:
 - This is UAE market - prices are in AED
@@ -128,7 +124,7 @@ IMPORTANT GUIDELINES:
 
 Respond ONLY with valid JSON:
 {
-  "decision": "approve" | "flag" | "reject",
+  "decision": "approve" | "flag",
   "confidence": 0.0-1.0,
   "flags": [
     { "code": "flag_code", "severity": "low|medium|high", "message": "explanation" }
@@ -286,8 +282,9 @@ function buildModerationPrompt(input: ModerationInput): string {
  * Validate and sanitize the AI response
  */
 function validateModerationResult(result: any): Omit<ModerationResult, 'processingTimeMs' | 'model'> {
-  // Validate decision
-  const validDecisions: ModerationDecision[] = ['approve', 'flag', 'reject'];
+  // Validate decision - AI can only approve or flag, never reject
+  const validDecisions: ModerationDecision[] = ['approve', 'flag'];
+  // If AI tries to reject, convert to flag for human review
   const decision: ModerationDecision = validDecisions.includes(result.decision) 
     ? result.decision 
     : 'flag';
@@ -337,10 +334,11 @@ export function shouldAutoApprove(result: ModerationResult): boolean {
 
 /**
  * Determine if a listing should be auto-rejected
+ * @deprecated AI no longer has reject power - always returns false
  */
-export function shouldAutoReject(result: ModerationResult): boolean {
-  // Must be "reject" decision with high confidence
-  return result.decision === 'reject' && result.confidence >= 0.9;
+export function shouldAutoReject(_result: ModerationResult): boolean {
+  // AI cannot auto-reject - only humans can reject listings
+  return false;
 }
 
 // ============================================================================

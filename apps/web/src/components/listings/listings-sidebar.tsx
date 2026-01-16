@@ -45,13 +45,13 @@ export function ListingsSidebar({
   if (!sidebarOpen) return null;
 
   return (
-    <aside className="hidden lg:block w-72 flex-shrink-0">
-      <div className={cn(
-        "sticky flex flex-col",
-        embedded 
-          ? "top-0 max-h-screen"
-          : "top-14 sm:top-16 max-h-[calc(100vh-3.5rem)] sm:max-h-[calc(100vh-4rem)]"
-      )}>
+    <aside className={cn(
+      "hidden lg:block w-72 flex-shrink-0 sticky self-start",
+      embedded 
+        ? "top-0 max-h-screen"
+        : "top-14 sm:top-16 max-h-[calc(100vh-3.5rem)] sm:max-h-[calc(100vh-4rem)]"
+    )}>
+      <div className="flex flex-col h-full">
         {/* Header */}
         <div className="flex items-center justify-between py-5 pr-6 flex-shrink-0">
           <div className="flex items-center gap-2">

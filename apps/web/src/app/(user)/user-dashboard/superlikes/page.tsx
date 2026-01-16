@@ -77,6 +77,7 @@ export default function SuperlikesPage() {
 
     fetch(`/api/listings/car-card?ids=${encodeURIComponent(superlikeIds.join(','))}`, {
       credentials: 'include',
+      cache: 'no-store', // Prevent Safari caching issues
     })
       .then(res => res.json())
       .then((data: CarCardResponse) => setListings(data.data || []))
@@ -93,9 +94,9 @@ export default function SuperlikesPage() {
   }, [listings]);
 
   // Filter to only IDs that have valid listing data (excludes deleted listings)
-  // Reverse order to show newest superlikes first
+  // LIFO - newest superlikes first (API returns in this order)
   const validSuperlikeIds = useMemo(() => 
-    superlikeIds.filter(id => listingsById.has(id)).reverse(), 
+    superlikeIds.filter(id => listingsById.has(id)), 
     [superlikeIds, listingsById]
   );
 

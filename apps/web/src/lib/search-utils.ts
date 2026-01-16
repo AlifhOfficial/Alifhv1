@@ -65,6 +65,7 @@ export interface SearchParams {
   partnerName?: string;
   partnerVerified?: boolean;
   isBlackTierPartner?: boolean;
+  sellerId?: string;
   randomize?: boolean;
   limit?: number;
   offset?: number;
@@ -181,6 +182,7 @@ export function searchParamsToUrl(params: SearchParams): URLSearchParams {
   if (params.sellerType) urlParams.set('seller', params.sellerType);
   if (params.partnerId) urlParams.set('partnerId', params.partnerId);
   if (params.partnerName) urlParams.set('partnerName', params.partnerName);
+  if (params.sellerId) urlParams.set('sellerId', params.sellerId);
   
   if (params.limit) urlParams.set('limit', String(params.limit));
   if (params.offset) urlParams.set('offset', String(params.offset));
@@ -244,6 +246,7 @@ export function urlToSearchParams(urlParams: URLSearchParams): SearchParams {
     sellerType: urlParams.get('seller') as SearchParams['sellerType'],
     partnerId: urlParams.get('partnerId') || undefined,
     partnerName: urlParams.get('partnerName') || undefined,
+    sellerId: urlParams.get('sellerId') || undefined,
     
     limit: parseNumber('limit'),
     offset: parseNumber('offset'),

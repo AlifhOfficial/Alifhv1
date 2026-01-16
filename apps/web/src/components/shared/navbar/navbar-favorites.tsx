@@ -1,12 +1,12 @@
 /**
  * Navbar Favorites - Quick access to favorite listings
- * Shows recent favorites with count badge
+ * Shows recent favorites
  */
 
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Heart, ChevronRight, Loader2, Moon } from 'lucide-react';
+import { useState, useCallback, useEffect } from 'react';
+import { Heart, ChevronRight, Loader2 } from 'lucide-react';
 import { useFavoritesStatus } from '@/hooks/engagement';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -29,25 +29,27 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
   const [listings, setListings] = useState<ListingPayload[]>([]);
   const [isLoadingListings, setIsLoadingListings] = useState(false);
   
-  // LAZY: Only fetch favorites when dropdown is clicked open
-  const { data: favoritesData, isLoading: isLoadingFavorites } = useFavoritesStatus({ 
-    enabled: isOpen 
-  });
+  const { data: favoritesData, isLoading: isLoadingFavorites } = useFavoritesStatus();
+  const favoriteIds = favoritesData?.favorites ?? [];
+  const count = favoriteIds.length;
 
-  const favoriteIds = useMemo(() => favoritesData?.favorites || [], [favoritesData?.favorites]);
-  const hasFavorites = favoriteIds.length > 0;
-
-  // Fetch listings function
-  const fetchListings = useCallback(async (ids: string[]) => {
-    if (!ids.length) {
+  // Fetch listings on open
+  const handleOpen = useCallback(async () => {
+    setIsOpen(true);
+    
+    if (favoriteIds.length === 0) {
       setListings([]);
-      setIsLoadingListings(false);
       return;
     }
+    
     setIsLoadingListings(true);
+    
     try {
-      const res = await fetch(`/api/listings/car-card?ids=${encodeURIComponent(ids.join(','))}`, {
+      // Take the 3 most recent favorites (newest first from API)
+      const topIds = favoriteIds.slice(0, 3);
+      const res = await fetch(`/api/listings/car-card?ids=${encodeURIComponent(topIds.join(','))}`, {
         credentials: 'include',
+        cache: 'no-store', // Prevent Safari caching issues
       });
       const data = await res.json();
       setListings(data.data || []);
@@ -56,25 +58,20 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
     } finally {
       setIsLoadingListings(false);
     }
+  }, [favoriteIds]);
+
+  const handleClose = useCallback(() => {
+    setIsOpen(false);
+    setListings([]);
   }, []);
 
-  // TWO-STEP LOADING:
-  // Step 1: Load favorite IDs (lightweight)
-  // Step 2: Only if favorites exist, load car card details (heavy)
-  useEffect(() => {
-    if (!isOpen) return;
-    
-    // Early return: No favorites = no need to fetch listings
-    if (!hasFavorites) {
-      setListings([]);
-      setIsLoadingListings(false);
-      return;
+  const handleToggle = useCallback(() => {
+    if (isOpen) {
+      handleClose();
+    } else {
+      handleOpen();
     }
-    
-    // Only fetch top 3 (reversed to show newest first)
-    const topIds = [...favoriteIds].reverse().slice(0, 3);
-    fetchListings(topIds);
-  }, [isOpen, hasFavorites, favoriteIds, fetchListings]);
+  }, [isOpen, handleOpen, handleClose]);
 
   // Close on outside click
   useEffect(() => {
@@ -87,8 +84,13 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
       }
     };
     
-    setTimeout(() => document.addEventListener('click', handleClick), 0);
-    return () => document.removeEventListener('click', handleClick);
+    // setTimeout is critical for Safari - allows the click event that opened
+    // the dropdown to complete before we start listening for outside clicks
+    const timeoutId = setTimeout(() => document.addEventListener('click', handleClick), 0);
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('click', handleClick);
+    };
   }, [isOpen]);
 
   // Close on escape
@@ -103,11 +105,7 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen]);
 
-  // Format price
-  const formatPrice = (price: number | null) => {
-    if (!price) return 'Price TBD';
-    return `AED ${price.toLocaleString()}`;
-  };
+  const isLoading = isLoadingFavorites || isLoadingListings;
 
   return (
     <div className="relative" data-favorites-dropdown>
@@ -115,21 +113,13 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
       <button
         onClick={(e) => {
           e.stopPropagation();
-          setIsOpen(!isOpen);
+          handleToggle();
         }}
         className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md"
         aria-label="Favorites"
       >
         <Heart className="size-4" />
       </button>
-
-      {/* Backdrop */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 z-[60]"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
 
       {/* Dropdown */}
       {isOpen && (
@@ -143,17 +133,16 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
 
           {/* Content */}
           <div className="max-h-[360px] overflow-y-auto">
-            {!hasFavorites ? (
-              <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                <Moon className="w-12 h-12 text-muted-foreground/40 mb-3" />
-                <p className="text-[15px] font-semibold text-foreground/80">No favorites yet</p>
-                <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
-                  Heart some cars and they&apos;ll appear here
-                </p>
-              </div>
-            ) : isLoadingListings ? (
+            {isLoading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+              </div>
+            ) : count === 0 ? (
+              <div className="flex flex-col items-center justify-center py-10 px-6 text-center">
+                <Heart className="w-8 h-8 text-muted-foreground/30 mb-3" />
+                <p className="text-sm text-muted-foreground">
+                  Your dream garage awaits
+                </p>
               </div>
             ) : listings.length > 0 ? (
               <div className="py-1.5">
@@ -161,33 +150,33 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
                   <FavoritePreviewItem
                     key={listing.id}
                     listing={listing}
-                    formatPrice={formatPrice}
                     onClose={() => setIsOpen(false)}
                   />
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                <Moon className="w-12 h-12 text-muted-foreground/40 mb-3" />
-                <p className="text-[15px] font-semibold text-foreground/80">No favorites yet</p>
-                <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
-                  Heart some cars and they&apos;ll appear here
+              <div className="flex flex-col items-center justify-center py-10 px-6 text-center">
+                <Heart className="w-8 h-8 text-muted-foreground/30 mb-3" />
+                <p className="text-sm text-muted-foreground">
+                  Unable to load favorites
                 </p>
               </div>
             )}
           </div>
 
           {/* Footer */}
-          <div className="border-t border-sidebar-border">
-            <Link
-              href="/user-dashboard/favorites"
-              onClick={() => setIsOpen(false)}
-              className="flex items-center justify-center gap-2 px-4 py-3.5 text-sm font-semibold text-primary hover:bg-sidebar-accent transition-colors"
-            >
-              View all favorites
-              <ChevronRight className="w-4 h-4" />
-            </Link>
-          </div>
+          {count > 0 && (
+            <div className="border-t border-sidebar-border">
+              <Link
+                href="/user-dashboard/favorites"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-primary hover:bg-sidebar-accent transition-colors"
+              >
+                View all favorites
+                <ChevronRight className="w-4 h-4" />
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -200,14 +189,14 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
 
 interface FavoritePreviewItemProps {
   listing: ListingPayload;
-  formatPrice: (price: number | null) => string;
   onClose: () => void;
 }
 
-function FavoritePreviewItem({ listing, formatPrice, onClose }: FavoritePreviewItemProps) {
+function FavoritePreviewItem({ listing, onClose }: FavoritePreviewItemProps) {
   const { id, make, model, year, price, thumbnail } = listing;
   
   const title = [year, make, model].filter(Boolean).join(' ') || 'Vehicle';
+  const priceText = price ? `AED ${price.toLocaleString()}` : 'Price TBD';
 
   return (
     <Link
@@ -237,8 +226,8 @@ function FavoritePreviewItem({ listing, formatPrice, onClose }: FavoritePreviewI
         <h4 className="text-sm font-semibold text-sidebar-foreground truncate">
           {title}
         </h4>
-        <p className="text-[13px] text-muted-foreground mt-1">
-          {formatPrice(price)}
+        <p className="text-xs text-muted-foreground mt-0.5">
+          {priceText}
         </p>
       </div>
     </Link>

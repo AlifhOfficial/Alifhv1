@@ -22,9 +22,19 @@ function clearStaleOAuthCookies() {
     const [name] = cookie.split("=");
     const trimmedName = name.trim();
     // Clear any state-related cookies (oauth state, pkce verifier, etc.)
-    if (trimmedName.includes("state") || trimmedName.includes("pkce") || trimmedName.includes("oauth")) {
-      document.cookie = `${trimmedName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
-      document.cookie = `${trimmedName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/api/auth`;
+    if (
+      trimmedName.includes("state") || 
+      trimmedName.includes("pkce") || 
+      trimmedName.includes("oauth") ||
+      trimmedName.includes("code_verifier") ||
+      trimmedName.startsWith("better-auth.") && !trimmedName.includes("session")
+    ) {
+      // Clear with various path combinations to ensure removal
+      const paths = ["/", "/api", "/api/auth", "/auth"];
+      for (const path of paths) {
+        document.cookie = `${trimmedName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}`;
+        document.cookie = `${trimmedName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}; secure`;
+      }
     }
   }
 }

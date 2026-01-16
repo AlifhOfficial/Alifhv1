@@ -157,13 +157,15 @@ export async function getFavoriteStatusForListings(userId: string) {
 
   // ⚡ OPTIMIZED: Use raw SQL for maximum performance (bypasses ORM overhead)
   // NOTE: No server-side cache - React Query handles client-side caching efficiently
+  // Order by created_at DESC so newest favorites come first
   const results = await db.execute(sql`
-    SELECT listing_id, 'fav' as type FROM user_favorite WHERE user_id = ${userId}
+    SELECT listing_id, 'fav' as type, created_at FROM user_favorite WHERE user_id = ${userId}
     UNION ALL
-    SELECT listing_id, 'super' as type FROM user_superlike WHERE user_id = ${userId}
+    SELECT listing_id, 'super' as type, created_at FROM user_superlike WHERE user_id = ${userId}
+    ORDER BY created_at DESC
   `);
   
-  // Split results by type
+  // Split results by type (already ordered by created_at DESC)
   const favorites: string[] = [];
   const superlikes: string[] = [];
   

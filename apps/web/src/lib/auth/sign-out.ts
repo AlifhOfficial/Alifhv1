@@ -17,6 +17,37 @@ import { signOut as betterAuthSignOut } from './client';
 import { getQueryClient } from '@/lib/query-client';
 
 /**
+ * Clears all Better Auth cookies including OAuth state cookies.
+ * This prevents state_mismatch errors on subsequent sign-ins.
+ */
+function clearAllBetterAuthCookies() {
+  if (typeof document === 'undefined') return;
+  
+  const cookies = document.cookie.split(";");
+  for (const cookie of cookies) {
+    const [name] = cookie.split("=");
+    const trimmedName = name.trim();
+    
+    // Clear all better-auth related cookies
+    // This includes: session_token, state, pkce_code_verifier, oauth cookies
+    if (
+      trimmedName.startsWith("better-auth") ||
+      trimmedName.includes("state") ||
+      trimmedName.includes("pkce") ||
+      trimmedName.includes("oauth") ||
+      trimmedName.includes("code_verifier")
+    ) {
+      // Clear with various path combinations to ensure removal
+      const paths = ["/", "/api", "/api/auth", "/auth"];
+      for (const path of paths) {
+        document.cookie = `${trimmedName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}`;
+        document.cookie = `${trimmedName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}; secure`;
+      }
+    }
+  }
+}
+
+/**
  * Signs out current user and clears all caches
  * Always redirects to homepage with hard reload, even on failure
  * 
@@ -27,6 +58,9 @@ export async function handleSignOut() {
   try {
     if (typeof window !== 'undefined') {
       try {
+        // Clear all Better Auth cookies (session, OAuth state, PKCE, etc.)
+        clearAllBetterAuthCookies();
+        
         localStorage.removeItem('better-auth.session');
         sessionStorage.clear();
       } catch (e) {
