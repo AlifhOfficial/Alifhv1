@@ -110,7 +110,7 @@ export function BadgesListSection() {
           {/* Image Card */}
           <div className="lg:col-span-2 aspect-[4/3] rounded-lg overflow-hidden">
             <Image
-              src="/Abstract/B3.png"
+              src="/Abstract/b3.png"
               alt="Abstract design"
               fill
               className="object-cover !relative"

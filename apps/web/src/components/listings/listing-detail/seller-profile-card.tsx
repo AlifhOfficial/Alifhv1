@@ -293,8 +293,11 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
           </p>
         </div>
 
-        {/* Inventory */}
-        <div className="space-y-1">
+        {/* Inventory - Clickable */}
+        <Link 
+          href={`/listings?partnerId=${partner.id}&partnerName=${encodeURIComponent(partner.brandName)}`}
+          className="space-y-1 group"
+        >
           <div className="flex items-center gap-2">
             <Package className="w-4 h-4 text-muted-foreground" />
             <span className="text-sm font-semibold text-muted-foreground/70">Inventory</span>
@@ -303,12 +306,12 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
             {statsLoading ? (
               <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
             ) : stats && 'inventoryCount' in stats ? (
-              stats.inventoryCount
+              <>{stats.inventoryCount}<span className="text-xs font-semibold text-primary group-hover:underline ml-1.5">View all</span></>
             ) : (
               <span className="text-muted-foreground">N/A</span>
             )}
           </p>
-        </div>
+        </Link>
 
         {/* Response Time */}
         <div className="space-y-1">
@@ -361,24 +364,6 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
           </div>
         </div>
       )}
-
-      {/* View Showroom Link - Inline text link */}
-      <div className="flex flex-col gap-2">
-        <Link
-          href={`/listings?partnerId=${partner.id}&partnerName=${encodeURIComponent(partner.brandName)}`}
-          className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-primary/80 transition-colors"
-        >
-          View all cars
-          <ExternalLink className="w-4 h-4" />
-        </Link>
-        <Link
-          href={`/showrooms/${partner.id}`}
-          className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors"
-        >
-          View showroom profile
-          <ExternalLink className="w-4 h-4" />
-        </Link>
-      </div>
     </div>
   );
 }
@@ -491,8 +476,11 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-4 py-4 border-y border-border">
-        {/* Inventory */}
-        <div className="space-y-1">
+        {/* Inventory - Clickable */}
+        <Link 
+          href={`/listings?sellerId=${sellerData.userId}`}
+          className="space-y-1 group"
+        >
           <div className="flex items-center gap-2">
             <Package className="w-4 h-4 text-muted-foreground" />
             <span className="text-sm font-semibold text-muted-foreground/70">Inventory</span>
@@ -501,12 +489,12 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
             {statsLoading ? (
               <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
             ) : stats && 'listingsCount' in stats ? (
-              stats.listingsCount
+              <>{stats.listingsCount}<span className="text-xs font-semibold text-primary group-hover:underline ml-1.5">View all</span></>
             ) : (
-              0
+              <>0<span className="text-xs font-semibold text-primary group-hover:underline ml-1.5">View all</span></>
             )}
           </p>
-        </div>
+        </Link>
 
         {/* Response Time */}
         <div className="space-y-1">
@@ -573,15 +561,6 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
           </div>
         </div>
       )}
-
-      {/* View all listings by this seller */}
-      <Link
-        href={`/listings?sellerId=${sellerData.userId}`}
-        className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-primary/80 transition-colors"
-      >
-        View all cars by this seller
-        <ExternalLink className="w-4 h-4" />
-      </Link>
     </div>
   );
 }

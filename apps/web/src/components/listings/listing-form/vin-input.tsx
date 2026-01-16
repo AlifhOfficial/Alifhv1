@@ -12,6 +12,9 @@ import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { cn } from '@/utils';
 import type { VINCheckResponse } from './types';
 
+/** VIN validation pattern (17 chars, no I, O, Q) */
+const VIN_PATTERN = /^[A-HJ-NPR-Z0-9]{17}$/i;
+
 interface VINInputProps {
   value: string;
   onChange: (value: string) => void;
@@ -22,13 +25,20 @@ interface VINInputProps {
 
 export function VINInput({ value, onChange, onDecode, disabled, excludeListingId }: VINInputProps) {
   const [isChecking, setIsChecking] = useState(false);
-  const [status, setStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'error' | 'invalid'>('idle');
   const [message, setMessage] = useState('');
   
   const checkVIN = useCallback(async (vin: string) => {
     if (vin.length !== 17) {
       setStatus('idle');
       setMessage('');
+      return;
+    }
+    
+    // Validate format before API call
+    if (!VIN_PATTERN.test(vin)) {
+      setStatus('invalid');
+      setMessage('VIN can only contain letters A-H, J-N, P-R, S-Z and numbers 0-9');
       return;
     }
     
@@ -94,7 +104,7 @@ export function VINInput({ value, onChange, onDecode, disabled, excludeListingId
             "w-full h-14 bg-transparent border-b-2 text-lg font-mono tracking-[0.15em] uppercase px-0 pr-12",
             "transition-all duration-200 outline-none",
             status === 'available' && "border-green-500 text-foreground",
-            status === 'taken' && "border-red-500 text-foreground",
+            (status === 'taken' || status === 'invalid') && "border-red-500 text-foreground",
             status === 'error' && "border-yellow-500 text-foreground",
             (status === 'idle' || status === 'checking') && "border-border/40 focus:border-blue-500 text-foreground",
             disabled && "opacity-50 cursor-not-allowed",
@@ -110,7 +120,7 @@ export function VINInput({ value, onChange, onDecode, disabled, excludeListingId
             <div className="p-1 bg-green-500/10 rounded-full">
               <CheckCircle2 className="w-5 h-5 text-green-500" />
             </div>
-          ) : status === 'taken' ? (
+          ) : status === 'taken' || status === 'invalid' ? (
             <AlertCircle className="w-5 h-5 text-red-500" />
           ) : status === 'error' ? (
             <AlertCircle className="w-5 h-5 text-yellow-500" />
@@ -127,7 +137,7 @@ export function VINInput({ value, onChange, onDecode, disabled, excludeListingId
           <p className={cn(
             "text-xs font-semibold",
             status === 'available' && "text-green-500",
-            status === 'taken' && "text-red-500",
+            (status === 'taken' || status === 'invalid') && "text-red-500",
             status === 'error' && "text-yellow-500"
           )}>
             {message}

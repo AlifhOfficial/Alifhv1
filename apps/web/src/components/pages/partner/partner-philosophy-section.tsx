@@ -47,7 +47,7 @@ export function PartnerPhilosophySection() {
           {/* Image Side */}
           <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
             <Image
-              src="/abstract/rs19.png"
+              src="/Abstract/rs19.png"
               alt="Abstract"
               fill
               className="object-cover"
