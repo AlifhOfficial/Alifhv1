@@ -9,6 +9,7 @@
 'use client';
 
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { 
   Share2, 
@@ -19,6 +20,8 @@ import {
   ChevronRight, 
   Play, 
   MapPin,
+  X,
+  Grid3X3,
 } from 'lucide-react';
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
@@ -79,6 +82,7 @@ const formatEnumValue = (value: string | null): string => {
 function ImageGallery({ images, title }: { images: string[]; title: string }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [showAllImages, setShowAllImages] = useState(false);
   const validImages = images.filter(img => img && typeof img === 'string' && img.trim().length > 0);
   const allImages = validImages.length > 0 ? validImages : ['/assets/cars/placeholder.avif'];
 
@@ -91,6 +95,50 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
     }
     setIsLightboxOpen(true);
   };
+
+  const closeLightbox = () => setIsLightboxOpen(false);
+
+  // Handle keyboard navigation in lightbox
+  useEffect(() => {
+    if (!isLightboxOpen) return;
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowRight') next();
+      if (e.key === 'ArrowLeft') prev();
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    // Prevent body scroll when lightbox is open
+    document.body.style.overflow = 'hidden';
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [isLightboxOpen]);
+
+  // Handle keyboard for all images view
+  useEffect(() => {
+    if (!showAllImages) return;
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowAllImages(false);
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    document.body.style.overflow = 'hidden';
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [showAllImages]);
+
+  // Max thumbnails to show before "View All"
+  const maxThumbnails = 5;
+  const displayedThumbnails = allImages.slice(0, maxThumbnails);
+  const remainingCount = allImages.length - maxThumbnails;
 
   return (
     <>
@@ -135,26 +183,327 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
           </div>
         </div>
 
-        {/* Thumbnails */}
+        {/* Thumbnails Row */}
         {allImages.length > 1 && (
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin min-w-0">
-            {allImages.map((img, idx) => (
+            {displayedThumbnails.map((img, idx) => (
               <button
                 key={idx}
                 onClick={() => setCurrentIndex(idx)}
                 className={cn(
-                  "relative w-16 h-12 flex-shrink-0 rounded-lg overflow-hidden transition-all",
+                  "relative w-16 h-12 flex-shrink-0 overflow-hidden transition-all rounded-md",
                   idx === currentIndex 
-                    ? "ring-2 ring-primary ring-offset-1" 
-                    : "opacity-60 hover:opacity-100"
+                    ? "ring-2 ring-primary ring-offset-2 ring-offset-background" 
+                    : "opacity-70 hover:opacity-100"
                 )}
               >
-                <Image src={img} alt={`View ${idx + 1}`} fill className="object-cover" sizes="64px" />
+                <Image 
+                  src={img} 
+                  alt={`View ${idx + 1}`} 
+                  fill 
+                  className="object-cover" 
+                  sizes="64px" 
+                />
               </button>
             ))}
+            
+            {/* View All Button */}
+            {remainingCount > 0 && (
+              <button
+                onClick={() => setShowAllImages(true)}
+                className="relative w-16 h-12 flex-shrink-0 rounded-md bg-muted/80 hover:bg-muted transition-colors flex flex-col items-center justify-center gap-0.5"
+              >
+                <Grid3X3 className="w-4 h-4 text-muted-foreground" />
+                <span className="text-[10px] font-bold text-muted-foreground">+{remainingCount}</span>
+              </button>
+            )}
+            
+            {/* View All for smaller counts */}
+            {remainingCount <= 0 && allImages.length > 3 && (
+              <button
+                onClick={() => setShowAllImages(true)}
+                className="relative w-16 h-12 flex-shrink-0 rounded-md bg-muted/80 hover:bg-muted transition-colors flex flex-col items-center justify-center gap-0.5"
+              >
+                <Grid3X3 className="w-4 h-4 text-muted-foreground" />
+                <span className="text-[10px] font-bold text-muted-foreground">All</span>
+              </button>
+            )}
           </div>
         )}
       </div>
+
+      {/* Fullscreen Lightbox - Theme Aware - Rendered via Portal */}
+      {isLightboxOpen && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[9999] bg-background"
+          style={{ 
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100vw',
+            height: '100vh',
+            margin: 0,
+            padding: 0,
+          }}
+          onClick={closeLightbox}
+        >
+          {/* Close Button - Floating */}
+          <button
+            onClick={closeLightbox}
+            className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 w-9 h-9 sm:w-10 sm:h-10 bg-muted/80 hover:bg-muted rounded-full flex items-center justify-center transition-colors backdrop-blur-sm"
+            aria-label="Close"
+          >
+            <X className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
+          </button>
+
+          {/* Image Counter - Floating */}
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-muted/80 backdrop-blur-sm text-foreground text-xs sm:text-sm font-medium tabular-nums rounded-full">
+            {currentIndex + 1} / {allImages.length}
+          </div>
+
+          {/* Main Image - Full Screen */}
+          <div 
+            className="absolute inset-0 flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image
+              src={allImages[currentIndex]}
+              alt={`${title} - Image ${currentIndex + 1}`}
+              fill
+              className="object-contain"
+              sizes="100vw"
+              priority
+            />
+          </div>
+
+          {/* Navigation Arrows */}
+          {allImages.length > 1 && (
+            <>
+              <button
+                onClick={(e) => { e.stopPropagation(); prev(); }}
+                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 bg-muted/80 hover:bg-muted backdrop-blur-sm rounded-full flex items-center justify-center transition-colors"
+                aria-label="Previous image"
+              >
+                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); next(); }}
+                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 bg-muted/80 hover:bg-muted backdrop-blur-sm rounded-full flex items-center justify-center transition-colors"
+                aria-label="Next image"
+              >
+                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
+              </button>
+            </>
+          )}
+
+          {/* Thumbnail Strip at Bottom */}
+          <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 hidden sm:flex gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-muted/80 backdrop-blur-sm rounded-xl max-w-[90vw] overflow-x-auto scrollbar-thin">
+            {allImages.map((img, idx) => (
+              <button
+                key={idx}
+                onClick={(e) => { e.stopPropagation(); setCurrentIndex(idx); }}
+                className={cn(
+                  "relative w-12 h-8 sm:w-14 sm:h-10 flex-shrink-0 rounded-md overflow-hidden transition-all",
+                  idx === currentIndex 
+                    ? "ring-2 ring-primary" 
+                    : "opacity-50 hover:opacity-100"
+                )}
+              >
+                <Image src={img} alt={`Thumbnail ${idx + 1}`} fill className="object-cover" sizes="56px" />
+              </button>
+            ))}
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* View All Images Modal - Rendered via Portal */}
+      {showAllImages && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[9999] bg-background overflow-y-auto"
+          style={{ 
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100vw',
+            height: '100vh',
+            margin: 0,
+            padding: 0,
+          }}
+        >
+          {/* Header */}
+          <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/50">
+            <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 max-w-5xl mx-auto">
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <button
+                  onClick={() => setShowAllImages(false)}
+                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-full hover:bg-muted/80 flex items-center justify-center transition-colors"
+                  aria-label="Close"
+                >
+                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                </button>
+                <div>
+                  <h2 className="text-sm sm:text-base font-bold text-foreground">All Photos</h2>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">{allImages.length} images</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Image Grid - Bento Layout */}
+          <div className="max-w-5xl mx-auto px-2 sm:px-4 py-3 sm:py-4">
+            {/* Render images in groups of 6 with bento pattern */}
+            {(() => {
+              const rows: React.ReactNode[] = [];
+              let i = 0;
+              
+              while (i < allImages.length) {
+                const remaining = allImages.length - i;
+                const rowIndex = rows.length;
+                
+                // Pattern alternates between different bento layouts
+                // Pattern A: 1 large (2x2) + 2 small stacked
+                // Pattern B: 3 equal columns
+                // Pattern C: 2 medium side by side
+                
+                if (remaining >= 3 && rowIndex % 3 === 0) {
+                  // Pattern A: Large left + 2 stacked right
+                  rows.push(
+                    <div key={`row-${rowIndex}`} className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+                      <button
+                        onClick={() => { setCurrentIndex(i); setShowAllImages(false); setIsLightboxOpen(true); }}
+                        className="relative col-span-2 sm:col-span-2 aspect-[4/3] overflow-hidden rounded-lg sm:rounded-xl bg-muted/30 group cursor-pointer"
+                      >
+                        <Image src={allImages[i]} alt={`Photo ${i + 1}`} fill className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="66vw" />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                        <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-[10px] sm:text-xs font-bold rounded">{i + 1}</div>
+                      </button>
+                      <div className="col-span-2 sm:col-span-1 grid grid-cols-2 sm:flex sm:flex-col gap-1.5 sm:gap-2">
+                        {[1, 2].map((offset) => {
+                          const imgIdx = i + offset;
+                          if (imgIdx >= allImages.length) return null;
+                          return (
+                            <button
+                              key={imgIdx}
+                              onClick={() => { setCurrentIndex(imgIdx); setShowAllImages(false); setIsLightboxOpen(true); }}
+                              className="relative aspect-[4/3] sm:aspect-auto sm:flex-1 overflow-hidden rounded-lg sm:rounded-xl bg-muted/30 group cursor-pointer"
+                            >
+                              <Image src={allImages[imgIdx]} alt={`Photo ${imgIdx + 1}`} fill className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="33vw" />
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                              <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-[10px] sm:text-xs font-bold rounded">{imgIdx + 1}</div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                  i += 3;
+                } else if (remaining >= 3 && rowIndex % 3 === 1) {
+                  // Pattern B: 3 equal
+                  rows.push(
+                    <div key={`row-${rowIndex}`} className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+                      {[0, 1, 2].map((offset) => {
+                        const imgIdx = i + offset;
+                        if (imgIdx >= allImages.length) return null;
+                        return (
+                          <button
+                            key={imgIdx}
+                            onClick={() => { setCurrentIndex(imgIdx); setShowAllImages(false); setIsLightboxOpen(true); }}
+                            className={cn(
+                              "relative aspect-square overflow-hidden rounded-lg sm:rounded-xl bg-muted/30 group cursor-pointer",
+                              offset === 2 && "col-span-2 sm:col-span-1 aspect-[2/1] sm:aspect-square"
+                            )}
+                          >
+                            <Image src={allImages[imgIdx]} alt={`Photo ${imgIdx + 1}`} fill className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="33vw" />
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                            <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-[10px] sm:text-xs font-bold rounded">{imgIdx + 1}</div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  );
+                  i += 3;
+                } else if (remaining >= 3 && rowIndex % 3 === 2) {
+                  // Pattern C: 2 stacked left + Large right (reversed on mobile)
+                  rows.push(
+                    <div key={`row-${rowIndex}`} className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+                      <button
+                        onClick={() => { setCurrentIndex(i + 2); setShowAllImages(false); setIsLightboxOpen(true); }}
+                        className="relative col-span-2 sm:col-span-2 sm:order-2 aspect-[4/3] overflow-hidden rounded-lg sm:rounded-xl bg-muted/30 group cursor-pointer"
+                      >
+                        <Image src={allImages[i + 2]} alt={`Photo ${i + 3}`} fill className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="66vw" />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                        <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-[10px] sm:text-xs font-bold rounded">{i + 3}</div>
+                      </button>
+                      <div className="col-span-2 sm:col-span-1 sm:order-1 grid grid-cols-2 sm:flex sm:flex-col gap-1.5 sm:gap-2">
+                        {[0, 1].map((offset) => {
+                          const imgIdx = i + offset;
+                          if (imgIdx >= allImages.length) return null;
+                          return (
+                            <button
+                              key={imgIdx}
+                              onClick={() => { setCurrentIndex(imgIdx); setShowAllImages(false); setIsLightboxOpen(true); }}
+                              className="relative aspect-[4/3] sm:aspect-auto sm:flex-1 overflow-hidden rounded-lg sm:rounded-xl bg-muted/30 group cursor-pointer"
+                            >
+                              <Image src={allImages[imgIdx]} alt={`Photo ${imgIdx + 1}`} fill className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="33vw" />
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                              <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-[10px] sm:text-xs font-bold rounded">{imgIdx + 1}</div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                  i += 3;
+                } else if (remaining === 2) {
+                  // 2 remaining: side by side
+                  rows.push(
+                    <div key={`row-${rowIndex}`} className="grid grid-cols-2 gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+                      {[0, 1].map((offset) => {
+                        const imgIdx = i + offset;
+                        return (
+                          <button
+                            key={imgIdx}
+                            onClick={() => { setCurrentIndex(imgIdx); setShowAllImages(false); setIsLightboxOpen(true); }}
+                            className="relative aspect-[4/3] overflow-hidden rounded-lg sm:rounded-xl bg-muted/30 group cursor-pointer"
+                          >
+                            <Image src={allImages[imgIdx]} alt={`Photo ${imgIdx + 1}`} fill className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="50vw" />
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                            <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-[10px] sm:text-xs font-bold rounded">{imgIdx + 1}</div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  );
+                  i += 2;
+                } else if (remaining === 1) {
+                  // 1 remaining: full width
+                  rows.push(
+                    <div key={`row-${rowIndex}`} className="mb-1.5 sm:mb-2">
+                      <button
+                        onClick={() => { setCurrentIndex(i); setShowAllImages(false); setIsLightboxOpen(true); }}
+                        className="relative w-full aspect-[16/9] overflow-hidden rounded-lg sm:rounded-xl bg-muted/30 group cursor-pointer"
+                      >
+                        <Image src={allImages[i]} alt={`Photo ${i + 1}`} fill className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="100vw" />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                        <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-[10px] sm:text-xs font-bold rounded">{i + 1}</div>
+                      </button>
+                    </div>
+                  );
+                  i += 1;
+                }
+              }
+              
+              return rows;
+            })()}
+          </div>
+        </div>,
+        document.body
+      )}
     </>
   );
 }
