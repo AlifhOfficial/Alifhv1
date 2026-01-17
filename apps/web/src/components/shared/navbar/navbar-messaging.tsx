@@ -22,9 +22,8 @@ interface NavbarMessagingProps {
 export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
   const [isOpen, setIsOpen] = useState(false);
   
-  // Lightweight unread count - always fetched for badge display
-  // Uses WebSocket for real-time updates without polling
-  const { unreadCount } = useUnreadCount(userId);
+  // Lightweight unread count - fetches minimal data with scope
+  const { unreadCount } = useUnreadCount({ userId, scope: 'personal' });
   
   // Full conversations list - only fetched when dropdown is open
   const { conversations, isLoading } = useConversations({ 

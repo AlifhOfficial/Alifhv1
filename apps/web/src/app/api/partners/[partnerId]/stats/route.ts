@@ -13,7 +13,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { calculatePartnerStats } from '@alifh/database/server';
+import { calculatePartnerStats } from '@alifh/database';
 import {
   createRateLimiter,
   getIdentifier,

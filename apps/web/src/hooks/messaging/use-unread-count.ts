@@ -1,5 +1,6 @@
 /**
  * Unread Count Hook - Total unread messages
+ * Fetches from conversations API with scope support
  */
 
 'use client';
@@ -8,19 +9,32 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useWebSocket } from './use-websocket';
 import { useEffect } from 'react';
 
-async function fetchUnreadCount(): Promise<{ unreadCount: number }> {
-  const res = await fetch('/api/conversations/unread-count', { credentials: 'include' });
+interface UnreadCountOptions {
+  userId?: string;
+  scope?: 'personal' | 'staff';
+  activeConversationId?: string;
+}
+
+async function fetchUnreadCount(scope?: 'personal' | 'staff'): Promise<{ unreadCount: number }> {
+  const params = new URLSearchParams();
+  if (scope) params.set('scope', scope);
+  
+  const url = `/api/conversations/unread-count${params.toString() ? `?${params}` : ''}`;
+  const res = await fetch(url, { credentials: 'include' });
   if (!res.ok) throw new Error('Failed to fetch unread count');
   return res.json();
 }
 
-export function useUnreadCount(userId?: string, activeConversationId?: string) {
+export function useUnreadCount(options: UnreadCountOptions = {}) {
+  const { userId, scope, activeConversationId } = options;
   const queryClient = useQueryClient();
   const { subscribe } = useWebSocket();
 
+  const queryKey = ['unread-count', scope] as const;
+
   const query = useQuery({
-    queryKey: ['unread-count'],
-    queryFn: fetchUnreadCount,
+    queryKey,
+    queryFn: () => fetchUnreadCount(scope),
     refetchInterval: 2 * 60 * 1000,
     enabled: !!userId,
   });
@@ -36,19 +50,23 @@ export function useUnreadCount(userId?: string, activeConversationId?: string) {
         
         // Don't increment unread count for your own messages
         if (senderId === userId) {
-          console.log(`🔔 [useUnreadCount] Own message in background conversation, skipping count increment`);
           return;
         }
         
-        console.log(`🔔 [useUnreadCount] New message in background conversation, incrementing count`);
-        queryClient.setQueryData(['unread-count'], (old: { unreadCount: number } | undefined) => ({
+        queryClient.setQueryData(queryKey, (old: { unreadCount: number } | undefined) => ({
           unreadCount: (old?.unreadCount ?? 0) + 1,
         }));
+      }
+      
+      // Decrement on read receipt (when user marks as read)
+      if (msg.type === 'read_receipt' && msg.userId === userId) {
+        // Refetch to get accurate count after marking as read
+        queryClient.invalidateQueries({ queryKey });
       }
     });
 
     return unsub;
-  }, [subscribe, queryClient, userId, activeConversationId]);
+  }, [subscribe, queryClient, userId, activeConversationId, queryKey]);
 
   return {
     unreadCount: query.data?.unreadCount ?? 0,

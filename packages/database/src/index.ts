@@ -45,11 +45,12 @@ export * from './queries/auth/user-auth-queries';
 
 // Explicit partner query exports (required for proper bundling)
 export * from './queries/partner/car-dealer/partner-profile-comprehensive';
+export * from './queries/partner/car-dealer/partner-stats';
 export * from './queries/partner/staff-profile-query';
 
-// ❌ DO NOT export partner-stats here - it causes Edge Runtime errors in middleware
-// Stats query uses dbclient which doesn't work in Edge Runtime
-// API routes must import directly from the file (see below)
+// Explicit user stats/dashboard exports
+export * from './queries/user-stats';
+export * from './queries/user-dashboard';
 
 // Explicit booking query exports (required for proper bundling)
 export * from './queries/booking/availability-queries';
@@ -67,8 +68,8 @@ export * from './queries/audit/audit-log-mutations';
 // Explicit conversation query exports (required for proper bundling)
 export * from './queries/conversation';
 
+// Explicit message query exports (required for proper bundling)
+export * from './queries/message';
+
 // Explicit consignment query exports (required for proper bundling)
 export * from './queries/consignment/funnel-queries';
-
-// Explicit user stats query exports (required for proper bundling)
-export * from './queries/user-stats';

@@ -49,6 +49,7 @@ setSessionCacheInvalidator((key) => {
   // Extract userId from key format "user:{userId}:session"
   const match = key.match(/^user:(.+):session$/);
   if (match) {
+    console.log('[setSessionCacheInvalidator] Invalidating session for user', match[1].slice(0, 8));
     // Invalidate by userId - clears both userId-keyed and token-keyed caches
     invalidateUserSessions(match[1]);
   } else {
@@ -216,6 +217,7 @@ export const auth = betterAuth({
       }>(cacheKey);
 
       if (cached) {
+        console.log('[customSession] Cache HIT for user', user.id.slice(0, 8), 'partnerLogo:', cached.partnerMemberships?.[0]?.partnerLogo?.slice(-20));
         return {
           user: {
             ...user,
@@ -224,6 +226,8 @@ export const auth = betterAuth({
           session,
         };
       }
+      
+      console.log('[customSession] Cache MISS for user', user.id.slice(0, 8), '- fetching fresh data');
 
       // OPTIMIZED: Single SQL query with LEFT JOINs instead of 3 parallel queries
       // This reduces 3 HTTP round-trips to Neon down to 1

@@ -11,10 +11,6 @@
       "import": "./src/index.ts",
       "types": "./src/index.ts"
     },
-    "./server": {
-      "import": "./src/server.ts",
-      "types": "./src/server.ts"
-    },
     "./listing-constants": {
       "import": "./src/schema/listing-constants.ts",
       "types": "./src/schema/listing-constants.ts"

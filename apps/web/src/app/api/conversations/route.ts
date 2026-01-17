@@ -10,7 +10,7 @@ import {
   createOrGetConversation,
   getUserConversations,
   getTotalUnreadCount,
-} from '@alifh/database/server';
+} from '@alifh/database';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_MESSAGING } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
@@ -64,6 +64,8 @@ export async function GET(req: NextRequest) {
       partnerScope,
     });
 
+    // For scoped queries, sum from returned conversations
+    // For unscoped, use the full count query
     const totalUnread =
       scope === 'staff' || scope === 'personal'
         ? conversations.reduce((sum, c) => sum + (c.unreadCount ?? 0), 0)

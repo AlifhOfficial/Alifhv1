@@ -12,7 +12,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { getUserDashboardStats } from '@alifh/database/server';
+import { getUserDashboardStats } from '@alifh/database';
 import {
   createRateLimiter,
   getIdentifier,

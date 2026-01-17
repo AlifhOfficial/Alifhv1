@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { getConversationParticipantsWithProfiles } from '@alifh/database/server';
+import { getConversationParticipantsWithProfiles } from '@alifh/database';
 import {
   createRateLimiter,
   getIdentifier,

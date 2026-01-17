@@ -18,8 +18,8 @@ import {
   memoryCache, 
   CacheTTL,
   calculateUserStats,
+  calculatePartnerStats,
 } from "@alifh/database";
-import { calculatePartnerStats } from "@alifh/database/server";
 import {
   createRateLimiter,
   getIdentifier,

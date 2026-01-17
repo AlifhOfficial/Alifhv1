@@ -44,7 +44,6 @@ export {
 // Cache exports for server-side usage
 export { memoryCache, CacheKeys, CacheTTL, CachePrefixes } from './caches/memory-cache';
 export { 
-  invalidateUnreadCount,
   invalidateSearchCaches,
   invalidateListingDetail,
   invalidateListingCaches,

@@ -26,6 +26,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { useCreateConversation } from '@/hooks/messaging';
 import { useListingDetail, useTrackView, type SellerData } from '@/hooks/listings';
+import { useFavoritesStatus } from '@/hooks/engagement';
 import { useAuth } from '@/providers/auth-provider';
 
 // Re-export types for backwards compatibility
@@ -40,8 +41,11 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
   const [isStartingChat, setIsStartingChat] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const { createConversation } = useCreateConversation();
-  const { session: user } = useAuth();
+  const { session: user, isAuthenticated } = useAuth();
   const { trackView } = useTrackView();
+  
+  // Fetch favorites status once (only if signed in) - CarCardDetailed subscribes to this data
+  useFavoritesStatus({ enabled: isAuthenticated });
   
   // Fetch listing data via hook
   const { listing, sellerData, isLoading, error } = useListingDetail(listingId);
@@ -127,6 +131,9 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
   const isOwnPartnerListing = listing.partnerId 
     ? (user?.partnerMemberships ?? []).some(m => m.partnerId === listing.partnerId)
     : false;
+
+  // Check if partner is Black tier
+  const isBlackTierPartner = sellerData?.type === 'partner' && sellerData.partner?.tier === 'black';
 
   const handleChatWithSeller = async () => {
     // Check if user is authenticated
@@ -278,7 +285,9 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
                   )}
                   <p className="text-sm text-muted-foreground leading-relaxed font-medium">
                     {isDealerListing 
-                      ? 'We trust this dealer as a respected partner of Alifh.'
+                      ? isBlackTierPartner
+                        ? <><span className="font-black text-foreground">Elite Partner.</span> Verified, vetted, and held to the highest standards.</>
+                        : 'We trust this dealer as a respected partner of Alifh.'
                       : <><span className="font-bold text-foreground">Safety Tip:</span> Meet in public places and verify the vehicle before payment.</>
                     }
                   </p>

@@ -56,7 +56,7 @@ type EditingField = null | 'firstName' | 'lastName' | 'phone' | 'bio' | 'tags';
 // ============================================================================
 
 export function ProfileView() {
-  const { session: user } = useAuth();
+  const { session: user, refetch: refetchSession } = useAuth();
   const { profile, updateProfile, refresh, isLoading: profileLoading, stats } = useUserProfile();
   const { toast } = useToast();
 
@@ -190,6 +190,7 @@ export function ProfileView() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Upload failed');
       await updateProfile({ avatar: data.key });
+      await refetchSession(); // Refresh session to sync sidebar
       toast({ title: 'Photo updated' });
     } catch {
       toast({ title: 'Upload failed', variant: 'destructive' });
@@ -205,6 +206,7 @@ export function ProfileView() {
     setAvatarUploading(true);
     try {
       await updateProfile({ avatar: null });
+      await refetchSession(); // Refresh session to sync sidebar
       toast({ title: 'Photo removed' });
     } catch {
       toast({ title: 'Failed to remove', variant: 'destructive' });

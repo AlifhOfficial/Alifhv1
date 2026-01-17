@@ -7,6 +7,7 @@
 
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/providers/auth-provider';
 import { usePartnerProfile } from '@/hooks/partner/car-dealer/use-partner-profile';
 import { usePartnerStats } from '@/hooks/partner/car-dealer/use-partner-stats';
 import { 
@@ -147,6 +148,7 @@ const EditableField = React.memo(function EditableField({
 
 export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormProps) {
   const { toast } = useToast();
+  const { refetch: refetchSession } = useAuth();
   const { profile, isLoading, updateProfile, isUpdating, refetchFresh } = usePartnerProfile(partnerId);
   const { stats, isLoading: statsLoading } = usePartnerStats(partnerId);
 
@@ -321,6 +323,10 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       
       await updateProfile({ [field]: data.key });
       updateField({ [field]: data.key });
+      // Refresh session to sync sidebar with new logo
+      if (field === 'logo') {
+        await refetchSession();
+      }
       toast({ title: `${field === 'logo' ? 'Logo' : 'Banner'} updated` });
     } catch {
       toast({ title: 'Upload failed', variant: 'destructive' });
@@ -549,6 +555,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                 try {
                   await updateProfile({ logo: null });
                   updateField({ logo: null });
+                  await refetchSession(); // Sync sidebar
                   toast({ title: 'Logo removed' });
                 } catch {
                   toast({ title: 'Failed to remove', variant: 'destructive' });
@@ -567,9 +574,13 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
         <div className="flex-1 pt-2">
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-semibold tracking-tight">{profile.brandName}</h1>
-            {profile.isVerified && (
+            {profile.tier === 'black' ? (
+              <span className="inline-flex items-center px-1.5 h-5 text-[10px] font-black tracking-wider bg-black text-white">
+                BLK
+              </span>
+            ) : profile.isVerified ? (
               <CheckCircle2 className="w-5 h-5 text-blue-500" />
-            )}
+            ) : null}
             <button
               onClick={() => refetchFresh()}
               disabled={isLoading}

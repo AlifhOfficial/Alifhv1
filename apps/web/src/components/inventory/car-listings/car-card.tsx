@@ -334,7 +334,32 @@ export function CarCard({
         <div className="flex items-center justify-between pt-3 mt-auto">
           {/* Left - Dealer */}
           <div className="flex items-center gap-2.5 min-w-0">
-            {isPartnerListing ? (
+            {/* Avatar - with ring for Black tier */}
+            {isBlackTierPartner ? (
+              <div className="flex-shrink-0 rounded-full ring-2 ring-black ring-offset-1 ring-offset-background">
+                {isPartnerListing ? (
+                  <BrandAvatar
+                    logoUrl={partnerLogo}
+                    brandName={displaySellerName}
+                    size="xs"
+                    className={cn(
+                      "w-7 h-7",
+                      isBlkListing ? "bg-zinc-800 border-zinc-700" : "bg-muted/40 border-border/40"
+                    )}
+                  />
+                ) : (
+                  <UserAvatar
+                    src={sellerAvatarUrl}
+                    name={displaySellerName}
+                    size="sm"
+                    className={cn(
+                      "w-7 h-7",
+                      isBlkListing ? "bg-zinc-800 border-zinc-700 text-zinc-500" : "bg-muted/40 border-border/40 text-muted-foreground/70"
+                    )}
+                  />
+                )}
+              </div>
+            ) : isPartnerListing ? (
               <BrandAvatar
                 logoUrl={partnerLogo}
                 brandName={displaySellerName}
@@ -361,8 +386,16 @@ export function CarCard({
             )}>
               {displaySellerName}
             </span>
-            {(partnerVerified || kycVerified) && (
-              <CheckCircle2 className="w-[18px] h-[18px] text-blue-500 flex-shrink-0 -ml-1" aria-label="Verified" />
+            {!isBlackTierPartner && (partnerVerified || kycVerified) && (
+              <CheckCircle2 
+                className="w-[18px] h-[18px] flex-shrink-0 -ml-1 text-blue-500" 
+                aria-label="Verified" 
+              />
+            )}
+            {isBlackTierPartner && (
+              <span className="flex-shrink-0 px-1.5 h-4 inline-flex items-center text-[8px] font-black tracking-widest uppercase bg-black text-white">
+                BLK
+              </span>
             )}
           </div>
 

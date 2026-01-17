@@ -174,6 +174,8 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
   
   if (!partner) return null;
 
+  const isBlackTier = partner.tier === 'black';
+
   const hasRating = partner.googleRating || partner.platformRating;
   const displayRating = partner.platformRating ?? partner.googleRating ?? 0;
   const totalReviews = (partner.platformReviewCount ?? 0) + (partner.googleReviewCount ?? 0);
@@ -210,7 +212,11 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
             )}>
               {partner.brandName}
             </h3>
-            {partner.isVerified && (
+            {isBlackTier ? (
+              <span className="flex-shrink-0 px-1.5 h-5 inline-flex items-center text-[9px] font-black tracking-widest uppercase bg-black text-white">
+                BLK
+              </span>
+            ) : partner.isVerified && (
               <CheckCircle2 className="w-5 h-5 text-blue-500 flex-shrink-0" />
             )}
           </div>

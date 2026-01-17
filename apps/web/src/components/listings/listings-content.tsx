@@ -173,10 +173,14 @@ export function ListingsContent({
                 make={listing.make}
                 model={listing.model}
                 thumbnail={listing.thumbnail}
+                isBlkListing={listing.isBlkListing}
                 partnerName={listing.partnerName || undefined}
                 partnerLogo={listing.partnerLogo || undefined}
+                partnerVerified={listing.partnerVerified || undefined}
+                isBlackTierPartner={listing.isBlackTierPartner || undefined}
                 sellerName={listing.sellerName || undefined}
                 sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
+                kycVerified={listing.sellerKycVerified || undefined}
                 priority={index < 4}
               />
             ))}
@@ -251,10 +255,14 @@ export function ListingsContent({
                 make={listing.make}
                 model={listing.model}
                 thumbnail={listing.thumbnail}
+                isBlkListing={listing.isBlkListing}
                 partnerName={listing.partnerName || undefined}
                 partnerLogo={listing.partnerLogo || undefined}
+                partnerVerified={listing.partnerVerified || undefined}
+                isBlackTierPartner={listing.isBlackTierPartner || undefined}
                 sellerName={listing.sellerName || undefined}
                 sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
+                kycVerified={listing.sellerKycVerified || undefined}
                 priority={index < 8}
               />
             ))}

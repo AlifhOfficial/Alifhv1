@@ -5,9 +5,11 @@
 
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { Heart, ChevronRight, Loader2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { useFavoritesStatus } from '@/hooks/engagement';
+import { useUser } from '@/hooks/auth/use-auth';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -24,54 +26,60 @@ type ListingPayload = {
   thumbnail: string | null;
 };
 
+async function fetchNavbarListings(ids: string[]): Promise<ListingPayload[]> {
+  if (!ids.length) return [];
+  // Take the 3 most recent favorites
+  const topIds = ids.slice(0, 3);
+  const res = await fetch(`/api/listings/car-card?ids=${encodeURIComponent(topIds.join(','))}`, {
+    credentials: 'include',
+  });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.data || [];
+}
+
 export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [listings, setListings] = useState<ListingPayload[]>([]);
-  const [isLoadingListings, setIsLoadingListings] = useState(false);
   
-  const { data: favoritesData, isLoading: isLoadingFavorites } = useFavoritesStatus();
+  const { isSignedIn } = useUser();
+  
+  // Only fetch when dropdown is open AND signed in (lazy load)
+  const { data: favoritesData, isLoading: isLoadingFavorites } = useFavoritesStatus({ enabled: isSignedIn && isOpen });
   const favoriteIds = favoritesData?.favorites ?? [];
   const count = favoriteIds.length;
 
-  // Fetch listings on open
-  const handleOpen = useCallback(async () => {
-    setIsOpen(true);
-    
-    if (favoriteIds.length === 0) {
-      setListings([]);
-      return;
-    }
-    
-    setIsLoadingListings(true);
-    
-    try {
-      // Take the 3 most recent favorites (newest first from API)
-      const topIds = favoriteIds.slice(0, 3);
-      const res = await fetch(`/api/listings/car-card?ids=${encodeURIComponent(topIds.join(','))}`, {
-        credentials: 'include',
-        cache: 'no-store', // Prevent Safari caching issues
-      });
-      const data = await res.json();
-      setListings(data.data || []);
-    } catch {
-      setListings([]);
-    } finally {
-      setIsLoadingListings(false);
-    }
-  }, [favoriteIds]);
+  // Fetch listings for navbar - only when dropdown is open
+  const { data: listings = [], isLoading: isLoadingListings } = useQuery({
+    queryKey: ['navbar-favorites-listings'],
+    queryFn: () => fetchNavbarListings(favoriteIds),
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    // Only fetch when dropdown is open and we have favorites
+    enabled: isOpen && favoriteIds.length > 0,
+  });
 
-  const handleClose = useCallback(() => {
-    setIsOpen(false);
-    setListings([]);
-  }, []);
+  // Create a map for quick lookup, then order by favoriteIds (preserves order)
+  const listingsById = useMemo(() => {
+    const map = new Map<string, ListingPayload>();
+    listings.forEach((l) => {
+      if (l?.id) map.set(l.id, l);
+    });
+    return map;
+  }, [listings]);
+
+  // Get top 3 favorites in correct order
+  const orderedListings = useMemo(() => {
+    return favoriteIds
+      .slice(0, 3)
+      .map(id => listingsById.get(id))
+      .filter((l): l is ListingPayload => l !== undefined);
+  }, [favoriteIds, listingsById]);
 
   const handleToggle = useCallback(() => {
-    if (isOpen) {
-      handleClose();
-    } else {
-      handleOpen();
-    }
-  }, [isOpen, handleOpen, handleClose]);
+    setIsOpen(prev => !prev);
+  }, []);
 
   // Close on outside click
   useEffect(() => {
@@ -144,9 +152,9 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
                   Your dream garage awaits
                 </p>
               </div>
-            ) : listings.length > 0 ? (
+            ) : orderedListings.length > 0 ? (
               <div className="py-1.5">
-                {listings.map((listing) => (
+                {orderedListings.map((listing) => (
                   <FavoritePreviewItem
                     key={listing.id}
                     listing={listing}

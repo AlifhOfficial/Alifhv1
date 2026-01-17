@@ -1,36 +1,23 @@
 /**
  * Favorites & Superlikes Queries - Production
  * 
- * User favorite and superlike management with quota tracking and memory caching.
+ * User favorite and superlike management with quota tracking.
  * 
- * USAGE:
- * - getFavoriteStatusForListings() - Fetch user's favorites/superlikes (cached 30s)
+ * QUERY FUNCTIONS:
+ * - getFavoriteStatusForListings() - IDs only (fast, for listing pages with heart icons)
+ * - getFavoritesWithListings()     - IDs + listing data (single JOIN query, for favorites/superlikes pages)
+ * - getSuperlikeQuotaForUser()     - Get/create user quota with auto-reset
+ * 
+ * MUTATION FUNCTIONS:
  * - toggleFavoriteForUser() - Add/remove favorite (optimistic delete-first)
  * - toggleSuperlikeForUser() - Add/remove superlike (quota-enforced)
- * - getSuperlikeQuotaForUser() - Get/create user quota with auto-reset
  * 
- * PLACEMENT RATIONALE:
- * Lives at queries/ root (not in profile/) because favorites span multiple
- * domains: listings (what's favorited), users (who favorited), and partners
- * (for future analytics). Cross-cutting concern that doesn't belong in any
- * single subdomain folder.
- * 
- * PERFORMANCE OPTIMIZATIONS:
- * - Memory cache with 30s TTL to avoid N+1 queries on listing pages
- * - Raw SQL UNION ALL query (faster than 2 separate ORM queries)
- * - Optimistic delete-first strategy reduces round trips
- * - Parallel insert + quota update for superlike toggle
- * 
- * QUOTA SYSTEM:
- * - 30-day rolling periods with auto-reset on expiry
- * - Base quota: 5 superlikes/month (configurable)
- * - Premium bonus: 0 (extendable for paid tiers)
- * - Quota consumed permanently per period (no refunds on removal)
+ * ARCHITECTURE:
+ * - getFavoriteStatusForListings: Simple UNION query, no JOINs (fast for IDs only)
+ * - getFavoritesWithListings: CTE with JOIN to car_listing (single query for IDs + data)
  * 
  * CACHE INVALIDATION:
- * - Eagerly invalidate on toggleFavorite/toggleSuperlike
- * - Cache key: `user:favorites:{userId}`
- * - Ensures immediate UI consistency after mutations
+ * Call invalidateFavoritesCache(userId) after toggles - clears both cache keys
  * 
  * @module queries/favorites
  */
@@ -178,6 +165,135 @@ export async function getFavoriteStatusForListings(userId: string) {
   }
   
   return { favorites, superlikes };
+}
+
+/**
+ * Listing card data returned from getFavoritesWithListings
+ * Matches CarCardData fields for UI compatibility
+ */
+export interface FavoriteListingData {
+  id: string;
+  make: string | null;
+  model: string | null;
+  year: number | null;
+  trim: string | null;
+  price: number | null;
+  mileage: number | null;
+  emirate: string | null;
+  specs: string | null;
+  thumbnail: string | null;
+  qiScore: number | null;
+  isBlkListing: boolean | null;
+  partnerName: string | null;
+  partnerLogo: string | null;
+  partnerVerified: boolean | null;
+  sellerName: string | null;
+  sellerAvatarUrl: string | null;
+  sellerKycVerified: boolean | null;
+}
+
+/**
+ * Get user's favorites/superlikes WITH listing data in a single query
+ * 
+ * ⚡ OPTIMIZED: Single round-trip instead of:
+ *    1. getFavoriteStatusForListings → [ids]
+ *    2. getListingCards({ ids }) → [listings]
+ * 
+ * @param userId - User ID
+ * @param options.limit - Max favorites to return listing data for (default: 50)
+ * @returns favorites IDs, superlike IDs, and listing data for favorites
+ */
+export async function getFavoritesWithListings(
+  userId: string,
+  options?: { limit?: number }
+): Promise<{
+  favorites: string[];
+  superlikes: string[];
+  listings: FavoriteListingData[];
+}> {
+  if (!userId) return { favorites: [], superlikes: [], listings: [] };
+
+  const limit = options?.limit ?? 50;
+
+  // Single query: get favorites/superlikes IDs + listing data for favorites
+  // Uses LEFT JOIN so we get IDs even if listing was deleted
+  const results = await db.execute(sql`
+    WITH user_engagements AS (
+      SELECT listing_id, 'fav' as type, created_at FROM user_favorite WHERE user_id = ${userId}
+      UNION ALL
+      SELECT listing_id, 'super' as type, created_at FROM user_superlike WHERE user_id = ${userId}
+    ),
+    favorite_listings AS (
+      SELECT 
+        l.id,
+        l.make,
+        l.model,
+        l.year,
+        l.trim,
+        l.price,
+        l.mileage,
+        l.emirate,
+        l.specs,
+        l.thumbnail,
+        l.qi_score as "qiScore",
+        l.is_black_member as "isBlkListing",
+        COALESCE(l.partner_brand_name, p.brand_name) as "partnerName",
+        p.logo as "partnerLogo",
+        COALESCE(l.partner_verified, p.is_verified) as "partnerVerified",
+        u.name as "sellerName",
+        up.avatar as "sellerAvatarUrl",
+        up.kyc_verified as "sellerKycVerified",
+        ue.created_at as fav_created_at
+      FROM user_engagements ue
+      JOIN car_listing l ON l.id = ue.listing_id
+      LEFT JOIN "user" u ON u.id = l.user_id
+      LEFT JOIN user_profile up ON up.user_id = l.user_id
+      LEFT JOIN partner p ON p.id = l.partner_id
+      WHERE ue.type = 'fav'
+        AND l.moderation_status = 'approved'
+        AND l.lifecycle_status = 'active'
+        AND (l.expires_at IS NULL OR l.expires_at > NOW())
+      ORDER BY ue.created_at DESC
+      LIMIT ${limit}
+    )
+    SELECT 
+      (SELECT json_agg(listing_id ORDER BY created_at DESC) FROM user_engagements WHERE type = 'fav') as favorites,
+      (SELECT json_agg(listing_id ORDER BY created_at DESC) FROM user_engagements WHERE type = 'super') as superlikes,
+      (SELECT json_agg(
+        json_build_object(
+          'id', id,
+          'make', make,
+          'model', model,
+          'year', year,
+          'trim', trim,
+          'price', price,
+          'mileage', mileage,
+          'emirate', emirate,
+          'specs', specs,
+          'thumbnail', thumbnail,
+          'qiScore', "qiScore",
+          'isBlkListing', "isBlkListing",
+          'partnerName', "partnerName",
+          'partnerLogo', "partnerLogo",
+          'partnerVerified', "partnerVerified",
+          'sellerName', "sellerName",
+          'sellerAvatarUrl', "sellerAvatarUrl",
+          'sellerKycVerified', "sellerKycVerified"
+        ) ORDER BY fav_created_at DESC
+      ) FROM favorite_listings) as listings
+  `);
+
+  const row = results.rows[0] as {
+    favorites: string[] | null;
+    superlikes: string[] | null;
+    listings: FavoriteListingData[] | null;
+  };
+
+  return {
+    favorites: row.favorites ?? [],
+    superlikes: row.superlikes ?? [],
+    listings: row.listings ?? [],
+  };
 }
 
 // Removed: getAllFavoritesForUser - use getFavoriteStatusForListings instead

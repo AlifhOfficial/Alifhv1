@@ -9,10 +9,15 @@
  * Features:
  * - Single API call for all favorite/superlike data
  * - Daily superlike quota tracking
+ * - Optional listing data inclusion (avoids second car-card API call)
  * - Optimized for React Query client-side caching
  * 
+ * Query Params:
+ * - include=listings: Include full listing data for favorites (navbar, favorites page)
+ * - limit: Max listings to include (default: 50, for include=listings)
+ * 
  * Cache Strategy:
- * - No server caching (React Query handles client-side)
+ * - Server memory cache: 5 minutes (invalidated on toggle)
  * - Private, no-store headers (user-specific data)
  * 
  * Standards:
@@ -24,6 +29,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import {
   getFavoriteStatusForListings,
+  getFavoritesWithListings,
   getSuperlikeQuotaForUser,
   memoryCache,
 } from '@alifh/database';
@@ -48,12 +54,19 @@ const CACHE_HEADERS_NO_CACHE = {
 } as const;
 
 // Helper to generate cache key for user's favorites status
-function getFavoritesStatusCacheKey(userId: string): string {
-  return `favorites:status:${userId}`;
+function getFavoritesStatusCacheKey(userId: string, includeListings: boolean): string {
+  return includeListings 
+    ? `favorites:status:full:${userId}` 
+    : `favorites:status:${userId}`;
 }
 
 export async function GET(req: NextRequest) {
   try {
+    const { searchParams } = new URL(req.url);
+    const includeListings = searchParams.get('include') === 'listings';
+    const limitParam = searchParams.get('limit');
+    const listingsLimit = limitParam ? Math.min(parseInt(limitParam, 10) || 50, 100) : 50;
+    
     const user = await getSessionUser();
     
     // Return empty data for guests (allows public browsing)
@@ -61,6 +74,7 @@ export async function GET(req: NextRequest) {
       const response = NextResponse.json({ 
         favorites: [],
         superlikes: [],
+        listings: includeListings ? [] : undefined,
         quota: { 
           currentMonthSuperlikesUsed: 0,
           maxSuperlikesPerMonth: 0,
@@ -83,7 +97,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Check cache first
-    const cacheKey = getFavoritesStatusCacheKey(user.id);
+    const cacheKey = getFavoritesStatusCacheKey(user.id, includeListings);
     const cached = memoryCache.get(cacheKey);
     if (cached) {
       const response = NextResponse.json(cached);
@@ -93,17 +107,35 @@ export async function GET(req: NextRequest) {
       return response;
     }
 
-    // Fetch all data in parallel (single round trip)
-    const [statusData, quota] = await Promise.all([
-      getFavoriteStatusForListings(user.id),
-      getSuperlikeQuotaForUser(user.id),
-    ]);
+    // ⚡ OPTIMIZED: Single query for favorites + listings OR just IDs
+    // Previously: getFavoriteStatusForListings → getListingCards (2 queries)
+    // Now: getFavoritesWithListings (1 query with JOIN)
+    
+    let favorites: string[];
+    let superlikes: string[];
+    let listings: unknown[] | undefined;
 
+    if (includeListings) {
+      // Single query: IDs + listing data via JOIN
+      const result = await getFavoritesWithListings(user.id, { limit: listingsLimit });
+      favorites = result.favorites;
+      superlikes = result.superlikes;
+      listings = result.listings;
+    } else {
+      // IDs only (faster, no JOIN needed)
+      const result = await getFavoriteStatusForListings(user.id);
+      favorites = result.favorites;
+      superlikes = result.superlikes;
+    }
+
+    // Fetch quota (separate query - different table)
+    const quota = await getSuperlikeQuotaForUser(user.id);
     const remaining = (quota.maxSuperlikesPerMonth + (quota.premiumSuperlikesBonus || 0)) - quota.currentMonthSuperlikesUsed;
 
     const responseData = {
-      favorites: statusData.favorites,
-      superlikes: statusData.superlikes,
+      favorites,
+      superlikes,
+      ...(includeListings && { listings }),
       quota: {
         currentMonthSuperlikesUsed: quota.currentMonthSuperlikesUsed,
         maxSuperlikesPerMonth: quota.maxSuperlikesPerMonth,

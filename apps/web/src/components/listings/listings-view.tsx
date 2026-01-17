@@ -10,6 +10,8 @@ import { ListingsHeader } from './listings-header';
 import { ListingsSidebar } from './listings-sidebar';
 import { ListingsContent } from './listings-content';
 import { useSearch } from '@/hooks/use-search';
+import { useUser } from '@/hooks/auth/use-auth';
+import { useFavoritesStatus } from '@/hooks/engagement';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
@@ -22,6 +24,12 @@ export function ListingsView({ embedded = false }: ListingsViewProps) {
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'minimal'>('grid'); // Default to grid
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const { isSignedIn } = useUser();
+
+  // Fetch favorites status once at the parent level (only if signed in)
+  // Child components (CarCard) will subscribe to this data without triggering refetch
+  useFavoritesStatus({ enabled: isSignedIn });
 
   // Force grid view on screens smaller than lg (1024px)
   // List view is only available on desktop/large tablets

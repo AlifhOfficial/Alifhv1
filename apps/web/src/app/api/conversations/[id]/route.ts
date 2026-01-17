@@ -9,7 +9,7 @@ import { getSessionUser } from '@/lib/auth/session-context';
 import {
   getConversation,
   updateConversationSettings,
-} from '@alifh/database/server';
+} from '@alifh/database';
 import {
   createRateLimiter,
   getIdentifier,

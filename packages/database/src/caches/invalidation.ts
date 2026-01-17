@@ -111,25 +111,16 @@ export function invalidateUserBookings(userId: string): void {
 /**
  * Invalidate user's favorites/superlikes cache
  * Use after: favorite toggle, superlike toggle
+ * 
+ * Clears both:
+ * - favorites:status:{userId} (IDs only)
+ * - favorites:status:full:{userId} (with listing data)
  */
 export function invalidateFavoritesCache(userId: string): void {
   const key = `favorites:status:${userId}`;
-  memoryCache.delete(key);
+  const fullKey = `favorites:status:full:${userId}`;
+  memoryCache.delete(key, fullKey);
   console.log(`[cache] Invalidated favorites for user: ${userId}`);
-}
-
-// ============================================================================
-// MESSAGING
-// ============================================================================
-
-/**
- * Invalidate user's unread message count cache
- * Use after: new message sent, conversation marked as read
- */
-export function invalidateUnreadCount(userId: string): void {
-  const key = CacheKeys.userUnreadCount(userId);
-  memoryCache.delete(key);
-  console.log(`[cache] Invalidated unread count for user: ${userId}`);
 }
 
 // ============================================================================

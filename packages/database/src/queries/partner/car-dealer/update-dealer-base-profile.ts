@@ -149,7 +149,8 @@ export async function updateDealerBaseProfile(
   }
   
   // Invalidate session cache for all staff if brand-related fields changed
-  if (data.brandName || data.logo) {
+  // Use !== undefined to catch null values (logo removal)
+  if (data.brandName !== undefined || data.logo !== undefined) {
     const staff = await db.query.partnerStaff.findMany({
       where: eq(partnerStaff.partnerId, partnerId),
       columns: { userId: true },

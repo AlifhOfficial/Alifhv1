@@ -51,9 +51,6 @@ invalidateListingCaches(id, partnerId); // Auto-clears search too
 ### Engagement
 - `invalidateFavoritesCache(userId)` - User's favorites/superlikes
 
-### Messaging
-- `invalidateUnreadCount(userId)` - User's unread message count (called on new message, mark as read)
-
 ### User Dashboard Data
 - `invalidateUserMyListings(userId)` - User's personal listings cache (called on create/update/delete)
 - `invalidateUserBookings(userId)` - User's bookings cache (called on create/cancel/reschedule)
@@ -71,7 +68,6 @@ invalidateListingCaches(id, partnerId); // Auto-clears search too
 
 ```typescript
 CacheTTL.userSession      // 5 min - auth sessions
-CacheTTL.userUnreadCount  // 1 min - unread message count
 CacheTTL.userMyListings   // 2 min - user's personal listings
 CacheTTL.userBookings     // 2 min - user's bookings
 CacheTTL.listingDetail    // 10 min - listing data
@@ -80,16 +76,40 @@ CacheTTL.searchResults    // 10 min - search queries
 
 ## 🚫 What NOT to Do
 
-❌ Client-side caching (React Query staleTime/gcTime)
+❌ Client-side caching for **shared data** (listings, search results)
 ❌ Browser caching (Cache-Control headers)
 ❌ Manual cache key construction
 
 ## ✅ What TO Do
 
-✅ Always use server-side cache
+✅ Always use server-side cache for shared data
 ✅ Always invalidate after mutations
 ✅ Use provided invalidation functions
 ✅ Import from `@alifh/database`
+
+## 🔐 Exception: User-Owned Data
+
+For user-specific data (favorites, superlikes), client-side caching with `staleTime: Infinity` is **allowed**:
+
+```typescript
+// ✅ OK for user-owned data
+useQuery({
+  queryKey: ['favorites-status'],
+  queryFn: fetchFavoritesStatus,
+  staleTime: Infinity,           // Never refetch automatically
+  refetchOnWindowFocus: false,   // Only refetch after mutations
+});
+```
+
+**Why this is safe:**
+- User-owned data changes ONLY via user actions (mutations)
+- Both server cache (`invalidateFavoritesCache`) AND client cache (`invalidateQueries`) are invalidated together
+- No risk of stale data from other users' actions
+
+**Where this applies:**
+- `favorites-status` (favorites, superlikes, quota)
+- User profile data
+- User bookings
 
 ## 📝 Adding New Cache
 

@@ -172,7 +172,7 @@ function ActivityDots({ days = 28 }: { days?: number }) {
 export function UserDashboardOverview() {
   const { session: user } = useAuth();
   const { stats, isLoading } = useDashboardStats();
-  const { unreadCount } = useUnreadCount(user?.id);
+  const { unreadCount } = useUnreadCount({ userId: user?.id, scope: 'personal' });
 
   if (!user) return null;
 

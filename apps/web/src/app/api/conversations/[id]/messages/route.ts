@@ -10,8 +10,7 @@ import {
   getMessages,
   sendMessage,
   getConversationParticipants,
-  invalidateUnreadCount,
-} from '@alifh/database/server';
+} from '@alifh/database';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_MESSAGING } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
@@ -146,13 +145,6 @@ export async function POST(
       
       // Get participants to broadcast to their user channels
       const participants = await getConversationParticipants(conversationId);
-      
-      // Invalidate unread count cache for all participants except sender
-      for (const participant of participants) {
-        if (participant.userId !== user.id) {
-          invalidateUnreadCount(participant.userId);
-        }
-      }
       
       // Broadcast to ALL participants in PARALLEL (non-blocking)
       Promise.all(

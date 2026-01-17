@@ -109,8 +109,12 @@ export function useFavoritesStatus(options?: { enabled?: boolean }) {
   return useQuery<FavoritesStatusData>({
     queryKey: ['favorites-status'],
     queryFn: fetchFavoritesStatus,
-    refetchOnWindowFocus: true,
-    enabled: options?.enabled ?? true, // Allow disabling the query
+    // User-owned data: safe to cache indefinitely since we control all mutations
+    // Data only changes via toggleFavorite/toggleSuperlike which invalidate both
+    // server cache (invalidateFavoritesCache) and client cache (invalidateQueries)
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    enabled: options?.enabled ?? true,
   });
 }
 
@@ -122,9 +126,12 @@ export function useFavorite(listingId: string) {
   const queryClient = useQueryClient();
   const [authRequired, setAuthRequired] = useState<AuthState>(DEFAULT_AUTH_STATE);
 
+  // Read from cache only - parent component fetches via useFavoritesStatus({ enabled: isSignedIn })
+  // enabled: false prevents this hook from triggering API calls
   const { data } = useQuery<FavoritesStatusData>({
     queryKey: ['favorites-status'],
     queryFn: fetchFavoritesStatus,
+    enabled: false, // Never fetch - only subscribe to cache updates
   });
 
   const isFavorite = data?.favorites.includes(listingId) || false;
@@ -166,8 +173,10 @@ export function useFavorite(listingId: string) {
       } catch {}
     },
     onSuccess: () => {
-      // Refetch to ensure consistency
+      // Invalidate all favorites-related caches
       queryClient.invalidateQueries({ queryKey: ['favorites-status'] });
+      queryClient.invalidateQueries({ queryKey: ['favorites-listings'] });
+      queryClient.invalidateQueries({ queryKey: ['navbar-favorites-listings'] });
     },
   });
 
@@ -191,9 +200,12 @@ export function useSuperlike(listingId: string) {
   const [authRequired, setAuthRequired] = useState<AuthState>(DEFAULT_AUTH_STATE);
   const [quotaExceeded, setQuotaExceeded] = useState(false);
 
+  // Read from cache only - parent component fetches via useFavoritesStatus({ enabled: isSignedIn })
+  // enabled: false prevents this hook from triggering API calls
   const { data } = useQuery<FavoritesStatusData>({
     queryKey: ['favorites-status'],
     queryFn: fetchFavoritesStatus,
+    enabled: false, // Never fetch - only subscribe to cache updates
   });
 
   const isSuperliked = data?.superlikes.includes(listingId) || false;
@@ -247,7 +259,10 @@ export function useSuperlike(listingId: string) {
           quota: data.quota,
         });
       }
+      // Invalidate all favorites-related caches
       queryClient.invalidateQueries({ queryKey: ['favorites-status'] });
+      queryClient.invalidateQueries({ queryKey: ['superlikes-listings'] });
+      queryClient.invalidateQueries({ queryKey: ['navbar-favorites-listings'] });
     },
   });
 
@@ -262,5 +277,92 @@ export function useSuperlike(listingId: string) {
     quotaExceeded,
     dismissAuth: () => setAuthRequired(DEFAULT_AUTH_STATE),
     dismissQuotaError: () => setQuotaExceeded(false),
+  };
+}
+
+// ============================================================================
+// Favorites Listings Hook - Fetch Full Listing Data
+// ============================================================================
+
+export interface ListingCardData {
+  id: string;
+  make: string | null;
+  model: string | null;
+  year: number | null;
+  trim: string | null;
+  price: number | null;
+  mileage: number | null;
+  emirate: string | null;
+  specs: string | null;
+  thumbnail: string | null;
+  qiScore: number | null;
+  partnerName: string | null;
+  partnerLogo?: string | null;
+  partnerVerified: boolean | null;
+  isBlkListing: boolean | null;
+  sellerName?: string | null;
+  sellerAvatarUrl?: string | null;
+  sellerKycVerified?: boolean | null;
+}
+
+async function fetchListingCards(ids: string[]): Promise<ListingCardData[]> {
+  if (!ids.length) return [];
+  const res = await fetch(`/api/listings/car-card?ids=${encodeURIComponent(ids.join(','))}`, {
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error('Failed to fetch listing cards');
+  const data = await res.json();
+  return data.data || [];
+}
+
+/**
+ * Fetch full listing data for favorites.
+ * Caches indefinitely, refetches only after invalidation.
+ */
+export function useFavoritesListings() {
+  const { data: favoritesData, isLoading: isLoadingStatus } = useFavoritesStatus();
+  const favoriteIds = favoritesData?.favorites || [];
+
+  const listingsQuery = useQuery({
+    queryKey: ['favorites-listings'],
+    queryFn: () => fetchListingCards(favoriteIds),
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    enabled: favoriteIds.length > 0,
+  });
+
+  return {
+    listings: listingsQuery.data || [],
+    favoriteIds,
+    isLoading: isLoadingStatus || listingsQuery.isLoading,
+    error: listingsQuery.error?.message || null,
+  };
+}
+
+/**
+ * Fetch full listing data for superlikes.
+ * Caches indefinitely, refetches only after invalidation.
+ */
+export function useSuperlikesListings() {
+  const { data: favoritesData, isLoading: isLoadingStatus } = useFavoritesStatus();
+  const superlikeIds = favoritesData?.superlikes || [];
+
+  const listingsQuery = useQuery({
+    queryKey: ['superlikes-listings'],
+    queryFn: () => fetchListingCards(superlikeIds),
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    enabled: superlikeIds.length > 0,
+  });
+
+  return {
+    listings: listingsQuery.data || [],
+    superlikeIds,
+    isLoading: isLoadingStatus || listingsQuery.isLoading,
+    error: listingsQuery.error?.message || null,
   };
 }

@@ -1,11 +1,11 @@
 /**
  * Unread Count API
- * GET: Get total unread message count for user
+ * GET: Get total unread message count for user (with scope support)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { getTotalUnreadCount, memoryCache, CacheKeys, CacheTTL } from '@alifh/database/server';
+import { getTotalUnreadCount } from '@alifh/database';
 import {
   createRateLimiter,
   getIdentifier,
@@ -19,7 +19,7 @@ export const runtime = 'nodejs';
 
 // ============================================================================
 // GET /api/conversations/unread-count
-// Get total unread count across all conversations
+// Get total unread count across all conversations (with optional scope)
 // ============================================================================
 
 export async function GET(req: NextRequest) {
@@ -39,16 +39,24 @@ export async function GET(req: NextRequest) {
       return rateLimitResponse(rateLimitResult);
     }
 
-    // Check cache first
-    const cacheKey = CacheKeys.userUnreadCount(user.id);
-    const cached = memoryCache.get<number>(cacheKey);
-    if (cached !== null) {
-      return NextResponse.json({ unreadCount: cached });
-    }
+    const { searchParams } = new URL(req.url);
+    const scope = searchParams.get('scope') as 'personal' | 'staff' | null;
 
-    // Fetch from database and cache
-    const unreadCount = await getTotalUnreadCount(user.id);
-    memoryCache.set(cacheKey, unreadCount, CacheTTL.userUnreadCount);
+    // Get partner IDs for scoping
+    const partnerIds = (user.partnerMemberships ?? []).map((m) => m.partnerId).filter(Boolean);
+    
+    // Determine partner scope filter
+    const partnerScope =
+      partnerIds.length > 0
+        ? scope === 'staff'
+          ? 'only'
+          : scope === 'personal'
+            ? 'exclude'
+            : undefined
+        : undefined;
+
+    // Fetch unread count (lightweight query - just SUM from participant table)
+    const unreadCount = await getTotalUnreadCount(user.id, partnerScope);
 
     return NextResponse.json({ unreadCount });
   } catch (error) {

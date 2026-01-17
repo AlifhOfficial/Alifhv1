@@ -7,6 +7,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { CheckCircle2 } from 'lucide-react';
 import { cn } from '@/utils';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
@@ -17,11 +18,15 @@ interface CarCardMinimalProps {
   model: string;
   thumbnail?: string | null;
   images?: string[];
+  isBlkListing?: boolean;
   // Seller info
   partnerName?: string;
   partnerLogo?: string | null;
+  partnerVerified?: boolean;
+  isBlackTierPartner?: boolean;
   sellerName?: string | null;
   sellerAvatarUrl?: string | null;
+  kycVerified?: boolean;
   className?: string;
   priority?: boolean;
 }
@@ -32,27 +37,38 @@ export function CarCardMinimal({
   model,
   thumbnail,
   images,
+  isBlkListing,
   partnerName,
   partnerLogo,
+  partnerVerified,
+  isBlackTierPartner,
   sellerName,
   sellerAvatarUrl,
+  kycVerified,
   className,
   priority = false,
 }: CarCardMinimalProps) {
   const displayImage = thumbnail || images?.[0] || '/assets/cars/car1.avif';
   const displaySellerName = partnerName || sellerName || 'Private Seller';
+  const isVerified = partnerVerified || kycVerified;
   const isPartnerListing = Boolean(partnerLogo || partnerName);
 
   return (
     <Link
       href={`/listings/${id}`}
       className={cn(
-        'group flex flex-col overflow-hidden rounded-lg bg-sidebar border border-sidebar-border hover:border-sidebar-border/80 hover:shadow-sm transition-all',
+        'group flex flex-col overflow-hidden rounded-lg transition-all',
+        isBlkListing 
+          ? 'bg-black border border-zinc-800 hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-900/50' 
+          : 'bg-sidebar border border-sidebar-border hover:border-sidebar-border/80 hover:shadow-sm',
         className
       )}
     >
       {/* Image */}
-      <div className="relative aspect-[3/2] w-full overflow-hidden bg-muted/20">
+      <div className={cn(
+        "relative aspect-[4/3] w-full overflow-hidden",
+        isBlkListing ? "bg-zinc-900" : "bg-muted/20"
+      )}>
         <Image
           src={displayImage}
           alt={`${make} ${model}`}
@@ -63,31 +79,82 @@ export function CarCardMinimal({
         />
       </div>
 
-      {/* Content */}
-      <div className="flex items-center gap-2 p-2.5">
-        {isPartnerListing ? (
+      {/* Content - Clean & Minimal */}
+      <div className="flex items-center justify-between gap-3 p-3">
+        {/* Left - Text */}
+        <div className="min-w-0 flex-1 space-y-1">
+          {/* Make/Model */}
+          <p className={cn(
+            "text-sm font-semibold truncate",
+            isBlkListing ? "text-white" : "text-foreground"
+          )}>
+            {make} {model}
+          </p>
+          
+          {/* Seller row */}
+          <div className="flex items-center gap-1.5">
+            <p className={cn(
+              "text-xs truncate",
+              isBlkListing ? "text-zinc-500" : "text-muted-foreground"
+            )}>
+              {displaySellerName}
+            </p>
+            {isBlackTierPartner ? (
+              <span className="flex-shrink-0 px-1 h-3.5 inline-flex items-center text-[7px] font-black tracking-widest uppercase bg-black text-white border border-zinc-700">
+                BLK
+              </span>
+            ) : isVerified && (
+              <CheckCircle2 className="w-3 h-3 flex-shrink-0 text-blue-500" />
+            )}
+          </div>
+        </div>
+
+        {/* Right - Avatar */}
+        {isBlackTierPartner ? (
+          <div className="flex-shrink-0 rounded-full ring-2 ring-black ring-offset-1 ring-offset-background">
+            {isPartnerListing ? (
+              <BrandAvatar
+                logoUrl={partnerLogo}
+                brandName={displaySellerName}
+                size="xs"
+                className={cn(
+                  "w-8 h-8",
+                  isBlkListing ? "bg-zinc-800 border-zinc-700" : "bg-muted/40 border-border/40"
+                )}
+              />
+            ) : (
+              <UserAvatar
+                src={sellerAvatarUrl}
+                name={displaySellerName}
+                size="sm"
+                className={cn(
+                  "w-8 h-8",
+                  isBlkListing ? "bg-zinc-800 border-zinc-700 text-zinc-500" : "bg-muted/40 border-border/40 text-muted-foreground/70"
+                )}
+              />
+            )}
+          </div>
+        ) : isPartnerListing ? (
           <BrandAvatar
             logoUrl={partnerLogo}
             brandName={displaySellerName}
             size="xs"
-            className="w-6 h-6 flex-shrink-0 bg-sidebar-accent border-sidebar-border"
+            className={cn(
+              "w-8 h-8 flex-shrink-0",
+              isBlkListing ? "bg-zinc-800 border-zinc-700" : "bg-muted/40 border-border/40"
+            )}
           />
         ) : (
           <UserAvatar
             src={sellerAvatarUrl}
             name={displaySellerName}
             size="sm"
-            className="w-6 h-6 flex-shrink-0 bg-sidebar-accent border-sidebar-border text-sidebar-foreground/70"
+            className={cn(
+              "w-8 h-8 flex-shrink-0",
+              isBlkListing ? "bg-zinc-800 border-zinc-700 text-zinc-500" : "bg-muted/40 border-border/40 text-muted-foreground/70"
+            )}
           />
         )}
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-foreground truncate">
-            {make} {model}
-          </p>
-          <p className="text-xs text-muted-foreground truncate">
-            {displaySellerName}
-          </p>
-        </div>
       </div>
     </Link>
   );

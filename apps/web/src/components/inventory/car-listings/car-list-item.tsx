@@ -271,7 +271,26 @@ export function CarListItem({
         )}>
           {/* Left - Dealer */}
           <div className="flex items-center gap-2.5 min-w-0 flex-1">
-            {isPartnerListing ? (
+            {/* Avatar - with ring for Black tier */}
+            {isBlackTierPartner ? (
+              <div className="flex-shrink-0 rounded-full ring-2 ring-black ring-offset-1 ring-offset-background">
+                {isPartnerListing ? (
+                  <BrandAvatar
+                    logoUrl={partnerLogo}
+                    brandName={displaySellerName}
+                    size="xs"
+                    className="w-8 h-8 lg:w-9 lg:h-9"
+                  />
+                ) : (
+                  <UserAvatar
+                    src={sellerAvatarUrl}
+                    name={displaySellerName}
+                    size="sm"
+                    className="w-8 h-8 lg:w-9 lg:h-9"
+                  />
+                )}
+              </div>
+            ) : isPartnerListing ? (
               <BrandAvatar
                 logoUrl={partnerLogo}
                 brandName={displaySellerName}
@@ -293,8 +312,16 @@ export function CarListItem({
               )}>
                 {displaySellerName}
               </span>
-              {(partnerVerified || kycVerified) && (
-                <CheckCircle2 className="w-4 h-4 text-blue-500 flex-shrink-0" aria-label="Verified" />
+              {!isBlackTierPartner && (partnerVerified || kycVerified) && (
+                <CheckCircle2 
+                  className="w-4 h-4 flex-shrink-0 text-blue-500" 
+                  aria-label="Verified" 
+                />
+              )}
+              {isBlackTierPartner && (
+                <span className="flex-shrink-0 px-1.5 h-4 inline-flex items-center text-[8px] font-black tracking-widest uppercase bg-black text-white">
+                  BLK
+                </span>
               )}
             </div>
           </div>

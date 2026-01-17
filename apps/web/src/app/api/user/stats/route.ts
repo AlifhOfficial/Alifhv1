@@ -10,7 +10,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { calculateUserStats } from '@alifh/database/server';
+import { calculateUserStats } from '@alifh/database';
 import {
   createRateLimiter,
   getIdentifier,

@@ -1,79 +1,20 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { Loader2, RefreshCw, Heart } from 'lucide-react';
 import { CarCard } from '@/components/inventory';
-import { useFavoritesStatus } from '@/hooks/engagement';
+import { useFavoritesListings } from '@/hooks/engagement';
 import { DashboardPageWrapper, DashboardPageHeader } from '@/components/shared/layout/dashboard-page-wrapper';
 
-type ListingPayload = {
-  id: string;
-  make: string | null;
-  model: string | null;
-  year: number | null;
-  trim: string | null;
-  price: number | null;
-  mileage: number | null;
-  emirate: string | null;
-  specs: string | null;
-  thumbnail: string | null;
-  images?: string[] | null; // Optional: Not returned in car-card API, lazy-loaded separately
-  qiScore: number | null;
-  partnerName: string | null;
-  partnerLogo?: string | null;
-  partnerVerified: boolean | null;
-  isBlkListing: boolean | null;
-  sellerName?: string | null;
-  sellerAvatarUrl?: string | null;
-  sellerKycVerified?: boolean | null;
-};
-
-type FavoritesResponse = {
-  favorites?: string[];
-  superlikes?: string[];
-  error?: string;
-};
-
-type CarCardResponse = {
-  data: ListingPayload[];
-  error?: string;
-};
-
 export default function FavoritesPage() {
-  const { data: favoritesData, isLoading, error: favError, refetch } = useFavoritesStatus();
-  const [listings, setListings] = useState<ListingPayload[]>([]);
-  const [isLoadingListings, setIsLoadingListings] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const hasFetchedRef = useRef(false);
+  const queryClient = useQueryClient();
+  const { listings, favoriteIds, isLoading, error } = useFavoritesListings();
 
-  const favoriteIds = useMemo(() => favoritesData?.favorites || [], [favoritesData?.favorites]);
-
-  // Load listing details when favorite IDs change
-  useEffect(() => {
-    if (!favoriteIds.length) {
-      setListings([]);
-      hasFetchedRef.current = false;
-      return;
-    }
-
-    if (hasFetchedRef.current) return;
-
-    hasFetchedRef.current = true;
-    setIsLoadingListings(true);
-
-    fetch(`/api/listings/car-card?ids=${encodeURIComponent(favoriteIds.join(','))}`, {
-      credentials: 'include',
-      cache: 'no-store', // Prevent Safari caching issues
-    })
-      .then(res => res.json())
-      .then((data: CarCardResponse) => setListings(data.data || []))
-      .catch(() => setListings([]))
-      .finally(() => setIsLoadingListings(false));
-  }, [favoriteIds]);
-
+  // Map listings by ID for quick lookup
   const listingsById = useMemo(() => {
-    const map = new Map<string, ListingPayload>();
+    const map = new Map<string, (typeof listings)[0]>();
     listings.forEach((l) => {
       if (l?.id) map.set(l.id, l);
     });
@@ -81,17 +22,15 @@ export default function FavoritesPage() {
   }, [listings]);
 
   // Filter to only IDs that have valid listing data (excludes deleted listings)
-  // LIFO - newest favorites first (API returns in this order)
   const validFavoriteIds = useMemo(() => 
     favoriteIds.filter(id => listingsById.has(id)), 
     [favoriteIds, listingsById]
   );
 
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    hasFetchedRef.current = false;
-    await refetch();
-    setTimeout(() => setIsRefreshing(false), 300);
+  const handleRefresh = () => {
+    // Invalidate both status and listings to refresh everything
+    queryClient.invalidateQueries({ queryKey: ['favorites-status'] });
+    queryClient.invalidateQueries({ queryKey: ['favorites-listings'] });
   };
 
   return (
@@ -103,32 +42,30 @@ export default function FavoritesPage() {
       >
         <button
           onClick={handleRefresh}
-          disabled={isRefreshing}
+          disabled={isLoading}
           className="p-2 rounded-lg hover:bg-sidebar transition-colors disabled:opacity-50"
           aria-label="Refresh favorites"
         >
-          <RefreshCw className={`h-4 w-4 text-muted-foreground ${isRefreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`h-4 w-4 text-muted-foreground ${isLoading ? 'animate-spin' : ''}`} />
         </button>
       </DashboardPageHeader>
 
       {/* Loading State */}
-      {(isLoading || isLoadingListings) && (
+      {isLoading && (
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
         </div>
       )}
 
       {/* Error State */}
-      {favError && (
+      {error && (
         <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4">
-          <p className="text-sm text-red-500">
-            {favError?.message || 'Failed to load favorites'}
-          </p>
+          <p className="text-sm text-red-500">{error}</p>
         </div>
       )}
 
       {/* Content */}
-      {!isLoading && !isLoadingListings && !favError && (
+      {!isLoading && !error && (
         <>
           {validFavoriteIds.length === 0 ? (
             <div className="flex items-center justify-center py-20">
@@ -145,39 +82,38 @@ export default function FavoritesPage() {
               </div>
             </div>
           ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3 sm:gap-4 lg:gap-5">
-                {validFavoriteIds.map((listingId) => {
-                  const listing = listingsById.get(listingId)!;
-                  
-                  return (
-                    <CarCard
-                      key={listingId}
-                      id={listing.id}
-                      make={listing.make ?? ''}
-                      model={listing.model ?? ''}
-                      year={listing.year ?? undefined}
-                      trim={listing.trim ?? undefined}
-                      price={listing.price ?? undefined}
-                      mileage={listing.mileage ?? undefined}
-                      emirate={listing.emirate ?? undefined}
-                      specs={listing.specs ?? undefined}
-                      thumbnail={listing.thumbnail ?? undefined}
-                      images={listing.images ?? undefined}
-                      qiScore={listing.qiScore ?? undefined}
-                      isBlkListing={listing.isBlkListing ?? undefined}
-                      partnerName={listing.partnerName ?? undefined}
-                      partnerLogo={listing.partnerLogo ?? undefined}
-                      partnerVerified={listing.partnerVerified ?? undefined}
-                      sellerName={listing.sellerName ?? undefined}
-                      sellerAvatarUrl={listing.sellerAvatarUrl ?? undefined}
-                      kycVerified={listing.sellerKycVerified ?? undefined}
-                    />
-                  );
-                })}
-              </div>
-            )}
-          </>
-        )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3 sm:gap-4 lg:gap-5">
+              {validFavoriteIds.map((listingId) => {
+                const listing = listingsById.get(listingId)!;
+                
+                return (
+                  <CarCard
+                    key={listingId}
+                    id={listing.id}
+                    make={listing.make ?? ''}
+                    model={listing.model ?? ''}
+                    year={listing.year ?? 0}
+                    trim={listing.trim}
+                    price={listing.price ?? 0}
+                    mileage={listing.mileage ?? 0}
+                    emirate={listing.emirate ?? ''}
+                    specs={listing.specs}
+                    thumbnail={listing.thumbnail}
+                    qiScore={listing.qiScore}
+                    isBlkListing={listing.isBlkListing ?? undefined}
+                    partnerName={listing.partnerName ?? undefined}
+                    partnerLogo={listing.partnerLogo}
+                    partnerVerified={listing.partnerVerified ?? undefined}
+                    sellerName={listing.sellerName}
+                    sellerAvatarUrl={listing.sellerAvatarUrl}
+                    kycVerified={listing.sellerKycVerified ?? undefined}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </>
+      )}
     </DashboardPageWrapper>
   );
 }

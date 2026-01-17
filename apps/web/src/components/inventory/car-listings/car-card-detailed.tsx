@@ -38,6 +38,7 @@ import type { CarDetailedData } from '@alifh/database';
 interface CarCardDetailedProps {
   listing: CarDetailedData;
   kycVerified?: boolean; // User/Seller KYC verification status
+  isBlackTierPartner?: boolean; // Partner is Black tier member
   className?: string;
 }
 
@@ -367,8 +368,11 @@ function PricingInsights({ listing }: { listing: CarDetailedData }) {
 // Main Component
 // ============================================================================
 
-export function CarCardDetailed({ listing, kycVerified: _kycVerified, className }: CarCardDetailedProps) {
+export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTierPartner, className }: CarCardDetailedProps) {
   const { isSignedIn } = useUser();
+  
+  // Show BLK badge if listing is Black OR partner is Black tier
+  const showBlkBadge = listing.isBlkListing || isBlackTierPartner;
   const favorite = useFavorite(listing.id);
   const superlike = useSuperlike(listing.id);
   
@@ -506,29 +510,29 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
 
           {/* Actions */}
           <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-            {listing.isBlkListing && (
-              <div className="px-2.5 py-1 text-[10px] font-bold tracking-widest bg-black text-white dark:bg-white dark:text-black rounded">
+            {showBlkBadge && (
+              <span className="inline-flex items-center px-1.5 h-5 text-[10px] font-black tracking-wider bg-black text-white">
                 BLK
-              </div>
+              </span>
             )}
 
             <button 
               onClick={handleShare}
-              className="p-2 sm:p-2.5 rounded-full hover:bg-muted/50 transition-colors"
+              className="p-1.5 rounded-full hover:bg-muted/50 transition-colors"
               aria-label="Share"
             >
-              <Share2 className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
+              <Share2 className="w-4 h-4 text-muted-foreground" />
             </button>
             
             <button 
               onClick={handleFavoriteClick}
               disabled={favorite.isUpdating}
-              className="p-2 sm:p-2.5 rounded-full hover:bg-muted/50 transition-colors"
+              className="p-1.5 rounded-full hover:bg-muted/50 transition-colors"
               aria-label={favorite.isFavorite ? "Remove from favorites" : "Add to favorites"}
             >
               <Heart 
                 className={cn(
-                  "w-5 h-5 sm:w-6 sm:h-6 transition-transform",
+                  "w-4 h-4 transition-transform",
                   heartScale && "scale-125",
                   favorite.isFavorite ? "text-rose-500" : "text-muted-foreground"
                 )}
@@ -539,12 +543,12 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, className 
             <button 
               onClick={handleSuperlikeClick}
               disabled={superlike.isUpdating}
-              className="p-2 sm:p-2.5 rounded-full hover:bg-muted/50 transition-colors"
+              className="p-1.5 rounded-full hover:bg-muted/50 transition-colors"
               aria-label={superlike.isSuperliked ? "Remove superlike" : "Superlike"}
             >
               <Sparkles 
                 className={cn(
-                  "w-5 h-5 sm:w-6 sm:h-6",
+                  "w-4 h-4",
                   superlike.isSuperliked ? "text-yellow-500" : "text-muted-foreground"
                 )}
                 fill={superlike.isSuperliked ? "currentColor" : "none"}
