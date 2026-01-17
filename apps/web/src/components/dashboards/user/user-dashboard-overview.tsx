@@ -43,6 +43,7 @@ import {
   BarChart,
   Bar,
 } from 'recharts';
+import { HealthStatus } from '@/components/shared/health-status';
 
 // ============================================================================
 // Stat Label with Tooltip
@@ -207,21 +208,28 @@ export function UserDashboardOverview() {
 
         {/* Header */}
         <header>
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-semibold tracking-tight text-foreground/90">
-                {greeting}, {firstName}
-              </h1>
-              <span className="px-2 py-0.5 rounded text-xs font-medium bg-muted/50 text-muted-foreground">
-                Experimental
-              </span>
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-semibold tracking-tight text-foreground/90">
+                  {greeting}, {firstName}
+                </h1>
+                <span className="px-2 py-0.5 rounded text-xs font-medium bg-muted/50 text-muted-foreground">
+                  Experimental
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Here's your activity overview · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              </p>
+              <p className="text-xs text-muted-foreground/60">
+                Note: Beta testing — data may not reflect accurately
+              </p>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Here's your activity overview · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-            </p>
-            <p className="text-xs text-muted-foreground/60">
-              Note: Beta testing — data may not reflect accurately
-            </p>
+            
+            {/* System Health - Top Right */}
+            <div className="flex-shrink-0">
+              <HealthStatus />
+            </div>
           </div>
         </header>
 
