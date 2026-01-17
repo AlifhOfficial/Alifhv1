@@ -15,12 +15,11 @@ interface UnreadCountOptions {
   activeConversationId?: string;
 }
 
-async function fetchUnreadCount(scope?: 'personal' | 'staff'): Promise<{ unreadCount: number }> {
-  const params = new URLSearchParams();
+async function fetchUnreadCount(scope?: 'personal' | 'staff'): Promise<{ totalUnread: number }> {
+  const params = new URLSearchParams({ limit: '1' }); // Just need totalUnread, minimal data
   if (scope) params.set('scope', scope);
   
-  const url = `/api/conversations/unread-count${params.toString() ? `?${params}` : ''}`;
-  const res = await fetch(url, { credentials: 'include' });
+  const res = await fetch(`/api/conversations?${params}`, { credentials: 'include' });
   if (!res.ok) throw new Error('Failed to fetch unread count');
   return res.json();
 }
@@ -53,8 +52,9 @@ export function useUnreadCount(options: UnreadCountOptions = {}) {
           return;
         }
         
-        queryClient.setQueryData(queryKey, (old: { unreadCount: number } | undefined) => ({
-          unreadCount: (old?.unreadCount ?? 0) + 1,
+        queryClient.setQueryData(queryKey, (old: { totalUnread: number } | undefined) => ({
+          ...old,
+          totalUnread: (old?.totalUnread ?? 0) + 1,
         }));
       }
       
@@ -69,7 +69,7 @@ export function useUnreadCount(options: UnreadCountOptions = {}) {
   }, [subscribe, queryClient, userId, activeConversationId, queryKey]);
 
   return {
-    unreadCount: query.data?.unreadCount ?? 0,
+    unreadCount: query.data?.totalUnread ?? 0,
     isLoading: query.isLoading,
     refetch: query.refetch,
   };

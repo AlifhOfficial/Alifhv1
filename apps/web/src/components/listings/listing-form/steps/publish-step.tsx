@@ -7,8 +7,8 @@
  * Primary for focus, green-500 for CheckCircle2.
  */
 
-import { useMemo, useState } from 'react';
-import { X, CheckCircle2, Sparkles } from 'lucide-react';
+import { useMemo, useState, useCallback } from 'react';
+import { X, CheckCircle2, Sparkles, RefreshCw, Loader2 } from 'lucide-react';
 import { cn } from '@/utils';
 import { Combobox } from '../combobox';
 import { UAE_EMIRATES } from '../constants';
@@ -78,85 +78,6 @@ function normalizeText(text: string): string {
   });
 }
 
-// Auto-generate description from listing data
-function generateDescription(data: Partial<import('../types').ListingFormData>): string {
-  const parts: string[] = [];
-  
-  // Opening with year, make, model
-  if (data.year && data.make && data.model) {
-    const trim = data.trim ? ` ${data.trim}` : '';
-    parts.push(`${data.year} ${data.make} ${data.model}${trim}.`);
-  }
-  
-  // Mileage
-  if (data.mileage !== undefined && data.mileage !== null) {
-    const mileageStr = data.mileage.toLocaleString();
-    if (data.mileage < 30000) {
-      parts.push(`Low mileage at ${mileageStr} km.`);
-    } else if (data.mileage < 80000) {
-      parts.push(`${mileageStr} km on the odometer.`);
-    } else {
-      parts.push(`Well-maintained with ${mileageStr} km.`);
-    }
-  }
-  
-  // Specs origin
-  if (data.specs) {
-    const specsMap: Record<string, string> = {
-      gcc: 'GCC specification',
-      american: 'American import',
-      european: 'European specification',
-      japanese: 'Japanese import',
-      korean: 'Korean specification',
-      chinese: 'Chinese specification',
-      other: 'International specification',
-    };
-    if (specsMap[data.specs]) {
-      parts.push(`${specsMap[data.specs]}.`);
-    }
-  }
-  
-  // Key features
-  const features: string[] = [];
-  if (data.exteriorColor) features.push(`${data.exteriorColor} exterior`);
-  if (data.interiorColor) features.push(`${data.interiorColor} interior`);
-  if (data.transmission) features.push(data.transmission === 'automatic' ? 'automatic' : 'manual');
-  if (data.fuelType && data.fuelType !== 'petrol') features.push(data.fuelType);
-  
-  if (features.length > 0) {
-    parts.push(`Features ${features.join(', ')}.`);
-  }
-  
-  // Engine info
-  if (data.engineSize || data.cylinders) {
-    const engine: string[] = [];
-    if (data.engineSize) engine.push(data.engineSize);
-    if (data.cylinders) engine.push(`${data.cylinders}-cylinder`);
-    if (engine.length > 0) {
-      parts.push(`${engine.join(' ')} engine.`);
-    }
-  }
-  
-  // Warranty
-  if (data.warrantyType && data.warrantyType !== 'none') {
-    const warrantyMap: Record<string, string> = {
-      manufacturer: 'Under manufacturer warranty',
-      extended: 'Extended warranty included',
-      third_party: 'Third-party warranty available',
-    };
-    if (warrantyMap[data.warrantyType]) {
-      parts.push(`${warrantyMap[data.warrantyType]}.`);
-    }
-  }
-  
-  // Closing
-  if (data.isNegotiable) {
-    parts.push('Open to reasonable offers.');
-  }
-  
-  return parts.join(' ');
-}
-
 // ============================================================================
 // Publish Step Component
 // ============================================================================
@@ -168,11 +89,73 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
   );
 
   const [noteDraft, setNoteDraft] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generateError, setGenerateError] = useState<string | null>(null);
 
   const images = (data.images ?? []) as ListingImage[];
   const imageKeys = images.map((img) => img.key);
 
   const ownerRemarks = (data.ownerRemarks ?? []) as string[];
+
+  // AI Description Generator
+  const generateAIDescription = useCallback(async (isRegenerate = false) => {
+    // Validate minimum required data
+    if (!data.make || !data.model || !data.year) {
+      setGenerateError('Complete vehicle details first (make, model, year)');
+      return;
+    }
+
+    setIsGenerating(true);
+    setGenerateError(null);
+
+    try {
+      const response = await fetch('/api/ai/description', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          make: data.make,
+          model: data.model,
+          year: data.year,
+          trim: data.trim,
+          mileage: data.mileage,
+          specs: data.specs,
+          bodyType: data.bodyType,
+          fuelType: data.fuelType,
+          transmission: data.transmission,
+          engineSize: data.engineSize,
+          cylinders: data.cylinders,
+          exteriorColor: data.exteriorColor,
+          interiorColor: data.interiorColor,
+          warrantyType: data.warrantyType,
+          condition: data.condition,
+          price: data.price,
+          isNegotiable: data.isNegotiable,
+          emirate: data.emirate,
+          extras: data.extras,
+          ownerRemarks: data.ownerRemarks,
+          // Pass current description for regeneration
+          previousDescription: isRegenerate ? data.description : null,
+          regenerateReason: isRegenerate ? 'different_angle' : null,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate description');
+      }
+
+      const result = await response.json();
+      if (result.success && result.data?.description) {
+        updateField('description', result.data.description);
+      } else {
+        throw new Error(result.error || 'No description returned');
+      }
+    } catch (err) {
+      console.error('[AI Description] Error:', err);
+      setGenerateError(err instanceof Error ? err.message : 'Failed to generate');
+    } finally {
+      setIsGenerating(false);
+    }
+  }, [data, updateField]);
 
   const addOwnerRemark = () => {
     const trimmed = noteDraft.trim();
@@ -304,25 +287,72 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
 
         <div className="rounded-xl border border-border/40 bg-sidebar p-5 mt-3 space-y-6">
 
-        <FieldWrapper label="Description" hint={`${(data.description || '').length}/750`} error={errors.description}>
+        <FieldWrapper label="Description" hint={`${(data.description || '').length}/700`} error={errors.description}>
           <div className="space-y-3">
-            <button
-              type="button"
-              onClick={() => {
-                const generated = generateDescription(data);
-                if (generated) updateField('description', generated);
-              }}
-              className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
-            >
-              <Sparkles className="w-4 h-4" />
-              Auto-generate for me
-            </button>
+            {/* AI Generate / Regenerate Buttons */}
+            <div className="flex items-center gap-3">
+              {!data.description ? (
+                <button
+                  type="button"
+                  onClick={() => generateAIDescription(false)}
+                  disabled={isGenerating}
+                  className={cn(
+                    "flex items-center gap-2 text-sm font-semibold transition-colors",
+                    isGenerating 
+                      ? "text-muted-foreground cursor-not-allowed" 
+                      : "text-primary hover:text-primary/80"
+                  )}
+                >
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4" />
+                      AI Generate
+                    </>
+                  )}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => generateAIDescription(true)}
+                  disabled={isGenerating}
+                  className={cn(
+                    "flex items-center gap-2 text-sm font-semibold transition-colors",
+                    isGenerating 
+                      ? "text-muted-foreground cursor-not-allowed" 
+                      : "text-primary hover:text-primary/80"
+                  )}
+                >
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Regenerating...
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="w-4 h-4" />
+                      Regenerate
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+
+            {/* Error message */}
+            {generateError && (
+              <p className="text-xs font-semibold text-red-500">{generateError}</p>
+            )}
+
             <textarea
               value={data.description || ''}
               onChange={(e) => updateField('description', normalizeText(e.target.value))}
-              placeholder="Share what makes your car special — maintenance history, upgrades, or why you loved driving it. Auto-formatted for readability."
+              placeholder="Click 'AI Generate' to create a professional description based on your car details, or write your own."
               rows={5}
-              maxLength={750}
+              maxLength={700}
               className={cn(
                 "w-full bg-transparent border-2 border-border/30 rounded-xl focus:border-primary",
                 "outline-none transition-colors px-4 py-3 text-sm font-medium resize-none",

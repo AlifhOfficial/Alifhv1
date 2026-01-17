@@ -158,8 +158,8 @@ export const publishStepSchema = z.object({
   })).min(1, 'At least one photo is required').max(20, 'Maximum 20 photos'),
   videoUrl: z.string().url().optional().nullable().or(z.literal('')),
   
-  // Content
-  description: z.string().max(5000, 'Description too long').optional().nullable(),
+  // Content (AI generates ~600 chars, max 700)
+  description: z.string().max(700, 'Description too long (max 700 characters)').optional().nullable(),
   
   // Owner Notes (MAX 10 bullet points)
   ownerRemarks: z.array(

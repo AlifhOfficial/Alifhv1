@@ -18,6 +18,10 @@
     "./moderation": {
       "import": "./src/moderation/index.ts",
       "types": "./src/moderation/index.ts"
+    },
+    "./description": {
+      "import": "./src/description/index.ts",
+      "types": "./src/description/index.ts"
     }
   },
   "scripts": {
