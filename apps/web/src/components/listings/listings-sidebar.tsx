@@ -6,6 +6,7 @@
 'use client';
 
 import { FilterSidebar } from '@/components/search/filter-sidebar';
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { PanelLeftClose } from 'lucide-react';
 import type { SearchParams, SearchFacets } from '@/lib/search-utils';
@@ -42,47 +43,106 @@ export function ListingsSidebar({
   setFilters,
   onClearAll,
 }: ListingsSidebarProps) {
-  if (!sidebarOpen) return null;
-
   return (
     <aside className={cn(
-      "hidden lg:block w-72 flex-shrink-0 sticky self-start",
+      "w-64 flex-shrink-0 flex flex-col",
       embedded 
-        ? "top-0 max-h-screen"
-        : "top-14 sm:top-16 max-h-[calc(100vh-3.5rem)] sm:max-h-[calc(100vh-4rem)]"
+        ? "h-screen sticky top-0"
+        : "h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] sticky top-14 sm:top-16"
     )}>
-      <div className="flex flex-col h-full">
-        {/* Header */}
-        <div className="flex items-center justify-between py-5 pr-6 flex-shrink-0">
-          <div className="flex items-center gap-2">
-            <h2 className="text-[15px] font-bold tracking-tight text-foreground">Filters</h2>
-            {activeFilterCount > 0 && (
-              <span className="px-2 py-0.5 rounded-md text-xs font-bold bg-primary/10 text-primary">
-                {activeFilterCount}
-              </span>
-            )}
-          </div>
-          <button
-            onClick={() => onSidebarToggle(false)}
-            className="p-2 text-muted-foreground/70 hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors"
-            title="Hide filters"
-          >
-            <PanelLeftClose className="h-4 w-4" />
-          </button>
+      {/* Header - Fixed */}
+      <div className="flex items-center justify-between py-4 pr-6 flex-shrink-0 border-b border-border/50">
+        <div className="flex items-center gap-3">
+          <h2 className="text-base font-bold tracking-tight text-foreground">Filters</h2>
         </div>
-        
-        {/* Scrollable Filter Content */}
-        <div className="flex-1 overflow-y-auto pr-6 py-4">
-          <FilterSidebar
-            params={params}
-            facets={facets}
-            isLoading={isLoading}
-            onFilterChange={setFilters}
-            onClearFilters={onClearAll}
-            activeFilterCount={activeFilterCount}
-          />
+        <button
+          onClick={() => onSidebarToggle(false)}
+          className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-colors"
+          title="Hide filters"
+        >
+          <PanelLeftClose className="h-4 w-4" />
+        </button>
+      </div>
+      
+      {/* Scrollable Filter Content */}
+      <div className="flex-1 overflow-y-auto overscroll-contain pr-6 py-4">
+        <FilterSidebar
+          params={params}
+          facets={facets}
+          isLoading={isLoading}
+          onFilterChange={setFilters}
+          onClearFilters={onClearAll}
+          activeFilterCount={activeFilterCount}
+        />
+      </div>
+    </aside>
+  );
+}
+
+// ============================================================================
+// SKELETON
+// ============================================================================
+
+interface ListingsSidebarSkeletonProps {
+  embedded?: boolean;
+}
+
+function ListingsSidebarSkeletonComponent({ embedded = false }: ListingsSidebarSkeletonProps) {
+  return (
+    <aside className={cn(
+      "w-64 flex-shrink-0 flex flex-col",
+      embedded 
+        ? "h-screen sticky top-0"
+        : "h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] sticky top-14 sm:top-16"
+    )}>
+      {/* Header */}
+      <div className="flex items-center justify-between py-4 pr-6 flex-shrink-0 border-b border-border/50">
+        <Skeleton className="h-5 w-16" />
+        <Skeleton className="h-8 w-8 rounded-xl" />
+      </div>
+      
+      {/* Filter sections skeleton */}
+      <div className="flex-1 overflow-hidden pr-6 py-4 space-y-6">
+        {/* Filter section 1 */}
+        <div className="space-y-3">
+          <Skeleton className="h-4 w-20" />
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-full rounded-md" />
+            <Skeleton className="h-8 w-full rounded-md" />
+            <Skeleton className="h-8 w-full rounded-md" />
+          </div>
+        </div>
+
+        {/* Filter section 2 */}
+        <div className="space-y-3">
+          <Skeleton className="h-4 w-16" />
+          <div className="flex gap-2">
+            <Skeleton className="h-9 flex-1 rounded-md" />
+            <Skeleton className="h-9 flex-1 rounded-md" />
+          </div>
+        </div>
+
+        {/* Filter section 3 */}
+        <div className="space-y-3">
+          <Skeleton className="h-4 w-24" />
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-full rounded-md" />
+            <Skeleton className="h-8 w-full rounded-md" />
+          </div>
+        </div>
+
+        {/* Filter section 4 */}
+        <div className="space-y-3">
+          <Skeleton className="h-4 w-20" />
+          <div className="flex flex-wrap gap-2">
+            <Skeleton className="h-7 w-16 rounded-full" />
+            <Skeleton className="h-7 w-20 rounded-full" />
+            <Skeleton className="h-7 w-14 rounded-full" />
+          </div>
         </div>
       </div>
     </aside>
   );
 }
+
+ListingsSidebar.Skeleton = ListingsSidebarSkeletonComponent;

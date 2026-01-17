@@ -165,12 +165,12 @@ export function ProfileMenu({
               {/* Quick Links */}
               <button
                 onClick={() => {
-                  router.push('/listings');
+                  router.push('/user-dashboard/listings/my-listings');
                   onToggleMenu();
                 }}
                 className="w-full text-left px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
               >
-                Listings
+                My Listings
               </button>
               <button
                 onClick={() => {

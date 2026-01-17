@@ -24,6 +24,7 @@ import {
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
 import { cn } from '@/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
 import { SuperlikeLimitDialog } from '@/components/engagement/favorites/superlike-limit-dialog';
 import { AuthRequiredDialog } from '@/components/auth/auth-required-dialog';
@@ -779,3 +780,123 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
     </div>
   );
 }
+
+// ============================================================================
+// SKELETON
+// ============================================================================
+
+function CarCardDetailedSkeletonComponent() {
+  return (
+    <div className="space-y-8">
+      {/* Image Gallery */}
+      <div className="space-y-3">
+        {/* Main Image */}
+        <Skeleton className="aspect-[16/10] w-full rounded-2xl" />
+        
+        {/* Thumbnails */}
+        <div className="flex gap-2">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton key={i} className="w-16 h-12 rounded-lg flex-shrink-0" />
+          ))}
+        </div>
+      </div>
+
+      {/* Highlights */}
+      <div className="space-y-3">
+        <Skeleton className="h-[13px] w-20" />
+        <div className="flex flex-wrap gap-x-5 gap-y-2.5">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-1.5">
+              <Skeleton className="w-4 h-4 rounded-full" />
+              <Skeleton className="h-3.5 w-24" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Header Section */}
+      <div className="space-y-4">
+        {/* Title & Actions */}
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0 space-y-1.5">
+            <Skeleton className="h-5 sm:h-6 w-3/4" />
+            <Skeleton className="h-6 sm:h-7 w-36" />
+          </div>
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+            <Skeleton className="h-7 w-7 rounded-full" />
+            <Skeleton className="h-7 w-7 rounded-full" />
+            <Skeleton className="h-7 w-7 rounded-full" />
+          </div>
+        </div>
+
+        {/* Quick Details - mileage · specs · location */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+          <Skeleton className="h-3.5 w-20" />
+          <Skeleton className="h-3.5 w-24" />
+          <Skeleton className="h-3.5 w-28" />
+        </div>
+
+        {/* VIN */}
+        <div className="flex items-baseline gap-2.5">
+          <Skeleton className="h-[11px] w-8" />
+          <Skeleton className="h-3.5 w-40" />
+        </div>
+      </div>
+
+      {/* Description */}
+      <div className="space-y-3">
+        <Skeleton className="h-[13px] w-24" />
+        <div className="space-y-2">
+          <Skeleton className="h-3.5 w-full" />
+          <Skeleton className="h-3.5 w-full" />
+          <Skeleton className="h-3.5 w-2/3" />
+        </div>
+      </div>
+
+      {/* Specifications - Two Column Grid */}
+      <div className="space-y-4">
+        <Skeleton className="h-[13px] w-28" />
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div key={i} className="flex justify-between py-3 border-b border-border">
+              <Skeleton className="h-3.5 w-24" />
+              <Skeleton className="h-3.5 w-20" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Features/Extras */}
+      <div className="space-y-3">
+        <Skeleton className="h-[13px] w-16" />
+        <div className="flex flex-wrap gap-2">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-7 w-24 rounded-md" />
+          ))}
+        </div>
+      </div>
+
+      {/* AI Pricing Insights */}
+      <div className="space-y-4">
+        <div className="pt-4 border-t border-border">
+          <Skeleton className="h-3 w-32" />
+        </div>
+        
+        {/* Price Trend & Fair Value Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Skeleton className="h-20 w-full rounded-lg" />
+          <Skeleton className="h-20 w-full rounded-lg" />
+        </div>
+
+        {/* Value Range */}
+        <Skeleton className="h-24 w-full rounded-xl" />
+
+        {/* Value Factors */}
+        <Skeleton className="h-28 w-full rounded-xl" />
+      </div>
+    </div>
+  );
+}
+
+CarCardDetailed.Skeleton = CarCardDetailedSkeletonComponent;

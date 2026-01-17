@@ -66,6 +66,16 @@ export type {
   ArchiveResult,
 } from './use-listing-mutations';
 
+// Similar listings hook
+export {
+  useSimilarListings,
+} from './use-similar-listings';
+
+export type {
+  SimilarListingCard,
+  UseSimilarListingsOptions,
+} from './use-similar-listings';
+
 // Analytics hooks
 export {
   useTrackView,

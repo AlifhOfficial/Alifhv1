@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { Share2, Heart, Sparkles, CheckCircle2 } from 'lucide-react';
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { cn } from '@/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
 import { SuperlikeLimitDialog } from '@/components/engagement/favorites/superlike-limit-dialog';
@@ -448,3 +449,69 @@ export function CarListItem({
     </div>
   );
 }
+
+// ============================================================================
+// SKELETON
+// ============================================================================
+
+interface CarListItemSkeletonProps {
+  className?: string;
+}
+
+function CarListItemSkeletonComponent({ className }: CarListItemSkeletonProps) {
+  return (
+    <div className={cn(
+      "overflow-hidden rounded-xl flex flex-col lg:flex-row w-full",
+      "bg-sidebar border border-border/40",
+      className
+    )}>
+      {/* Image Section */}
+      <div className="p-3 w-full lg:w-80 flex-shrink-0">
+        <Skeleton className="aspect-[4/3] w-full rounded-lg" />
+      </div>
+
+      {/* Content Section */}
+      <div className="flex flex-1 flex-col px-4 lg:px-6 py-4 lg:py-5 min-w-0">
+        {/* Top Section - Title and Price */}
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-2 lg:gap-6 mb-3">
+          <div className="flex-1 min-w-0 space-y-1">
+            {/* Title with year */}
+            <div className="flex items-baseline gap-2">
+              <Skeleton className="h-[15px] lg:h-[18px] w-32" />
+              <Skeleton className="h-3.5 w-10" />
+            </div>
+            {/* Trim */}
+            <Skeleton className="h-3.5 w-24" />
+          </div>
+          {/* Price */}
+          <Skeleton className="h-[18px] w-28 flex-shrink-0" />
+        </div>
+
+        {/* Specs Row - mileage · specs · emirate */}
+        <div className="flex flex-wrap items-center gap-2 mb-2">
+          <Skeleton className="h-3.5 w-16" />
+          <Skeleton className="h-3.5 w-10" />
+          <Skeleton className="h-3.5 w-14" />
+        </div>
+
+        {/* Bottom Section - Seller and Actions */}
+        <div className="flex items-center justify-between gap-4 pt-4 border-t border-border/40 mt-auto">
+          {/* Left - Seller */}
+          <div className="flex items-center gap-2.5 min-w-0 flex-1">
+            <Skeleton className="w-8 h-8 lg:w-9 lg:h-9 rounded-full flex-shrink-0" />
+            <Skeleton className="h-3.5 w-28" />
+          </div>
+
+          {/* Right - Actions */}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <Skeleton className="h-8 w-8 rounded-full" />
+            <Skeleton className="h-8 w-8 rounded-full" />
+            <Skeleton className="h-8 w-8 rounded-full" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+CarListItem.Skeleton = CarListItemSkeletonComponent;

@@ -1,31 +1,22 @@
 'use client';
 
 /**
- * AdvancedFilters - Advanced tier filters drawer
+ * AdvancedFilters - Floating panel for advanced filters
  * 
- * All remaining filters in a drawer/modal:
+ * A floating panel (like search dropdown) on the right side:
  * - Body type
  * - Fuel type
  * - Transmission
  * - Engine size
  * - Colors
  * - Seller type
- * - Features
  * 
  * @module components/search/advanced-filters
  */
 
-import { useState } from 'react';
-import { CheckCircle2, ChevronDown, SlidersHorizontal } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { CheckCircle2, ChevronDown, X, SlidersHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
 import {
   Collapsible,
   CollapsibleContent,
@@ -59,6 +50,7 @@ export function AdvancedFilters({
   children,
 }: AdvancedFiltersProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const advancedCount = countAdvancedFilters(params);
 
@@ -84,153 +76,207 @@ export function AdvancedFilters({
     setIsOpen(false);
   };
 
+  // Close on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isOpen]);
+
+  // Close on escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [isOpen]);
+
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen} modal={true}>
-      <SheetTrigger asChild>
-        {children || (
-          <button type="button" className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-sm sm:text-[15px] transition-colors text-primary font-semibold hover:text-primary/90 whitespace-nowrap">
-            <span className="hidden sm:inline">Advanced Filters</span>
-            <span className="sm:hidden">Filters</span>
-            {advancedCount > 0 && (
-              <span className="w-4 h-4 sm:w-5 sm:h-5 text-[10px] sm:text-xs font-semibold bg-foreground text-background rounded-full flex items-center justify-center flex-shrink-0">
-                {advancedCount}
-              </span>
-            )}
-          </button>
-        )}
-      </SheetTrigger>
-      <SheetContent 
-        side="right" 
-        overlayClassName="backdrop-blur-md bg-background/30"
-        className="w-80 sm:w-[400px] p-0 flex flex-col bg-sidebar text-sidebar-foreground border-sidebar-border !fixed !inset-y-0 !right-0"
-      >
-        {/* Fixed Header */}
-        <SheetHeader className="flex-shrink-0 p-6 pb-4 border-b border-sidebar-border/50">
-          <SheetTitle className="text-xl font-bold tracking-tight">More Filters</SheetTitle>
-        </SheetHeader>
-
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-8">
-          {/* Body Type */}
-          <FilterGroup
-            title="Body Type"
-            options={BODY_TYPES.map(b => ({
-              value: b.value,
-              label: b.label,
-              count: facets?.bodyType.find(f => f.value === b.value)?.count ?? 0,
-            }))}
-            selected={params.bodyType ?? []}
-            onChange={(bodyType) => handleFilterChange({ bodyType: bodyType as any })}
-          />
-
-          {/* Fuel Type */}
-          <FilterGroup
-            title="Fuel Type"
-            options={FUEL_TYPES.map(f => ({
-              value: f.value,
-              label: f.label,
-              count: facets?.fuelType.find(x => x.value === f.value)?.count ?? 0,
-            }))}
-            selected={params.fuelType ?? []}
-            onChange={(fuelType) => handleFilterChange({ fuelType: fuelType as any })}
-          />
-
-          {/* Transmission */}
-          <FilterGroup
-            title="Transmission"
-            options={TRANSMISSION_TYPES.map(t => ({
-              value: t.value,
-              label: t.label,
-              count: facets?.transmission.find(x => x.value === t.value)?.count ?? 0,
-            }))}
-            selected={params.transmission ?? []}
-            onChange={(transmission) => handleFilterChange({ transmission: transmission as any })}
-          />
-
-          {/* Engine Size */}
-          <FilterGroup
-            title="Engine Size"
-            options={ENGINE_SIZES.map(e => ({
-              value: e.value,
-              label: e.label,
-              count: facets?.engineSize.find(x => x.value === e.value)?.count ?? 0,
-            }))}
-            selected={params.engineSize ?? []}
-            onChange={(engineSize) => handleFilterChange({ engineSize: engineSize as any })}
-          />
-
-          {/* Exterior Color */}
-          <FilterGroup
-            title="Exterior Color"
-            options={EXTERIOR_COLORS.map(c => ({
-              value: c.value,
-              label: c.label,
-              count: facets?.exteriorColor.find(x => x.value === c.value)?.count ?? 0,
-              hex: c.hex,
-            }))}
-            selected={params.exteriorColor ?? []}
-            onChange={(exteriorColor) => handleFilterChange({ exteriorColor: exteriorColor as any })}
-            showColors
-          />
-
-          {/* Interior Color */}
-          <FilterGroup
-            title="Interior Color"
-            options={INTERIOR_COLORS.map(c => ({
-              value: c.value,
-              label: c.label,
-              count: facets?.interiorColor.find(x => x.value === c.value)?.count ?? 0,
-              hex: c.hex,
-            }))}
-            selected={params.interiorColor ?? []}
-            onChange={(interiorColor) => handleFilterChange({ interiorColor: interiorColor as any })}
-            showColors
-          />
-
-          {/* Seller Type */}
-          <FilterGroup
-            title="Seller Type"
-            options={[
-              { 
-                value: 'dealer', 
-                label: 'Dealer', 
-                count: facets?.sellerType.find(x => x.value === 'dealer')?.count ?? 0 
-              },
-              { 
-                value: 'private', 
-                label: 'Private', 
-                count: facets?.sellerType.find(x => x.value === 'private')?.count ?? 0 
-              },
-            ]}
-            selected={params.sellerType ? [params.sellerType] : []}
-            onChange={(sellerType) => handleFilterChange({ 
-              sellerType: sellerType[0] as 'dealer' | 'private' | undefined 
-            })}
-            singleSelect
-          />
+    <div ref={containerRef} className="relative">
+      {/* Trigger Button */}
+      {children ? (
+        <div onClick={() => setIsOpen(!isOpen)}>
+          {children}
         </div>
+      ) : (
+        <button 
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center gap-2 h-9 px-4 text-sm font-semibold bg-sidebar border border-sidebar-border rounded-full text-sidebar-foreground/70 hover:text-sidebar-foreground shadow-sm transition-colors"
+        >
+          <SlidersHorizontal className="h-4 w-4" />
+          <span className="hidden sm:inline">More Filters</span>
+          <span className="sm:hidden">Filters</span>
+        </button>
+      )}
 
-        {/* Fixed Footer */}
-        <div className="flex-shrink-0 p-6 bg-sidebar border-t border-sidebar-border/50">
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={(e) => handleReset(e)}
-              className="flex-1 px-4 py-2.5 text-[15px] font-semibold text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-full border border-sidebar-border/50 transition-colors"
-            >
-              Reset
-            </button>
-            <button
+      {/* Floating Panel */}
+      {isOpen && (
+        <div 
+          className={cn(
+            "absolute top-full right-0 z-50 mt-2",
+            "w-[360px] sm:w-[420px]",
+            "bg-sidebar border border-sidebar-border rounded-2xl shadow-xl",
+            "overflow-hidden",
+            "animate-in fade-in-0 slide-in-from-top-2 duration-150"
+          )}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-sidebar-border">
+            <div className="flex items-center gap-3">
+              <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+              <h3 className="text-base font-bold text-sidebar-foreground">More Filters</h3>
+            </div>
+            <button 
               type="button"
               onClick={handleClose}
-              className="flex-1 px-4 py-2.5 text-[15px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 rounded-full transition-colors"
+              className="p-1.5 rounded-full hover:bg-muted transition-colors"
             >
-              Close
+              <X className="h-4 w-4 text-muted-foreground" />
             </button>
           </div>
+
+          {/* Scrollable Content */}
+          <div className="max-h-[85vh] overflow-y-auto p-4 space-y-1">
+            {/* Body Type */}
+            <FilterGroup
+              title="Body Type"
+              options={BODY_TYPES.map(b => ({
+                value: b.value,
+                label: b.label,
+                count: facets?.bodyType.find(f => f.value === b.value)?.count ?? 0,
+              }))}
+              selected={params.bodyType ?? []}
+              onChange={(bodyType) => handleFilterChange({ bodyType: bodyType as any })}
+              defaultOpen={false}
+            />
+
+            {/* Fuel Type */}
+            <FilterGroup
+              title="Fuel Type"
+              options={FUEL_TYPES.map(f => ({
+                value: f.value,
+                label: f.label,
+                count: facets?.fuelType.find(x => x.value === f.value)?.count ?? 0,
+              }))}
+              selected={params.fuelType ?? []}
+              onChange={(fuelType) => handleFilterChange({ fuelType: fuelType as any })}
+              defaultOpen={false}
+            />
+
+            {/* Transmission */}
+            <FilterGroup
+              title="Transmission"
+              options={TRANSMISSION_TYPES.map(t => ({
+                value: t.value,
+                label: t.label,
+                count: facets?.transmission.find(x => x.value === t.value)?.count ?? 0,
+              }))}
+              selected={params.transmission ?? []}
+              onChange={(transmission) => handleFilterChange({ transmission: transmission as any })}
+              defaultOpen={false}
+            />
+
+            {/* Engine Size */}
+            <FilterGroup
+              title="Engine Size"
+              options={ENGINE_SIZES.map(e => ({
+                value: e.value,
+                label: e.label,
+                count: facets?.engineSize.find(x => x.value === e.value)?.count ?? 0,
+              }))}
+              selected={params.engineSize ?? []}
+              onChange={(engineSize) => handleFilterChange({ engineSize: engineSize as any })}
+              defaultOpen={false}
+            />
+
+            {/* Exterior Color */}
+            <FilterGroup
+              title="Exterior Color"
+              options={EXTERIOR_COLORS.map(c => ({
+                value: c.value,
+                label: c.label,
+                count: facets?.exteriorColor.find(x => x.value === c.value)?.count ?? 0,
+                hex: c.hex,
+              }))}
+              selected={params.exteriorColor ?? []}
+              onChange={(exteriorColor) => handleFilterChange({ exteriorColor: exteriorColor as any })}
+              showColors
+              defaultOpen={true}
+            />
+
+            {/* Interior Color */}
+            <FilterGroup
+              title="Interior Color"
+              options={INTERIOR_COLORS.map(c => ({
+                value: c.value,
+                label: c.label,
+                count: facets?.interiorColor.find(x => x.value === c.value)?.count ?? 0,
+                hex: c.hex,
+              }))}
+              selected={params.interiorColor ?? []}
+              onChange={(interiorColor) => handleFilterChange({ interiorColor: interiorColor as any })}
+              showColors
+              defaultOpen={true}
+            />
+
+            {/* Seller Type */}
+            <FilterGroup
+              title="Seller Type"
+              options={[
+                { 
+                  value: 'dealer', 
+                  label: 'Dealer', 
+                  count: facets?.sellerType.find(x => x.value === 'dealer')?.count ?? 0 
+                },
+                { 
+                  value: 'private', 
+                  label: 'Private', 
+                  count: facets?.sellerType.find(x => x.value === 'private')?.count ?? 0 
+                },
+              ]}
+              selected={params.sellerType ? [params.sellerType] : []}
+              onChange={(sellerType) => handleFilterChange({ 
+                sellerType: sellerType[0] as 'dealer' | 'private' | undefined 
+              })}
+              singleSelect
+              defaultOpen={true}
+            />
+          </div>
+
+          {/* Footer */}
+          {advancedCount > 0 && (
+            <div className="px-5 py-4 border-t border-sidebar-border">
+              <button
+                type="button"
+                onClick={(e) => handleReset(e)}
+                className={cn(
+                  "w-full px-4 py-3 text-sm font-semibold",
+                  "text-muted-foreground hover:text-sidebar-foreground",
+                  "hover:bg-muted rounded-2xl",
+                  "transition-colors"
+                )}
+              >
+                Reset all filters
+              </button>
+            </div>
+          )}
         </div>
-      </SheetContent>
-    </Sheet>
+      )}
+    </div>
   );
 }
 
@@ -252,6 +298,7 @@ interface FilterGroupProps {
   onChange: (selected: string[]) => void;
   singleSelect?: boolean;
   showColors?: boolean;
+  defaultOpen?: boolean;
 }
 
 function FilterGroup({
@@ -261,13 +308,10 @@ function FilterGroup({
   onChange,
   singleSelect = false,
   showColors = false,
+  defaultOpen = true,
 }: FilterGroupProps) {
-  const [expanded, setExpanded] = useState(false);
-  
-  // Filter out options with 0 count unless selected
+  // Show all options - no more "show more"
   const availableOptions = options.filter(o => o.count > 0 || selected.includes(o.value));
-  const visibleOptions = expanded ? availableOptions : availableOptions.slice(0, 6);
-  const hasMore = !expanded && availableOptions.length > 6;
 
   const toggleOption = (value: string) => {
     if (singleSelect) {
@@ -284,28 +328,21 @@ function FilterGroup({
   if (availableOptions.length === 0) return null;
 
   return (
-    <Collapsible asChild defaultOpen className="group/collapsible">
+    <Collapsible asChild defaultOpen={defaultOpen} className="group/collapsible">
       <div>
         <CollapsibleTrigger asChild>
-          <button type="button" className="flex w-full items-center justify-between py-2 text-[15px] hover:bg-sidebar-accent/50 rounded-lg px-2 -mx-2 transition-colors">
-            <span className="font-bold tracking-tight">{title}</span>
-            <div className="flex items-center gap-2">
-              {selected.length > 0 && (
-                <span className="w-5 h-5 text-xs font-semibold bg-sidebar-accent text-sidebar-foreground rounded-full flex items-center justify-center">
-                  {selected.length}
-                </span>
-              )}
-              <ChevronDown className="h-4 w-4 text-sidebar-foreground/60 transition-transform group-data-[state=closed]/collapsible:-rotate-90" />
-            </div>
+          <button type="button" className="flex w-full items-center justify-between px-4 py-4 hover:bg-muted/30 rounded-2xl transition-colors">
+            <span className="text-[15px] font-bold tracking-tight text-sidebar-foreground">{title}</span>
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=closed]/collapsible:-rotate-90" />
           </button>
         </CollapsibleTrigger>
         
         <CollapsibleContent>
-          <div className="pt-3 pb-2">
+          <div className="px-4 pb-4">
             {showColors ? (
-              // Color grid
+              // Color grid with labels on hover
               <div className="flex flex-wrap gap-2.5">
-                {visibleOptions.map((option) => {
+                {availableOptions.map((option) => {
                   const isSelected = selected.includes(option.value);
                   return (
                     <button
@@ -313,20 +350,20 @@ function FilterGroup({
                       key={option.value}
                       onClick={() => toggleOption(option.value)}
                       className={cn(
-                        'w-8 h-8 rounded-full border-2 transition-all flex items-center justify-center',
+                        'w-8 h-8 rounded-full border-2 transition-all duration-150 flex items-center justify-center',
                         isSelected
-                          ? 'border-sidebar-foreground ring-2 ring-offset-2 ring-sidebar-foreground/20'
-                          : 'border-sidebar-border hover:border-sidebar-foreground/40'
+                          ? 'border-foreground ring-2 ring-foreground/20 scale-110'
+                          : 'border-sidebar-border hover:border-muted-foreground/50 hover:scale-105'
                       )}
                       style={{ backgroundColor: option.hex }}
-                      title={`${option.label} (${option.count})`}
+                      title={`${option.label}`}
                     >
                       {isSelected && (
                         <CheckCircle2 className={cn(
                           'h-4 w-4',
                           option.value === 'white' || option.value === 'beige' || option.value === 'yellow' || option.value === 'gold'
-                            ? 'text-green-600'
-                            : 'text-green-400'
+                            ? 'text-foreground'
+                            : 'text-white'
                         )} />
                       )}
                     </button>
@@ -334,48 +371,35 @@ function FilterGroup({
                 })}
               </div>
             ) : (
-              // Standard list
-              <div className="space-y-1">
-                {visibleOptions.map((option) => {
+              // List items with clear hierarchy
+              <ul className="space-y-1">
+                {availableOptions.map((option) => {
                   const isSelected = selected.includes(option.value);
                   return (
-                    <button
-                      type="button"
+                    <li
                       key={option.value}
                       onClick={() => toggleOption(option.value)}
                       className={cn(
-                        'flex items-center justify-between w-full px-3 py-2 rounded-lg transition-colors',
-                        'text-[15px] text-left',
-                        isSelected
-                          ? 'bg-sidebar-accent text-sidebar-foreground'
-                          : 'text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent/50'
+                        'flex items-center justify-between px-4 py-3 cursor-pointer rounded-2xl',
+                        'transition-colors duration-100',
+                        isSelected 
+                          ? 'bg-muted/50' 
+                          : 'hover:bg-muted/50'
                       )}
                     >
-                      <span className={isSelected ? 'font-semibold tracking-tight' : 'font-medium tracking-tight'}>
+                      <span className={cn(
+                        "text-[15px]",
+                        isSelected 
+                          ? "font-semibold text-sidebar-foreground" 
+                          : "font-medium text-sidebar-foreground/70"
+                      )}>
                         {option.label}
                       </span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-sidebar-foreground/60 tabular-nums font-medium">
-                          {option.count}
-                        </span>
-                        {isSelected && (
-                          <CheckCircle2 className="h-4 w-4 text-green-500" />
-                        )}
-                      </div>
-                    </button>
+                      {isSelected && <CheckCircle2 className="h-4 w-4 text-foreground" />}
+                    </li>
                   );
                 })}
-              </div>
-            )}
-
-            {hasMore && (
-              <button
-                type="button"
-                onClick={() => setExpanded(true)}
-                className="text-sm text-sidebar-foreground/60 hover:text-sidebar-foreground font-semibold transition-colors mt-2 px-3"
-              >
-                Show {availableOptions.length - 6} more
-              </button>
+              </ul>
             )}
           </div>
         </CollapsibleContent>
@@ -413,7 +437,7 @@ function ToggleOption({ label, checked, onChange }: ToggleOptionProps) {
           ? 'bg-sidebar-foreground border-sidebar-foreground'
           : 'border-sidebar-border bg-transparent'
       )}>
-        {checked && <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />}
+        {checked && <CheckCircle2 className="h-3.5 w-3.5 text-sidebar" />}
       </div>
     </button>
   );

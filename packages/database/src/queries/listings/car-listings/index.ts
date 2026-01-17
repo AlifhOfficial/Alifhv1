@@ -13,3 +13,4 @@ export * from './cache-invalidation';
 export * from './sql-fragments';
 export * from './analytics';
 export * from './view-buffer';
+export * from './similar-listings-query';

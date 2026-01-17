@@ -9,7 +9,7 @@
  * @module hooks/use-search
  */
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { 
@@ -44,6 +44,10 @@ interface UseSearchResult {
   isFetching: boolean;
   error: Error | null;
   
+  // Pagination
+  currentPage: number;
+  totalPages: number;
+  
   // Actions
   setQuery: (q: string) => void;
   setFilters: (filters: Partial<SearchParams>) => void;
@@ -52,6 +56,7 @@ interface UseSearchResult {
   clearFilters: () => void;
   setSort: (sortBy: SearchSortOption) => void;
   loadMore: () => void;
+  goToPage: (page: number) => void;
   refresh: () => void;
 }
 
@@ -121,8 +126,9 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
     queryKey,
     queryFn: () => fetchSearch(params),
     staleTime: 0, // Always fetch fresh - server handles caching
-    gcTime: 0, // No client-side caching
+    gcTime: 30 * 1000, // Keep previous data for 30s during navigation
     refetchOnWindowFocus: false,
+    placeholderData: (previousData) => previousData, // Keep previous data visible while fetching
   });
 
   // Update URL with new params
@@ -190,6 +196,33 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
     updateUrl(newParams);
   }, [params, data?.meta.hasMore, defaultLimit, updateUrl]);
 
+  // Go to specific page (1-indexed)
+  const goToPage = useCallback((page: number) => {
+    const limit = params.limit || defaultLimit;
+    const total = data?.meta.total || 0;
+    const maxPage = Math.ceil(total / limit);
+    
+    // Clamp page to valid range
+    const validPage = Math.max(1, Math.min(page, maxPage));
+    const newOffset = (validPage - 1) * limit;
+    
+    const newParams = { ...params, offset: newOffset };
+    updateUrl(newParams);
+  }, [params, data?.meta.total, defaultLimit, updateUrl]);
+
+  // Calculate current page and total pages
+  const currentPage = useMemo(() => {
+    const limit = params.limit || defaultLimit;
+    const offset = params.offset || 0;
+    return Math.floor(offset / limit) + 1;
+  }, [params.limit, params.offset, defaultLimit]);
+
+  const totalPages = useMemo(() => {
+    const limit = params.limit || defaultLimit;
+    const total = data?.meta.total || 0;
+    return Math.max(1, Math.ceil(total / limit));
+  }, [params.limit, data?.meta.total, defaultLimit]);
+
   // Force refresh
   const refresh = useCallback(() => {
     refetch();
@@ -211,6 +244,10 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
     isFetching,
     error: error as Error | null,
     
+    // Pagination
+    currentPage,
+    totalPages,
+    
     // Actions
     setQuery,
     setFilters,
@@ -219,6 +256,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
     clearFilters,
     setSort,
     loadMore,
+    goToPage,
     refresh,
   };
 }

@@ -1,11 +1,12 @@
 /**
  * Listing Detail Skeleton Component
  * Loading placeholder for listing detail page
- * Uses CarCardDetailedSkeleton for the main content
+ * Uses CarCardDetailed.Skeleton and SellerProfileCard.Skeleton
  */
 
 import { Skeleton } from '@/components/ui/skeleton';
-import { CarCardDetailedSkeleton } from '@/components/inventory';
+import { CarCardDetailed } from '@/components/inventory';
+import { SellerProfileCard } from './seller-profile-card';
 
 export function ListingDetailSkeleton() {
   return (
@@ -13,38 +14,15 @@ export function ListingDetailSkeleton() {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10">
         {/* Main Column - Car Details (60%) */}
         <div className="lg:col-span-3 min-w-0">
-          <CarCardDetailedSkeleton />
+          <CarCardDetailed.Skeleton />
         </div>
 
         {/* Sidebar (40%) */}
         <div className="lg:col-span-2 min-w-0">
           <div className="lg:sticky lg:top-24 space-y-6">
             {/* Seller Profile Card */}
-            <div className="rounded-xl border border-border p-6 space-y-5">
-              {/* Header */}
-              <div className="flex items-center gap-3">
-                <Skeleton className="h-14 w-14 rounded-full flex-shrink-0" />
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="h-5 w-40" />
-                  <Skeleton className="h-4 w-24" />
-                </div>
-              </div>
-              
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-3 pt-4 border-t border-border">
-                <div className="space-y-1.5">
-                  <Skeleton className="h-6 w-12 mx-auto" />
-                  <Skeleton className="h-3 w-16 mx-auto" />
-                </div>
-                <div className="space-y-1.5">
-                  <Skeleton className="h-6 w-12 mx-auto" />
-                  <Skeleton className="h-3 w-16 mx-auto" />
-                </div>
-                <div className="space-y-1.5">
-                  <Skeleton className="h-6 w-12 mx-auto" />
-                  <Skeleton className="h-3 w-16 mx-auto" />
-                </div>
-              </div>
+            <div className="rounded-xl border border-border p-6">
+              <SellerProfileCard.Skeleton />
             </div>
             
             {/* Contact Section */}

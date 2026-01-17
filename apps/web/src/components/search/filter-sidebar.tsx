@@ -45,43 +45,43 @@ export function FilterSidebar({
             type="button"
             onClick={() => onFilterChange({ condition: params.condition === 'new' ? undefined : 'new' })}
             className={cn(
-              'flex items-center justify-between w-full py-2.5 px-3 rounded-lg',
-              'text-sm transition-all duration-150',
+              'flex items-center justify-between w-full py-3 px-4 rounded-2xl',
+              'text-[15px] transition-all duration-150',
               params.condition === 'new'
-                ? 'text-foreground font-bold bg-muted/50'
-                : 'text-muted-foreground font-semibold hover:text-foreground hover:bg-muted/30'
+                ? 'text-foreground font-semibold bg-muted/50'
+                : 'text-muted-foreground font-medium hover:text-foreground hover:bg-muted/50'
             )}
           >
             <span>New Cars</span>
-            {params.condition === 'new' && <CheckCircle2 className="h-4 w-4 text-green-500" />}
+            {params.condition === 'new' && <CheckCircle2 className="h-4 w-4 text-foreground" />}
           </button>
           <button
             type="button"
             onClick={() => onFilterChange({ isBlkListing: params.isBlkListing ? undefined : true })}
             className={cn(
-              'flex items-center justify-between w-full py-2.5 px-3 rounded-lg',
-              'text-sm transition-all duration-150',
+              'flex items-center justify-between w-full py-3 px-4 rounded-2xl',
+              'text-[15px] transition-all duration-150',
               params.isBlkListing
-                ? 'text-foreground font-bold bg-muted/50'
-                : 'text-muted-foreground font-semibold hover:text-foreground hover:bg-muted/30'
+                ? 'text-foreground font-semibold bg-muted/50'
+                : 'text-muted-foreground font-medium hover:text-foreground hover:bg-muted/50'
             )}
           >
             <span>Black Listings</span>
-            {params.isBlkListing && <CheckCircle2 className="h-4 w-4 text-green-500" />}
+            {params.isBlkListing && <CheckCircle2 className="h-4 w-4 text-foreground" />}
           </button>
           <button
             type="button"
             onClick={() => onFilterChange({ isBlackTierPartner: params.isBlackTierPartner ? undefined : true })}
             className={cn(
-              'flex items-center justify-between w-full py-2.5 px-3 rounded-lg',
-              'text-sm transition-all duration-150',
+              'flex items-center justify-between w-full py-3 px-4 rounded-2xl',
+              'text-[15px] transition-all duration-150',
               params.isBlackTierPartner
-                ? 'text-foreground font-bold bg-muted/50'
-                : 'text-muted-foreground font-semibold hover:text-foreground hover:bg-muted/30'
+                ? 'text-foreground font-semibold bg-muted/50'
+                : 'text-muted-foreground font-medium hover:text-foreground hover:bg-muted/50'
             )}
           >
             <span>Black Members</span>
-            {params.isBlackTierPartner && <CheckCircle2 className="h-4 w-4 text-green-500" />}
+            {params.isBlackTierPartner && <CheckCircle2 className="h-4 w-4 text-foreground" />}
           </button>
         </div>
       </FilterSection>
@@ -144,14 +144,14 @@ export function FilterSidebar({
           type="button"
           onClick={() => onFilterChange({ isNegotiable: params.isNegotiable ? undefined : true })}
           className={cn(
-            'flex items-center justify-between w-full px-3 py-2.5 text-sm rounded-lg transition-all',
+            'flex items-center justify-between w-full px-4 py-3 text-[15px] rounded-2xl transition-all',
             params.isNegotiable
-              ? 'text-foreground font-bold bg-muted/50'
-              : 'bg-muted/30 text-muted-foreground font-semibold hover:bg-muted/50 hover:text-foreground'
+              ? 'text-foreground font-semibold bg-muted/50'
+              : 'text-muted-foreground font-medium hover:bg-muted/50 hover:text-foreground'
           )}
         >
           <span>Negotiable prices only</span>
-          {params.isNegotiable && <CheckCircle2 className="h-4 w-4 text-green-500" />}
+          {params.isNegotiable && <CheckCircle2 className="h-4 w-4 text-foreground" />}
         </button>
       </FilterSection>
 
@@ -182,7 +182,7 @@ interface FilterSectionProps {
 function FilterSection({ title, children, defaultOpen = false }: FilterSectionProps) {
   return (
     <Collapsible defaultOpen={defaultOpen} className="group/collapsible">
-      <CollapsibleTrigger className="flex items-center justify-between w-full py-4 text-sm font-bold text-foreground hover:text-foreground transition-colors">
+      <CollapsibleTrigger className="flex items-center justify-between w-full py-4 text-[15px] font-bold tracking-tight text-foreground hover:text-foreground rounded-2xl hover:bg-muted/30 px-2 -mx-2 transition-colors">
         <span>{title}</span>
         <ChevronDown className="size-4 text-muted-foreground/50 transition-transform duration-200 group-data-[state=closed]/collapsible:-rotate-90" />
       </CollapsibleTrigger>
@@ -226,8 +226,8 @@ function MultiSelectFilter({
   if (isLoading) {
     return (
       <div className="space-y-2">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-10 bg-muted/10 rounded-lg animate-pulse" />
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="h-12 bg-muted/10 rounded-2xl animate-pulse" />
         ))}
       </div>
     );
@@ -235,7 +235,7 @@ function MultiSelectFilter({
 
   if (options.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground/50 py-3 font-medium">No options available</p>
+      <p className="text-[15px] text-muted-foreground/50 py-3 font-medium">No options available</p>
     );
   }
 
@@ -250,19 +250,22 @@ function MultiSelectFilter({
             key={option.value}
             onClick={() => toggleOption(option.value)}
             className={cn(
-              'flex items-center justify-between w-full py-2.5 px-3 rounded-lg',
-              'text-sm transition-all duration-150',
+              'flex items-center justify-between w-full py-3 px-4 rounded-2xl',
+              'text-[15px] transition-all duration-150',
               isSelected
-                ? 'text-foreground font-bold bg-muted/50'
-                : 'text-muted-foreground font-semibold hover:text-foreground hover:bg-muted/30'
+                ? 'text-foreground font-semibold bg-muted/50'
+                : 'text-muted-foreground/70 font-medium hover:text-foreground hover:bg-muted/50'
             )}
           >
-            <span>
-              {option.label}
-            </span>
+            <span>{option.label}</span>
             <div className="flex items-center gap-2.5">
-              <span className="text-xs text-muted-foreground/50 tabular-nums font-semibold">{option.count}</span>
-              {isSelected && <CheckCircle2 className="h-4 w-4 text-green-500" />}
+              <span className={cn(
+                "text-xs tabular-nums",
+                isSelected ? "font-semibold text-foreground" : "font-medium text-muted-foreground"
+              )}>
+                {option.count} cars
+              </span>
+              {isSelected && <CheckCircle2 className="h-4 w-4 text-foreground" />}
             </div>
           </button>
         );
@@ -272,9 +275,9 @@ function MultiSelectFilter({
         <button
           type="button"
           onClick={() => setShowAll(!showAll)}
-          className="text-sm font-semibold text-muted-foreground/60 hover:text-foreground py-3 px-3 text-left transition-colors"
+          className="text-sm font-semibold text-muted-foreground hover:text-foreground py-3 px-4 text-left transition-colors"
         >
-          {showAll ? 'Show less' : `+${options.length - maxVisible} more`}
+          {showAll ? 'Show less' : `+ Show ${options.length - maxVisible} more`}
         </button>
       )}
     </div>
@@ -360,9 +363,9 @@ function RangeFilter({
                 key={preset.label}
                 onClick={() => handlePresetClick(preset)}
                 className={cn(
-                  'px-3 py-1.5 text-sm font-semibold rounded-full transition-all duration-150',
+                  'px-4 py-2 text-sm font-semibold rounded-2xl transition-all duration-150',
                   isActive
-                    ? 'bg-muted/50 text-foreground'
+                    ? 'bg-muted/60 text-foreground'
                     : 'bg-muted/30 text-muted-foreground hover:text-foreground hover:bg-muted/50'
                 )}
               >
@@ -404,8 +407,8 @@ function RangeFilter({
 
       {/* Current range label */}
       {(minValue || maxValue) && (
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground font-semibold">
+        <div className="flex items-center justify-between text-sm bg-muted/30 rounded-2xl px-4 py-3">
+          <span className="text-foreground font-medium">
             {minValue && maxValue
               ? `${formatLabel(minValue)} - ${formatLabel(maxValue)}`
               : minValue
@@ -417,7 +420,7 @@ function RangeFilter({
           <button
             type="button"
             onClick={handleClear}
-            className="text-muted-foreground/50 hover:text-foreground transition-colors font-semibold"
+            className="text-muted-foreground hover:text-foreground transition-colors font-semibold"
           >
             Clear
           </button>

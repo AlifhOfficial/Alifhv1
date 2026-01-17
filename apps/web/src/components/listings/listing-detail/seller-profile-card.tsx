@@ -140,6 +140,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { cn } from '@/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 import { BrandHero } from '@/components/partner/car-dealer/ui/brand-hero';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
@@ -586,3 +587,139 @@ export function SellerProfileCard({ sellerData, className }: SellerProfileCardPr
     </div>
   );
 }
+
+// ============================================================================
+// SKELETON
+// ============================================================================
+
+interface SellerProfileCardSkeletonProps {
+  className?: string;
+  /** Show partner-style skeleton (with hero) vs user-style */
+  variant?: 'partner' | 'user';
+}
+
+function SellerProfileCardSkeletonComponent({ className, variant = 'partner' }: SellerProfileCardSkeletonProps) {
+  return (
+    <div className={cn("overflow-hidden space-y-5", className)}>
+      {/* Hero Image - Partner only */}
+      {variant === 'partner' && (
+        <div className="relative -mx-4 -mt-4 mb-3">
+          <Skeleton className="h-28 w-full rounded-t-2xl" />
+        </div>
+      )}
+
+      {/* Header with Logo/Avatar and Brand/Name Info */}
+      <div className="flex items-start justify-between gap-4">
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          {/* Name + verification badge */}
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-6 sm:h-7 w-36 sm:w-44" />
+            <Skeleton className="h-5 w-5 rounded-full flex-shrink-0" />
+          </div>
+          
+          {/* Location with icon */}
+          <div className="flex items-center gap-2 mt-1.5">
+            <Skeleton className="w-4 h-4 rounded" />
+            <Skeleton className="h-4 w-28" />
+          </div>
+
+          {/* Years in business / Member since */}
+          <Skeleton className="h-4 w-36 mt-1.5" />
+        </div>
+
+        {/* Logo/Avatar */}
+        <Skeleton className={cn(
+          "flex-shrink-0",
+          variant === 'partner' ? "w-16 h-16 rounded-lg" : "w-14 h-14 rounded-full"
+        )} />
+      </div>
+
+      {/* Website Link - Partner only */}
+      {variant === 'partner' && (
+        <div className="flex items-center gap-2">
+          <Skeleton className="w-4 h-4 rounded" />
+          <Skeleton className="h-4 w-40" />
+          <Skeleton className="w-4 h-4 rounded" />
+        </div>
+      )}
+
+      {/* Badges */}
+      <div className="flex flex-wrap gap-2">
+        <Skeleton className="h-8 w-28 rounded-lg" />
+        <Skeleton className="h-8 w-24 rounded-lg" />
+        {variant === 'user' && (
+          <Skeleton className="h-8 w-20 rounded-lg" />
+        )}
+      </div>
+
+      {/* About Section - Partner only */}
+      {variant === 'partner' && (
+        <div className="space-y-2">
+          <Skeleton className="h-[13px] w-14" />
+          <div className="space-y-1.5">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-4/5" />
+          </div>
+        </div>
+      )}
+
+      {/* Stats Grid - 2x2 */}
+      <div className="grid grid-cols-2 gap-4 py-4 border-y border-border">
+        {/* Stat 1 - Google Rating / Inventory */}
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2">
+            <Skeleton className="w-4 h-4 rounded" />
+            <Skeleton className="h-3.5 w-14" />
+          </div>
+          <div className="flex items-baseline gap-1">
+            <Skeleton className="h-6 w-10" />
+            <Skeleton className="h-4 w-8" />
+          </div>
+        </div>
+
+        {/* Stat 2 - Inventory / Response */}
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2">
+            <Skeleton className="w-4 h-4 rounded" />
+            <Skeleton className="h-3.5 w-16" />
+          </div>
+          <div className="flex items-baseline gap-1.5">
+            <Skeleton className="h-6 w-8" />
+            <Skeleton className="h-3 w-14" />
+          </div>
+        </div>
+
+        {/* Stat 3 - Response Time */}
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2">
+            <Skeleton className="w-4 h-4 rounded" />
+            <Skeleton className="h-3.5 w-16" />
+          </div>
+          <Skeleton className="h-6 w-10" />
+        </div>
+
+        {/* Stat 4 - Response Rate */}
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2">
+            <Skeleton className="w-4 h-4 rounded" />
+            <Skeleton className="h-3.5 w-10" />
+          </div>
+          <Skeleton className="h-6 w-12" />
+        </div>
+      </div>
+
+      {/* Specialties / Tags */}
+      <div className="space-y-2">
+        <Skeleton className="h-[13px] w-24" />
+        <div className="flex flex-wrap gap-2">
+          <Skeleton className="h-8 w-20 rounded-lg" />
+          <Skeleton className="h-8 w-16 rounded-lg" />
+          <Skeleton className="h-8 w-24 rounded-lg" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+SellerProfileCard.Skeleton = SellerProfileCardSkeletonComponent;

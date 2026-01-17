@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { ListingsHeader } from './listings-header';
 import { ListingsSidebar } from './listings-sidebar';
 import { ListingsContent } from './listings-content';
@@ -60,10 +60,13 @@ export function ListingsView({ embedded = false }: ListingsViewProps) {
     isLoading,
     isFetching,
     error,
+    currentPage,
+    totalPages,
     setFilters,
     clearFilters,
     setSort,
     loadMore,
+    goToPage,
   } = useSearch({ defaultLimit: 30 });
 
   return (
@@ -77,23 +80,67 @@ export function ListingsView({ embedded = false }: ListingsViewProps) {
           "mx-auto px-4 sm:px-6 lg:px-8",
           !embedded && "max-w-[1600px] pt-4 sm:pt-6"
         )}>
-          <div className="flex">
-            {/* LEFT: Fixed Sidebar */}
-            <ListingsSidebar
+          {/* Mobile Layout (no resizable) */}
+          <div className="lg:hidden">
+            {/* TOP: Sticky Search Header */}
+            <ListingsHeader
               params={params}
               facets={facets}
+              meta={meta}
               activeFilterCount={activeFilterCount}
               isLoading={isLoading}
+              listings={listings}
               embedded={embedded}
-              sidebarOpen={sidebarOpen}
+              sidebarOpen={false}
               onSidebarToggle={setSidebarOpen}
+              mobileFiltersOpen={mobileFiltersOpen}
+              onMobileFiltersToggle={setMobileFiltersOpen}
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
               setFilters={setFilters}
-              onClearAll={clearFilters}
+              clearFilters={clearFilters}
+              setSort={setSort}
             />
 
+            {/* Content */}
+            <main className="py-4 sm:py-6">
+              <ListingsContent
+                listings={listings}
+                meta={meta}
+                isLoading={isLoading}
+                isFetching={isFetching}
+                error={error}
+                activeFilterCount={activeFilterCount}
+                viewMode={viewMode}
+                clearFilters={clearFilters}
+                loadMore={loadMore}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                goToPage={goToPage}
+              />
+            </main>
+          </div>
+
+          {/* Desktop Layout - Simple Flex */}
+          <div className="hidden lg:flex gap-6">
+            {/* LEFT: Sidebar */}
+            {sidebarOpen && (
+              <ListingsSidebar
+                params={params}
+                facets={facets}
+                activeFilterCount={activeFilterCount}
+                isLoading={isLoading}
+                embedded={embedded}
+                sidebarOpen={sidebarOpen}
+                onSidebarToggle={setSidebarOpen}
+                setFilters={setFilters}
+                onClearAll={clearFilters}
+              />
+            )}
+
             {/* RIGHT: Search Header + Content */}
-            <div className="flex-1 min-w-0 flex flex-col">
-              {/* TOP: Fixed Search Header */}
+            <div className="flex-1 min-w-0">
+              {/* TOP: Sticky Search Header */}
               <ListingsHeader
                 params={params}
                 facets={facets}
@@ -114,10 +161,7 @@ export function ListingsView({ embedded = false }: ListingsViewProps) {
               />
 
               {/* BOTTOM: Scrollable Content */}
-              <main className={cn(
-                "flex-1 py-4 sm:py-6",
-                sidebarOpen && "lg:pl-6"
-              )}>
+              <main className="py-4 sm:py-6">
                 <ListingsContent
                   listings={listings}
                   meta={meta}
@@ -128,6 +172,9 @@ export function ListingsView({ embedded = false }: ListingsViewProps) {
                   viewMode={viewMode}
                   clearFilters={clearFilters}
                   loadMore={loadMore}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  goToPage={goToPage}
                 />
               </main>
             </div>

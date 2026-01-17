@@ -114,6 +114,13 @@ async function updateUserProfileAPI(updates: UserProfileUpdate): Promise<UserPro
 }
 
 // ============================================================================
+// Constants
+// ============================================================================
+
+// 24 hours in milliseconds - client-side caching for user-owned data
+const STALE_TIME_24H = 24 * 60 * 60 * 1000;
+
+// ============================================================================
 // Main Hook
 // ============================================================================
 
@@ -121,11 +128,16 @@ export function useUserProfile() {
   const queryClient = useQueryClient();
   const { refetch: refetchSession, isAuthenticated } = useAuth();
 
-  // Fetch profile data with proper caching - ONLY when authenticated
+  // Fetch profile data with 24h client-side caching
+  // This is safe because profile is user-owned data that only changes via user actions.
+  // Both server cache (invalidateUserProfile) and client cache (invalidateQueries)
+  // are invalidated together on mutations.
   const query = useQuery<UserProfileResponse | null>({
     queryKey: ['user-profile'],
     queryFn: fetchUserProfile,
-    refetchOnWindowFocus: false, // Don't refetch on focus - expensive query
+    staleTime: STALE_TIME_24H, // 24h - only refetch after mutations
+    gcTime: STALE_TIME_24H, // Keep in cache for 24h
+    refetchOnWindowFocus: false, // Don't refetch on focus - user-owned data
     refetchOnMount: false, // Don't refetch on remount - use cache
     retry: false, // Don't retry on 401
     enabled: isAuthenticated, // Only fetch when user is logged in

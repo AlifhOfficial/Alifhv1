@@ -10,3 +10,4 @@ export { BookingSection } from './booking-section';
 export { EMICalculator } from './emi-calculator';
 export { LocationSection } from './location-section';
 export { ListingTimestamp } from './listing-timestamp';
+export { SimilarListings } from './similar-listings';

@@ -11,6 +11,7 @@ import { Share2, Heart, CheckCircle2, Sparkles } from 'lucide-react';
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
 import { cn } from '@/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
 import { SuperlikeLimitDialog } from '@/components/engagement/favorites/superlike-limit-dialog';
@@ -527,3 +528,61 @@ export function CarCard({
     </div>
   );
 }
+
+// ============================================================================
+// SKELETON
+// ============================================================================
+
+interface CarCardSkeletonProps {
+  className?: string;
+}
+
+function CarCardSkeletonComponent({ className }: CarCardSkeletonProps) {
+  return (
+    <div className={cn(
+      "flex flex-col overflow-hidden rounded-lg w-full",
+      "bg-sidebar border border-sidebar-border",
+      className
+    )}>
+      {/* Image Section - matches CarCard aspect ratios */}
+      <Skeleton className="aspect-[4/3] sm:aspect-[3/2] lg:aspect-[16/10] w-full" />
+      
+      {/* Content Section */}
+      <div className="flex flex-1 flex-col p-3 sm:p-4 gap-1.5">
+        {/* Title + Year row */}
+        <div className="flex items-baseline justify-between gap-3">
+          <Skeleton className="h-[15px] w-2/3" />
+          <Skeleton className="h-3 w-8 flex-shrink-0" />
+        </div>
+
+        {/* Price */}
+        <Skeleton className="h-[18px] w-28" />
+
+        {/* Stats Row - mileage · specs · emirate */}
+        <div className="flex items-center gap-1.5">
+          <Skeleton className="h-3.5 w-14" />
+          <Skeleton className="h-3.5 w-8" />
+          <Skeleton className="h-3.5 w-12" />
+        </div>
+
+        {/* Bottom Section - Seller and Actions */}
+        <div className="flex items-center justify-between pt-3 mt-auto">
+          {/* Left - Seller avatar + name */}
+          <div className="flex items-center gap-2.5 min-w-0">
+            <Skeleton className="w-7 h-7 rounded-full flex-shrink-0" />
+            <Skeleton className="h-[13px] w-24" />
+          </div>
+
+          {/* Right - Actions (share, favorite, superlike) */}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <Skeleton className="h-8 w-8 rounded-full" />
+            <Skeleton className="h-8 w-8 rounded-full" />
+            <Skeleton className="h-8 w-8 rounded-full" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+CarCard.Skeleton = CarCardSkeletonComponent;

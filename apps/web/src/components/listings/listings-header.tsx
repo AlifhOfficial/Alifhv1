@@ -10,7 +10,8 @@ import Link from 'next/link';
 import { SearchBar } from '@/components/search/search-bar';
 import { FilterSidebar } from '@/components/search/filter-sidebar';
 import { AdvancedFilters } from '@/components/search/advanced-filters';
-import { LayoutGrid, List, SlidersHorizontal, X, ChevronDown, PanelLeft, ChevronRight } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { LayoutGrid, List, SlidersHorizontal, X, ChevronDown, PanelLeft, ChevronRight, CheckCircle2 } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -18,17 +19,24 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
 import { SORT_OPTIONS, type SearchParams, type SearchFacets } from '@/lib/search-utils';
 import { cn } from '@/lib/utils';
 
@@ -85,13 +93,13 @@ export function ListingsHeader({
   clearFilters,
   setSort,
 }: ListingsHeaderProps) {
-  // Modal states for viewing all options
-  const [makesModalOpen, setMakesModalOpen] = useState(false);
-  const [modelsModalOpen, setModelsModalOpen] = useState(false);
-  const [trimsModalOpen, setTrimsModalOpen] = useState(false);
+  // Popover open states
+  const [makesOpen, setMakesOpen] = useState(false);
+  const [modelsOpen, setModelsOpen] = useState(false);
+  const [trimsOpen, setTrimsOpen] = useState(false);
 
-  // Number of items to show before "View all"
-  const VISIBLE_COUNT = 6;
+  // Number of items to show before "View all" - kept small for fixed-height dynamic island
+  const VISIBLE_COUNT = 4;
 
   // Memoize active chips - pass listings directly, memoize on params change
   const activeChips = useMemo(
@@ -164,12 +172,13 @@ export function ListingsHeader({
 
   return (
     <header className={cn(
-      "sticky z-30 bg-background",
+      "sticky z-30 bg-background border-b border-transparent",
+      "[&:not(:first-child)]:border-sidebar-border/50",
       embedded ? "top-0" : "top-14 sm:top-16"
     )}>
-      <div className="py-3 sm:py-4">
+      <div className="py-3 sm:py-4 relative">
         {/* Search Row */}
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Sidebar Toggle (Desktop) - Use opacity/pointer-events instead of conditional render */}
           <button
             onClick={() => onSidebarToggle(true)}
@@ -215,9 +224,15 @@ export function ListingsHeader({
           </Sheet>
 
           {/* Results count - hidden on mobile, shows on larger screens */}
-          <span className="hidden sm:inline-block text-sm font-semibold text-muted-foreground/70 tabular-nums whitespace-nowrap">
-            {isLoading ? '...' : `${meta?.total ?? 0} cars`}
-          </span>
+          <div className="hidden sm:flex items-center h-9 px-4 bg-sidebar border border-sidebar-border rounded-full shadow-sm">
+            {isLoading ? (
+              <span className="inline-block w-10 h-4 bg-muted/50 rounded animate-pulse" />
+            ) : (
+              <span className="text-sm font-semibold text-sidebar-foreground/70 tabular-nums whitespace-nowrap">
+                {meta?.total ?? 0} cars
+              </span>
+            )}
+          </div>
 
           {/* Search Bar - Full width on mobile, flexible on desktop */}
           <div className="w-full sm:flex-1 sm:min-w-[200px] order-last sm:order-none">
@@ -229,74 +244,74 @@ export function ListingsHeader({
             />
           </div>
 
-          {/* Sort Dropdown */}
-          <div className="relative">
+          {/* Right Controls Group */}
+          <div className="flex items-center gap-2">
+            {/* Sort Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-muted-foreground/70 hover:text-foreground transition-colors">
-                  <span className="hidden sm:inline">{SORT_OPTIONS.find(s => s.value === params.sortBy)?.label || 'Sort'}</span>
-                  <span className="sm:hidden">Sort</span>
-                  <ChevronDown className="size-4 text-muted-foreground/50" />
+                <button 
+                  className="flex items-center gap-2 h-9 px-4 text-sm font-semibold bg-sidebar border border-sidebar-border rounded-full text-sidebar-foreground/70 hover:text-sidebar-foreground shadow-sm transition-colors"
+                >
+                  <span>{SORT_OPTIONS.find(s => s.value === (params.sortBy || 'relevance'))?.label || 'Default'}</span>
+                  <ChevronDown className="size-3.5" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 bg-sidebar border-border/40">
+              <DropdownMenuContent align="start" className="w-52 bg-sidebar border border-sidebar-border rounded-lg shadow-lg p-1.5">
                 {SORT_OPTIONS.map((option) => (
                   <DropdownMenuItem
                     key={option.value}
                     onClick={() => setSort(option.value)}
-                    className={cn(
-                      "text-sm font-semibold cursor-pointer",
-                      params.sortBy === option.value ? "bg-muted/50 text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                    )}
+                    className="text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent cursor-pointer rounded-md px-3 py-2 flex items-center justify-between"
                   >
-                    {option.label}
+                    <span>{option.label}</span>
+                    {params.sortBy === option.value && (
+                      <CheckCircle2 className="size-4 text-foreground" />
+                    )}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
 
-          {/* View Toggle - Grid/Minimal on mobile, all three on desktop */}
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => onViewModeChange('grid')}
-              className={cn(
-                "p-2 transition-colors rounded-md",
-                viewMode === 'grid' ? "text-foreground" : "text-muted-foreground/50 hover:text-foreground"
-              )}
-              title="Grid view"
-            >
-              <LayoutGrid className="size-4" />
-            </button>
-            <button
-              onClick={() => onViewModeChange('minimal')}
-              className={cn(
-                "p-2 transition-colors rounded-md",
-                viewMode === 'minimal' ? "text-foreground" : "text-muted-foreground/50 hover:text-foreground"
-              )}
-              title="Minimal view"
-            >
-              <svg className="size-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="1" y="1" width="6" height="6" rx="1" />
-                <rect x="9" y="1" width="6" height="6" rx="1" />
-                <rect x="1" y="9" width="6" height="6" rx="1" />
-                <rect x="9" y="9" width="6" height="6" rx="1" />
-              </svg>
-            </button>
-            <button
-              onClick={() => onViewModeChange('list')}
-              className={cn(
-                "hidden lg:block p-2 transition-colors rounded-md",
-                viewMode === 'list' ? "text-foreground" : "text-muted-foreground/50 hover:text-foreground"
-              )}
-              title="List view"
-            >
-              <List className="size-4" />
-            </button>
-          </div>
+            {/* View Toggle */}
+            <div className="flex items-center h-9 px-1 bg-sidebar border border-sidebar-border rounded-full shadow-sm">
+              <button
+                onClick={() => onViewModeChange('grid')}
+                className={cn(
+                  "flex items-center justify-center w-7 h-7 rounded-full transition-colors",
+                  viewMode === 'grid' ? "text-foreground bg-muted/50" : "text-muted-foreground hover:text-foreground"
+                )}
+                title="Grid view"
+              >
+                <LayoutGrid className="size-4" />
+              </button>
+              <button
+                onClick={() => onViewModeChange('minimal')}
+                className={cn(
+                  "flex items-center justify-center w-7 h-7 rounded-full transition-colors",
+                  viewMode === 'minimal' ? "text-foreground bg-muted/50" : "text-muted-foreground hover:text-foreground"
+                )}
+                title="Minimal view"
+              >
+                <svg className="size-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="1" y="1" width="6" height="6" rx="1" />
+                  <rect x="9" y="1" width="6" height="6" rx="1" />
+                  <rect x="1" y="9" width="6" height="6" rx="1" />
+                  <rect x="9" y="9" width="6" height="6" rx="1" />
+                </svg>
+              </button>
+              <button
+                onClick={() => onViewModeChange('list')}
+                className={cn(
+                  "hidden lg:flex items-center justify-center w-7 h-7 rounded-full transition-colors",
+                  viewMode === 'list' ? "text-foreground bg-muted/50" : "text-muted-foreground hover:text-foreground"
+                )}
+                title="List view"
+              >
+                <List className="size-4" />
+              </button>
+            </div>
 
-          {/* Advanced Filters - moves to the right on mobile */}
-          <div className="md:contents ml-auto md:ml-0">
+            {/* Advanced Filters - Right side */}
             <AdvancedFilters
               params={params}
               facets={facets}
@@ -305,244 +320,296 @@ export function ListingsHeader({
           </div>
         </div>
 
-        {/* Breadcrumb - Show when make/model/trim filters are active */}
-        {breadcrumbItems.length > 1 && (
-          <nav 
-            className={cn(
-              "flex items-center gap-2 text-sm py-3 overflow-x-auto scrollbar-hide mt-3",
-              sidebarOpen && "lg:pl-6"
-            )}
-          >
-            {breadcrumbItems.map((item, index) => (
-              <div key={item.href} className="flex items-center gap-2">
-                {index > 0 && <span className="text-muted-foreground/30">/</span>}
-                {index === breadcrumbItems.length - 1 ? (
-                  <span className="font-bold text-foreground whitespace-nowrap">{item.label}</span>
-                ) : (
-                  <Link 
-                    href={item.href}
-                    className="font-semibold text-muted-foreground/70 hover:text-foreground transition-colors whitespace-nowrap"
-                  >
-                    {item.label}
-                  </Link>
-                )}
-              </div>
-            ))}
-          </nav>
-        )}
-
-        {/* Make Quick-Select - Show when no make is selected */}
-        {!params.make?.length && (facets?.make ?? []).length > 0 && (
-          <div 
-            className={cn(
-              "hidden sm:flex flex-wrap items-center gap-2 py-3 mt-3",
-              sidebarOpen && "lg:pl-6"
-            )}
-          >
-            <span className="text-sm font-semibold text-muted-foreground/70 whitespace-nowrap shrink-0">
-              Makes:
-            </span>
-            <div className="flex flex-wrap items-center gap-1.5">
-              {(facets?.make ?? []).slice(0, VISIBLE_COUNT).map((make) => (
-                <button
-                  key={make.value}
-                  onClick={() => setFilters({ make: [make.value], model: undefined, trim: undefined })}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-all whitespace-nowrap"
-                >
-                  <span>{make.label}</span>
-                  <span className="text-xs text-muted-foreground/50 tabular-nums">{make.count}</span>
-                </button>
+        {/* Dynamic Island - Fixed height container that morphs content */}
+        <div className="hidden sm:flex items-center gap-3 mt-3 h-10">
+          {/* Left: Breadcrumb (when filters active) */}
+          {breadcrumbItems.length > 1 && (
+            <nav className="flex items-center gap-1.5 shrink-0">
+              {breadcrumbItems.map((item, index) => (
+                <div key={item.href} className="flex items-center gap-1.5">
+                  {index > 0 && <ChevronRight className="size-3.5 text-muted-foreground/40" />}
+                  {index === breadcrumbItems.length - 1 ? (
+                    <span className="text-sm font-bold text-foreground whitespace-nowrap">{item.label}</span>
+                  ) : (
+                    <Link 
+                      href={item.href}
+                      className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
+                    >
+                      {item.label}
+                    </Link>
+                  )}
+                </div>
               ))}
-              {(facets?.make ?? []).length > VISIBLE_COUNT && (
-                <button
-                  onClick={() => setMakesModalOpen(true)}
-                  className="flex items-center gap-1 px-3 py-1.5 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
-                >
-                  View all
-                  <ChevronRight className="size-3.5" />
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Makes Modal */}
-        <Dialog open={makesModalOpen} onOpenChange={setMakesModalOpen}>
-          <DialogContent className="max-w-lg bg-sidebar border-border/40 p-0 gap-0">
-            <DialogHeader className="px-5 py-4 border-b border-border/40">
-              <DialogTitle className="text-[15px] font-bold tracking-tight text-foreground">
-                All Makes
-              </DialogTitle>
-            </DialogHeader>
-            <div className="grid grid-cols-2 gap-1 p-2 overflow-y-auto max-h-[60vh]">
-              {(facets?.make ?? []).map((make) => (
-                <button
-                  key={make.value}
-                  onClick={() => {
-                    setFilters({ make: [make.value], model: undefined, trim: undefined });
-                    setMakesModalOpen(false);
-                  }}
-                  className="flex items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted/50 rounded-lg transition-colors text-left"
-                >
-                  <span className="truncate">{make.label}</span>
-                  <span className="text-xs text-muted-foreground/70 tabular-nums flex-shrink-0">{make.count}</span>
-                </button>
-              ))}
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* Model Quick-Select - Show when make is selected but no model */}
-        {params.make?.length && !params.model?.length && (facets?.model ?? []).length > 0 && (
-          <div 
-            className={cn(
-              "hidden sm:flex flex-wrap items-center gap-2 py-3",
-              breadcrumbItems.length <= 1 && "mt-3",
-              sidebarOpen && "lg:pl-6"
-            )}
-          >
-            <span className="text-sm font-semibold text-muted-foreground/70 whitespace-nowrap shrink-0">
-              Models:
-            </span>
-            <div className="flex flex-wrap items-center gap-1.5">
-              {(facets?.model ?? []).slice(0, VISIBLE_COUNT).map((model) => (
-                <button
-                  key={model.value}
-                  onClick={() => setFilters({ model: [model.value] })}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-all whitespace-nowrap"
-                >
-                  <span>{model.label}</span>
-                  <span className="text-xs text-muted-foreground/50 tabular-nums">{model.count}</span>
-                </button>
-              ))}
-              {(facets?.model ?? []).length > VISIBLE_COUNT && (
-                <button
-                  onClick={() => setModelsModalOpen(true)}
-                  className="flex items-center gap-1 px-3 py-1.5 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
-                >
-                  View all
-                  <ChevronRight className="size-3.5" />
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Models Modal */}
-        <Dialog open={modelsModalOpen} onOpenChange={setModelsModalOpen}>
-          <DialogContent className="max-w-lg bg-sidebar border-border/40 p-0 gap-0">
-            <DialogHeader className="px-5 py-4 border-b border-border/40">
-              <DialogTitle className="text-[15px] font-bold tracking-tight text-foreground">
-                All Models
-              </DialogTitle>
-            </DialogHeader>
-            <div className="grid grid-cols-2 gap-1 p-2 overflow-y-auto max-h-[60vh]">
-              {(facets?.model ?? []).map((model) => (
-                <button
-                  key={model.value}
-                  onClick={() => {
-                    setFilters({ model: [model.value] });
-                    setModelsModalOpen(false);
-                  }}
-                  className="flex items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted/50 rounded-lg transition-colors text-left"
-                >
-                  <span className="truncate">{model.label}</span>
-                  <span className="text-xs text-muted-foreground/70 tabular-nums flex-shrink-0">{model.count}</span>
-                </button>
-              ))}
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* Trim Quick-Select - Show when make & model selected but no trim */}
-        {params.make?.length && params.model?.length && !params.trim?.length && (facets?.trim ?? []).length > 0 && (
-          <div 
-            className={cn(
-              "hidden sm:flex flex-wrap items-center gap-2 py-3",
-              sidebarOpen && "lg:pl-6"
-            )}
-          >
-            <span className="text-sm font-semibold text-muted-foreground/70 whitespace-nowrap shrink-0">
-              Trims:
-            </span>
-            <div className="flex flex-wrap items-center gap-1.5">
-              {(facets?.trim ?? []).slice(0, VISIBLE_COUNT).map((trim) => (
-                <button
-                  key={trim.value}
-                  onClick={() => setFilters({ trim: [trim.value] })}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-all whitespace-nowrap"
-                >
-                  <span>{trim.label}</span>
-                  <span className="text-xs text-muted-foreground/50 tabular-nums">{trim.count}</span>
-                </button>
-              ))}
-              {(facets?.trim ?? []).length > VISIBLE_COUNT && (
-                <button
-                  onClick={() => setTrimsModalOpen(true)}
-                  className="flex items-center gap-1 px-3 py-1.5 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
-                >
-                  View all
-                  <ChevronRight className="size-3.5" />
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Trims Modal */}
-        <Dialog open={trimsModalOpen} onOpenChange={setTrimsModalOpen}>
-          <DialogContent className="max-w-lg bg-sidebar border-border/40 p-0 gap-0">
-            <DialogHeader className="px-5 py-4 border-b border-border/40">
-              <DialogTitle className="text-[15px] font-bold tracking-tight text-foreground">
-                All Trims
-              </DialogTitle>
-            </DialogHeader>
-            <div className="grid grid-cols-2 gap-1 p-2 overflow-y-auto max-h-[60vh]">
-              {(facets?.trim ?? []).map((trim) => (
-                <button
-                  key={trim.value}
-                  onClick={() => {
-                    setFilters({ trim: [trim.value] });
-                    setTrimsModalOpen(false);
-                  }}
-                  className="flex items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-foreground hover:bg-muted/50 rounded-lg transition-colors text-left"
-                >
-                  <span className="truncate">{trim.label}</span>
-                  <span className="text-xs text-muted-foreground/70 tabular-nums flex-shrink-0">{trim.count}</span>
-                </button>
-              ))}
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* Active Chips - with sidebar-aware padding to align with content grid */}
-        <div 
-          className={cn(
-            "overflow-hidden transition-all duration-200",
-            activeChips.length > 0 ? "mt-3 sm:mt-4 max-h-32 opacity-100" : "max-h-0 opacity-0",
-            sidebarOpen && "lg:pl-6"
+            </nav>
           )}
-        >
-          <div className="flex flex-wrap items-center gap-2">
-            {activeChips.map((chip) => (
+
+          {/* Separator when breadcrumb exists and quick-select will show */}
+          {breadcrumbItems.length > 1 && (
+            (!params.make?.length && (facets?.make ?? []).length > 0) ||
+            (params.make?.length && !params.model?.length && (facets?.model ?? []).length > 0) ||
+            (params.make?.length && params.model?.length && !params.trim?.length && (facets?.trim ?? []).length > 0)
+          ) && (
+            <div className="w-px h-5 bg-border shrink-0" />
+          )}
+
+          {/* Quick-Select Options (contextual) */}
+          <div className="flex-1 flex items-center gap-2 overflow-x-auto scrollbar-hide">
+            {/* Make Quick-Select - when no make selected */}
+            {!params.make?.length && (facets?.make ?? []).length > 0 && (
+              <>
+                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
+                  Makes
+                </span>
+                {(facets?.make ?? []).slice(0, VISIBLE_COUNT).map((make) => (
+                  <button
+                    key={make.value}
+                    onClick={() => setFilters({ make: [make.value], model: undefined, trim: undefined })}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
+                  >
+                    <span>{make.label}</span>
+                    <span className="text-xs text-muted-foreground tabular-nums">{make.count}</span>
+                  </button>
+                ))}
+                {(facets?.make ?? []).length > VISIBLE_COUNT && (
+                  <Popover open={makesOpen} onOpenChange={setMakesOpen}>
+                    <PopoverTrigger asChild>
+                      <button
+                        className={cn(
+                          "flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-full transition-all whitespace-nowrap shrink-0",
+                          "bg-sidebar border border-sidebar-border shadow-sm",
+                          makesOpen 
+                            ? "text-sidebar-foreground border-primary/50 ring-1 ring-primary/20" 
+                            : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:shadow-md"
+                        )}
+                      >
+                        <span>View all</span>
+                        <ChevronDown className={cn("size-3.5 transition-transform", makesOpen && "rotate-180")} />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent 
+                      className="w-[280px] p-0 bg-sidebar border-sidebar-border rounded-lg shadow-lg overflow-hidden" 
+                      align="start"
+                      sideOffset={8}
+                    >
+                      <Command className="bg-transparent">
+                        <CommandInput 
+                          placeholder="Search makes..." 
+                          className="h-10 border-b border-sidebar-border text-[15px]"
+                        />
+                        <CommandList className="max-h-[280px]">
+                          <CommandEmpty className="py-4 text-center text-[15px] text-muted-foreground">No makes found.</CommandEmpty>
+                          <CommandGroup className="p-1.5">
+                            {(facets?.make ?? []).map((make) => (
+                              <CommandItem
+                                key={make.value}
+                                value={make.label}
+                                onSelect={() => {
+                                  setFilters({ make: [make.value], model: undefined, trim: undefined });
+                                  setMakesOpen(false);
+                                }}
+                                className="px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent rounded-md cursor-pointer"
+                              >
+                                <span className="flex-1">{make.label}</span>
+                                <span className="text-xs text-muted-foreground tabular-nums">{make.count}</span>
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                )}
+              </>
+            )}
+
+            {/* Model Quick-Select - when make selected but no model */}
+            {params.make?.length && !params.model?.length && (
+              <>
+                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
+                  Models
+                </span>
+                {isLoading ? (
+                  /* Skeleton loading state */
+                  <>
+                    {[...Array(4)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="h-7 rounded-full bg-muted/60 animate-pulse shrink-0"
+                        style={{ width: `${60 + Math.random() * 30}px` }}
+                      />
+                    ))}
+                  </>
+                ) : (facets?.model ?? []).length > 0 ? (
+                  <>
+                    {(facets?.model ?? []).slice(0, VISIBLE_COUNT).map((model) => (
+                      <button
+                        key={model.value}
+                        onClick={() => setFilters({ model: [model.value] })}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
+                      >
+                        <span>{model.label}</span>
+                        <span className="text-xs text-muted-foreground tabular-nums">{model.count}</span>
+                      </button>
+                    ))}
+                    {(facets?.model ?? []).length > VISIBLE_COUNT && (
+                      <Popover open={modelsOpen} onOpenChange={setModelsOpen}>
+                        <PopoverTrigger asChild>
+                          <button
+                            className={cn(
+                              "flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-full transition-all whitespace-nowrap shrink-0",
+                              "bg-sidebar border border-sidebar-border shadow-sm",
+                              modelsOpen 
+                                ? "text-sidebar-foreground border-primary/50 ring-1 ring-primary/20" 
+                                : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:shadow-md"
+                            )}
+                          >
+                            <span>View all</span>
+                            <ChevronDown className={cn("size-3.5 transition-transform", modelsOpen && "rotate-180")} />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent 
+                          className="w-[280px] p-0 bg-sidebar border-sidebar-border rounded-lg shadow-lg overflow-hidden" 
+                          align="start"
+                          sideOffset={8}
+                        >
+                          <Command className="bg-transparent">
+                            <CommandInput 
+                              placeholder="Search models..." 
+                              className="h-10 border-b border-sidebar-border text-[15px]"
+                            />
+                            <CommandList className="max-h-[280px]">
+                              <CommandEmpty className="py-4 text-center text-[15px] text-muted-foreground">No models found.</CommandEmpty>
+                              <CommandGroup className="p-1.5">
+                                {(facets?.model ?? []).map((model) => (
+                                  <CommandItem
+                                    key={model.value}
+                                    value={model.label}
+                                    onSelect={() => {
+                                      setFilters({ model: [model.value] });
+                                      setModelsOpen(false);
+                                    }}
+                                    className="px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent rounded-md cursor-pointer"
+                                  >
+                                    <span className="flex-1">{model.label}</span>
+                                    <span className="text-xs text-muted-foreground tabular-nums">{model.count}</span>
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    )}
+                  </>
+                ) : null}
+              </>
+            )}
+
+            {/* Trim Quick-Select - when make & model selected but no trim */}
+            {params.make?.length && params.model?.length && !params.trim?.length && (
+              <>
+                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
+                  Trims
+                </span>
+                {isLoading ? (
+                  /* Skeleton loading state */
+                  <>
+                    {[...Array(4)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="h-7 rounded-full bg-muted/60 animate-pulse shrink-0"
+                        style={{ width: `${50 + Math.random() * 40}px` }}
+                      />
+                    ))}
+                  </>
+                ) : (facets?.trim ?? []).length > 0 ? (
+                  <>
+                    {(facets?.trim ?? []).slice(0, VISIBLE_COUNT).map((trim) => (
+                      <button
+                        key={trim.value}
+                        onClick={() => setFilters({ trim: [trim.value] })}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
+                      >
+                        <span>{trim.label}</span>
+                        <span className="text-xs text-muted-foreground tabular-nums">{trim.count}</span>
+                      </button>
+                    ))}
+                    {(facets?.trim ?? []).length > VISIBLE_COUNT && (
+                      <Popover open={trimsOpen} onOpenChange={setTrimsOpen}>
+                        <PopoverTrigger asChild>
+                          <button
+                            className={cn(
+                              "flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-full transition-all whitespace-nowrap shrink-0",
+                              "bg-sidebar border border-sidebar-border shadow-sm",
+                              trimsOpen 
+                                ? "text-sidebar-foreground border-primary/50 ring-1 ring-primary/20" 
+                                : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:shadow-md"
+                            )}
+                          >
+                            <span>View all</span>
+                            <ChevronDown className={cn("size-3.5 transition-transform", trimsOpen && "rotate-180")} />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent 
+                          className="w-[280px] p-0 bg-sidebar border-sidebar-border rounded-lg shadow-lg overflow-hidden" 
+                          align="start"
+                          sideOffset={8}
+                        >
+                          <Command className="bg-transparent">
+                            <CommandInput 
+                              placeholder="Search trims..." 
+                              className="h-10 border-b border-sidebar-border text-[15px]"
+                            />
+                            <CommandList className="max-h-[280px]">
+                              <CommandEmpty className="py-4 text-center text-[15px] text-muted-foreground">No trims found.</CommandEmpty>
+                              <CommandGroup className="p-1.5">
+                                {(facets?.trim ?? []).map((trim) => (
+                                  <CommandItem
+                                    key={trim.value}
+                                    value={trim.label}
+                                    onSelect={() => {
+                                      setFilters({ trim: [trim.value] });
+                                      setTrimsOpen(false);
+                                    }}
+                                    className="px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent rounded-md cursor-pointer"
+                                  >
+                                    <span className="flex-1">{trim.label}</span>
+                                    <span className="text-xs text-muted-foreground tabular-nums">{trim.count}</span>
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    )}
+                  </>
+                ) : null}
+              </>
+            )}
+
+            {/* Other active filter chips */}
+            {activeChips.filter(c => !['make', 'model', 'trim'].includes(c.key)).map((chip) => (
               <button
                 key={chip.key}
                 onClick={() => handleChipRemove(chip.key)}
-                className="group flex items-center gap-1.5 px-3 py-1 text-xs font-semibold bg-muted/40 hover:bg-muted/60 rounded-full transition-colors"
+                className="group flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-muted/50 text-foreground/80 hover:bg-muted/70 hover:text-foreground rounded-full transition-colors whitespace-nowrap shrink-0"
               >
                 <span>{chip.label}</span>
-                <X className="h-3 w-3 text-muted-foreground/70 group-hover:text-foreground transition-colors" />
+                <X className="h-3 w-3 text-muted-foreground group-hover:text-foreground transition-colors" />
               </button>
             ))}
-            {activeChips.length > 0 && (
-              <button
-                onClick={clearFilters}
-                className="px-2 py-1 text-xs font-semibold text-muted-foreground/70 hover:text-foreground transition-colors"
-              >
-                Clear all
-              </button>
-            )}
           </div>
+
+          {/* Clear All - Always visible on right when filters active */}
+          {activeFilterCount > 0 && (
+            <button
+              onClick={clearFilters}
+              className="shrink-0 px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full transition-colors"
+            >
+              Clear all
+            </button>
+          )}
         </div>
       </div>
     </header>
@@ -634,3 +701,48 @@ function getActiveFilterChips(
 
   return chips;
 }
+
+// ============================================================================
+// SKELETON
+// ============================================================================
+
+interface ListingsHeaderSkeletonProps {
+  embedded?: boolean;
+}
+
+function ListingsHeaderSkeletonComponent({ embedded = false }: ListingsHeaderSkeletonProps) {
+  return (
+    <header className={cn(
+      "sticky z-30 bg-background border-b border-transparent",
+      "[&:not(:first-child)]:border-sidebar-border/50",
+      embedded ? "top-0" : "top-14 sm:top-16"
+    )}>
+      <div className="py-3 sm:py-4">
+        {/* Search Row */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Results count skeleton */}
+          <Skeleton className="hidden sm:block h-9 w-20 rounded-full" />
+
+          {/* Search bar skeleton */}
+          <Skeleton className="w-full sm:flex-1 sm:min-w-[200px] h-9 rounded-full order-last sm:order-none" />
+
+          {/* Right controls */}
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-9 w-20 rounded-full" />
+            <Skeleton className="h-9 w-24 rounded-full" />
+          </div>
+        </div>
+
+        {/* Dynamic Island skeleton */}
+        <div className="hidden sm:flex items-center gap-3 mt-3 h-10">
+          <Skeleton className="h-7 w-16 rounded-full" />
+          <Skeleton className="h-7 w-20 rounded-full" />
+          <Skeleton className="h-7 w-24 rounded-full" />
+          <Skeleton className="h-7 w-18 rounded-full" />
+        </div>
+      </div>
+    </header>
+  );
+}
+
+ListingsHeader.Skeleton = ListingsHeaderSkeletonComponent;

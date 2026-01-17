@@ -9,6 +9,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
 import { cn } from '@/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 
@@ -159,3 +160,40 @@ export function CarCardMinimal({
     </Link>
   );
 }
+
+// ============================================================================
+// SKELETON
+// ============================================================================
+
+interface CarCardMinimalSkeletonProps {
+  className?: string;
+}
+
+function CarCardMinimalSkeletonComponent({ className }: CarCardMinimalSkeletonProps) {
+  return (
+    <div className={cn(
+      "flex flex-col overflow-hidden rounded-lg w-full",
+      "bg-sidebar border border-sidebar-border",
+      className
+    )}>
+      {/* Image */}
+      <Skeleton className="aspect-[4/3] w-full" />
+
+      {/* Content - Clean & Minimal */}
+      <div className="flex items-center justify-between gap-3 p-3">
+        {/* Left - Text */}
+        <div className="min-w-0 flex-1 space-y-1">
+          {/* Make/Model */}
+          <Skeleton className="h-3.5 w-24" />
+          {/* Seller name */}
+          <Skeleton className="h-3 w-20" />
+        </div>
+
+        {/* Right - Avatar */}
+        <Skeleton className="w-8 h-8 rounded-full flex-shrink-0" />
+      </div>
+    </div>
+  );
+}
+
+CarCardMinimal.Skeleton = CarCardMinimalSkeletonComponent;

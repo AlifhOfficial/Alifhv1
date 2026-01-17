@@ -20,6 +20,7 @@ import { EMICalculator } from './emi-calculator';
 import { LocationSection } from './location-section';
 import { ListingTimestamp } from './listing-timestamp';
 import { ListingDetailSkeleton } from './listing-detail-skeleton';
+import { SimilarListings } from './similar-listings';
 import { ChevronLeft, AlertTriangle, Loader2, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -295,6 +296,12 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
               </div>
             </div>
           </div>
+
+          {/* Similar Listings - non-blocking, loads after main content */}
+          <SimilarListings 
+            listingId={listing.id} 
+            enabled={listing.isPublic}
+          />
         </div>
       </main>
 
