@@ -273,7 +273,7 @@ export function UserDashboardOverview() {
         <div className="grid grid-cols-12 gap-4">
           {/* Views Trend Card */}
           <div className="col-span-12 lg:col-span-8 rounded-lg border border-border/20 bg-muted/5 p-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-4">
               <div>
                 <p className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium mb-2">Total Views</p>
                 <span className="text-3xl font-semibold text-purple-500">
@@ -286,6 +286,11 @@ export function UserDashboardOverview() {
                   <WaveChart className="text-purple-500/20" />
                 </div>
               </div>
+            </div>
+            
+            {/* Trend Chart */}
+            <div className="h-24 w-full text-purple-500/30 -mb-2">
+              <WaveChart className="text-purple-500/30" />
             </div>
           </div>
 

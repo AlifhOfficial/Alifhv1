@@ -573,7 +573,7 @@ export function PartnerInsightsView() {
           <div className="grid grid-cols-12 gap-4">
             {/* Views Card */}
             <div className="col-span-12 lg:col-span-8 rounded-lg border border-border/20 bg-muted/5 p-6">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium mb-2">Views This Month</p>
                   <div className="flex items-baseline gap-2">
@@ -593,6 +593,11 @@ export function PartnerInsightsView() {
                     <p className="text-sm font-semibold text-foreground/90 tabular-nums">{Math.round(engagement.avgViewsPerListing)}</p>
                   </div>
                 </div>
+              </div>
+              
+              {/* Trend Chart */}
+              <div className="h-24 w-full text-purple-500/30 -mb-2">
+                <WaveChart className="text-purple-500/30" />
               </div>
             </div>
 
