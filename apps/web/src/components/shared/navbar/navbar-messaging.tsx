@@ -22,16 +22,10 @@ interface NavbarMessagingProps {
 export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
   const [isOpen, setIsOpen] = useState(false);
   
-  // Lightweight unread count - fetches minimal data with scope
-  const { unreadCount } = useUnreadCount({ userId, scope: 'personal' });
-  
-  // Full conversations list - only fetched when dropdown is open
-  const { conversations, isLoading } = useConversations({ 
-    userId, 
-    scope: 'personal', 
-    limit: 50,
-    enabled: isOpen,
-  });
+  // Always fetch conversations (not just when open) for real-time updates
+  const { conversations, isLoading, totalUnread } = useConversations({ userId, scope: 'personal', limit: 50 });
+  // Use totalUnread from conversations hook (includes real-time updates)
+  const unreadCount = totalUnread;
 
   // Close on outside click
   useEffect(() => {
@@ -120,8 +114,8 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
               Messages
             </h3>
             {unreadCount > 0 && (
-              <span className="text-xs text-muted-foreground">
-                {unreadCount} new
+              <span className="text-sm font-medium text-rose-500">
+                {unreadCount} unread
               </span>
             )}
           </div>
@@ -238,7 +232,9 @@ function ConversationGroup({ group, onSelectConversation }: ConversationGroupPro
               ({conversations.length})
             </span>
             {hasUnread && (
-              <span className="ml-auto flex-shrink-0 w-2 h-2 bg-rose-500 rounded-full" />
+              <span className="ml-auto flex-shrink-0 w-5 h-5 text-[11px] font-bold bg-rose-500 text-white rounded-full flex items-center justify-center">
+                {totalUnread > 9 ? '9+' : totalUnread}
+              </span>
             )}
           </div>
         </div>
@@ -339,7 +335,9 @@ function ConversationPreviewItem({ conversation, onClick, isGrouped = false }: C
               </span>
             )}
             {hasUnread && (
-              <span className="w-1.5 h-1.5 bg-rose-500 rounded-full" />
+              <span className="w-5 h-5 text-[11px] font-bold bg-rose-500 text-white rounded-full flex items-center justify-center">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
             )}
           </div>
         </div>
@@ -385,7 +383,7 @@ function ConversationPreviewItem({ conversation, onClick, isGrouped = false }: C
           
           {/* Unread indicator dot */}
           {hasUnread && (
-            <span className="absolute top-0 right-0 w-2 h-2 bg-rose-500 rounded-full" />
+            <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-rose-500 rounded-full border-2 border-sidebar" />
           )}
         </div>
 

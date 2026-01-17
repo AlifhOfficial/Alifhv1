@@ -1,6 +1,5 @@
 /**
  * Unread Count Hook - Total unread messages
- * Fetches from conversations API with scope support
  */
 
 'use client';
@@ -9,31 +8,19 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useWebSocket } from './use-websocket';
 import { useEffect } from 'react';
 
-interface UnreadCountOptions {
-  userId?: string;
-  scope?: 'personal' | 'staff';
-  activeConversationId?: string;
-}
-
-async function fetchUnreadCount(scope?: 'personal' | 'staff'): Promise<{ totalUnread: number }> {
-  const params = new URLSearchParams({ limit: '1' }); // Just need totalUnread, minimal data
-  if (scope) params.set('scope', scope);
-  
-  const res = await fetch(`/api/conversations?${params}`, { credentials: 'include' });
+async function fetchUnreadCount(): Promise<{ unreadCount: number }> {
+  const res = await fetch('/api/conversations/unread-count', { credentials: 'include' });
   if (!res.ok) throw new Error('Failed to fetch unread count');
   return res.json();
 }
 
-export function useUnreadCount(options: UnreadCountOptions = {}) {
-  const { userId, scope, activeConversationId } = options;
+export function useUnreadCount(userId?: string, activeConversationId?: string) {
   const queryClient = useQueryClient();
   const { subscribe } = useWebSocket();
 
-  const queryKey = ['unread-count', scope] as const;
-
   const query = useQuery({
-    queryKey,
-    queryFn: () => fetchUnreadCount(scope),
+    queryKey: ['unread-count'],
+    queryFn: fetchUnreadCount,
     refetchInterval: 2 * 60 * 1000,
     enabled: !!userId,
   });
@@ -49,27 +36,22 @@ export function useUnreadCount(options: UnreadCountOptions = {}) {
         
         // Don't increment unread count for your own messages
         if (senderId === userId) {
+          console.log(`🔔 [useUnreadCount] Own message in background conversation, skipping count increment`);
           return;
         }
         
-        queryClient.setQueryData(queryKey, (old: { totalUnread: number } | undefined) => ({
-          ...old,
-          totalUnread: (old?.totalUnread ?? 0) + 1,
+        console.log(`🔔 [useUnreadCount] New message in background conversation, incrementing count`);
+        queryClient.setQueryData(['unread-count'], (old: { unreadCount: number } | undefined) => ({
+          unreadCount: (old?.unreadCount ?? 0) + 1,
         }));
-      }
-      
-      // Decrement on read receipt (when user marks as read)
-      if (msg.type === 'read_receipt' && msg.userId === userId) {
-        // Refetch to get accurate count after marking as read
-        queryClient.invalidateQueries({ queryKey });
       }
     });
 
     return unsub;
-  }, [subscribe, queryClient, userId, activeConversationId, queryKey]);
+  }, [subscribe, queryClient, userId, activeConversationId]);
 
   return {
-    unreadCount: query.data?.totalUnread ?? 0,
+    unreadCount: query.data?.unreadCount ?? 0,
     isLoading: query.isLoading,
     refetch: query.refetch,
   };

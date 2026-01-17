@@ -64,8 +64,6 @@ export async function GET(req: NextRequest) {
       partnerScope,
     });
 
-    // For scoped queries, sum from returned conversations
-    // For unscoped, use the full count query
     const totalUnread =
       scope === 'staff' || scope === 'personal'
         ? conversations.reduce((sum, c) => sum + (c.unreadCount ?? 0), 0)

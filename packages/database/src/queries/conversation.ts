@@ -5,7 +5,7 @@
 
 import { db } from '../index';
 import { conversation, conversationParticipant, user, carListing, partner, userProfile, partnerStaff } from '../schema';
-import { eq, and, desc, or, sql, inArray, isNull, isNotNull, not } from 'drizzle-orm';
+import { eq, and, desc, or, sql, inArray, isNull, not } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 
 // ============================================================================
@@ -583,45 +583,17 @@ export async function getConversationParticipantsWithProfiles(
 
 /**
  * Get total unread count for user across all conversations
- * @param userId - User ID
- * @param partnerScope - Filter by partner involvement: 'only' (staff only), 'exclude' (personal only), undefined (all)
  */
-export async function getTotalUnreadCount(
-  userId: string,
-  partnerScope?: 'only' | 'exclude'
-): Promise<number> {
-  // If no scope filter, use simple query without join
-  if (!partnerScope) {
-    const result = await db
-      .select({
-        total: sql<number>`sum(${conversationParticipant.unreadCount})::int`,
-      })
-      .from(conversationParticipant)
-      .where(
-        and(
-          eq(conversationParticipant.userId, userId),
-          eq(conversationParticipant.isArchived, false)
-        )
-      );
-    return result[0]?.total || 0;
-  }
-
-  // For scoped queries, need to join with conversation table to check partnerId
-  const partnerCondition = partnerScope === 'only' 
-    ? isNotNull(conversation.partnerId)
-    : isNull(conversation.partnerId);
-
+export async function getTotalUnreadCount(userId: string): Promise<number> {
   const result = await db
     .select({
       total: sql<number>`sum(${conversationParticipant.unreadCount})::int`,
     })
     .from(conversationParticipant)
-    .innerJoin(conversation, eq(conversationParticipant.conversationId, conversation.id))
     .where(
       and(
         eq(conversationParticipant.userId, userId),
-        eq(conversationParticipant.isArchived, false),
-        partnerCondition
+        eq(conversationParticipant.isArchived, false)
       )
     );
 
