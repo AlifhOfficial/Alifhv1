@@ -25,6 +25,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
 import { uploadFile, deleteFile } from "@/lib/storage";
+import { generateUserAvatarKey } from "@/lib/storage/keys";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 
@@ -87,9 +88,10 @@ export async function POST(req: NextRequest) {
       .webp({ quality: OUTPUT_QUALITY, effort: 2 }) // effort 2 = faster encoding
       .toBuffer();
 
-    // Generate unique key with timestamp
+    // Generate unique key with date-based path
+    // Format: users/{userId}/{YYYY}/{MM}/{DD}/avatar-{timestamp}.webp
     const timestamp = Date.now();
-    const key = `avatars/${user.id}-${timestamp}.webp`;
+    const key = generateUserAvatarKey({ userId: user.id });
 
     // Upload to public R2 bucket
     const result = await uploadFile({
@@ -100,7 +102,8 @@ export async function POST(req: NextRequest) {
     });
 
     // Delete old avatar in background (don't await)
-    if (previousKey && previousKey.startsWith("avatars/")) {
+    // Supports both legacy (avatars/) and new (users/) formats
+    if (previousKey && (previousKey.startsWith("avatars/") || previousKey.startsWith("users/"))) {
       deleteFile(previousKey).catch(() => {});
     }
 

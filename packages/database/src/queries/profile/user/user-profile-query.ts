@@ -12,10 +12,10 @@
  */
 
 import { createId } from '@paralleldrive/cuid2';
-import { eq } from 'drizzle-orm';
+import { eq, desc } from 'drizzle-orm';
 import { db } from '../../../dbclient';
 import { memoryCache, CacheKeys, CacheTTL, invalidateUserSessions } from '../../../caches/memory-cache';
-import { userProfile } from '../../../schema/profile';
+import { userProfile, kycRecord } from '../../../schema/profile';
 import { user } from '../../../schema/auth';
 
 const PROFILE_ID_PREFIX = 'prof_';
@@ -57,6 +57,7 @@ export type ExtendedUserProfile = {
   kycVerifiedAt: Date | null;
   kycExpiryDate: Date | null;
   kycStatus: 'none' | 'pending' | 'approved' | 'rejected';
+  kycRejectionReason: string | null;
   badges: string[];
   platformRating: number | null;
   memberSince: Date | null;
@@ -119,10 +120,23 @@ export const getUserProfileByUserId = async (userId: string): Promise<ExtendedUs
     return null;
   }
 
+  // If KYC is rejected, fetch the rejection reason from the latest kycRecord
+  let kycRejectionReason: string | null = null;
+  if (result.kycStatus === 'rejected') {
+    const [latestKyc] = await db
+      .select({ rejectionReason: kycRecord.rejectionReason })
+      .from(kycRecord)
+      .where(eq(kycRecord.userId, userId))
+      .orderBy(desc(kycRecord.createdAt))
+      .limit(1);
+    kycRejectionReason = latestKyc?.rejectionReason ?? null;
+  }
+
   const profile: ExtendedUserProfile = {
     ...result,
     emailVerified: result.emailVerified ?? false,
     phoneNumberVerified: result.phoneNumberVerified ?? false,
+    kycRejectionReason,
   };
 
   // Cache the result (disabled - no-op)

@@ -21,8 +21,7 @@ import {
   Clock,
   Fingerprint,
   Trash2,
-  Plus,
-  ShieldCheck
+  Plus
 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { KycVerificationModal } from '@/components/kyc';
@@ -509,47 +508,59 @@ export function ProfileView() {
             <p className="text-sm text-muted-foreground/70 mt-0.5">
               Member since {memberSinceYear ?? '—'}
             </p>
-            
-            {/* KYC Status Messages */}
-            {isKycExpired ? (
+          </div>
+        </div>
+
+        {/* Identity Verification Status */}
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className={cn(
+                "text-sm font-semibold",
+                profile?.kycVerified && !isKycExpired ? "text-foreground" :
+                isKycExpired || profile?.kycStatus === 'rejected' ? "text-red-500" :
+                profile?.kycStatus === 'pending' ? "text-amber-500" :
+                "text-foreground"
+              )}>
+                {profile?.kycVerified && !isKycExpired ? 'Identity Verified' :
+                 isKycExpired ? 'Verification Expired' :
+                 profile?.kycStatus === 'pending' ? 'Under Review' :
+                 profile?.kycStatus === 'rejected' ? 'Verification Failed' :
+                 'Identity Not Verified'}
+              </p>
+              <p className={cn(
+                "text-xs font-medium mt-0.5",
+                isExpiringSoon ? "text-amber-500" : "text-muted-foreground/70"
+              )}>
+                {profile?.kycVerified && !isKycExpired && kycExpiryDate ? (
+                  isExpiringSoon 
+                    ? `Expires in ${daysUntilExpiry} day${daysUntilExpiry === 1 ? '' : 's'}` 
+                    : `Valid until ${kycExpiryDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+                ) : isKycExpired ? (
+                  'Please verify again to continue'
+                ) : profile?.kycStatus === 'pending' ? (
+                  'We\'re reviewing your documents'
+                ) : profile?.kycStatus === 'rejected' ? (
+                  profile.kycRejectionReason || 'Please try again with valid documents'
+                ) : (
+                  'Verify to build trust and unlock features'
+                )}
+              </p>
+            </div>
+            {(!profile?.kycVerified || isKycExpired || profile?.kycStatus === 'rejected' || showResubmit) && profile?.kycStatus !== 'pending' && (
               <button 
                 onClick={() => setKycModalOpen(true)}
-                className="text-xs text-red-500 hover:text-red-600 font-medium mt-2 inline-block"
+                className="text-xs text-blue-500 hover:text-blue-600 font-semibold px-4 py-2 rounded-lg bg-muted/30 hover:bg-muted/40 transition-colors"
               >
-                Verification expired - Renew now
+                {isKycExpired || profile?.kycStatus === 'rejected' ? 'Try Again' : 
+                 showResubmit ? 'Renew' : 'Verify'}
               </button>
-            ) : profile?.kycStatus === 'pending' ? (
-              <div className="flex items-center gap-1.5 text-xs text-amber-500 font-medium mt-2">
-                <Clock className="w-3.5 h-3.5" />
-                Under Review
-              </div>
-            ) : profile?.kycStatus === 'rejected' ? (
-              <button 
-                onClick={() => setKycModalOpen(true)}
-                className="text-xs text-red-500 hover:text-red-600 font-medium mt-2 inline-block"
-              >
-                Verification failed - Try again
-              </button>
-            ) : !profile?.kycVerified ? (
-              <button 
-                onClick={() => setKycModalOpen(true)}
-                className="text-xs text-blue-500 hover:text-blue-600 font-medium mt-2 inline-block"
-              >
-                Get verified
-              </button>
-            ) : showResubmit ? (
-              <button 
-                onClick={() => setKycModalOpen(true)}
-                className="text-xs text-blue-500 hover:text-blue-600 font-medium mt-2 inline-block"
-              >
-                Renew verification
-              </button>
-            ) : null}
+            )}
           </div>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-5 border-y border-border/40 divide-x divide-border/40 bg-sidebar rounded-xl">
+        <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border/40 divide-x divide-border/40 bg-sidebar rounded-xl">
           <div className="p-5 flex flex-col gap-1">
             <span className="text-sm font-semibold text-muted-foreground/70">Listings</span>
             <span className="text-xl font-bold text-foreground">{stats?.listingsCount ?? '—'}</span>
@@ -573,34 +584,6 @@ export function ProfileView() {
                   {profile.platformRating.toFixed(1)}
                 </span>
               ) : '—'}
-            </span>
-          </div>
-          <div className="p-5 flex flex-col gap-1">
-            <span className="text-sm font-semibold text-muted-foreground/70">Status</span>
-            <span className="text-xl font-bold text-foreground">
-              {profile?.kycVerified && !isKycExpired ? (
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className={cn(
-                    "w-5 h-5 text-blue-500 transition-opacity",
-                    isExpiringSoon && "opacity-50"
-                  )} />
-                  <span className={cn(isExpiringSoon && "text-amber-500")}>
-                    {isExpiringSoon ? 'Expiring' : 'Verified'}
-                  </span>
-                </span>
-              ) : isKycExpired ? (
-                <span className="flex items-center gap-1.5 text-red-500">
-                  <X className="w-5 h-5" />
-                  Expired
-                </span>
-              ) : profile?.kycStatus === 'pending' ? (
-                <span className="flex items-center gap-1.5 text-amber-500">
-                  <Clock className="w-5 h-5" />
-                  In Review
-                </span>
-              ) : (
-                <span className="text-muted-foreground">—</span>
-              )}
             </span>
           </div>
         </div>
@@ -895,42 +878,6 @@ export function ProfileView() {
             </div>
           </div>
         </section>
-
-        {/* KYC Expiry Info - Bottom */}
-        {profile?.kycVerified && !isKycExpired && kycExpiryDate && (
-          <section>
-            <div className="rounded-xl border border-border/40 bg-sidebar p-5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className={cn(
-                    "w-5 h-5 text-blue-500",
-                    isExpiringSoon && "opacity-50"
-                  )} />
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">Identity Verified</p>
-                    <p className={cn(
-                      "text-xs font-medium mt-0.5",
-                      isExpiringSoon ? "text-amber-500" : "text-muted-foreground/70"
-                    )}>
-                      {isExpiringSoon 
-                        ? `Expires in ${daysUntilExpiry} day${daysUntilExpiry === 1 ? '' : 's'}` 
-                        : `Valid until ${kycExpiryDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
-                      }
-                    </p>
-                  </div>
-                </div>
-                {showResubmit && (
-                  <button 
-                    onClick={() => setKycModalOpen(true)}
-                    className="text-xs text-blue-500 hover:text-blue-600 font-semibold px-4 py-2 rounded-lg bg-muted/30 hover:bg-muted/40 transition-colors"
-                  >
-                    Renew
-                  </button>
-                )}
-              </div>
-            </div>
-          </section>
-        )}
 
       </div>
       

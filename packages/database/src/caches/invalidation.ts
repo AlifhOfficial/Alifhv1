@@ -202,10 +202,12 @@ export function invalidatePartnerProfileComprehensive(partnerId: string): void {
 
 /**
  * Invalidate user profile cache
- * Use after: user profile update, stats change, passkeys change
+ * Use after: user profile update, stats change, passkeys change, KYC status change
+ * 
+ * Uses CacheKeys.userProfile for single source of truth
  */
 export function invalidateUserProfile(userId: string): void {
-  const key = `user:profile:${userId}`;
+  const key = CacheKeys.userProfile(userId);
   memoryCache.delete(key);
   console.log(`[cache] Invalidated user profile: ${userId}`);
 }

@@ -29,6 +29,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
 import { uploadFile, deleteFile } from "@/lib/storage";
+import { generateBrandImageKey, type BrandImageType } from "@/lib/storage/keys";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 
@@ -46,18 +47,14 @@ const IMAGE_CONFIG = {
     height: 512,
     fit: "cover" as const, // Square crop for logos
     quality: 85,
-    directory: "partner-logos",
   },
   hero: {
     width: 1920,
     height: 600,
     fit: "cover" as const, // Banner crop for hero images
     quality: 85,
-    directory: "partner-heroes",
   },
 } as const;
-
-type ImageType = keyof typeof IMAGE_CONFIG;
 
 export async function POST(req: NextRequest) {
   try {
@@ -113,7 +110,7 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    const config = IMAGE_CONFIG[imageType as ImageType];
+    const config = IMAGE_CONFIG[imageType as BrandImageType];
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
@@ -129,11 +126,11 @@ export async function POST(req: NextRequest) {
       .webp({ quality: config.quality })
       .toBuffer();
 
-    // Generate unique key with timestamp to bust CDN cache
+    // Generate unique key with date-based path to bust CDN cache
+    // Format: brands/{partnerId}/{YYYY}/{MM}/{DD}/{type}-{timestamp}.webp
     // This ensures each upload creates a NEW cache entry in Cloudflare R2 edge
-    // Old images will be orphaned but can be cleaned up via a scheduled job
     const timestamp = Date.now();
-    const key = `${config.directory}/${partnerId}-${timestamp}.webp`;
+    const key = generateBrandImageKey({ partnerId, type: imageType as BrandImageType });
 
     // IMPORTANT: Long cache since each upload creates a unique path
     // No need for must-revalidate since path changes on each upload
@@ -145,7 +142,10 @@ export async function POST(req: NextRequest) {
     });
 
     // Delete old image if provided (async, don't block response)
-    if (previousKey && previousKey.startsWith(config.directory)) {
+    // Supports both legacy (partner-logos/, partner-heroes/) and new (brands/) formats
+    const isLegacyKey = previousKey?.startsWith("partner-logos/") || previousKey?.startsWith("partner-heroes/");
+    const isNewKey = previousKey?.startsWith("brands/");
+    if (previousKey && (isLegacyKey || isNewKey)) {
       deleteFile(previousKey).catch((err) => {
         console.warn(`[upload-partner-image] Failed to delete old image: ${previousKey}`, err);
       });

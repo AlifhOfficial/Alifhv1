@@ -23,7 +23,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from 'zod';
-import { getUserProfileByUserId, updateUserProfileByUserId, ensureUserProfile, invalidateUserSession, memoryCache, invalidateUserProfile, invalidateUserListingsInSearch, calculateUserStats, db, passkey, eq } from "@alifh/database";
+import { getUserProfileByUserId, updateUserProfileByUserId, ensureUserProfile, invalidateUserSession, invalidateUserProfile, invalidateUserListingsInSearch, calculateUserStats, db, passkey, eq } from "@alifh/database";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { deleteFile } from "@/lib/storage";
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_GENERAL } from '@/lib/rate-limit';
@@ -32,9 +32,6 @@ export const runtime = "nodejs";
 export const dynamic = 'force-dynamic';
 
 const profileUpdateLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
-
-// Server-side cache TTL: 5 minutes
-const USER_PROFILE_CACHE_TTL = 300;
 
 // No browser caching - server handles caching
 const CACHE_HEADERS_PRIVATE = {
@@ -101,17 +98,7 @@ export async function GET(req: NextRequest) {
       return response;
     }
 
-    // Check server-side cache
-    const cacheKey = `user:profile:${user.id}`;
-    const cached = memoryCache.get(cacheKey);
-    if (cached) {
-      const response = NextResponse.json(cached);
-      Object.entries(CACHE_HEADERS_PRIVATE).forEach(([key, value]) => 
-        response.headers.set(key, value)
-      );
-      return response;
-    }
-
+    // Query already handles caching via CacheKeys.userProfile
     let profile = await getUserProfileByUserId(user.id);
     
     if (!profile) {
@@ -138,9 +125,6 @@ export async function GET(req: NextRequest) {
       stats,
       passkeys,
     };
-
-    // Cache the result
-    memoryCache.set(cacheKey, responseData, USER_PROFILE_CACHE_TTL);
 
     const response = NextResponse.json(responseData);
     Object.entries(CACHE_HEADERS_PRIVATE).forEach(([key, value]) => 

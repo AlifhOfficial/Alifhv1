@@ -44,6 +44,7 @@ export interface UserProfile {
   kycVerifiedAt?: Date | string | null;
   kycExpiryDate?: Date | string | null;
   kycStatus?: 'none' | 'pending' | 'approved' | 'rejected';
+  kycRejectionReason?: string | null;
   badges?: string[];
   platformRating?: number | null;
   memberSince?: Date | string;
@@ -114,13 +115,6 @@ async function updateUserProfileAPI(updates: UserProfileUpdate): Promise<UserPro
 }
 
 // ============================================================================
-// Constants
-// ============================================================================
-
-// 24 hours in milliseconds - client-side caching for user-owned data
-const STALE_TIME_24H = 24 * 60 * 60 * 1000;
-
-// ============================================================================
 // Main Hook
 // ============================================================================
 
@@ -128,17 +122,15 @@ export function useUserProfile() {
   const queryClient = useQueryClient();
   const { refetch: refetchSession, isAuthenticated } = useAuth();
 
-  // Fetch profile data with 24h client-side caching
-  // This is safe because profile is user-owned data that only changes via user actions.
-  // Both server cache (invalidateUserProfile) and client cache (invalidateQueries)
-  // are invalidated together on mutations.
+  // Fetch profile data - always fresh from server, no client caching
+  // Server-side cache handles the caching, client always gets fresh data
   const query = useQuery<UserProfileResponse | null>({
     queryKey: ['user-profile'],
     queryFn: fetchUserProfile,
-    staleTime: STALE_TIME_24H, // 24h - only refetch after mutations
-    gcTime: STALE_TIME_24H, // Keep in cache for 24h
-    refetchOnWindowFocus: false, // Don't refetch on focus - user-owned data
-    refetchOnMount: false, // Don't refetch on remount - use cache
+    staleTime: 0, // Always stale - fetch fresh
+    gcTime: 0, // No garbage collection caching
+    refetchOnWindowFocus: true, // Refetch when user returns to tab
+    refetchOnMount: 'always', // Always refetch on mount
     retry: false, // Don't retry on 401
     enabled: isAuthenticated, // Only fetch when user is logged in
   });

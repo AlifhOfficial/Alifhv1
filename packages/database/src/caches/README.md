@@ -108,7 +108,6 @@ useQuery({
 
 **Where this applies:**
 - `favorites-status` (favorites, superlikes, quota)
-- `user-profile` (profile data, stats, passkeys - 24h stale time)
 - User bookings
 
 ## 📝 Adding New Cache
