@@ -33,6 +33,36 @@ const INTERNAL_SECRET = process.env.INTERNAL_API_SECRET || process.env.CRON_SECR
 const SEARCH_CACHE_TTL = 600; // 10 minutes
 const FACET_CACHE_TTL = 900; // 15 minutes
 
+// Retry configuration
+const MAX_RETRIES = 3;
+const INITIAL_RETRY_DELAY = 1000; // 1 second
+const MAX_RETRY_DELAY = 10000; // 10 seconds
+
+// Helper: Sleep for exponential backoff
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Helper: Retry with exponential backoff
+async function retryWithBackoff<T>(
+  fn: () => Promise<T>,
+  context: string,
+  attempt = 0
+): Promise<T | null> {
+  try {
+    return await fn();
+  } catch (error: any) {
+    if (attempt >= MAX_RETRIES) {
+      console.error(`[cache-warm] ${context} failed after ${MAX_RETRIES} retries:`, error.message);
+      return null;
+    }
+
+    const delay = Math.min(INITIAL_RETRY_DELAY * Math.pow(2, attempt), MAX_RETRY_DELAY);
+    console.warn(`[cache-warm] ${context} failed (attempt ${attempt + 1}/${MAX_RETRIES}), retrying in ${delay}ms...`);
+    
+    await sleep(delay);
+    return retryWithBackoff(fn, context, attempt + 1);
+  }
+}
+
 // Common pagination variants that frontend might send
 // Must match EXACTLY what the frontend sends to get cache hits
 const PAGINATION_VARIANTS = [
@@ -105,13 +135,23 @@ export async function POST(req: NextRequest) {
 
       const queryStart = Date.now();
       
-      // Execute search and facets in parallel
+      // Execute search and facets with retry logic
       const [searchResult, facets] = await Promise.all([
-        existingSearch ? Promise.resolve(null) : searchListings(params as any, { skipFacets: true }),
-        existingFacets ? Promise.resolve(null) : getSearchFacets(params as any),
+        existingSearch 
+          ? Promise.resolve(null) 
+          : retryWithBackoff(
+              () => searchListings(params as any, { skipFacets: true }),
+              `Search ${searchKey}`
+            ),
+        existingFacets 
+          ? Promise.resolve(null) 
+          : retryWithBackoff(
+              () => getSearchFacets(params as any),
+              `Facets ${facetKey}`
+            ),
       ]);
 
-      // Cache results
+      // Cache results only if they exist
       if (searchResult) {
         memoryCache.set(searchKey, searchResult, SEARCH_CACHE_TTL);
       }
@@ -119,6 +159,7 @@ export async function POST(req: NextRequest) {
         memoryCache.set(facetKey, facets, FACET_CACHE_TTL);
       }
 
+      // Track result even if it failed (null)
       results.push({
         search: searchKey,
         time: Date.now() - queryStart,
@@ -130,16 +171,21 @@ export async function POST(req: NextRequest) {
     const warmedCount = results.filter(r => !r.cached).length;
     const skippedCount = results.filter(r => r.cached).length;
 
-    // Also flush view buffer while we're here
+    // Also flush view buffer while we're here (with retry)
     const viewBufferStats = getViewBufferStats();
     let flushResult = { views: 0, viewListings: 0, impressionListings: 0 };
     
     if (viewBufferStats.pendingViews > 0 || viewBufferStats.pendingImpressionListings > 0) {
-      try {
-        flushResult = await flushViewBuffer();
+      const result = await retryWithBackoff(
+        () => flushViewBuffer(),
+        'View buffer flush'
+      );
+      
+      if (result) {
+        flushResult = result;
         console.log(`[cache-warm] Flushed ${flushResult.views} views, ${flushResult.impressionListings} impression updates`);
-      } catch (err) {
-        console.error('[cache-warm] Analytics flush error:', err);
+      } else {
+        console.error('[cache-warm] Analytics flush failed after all retries');
       }
     }
 
