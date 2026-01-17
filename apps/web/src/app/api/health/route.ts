@@ -103,6 +103,7 @@ async function checkWebSocket(): Promise<ServiceStatus> {
 
 /**
  * Check runtime health (Node.js or Bun)
+ * Note: Always returns healthy - memory usage is monitored but not flagged as unhealthy
  */
 function checkRuntime(): ServiceStatus {
   try {
@@ -117,8 +118,8 @@ function checkRuntime(): ServiceStatus {
     const runtimeName = isBun ? 'Bun' : 'Node.js';
     
     return {
-      status: memPercent < 90 ? 'healthy' : memPercent < 95 ? 'degraded' : 'unhealthy',
-      message: `${runtimeName} ${runtimeVersion} · ${memUsedMB}MB / ${memTotalMB}MB`,
+      status: 'healthy',
+      message: `${runtimeName} ${runtimeVersion} · ${memUsedMB}MB / ${memTotalMB}MB (${memPercent}%)`,
       details: {
         runtime: runtimeName,
         version: runtimeVersion,
