@@ -308,6 +308,14 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="Listings" className="font-semibold tracking-tight">
+              <Link href="/listings">
+                <Package className="size-4" />
+                <span>Listings</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
             <SidebarMenuButton 
               onClick={() => setShowSupportModal(true)}
               tooltip="Support" 

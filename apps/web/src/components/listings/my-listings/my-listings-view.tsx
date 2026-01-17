@@ -490,10 +490,9 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
             : 'Manage your personal car listings'}
         >
             {listingType === 'work' && blackQuota && (
-              <div className="px-2.5 py-1 rounded-lg bg-black/80 text-white">
-                <span className="text-[10px] font-bold tracking-wider">BLK</span>
-                <span className="text-xs font-semibold ml-1.5 tabular-nums">
-                  {blackQuota.activeBlackListingsCount}/{blackQuota.blackListingQuota}
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-800/80 text-zinc-100">
+                <span className="text-xs font-medium">
+                  {blackQuota.activeBlackListingsCount}/{blackQuota.blackListingQuota} BLK
                 </span>
               </div>
             )}
@@ -501,170 +500,180 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
             <button 
               onClick={() => fetchData()} 
               disabled={isLoading}
-              className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-muted/50 transition-colors disabled:opacity-50"
-              title="Refresh"
+              className="p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
+              aria-label="Refresh"
             >
               <RefreshCw className={`w-4 h-4 text-muted-foreground ${isLoading ? 'animate-spin' : ''}`} />
             </button>
         </DashboardPageHeader>
 
-          {/* Status Tabs */}
-          <div className="flex items-center gap-1 overflow-x-auto pb-1 -mx-1 px-1">
-              {statusTabs.map((tab) => {
-                const isActive = selectedStatus === tab.key;
-                // Color mapping for badges and active state
-                const colorConfig = {
-                  active: { bg: 'bg-emerald-500/10', text: 'text-emerald-600', badge: 'bg-emerald-500/20 text-emerald-600' },
-                  public: { bg: 'bg-blue-500/10', text: 'text-blue-600', badge: 'bg-blue-500/20 text-blue-600' },
-                  draft: { bg: 'bg-amber-500/10', text: 'text-amber-600', badge: 'bg-amber-500/20 text-amber-600' },
-                  in_review: { bg: 'bg-sky-500/10', text: 'text-sky-600', badge: 'bg-sky-500/20 text-sky-600' },
-                  rejected: { bg: 'bg-red-500/10', text: 'text-red-600', badge: 'bg-red-500/20 text-red-600' },
-                  archived: { bg: 'bg-muted', text: 'text-muted-foreground', badge: 'bg-muted text-muted-foreground' },
-                  sold: { bg: 'bg-emerald-500/10', text: 'text-emerald-600', badge: 'bg-emerald-500/20 text-emerald-600' },
-                  expired: { bg: 'bg-orange-500/10', text: 'text-orange-600', badge: 'bg-orange-500/20 text-orange-600' },
-                  suspended: { bg: 'bg-red-500/10', text: 'text-red-600', badge: 'bg-red-500/20 text-red-600' },
-                  all: { bg: 'bg-primary/10', text: 'text-primary', badge: 'bg-primary/20 text-primary' },
-                }[tab.key] || { bg: 'bg-muted', text: 'text-foreground', badge: 'bg-muted text-muted-foreground' };
-                
-                return (
-                  <button
-                    key={tab.key}
-                    onClick={() => setSelectedStatus(tab.key)}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${
-                      isActive
-                        ? `${colorConfig.bg} ${colorConfig.text}`
-                        : 'text-muted-foreground/60 hover:text-muted-foreground hover:bg-muted/30'
-                    }`}
-                  >
-                    {tab.label}
-                    {tab.count > 0 && (
-                      <span className={`ml-1.5 px-1.5 py-0.5 rounded text-xs font-bold tabular-nums ${
-                        isActive ? colorConfig.badge : 'bg-muted/50 text-muted-foreground/50'
-                      }`}>
-                        {tab.count}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-          </div>
-
-        {/* Toolbar */}
-        <div className="flex items-center gap-3">
-          {/* Search */}
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
-            <input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search listings..."
-              className="w-full h-10 pl-10 pr-9 rounded-lg bg-muted/30 border border-border/40 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 focus:bg-background transition-all"
-            />
-            {searchQuery && (
-              <button 
-                onClick={() => setSearchQuery('')} 
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-muted/50 hover:bg-muted transition-colors"
-              >
-                <X className="w-3 h-3 text-muted-foreground" />
-              </button>
+        {/* Stats */}
+        {stats && (
+          <div className="flex items-center gap-10">
+            <div>
+              <span className="text-xs text-muted-foreground">Active</span>
+              <p className="text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.active}</p>
+            </div>
+            <div>
+              <span className="text-xs text-muted-foreground">Public</span>
+              <p className="text-xl font-semibold tracking-tight mt-1 text-green-500">{stats.public}</p>
+            </div>
+            <div>
+              <span className="text-xs text-muted-foreground">Draft</span>
+              <p className="text-xl font-semibold tracking-tight mt-1 text-yellow-500">{stats.draft}</p>
+            </div>
+            {stats.inReview > 0 && (
+              <div>
+                <span className="text-xs text-muted-foreground">In Review</span>
+                <p className="text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.inReview}</p>
+              </div>
             )}
+            {stats.sold > 0 && (
+              <div>
+                <span className="text-xs text-muted-foreground">Sold</span>
+                <p className="text-xl font-semibold tracking-tight mt-1 text-purple-500">{stats.sold}</p>
+              </div>
+            )}
+            <div>
+              <span className="text-xs text-muted-foreground">Total</span>
+              <p className="text-xl font-semibold tracking-tight mt-1">{stats.all}</p>
+            </div>
           </div>
+        )}
 
-          {/* Sort */}
-          <Select value={sort} onValueChange={(v) => setSort(v as ListingsSort)}>
-            <SelectTrigger className="h-10 w-32 border border-border/40 bg-muted/30 rounded-lg text-sm font-medium focus:ring-1 focus:ring-primary/30">
-              <SelectValue placeholder="Sort" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">Newest</SelectItem>
-              <SelectItem value="oldest">Oldest</SelectItem>
-              <SelectItem value="updated">Updated</SelectItem>
-              <SelectItem value="expiring">Expiring</SelectItem>
-            </SelectContent>
-          </Select>
-
-          {/* New Listing */}
-          <Link href={newListingUrl}>
-            <button className="h-10 px-4 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">New Listing</span>
-            </button>
-          </Link>
-        </div>
-
-        {/* Section Header */}
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            <span className="font-semibold text-foreground tabular-nums">{filteredAndSortedListings.length}</span>
-            {' '}listing{filteredAndSortedListings.length !== 1 ? 's' : ''}
-            {searchQuery && <span className="text-muted-foreground/60"> matching "{searchQuery}"</span>}
-          </p>
-          
-          {/* Bulk Clear Button */}
-          {filteredAndSortedListings.length > 0 && 
-           ['sold', 'archived', 'expired', 'rejected', 'suspended'].includes(selectedStatus) && (
+      {/* Toolbar */}
+      <div className="flex items-center gap-4 mb-8">
+        {/* Search */}
+        <div className="relative flex-1 max-w-xs">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full h-10 pl-10 pr-8 rounded-xl bg-secondary/50 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+          />
+          {searchQuery && (
             <button
-              onClick={handleBulkClear}
-              className="px-3 py-1.5 text-xs font-semibold text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-secondary"
             >
-              Clear all
+              <X className="w-3.5 h-3.5 text-muted-foreground" />
             </button>
           )}
         </div>
 
-        {/* Error */}
-        {error && (
-          <div className="flex items-center gap-3 p-4 rounded-xl bg-destructive/5 border border-destructive/20">
-            <div className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center flex-shrink-0">
-              <AlertTriangle className="w-4 h-4 text-destructive" />
-            </div>
-            <p className="text-sm text-destructive">{error}</p>
-          </div>
-        )}
+        {/* Status Pills */}
+        <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl">
+          {statusTabs.map((tab) => {
+            const isActive = selectedStatus === tab.key;
+            const count = tab.count;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setSelectedStatus(tab.key)}
+                className={`px-3 py-1.5 rounded-lg text-xs transition-all capitalize ${
+                  isActive
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {tab.label === 'All' ? 'All' : tab.label.replace(/([A-Z])/g, ' $1').trim().toLowerCase()}
+                {count !== undefined && count > 0 && (
+                  <span className="ml-1.5 text-muted-foreground">{count}</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
 
-        {/* Loading */}
-        {isLoading && (
-          <div className="flex items-center justify-center py-24">
-            <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
-          </div>
-        )}
+        {/* Sort */}
+        <Select value={sort} onValueChange={(v) => setSort(v as ListingsSort)}>
+          <SelectTrigger className="h-10 w-32 border-0 bg-secondary/50 rounded-xl text-sm">
+            <SelectValue placeholder="Sort" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="newest">Newest</SelectItem>
+            <SelectItem value="oldest">Oldest</SelectItem>
+            <SelectItem value="updated">Updated</SelectItem>
+            <SelectItem value="expiring">Expiring</SelectItem>
+          </SelectContent>
+        </Select>
 
-        {/* Empty State */}
-        {!isLoading && filteredAndSortedListings.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-14 h-14 rounded-full bg-muted/50 flex items-center justify-center mb-4">
-              <Package className="w-6 h-6 text-muted-foreground/50" />
-            </div>
-            <h3 className="text-base font-semibold text-foreground mb-1">
-              {searchQuery 
-                ? 'No results found' 
-                : selectedStatus === 'all'
-                ? 'No listings yet'
-                : `No ${statusTabs.find(t => t.key === selectedStatus)?.label.toLowerCase()} listings`
-              }
-            </h3>
-            <p className="text-sm text-muted-foreground max-w-xs">
-              {searchQuery 
-                ? 'Try adjusting your search terms'
-                : selectedStatus === 'all'
-                ? 'Create your first listing to get started'
-                : `Listings will appear here when they are ${statusTabs.find(t => t.key === selectedStatus)?.label.toLowerCase()}`
-              }
-            </p>
-            {!searchQuery && selectedStatus === 'all' && (
-              <Link href={newListingUrl} className="mt-5">
-                <button className="h-10 px-5 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors flex items-center gap-2">
-                  <Plus className="w-4 h-4" />
-                  Create Listing
-                </button>
-              </Link>
-            )}
-          </div>
-        )}
+        {/* New Listing */}
+        <Link href={newListingUrl}>
+          <button className="h-10 px-4 rounded-xl bg-primary text-primary-foreground text-sm font-medium transition-colors hover:bg-primary/90 flex items-center gap-2">
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">New</span>
+          </button>
+        </Link>
+      </div>
 
-        {/* Listings */}
-        {!isLoading && filteredAndSortedListings.length > 0 && (
-          <div className="space-y-2">
+      {/* Count & Actions */}
+      <div className="flex items-center justify-between mb-6">
+        <p className="text-xs text-muted-foreground">
+          {filteredAndSortedListings.length} listing{filteredAndSortedListings.length !== 1 ? 's' : ''}
+          {searchQuery && <span> matching "{searchQuery}"</span>}
+        </p>
+          
+        {/* Bulk Clear Button */}
+        {filteredAndSortedListings.length > 0 && 
+         ['sold', 'archived', 'expired', 'rejected', 'suspended'].includes(selectedStatus) && (
+          <button
+            onClick={handleBulkClear}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Clear all
+          </button>
+        )}
+      </div>
+
+      {/* Error */}
+      {error && (
+        <div className="mb-8 p-4 rounded-xl bg-secondary/50 text-sm">
+          {error}
+        </div>
+      )}
+
+      {/* Loading */}
+      {isLoading && (
+        <div className="flex flex-col items-center justify-center py-24">
+          <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
+          <p className="text-xs text-muted-foreground mt-4">Loading...</p>
+        </div>
+      )}
+
+      {/* Empty State - No Data */}
+      {!isLoading && !error && allListings.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-32 text-center">
+          <Package className="w-10 h-10 text-muted-foreground/20 mb-4" />
+          <h3 className="text-lg font-medium tracking-tight">No listings yet</h3>
+          <p className="text-sm text-muted-foreground mt-1">Create your first listing to get started</p>
+          <Link href={newListingUrl} className="mt-6">
+            <button className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium transition-colors hover:bg-primary/90">
+              Create Listing
+            </button>
+          </Link>
+        </div>
+      )}
+
+      {/* Empty State - No Results */}
+      {!isLoading && !error && allListings.length > 0 && filteredAndSortedListings.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-32 text-center">
+          <Search className="w-10 h-10 text-muted-foreground/20 mb-4" />
+          <h3 className="text-lg font-medium tracking-tight">No results</h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            {searchQuery 
+              ? 'Try a different search term'
+              : 'Try a different filter'}
+          </p>
+        </div>
+      )}
+
+      {/* Listings */}
+      {!isLoading && !error && filteredAndSortedListings.length > 0 && (
+        <>
+          <div className="space-y-1">
             {filteredAndSortedListings.map((listing) => (
               <ListingCard
                 key={listing.id}
@@ -682,7 +691,8 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
               />
             ))}
           </div>
-        )}
+        </>
+      )}
 
       {/* Confirmation Modal */}
       <Dialog open={confirmModal.isOpen} onOpenChange={(open) => !open && !isConfirming && setConfirmModal({ ...confirmModal, isOpen: false })}>

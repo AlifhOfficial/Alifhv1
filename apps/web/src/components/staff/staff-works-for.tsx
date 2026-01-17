@@ -162,7 +162,8 @@ export function StaffWorksFor() {
         <SellerProfileCard sellerData={worksForData} />
       </div>
 
-      {/* Resign Section - Only for non-owners */}
+      {/* Resign Section - Only for non-owners - COMMENTED OUT */}
+      {/* 
       {!isOwner && (
         <div className="rounded-xl border border-border/40 bg-sidebar p-6 space-y-4">
           <div className="flex items-start gap-3">
@@ -184,8 +185,10 @@ export function StaffWorksFor() {
           </button>
         </div>
       )}
+      */}
 
-      {/* Resign Confirmation Modal */}
+      {/* Resign Confirmation Modal - COMMENTED OUT */}
+      {/* 
       {showResignModal && typeof document !== 'undefined' && createPortal(
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div 
@@ -194,7 +197,6 @@ export function StaffWorksFor() {
           />
           <div className="relative bg-sidebar rounded-xl border border-border/40 shadow-2xl max-w-md w-full p-6">
             <div className="space-y-5">
-              {/* Header with Icon */}
               <div className="flex items-start gap-3">
                 <div className="p-2 rounded-lg bg-red-500/10 flex-shrink-0">
                   <AlertTriangle className="w-5 h-5 text-red-500" />
@@ -205,10 +207,8 @@ export function StaffWorksFor() {
                 </div>
               </div>
 
-              {/* Divider */}
               <div className="border-t border-border" />
 
-              {/* Content */}
               <div className="space-y-3">
                 <p className="text-sm sm:text-[15px] text-foreground leading-relaxed">
                   Are you sure you want to resign from <span className="font-semibold">{worksForData.partner.brandName}</span>?
@@ -235,7 +235,6 @@ export function StaffWorksFor() {
                 </ul>
               </div>
 
-              {/* Reason Input */}
               <div className="space-y-2">
                 <label className="text-[13px] uppercase tracking-wider font-semibold text-muted-foreground">
                   Reason for leaving <span className="text-muted-foreground/60">(optional)</span>
@@ -248,10 +247,8 @@ export function StaffWorksFor() {
                 />
               </div>
 
-              {/* Divider */}
               <div className="border-t border-border" />
 
-              {/* Actions */}
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowResignModal(false)}
@@ -273,6 +270,7 @@ export function StaffWorksFor() {
         </div>,
         document.body
       )}
+      */}
     </div>
   );
 }

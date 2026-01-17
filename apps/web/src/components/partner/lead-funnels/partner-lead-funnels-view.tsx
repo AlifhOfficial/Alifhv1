@@ -290,16 +290,16 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
 
       {/* Error */}
       {error && (
-        <div className="mb-8 p-4 rounded-xl bg-secondary/50 text-sm">
-          Failed to load funnels. Please try again.
+        <div className="text-center py-16 rounded-xl bg-secondary/50">
+          <p className="text-sm text-destructive font-medium">Failed to load funnels. Please try again.</p>
         </div>
       )}
 
       {/* Loading */}
       {isLoading && (
         <div className="flex flex-col items-center justify-center py-24">
-          <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
-          <p className="text-xs text-muted-foreground mt-4">Loading...</p>
+          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground/40 mb-3" />
+          <p className="text-sm text-muted-foreground/60 font-medium">Loading...</p>
         </div>
       )}
 
@@ -318,7 +318,7 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
           </div>
 
           {/* List */}
-          <div className="space-y-2">
+          <div className="space-y-4">
             {paginatedFunnels.map((funnel) => (
               <FunnelRow
                 key={funnel.id}
@@ -381,19 +381,19 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
 
       {/* Empty - No Data */}
       {!isLoading && !error && funnels.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-32 text-center">
-          <Filter className="w-10 h-10 text-muted-foreground/20 mb-4" />
-          <h3 className="text-lg font-medium tracking-tight">No lead funnels yet</h3>
-          <p className="text-sm text-muted-foreground mt-1">Staff members haven't created any lead funnels</p>
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <Filter className="w-12 h-12 text-muted-foreground/20 mb-3" />
+          <h3 className="text-base font-semibold mb-1">No lead funnels yet</h3>
+          <p className="text-sm text-muted-foreground/60">Staff members haven't created any lead funnels</p>
         </div>
       )}
 
       {/* Empty - No Results */}
       {!isLoading && !error && funnels.length > 0 && filteredFunnels.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-32 text-center">
-          <Search className="w-10 h-10 text-muted-foreground/20 mb-4" />
-          <h3 className="text-lg font-medium tracking-tight">No results</h3>
-          <p className="text-sm text-muted-foreground mt-1">Try a different search or filter</p>
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <Search className="w-12 h-12 text-muted-foreground/20 mb-3" />
+          <h3 className="text-base font-semibold mb-1">No results</h3>
+          <p className="text-sm text-muted-foreground/60">Try a different search or filter</p>
           <button
             onClick={clearFilters}
             className="mt-4 text-sm text-foreground hover:underline"
@@ -432,128 +432,129 @@ function FunnelRow({ funnel, isExpanded, onToggle }: FunnelRowProps) {
   });
 
   return (
-    <div className="rounded-xl hover:bg-secondary/30 transition-colors">
+    <div className="rounded-xl border border-border/40 bg-card hover:border-border/60 hover:shadow-sm transition-all overflow-hidden">
       {/* Funnel Header */}
-      <button
-        type="button"
-        onClick={onToggle}
-        className="w-full p-4 -mx-4 text-left flex items-center gap-4"
-      >
-        {/* Expand Icon */}
-        <ChevronDown className={cn(
-          "w-4 h-4 text-muted-foreground/50 transition-transform flex-shrink-0",
-          isExpanded && "rotate-180"
-        )} />
+      <div className="w-full p-4 sm:p-5 border-b border-border/30">
+        <div className="flex items-start justify-between gap-4">
+          {/* Left: Toggle + Title, Description, Tags - Clickable for collapse */}
+          <button
+            type="button"
+            onClick={onToggle}
+            className="min-w-0 flex-1 text-left"
+          >
+            <div className="flex items-center gap-3 mb-1">
+              <ChevronDown className={cn(
+                "w-4 h-4 text-muted-foreground/50 transition-transform flex-shrink-0",
+                !isExpanded && "-rotate-90"
+              )} />
+              <h3 className="text-base sm:text-lg font-bold tracking-tight truncate">{funnel.name}</h3>
+            </div>
+            
+            {funnel.description && (
+              <p className="text-sm text-muted-foreground/60 line-clamp-1 mb-2 ml-7">
+                {funnel.description}
+              </p>
+            )}
 
-        {/* Info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-3">
-            <h4 className="text-sm font-medium tracking-tight text-foreground truncate">
-              {funnel.name}
-            </h4>
-            {/* Status Badge */}
+            <p className="text-xs text-muted-foreground ml-7 mb-2">
+              {funnel.staffName || 'Unknown'} · {new Date(funnel.createdAt).toLocaleDateString()}
+            </p>
+
+            {/* Filter Tags */}
+            <div className="flex flex-wrap gap-1.5 ml-7">
+              {filterTags.length > 0 ? (
+                filterTags.slice(0, 5).map((tag, i) => (
+                  <span key={i} className="px-2 py-0.5 text-xs font-medium bg-secondary text-muted-foreground rounded-md">
+                    {tag}
+                  </span>
+                ))
+              ) : (
+                <span className="text-xs text-muted-foreground/40 italic">All vehicles</span>
+              )}
+              {filterTags.length > 5 && (
+                <span className="px-2 py-0.5 text-xs font-medium bg-secondary text-muted-foreground rounded-md">
+                  +{filterTags.length - 5} more
+                </span>
+              )}
+            </div>
+          </button>
+
+          {/* Right: Active Badge */}
+          <div className="flex items-center gap-2 flex-shrink-0">
             <span className={cn(
-              "px-2 py-0.5 rounded-md text-xs font-medium flex-shrink-0",
+              'shrink-0 px-2 py-0.5 text-xs font-semibold rounded-full',
               funnel.isActive 
-                ? "bg-green-500/10 text-green-600" 
-                : "bg-secondary text-muted-foreground"
+                ? 'bg-green-500/10 text-green-600' 
+                : 'bg-muted/50 text-muted-foreground'
             )}>
-              {funnel.isActive ? 'Active' : 'Inactive'}
+              {funnel.isActive ? 'Active' : 'Paused'}
             </span>
           </div>
-          
-          <p className="text-xs text-muted-foreground mt-1 truncate">
-            {funnel.staffName || 'Unknown'} · {new Date(funnel.createdAt).toLocaleDateString()}
-          </p>
         </div>
-
-        {/* Filter Tags (collapsed view) */}
-        <div className="hidden sm:flex items-center gap-1.5 flex-shrink-0 max-w-[300px]">
-          {filterTags.length > 0 ? (
-            <>
-              {filterTags.slice(0, 3).map((tag, i) => (
-                <span key={i} className="px-2 py-0.5 text-xs bg-secondary/80 text-muted-foreground rounded-md truncate max-w-[100px]">
-                  {tag}
-                </span>
-              ))}
-              {filterTags.length > 3 && (
-                <span className="text-xs text-muted-foreground">+{filterTags.length - 3}</span>
-              )}
-            </>
-          ) : (
-            <span className="text-xs text-muted-foreground/50">All vehicles</span>
-          )}
-        </div>
-      </button>
+      </div>
 
       {/* Expanded Preview */}
       {isExpanded && (
-        <div className="px-4 pb-4 pt-2 ml-8">
-          {/* All Filter Tags */}
-          {filterTags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mb-4">
-              {filterTags.map((tag, i) => (
-                <span key={i} className="px-2 py-0.5 text-xs bg-secondary text-muted-foreground rounded-md">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* Description */}
-          {funnel.description && (
-            <p className="text-sm text-muted-foreground mb-4">{funnel.description}</p>
-          )}
+        <div className="p-4 sm:p-5">
 
           {/* Preview Loading */}
           {previewLoading && (
-            <div className="flex items-center justify-center py-8">
-              <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
+            <div className="flex flex-col items-center justify-center py-8 gap-2">
+              <Loader2 className="w-5 h-5 animate-spin text-muted-foreground/30" />
+              <p className="text-xs text-muted-foreground/50">Loading...</p>
             </div>
           )}
 
           {/* Preview Empty */}
           {!previewLoading && (!previewData?.listings || previewData.listings.length === 0) && (
-            <div className="text-center py-8">
-              <Inbox className="w-6 h-6 text-muted-foreground/20 mx-auto mb-2" />
-              <p className="text-xs text-muted-foreground">No matching listings</p>
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <ImageIcon className="w-8 h-8 text-muted-foreground/20 mb-2" />
+              <p className="text-xs text-muted-foreground/50">No matching listings</p>
             </div>
           )}
 
           {/* Preview Grid */}
           {!previewLoading && previewData?.listings && previewData.listings.length > 0 && (
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+            <>
+            <div className="flex gap-3 overflow-x-auto pb-2 sm:pb-0 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 sm:overflow-visible scrollbar-hide">
               {previewData.listings.map((listing) => (
                 <Link
                   key={listing.id}
                   href={`/listings/${listing.id}`}
                   target="_blank"
-                  className="group block"
+                  className="flex-shrink-0 w-[180px] sm:w-auto group"
                 >
-                  <div className="aspect-[4/3] relative rounded-lg overflow-hidden bg-secondary mb-2">
-                    {listing.thumbnail ? (
-                      <Image
-                        src={listing.thumbnail}
-                        alt=""
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        sizes="(max-width: 768px) 33vw, 16vw"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <ImageIcon className="w-4 h-4 text-muted-foreground/20" />
-                      </div>
-                    )}
+                  <div className="rounded-lg border border-border/40 bg-card overflow-hidden hover:border-border/60 hover:shadow-md transition-all">
+                    {/* Image */}
+                    <div className="aspect-[4/3] bg-muted/20 relative overflow-hidden">
+                      {listing.thumbnail ? (
+                        <Image
+                          src={listing.thumbnail}
+                          alt=""
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          sizes="(max-width: 768px) 33vw, 16vw"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-secondary">
+                          <ImageIcon className="w-4 h-4 text-muted-foreground/20" />
+                        </div>
+                      )}
+                    </div>
+                    {/* Info */}
+                    <div className="p-2.5">
+                      <p className="text-sm font-semibold truncate">
+                        {listing.year} {listing.make}
+                      </p>
+                      <p className="text-sm font-bold text-blue-600">
+                        AED {listing.price.toLocaleString()}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-xs font-medium text-foreground truncate group-hover:text-blue-500 transition-colors">
-                    {listing.year} {listing.make}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {listing.price.toLocaleString()} AED
-                  </p>
                 </Link>
               ))}
             </div>
+            </>
           )}
         </div>
       )}

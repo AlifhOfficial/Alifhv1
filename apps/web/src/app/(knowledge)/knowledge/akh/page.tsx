@@ -103,22 +103,22 @@ export default function AKHPage() {
   useEffect(() => {
     setContent(
       <div className="space-y-4">
-        <span className="block text-[11px] font-medium text-muted-foreground/50 uppercase tracking-wider">
+        <span className="block text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider">
           {aside.title}
         </span>
         <div className="space-y-3">
           {aside.items.map((item, i) => {
             const Icon = item.icon;
             return (
-              <div key={i} className="flex items-center gap-2.5 text-xs text-muted-foreground/70">
-                <Icon className="w-3.5 h-3.5 text-muted-foreground/50" />
+              <div key={i} className="flex items-center gap-2.5 text-sm font-medium text-muted-foreground/70">
+                <Icon className="size-4 text-muted-foreground/60" />
                 <span>{item.label}</span>
               </div>
             );
           })}
         </div>
         <div className="pt-3 border-t border-border/20">
-          <span className="text-[10px] text-muted-foreground/40">{aside.footer}</span>
+          <span className="text-xs text-muted-foreground/50">{aside.footer}</span>
         </div>
       </div>
     );
@@ -127,27 +127,25 @@ export default function AKHPage() {
   }, [language, aside, setContent]);
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-10">
       {/* Header */}
-      <header className="space-y-4">
-        <div className="space-y-1">
-          <p className="text-[11px] font-medium text-muted-foreground/50 uppercase tracking-wider">
+      <header className="space-y-3">
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider">
             {t.welcome}
           </p>
-          <h1 className="text-2xl font-semibold tracking-tight">{t.title}</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t.title}</h1>
         </div>
-        <p className="text-sm text-muted-foreground/70 leading-relaxed max-w-xl">
+        <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">
           {t.intro}
         </p>
       </header>
 
       {/* What is this */}
       <section className="space-y-4">
-        <div className="border-b border-border/30 pb-2">
-          <h2 className="text-lg font-medium tracking-tight">{t.whatIsIt}</h2>
-        </div>
+        <h2 className="text-[15px] font-bold tracking-tight">{t.whatIsIt}</h2>
         
-        <div className="space-y-4 text-sm text-muted-foreground/70 leading-relaxed">
+        <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">
           <p>{t.whatIsItText1}</p>
           <p>{t.whatIsItText2}</p>
         </div>
@@ -155,11 +153,9 @@ export default function AKHPage() {
 
       {/* Why this exists */}
       <section className="space-y-4">
-        <div className="border-b border-border/30 pb-2">
-          <h2 className="text-lg font-medium tracking-tight">{t.whyExists}</h2>
-        </div>
+        <h2 className="text-[15px] font-bold tracking-tight">{t.whyExists}</h2>
         
-        <div className="space-y-4 text-sm text-muted-foreground/70 leading-relaxed">
+        <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">
           <p>{t.whyExistsText1}</p>
           <p>{t.whyExistsText2}</p>
         </div>
@@ -167,101 +163,106 @@ export default function AKHPage() {
 
       {/* What you'll find */}
       <section className="space-y-4">
-        <div className="border-b border-border/30 pb-2">
-          <h2 className="text-lg font-medium tracking-tight">{t.whatsInside}</h2>
-        </div>
+        <h2 className="text-[15px] font-bold tracking-tight">{t.whatsInside}</h2>
         
-        <div className="space-y-3">
-          <div className="flex items-start justify-between py-2">
-            <div className="space-y-0.5 flex-1">
-              <h3 className="text-sm font-medium">{t.sections.gettingStarted.title}</h3>
-              <p className="text-xs text-muted-foreground/60">{t.sections.gettingStarted.desc}</p>
+        <div className="rounded-xl border border-border/40 bg-sidebar divide-y divide-border/20">
+          <Link 
+            href="/knowledge/basics" 
+            className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group"
+          >
+            <div className="space-y-1 flex-1">
+              <h3 className="text-sm font-semibold tracking-tight group-hover:text-primary transition-colors">{t.sections.gettingStarted.title}</h3>
+              <p className="text-xs text-muted-foreground/70">{t.sections.gettingStarted.desc}</p>
             </div>
-            <Link href="/knowledge/basics" className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 transition-colors shrink-0">
-              {t.learnMore} <Arrow className="w-3 h-3" />
-            </Link>
-          </div>
+            <Arrow className="size-4 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
+          </Link>
 
-          <div className="flex items-start justify-between py-2 border-t border-border/20">
-            <div className="space-y-0.5 flex-1">
-              <h3 className="text-sm font-medium">{t.sections.buying.title}</h3>
-              <p className="text-xs text-muted-foreground/60">{t.sections.buying.desc}</p>
+          <Link 
+            href="/knowledge/buying" 
+            className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group"
+          >
+            <div className="space-y-1 flex-1">
+              <h3 className="text-sm font-semibold tracking-tight group-hover:text-primary transition-colors">{t.sections.buying.title}</h3>
+              <p className="text-xs text-muted-foreground/70">{t.sections.buying.desc}</p>
             </div>
-            <Link href="/knowledge/buying" className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 transition-colors shrink-0">
-              {t.learnMore} <Arrow className="w-3 h-3" />
-            </Link>
-          </div>
+            <Arrow className="size-4 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
+          </Link>
 
-          <div className="flex items-start justify-between py-2 border-t border-border/20">
-            <div className="space-y-0.5 flex-1">
-              <h3 className="text-sm font-medium">{t.sections.legal.title}</h3>
-              <p className="text-xs text-muted-foreground/60">{t.sections.legal.desc}</p>
+          <Link 
+            href="/knowledge/legal" 
+            className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group"
+          >
+            <div className="space-y-1 flex-1">
+              <h3 className="text-sm font-semibold tracking-tight group-hover:text-primary transition-colors">{t.sections.legal.title}</h3>
+              <p className="text-xs text-muted-foreground/70">{t.sections.legal.desc}</p>
             </div>
-            <Link href="/knowledge/legal" className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 transition-colors shrink-0">
-              {t.learnMore} <Arrow className="w-3 h-3" />
-            </Link>
-          </div>
+            <Arrow className="size-4 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
+          </Link>
 
-          <div className="flex items-start justify-between py-2 border-t border-border/20">
-            <div className="space-y-0.5 flex-1">
-              <h3 className="text-sm font-medium">{t.sections.maintenance.title}</h3>
-              <p className="text-xs text-muted-foreground/60">{t.sections.maintenance.desc}</p>
+          <Link 
+            href="/knowledge/maintenance" 
+            className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group"
+          >
+            <div className="space-y-1 flex-1">
+              <h3 className="text-sm font-semibold tracking-tight group-hover:text-primary transition-colors">{t.sections.maintenance.title}</h3>
+              <p className="text-xs text-muted-foreground/70">{t.sections.maintenance.desc}</p>
             </div>
-            <Link href="/knowledge/maintenance" className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 transition-colors shrink-0">
-              {t.learnMore} <Arrow className="w-3 h-3" />
-            </Link>
-          </div>
+            <Arrow className="size-4 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
+          </Link>
         </div>
       </section>
 
       {/* Tools */}
       <section className="space-y-4">
-        <div className="border-b border-border/30 pb-2">
-          <h2 className="text-lg font-medium tracking-tight">{t.tools}</h2>
-        </div>
+        <h2 className="text-[15px] font-bold tracking-tight">{t.tools}</h2>
         
-        <p className="text-sm text-muted-foreground/70">
+        <p className="text-sm text-muted-foreground">
           {t.toolsDesc}
         </p>
 
-        <div className="flex items-start justify-between py-2">
-          <div className="space-y-0.5 flex-1">
-            <h3 className="text-sm font-medium">{t.sections.vinDecoder.title}</h3>
-            <p className="text-xs text-muted-foreground/60">{t.sections.vinDecoder.desc}</p>
-          </div>
-          <Link href="/tools/vin-decoder" className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 transition-colors shrink-0">
-            {t.learnMore} <Arrow className="w-3 h-3" />
-          </Link>
-        </div>
-
-        <div className="flex items-start justify-between py-2 border-t border-border/20">
-          <div className="space-y-0.5 flex-1">
-            <h3 className="text-sm font-medium">{t.sections.compareCars.title}</h3>
-            <p className="text-xs text-muted-foreground/60">{t.sections.compareCars.desc}</p>
-          </div>
-          <Link href="/tools/compare" className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 transition-colors shrink-0">
-            {t.learnMore} <Arrow className="w-3 h-3" />
-          </Link>
-        </div>
-
-        <div className="flex items-start justify-between py-2 border-t border-border/20">
-          <div className="space-y-0.5 flex-1">
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm font-medium">{t.sections.valuation.title}</h3>
-              <span className="px-1 py-0.5 text-[8px] font-bold uppercase tracking-wider text-yellow-600 bg-yellow-500/15 rounded">Beta</span>
+        <div className="rounded-xl border border-border/40 bg-sidebar divide-y divide-border/20">
+          <Link 
+            href="/tools/vin-decoder" 
+            className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group"
+          >
+            <div className="space-y-1 flex-1">
+              <h3 className="text-sm font-semibold tracking-tight group-hover:text-primary transition-colors">{t.sections.vinDecoder.title}</h3>
+              <p className="text-xs text-muted-foreground/70">{t.sections.vinDecoder.desc}</p>
             </div>
-            <p className="text-xs text-muted-foreground/60">{t.sections.valuation.desc}</p>
-          </div>
-          <Link href="/tools/valuation" className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 transition-colors shrink-0">
-            {t.learnMore} <Arrow className="w-3 h-3" />
+            <Arrow className="size-4 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
+          </Link>
+
+          <Link 
+            href="/tools/compare" 
+            className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group"
+          >
+            <div className="space-y-1 flex-1">
+              <h3 className="text-sm font-semibold tracking-tight group-hover:text-primary transition-colors">{t.sections.compareCars.title}</h3>
+              <p className="text-xs text-muted-foreground/70">{t.sections.compareCars.desc}</p>
+            </div>
+            <Arrow className="size-4 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
+          </Link>
+
+          <Link 
+            href="/tools/valuation" 
+            className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group"
+          >
+            <div className="space-y-1 flex-1">
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-semibold tracking-tight group-hover:text-primary transition-colors">{t.sections.valuation.title}</h3>
+                <span className="px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-600 bg-amber-500/10 rounded">Beta</span>
+              </div>
+              <p className="text-xs text-muted-foreground/70">{t.sections.valuation.desc}</p>
+            </div>
+            <Arrow className="size-4 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
           </Link>
         </div>
       </section>
 
       {/* Note */}
-      <div className="p-4 rounded-xl bg-muted/15 border border-border/40">
-        <p className="text-xs text-muted-foreground/60 leading-relaxed">
-          <strong className="text-foreground">{t.alwaysFree}</strong> {t.alwaysFreeText}
+      <div className="rounded-xl bg-sidebar border border-border/40 p-5">
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          <strong className="font-semibold text-foreground">{t.alwaysFree}</strong> {t.alwaysFreeText}
         </p>
       </div>
     </div>

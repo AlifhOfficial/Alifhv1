@@ -4,6 +4,8 @@
  * Fetches comprehensive listing data for detailed view pages.
  * Includes all specifications, features, pricing insights, and partner info.
  * 
+ * Cached for 10 minutes - invalidated via invalidateListingDetail()
+ * 
  * @module queries/listings/car-detailed-query
  */
 
@@ -14,6 +16,7 @@ import { user } from '../../../schema/auth';
 import { userProfile } from '../../../schema/profile';
 import { isPublicSql } from './sql-fragments';
 import { isMissingColumnError } from './error-utils';
+import { memoryCache, CacheKeys, CacheTTL } from '../../../caches/memory-cache';
 
 /**
  * Technical features structure matching schema
@@ -311,14 +314,30 @@ async function executeDetailedQuery(whereClause: SQL): Promise<CarDetailedData |
 
 /**
  * Get detailed listing data by ID
+ * Cached for 10 minutes - invalidated via invalidateListingDetail()
  */
 export async function getListingDetailed(listingId: string): Promise<CarDetailedData | null> {
-  return executeDetailedQuery(eq(carListing.id, listingId));
+  // Check cache first
+  const cacheKey = CacheKeys.listingDetailed(listingId);
+  const cached = memoryCache.get<CarDetailedData>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  const result = await executeDetailedQuery(eq(carListing.id, listingId));
+  
+  // Cache the result (including null to prevent repeated DB hits for non-existent listings)
+  if (result) {
+    memoryCache.set(cacheKey, result, CacheTTL.listingDetailed);
+  }
+  
+  return result;
 }
 
 /**
  * Get detailed listing data by slug
  * Single query instead of 2 separate queries
+ * Note: Not cached by slug - slug lookups are less common, use ID when possible
  */
 export async function getListingDetailedBySlug(slug: string): Promise<CarDetailedData | null> {
   return executeDetailedQuery(eq(carListing.slug, slug));

@@ -217,23 +217,23 @@ export function ConsignmentFunnelsView() {
       {/* Loading State */}
       {isLoading && (
         <div className="flex flex-col items-center justify-center py-24">
-          <Loader2 className="w-8 h-8 animate-spin text-muted-foreground/40 mb-4" />
-          <p className="text-[15px] text-muted-foreground/60 font-medium">Loading your funnels...</p>
+          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground/40 mb-3" />
+          <p className="text-sm text-muted-foreground/60 font-medium">Loading...</p>
         </div>
       )}
 
       {/* Error State */}
       {error && (
-        <div className="text-center py-24 rounded-xl bg-destructive/5 border border-destructive/20">
-          <p className="text-[15px] text-destructive font-medium">Failed to load funnels. Please try again.</p>
+        <div className="text-center py-16 rounded-xl bg-secondary/50">
+          <p className="text-sm text-destructive font-medium">Failed to load funnels. Please try again.</p>
         </div>
       )}
 
       {/* Empty State */}
       {!isLoading && !error && (!data?.funnels || data.funnels.length === 0) && (
         <div className="flex flex-col items-center justify-center py-24 text-center">
-          <Inbox className="w-12 h-12 text-muted-foreground/30 mb-4" strokeWidth={1.5} />
-          <h3 className="text-lg font-semibold tracking-tight mb-1">No Lead Funnels Yet</h3>
+          <Inbox className="w-12 h-12 text-muted-foreground/20 mb-3" />
+          <h3 className="text-base font-semibold mb-1">No Lead Funnels Yet</h3>
           <p className="text-sm text-muted-foreground/60 max-w-sm">
             Create a funnel to discover consignment leads
           </p>
@@ -242,7 +242,7 @@ export function ConsignmentFunnelsView() {
 
       {/* Funnels as Rows */}
       {!isLoading && data?.funnels && data.funnels.length > 0 && (
-        <div className="space-y-6 sm:space-y-8">
+        <div className="space-y-4">
           {data.funnels.map((funnel) => (
             <FunnelRow
               key={funnel.id}
@@ -329,27 +329,27 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
   });
 
   return (
-    <div className="rounded-xl border border-sidebar-border bg-sidebar overflow-hidden">
+    <div className="rounded-xl border border-border/40 bg-card hover:border-border/60 hover:shadow-sm transition-all overflow-hidden">
       {/* Funnel Header */}
-      <div className="w-full p-4 sm:p-5 border-b border-sidebar-border/50 bg-sidebar-accent/30">
+      <div className="w-full p-4 sm:p-5 border-b border-border/30">
         <div className="flex items-start justify-between gap-4">
           {/* Left: Toggle + Title, Description, Tags - Clickable for collapse */}
           <button
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="min-w-0 flex-1 text-left hover:opacity-80 transition-opacity"
+            className="min-w-0 flex-1 text-left"
           >
             <div className="flex items-center gap-3 mb-1">
               <ChevronDown className={cn(
-                "w-4 h-4 text-sidebar-foreground/60 transition-transform flex-shrink-0",
+                "w-4 h-4 text-muted-foreground/50 transition-transform flex-shrink-0",
                 !isExpanded && "-rotate-90"
               )} />
-              <h3 className="text-base sm:text-lg font-bold tracking-tight text-sidebar-foreground truncate">{funnel.name}</h3>
+              <h3 className="text-base sm:text-lg font-bold tracking-tight truncate">{funnel.name}</h3>
               <span className="text-sm font-semibold text-blue-600">Count: {funnel.matchCount}</span>
             </div>
             
             {funnel.description && (
-              <p className="text-sm text-sidebar-foreground/60 line-clamp-1 mb-2 ml-7">
+              <p className="text-sm text-muted-foreground/60 line-clamp-1 mb-2 ml-7">
                 {funnel.description}
               </p>
             )}
@@ -358,15 +358,15 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
             <div className="flex flex-wrap gap-1.5 ml-7">
               {filterTags.length > 0 ? (
                 filterTags.slice(0, 5).map((tag, i) => (
-                  <span key={i} className="px-2 py-0.5 text-xs font-medium bg-sidebar-accent text-sidebar-foreground/70 rounded-md">
+                  <span key={i} className="px-2 py-0.5 text-xs font-medium bg-secondary text-muted-foreground rounded-md">
                     {tag}
                   </span>
                 ))
               ) : (
-                <span className="text-xs text-sidebar-foreground/40 italic">All vehicles</span>
+                <span className="text-xs text-muted-foreground/40 italic">All vehicles</span>
               )}
               {filterTags.length > 5 && (
-                <span className="px-2 py-0.5 text-xs font-medium bg-sidebar-accent text-sidebar-foreground/70 rounded-md">
+                <span className="px-2 py-0.5 text-xs font-medium bg-secondary text-muted-foreground rounded-md">
                   +{filterTags.length - 5} more
                 </span>
               )}
@@ -386,7 +386,7 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
             <button
               type="button"
               onClick={onEdit}
-              className="p-2 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent rounded-lg transition-colors"
+              className="p-2 text-muted-foreground/60 hover:text-foreground hover:bg-secondary/50 rounded-lg transition-colors"
               title="Edit funnel"
             >
               <Edit2 className="w-4 h-4" />
@@ -395,7 +395,7 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
               type="button"
               onClick={onDelete}
               disabled={isDeleting}
-              className="p-2 text-sidebar-foreground/60 hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors disabled:opacity-50"
+              className="p-2 text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors disabled:opacity-50"
               title="Delete funnel"
             >
               <Trash2 className="w-4 h-4" />
@@ -408,13 +408,14 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
       {isExpanded && (
       <div className="p-4 sm:p-5">
         {previewLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="w-5 h-5 animate-spin text-sidebar-foreground/30" />
+          <div className="flex flex-col items-center justify-center py-8 gap-2">
+            <Loader2 className="w-5 h-5 animate-spin text-muted-foreground/30" />
+            <p className="text-xs text-muted-foreground/50">Loading...</p>
           </div>
         ) : !previewData?.listings || previewData.listings.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">
-            <ImageIcon className="w-8 h-8 text-sidebar-foreground/20 mb-2" />
-            <p className="text-sm text-sidebar-foreground/50">No matching vehicles yet</p>
+            <ImageIcon className="w-8 h-8 text-muted-foreground/20 mb-2" />
+            <p className="text-xs text-muted-foreground/50">No matching vehicles yet</p>
           </div>
         ) : (
           <>
@@ -426,7 +427,7 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
                   href={`/listings/${listing.id}`}
                   className="flex-shrink-0 w-[180px] sm:w-auto group"
                 >
-                  <div className="rounded-lg border border-sidebar-border bg-sidebar overflow-hidden hover:border-sidebar-border/80 hover:shadow-md transition-all">
+                  <div className="rounded-lg border border-border/40 bg-card overflow-hidden hover:border-border/60 hover:shadow-md transition-all">
                     {/* Image */}
                     <div className="aspect-[4/3] bg-muted/20 relative overflow-hidden">
                       {listing.thumbnail ? (
@@ -438,14 +439,14 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
                           sizes="(max-width: 640px) 180px, 200px"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-sidebar-accent">
-                          <ImageIcon className="w-8 h-8 text-sidebar-foreground/20" />
+                        <div className="w-full h-full flex items-center justify-center bg-secondary">
+                          <ImageIcon className="w-8 h-8 text-muted-foreground/20" />
                         </div>
                       )}
                     </div>
                     {/* Info */}
                     <div className="p-2.5">
-                      <p className="text-sm font-semibold text-sidebar-foreground truncate">
+                      <p className="text-sm font-semibold truncate">
                         {listing.year} {listing.make} {listing.model}
                       </p>
                       <p className="text-sm font-bold text-blue-600">
@@ -556,7 +557,7 @@ function DeleteConfirmModal({ open, funnelName, onClose, onConfirm, isDeleting }
       onClick={onClose}
     >
       <div 
-        className="max-w-md w-full bg-sidebar border border-sidebar-border rounded-xl overflow-hidden shadow-2xl"
+        className="max-w-md w-full bg-card border border-border rounded-xl overflow-hidden shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -564,9 +565,9 @@ function DeleteConfirmModal({ open, funnelName, onClose, onConfirm, isDeleting }
           <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
             <AlertTriangle className="w-6 h-6 text-destructive" />
           </div>
-          <h2 className="text-lg font-semibold text-sidebar-foreground mb-1">Delete Funnel</h2>
-          <p className="text-sm text-sidebar-foreground/60">
-            Are you sure you want to delete <span className="font-medium text-sidebar-foreground">&ldquo;{funnelName}&rdquo;</span>? This action cannot be undone.
+          <h2 className="text-lg font-semibold mb-1">Delete Funnel</h2>
+          <p className="text-sm text-muted-foreground/60">
+            Are you sure you want to delete <span className="font-medium text-foreground">&ldquo;{funnelName}&rdquo;</span>? This action cannot be undone.
           </p>
         </div>
 
@@ -576,7 +577,7 @@ function DeleteConfirmModal({ open, funnelName, onClose, onConfirm, isDeleting }
             type="button"
             onClick={onClose}
             disabled={isDeleting}
-            className="flex-1 h-10 px-4 border border-sidebar-border text-sidebar-foreground text-sm font-medium rounded-lg hover:bg-sidebar-accent disabled:opacity-50 transition-colors"
+            className="flex-1 h-10 px-4 border border-border text-foreground text-sm font-medium rounded-lg hover:bg-secondary/50 disabled:opacity-50 transition-colors"
           >
             Cancel
           </button>

@@ -44,8 +44,9 @@ export function invalidateSearchCaches(): void {
 export function invalidateListingDetail(listingId: string): void {
   const key = CacheKeys.listingDetail(listingId);
   const legacyDetailedKey = `listing:detailed:${listingId}`;
-  memoryCache.delete(key, legacyDetailedKey);
-  console.log(`[cache] Invalidated listing detail: ${listingId} (keys: ${key}, ${legacyDetailedKey})`);
+  const detailedKey = CacheKeys.listingDetailed(listingId);
+  memoryCache.delete(key, legacyDetailedKey, detailedKey);
+  console.log(`[cache] Invalidated listing detail: ${listingId}`);
 }
 
 /**
@@ -146,6 +147,25 @@ export function invalidateDealerBaseProfile(partnerId: string): void {
   const miniKey = CacheKeys.partnerMiniProfile(partnerId);
   memoryCache.delete(key, miniKey);
   console.log(`[cache] Invalidated dealer base profile: ${partnerId}`);
+}
+
+/**
+ * Invalidate staff phone cache
+ * Use after: staff profile update (workPhone, usePersonalPhone, displayName change)
+ */
+export function invalidateStaffPhone(staffUserId: string, partnerId: string): void {
+  const key = CacheKeys.staffPhone(staffUserId, partnerId);
+  memoryCache.delete(key);
+  console.log(`[cache] Invalidated staff phone: ${staffUserId}@${partnerId}`);
+}
+
+/**
+ * Invalidate listing detailed query cache
+ * Use after: listing update, status change (called by invalidateListingDetail)
+ */
+export function invalidateListingDetailed(listingId: string): void {
+  const key = CacheKeys.listingDetailed(listingId);
+  memoryCache.delete(key);
 }
 
 /**

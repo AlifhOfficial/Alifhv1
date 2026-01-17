@@ -67,9 +67,9 @@ function LanguageToggle({ isCollapsed }: { isCollapsed?: boolean }) {
       )}
       title={isCollapsed ? (language === 'en' ? 'العربية' : 'English') : undefined}
     >
-      <Languages className="h-4 w-4 text-muted-foreground/70" />
+      <Languages className="size-4 text-muted-foreground/70" />
       {!isCollapsed && (
-        <span className="text-[13px] font-medium">
+        <span className="text-sm font-semibold tracking-tight">
           {language === 'en' ? 'العربية' : 'English'}
         </span>
       )}
@@ -136,8 +136,7 @@ export function KnowledgeSidebar({ className }: KnowledgeSidebarProps) {
     <aside
       className={cn(
         'hidden lg:flex flex-col flex-shrink-0 transition-all duration-300 ease-in-out',
-        // macOS-style translucent sidebar
-        'bg-muted/30 backdrop-blur-xl',
+        'bg-sidebar border-r border-sidebar-border',
         isCollapsed ? 'w-[52px]' : 'w-[220px]',
         className
       )}
@@ -160,15 +159,15 @@ export function KnowledgeSidebar({ className }: KnowledgeSidebarProps) {
                 alt="Alifh"
                 width={24}
                 height={24}
-                className="h-5 w-5 object-contain"
+                className="h-6 w-6 object-contain"
               />
             ) : (
               <Image
                 src={logoSrc}
                 alt="Alifh"
-                width={72}
-                height={20}
-                className="h-5 w-auto"
+                width={90}
+                height={25}
+                className="h-6 w-auto"
               />
             )}
           </Link>
@@ -201,7 +200,7 @@ export function KnowledgeSidebar({ className }: KnowledgeSidebarProps) {
           {/* Knowledge Section */}
           <div className="space-y-1">
             {!isCollapsed && (
-              <span className="block text-[11px] font-medium text-muted-foreground/50 uppercase tracking-wider px-2 mb-2">
+              <span className="block text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider px-2 mb-2">
                 {language === 'ar' ? 'المعرفة' : 'Knowledge'}
               </span>
             )}
@@ -224,11 +223,11 @@ export function KnowledgeSidebar({ className }: KnowledgeSidebarProps) {
                   title={isCollapsed ? label : undefined}
                 >
                   <Icon className={cn(
-                    'h-4 w-4 flex-shrink-0 transition-colors',
+                    'size-4 flex-shrink-0 transition-colors',
                     active ? 'text-primary' : 'text-muted-foreground/70 group-hover:text-foreground/80'
                   )} />
                   {!isCollapsed && (
-                    <span className="text-[13px] font-medium truncate">{label}</span>
+                    <span className="text-sm font-semibold tracking-tight truncate">{label}</span>
                   )}
                 </Link>
               );
@@ -238,7 +237,7 @@ export function KnowledgeSidebar({ className }: KnowledgeSidebarProps) {
           {/* Tools Section */}
           <div className="space-y-1">
             {!isCollapsed && (
-              <span className="block text-[11px] font-medium text-muted-foreground/50 uppercase tracking-wider px-2 mb-2">
+              <span className="block text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider px-2 mb-2">
                 {language === 'ar' ? 'الأدوات' : 'Tools'}
               </span>
             )}
@@ -262,14 +261,14 @@ export function KnowledgeSidebar({ className }: KnowledgeSidebarProps) {
                   title={isCollapsed ? label : undefined}
                 >
                   <Icon className={cn(
-                    'h-4 w-4 flex-shrink-0 transition-colors',
+                    'size-4 flex-shrink-0 transition-colors',
                     active ? 'text-primary' : 'text-muted-foreground/70 group-hover:text-foreground/80'
                   )} />
                   {!isCollapsed && (
                     <>
-                      <span className="text-[13px] font-medium truncate">{label}</span>
+                      <span className="text-sm font-semibold tracking-tight truncate">{label}</span>
                       {item.badge && (
-                        <span className="ml-auto text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                        <span className="ml-auto text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">
                           {item.badge}
                         </span>
                       )}
@@ -283,7 +282,7 @@ export function KnowledgeSidebar({ className }: KnowledgeSidebarProps) {
           {/* Partners Section */}
           <div className="space-y-1">
             {!isCollapsed && (
-              <span className="block text-[11px] font-medium text-muted-foreground/50 uppercase tracking-wider px-2 mb-2">
+              <span className="block text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider px-2 mb-2">
                 {language === 'ar' ? 'الشركاء' : 'Partners'}
               </span>
             )}
@@ -341,9 +340,9 @@ export function KnowledgeSidebar({ className }: KnowledgeSidebarProps) {
               )}
               title={isCollapsed ? 'Theme' : undefined}
             >
-              <Moon className="h-4 w-4 text-muted-foreground/70" />
+              <Moon className="size-4 text-muted-foreground/70" />
               {!isCollapsed && (
-                <span className="text-[13px] font-medium">Theme</span>
+                <span className="text-sm font-semibold tracking-tight">Theme</span>
               )}
             </button>
 
@@ -445,7 +444,7 @@ export function MobileKnowledgeSidebar() {
           <Menu className="h-4 w-4" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[280px] p-0 bg-background/95 backdrop-blur-xl">
+      <SheetContent side="left" className="w-[280px] p-0 bg-sidebar">
         <div className="flex flex-col h-full">
           {/* Header with Logo */}
           <div className="p-5 border-b border-border/30">
@@ -453,9 +452,9 @@ export function MobileKnowledgeSidebar() {
               <Image
                 src={logoSrc}
                 alt="Alifh"
-                width={72}
-                height={20}
-                className="h-5 w-auto"
+                width={90}
+                height={25}
+                className="h-6 w-auto"
               />
               <SheetTitle className="sr-only">Alifh Knowledge Hub</SheetTitle>
             </Link>
@@ -465,7 +464,7 @@ export function MobileKnowledgeSidebar() {
           <nav className="flex-1 p-3 space-y-5 overflow-y-auto">
             {/* Knowledge Section */}
             <div className="space-y-1">
-              <span className="block text-[11px] font-medium text-muted-foreground/50 uppercase tracking-wider px-2 mb-2">
+              <span className="block text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider px-2 mb-2">
                 {language === 'ar' ? 'المعرفة' : 'Knowledge'}
               </span>
               {knowledgeItems.map((item) => {
@@ -486,10 +485,10 @@ export function MobileKnowledgeSidebar() {
                     )}
                   >
                     <Icon className={cn(
-                      'h-[18px] w-[18px] flex-shrink-0',
+                      'size-4 flex-shrink-0',
                       active ? 'text-primary' : 'text-muted-foreground/70'
                     )} />
-                    <span className="text-[14px] font-medium">{label}</span>
+                    <span className="text-sm font-semibold tracking-tight truncate">{label}</span>
                   </Link>
                 );
               })}
@@ -497,7 +496,7 @@ export function MobileKnowledgeSidebar() {
 
             {/* Tools Section */}
             <div className="space-y-1">
-              <span className="block text-[11px] font-medium text-muted-foreground/50 uppercase tracking-wider px-2 mb-2">
+              <span className="block text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider px-2 mb-2">
                 {language === 'ar' ? 'الأدوات' : 'Tools'}
               </span>
               {toolItems.map((item) => {
@@ -518,10 +517,10 @@ export function MobileKnowledgeSidebar() {
                     )}
                   >
                     <Icon className={cn(
-                      'h-[18px] w-[18px] flex-shrink-0',
+                      'size-4 flex-shrink-0',
                       active ? 'text-primary' : 'text-muted-foreground/70'
                     )} />
-                    <span className="text-[14px] font-medium">{label}</span>
+                    <span className="text-sm font-semibold tracking-tight truncate">{label}</span>
                   </Link>
                 );
               })}
@@ -542,8 +541,8 @@ export function MobileKnowledgeSidebar() {
                 }}
                 className="w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 text-foreground/70 hover:bg-muted/60 hover:text-foreground"
               >
-                <Moon className="h-[18px] w-[18px] text-muted-foreground/70" />
-                <span className="text-[14px] font-medium">Theme</span>
+                <Moon className="size-4 text-muted-foreground/70" />
+                <span className="text-sm font-semibold tracking-tight">Theme</span>
               </button>
 
               {showThemeMenu && (

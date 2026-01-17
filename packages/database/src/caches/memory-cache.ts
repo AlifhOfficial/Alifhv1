@@ -362,6 +362,10 @@ export const CacheKeys = {
   partnerProfileComprehensive: (partnerId: string) => `partner:${partnerId}:profile-comprehensive`,
   userToPartnerId: (userId: string) => `user:${userId}:partnerId`,
   partnerStats: (partnerId: string) => `partner:${partnerId}:stats`,
+  staffPhone: (staffUserId: string, partnerId: string) => `staff:${staffUserId}:${partnerId}:phone`,
+  
+  // Listing detailed (full query result)
+  listingDetailed: (listingId: string) => `listing:${listingId}:detailed`,
 } as const;
 
 /**
@@ -396,6 +400,10 @@ export const CacheTTL = {
   partnerProfileComprehensive: 300, // 5 minutes - full partner profile (invalidated on profile updates)
   userToPartnerId: 600, // 10 minutes - user to partner mapping (rarely changes)
   partnerStats: 600, // 10 minutes - partner stats (expensive aggregation)
+  staffPhone: 300, // 5 minutes - staff phone lookup (invalidated on staff profile change)
+  
+  // Listing detailed query result - invalidated on listing mutations
+  listingDetailed: 600, // 10 minutes - full listing with joins (same as listingDetail)
 } as const;
 
 /**

@@ -207,66 +207,55 @@ export function UserDashboardOverview() {
 
         {/* Header */}
         <header>
-          <div className="flex items-center justify-between mb-3">
-            <div className="space-y-2">
-              <h1 className="text-2xl font-bold tracking-tight">
-                {greeting}, <span className="text-foreground/80">{firstName}</span>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground/90">
+                {greeting}, {firstName}
               </h1>
-              <p className="text-[15px] font-medium text-muted-foreground/70">
-                Here's your activity overview
-              </p>
+              <span className="px-2 py-0.5 rounded text-xs font-medium bg-muted/50 text-muted-foreground">
+                Experimental
+              </span>
             </div>
-
-            <Link
-              href="/user-dashboard/listings/new"
-              className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold transition-colors"
-            >
-              New Listing
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-purple-500" />
-            <span className="text-sm"><span className="text-purple-600 dark:text-purple-400 font-bold">Experimental</span> <span className="text-muted-foreground font-medium">· Data may not be fully accurate</span></span>
+            <p className="text-sm text-muted-foreground">
+              Here's your activity overview · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            </p>
+            <p className="text-xs text-muted-foreground/60">
+              Note: Beta testing — data may not reflect accurately
+            </p>
           </div>
         </header>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 border border-border/40 rounded-xl divide-x divide-y md:divide-y-0 divide-border/40 bg-sidebar">
-          <div className="p-5 sm:p-6 flex flex-col gap-1.5">
-            <StatLabel 
-              label="Active Listings" 
-              tooltip="Number of listings currently visible to buyers" 
-            />
-            <span className="text-xl font-bold text-foreground">
+        <div className="grid grid-cols-2 md:grid-cols-4 border border-border/20 rounded-lg divide-x divide-y md:divide-y-0 divide-border/20 bg-muted/5">
+          <div className="p-5 sm:p-6 flex flex-col gap-2">
+            <span className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium">
+              Active
+            </span>
+            <span className="text-2xl font-semibold text-blue-500">
               {isLoading ? '—' : (stats?.activeListings ?? 0)}
             </span>
           </div>
-          <div className="p-5 sm:p-6 flex flex-col gap-1.5">
-            <StatLabel 
-              label="Total Views" 
-              tooltip="Total times your listings have been viewed by potential buyers" 
-            />
-            <span className="text-xl font-bold text-blue-500">
+          <div className="p-5 sm:p-6 flex flex-col gap-2">
+            <span className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium">
+              Views
+            </span>
+            <span className="text-2xl font-semibold text-purple-500">
               {isLoading ? '—' : formatNumber(stats?.totalViews ?? 0)}
             </span>
           </div>
-          <div className="p-5 sm:p-6 flex flex-col gap-1.5">
-            <StatLabel 
-              label="Saved" 
-              tooltip="How many times users saved your listings to their favorites" 
-            />
-            <span className="text-xl font-bold text-foreground">
+          <div className="p-5 sm:p-6 flex flex-col gap-2">
+            <span className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium">
+              Saved
+            </span>
+            <span className="text-2xl font-semibold text-amber-500">
               {isLoading ? '—' : formatNumber(stats?.totalSaves ?? 0)}
             </span>
           </div>
-          <div className="p-5 sm:p-6 flex flex-col gap-1.5">
-            <StatLabel 
-              label="Sold" 
-              tooltip="Total listings you've marked as sold" 
-            />
-            <span className="text-xl font-bold text-green-500">
+          <div className="p-5 sm:p-6 flex flex-col gap-2">
+            <span className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium">
+              Sold
+            </span>
+            <span className="text-2xl font-semibold text-green-500">
               {isLoading ? '—' : formatNumber(stats?.soldCount ?? 0)}
             </span>
           </div>
@@ -275,62 +264,37 @@ export function UserDashboardOverview() {
         {/* Main Grid - Row 1: Views Trend + Membership/Messages */}
         <div className="grid grid-cols-12 gap-4">
           {/* Views Trend Card */}
-          <div className="col-span-12 lg:col-span-8 rounded-xl border border-border/40 bg-sidebar p-6">
-            <div className="flex items-center justify-between mb-4">
+          <div className="col-span-12 lg:col-span-8 rounded-lg border border-border/20 bg-muted/5 p-6">
+            <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-[15px] font-bold tracking-tight text-foreground">Views Trend</h3>
-                <p className="text-sm font-medium text-muted-foreground/70">Last 7 days</p>
+                <p className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium mb-2">Total Views</p>
+                <span className="text-3xl font-semibold text-purple-500">
+                  {isLoading ? '—' : formatNumber(stats?.totalViews ?? 0)}
+                </span>
               </div>
-              <span className="text-2xl font-bold text-blue-500">
-                {isLoading ? '—' : formatNumber(stats?.totalViews ?? 0)}
-              </span>
-            </div>
-            
-            <div className="h-24 text-blue-500">
-              <WaveChart />
+              <div className="text-right">
+                <p className="text-xs text-muted-foreground/60 mb-1">Last 7 days</p>
+                <div className="h-16 w-32 text-purple-500/20">
+                  <WaveChart className="text-purple-500/20" />
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Right: Membership + Messages stacked */}
           <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
             {/* Member Info */}
-            <div className="rounded-xl border border-border/40 bg-sidebar p-5 flex-1">
-              <div className="mb-3">
-                <span className="text-[15px] font-bold tracking-tight text-foreground">Membership</span>
-              </div>
+            <div className="rounded-lg border border-border/20 bg-muted/5 p-5 flex-1">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium mb-4">Membership</p>
               
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <TooltipProvider delayDuration={200}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="text-sm font-medium text-muted-foreground/70 inline-flex items-center gap-1.5 cursor-help">
-                          Member for
-                          <Info className="w-3 h-3 opacity-50" />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-[200px] text-xs">
-                        Days since you joined the platform
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  <span className="text-sm font-bold text-foreground">{memberDays} days</span>
+                  <span className="text-sm text-muted-foreground">Member for</span>
+                  <span className="text-sm font-semibold text-cyan-500">{memberDays} days</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <TooltipProvider delayDuration={200}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="text-sm font-medium text-muted-foreground/70 inline-flex items-center gap-1.5 cursor-help">
-                          Superlikes left
-                          <Info className="w-3 h-3 opacity-50" />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-[200px] text-xs">
-                        Premium saves you can use to stand out. Resets monthly.
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  <span className="text-sm font-bold text-foreground">{stats?.superlikesRemaining ?? 5}</span>
+                  <span className="text-sm text-muted-foreground">Superlikes left</span>
+                  <span className="text-sm font-semibold text-pink-500">{stats?.superlikesRemaining ?? 5}</span>
                 </div>
               </div>
             </div>
@@ -338,192 +302,81 @@ export function UserDashboardOverview() {
             {/* Messages Widget */}
             <Link 
               href="/user-dashboard/messaging"
-              className="group block rounded-xl border border-border/40 bg-sidebar p-5 hover:border-border transition-colors flex-1"
+              className="group block rounded-lg border border-border/20 bg-muted/5 p-5 hover:border-border/40 transition-colors flex-1"
             >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-[15px] font-bold tracking-tight text-foreground">Messages</span>
-                </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium">Messages</p>
+                <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+              <div>
+                <span className="text-2xl font-semibold text-indigo-500">{unreadCount}</span>
+                <span className="text-sm text-muted-foreground ml-1.5">unread</span>
+              </div>
+            </Link>
+          </div>
+        </div>
+
+        {/* Main Grid - Row 2: Quick Links */}
+        <div className="grid grid-cols-12 gap-4">
+          {/* Activity Summary */}
+          <div className="col-span-12 sm:col-span-6 lg:col-span-4 rounded-lg border border-border/20 bg-muted/5 p-5">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium mb-4">Activity</p>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Total sold</span>
+                <span className="text-sm font-semibold text-green-500">{formatNumber(stats?.soldCount ?? 0)}</span>
               </div>
               <div className="flex items-center justify-between">
-                <div>
-                  <span className="text-2xl font-bold text-blue-500">{unreadCount}</span>
-                  <span className="text-sm font-medium text-muted-foreground/70 ml-1.5">unread</span>
-                </div>
-                <div className="h-10 w-16 text-blue-500">
-                  <WaveChart />
-                </div>
+                <span className="text-sm text-muted-foreground">Save rate</span>
+                <span className="text-sm font-semibold text-amber-500">{growthRate}%</span>
               </div>
-            </Link>
+            </div>
           </div>
+
+          {/* Saved Items */}
+          <Link 
+            href="/user-dashboard/favorites"
+            className="col-span-12 sm:col-span-6 lg:col-span-4 group block rounded-lg border border-border/20 bg-muted/5 p-5 hover:border-border/40 transition-colors"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium">Saved Items</p>
+              <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:translate-x-0.5 transition-transform" />
+            </div>
+            <div>
+              <span className="text-2xl font-semibold text-rose-500">{stats?.mySaves ?? 0}</span>
+              <span className="text-sm text-muted-foreground ml-1.5">items</span>
+            </div>
+          </Link>
+
+          {/* My Listings */}
+          <Link 
+            href="/user-dashboard/listings/my-listings"
+            className="col-span-12 sm:col-span-6 lg:col-span-4 group block rounded-lg border border-border/20 bg-muted/5 p-5 hover:border-border/40 transition-colors"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium">My Listings</p>
+              <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:translate-x-0.5 transition-transform" />
+            </div>
+            <div>
+              <span className="text-2xl font-semibold text-blue-500">{stats?.activeListings ?? 0}</span>
+              <span className="text-sm text-muted-foreground ml-1.5">active</span>
+            </div>
+          </Link>
         </div>
 
-        {/* Main Grid - Row 2: Activity/Performance + Saved/Listings */}
-        <div className="grid grid-cols-12 gap-4">
-          {/* Activity Card */}
-          <div className="col-span-12 sm:col-span-6 lg:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Activity className="w-4 h-4 text-muted-foreground" />
-                <span className="text-[15px] font-bold tracking-tight text-foreground">Activity</span>
-              </div>
-              <TooltipProvider delayDuration={200}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="text-xs font-medium text-muted-foreground/70 inline-flex items-center gap-1 cursor-help">
-                      Last 28 days
-                      <Info className="w-3 h-3 opacity-50" />
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-[200px] text-xs">
-                    Your posting activity over the past month
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            
-            <div className="h-12 text-blue-500 mb-4">
-              <MiniBarChart />
-            </div>
-            
-            <div className="pt-4 border-t border-border/40">
-              <ActivityDots days={28} />
-            </div>
-          </div>
-
-          {/* Performance Card */}
-          <div className="col-span-12 sm:col-span-6 lg:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="w-4 h-4 text-green-500" />
-              <span className="text-[15px] font-bold tracking-tight text-foreground">Performance</span>
-            </div>
-            
-            <div className="flex items-end justify-between">
-              <div>
-                <span className="text-2xl font-bold text-green-500">
-                  {formatNumber(stats?.soldCount ?? 0)}
-                </span>
-                <span className="text-sm font-medium text-muted-foreground/70 ml-1.5">sold</span>
-              </div>
-              <div className="h-12 w-24 text-green-500">
-                <WaveChart className="text-green-500" />
-              </div>
-            </div>
-            
-            <div className="mt-4 pt-4 border-t border-border/40 flex items-center justify-between">
-              <TooltipProvider delayDuration={200}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="text-sm font-medium text-muted-foreground/70 inline-flex items-center gap-1.5 cursor-help">
-                      Save rate
-                      <Info className="w-3 h-3 opacity-50" />
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-[200px] text-xs">
-                    Percentage of viewers who saved your listings
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <span className="text-sm font-bold text-foreground">{growthRate}%</span>
-            </div>
-          </div>
-
-          {/* Right: Saved + Listings stacked */}
-          <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
-            {/* Saved Items Widget */}
-            <Link 
-              href="/user-dashboard/favorites"
-              className="group block rounded-xl border border-border/40 bg-sidebar p-5 hover:border-border transition-colors flex-1"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Bookmark className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-[15px] font-bold tracking-tight text-foreground">Saved Items</span>
-                </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-              </div>
-              <div>
-                <span className="text-2xl font-bold text-foreground">{stats?.mySaves ?? 0}</span>
-                <span className="text-sm font-medium text-muted-foreground/70 ml-1.5">items</span>
-              </div>
-            </Link>
-
-            {/* My Listings Widget */}
-            <Link 
-              href="/user-dashboard/listings/my-listings"
-              className="group block rounded-xl border border-border/40 bg-sidebar p-5 hover:border-border transition-colors flex-1"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <LayoutGrid className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-[15px] font-bold tracking-tight text-foreground">My Listings</span>
-                </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-              </div>
-              <div>
-                <span className="text-2xl font-bold text-foreground">{stats?.activeListings ?? 0}</span>
-                <span className="text-sm font-medium text-muted-foreground/70 ml-1.5">active</span>
-              </div>
-            </Link>
-          </div>
-        </div>
-
-        {/* System Status - Full Width */}
-        <div className="rounded-xl border border-border/40 bg-sidebar p-5">
-          <div className="mb-4">
-            <span className="text-[15px] font-bold tracking-tight text-foreground">System Status</span>
-          </div>
-          
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="flex items-center gap-2.5 p-3 rounded-lg bg-muted/10">
-              <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center">
-                <CheckCircle2 className="w-4 h-4 text-green-500" />
-              </div>
-              <div>
-                <span className="text-sm font-medium text-foreground block">Platform</span>
-                <span className="text-xs text-green-500">Operational</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2.5 p-3 rounded-lg bg-muted/10">
-              <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center">
-                <Shield className="w-4 h-4 text-green-500" />
-              </div>
-              <div>
-                <span className="text-sm font-medium text-foreground block">Security</span>
-                <span className="text-xs text-green-500">Protected</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2.5 p-3 rounded-lg bg-muted/10">
-              <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center">
-                <Zap className="w-4 h-4 text-green-500" />
-              </div>
-              <div>
-                <span className="text-sm font-medium text-foreground block">API</span>
-                <span className="text-xs text-green-500">Fast</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2.5 p-3 rounded-lg bg-muted/10">
-              <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center">
-                <Database className="w-4 h-4 text-green-500" />
-              </div>
-              <div>
-                <span className="text-sm font-medium text-foreground block">Database</span>
-                <span className="text-xs text-green-500">Synced</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile CTA */}
-        <div className="sm:hidden">
+        {/* Quick Actions */}
+        <div className="flex gap-3">
           <Link
             href="/user-dashboard/listings/new"
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-lg border border-border/20 bg-muted/5 hover:bg-muted/10 text-sm font-medium transition-colors"
           >
-            Create New Listing
-            <ArrowRight className="w-4 h-4" />
+            Create Listing
+          </Link>
+          <Link
+            href="/listings"
+            className="flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-lg border border-border/20 bg-muted/5 hover:bg-muted/10 text-sm font-medium transition-colors"
+          >
+            Browse Listings
           </Link>
         </div>
 
