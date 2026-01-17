@@ -7,7 +7,6 @@
   "scripts": {
     "dev": "turbo run dev --parallel",
     "dev:ws": "cd apps/ws && bun run src/index.ts",
-    "dev:warmup": "bun scripts/warmup-dev.ts",
     "build": "turbo run build --filter='!@alifh/mobile'",
     "build:all": "turbo run build",
     "build:web": "turbo run build --filter=@alifh/web",
@@ -15,17 +14,10 @@
     "test": "turbo run test",
     "lint": "turbo run lint",
     "format": "turbo run format",
-    "db:seed": "bun scripts/seed.ts",
     "db:seed:all": "cd apps/web && bun ../../scripts/seed-all.ts",
-    "db:reset": "bun scripts/reset-db.ts",
-    "users:seed": "cd apps/web && bun ../../scripts/create-test-users.ts",
-    "users:clear": "cd apps/web && bun ../../scripts/clear-users.ts",
-    "partners:setup": "cd apps/web && bun ../../scripts/setup-partners-and-staff.ts",
-    "sessions:clear": "cd apps/web && bun ../../scripts/clear-sessions.ts",
-    "bench": "bun scripts/api-bench.ts",
-    "bench:public": "bun scripts/api-bench.ts --only-public",
-    "bench:verbose": "bun scripts/api-bench.ts --verbose",
-    "bench:heavy": "bun scripts/api-bench.ts --concurrency=50,100,200 --rounds=5"
+    "db:seed:100": "cd apps/web && bun ../../scripts/seed-100-listings.ts",
+    "db:seed:listings": "cd apps/web && bun ../../scripts/seed-listings-v2.ts",
+    "partners:setup": "cd apps/web && bun ../../scripts/setup-partners-and-staff.ts"
   },
   "workspaces": [
     "apps/web",
