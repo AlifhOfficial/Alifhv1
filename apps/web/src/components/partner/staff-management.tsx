@@ -288,7 +288,7 @@ export function PartnerStaffManagement() {
             </button>
             <button
               onClick={() => setShowInviteForm(!showInviteForm)}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
             >
               <UserPlus className="w-4 h-4" />
               Invite
@@ -380,7 +380,7 @@ export function PartnerStaffManagement() {
             <button
               onClick={handleInvite}
               disabled={inviteMutation.isPending || !inviteFormData.email}
-              className="px-4 py-2 rounded-full bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors disabled:opacity-50"
+              className="px-4 py-2 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
             >
               {inviteMutation.isPending ? 'Sending...' : 'Send Invite'}
             </button>
@@ -505,7 +505,7 @@ export function PartnerStaffManagement() {
               <p className="text-sm text-muted-foreground mt-1">Start by inviting your first member</p>
               <button
                 onClick={() => setShowInviteForm(true)}
-                className="mt-6 flex items-center gap-2 px-4 py-2 rounded-full bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors"
+                className="mt-6 flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
               >
                 <UserPlus className="w-4 h-4" />
                 Invite Member

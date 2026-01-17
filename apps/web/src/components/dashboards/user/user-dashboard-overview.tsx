@@ -197,15 +197,6 @@ export function UserDashboardOverview() {
   return (
     <DashboardPageWrapper>
 
-        {/* Ban Notice */}
-        {user?.banned && (user as any)?.banReason && (
-          <UserBanNotice 
-            banReason={(user as any).banReason} 
-            banExpires={(user as any).banExpires || null} 
-            userId={user.id}
-          />
-        )}
-
         {/* Header */}
         <header>
           <div className="flex items-start justify-between gap-4">

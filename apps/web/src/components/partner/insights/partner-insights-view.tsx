@@ -486,27 +486,6 @@ export function PartnerInsightsView() {
     <>
       <DashboardPageWrapper>
 
-          {/* Attention Banner - Top Priority */}
-          {attentionItems.length > 0 && (
-            <div className="flex items-start gap-3 p-4 rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-950/20">
-              <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-500 mt-0.5 shrink-0" />
-              <div className="flex-1 space-y-1">
-                <p className="text-sm font-medium text-amber-900 dark:text-amber-100">Needs attention</p>
-                <div className="flex flex-wrap gap-x-4 gap-y-1">
-                  {attentionItems.map((item, i) => (
-                    <Link 
-                      key={i} 
-                      href={item.href}
-                      className="text-xs text-amber-700 dark:text-amber-300 hover:underline"
-                    >
-                      {item.count} {item.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Header */}
           <header>
             <div className="flex items-start justify-between gap-4">

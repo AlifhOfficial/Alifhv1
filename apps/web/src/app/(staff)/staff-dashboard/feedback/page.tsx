@@ -1,7 +1,5 @@
-"use client";
-
 import { FeedbackView } from '@/components/feedback/feedback-view';
 
-export default function FeedbackPage() {
+export default function StaffFeedbackPage() {
   return <FeedbackView />;
 }

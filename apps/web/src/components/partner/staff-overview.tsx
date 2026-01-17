@@ -114,7 +114,7 @@ export function StaffOverview() {
       <div className="flex items-center gap-3 mb-12">
         <Link
           href="/partner-dashboard/staff/manage"
-          className="group flex items-center gap-2 px-4 py-2.5 rounded-full bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors"
+          className="group flex items-center gap-2 px-4 py-2.5 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
         >
           <UserPlus className="w-4 h-4" />
           Manage Team
@@ -152,7 +152,7 @@ export function StaffOverview() {
               <p className="text-sm text-muted-foreground mt-1">Start by inviting your first staff member</p>
               <Link
                 href="/partner-dashboard/staff/manage"
-                className="mt-6 px-4 py-2 rounded-full bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors"
+                className="mt-6 px-4 py-2 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
               >
                 Invite Team Member
               </Link>

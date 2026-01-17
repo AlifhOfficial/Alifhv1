@@ -940,6 +940,7 @@ export function AdvancedStatsView() {
   const [stats, setStats] = useState<AdvancedStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [visibleTopListings, setVisibleTopListings] = useState(4);
 
   useEffect(() => {
     async function fetchStats() {
@@ -1339,21 +1340,13 @@ export function AdvancedStatsView() {
 
             {/* Top Performing Listings */}
             <div className="col-span-12 lg:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-blue-500" />
-                  <span className="text-[15px] font-bold tracking-tight">Top Performing</span>
-                </div>
-                <Link 
-                  href="/partner-dashboard/analytics"
-                  className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  View all →
-                </Link>
+              <div className="flex items-center gap-2 mb-4">
+                <Activity className="w-4 h-4 text-blue-500" />
+                <span className="text-[15px] font-bold tracking-tight">Top Performing</span>
               </div>
               <TopListings
                 title=""
-                listings={engagement.topViewedListings.slice(0, 4).map(l => ({
+                listings={engagement.topViewedListings.slice(0, visibleTopListings).map(l => ({
                   id: l.id,
                   title: l.title,
                   thumbnail: l.thumbnail,
@@ -1362,6 +1355,14 @@ export function AdvancedStatsView() {
                 }))}
                 emptyMessage="No viewed listings yet"
               />
+              {engagement.topViewedListings.length > visibleTopListings && (
+                <button
+                  onClick={() => setVisibleTopListings(prev => prev + 4)}
+                  className="w-full mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors py-2 rounded-lg hover:bg-accent/50"
+                >
+                  Load more ({engagement.topViewedListings.length - visibleTopListings} remaining)
+                </button>
+              )}
             </div>
           </div>
         </section>

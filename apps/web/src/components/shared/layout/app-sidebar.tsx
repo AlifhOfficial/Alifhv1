@@ -42,6 +42,7 @@ import { UserAvatar } from "@/components/ui/data-display/user-avatar";
 import { BrandAvatar } from "@/components/partner/car-dealer/ui/brand-avatar";
 import { useAuth } from "@/providers/auth-provider";
 import { SupportModal } from "@/components/shared/support/support-modal";
+import { FeedbackLink } from '@/components/feedback/feedback-link';
 import {
   Sidebar,
   SidebarContent,
@@ -326,12 +327,7 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Feedback" className="font-semibold tracking-tight">
-              <Link href="/feedback">
-                <Send className="size-4" />
-                <span>Feedback</span>
-              </Link>
-            </SidebarMenuButton>
+            <FeedbackLink />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
