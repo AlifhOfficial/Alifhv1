@@ -24,6 +24,7 @@ export type SearchSortOption =
 
 export const SORT_OPTIONS: { value: SearchSortOption; label: string }[] = [
   { value: 'relevance', label: 'Default' },
+  { value: 'popular', label: 'Most Popular' },
   { value: 'newest', label: 'Newest First' },
   { value: 'oldest', label: 'Oldest First' },
   { value: 'price_low', label: 'Price: Low to High' },
@@ -31,7 +32,6 @@ export const SORT_OPTIONS: { value: SearchSortOption; label: string }[] = [
   { value: 'mileage_low', label: 'Lowest Mileage' },
   { value: 'year_new', label: 'Newest Year' },
   { value: 'year_old', label: 'Oldest Year' },
-  { value: 'popular', label: 'Most Popular' },
 ];
 
 export interface SearchParams {
