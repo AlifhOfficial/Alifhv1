@@ -75,8 +75,13 @@ export function Footer() {
             <div className="space-y-4">
               <p className="text-xs uppercase tracking-widest text-muted-foreground">Legal</p>
               <div className="flex flex-col gap-2">
-                <Link href="/privacy" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Privacy</Link>
-                <Link href="/terms" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Terms</Link>
+                <Link href="/privacy-policy" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Privacy Policy</Link>
+                <Link href="/terms-of-service" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Terms of Service</Link>
+                <Link href="/refund-policy" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Refund Policy</Link>
+                <Link href="/intellectual-property" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Intellectual Property</Link>
+                <Link href="/dealer-agreement" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Dealer Agreement</Link>
+                <Link href="/acceptable-use-policy" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Acceptable Use Policy</Link>
+                <Link href="/disclaimer" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Disclaimer</Link>
               </div>
             </div>
           </div>

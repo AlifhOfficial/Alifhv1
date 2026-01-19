@@ -8,3 +8,6 @@ export * from './home';
 
 // Showcase Pages
 export * from './showcase';
+
+// Legal Pages
+export * from './legal';
