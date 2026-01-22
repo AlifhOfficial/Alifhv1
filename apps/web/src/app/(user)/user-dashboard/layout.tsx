@@ -11,12 +11,20 @@ const navSections = [
   {
     items: [
       { label: "Overview", href: "/user-dashboard", icon: "compass" },
+    ]
+  },
+  {
+    items: [
       { label: "My Listings", href: "/user-dashboard/listings/my-listings", icon: "package" },
       { label: "Bookings", href: "/user-dashboard/bookings", icon: "calendar" },
       { label: "Messages", href: "/user-dashboard/messaging", icon: "message-circle" },
       { label: "Requests", href: "/user-dashboard/requests", icon: "inbox" },
+    ]
+  },
+  {
+    items: [
       { label: "Favorites", href: "/user-dashboard/favorites", icon: "heart" },
-      { label: "Superlikes", href: "/user-dashboard/superlikes", icon: "zap" },
+      { label: "Superlikes", href: "/user-dashboard/superlikes", icon: "sparkles" },
     ]
   },
   {
