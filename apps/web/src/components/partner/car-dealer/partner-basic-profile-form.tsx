@@ -836,7 +836,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <p className="text-[15px] font-medium text-muted-foreground/60 mb-2">No badges earned yet</p>
               <a 
-                href="/partner/badges" 
+                href="/badges" 
                 className="text-sm text-primary hover:text-primary/80 font-semibold transition-colors"
               >
                 Learn more about badges

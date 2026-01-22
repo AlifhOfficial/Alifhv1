@@ -1,11 +1,11 @@
 /**
- * Partner Profile Comprehensive Query
+ * Partner Profile Query
  * 
- * Complete partner profile for the partner dashboard form and showroom page.
- * Partners fill this form once after registration to complete their profile.
+ * Partner profile for the partner dashboard and showroom page.
+ * Used by contact settings and basic profile updates.
  * 
- * This query returns ALL editable partner data points (excluding analytics & audit fields).
- * For car listing joins, use getDealerBaseProfile instead.
+ * Note: Comprehensive form features (businessHours, features, notificationPreferences,
+ * galleryImages, coverImage, showroomVideo) are deprecated in the form but kept in schema.
  * 
  * Performance optimizations:
  * - Server-side caching with 5 min TTL
@@ -149,6 +149,8 @@ export interface PartnerProfileComprehensive {
 /**
  * Editable fields for partner profile update
  * Excludes read-only fields like status, tier, analytics, etc.
+ * Note: Comprehensive fields (features, businessHours, notificationPreferences,
+ * coverImage, galleryImages, showroomVideo) kept in schema but not exposed in API
  */
 export interface PartnerProfileUpdate {
   // Contact
@@ -172,10 +174,6 @@ export interface PartnerProfileUpdate {
   // Branding & Media
   logo?: string | null;
   heroImage?: string | null;
-  coverImage?: string | null;
-  galleryImages?: string[];
-  showroomVideoUrl?: string | null;
-  showroomVideoThumbnail?: string | null;
   
   // Business Description
   description?: string | null;
@@ -188,13 +186,6 @@ export interface PartnerProfileUpdate {
   
   // Trust & Branding
   tags?: string[];
-  
-  // Services & Features
-  features?: Partial<PartnerFeatures>;
-  businessHours?: BusinessHours;
-  
-  // Notifications
-  notificationPreferences?: Partial<NotificationPreferences>;
 }
 
 // ============================================================================
@@ -380,34 +371,11 @@ export async function updatePartnerProfile(
     return getPartnerProfileComprehensive(partnerId);
   }
   
-  // For partial feature/notification updates, we need current values
-  // Fetch once if needed (use cache if available)
-  let existingProfile: PartnerProfileComprehensive | null = null;
-  if (cleanUpdates.features || cleanUpdates.notificationPreferences) {
-    existingProfile = await getPartnerProfileComprehensive(partnerId);
-    if (!existingProfile) return null;
-    
-    if (cleanUpdates.features) {
-      cleanUpdates.features = {
-        ...existingProfile.features,
-        ...cleanUpdates.features,
-      };
-    }
-    
-    if (cleanUpdates.notificationPreferences) {
-      cleanUpdates.notificationPreferences = {
-        ...existingProfile.notificationPreferences,
-        ...cleanUpdates.notificationPreferences,
-      };
-    }
-  }
-  
   // Sanitize string fields at write time
   if (cleanUpdates.website !== undefined) cleanUpdates.website = cleanUpdates.website?.trim() || null;
   if (cleanUpdates.address !== undefined) cleanUpdates.address = cleanUpdates.address?.trim() || null;
   if (cleanUpdates.logo !== undefined) cleanUpdates.logo = cleanUpdates.logo?.trim() || null;
   if (cleanUpdates.heroImage !== undefined) cleanUpdates.heroImage = cleanUpdates.heroImage?.trim() || null;
-  if (cleanUpdates.coverImage !== undefined) cleanUpdates.coverImage = cleanUpdates.coverImage?.trim() || null;
   if (cleanUpdates.description !== undefined) cleanUpdates.description = cleanUpdates.description?.trim() || null;
   if (cleanUpdates.googleReviewUrl !== undefined) cleanUpdates.googleReviewUrl = cleanUpdates.googleReviewUrl?.trim() || null;
   

@@ -8,7 +8,7 @@
 export { getDealerBaseProfile } from './get-dealer-base-profile';
 export { updateDealerBaseProfile, type UpdateDealerBaseProfileData } from './update-dealer-base-profile';
 
-// Comprehensive Partner Profile (for dashboard form & showroom page)
+// Partner Profile (for dashboard & showroom page)
 export {
   getPartnerProfileComprehensive,
   updatePartnerProfile,
@@ -16,6 +16,7 @@ export {
   getShowroomPageData,
   type PartnerProfileComprehensive,
   type PartnerProfileUpdate,
+  // Types kept for schema reference but not used in forms:
   type PartnerFeatures,
   type BusinessHours,
   type NotificationPreferences,

@@ -38,17 +38,12 @@ const getNavSections = (isBlackTier: boolean) => [
     items: [
       { label: "Business Profile", href: "/partner-dashboard/basic" },
       { label: "Contact Settings", href: "/partner-dashboard/contact" },
-      { label: "Account", href: "/partner-dashboard/profile" },
     ]
   },
-  // Black tier exclusive
-  ...(isBlackTier ? [{
-    items: [
-      { label: "Showroom", href: "/partner-dashboard/showroom", icon: "store" },
-    ]
-  }] : []),
   {
     items: [
+      // Black tier exclusive
+      ...(isBlackTier ? [{ label: "Black", href: "/partner-dashboard/showroom", icon: "crown" }] : []),
       { label: "Billing", href: "/partner-dashboard/subscription", icon: "credit-card" },
     ]
   },

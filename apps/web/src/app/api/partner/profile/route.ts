@@ -1,14 +1,17 @@
 /**
- * API: Partner Profile Comprehensive
+ * API: Partner Profile
  * GET/PATCH /api/partner/profile
  * 
- * Purpose: Complete partner profile management for dashboard form
- * Partners fill this form once after registration to complete their profile.
+ * Purpose: Partner profile management for contact settings
+ * Used by partner-contact-settings and basic profile updates
  * 
  * Authentication: Required (must be partner staff with owner/admin role)
  * 
- * GET: Returns full partner profile for form population
+ * GET: Returns partner profile for form population
  * PATCH: Updates editable partner profile fields
+ * 
+ * Note: Comprehensive form features (businessHours, features, notificationPreferences,
+ * galleryImages, coverImage, showroomVideo) are deprecated. Schema kept for future use.
  * 
  * Standards:
  * - Returns 401 for unauthenticated requests
@@ -93,10 +96,6 @@ const PartnerProfileUpdateSchema = z.object({
   // Branding & Media (storage keys OR URLs)
   logo: z.string().nullable().optional(),
   heroImage: z.string().nullable().optional(),
-  coverImage: z.string().nullable().optional(),
-  galleryImages: z.array(z.string()).optional(),
-  showroomVideoUrl: z.string().url().nullable().optional(),
-  showroomVideoThumbnail: z.string().nullable().optional(),
   
   // Business Description
   description: z.string().max(2000).nullable().optional(),
@@ -109,37 +108,6 @@ const PartnerProfileUpdateSchema = z.object({
   
   // Trust & Branding
   tags: z.array(z.string()).optional(),
-  
-  // Services & Features
-  features: z.object({
-    homeDelivery: z.boolean().optional(),
-    testDriveAvailable: z.boolean().optional(),
-    financing: z.boolean().optional(),
-    tradeIn: z.boolean().optional(),
-    warranty: z.boolean().optional(),
-    insurance: z.boolean().optional(),
-    registration: z.boolean().optional(),
-    exportAssistance: z.boolean().optional(),
-  }).optional(),
-  
-  // Business Hours
-  businessHours: z.record(z.string(), z.object({
-    open: z.string(),
-    close: z.string(),
-    closed: z.boolean().optional(),
-  })).optional(),
-  
-  // Notifications
-  notificationPreferences: z.object({
-    emailNewLead: z.boolean().optional(),
-    emailBooking: z.boolean().optional(),
-    emailMessage: z.boolean().optional(),
-    emailSale: z.boolean().optional(),
-    emailReview: z.boolean().optional(),
-    emailMarketing: z.boolean().optional(),
-    smsNewLead: z.boolean().optional(),
-    smsBooking: z.boolean().optional(),
-  }).optional(),
 });
 
 /**

@@ -36,6 +36,8 @@ import {
   LifeBuoy,
   Send,
   X,
+  Crown,
+  CreditCard,
 } from "lucide-react";
 import { useMemo, useState, useEffect, type ComponentType } from "react";
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
@@ -138,6 +140,8 @@ const iconMap: Record<string, ComponentType<{ className?: string }>> = {
   "briefcase": Briefcase,
   "life-buoy": LifeBuoy,
   "send": Send,
+  "crown": Crown,
+  "credit-card": CreditCard,
 };
 
 // ============================================================================
@@ -308,14 +312,6 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
       {/* Footer - Support & Feedback */}
       <SidebarFooter>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Listings" className="font-semibold tracking-tight">
-              <Link href="/listings">
-                <Package className="size-4" />
-                <span>Listings</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton 
               onClick={() => setShowSupportModal(true)}

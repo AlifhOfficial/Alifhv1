@@ -1,8 +1,14 @@
-'use client';
+/**
+ * Support Modal - Alifh Design System
+ * 
+ * Clean, minimal support contact modal
+ */
 
-import { useEffect, useState, useCallback } from 'react';
-import { createPortal } from 'react-dom';
-import { LifeBuoy, X, Mail } from 'lucide-react';
+"use client";
+
+import { useEffect, useState } from "react";
+import { LifeBuoy, X, Mail, Clock } from "lucide-react";
+import { cn } from "@/utils/cn";
 
 interface SupportModalProps {
   isOpen: boolean;
@@ -10,19 +16,14 @@ interface SupportModalProps {
 }
 
 export function SupportModal({ isOpen, onClose }: SupportModalProps) {
-  const [isClosing, setIsClosing] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    return () => setMounted(false);
-  }, []);
+  const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      setIsClosing(false);
       document.body.style.overflow = 'hidden';
+      setTimeout(() => setShowContent(true), 100);
     } else {
+      setShowContent(false);
       document.body.style.overflow = 'unset';
     }
     return () => {
@@ -30,89 +31,94 @@ export function SupportModal({ isOpen, onClose }: SupportModalProps) {
     };
   }, [isOpen]);
 
-  const handleClose = useCallback(() => {
-    setIsClosing(true);
-    setTimeout(() => {
-      onClose();
-      setIsClosing(false);
-    }, 200);
-  }, [onClose]);
+  if (!isOpen) return null;
 
-  if (!isOpen && !isClosing) return null;
-  if (!mounted) return null;
-
-  return createPortal(
-    <div
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity duration-200 ${
-        isClosing ? 'opacity-0' : 'opacity-100'
-      }`}
-      onClick={handleClose}
+  return (
+    <div 
+      className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+      onClick={onClose}
     >
-      <div
-        className={`relative w-full max-w-lg rounded-2xl bg-card border border-border p-8 shadow-2xl transition-all duration-200 mx-4 ${
-          isClosing ? 'scale-95 opacity-0' : 'scale-100 opacity-100'
-        }`}
+      <div 
+        className={cn(
+          "max-w-sm w-full bg-card border border-border/40 rounded-xl shadow-xl p-6 relative",
+          "transform transition-all duration-200",
+          showContent ? "scale-100 opacity-100" : "scale-95 opacity-0"
+        )}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
         <button
-          onClick={handleClose}
-          className="absolute right-4 top-4 rounded-full p-2 hover:bg-muted transition-colors"
+          onClick={onClose}
+          className="absolute top-4 right-4 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
           aria-label="Close"
         >
-          <X className="h-4 w-4 text-muted-foreground" />
+          <X className="w-4 h-4" />
         </button>
 
-        {/* Header */}
-        <div className="flex flex-col items-center text-center space-y-6 mb-8">
-          <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-            <LifeBuoy className="w-5 h-5 text-foreground" />
+        <div className="flex flex-col items-center space-y-4">
+          {/* Icon */}
+          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+            <LifeBuoy className="w-6 h-6 text-primary" />
           </div>
-          <div className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">Contact Support</h2>
-            <p className="text-sm sm:text-[15px] text-muted-foreground leading-relaxed max-w-md">
-              Our support team is available to assist with any questions or issues.
+          
+          {/* Content */}
+          <div className="text-center space-y-1">
+            <h2 className="text-base font-semibold tracking-tight text-foreground">
+              Contact Support
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              We're here to help with any questions
             </p>
           </div>
-        </div>
 
-        {/* Content */}
-        <div className="space-y-6">
-          {/* Email */}
-          <div className="space-y-2">
-            <p className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Email</p>
+          {/* Contact Options */}
+          <div className="w-full space-y-3 pt-2">
+            {/* Email */}
             <a
               href="mailto:support@alifh.ae"
-              className="flex items-center gap-2 text-sm sm:text-[15px] font-medium text-foreground hover:text-primary transition-colors"
+              className={cn(
+                "w-full flex items-center gap-3 p-3 rounded-lg",
+                "bg-muted/30 hover:bg-muted/50 transition-colors"
+              )}
             >
-              <Mail className="w-4 h-4" />
-              support@alifh.ae
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <Mail className="w-4 h-4 text-primary" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-semibold text-foreground">Email us</p>
+                <p className="text-xs text-muted-foreground">support@alifh.ae</p>
+              </div>
             </a>
+
+            {/* Response Time */}
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
+              <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                <Clock className="w-4 h-4 text-muted-foreground" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-semibold text-foreground">Response time</p>
+                <p className="text-xs text-muted-foreground">Usually within 24-48 hours</p>
+              </div>
+            </div>
           </div>
 
-          {/* Response Time */}
-          <div className="space-y-2">
-            <p className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Response Time</p>
-            <p className="text-sm sm:text-[15px] font-medium text-foreground">24-48 hours</p>
-          </div>
-
-          {/* Urgent Matters */}
-          <div className="rounded-xl border border-border/40 p-4 bg-muted/30">
-            <p className="text-sm sm:text-[15px] font-medium text-foreground leading-relaxed">
-              <span className="font-bold text-red-500">For urgent matters:</span> Include "URGENT" in the subject line
-            </p>
-          </div>
+          {/* Urgent Note */}
+          <p className="text-xs text-muted-foreground/80 text-center px-2">
+            For urgent matters, include <span className="font-semibold text-foreground">"URGENT"</span> in the subject
+          </p>
 
           {/* Close Button */}
           <button
-            onClick={handleClose}
-            className="w-full px-6 py-3 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-semibold tracking-tight transition-colors"
+            onClick={onClose}
+            className={cn(
+              "w-full h-10 px-4 rounded-lg text-sm font-semibold transition-colors",
+              "bg-muted/30 text-foreground hover:bg-muted/50"
+            )}
           >
             Close
           </button>
         </div>
       </div>
-    </div>,
-    document.body
+    </div>
   );
 }
