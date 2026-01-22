@@ -147,7 +147,7 @@ export function ContactSection({
 
       {/* Phone number display when revealed */}
       {phoneNumber && showPhone && (
-        <div className="py-3 border-y border-border">
+        <div className="py-3">
           {contactName && (
             <p className="text-[13px] text-muted-foreground/70 uppercase tracking-wider font-bold mb-1">
               {contactName}

@@ -7,7 +7,71 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
-import { AlertTriangle, Package, Search, RefreshCw, Plus, X } from 'lucide-react';
+import { AlertTriangle, Package, Search, RefreshCw, Plus, X, Clock, FileText, XCircle, Archive, CheckCircle2, Timer, Ban } from 'lucide-react';
+
+// Empty state config - context-aware messages for each status
+const EMPTY_STATE_CONFIG: Record<string, { icon: React.ElementType; color: string; message: string; subMessage: string }> = {
+  all: { 
+    icon: Package, 
+    color: 'text-foreground', 
+    message: 'No listings yet', 
+    subMessage: 'Create your first listing to get started' 
+  },
+  active: { 
+    icon: CheckCircle2, 
+    color: 'text-blue-500', 
+    message: 'No active listings', 
+    subMessage: 'Published listings visible to buyers will appear here' 
+  },
+  public: { 
+    icon: CheckCircle2, 
+    color: 'text-emerald-500', 
+    message: 'No public listings', 
+    subMessage: 'Listings visible to everyone will appear here' 
+  },
+  draft: { 
+    icon: FileText, 
+    color: 'text-amber-500', 
+    message: 'No drafts', 
+    subMessage: 'Unfinished listings you\'re working on will appear here' 
+  },
+  in_review: { 
+    icon: Clock, 
+    color: 'text-blue-500', 
+    message: 'Nothing in review', 
+    subMessage: 'Listings awaiting moderation will appear here' 
+  },
+  rejected: { 
+    icon: XCircle, 
+    color: 'text-red-500', 
+    message: 'No rejected listings', 
+    subMessage: 'Listings that need changes will appear here' 
+  },
+  archived: { 
+    icon: Archive, 
+    color: 'text-slate-500', 
+    message: 'No archived listings', 
+    subMessage: 'Listings you\'ve archived will appear here' 
+  },
+  sold: { 
+    icon: CheckCircle2, 
+    color: 'text-emerald-500', 
+    message: 'No sold listings', 
+    subMessage: 'Vehicles you\'ve sold will appear here' 
+  },
+  expired: { 
+    icon: Timer, 
+    color: 'text-orange-500', 
+    message: 'No expired listings', 
+    subMessage: 'Listings past their expiration date will appear here' 
+  },
+  suspended: { 
+    icon: Ban, 
+    color: 'text-red-500', 
+    message: 'No suspended listings', 
+    subMessage: 'Listings flagged for policy review will appear here' 
+  },
+};
 import { DashboardPageWrapper, DashboardPageHeader } from '@/components/shared/layout/dashboard-page-wrapper';
 import {
   Select,
@@ -646,10 +710,10 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
       {/* Empty State - No Data */}
       {!isLoading && !error && allListings.length === 0 && (
         <div className="flex flex-col items-center justify-center py-32 text-center">
-          <Package className="w-10 h-10 text-muted-foreground/20 mb-4" />
-          <h3 className="text-lg font-medium tracking-tight">No listings yet</h3>
-          <p className="text-sm text-muted-foreground mt-1">Create your first listing to get started</p>
-          <Link href={newListingUrl} className="mt-6">
+          <Package className="w-5 h-5 text-foreground mb-3" strokeWidth={2} />
+          <h3 className="text-sm font-semibold tracking-tight">No listings yet</h3>
+          <p className="text-xs text-muted-foreground mt-1">Create your first listing to get started</p>
+          <Link href={newListingUrl} className="mt-4">
             <button className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium transition-colors hover:bg-primary/90">
               Create Listing
             </button>
@@ -658,17 +722,20 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
       )}
 
       {/* Empty State - No Results */}
-      {!isLoading && !error && allListings.length > 0 && filteredAndSortedListings.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-32 text-center">
-          <Search className="w-10 h-10 text-muted-foreground/20 mb-4" />
-          <h3 className="text-lg font-medium tracking-tight">No results</h3>
-          <p className="text-sm text-muted-foreground mt-1">
-            {searchQuery 
-              ? 'Try a different search term'
-              : 'Try a different filter'}
-          </p>
-        </div>
-      )}
+      {!isLoading && !error && allListings.length > 0 && filteredAndSortedListings.length === 0 && (() => {
+        const config = searchQuery 
+          ? { icon: Search, color: 'text-foreground', message: 'No matches found', subMessage: 'Try adjusting your search' }
+          : (EMPTY_STATE_CONFIG[selectedStatus] || EMPTY_STATE_CONFIG.all);
+        const Icon = config.icon;
+        
+        return (
+          <div className="flex flex-col items-center justify-center py-32 text-center">
+            <Icon className={`w-5 h-5 ${config.color} mb-3`} strokeWidth={2} />
+            <h3 className="text-sm font-semibold tracking-tight">{config.message}</h3>
+            <p className="text-xs text-muted-foreground mt-1">{config.subMessage}</p>
+          </div>
+        );
+      })()}
 
       {/* Listings */}
       {!isLoading && !error && filteredAndSortedListings.length > 0 && (

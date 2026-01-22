@@ -7,10 +7,26 @@
 
 import { useEffect } from 'react';
 import { CarCard, CarCardMinimal, CarListItem } from '@/components/inventory';
-import { Search, X } from 'lucide-react';
+import { Search, X, Car } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTrackImpressions } from '@/hooks/listings';
 import type { SearchResponse } from '@/lib/search-utils';
+
+// Empty state config - consistent with booking views
+const EMPTY_STATE_CONFIG = {
+  noResults: { 
+    icon: Search, 
+    color: 'text-foreground', 
+    message: 'No matches found', 
+    subMessage: 'Try adjusting your search or filters' 
+  },
+  noListings: { 
+    icon: Car, 
+    color: 'text-foreground', 
+    message: 'No cars available', 
+    subMessage: 'Check back soon for new listings' 
+  },
+};
 
 interface ListingItem {
   id: string;
@@ -79,34 +95,45 @@ export function ListingsContent({
     }
   }, [listings, isFetching, trackImpressions]);
 
-  // Error state
+  // Error state - consistent with booking views
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 sm:py-24">
-        <div className="rounded-full bg-destructive/10 p-4 mb-4">
-          <X className="w-6 h-6 text-destructive" />
-        </div>
-        <h3 className="text-lg font-semibold mb-2">Something went wrong</h3>
-        <p className="text-sm text-muted-foreground mb-6 max-w-sm text-center">{error.message}</p>
-        <Button variant="outline" onClick={() => window.location.reload()}>
+      <div className="flex flex-col items-center justify-center py-32 text-center">
+        <X className="w-5 h-5 text-destructive mb-3" strokeWidth={2} />
+        <h3 className="text-sm font-semibold tracking-tight">Something went wrong</h3>
+        <p className="text-xs text-muted-foreground mt-1 max-w-xs">{error.message}</p>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={() => window.location.reload()}
+          className="mt-4"
+        >
           Try again
         </Button>
       </div>
     );
   }
 
-  // Empty state (only show after loading is complete)
+  // Empty state - consistent with booking views
   if (!isLoading && !isFetching && listings.length === 0) {
+    const config = activeFilterCount > 0 
+      ? EMPTY_STATE_CONFIG.noResults 
+      : EMPTY_STATE_CONFIG.noListings;
+    const Icon = config.icon;
+    
     return (
-      <div className="flex flex-col items-center justify-center py-16 sm:py-24">
-        <div className="rounded-full bg-muted/50 p-4 mb-4">
-          <Search className="w-6 h-6 text-muted-foreground" />
-        </div>
-        <h3 className="text-lg font-semibold mb-2">No cars found</h3>
-        <p className="text-sm text-muted-foreground mb-6">Try adjusting your filters or search terms</p>
+      <div className="flex flex-col items-center justify-center py-32 text-center">
+        <Icon className={`w-5 h-5 ${config.color} mb-3`} strokeWidth={2} />
+        <h3 className="text-sm font-semibold tracking-tight">{config.message}</h3>
+        <p className="text-xs text-muted-foreground mt-1">{config.subMessage}</p>
         {activeFilterCount > 0 && (
-          <Button variant="outline" onClick={clearFilters}>
-            Clear all filters
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={clearFilters}
+            className="mt-4"
+          >
+            Clear filters
           </Button>
         )}
       </div>

@@ -1,6 +1,6 @@
 /**
- * Footer - Alifh
- * Minimal, clean footer
+ * Footer - Alifh Design System
+ * Clean, minimal footer following profile/settings typography
  */
 
 'use client';
@@ -23,84 +23,80 @@ export function Footer() {
     : "/assets/Alifh_logo_Black.svg";
 
   return (
-    <footer className="bg-background">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <footer className="bg-background border-t border-border/40">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         
-        {/* Top Section */}
-        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-12 mb-16">
+        {/* Main Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 lg:gap-12">
           
-          {/* Brand */}
-          <div className="space-y-4 max-w-sm">
+          {/* Brand - Takes full width on mobile, 1 col on lg */}
+          <div className="col-span-2 md:col-span-4 lg:col-span-1 space-y-4 mb-4 lg:mb-0">
             <Link href="/" className="inline-block">
               <Image
                 src={logoSrc}
                 alt="Alifh"
                 width={100}
                 height={30}
-                className="h-6 w-auto"
+                className="h-5 w-auto"
               />
             </Link>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-sm text-muted-foreground font-medium max-w-[200px]">
               Where quality beats ads.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Dubai, UAE 🇦🇪
             </p>
           </div>
 
-          {/* Links */}
-          <div className="flex flex-wrap gap-x-16 gap-y-8">
-            <div className="space-y-4">
-              <p className="text-xs uppercase tracking-widest text-muted-foreground">Browse</p>
-              <div className="flex flex-col gap-2">
-                <Link href="/listings" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">All Cars</Link>
-                <Link href="/user-dashboard/listings/new" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Sell Your Car</Link>
-              </div>
+          {/* Browse */}
+          <div className="space-y-3">
+            <p className="text-[13px] font-bold text-foreground">Browse</p>
+            <div className="flex flex-col gap-2.5">
+              <Link href="/listings" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">All Cars</Link>
+              <Link href="/user-dashboard/listings/new" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Sell Your Car</Link>
             </div>
-            
-            <div className="space-y-4">
-              <p className="text-xs uppercase tracking-widest text-muted-foreground">For Dealers</p>
-              <div className="flex flex-col gap-2">
-                <Link href="/partner" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Partner With Us</Link>
-                <Link href="/pricing" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Pricing</Link>
-              </div>
+          </div>
+          
+          {/* Dealers */}
+          <div className="space-y-3">
+            <p className="text-[13px] font-bold text-foreground">Dealers</p>
+            <div className="flex flex-col gap-2.5">
+              <Link href="/partner" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Partner With Us</Link>
+              <Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
             </div>
+          </div>
 
-            <div className="space-y-4">
-              <p className="text-xs uppercase tracking-widest text-muted-foreground">Company</p>
-              <div className="flex flex-col gap-2">
-                <Link href="/about" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">About</Link>
-                <Link href="/vision" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Our Vision</Link>
-                <Link href="/contact" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Contact</Link>
-              </div>
+          {/* Company */}
+          <div className="space-y-3">
+            <p className="text-[13px] font-bold text-foreground">Company</p>
+            <div className="flex flex-col gap-2.5">
+              <Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">About</Link>
+              <Link href="/vision" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Our Vision</Link>
+              <Link href="/contact" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Contact</Link>
             </div>
-            
-            <div className="space-y-4">
-              <p className="text-xs uppercase tracking-widest text-muted-foreground">Legal</p>
-              <div className="flex flex-col gap-2">
-                <Link href="/terms-of-service" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Terms of Service</Link>
-                <Link href="/privacy-policy" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Privacy Policy</Link>
-                <Link href="/dealer-agreement" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Dealer Agreement</Link>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <p className="text-xs uppercase tracking-widest text-muted-foreground">Policies</p>
-              <div className="flex flex-col gap-2">
-                <Link href="/refund-policy" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Refund Policy</Link>
-                <Link href="/acceptable-use-policy" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Acceptable Use</Link>
-                <Link href="/intellectual-property" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Intellectual Property</Link>
-                <Link href="/disclaimer" className="text-sm text-foreground hover:text-[#0066FF] transition-colors">Disclaimer</Link>
-              </div>
+          </div>
+          
+          {/* Legal - Consolidated */}
+          <div className="space-y-3">
+            <p className="text-[13px] font-bold text-foreground">Legal</p>
+            <div className="flex flex-col gap-2.5">
+              <Link href="/terms-of-service" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Terms</Link>
+              <Link href="/privacy-policy" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Privacy</Link>
+              <Link href="/dealer-agreement" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Dealer Agreement</Link>
             </div>
           </div>
         </div>
 
         {/* Bottom */}
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-8 border-t border-border/40">
-          <p className="text-xs text-muted-foreground">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 pt-10 mt-10 border-t border-border/40">
+          <p className="text-xs text-muted-foreground/70 font-medium">
             © {new Date().getFullYear()} Alifh. All rights reserved.
           </p>
-          <p className="text-xs text-muted-foreground">
-            Dubai, UAE 🇦🇪
-          </p>
+          <div className="flex items-center gap-4">
+            <Link href="/refund-policy" className="text-xs text-muted-foreground/70 font-medium hover:text-muted-foreground transition-colors">Refunds</Link>
+            <Link href="/acceptable-use-policy" className="text-xs text-muted-foreground/70 font-medium hover:text-muted-foreground transition-colors">Acceptable Use</Link>
+            <Link href="/disclaimer" className="text-xs text-muted-foreground/70 font-medium hover:text-muted-foreground transition-colors">Disclaimer</Link>
+          </div>
         </div>
       </div>
     </footer>

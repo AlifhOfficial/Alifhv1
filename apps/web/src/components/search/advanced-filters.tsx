@@ -135,10 +135,10 @@ export function AdvancedFilters({
           )}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-sidebar-border">
-            <div className="flex items-center gap-3">
-              <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-              <h3 className="text-base font-bold text-sidebar-foreground">More Filters</h3>
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-sidebar-border">
+            <div className="flex items-center gap-2.5">
+              <SlidersHorizontal className="h-4 w-4 text-muted-foreground/70" />
+              <h3 className="text-[15px] font-semibold tracking-tight text-sidebar-foreground/80">More Filters</h3>
             </div>
             <button 
               type="button"
@@ -150,7 +150,7 @@ export function AdvancedFilters({
           </div>
 
           {/* Scrollable Content */}
-          <div className="max-h-[85vh] overflow-y-auto p-4 space-y-1">
+          <div className="max-h-[70vh] overflow-y-auto p-3 space-y-0.5">
             {/* Body Type */}
             <FilterGroup
               title="Body Type"
@@ -259,14 +259,14 @@ export function AdvancedFilters({
 
           {/* Footer */}
           {advancedCount > 0 && (
-            <div className="px-5 py-4 border-t border-sidebar-border">
+            <div className="px-4 py-3 border-t border-sidebar-border">
               <button
                 type="button"
                 onClick={(e) => handleReset(e)}
                 className={cn(
-                  "w-full px-4 py-3 text-sm font-semibold",
-                  "text-muted-foreground hover:text-sidebar-foreground",
-                  "hover:bg-muted rounded-2xl",
+                  "w-full px-3 py-2 text-sm font-medium",
+                  "text-muted-foreground/70 hover:text-sidebar-foreground/80",
+                  "hover:bg-muted/40 rounded-lg",
                   "transition-colors"
                 )}
               >
@@ -331,17 +331,17 @@ function FilterGroup({
     <Collapsible asChild defaultOpen={defaultOpen} className="group/collapsible">
       <div>
         <CollapsibleTrigger asChild>
-          <button type="button" className="flex w-full items-center justify-between px-4 py-4 hover:bg-muted/30 rounded-2xl transition-colors">
-            <span className="text-[15px] font-bold tracking-tight text-sidebar-foreground">{title}</span>
-            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=closed]/collapsible:-rotate-90" />
+          <button type="button" className="flex w-full items-center justify-between px-3 py-2.5 hover:bg-muted/30 rounded-lg transition-colors">
+            <span className="text-[15px] font-semibold tracking-tight text-sidebar-foreground/80">{title}</span>
+            <ChevronDown className="h-3.5 w-3.5 text-muted-foreground/60 transition-transform duration-200 group-data-[state=closed]/collapsible:-rotate-90" />
           </button>
         </CollapsibleTrigger>
         
         <CollapsibleContent>
-          <div className="px-4 pb-4">
+          <div className="px-3 pb-3">
             {showColors ? (
               // Color grid with labels on hover
-              <div className="flex flex-wrap gap-2.5">
+              <div className="flex flex-wrap gap-2">
                 {availableOptions.map((option) => {
                   const isSelected = selected.includes(option.value);
                   return (
@@ -350,20 +350,20 @@ function FilterGroup({
                       key={option.value}
                       onClick={() => toggleOption(option.value)}
                       className={cn(
-                        'w-8 h-8 rounded-full border-2 transition-all duration-150 flex items-center justify-center',
+                        'w-7 h-7 rounded-full border transition-all duration-150 flex items-center justify-center',
                         isSelected
-                          ? 'border-foreground ring-2 ring-foreground/20 scale-110'
-                          : 'border-sidebar-border hover:border-muted-foreground/50 hover:scale-105'
+                          ? 'border-foreground/80 ring-1 ring-foreground/15 scale-105'
+                          : 'border-sidebar-border/80 hover:border-muted-foreground/40 hover:scale-105'
                       )}
                       style={{ backgroundColor: option.hex }}
                       title={`${option.label}`}
                     >
                       {isSelected && (
                         <CheckCircle2 className={cn(
-                          'h-4 w-4',
+                          'h-3.5 w-3.5',
                           option.value === 'white' || option.value === 'beige' || option.value === 'yellow' || option.value === 'gold'
-                            ? 'text-foreground'
-                            : 'text-white'
+                            ? 'text-foreground/80'
+                            : 'text-white/90'
                         )} />
                       )}
                     </button>
@@ -372,7 +372,7 @@ function FilterGroup({
               </div>
             ) : (
               // List items with clear hierarchy
-              <ul className="space-y-1">
+              <ul className="space-y-0.5">
                 {availableOptions.map((option) => {
                   const isSelected = selected.includes(option.value);
                   return (
@@ -380,22 +380,22 @@ function FilterGroup({
                       key={option.value}
                       onClick={() => toggleOption(option.value)}
                       className={cn(
-                        'flex items-center justify-between px-4 py-3 cursor-pointer rounded-2xl',
+                        'flex items-center justify-between px-3 py-2 cursor-pointer rounded-md',
                         'transition-colors duration-100',
                         isSelected 
-                          ? 'bg-muted/50' 
-                          : 'hover:bg-muted/50'
+                          ? 'bg-sidebar-accent' 
+                          : 'hover:bg-sidebar-accent'
                       )}
                     >
                       <span className={cn(
-                        "text-[15px]",
+                        "text-[15px] font-semibold tracking-tight",
                         isSelected 
-                          ? "font-semibold text-sidebar-foreground" 
-                          : "font-medium text-sidebar-foreground/70"
+                          ? "text-sidebar-foreground" 
+                          : "text-sidebar-foreground/80"
                       )}>
                         {option.label}
                       </span>
-                      {isSelected && <CheckCircle2 className="h-4 w-4 text-foreground" />}
+                      {isSelected && <CheckCircle2 className="size-4 text-foreground" />}
                     </li>
                   );
                 })}

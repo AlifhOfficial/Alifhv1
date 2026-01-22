@@ -160,7 +160,7 @@ export function EMICalculator({ price, currency = 'AED', className }: EMICalcula
           </div>
 
           {/* Summary */}
-          <div className="space-y-3 py-4 border-y border-border">
+          <div className="space-y-3 py-4">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground/70 font-semibold">Loan Amount</span>
               <span className="font-bold tabular-nums text-foreground">{formatAmount(calculations.loanAmount)}</span>

@@ -50,8 +50,7 @@ export function PartnerConversationGroup({
         onClick={() => setIsExpanded(!isExpanded)}
         className={cn(
           'w-full py-3 px-3 text-left transition-colors duration-150 hover:bg-sidebar rounded-xl',
-          'flex items-center gap-3',
-          hasActiveConversation && 'bg-sidebar'
+          'flex items-center gap-3'
         )}
       >
         {/* Partner Avatar */}

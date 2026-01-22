@@ -1,16 +1,10 @@
 /**
  * Staff Invite Action Modal
- * Confirmation modal for accepting/rejecting staff invitations
- * Following Alifh design system - modals for important feedback
+ * Simple confirmation for accepting/rejecting staff invitations
  */
 'use client';
 
-import { CheckCircle2, XCircle, Loader2, AlertCircle } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from '@/components/ui/layout/dialog';
+import { Loader2, CheckCircle2, XCircle } from 'lucide-react';
 
 interface StaffInviteActionModalProps {
   open: boolean;
@@ -33,85 +27,70 @@ export function StaffInviteActionModal({
   error,
   onConfirm,
 }: StaffInviteActionModalProps) {
-  if (!action) return null;
+  if (!open || !action) return null;
 
   const isAccept = action === 'accept';
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
-        <DialogTitle className="sr-only">
-          {error ? 'Action Failed' : isAccept ? 'Accept Invitation' : 'Reject Invitation'}
-        </DialogTitle>
-        
-        <div className="flex flex-col items-center text-center space-y-6 py-4">
-          
+    <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+      <div 
+        className="max-w-xs w-full bg-card border border-border/40 rounded-xl shadow-xl p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex flex-col items-center space-y-4">
           {/* Icon */}
-          <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+          <div className="w-12 h-12 rounded-full flex items-center justify-center">
             {isLoading ? (
               <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
             ) : error ? (
-              <AlertCircle className="w-5 h-5 text-red-500" />
+              <XCircle className="w-6 h-6 text-destructive" />
             ) : isAccept ? (
-              <CheckCircle2 className="w-5 h-5 text-green-500" />
+              <CheckCircle2 className="w-6 h-6 text-green-500" />
             ) : (
-              <XCircle className="w-5 h-5 text-red-500" />
+              <XCircle className="w-6 h-6 text-red-500" />
             )}
           </div>
-
+          
           {/* Content */}
-          <div className="space-y-3">
-            <h2 className="text-xl font-semibold">
-              {error ? 'Action Failed' : isAccept ? 'Accept Invitation?' : 'Reject Invitation?'}
+          <div className="text-center space-y-1">
+            <h2 className="text-base font-semibold tracking-tight text-foreground">
+              {error ? 'Failed' : isLoading ? (isAccept ? 'Joining...' : 'Declining...') : (isAccept ? 'Join team?' : 'Decline invite?')}
             </h2>
-            <p className="text-sm text-muted-foreground/70 max-w-sm">
-              {error ? (
-                error
-              ) : isAccept ? (
-                <>
-                  You will join <span className="font-medium text-foreground">{partnerName}</span> as{' '}
-                  <span className="font-medium text-foreground capitalize">{role}</span>
-                </>
-              ) : (
-                <>
-                  This invitation from <span className="font-medium text-foreground">{partnerName}</span> will be declined
-                </>
+            
+            <p className="text-sm text-muted-foreground">
+              {error ? error : isLoading ? 'Please wait' : (
+                isAccept 
+                  ? `Join ${partnerName} as ${role}`
+                  : `Decline invite from ${partnerName}`
               )}
             </p>
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3 w-full">
-            <button
-              onClick={onClose}
-              disabled={isLoading}
-              className="flex-1 px-6 py-3 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium transition-colors disabled:opacity-50"
-            >
-              Cancel
-            </button>
-            {!error && (
+          {!isLoading && (
+            <div className="flex gap-2 w-full">
               <button
-                onClick={onConfirm}
-                disabled={isLoading}
-                className={`flex-1 px-6 py-3 rounded-full text-sm font-medium transition-colors disabled:opacity-50 ${
-                  isAccept
-                    ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
-                    : 'bg-destructive hover:bg-destructive/90 text-destructive-foreground'
-                }`}
+                onClick={onClose}
+                className="flex-1 py-2.5 rounded-lg bg-muted text-sm font-medium text-foreground hover:bg-muted/80 transition-colors"
               >
-                {isLoading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    {isAccept ? 'Accepting...' : 'Rejecting...'}
-                  </span>
-                ) : (
-                  isAccept ? 'Accept' : 'Reject'
-                )}
+                {error ? 'Close' : 'Cancel'}
               </button>
-            )}
-          </div>
+              {!error && (
+                <button
+                  onClick={onConfirm}
+                  className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                    isAccept
+                      ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                      : 'bg-red-500 text-white hover:bg-red-600'
+                  }`}
+                >
+                  {isAccept ? 'Join' : 'Decline'}
+                </button>
+              )}
+            </div>
+          )}
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }

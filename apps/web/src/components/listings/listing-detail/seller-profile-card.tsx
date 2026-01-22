@@ -245,31 +245,31 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
         />
       </div>
 
-      {/* Website Link */}
-      {partner.website && (
-        <Link
-          href={partner.website}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
-        >
-          <Globe className="w-4 h-4" />
-          <span className="truncate">{partner.website.replace(/^https?:\/\/(www\.)?/, '')}</span>
-          <ExternalLink className="w-4 h-4 flex-shrink-0" />
-        </Link>
-      )}
-
-      {/* Showroom Link - Black Tier Only, with valid partner.id */}
-      {isBlackTier && partner.id && (
-        <Link
-          href={`/showroom/${partner.id}`}
-          prefetch={false}
-          className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
-        >
-          <Sparkles className="w-4 h-4" />
-          <span>View Showroom</span>
-          <ExternalLink className="w-4 h-4 flex-shrink-0" />
-        </Link>
+      {/* Website & Showroom Links */}
+      {(partner.website || (isBlackTier && partner.id)) && (
+        <div className="flex items-center gap-4">
+          {partner.website && (
+            <Link
+              href={partner.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+            >
+              <span className="truncate">{partner.website.replace(/^https?:\/\/(www\.)?/, '')}</span>
+              <ExternalLink className="w-4 h-4 flex-shrink-0" />
+            </Link>
+          )}
+          {isBlackTier && partner.id && (
+            <Link
+              href={`/showroom/${partner.id}`}
+              prefetch={false}
+              className="flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <span>Visit Showroom</span>
+              <ExternalLink className="w-4 h-4 flex-shrink-0" />
+            </Link>
+          )}
+        </div>
       )}
 
       {/* Badges - Minimal, neutral design */}
@@ -298,7 +298,7 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
       )}
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-4 py-4 border-y border-border">
+      <div className="grid grid-cols-2 gap-4 py-4">
         {/* Google Rating */}
         <div className="space-y-1">
           <div className="flex items-center gap-2">
@@ -495,7 +495,7 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
       )}
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-4 py-4 border-y border-border">
+      <div className="grid grid-cols-2 gap-4 py-4">
         {/* Inventory - Clickable */}
         <Link 
           href={`/listings?sellerId=${sellerData.userId}`}
@@ -678,7 +678,7 @@ function SellerProfileCardSkeletonComponent({ className, variant = 'partner' }: 
       )}
 
       {/* Stats Grid - 2x2 */}
-      <div className="grid grid-cols-2 gap-4 py-4 border-y border-border">
+      <div className="grid grid-cols-2 gap-4 py-4">
         {/* Stat 1 - Google Rating / Inventory */}
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">

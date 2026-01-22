@@ -5,7 +5,6 @@
  */
 
 export { UserDashboardOverview } from './user-dashboard-overview';
-export { PartnerApplicationStatus } from './partner-application-status';
 export { PartnerApplicationForm } from './partner-application-form';
 export { UserBanNotice } from './user-ban-notice';
 export { UserStaffInvites } from './user-staff-invites';

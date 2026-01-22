@@ -42,6 +42,7 @@ import {
   Compass,
   Store,
   Phone,
+  Zap,
 } from "lucide-react";
 import { useMemo, useState, useEffect, type ComponentType } from "react";
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
@@ -150,6 +151,7 @@ const iconMap: Record<string, ComponentType<{ className?: string }>> = {
   "compass": Compass,
   "store": Store,
   "phone": Phone,
+  "zap": Zap,
 };
 
 // ============================================================================

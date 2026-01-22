@@ -26,7 +26,7 @@ import {
   Database,
   Sparkles,
 } from 'lucide-react';
-import { PartnerApplicationStatus, UserBanNotice } from '@/components/dashboards/user';
+import { UserBanNotice } from '@/components/dashboards/user';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { useDashboardStats } from '@/hooks/profile';
 import { useUnreadCount } from '@/hooks/messaging';

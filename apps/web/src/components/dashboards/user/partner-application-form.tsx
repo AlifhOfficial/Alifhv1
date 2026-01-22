@@ -1,7 +1,6 @@
 /**
  * Partner Application Form Component
- * Logged-in users apply to become partners
- * Following Alifh design system
+ * Clean typography-first design, no icons
  */
 
 'use client';
@@ -26,20 +25,52 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { 
-  Building2, 
-  FileText, 
-  CalendarIcon,
-  Upload,
-  Loader2,
-  CheckCircle2,
-  AlertCircle,
-  Users,
-  X,
-  File
-} from 'lucide-react';
 
-export function PartnerApplicationForm() {
+// ============================================================================
+// Shared Components
+// ============================================================================
+
+function SectionHeader({ 
+  title, 
+  subtitle 
+}: { 
+  title: string; 
+  subtitle?: string;
+}) {
+  return (
+    <div className="mb-6">
+      <h3 className="text-[15px] font-bold tracking-tight text-foreground">{title}</h3>
+      {subtitle && <p className="text-xs text-muted-foreground/70 mt-1">{subtitle}</p>}
+    </div>
+  );
+}
+
+function FieldWrapper({ 
+  label, 
+  required, 
+  error, 
+  children 
+}: { 
+  label: string; 
+  required?: boolean; 
+  error?: string; 
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-2">
+      <label className="text-sm font-semibold text-muted-foreground/70">
+        {label}
+        {required && <span className="text-red-500 ml-0.5">*</span>}
+      </label>
+      {children}
+      {error && (
+        <p className="text-xs font-medium text-red-500">{error}</p>
+      )}
+    </div>
+  );
+}
+
+export function PartnerApplicationForm({ onSuccess }: { onSuccess?: () => void }) {
   const router = useRouter();
   const { user } = useUser();
   const { data: existingRequest, isLoading: loadingRequest } = usePartnerRequest();
@@ -74,14 +105,12 @@ export function PartnerApplicationForm() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
     if (!allowedTypes.includes(file.type)) {
       setErrors(prev => ({ ...prev, tradeLicenseDocumentUrl: 'Please upload a PDF, JPEG, or PNG file' }));
       return;
     }
 
-    // Validate file size (5MB max)
     if (file.size > 5 * 1024 * 1024) {
       setErrors(prev => ({ ...prev, tradeLicenseDocumentUrl: 'Maximum file size is 5MB' }));
       return;
@@ -165,21 +194,6 @@ export function PartnerApplicationForm() {
     submit(submissionData, {
       onSuccess: () => {
         setSubmissionSuccess(true);
-        setTimeout(() => {
-          setFormData({
-            companyNameLegal: '',
-            tradeLicense: '',
-            tradeLicenseExpiry: '',
-            tradeLicenseDocumentUrl: '',
-            vatNumber: '',
-            partnerType: 'car_dealer',
-            companySize: 'small',
-          });
-          setSelectedDate(undefined);
-          setUploadedFile(null);
-          setShowFeedback(false);
-          router.push('/user-dashboard/requests');
-        }, 2000);
       },
       onError: (error) => {
         setSubmissionError(error.message || 'Failed to submit application. Please try again.');
@@ -188,24 +202,45 @@ export function PartnerApplicationForm() {
   };
 
   const handleFeedbackClose = () => {
+    if (submissionSuccess) {
+      // Reset form on success
+      setFormData({
+        companyNameLegal: '',
+        tradeLicense: '',
+        tradeLicenseExpiry: '',
+        tradeLicenseDocumentUrl: '',
+        vatNumber: '',
+        partnerType: 'car_dealer',
+        companySize: 'small',
+      });
+      setSelectedDate(undefined);
+      setUploadedFile(null);
+      onSuccess?.();
+    }
     setShowFeedback(false);
     setSubmissionSuccess(false);
     setSubmissionError(null);
   };
 
+  // ============================================================================
+  // Loading State
+  // ============================================================================
+  
   if (loadingRequest) {
     return (
-      <div className="max-w-2xl mx-auto px-6 py-16">
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+      <div className="max-w-2xl mx-auto py-16">
+        <div className="space-y-6">
+          <div className="h-8 w-48 bg-muted/40 rounded-lg animate-pulse" />
+          <div className="rounded-xl border border-border/40 bg-sidebar p-6 h-64 animate-pulse" />
         </div>
       </div>
     );
   }
 
-  // Check if user is currently a staff member of any partner
-  // They must leave their organization before applying to become a partner
-  // Cast user to include partnerMemberships from custom session
+  // ============================================================================
+  // Staff Member Block
+  // ============================================================================
+  
   const userWithPartner = user as typeof user & { 
     partnerMemberships?: Array<{ partnerId: string; partnerName?: string }>;
     hasPartnerAccess?: boolean;
@@ -216,23 +251,19 @@ export function PartnerApplicationForm() {
   if (isStaffMember) {
     const membership = userWithPartner.partnerMemberships?.[0];
     return (
-      <div className="max-w-2xl mx-auto px-6 py-24">
-        <div className="text-center space-y-6">
-          <div className="w-12 h-12 rounded-full bg-muted/50 flex items-center justify-center mx-auto">
-            <Users className="w-6 h-6 text-muted-foreground" />
-          </div>
-          
-          <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">Staff Membership Active</h2>
-            <p className="text-sm text-muted-foreground max-w-md mx-auto">
-              You are currently a staff member of {membership.partnerName || 'a partner organization'}. 
+      <div className="max-w-2xl mx-auto py-16">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-8 text-center space-y-5">
+          <div>
+            <p className="text-lg font-semibold text-foreground">Staff Membership Active</p>
+            <p className="text-sm text-muted-foreground/70 mt-2 max-w-md mx-auto">
+              You're currently a staff member of {membership?.partnerName || 'a partner organization'}. 
               To apply as a partner, you must first leave your current organization.
             </p>
           </div>
           
           <button
             onClick={() => router.push('/staff-dashboard')}
-            className="px-6 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-all shadow-sm"
+            className="px-6 py-3 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm"
           >
             Go to Staff Dashboard
           </button>
@@ -241,90 +272,62 @@ export function PartnerApplicationForm() {
     );
   }
 
-  // User already has an ACTIVE application (pending or approved)
-  // Allow re-application if previous request was rejected
+  // ============================================================================
+  // Existing Application - Don't show form
+  // ============================================================================
+  
   const hasActiveRequest = existingRequest && 
     (existingRequest.status === 'pending' || existingRequest.status === 'approved');
-  
+
   if (hasActiveRequest) {
-    return (
-      <div className="max-w-2xl mx-auto px-6 py-24">
-        <div className="text-center space-y-6">
-          <div className="w-12 h-12 rounded-full bg-muted/50 flex items-center justify-center mx-auto">
-            <AlertCircle className="w-6 h-6 text-muted-foreground" />
-          </div>
-          
-          <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-foreground">Application Already Submitted</h2>
-            <p className="text-sm text-muted-foreground">
-              You've already submitted a partner application. Check your dashboard for status updates.
-            </p>
-          </div>
-          
-          <button
-            onClick={() => router.push('/user-dashboard/requests')}
-            className="px-6 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-all shadow-sm"
-          >
-            Go to Requests
-          </button>
-        </div>
-      </div>
-    );
+    return null;
   }
 
+  // ============================================================================
+  // Main Form
+  // ============================================================================
+
   return (
-    <div className="min-h-screen bg-background pb-32">
-      <div className="max-w-3xl mx-auto px-8 py-24 space-y-24">
+    <div className="min-h-screen bg-background pb-16">
+      <div className="max-w-2xl mx-auto space-y-8">
       
         {/* Header */}
-        <section className="space-y-4 text-center">
-          <h1 className="text-foreground">Partner Application</h1>
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            Join Alifh as a verified partner and grow your business with our platform
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight">Partner Application</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Join Alifh as a verified partner
           </p>
-        </section>
+        </div>
 
         {/* Application Form */}
-        <form onSubmit={handleSubmit} className="space-y-12">
+        <form onSubmit={handleSubmit} className="space-y-8">
           
-          {/* Company Information Card */}
-          <div className="rounded-2xl border border-border/40 bg-card/50 backdrop-blur-sm p-8 md:p-12 space-y-10">
-            <div className="space-y-2">
-              <h2 className="text-foreground">Company Information</h2>
-              <p className="text-sm text-muted-foreground">Tell us about your business</p>
-            </div>
+          {/* Company Information */}
+          <section>
+            <SectionHeader 
+              title="Company Information" 
+              subtitle="Tell us about your business"
+            />
+            
+            <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-6">
+              <FieldWrapper label="Company Name (Legal)" required error={errors.companyNameLegal}>
+                <input
+                  type="text"
+                  value={formData.companyNameLegal}
+                  onChange={(e) => updateField('companyNameLegal', e.target.value)}
+                  placeholder="Enter your company's legal name"
+                  className={cn(
+                    "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-primary",
+                    "outline-none transition-colors px-0 text-sm font-medium",
+                    "placeholder:text-muted-foreground/40"
+                  )}
+                />
+              </FieldWrapper>
 
-            <div className="space-y-8">
-              {/* Company Name */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground flex items-center gap-2">
-                  Company Name (Legal)
-                  <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <Building2 className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <input
-                    type="text"
-                    value={formData.companyNameLegal}
-                    onChange={(e) => updateField('companyNameLegal', e.target.value)}
-                    placeholder="Enter your company's legal name"
-                    className="w-full h-11 pl-7 pr-4 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-all placeholder:text-muted-foreground/40 text-foreground"
-                  />
-                </div>
-                {errors.companyNameLegal && (
-                  <small className="text-red-500 block mt-1">{errors.companyNameLegal}</small>
-                )}
-              </div>
-
-              {/* Partner Type & Company Size */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground flex items-center gap-2">
-                    Partner Type
-                    <span className="text-red-500">*</span>
-                  </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <FieldWrapper label="Partner Type" required>
                   <Select value={formData.partnerType} onValueChange={(value) => updateField('partnerType', value)}>
-                    <SelectTrigger className="h-11 border border-border/40 bg-background/50 hover:bg-background transition-colors">
+                    <SelectTrigger className="h-12 border-0 border-b-2 border-border/40 rounded-none bg-transparent px-0 focus:ring-0 focus:border-primary">
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -332,15 +335,11 @@ export function PartnerApplicationForm() {
                       <SelectItem value="showroom">Showroom</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
+                </FieldWrapper>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground flex items-center gap-2">
-                    Company Size
-                    <span className="text-red-500">*</span>
-                  </label>
+                <FieldWrapper label="Company Size" required>
                   <Select value={formData.companySize} onValueChange={(value) => updateField('companySize', value)}>
-                    <SelectTrigger className="h-11 border border-border/40 bg-background/50 hover:bg-background transition-colors">
+                    <SelectTrigger className="h-12 border-0 border-b-2 border-border/40 rounded-none bg-transparent px-0 focus:ring-0 focus:border-primary">
                       <SelectValue placeholder="Select size" />
                     </SelectTrigger>
                     <SelectContent>
@@ -350,131 +349,71 @@ export function PartnerApplicationForm() {
                       <SelectItem value="enterprise">Enterprise (200+ employees)</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
+                </FieldWrapper>
               </div>
             </div>
-          </div>
+          </section>
 
-          {/* Legal Documents Card */}
-          <div className="rounded-2xl border border-border/40 bg-card/50 backdrop-blur-sm p-8 md:p-12 space-y-10">
-            <div className="space-y-2">
-              <h2 className="text-foreground">Legal Documents</h2>
-              <p className="text-sm text-muted-foreground">Provide your business registration details</p>
-            </div>
+          {/* Legal Documents */}
+          <section>
+            <SectionHeader 
+              title="Legal Documents" 
+              subtitle="Provide your business registration details"
+            />
+            
+            <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <FieldWrapper label="Trade License Number" required error={errors.tradeLicense}>
+                  <input
+                    type="text"
+                    value={formData.tradeLicense}
+                    onChange={(e) => updateField('tradeLicense', e.target.value)}
+                    placeholder="TL-123456"
+                    className={cn(
+                      "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-primary",
+                      "outline-none transition-colors px-0 text-sm font-medium",
+                      "placeholder:text-muted-foreground/40"
+                    )}
+                  />
+                </FieldWrapper>
 
-            <div className="space-y-8">
-              {/* Trade License Number & Expiry */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground flex items-center gap-2">
-                    Trade License Number
-                    <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <FileText className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <input
-                      type="text"
-                      value={formData.tradeLicense}
-                      onChange={(e) => updateField('tradeLicense', e.target.value)}
-                      placeholder="TL-123456"
-                      className="w-full h-11 pl-7 pr-4 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-all placeholder:text-muted-foreground/40 text-foreground"
-                    />
-                  </div>
-                  {errors.tradeLicense && (
-                    <small className="text-red-500 block mt-1">{errors.tradeLicense}</small>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground flex items-center gap-2">
-                    Expiry Date
-                    <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={dateInputValue}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        const digits = value.replace(/\D/g, '');
-                        
-                        let formatted = digits;
-                        if (digits.length >= 2) {
-                          formatted = digits.slice(0, 2) + '/' + digits.slice(2);
-                        }
-                        if (digits.length >= 4) {
-                          formatted = digits.slice(0, 2) + '/' + digits.slice(2, 4) + '/' + digits.slice(4, 8);
-                        }
-                        
-                        setDateInputValue(formatted.slice(0, 10));
-                        
-                        if (digits.length === 8) {
-                          const day = parseInt(digits.slice(0, 2));
-                          const month = parseInt(digits.slice(2, 4));
-                          const year = parseInt(digits.slice(4, 8));
-                          
-                          if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && year >= 2025) {
-                            const date = new Date(year, month - 1, day);
-                            if (!isNaN(date.getTime()) && date > new Date()) {
-                              setSelectedDate(date);
-                              updateField('tradeLicenseExpiry', format(date, 'yyyy-MM-dd'));
-                              setErrors(prev => ({ ...prev, tradeLicenseExpiry: '' }));
-                            }
-                          }
-                        }
-                      }}
-                      onBlur={(e) => {
-                        const digits = e.target.value.replace(/\D/g, '');
-                        if (digits.length > 0 && digits.length !== 8) {
-                          setErrors(prev => ({ ...prev, tradeLicenseExpiry: 'Please enter a valid date (DD/MM/YYYY)' }));
-                        } else if (digits.length === 8 && !selectedDate) {
-                          setErrors(prev => ({ ...prev, tradeLicenseExpiry: 'Invalid date or must be in the future' }));
-                        }
-                      }}
-                      placeholder="DD/MM/YYYY"
-                      className="w-full h-11 pl-4 pr-11 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-all placeholder:text-muted-foreground/40 text-foreground"
-                    />
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <button
-                          type="button"
-                          className="absolute right-0 top-1/2 -translate-y-1/2 h-9 w-9 hover:bg-secondary/60 rounded-lg transition-colors flex items-center justify-center"
-                        >
-                          <CalendarIcon className="w-4 h-4 text-muted-foreground" />
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="end" sideOffset={4}>
-                        <Calendar
-                          mode="single"
-                          selected={selectedDate}
-                          onSelect={(date) => {
-                            setSelectedDate(date);
-                            setDateInputValue(date ? format(date, 'dd/MM/yyyy') : '');
-                            updateField('tradeLicenseExpiry', date ? format(date, 'yyyy-MM-dd') : '');
-                            setErrors(prev => ({ ...prev, tradeLicenseExpiry: '' }));
-                          }}
-                          disabled={(date) => date < new Date()}
-                          initialFocus
-                          captionLayout="dropdown"
-                          fromYear={2025}
-                          toYear={2050}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                  {errors.tradeLicenseExpiry && (
-                    <small className="text-red-500 block mt-1">{errors.tradeLicenseExpiry}</small>
-                  )}
-                </div>
+                <FieldWrapper label="Expiry Date" required error={errors.tradeLicenseExpiry}>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className={cn(
+                          "w-full h-12 bg-transparent border-b-2 border-border/40 hover:border-primary/60 focus:border-primary",
+                          "outline-none transition-colors px-0 text-sm font-medium text-left",
+                          !selectedDate && "text-muted-foreground/40"
+                        )}
+                      >
+                        {selectedDate ? format(selectedDate, 'dd MMM yyyy') : 'Select date'}
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start" sideOffset={4}>
+                      <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={(date) => {
+                          setSelectedDate(date);
+                          setDateInputValue(date ? format(date, 'dd/MM/yyyy') : '');
+                          updateField('tradeLicenseExpiry', date ? format(date, 'yyyy-MM-dd') : '');
+                          setErrors(prev => ({ ...prev, tradeLicenseExpiry: '' }));
+                        }}
+                        disabled={(date) => date < new Date()}
+                        initialFocus
+                        captionLayout="dropdown"
+                        fromYear={2025}
+                        toYear={2050}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </FieldWrapper>
               </div>
 
               {/* Trade License Document Upload */}
-              <div className="space-y-3">
-                <label className="text-sm font-medium text-foreground flex items-center gap-2">
-                  Trade License Document
-                  <span className="text-red-500">*</span>
-                </label>
-                
+              <FieldWrapper label="Trade License Document" required error={errors.tradeLicenseDocumentUrl}>
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -485,25 +424,20 @@ export function PartnerApplicationForm() {
                 />
 
                 {uploadedFile ? (
-                  <div className="rounded-xl border border-border/40 bg-card/50 p-4 transition-all hover:border-border/60">
+                  <div className="rounded-lg bg-muted/20 p-4">
                     <div className="flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <File className="w-5 h-5 text-primary" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium text-foreground truncate">{uploadedFile.name}</p>
-                          <small className="text-muted-foreground">
-                            {(uploadedFile.size / 1024).toFixed(1)} KB
-                          </small>
-                        </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-foreground truncate">{uploadedFile.name}</p>
+                        <p className="text-xs text-muted-foreground/70 mt-0.5">
+                          {(uploadedFile.size / 1024).toFixed(1)} KB
+                        </p>
                       </div>
                       <button
                         type="button"
                         onClick={removeFile}
-                        className="p-1.5 hover:bg-secondary rounded-lg transition-colors flex-shrink-0"
+                        className="text-xs font-semibold text-red-500 hover:text-red-600 transition-colors"
                       >
-                        <X className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
+                        Remove
                       </button>
                     </div>
                   </div>
@@ -512,89 +446,62 @@ export function PartnerApplicationForm() {
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUploading}
-                    className="w-full rounded-xl border-2 border-dashed border-border/40 bg-secondary/20 hover:bg-secondary/30 hover:border-primary/40 transition-all p-12 flex flex-col items-center gap-4 disabled:opacity-50 disabled:cursor-not-allowed group"
+                    className={cn(
+                      "w-full rounded-lg border-2 border-dashed border-border/40 bg-muted/10",
+                      "hover:bg-muted/20 hover:border-primary/40 transition-all p-8",
+                      "disabled:opacity-50 disabled:cursor-not-allowed"
+                    )}
                   >
                     {isUploading ? (
-                      <>
-                        <div className="relative">
-                          <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-                            <Loader2 className="w-8 h-8 text-muted-foreground animate-spin" />
-                          </div>
-                        </div>
-                        <div className="text-center">
-                          <p className="font-medium text-foreground mb-1">Uploading document...</p>
-                          <small className="text-muted-foreground">Please wait</small>
-                        </div>
-                      </>
+                      <div className="text-center">
+                        <p className="text-sm font-medium text-foreground">Uploading...</p>
+                        <p className="text-xs text-muted-foreground/70 mt-1">Please wait</p>
+                      </div>
                     ) : (
-                      <>
-                        <div className="relative">
-                          <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center group-hover:scale-105 transition-transform">
-                            <Upload className="w-8 h-8 text-muted-foreground" />
-                          </div>
-                        </div>
-                        <div className="text-center">
-                          <p className="font-medium text-foreground mb-1">Upload Trade License</p>
-                          <small className="text-muted-foreground">PDF, JPG, or PNG • Maximum 5MB</small>
-                        </div>
-                      </>
+                      <div className="text-center">
+                        <p className="text-sm font-medium text-foreground">Click to upload</p>
+                        <p className="text-xs text-muted-foreground/70 mt-1">PDF, JPG, or PNG • Max 5MB</p>
+                      </div>
                     )}
                   </button>
                 )}
-                
-                {errors.tradeLicenseDocumentUrl && (
-                  <small className="text-red-500 block mt-1">{errors.tradeLicenseDocumentUrl}</small>
-                )}
-              </div>
+              </FieldWrapper>
 
-              {/* VAT Number */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground flex items-center gap-2">
-                  VAT Number
-                  <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <FileText className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <input
-                    type="text"
-                    value={formData.vatNumber}
-                    onChange={(e) => updateField('vatNumber', e.target.value)}
-                    placeholder="Enter VAT registration number"
-                    className="w-full h-11 pl-7 pr-4 bg-transparent border-b border-border/40 focus:border-primary outline-none transition-all placeholder:text-muted-foreground/40 text-foreground"
-                  />
-                </div>
-                {errors.vatNumber && (
-                  <small className="text-red-500 block mt-1">{errors.vatNumber}</small>
-                )}
-              </div>
+              <FieldWrapper label="VAT Number" required error={errors.vatNumber}>
+                <input
+                  type="text"
+                  value={formData.vatNumber}
+                  onChange={(e) => updateField('vatNumber', e.target.value)}
+                  placeholder="Enter VAT registration number"
+                  className={cn(
+                    "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-primary",
+                    "outline-none transition-colors px-0 text-sm font-medium",
+                    "placeholder:text-muted-foreground/40"
+                  )}
+                />
+              </FieldWrapper>
             </div>
-          </div>
+          </section>
 
           {/* Submit Actions */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
+          <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4">
             <button
               type="button"
               onClick={() => router.push('/user-dashboard/requests')}
-              className="w-full sm:w-auto px-8 py-3 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium transition-colors"
+              className="w-full sm:w-auto px-6 py-3 rounded-lg bg-muted text-foreground text-sm font-medium hover:bg-muted/80 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting || isUploading}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Submitting...
-                </>
-              ) : (
-                <>
-                  <CheckCircle2 className="w-4 h-4" />
-                  Submit Application
-                </>
+              className={cn(
+                "w-full sm:w-auto px-8 py-3 rounded-lg text-sm font-medium transition-colors shadow-sm",
+                "bg-primary text-primary-foreground hover:bg-primary/90",
+                "disabled:opacity-50 disabled:cursor-not-allowed"
               )}
+            >
+              {isSubmitting ? 'Submitting...' : 'Submit Application'}
             </button>
           </div>
         </form>

@@ -61,7 +61,7 @@ export function ListingTimestamp({
   const wasUpdated = editedDateObj && editedDateObj.getTime() > postedDate.getTime() + 60000;
 
   return (
-    <div className={cn("py-4 border-y border-border", className)}>
+    <div className={cn("py-4", className)}>
       <div className="flex items-center gap-2.5">
         <Clock className="w-5 h-5 text-muted-foreground" />
         <div className="flex items-baseline gap-2">
