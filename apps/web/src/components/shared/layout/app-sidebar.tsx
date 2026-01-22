@@ -21,6 +21,7 @@ import {
   MessageCircle,
   Heart,
   ChevronDown,
+  ChevronUp,
   Sparkles,
   ShieldCheck,
   Car,
@@ -47,7 +48,7 @@ import { UserAvatar } from "@/components/ui/data-display/user-avatar";
 import { BrandAvatar } from "@/components/partner/car-dealer/ui/brand-avatar";
 import { useAuth } from "@/providers/auth-provider";
 import { SupportModal } from "@/components/shared/support/support-modal";
-import { FeedbackLink } from '@/components/feedback/feedback-link';
+import { handleSignOut } from '@/lib/auth/sign-out';
 import {
   Sidebar,
   SidebarContent,
@@ -63,6 +64,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import {
   Collapsible,
@@ -151,6 +153,170 @@ const iconMap: Record<string, ComponentType<{ className?: string }>> = {
 };
 
 // ============================================================================
+// Footer Content Component (uses useSidebar for collapse state)
+// ============================================================================
+
+interface SidebarFooterContentProps {
+  isStaffMode: boolean;
+  staffOverride?: {
+    displayName?: string | null;
+    companyLogo?: string | null;
+    companyName?: string | null;
+  };
+  avatarUrl?: string | null;
+  displayName: string;
+  useGeneratedAvatar: boolean;
+  showFooterMenu: boolean;
+  setShowFooterMenu: (show: boolean) => void;
+  setShowSupportModal: (show: boolean) => void;
+  pathname: string;
+}
+
+function SidebarFooterContent({
+  isStaffMode,
+  staffOverride,
+  avatarUrl,
+  displayName,
+  useGeneratedAvatar,
+  showFooterMenu,
+  setShowFooterMenu,
+  setShowSupportModal,
+  pathname,
+}: SidebarFooterContentProps) {
+  const { state } = useSidebar();
+  const isCollapsed = state === 'collapsed';
+
+  return (
+    <SidebarFooter>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <div className="relative" data-footer-menu>
+            <SidebarMenuButton 
+              size="lg" 
+              className="cursor-pointer"
+              tooltip={displayName}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowFooterMenu(!showFooterMenu);
+              }}
+            >
+              {isCollapsed ? (
+                // Collapsed: show only avatar
+                <div className="shrink-0">
+                  {isStaffMode ? (
+                    <BrandAvatar
+                      logoUrl={staffOverride?.companyLogo}
+                      brandName={staffOverride?.companyName || 'Company'}
+                      size="sm"
+                    />
+                  ) : (
+                    <UserAvatar
+                      src={avatarUrl}
+                      name={displayName}
+                      size="sm"
+                      useGeneratedAvatar={useGeneratedAvatar}
+                    />
+                  )}
+                </div>
+              ) : (
+                // Expanded: show avatar + name
+                <div className="flex items-center gap-3 w-full">
+                  <div className="shrink-0">
+                    {isStaffMode ? (
+                      <BrandAvatar
+                        logoUrl={staffOverride?.companyLogo}
+                        brandName={staffOverride?.companyName || 'Company'}
+                        size="md"
+                      />
+                    ) : (
+                      <UserAvatar
+                        src={avatarUrl}
+                        name={displayName}
+                        size="md"
+                        useGeneratedAvatar={useGeneratedAvatar}
+                      />
+                    )}
+                  </div>
+                  <div className="flex flex-col min-w-0 flex-1 gap-0.5">
+                    <span className="truncate font-bold text-sm tracking-tight">{displayName}</span>
+                    {isStaffMode && (
+                      <span className="truncate text-xs font-medium text-sidebar-foreground/70">
+                        {staffOverride?.companyName}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+            </SidebarMenuButton>
+            
+            {/* Dropup Menu */}
+            {showFooterMenu && (
+              <div 
+                className={`absolute bottom-full mb-2 bg-sidebar border border-sidebar-border rounded-lg shadow-lg z-50 overflow-hidden ${
+                  isCollapsed ? 'left-0 w-48' : 'left-0 right-0'
+                }`}
+                onClick={(e) => e.stopPropagation()}
+                data-footer-menu
+              >
+                <div className="py-1.5">
+                  <Link
+                    href="/"
+                    onClick={() => setShowFooterMenu(false)}
+                    className="w-full text-left px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors block"
+                  >
+                    Home
+                  </Link>
+                  <Link
+                    href="/listings"
+                    onClick={() => setShowFooterMenu(false)}
+                    className="w-full text-left px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors block"
+                  >
+                    Listings
+                  </Link>
+                  
+                  {/* Divider */}
+                  <div className="my-1.5 mx-3 border-t border-sidebar-border" />
+                  
+                  <button
+                    onClick={() => {
+                      setShowSupportModal(true);
+                      setShowFooterMenu(false);
+                    }}
+                    className="w-full text-left px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                  >
+                    Support
+                  </button>
+                  <Link
+                    href={pathname.startsWith('/partner-dashboard') ? '/partner-dashboard/feedback' : pathname.startsWith('/staff-dashboard') ? '/staff-dashboard/feedback' : '/user-dashboard/feedback'}
+                    onClick={() => setShowFooterMenu(false)}
+                    className="w-full text-left px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors block"
+                  >
+                    Feedback
+                  </Link>
+                  
+                  {/* Divider */}
+                  <div className="my-1.5 mx-3 border-t border-sidebar-border" />
+                  
+                  <button
+                    onClick={async () => {
+                      setShowFooterMenu(false);
+                      await handleSignOut();
+                    }}
+                    className="w-full text-left px-3 py-2 text-[15px] font-semibold tracking-tight text-destructive hover:bg-destructive/10 transition-colors"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarFooter>
+  );
+}
+
+// ============================================================================
 // Component
 // ============================================================================
 
@@ -167,9 +333,25 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
   // Support modal state
   const [showSupportModal, setShowSupportModal] = useState(false);
   
+  // Footer menu state
+  const [showFooterMenu, setShowFooterMenu] = useState(false);
+  
   useEffect(() => {
     setIsHydrated(true);
   }, []);
+  
+  // Close footer menu on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (showFooterMenu && !target.closest('[data-footer-menu]')) {
+        setShowFooterMenu(false);
+      }
+    };
+    
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [showFooterMenu]);
 
   // Convert flat items to sections if sections not provided
   const navSections: SidebarSection[] = useMemo(() => {
@@ -282,52 +464,18 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
         })}
       </SidebarContent>
 
-      {/* Footer - Support, Feedback & User Profile */}
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton 
-              onClick={() => setShowSupportModal(true)}
-              tooltip="Support" 
-              className="font-semibold tracking-tight cursor-pointer"
-            >
-              <LifeBuoy className="size-4" />
-              <span>Support</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem className="mb-4">
-            <FeedbackLink />
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" className="cursor-default hover:bg-transparent">
-              <div className="flex items-center gap-3 w-full">
-                <div className="shrink-0">
-                  {isStaffMode ? (
-                    <BrandAvatar
-                      logoUrl={staffOverride?.companyLogo}
-                      brandName={staffOverride?.companyName || 'Company'}
-                      size="md"
-                    />
-                  ) : (
-                    <UserAvatar
-                      src={avatarUrl}
-                      name={displayName}
-                      size="md"
-                      useGeneratedAvatar={useGeneratedAvatar}
-                    />
-                  )}
-                </div>
-                <div className="flex flex-col min-w-0 flex-1 gap-0.5">
-                  <span className="truncate font-bold text-sm tracking-tight">{displayName}</span>
-                  <span className="truncate text-xs font-medium text-sidebar-foreground/70">
-                    {isStaffMode ? staffOverride?.companyName : user.email}
-                  </span>
-                </div>
-              </div>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
+      {/* Footer - User Profile with Dropup Menu */}
+      <SidebarFooterContent 
+        isStaffMode={isStaffMode}
+        staffOverride={staffOverride}
+        avatarUrl={avatarUrl}
+        displayName={displayName}
+        useGeneratedAvatar={useGeneratedAvatar}
+        showFooterMenu={showFooterMenu}
+        setShowFooterMenu={setShowFooterMenu}
+        setShowSupportModal={setShowSupportModal}
+        pathname={pathname}
+      />
 
       {/* Rail for collapse/expand on hover */}
       <SidebarRail />

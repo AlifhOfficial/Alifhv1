@@ -10,7 +10,11 @@ import Link from 'next/link';
 import { Send } from 'lucide-react';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
 
-export function FeedbackLink() {
+interface FeedbackLinkProps {
+  onClick?: () => void;
+}
+
+export function FeedbackLink({ onClick }: FeedbackLinkProps) {
   const pathname = usePathname();
   
   // Determine which dashboard we're in
@@ -24,7 +28,7 @@ export function FeedbackLink() {
   
   return (
     <SidebarMenuButton asChild tooltip="Feedback" className="font-semibold tracking-tight">
-      <Link href={feedbackHref}>
+      <Link href={feedbackHref} onClick={onClick}>
         <Send className="size-4" />
         <span>Feedback</span>
       </Link>

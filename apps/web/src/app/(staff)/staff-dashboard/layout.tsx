@@ -10,7 +10,7 @@ const navSections = [
   {
     items: [
       { label: "Browse", href: "/staff-dashboard/inventory", icon: "compass" },
-      { label: "Our Listings", href: "/staff-dashboard/work-listings", icon: "package" },
+      { label: "Inventory", href: "/staff-dashboard/work-listings", icon: "package" },
       { label: "Leads", href: "/staff-dashboard/consignment", icon: "inbox" },
       { label: "Bookings", href: "/staff-dashboard/bookings", icon: "calendar" },
       { label: "Messages", href: "/staff-dashboard/messaging", icon: "message-circle" },
