@@ -7,6 +7,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   Plus, 
@@ -147,12 +148,13 @@ export function ConsignmentFunnelsView() {
   const totalMatches = data?.funnels?.reduce((sum, f) => sum + f.matchCount, 0) || 0;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+    <div className="min-h-full bg-background">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
       {/* Header */}
-      <div className="flex items-start justify-between gap-4 mb-6 sm:mb-8">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Lead Funnels</h1>
-          <p className="text-sm sm:text-[15px] text-muted-foreground/70 mt-1">
+      <div className="flex items-start justify-between gap-4">
+        <div className="space-y-1.5">
+          <h1 className="text-2xl font-bold tracking-tight">Lead Funnels</h1>
+          <p className="text-[15px] font-medium text-muted-foreground/70">
             Create saved searches to find consignment leads
           </p>
         </div>
@@ -280,6 +282,7 @@ export function ConsignmentFunnelsView() {
         }}
         funnel={editingFunnel}
       />
+      </div>
     </div>
   );
 }
@@ -551,7 +554,10 @@ interface DeleteConfirmModalProps {
 function DeleteConfirmModal({ open, funnelName, onClose, onConfirm, isDeleting }: DeleteConfirmModalProps) {
   if (!open) return null;
 
-  return (
+  // Use portal to render at document.body level to avoid stacking context issues
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
     <div 
       className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
       onClick={onClose}
@@ -601,6 +607,7 @@ function DeleteConfirmModal({ open, funnelName, onClose, onConfirm, isDeleting }
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

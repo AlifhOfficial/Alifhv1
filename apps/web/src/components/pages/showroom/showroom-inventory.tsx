@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { ListingsHeader } from '@/components/listings/listings-header';
 import { ListingsSidebar } from '@/components/listings/listings-sidebar';
 import { ListingsContent } from '@/components/listings/listings-content';
+import { ListingsPagination } from '@/components/listings/listings-pagination';
 import { useSearch } from '@/hooks/use-search';
 import { useUser } from '@/hooks/auth/use-auth';
 import { useFavoritesStatus } from '@/hooks/engagement';
@@ -172,7 +173,7 @@ export function ShowroomInventory({ showroom }: ShowroomInventoryProps) {
                 'animate-in fade-in-0 slide-in-from-bottom-4 duration-300'
               )}>
                 {/* Mobile Layout */}
-                <div className="lg:hidden max-h-[75vh] overflow-y-auto scrollbar-hide">
+                <div className="lg:hidden max-h-[100vh] overflow-y-auto scrollbar-hide">
                   <ListingsHeader
                     params={params}
                     facets={facets}
@@ -202,15 +203,22 @@ export function ShowroomInventory({ showroom }: ShowroomInventoryProps) {
                       viewMode={viewMode}
                       clearFilters={clearFilters}
                       loadMore={loadMore}
-                      currentPage={currentPage}
-                      totalPages={totalPages}
-                      goToPage={goToPage}
                     />
                   </main>
+                  {/* Pagination - outside content panel */}
+                  {!isLoading && !isFetching && listings.length > 0 && (
+                    <ListingsPagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      totalResults={meta?.total ?? 0}
+                      isFetching={isFetching}
+                      goToPage={goToPage}
+                    />
+                  )}
                 </div>
 
                 {/* Desktop Layout */}
-                <div className="hidden lg:flex max-h-[75vh]">
+                <div className="hidden lg:flex max-h-[100vh]">
                   {sidebarOpen && (
                     <div className="w-64 shrink-0 overflow-y-auto scrollbar-hide border-r border-border/10">
                       <ListingsSidebar
@@ -256,11 +264,18 @@ export function ShowroomInventory({ showroom }: ShowroomInventoryProps) {
                         viewMode={viewMode}
                         clearFilters={clearFilters}
                         loadMore={loadMore}
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        goToPage={goToPage}
                       />
                     </main>
+                    {/* Pagination - outside content panel */}
+                    {!isLoading && !isFetching && listings.length > 0 && (
+                      <ListingsPagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        totalResults={meta?.total ?? 0}
+                        isFetching={isFetching}
+                        goToPage={goToPage}
+                      />
+                    )}
                   </div>
                 </div>
               </div>

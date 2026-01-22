@@ -369,7 +369,7 @@ export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProp
               type="button"
               onClick={handleSubmit}
               disabled={!name.trim() || isPending}
-              className="flex-1 px-4 py-2.5 text-[15px] font-semibold bg-sidebar-foreground text-sidebar hover:bg-sidebar-foreground/90 rounded-full transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-2.5 text-[15px] font-semibold bg-[#2563eb] text-white hover:bg-[#1d4ed8] rounded-full transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
               {isEditing ? 'Save Changes' : 'Create Funnel'}
@@ -463,7 +463,7 @@ function FilterGroup({ title, options, selected, onChange }: FilterGroupProps) {
             <button
               type="button"
               onClick={() => setExpanded(true)}
-              className="text-sm text-sidebar-foreground/60 hover:text-sidebar-foreground font-semibold transition-colors mt-2 px-3"
+              className="text-sm text-[#2563eb] hover:text-[#1d4ed8] font-semibold transition-colors mt-2 px-3"
             >
               Show {options.length - 3} more
             </button>
@@ -583,7 +583,7 @@ function SearchableFilterGroup({
                 <button
                   type="button"
                   onClick={() => setExpanded(true)}
-                  className="text-sm text-sidebar-foreground/60 hover:text-sidebar-foreground font-semibold transition-colors mt-2 px-3"
+                  className="text-sm text-[#2563eb] hover:text-[#1d4ed8] font-semibold transition-colors mt-2 px-3"
                 >
                   Show {filteredOptions.length - 3} more
                 </button>

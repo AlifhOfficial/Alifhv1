@@ -14,37 +14,37 @@ import { BookingCard } from './booking-card';
 const EMPTY_STATE_CONFIG: Record<string, { icon: React.ElementType; color: string; message: string; subMessage: string }> = {
   all: { 
     icon: Calendar, 
-    color: 'text-muted-foreground/40', 
+    color: 'text-foreground', 
     message: 'No bookings yet', 
     subMessage: 'Bookings will appear here' 
   },
   pending: { 
     icon: Clock, 
-    color: 'text-amber-500/40', 
+    color: 'text-amber-500', 
     message: 'No pending bookings', 
     subMessage: 'Bookings awaiting confirmation will appear here' 
   },
   confirmed: { 
     icon: CheckCircle2, 
-    color: 'text-emerald-500/40', 
+    color: 'text-emerald-500', 
     message: 'No confirmed bookings', 
     subMessage: 'Upcoming test drives will appear here' 
   },
   completed: { 
     icon: CheckCircle2, 
-    color: 'text-blue-500/40', 
+    color: 'text-blue-500', 
     message: 'No completed bookings', 
     subMessage: 'Past test drives will appear here' 
   },
   cancelled: { 
     icon: XCircle, 
-    color: 'text-red-500/40', 
+    color: 'text-red-500', 
     message: 'No cancelled bookings', 
     subMessage: 'Cancelled bookings will appear here' 
   },
   no_show: { 
     icon: AlertCircle, 
-    color: 'text-slate-400/40', 
+    color: 'text-slate-500', 
     message: 'No missed bookings', 
     subMessage: 'No-shows and expired bookings will appear here' 
   },
@@ -90,17 +90,17 @@ export function BookingList({
   // Empty state with colors
   if (bookings.length === 0) {
     const config = searchQuery 
-      ? { icon: Calendar, color: 'text-muted-foreground/20', message: 'No matches found', subMessage: 'Try adjusting your search' }
+      ? { icon: Calendar, color: 'text-foreground', message: 'No matches found', subMessage: 'Try adjusting your search' }
       : (EMPTY_STATE_CONFIG[selectedStatus] || EMPTY_STATE_CONFIG.all);
     const Icon = config.icon;
     
     return (
       <div className="flex flex-col items-center justify-center py-32 text-center">
-        <Icon className={`w-10 h-10 ${config.color} mb-4`} />
-        <h3 className="text-lg font-medium tracking-tight">
+        <Icon className={`w-5 h-5 ${config.color} mb-3`} strokeWidth={2} />
+        <h3 className="text-sm font-semibold tracking-tight">
           {config.message}
         </h3>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           {config.subMessage}
         </p>
       </div>

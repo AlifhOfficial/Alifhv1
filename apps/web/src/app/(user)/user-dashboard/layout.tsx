@@ -10,35 +10,17 @@ import { useEffect } from "react";
 const navSections = [
   {
     items: [
-      { label: "Overview", href: "/user-dashboard", icon: "layout-dashboard" },
+      { label: "Overview", href: "/user-dashboard", icon: "compass" },
+      { label: "My Listings", href: "/user-dashboard/listings/my-listings", icon: "package" },
+      { label: "Bookings", href: "/user-dashboard/bookings", icon: "calendar" },
+      { label: "Messages", href: "/user-dashboard/messaging", icon: "message-circle" },
+      { label: "Favorites", href: "/user-dashboard/favorites", icon: "heart" },
     ]
   },
   {
-    collapsible: { label: "Activity", icon: "package" },
     items: [
-      { label: "My Listings", href: "/user-dashboard/listings/my-listings" },
-      { label: "Bookings", href: "/user-dashboard/bookings" },
-    ]
-  },
-  {
-    collapsible: { label: "Communication", icon: "message-circle" },
-    items: [
-      { label: "Messages", href: "/user-dashboard/messaging" },
-      { label: "Requests", href: "/user-dashboard/requests" },
-    ]
-  },
-  {
-    collapsible: { label: "Saved", icon: "heart" },
-    items: [
-      { label: "Favorites", href: "/user-dashboard/favorites" },
-      { label: "Superlikes", href: "/user-dashboard/superlikes" },
-    ]
-  },
-  {
-    collapsible: { label: "Account", icon: "user" },
-    items: [
-      { label: "Profile", href: "/user-dashboard/profile" },
-      { label: "Settings", href: "/user-dashboard/settings" },
+      { label: "Profile", href: "/user-dashboard/profile", icon: "user" },
+      { label: "Settings", href: "/user-dashboard/settings", icon: "settings" },
     ]
   },
 ];

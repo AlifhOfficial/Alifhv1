@@ -10,40 +10,23 @@ import { redirect } from "next/navigation";
 const getNavSections = (isBlackTier: boolean) => [
   {
     items: [
-      { label: "Overview", href: "/partner-dashboard/insights", icon: "layout-dashboard" },
-    ]
-  },
-  {
-    collapsible: { label: "Operations", icon: "briefcase" },
-    items: [
-      { label: "Inventory", href: "/partner-dashboard/inventory" },
-      { label: "Bookings", href: "/partner-dashboard/bookings" },
-      { label: "Leads", href: "/partner-dashboard/lead-funnels" },
-    ]
-  },
-  {
-    collapsible: { label: "Insights", icon: "bar-chart" },
-    items: [
-      { label: "Analytics", href: "/partner-dashboard/analytics" },
-    ]
-  },
-  {
-    collapsible: { label: "Team", icon: "users" },
-    items: [
-      { label: "Staff", href: "/partner-dashboard/staff" },
-    ]
-  },
-  {
-    collapsible: { label: "Settings", icon: "settings" },
-    items: [
-      { label: "Business Profile", href: "/partner-dashboard/basic" },
-      { label: "Contact Settings", href: "/partner-dashboard/contact" },
+      { label: "Overview", href: "/partner-dashboard/insights", icon: "compass" },
+      { label: "Inventory", href: "/partner-dashboard/inventory", icon: "package" },
+      { label: "Bookings", href: "/partner-dashboard/bookings", icon: "calendar" },
+      { label: "Leads", href: "/partner-dashboard/lead-funnels", icon: "inbox" },
+      { label: "Analytics", href: "/partner-dashboard/analytics", icon: "bar-chart" },
+      { label: "Staff", href: "/partner-dashboard/staff", icon: "users" },
     ]
   },
   {
     items: [
-      // Black tier exclusive
       ...(isBlackTier ? [{ label: "Black", href: "/partner-dashboard/showroom", icon: "crown" }] : []),
+      { label: "Business Profile", href: "/partner-dashboard/basic", icon: "briefcase" },
+      { label: "Contact Info", href: "/partner-dashboard/contact", icon: "phone" },
+    ]
+  },
+  {
+    items: [
       { label: "Billing", href: "/partner-dashboard/subscription", icon: "credit-card" },
     ]
   },

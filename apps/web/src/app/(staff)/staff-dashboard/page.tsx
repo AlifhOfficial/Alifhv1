@@ -1,7 +1,5 @@
-'use client';
-
-import { StaffOverview } from "@/components/staff/staff-overview";
+import { redirect } from 'next/navigation';
 
 export default function StaffDashboard() {
-  return <StaffOverview />;
+  redirect('/staff-dashboard/inventory');
 }

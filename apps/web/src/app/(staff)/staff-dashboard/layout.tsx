@@ -9,29 +9,17 @@ import { redirect } from "next/navigation";
 const navSections = [
   {
     items: [
-      { label: "Overview", href: "/staff-dashboard", icon: "layout-dashboard" },
-      { label: "Global Inventory", href: "/staff-dashboard/inventory", icon: "package" },
+      { label: "Browse", href: "/staff-dashboard/inventory", icon: "compass" },
+      { label: "Our Listings", href: "/staff-dashboard/work-listings", icon: "package" },
+      { label: "Leads", href: "/staff-dashboard/consignment", icon: "inbox" },
+      { label: "Bookings", href: "/staff-dashboard/bookings", icon: "calendar" },
+      { label: "Messages", href: "/staff-dashboard/messaging", icon: "message-circle" },
     ]
   },
   {
-    collapsible: { label: "Work", icon: "briefcase" },
     items: [
-      { label: "Dealership", href: "/staff-dashboard/works-for" },
-      { label: "Manage Inventory", href: "/staff-dashboard/work-listings" },
-      { label: "Lead Funnels", href: "/staff-dashboard/consignment" },
-    ]
-  },
-  {
-    collapsible: { label: "Activity", icon: "package" },
-    items: [
-      { label: "Bookings", href: "/staff-dashboard/bookings" },
-      { label: "Messages", href: "/staff-dashboard/messaging" },
-    ]
-  },
-  {
-    collapsible: { label: "Account", icon: "user" },
-    items: [
-      { label: "Profile", href: "/staff-dashboard/profile" },
+      { label: "Dealership", href: "/staff-dashboard/works-for", icon: "briefcase" },
+      { label: "Profile", href: "/staff-dashboard/profile", icon: "user" },
     ]
   },
 ];

@@ -38,6 +38,9 @@ import {
   X,
   Crown,
   CreditCard,
+  Compass,
+  Store,
+  Phone,
 } from "lucide-react";
 import { useMemo, useState, useEffect, type ComponentType } from "react";
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
@@ -142,6 +145,9 @@ const iconMap: Record<string, ComponentType<{ className?: string }>> = {
   "send": Send,
   "crown": Crown,
   "credit-card": CreditCard,
+  "compass": Compass,
+  "store": Store,
+  "phone": Phone,
 };
 
 // ============================================================================
@@ -192,41 +198,8 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
   const isStaffMode = Boolean(staffOverride?.companyLogo);
 
   return (
-    <Sidebar collapsible="icon" className="border-r">
-      {/* Header - User Profile */}
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" className="cursor-default hover:bg-transparent">
-              <div className="flex items-center gap-3 w-full">
-                <div className="shrink-0">
-                  {isStaffMode ? (
-                    <BrandAvatar
-                      logoUrl={staffOverride?.companyLogo}
-                      brandName={staffOverride?.companyName || 'Company'}
-                      size="xs"
-                    />
-                  ) : (
-                    <UserAvatar
-                      src={avatarUrl}
-                      name={displayName}
-                      size="sm"
-                      useGeneratedAvatar={useGeneratedAvatar}
-                    />
-                  )}
-                </div>
-                <div className="flex flex-col min-w-0 flex-1 gap-0.5">
-                  <span className="truncate font-bold text-[15px] tracking-tight">{displayName}</span>
-                  <span className="truncate text-sm font-medium text-sidebar-foreground/70">
-                    {isStaffMode ? staffOverride?.companyName : user.email}
-                  </span>
-                </div>
-              </div>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
-
+    <>
+    <Sidebar collapsible="icon">
       {/* Main Navigation */}
       <SidebarContent>
         {navSections.map((section, sectionIndex) => {
@@ -309,7 +282,7 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
         })}
       </SidebarContent>
 
-      {/* Footer - Support & Feedback */}
+      {/* Footer - Support, Feedback & User Profile */}
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -322,17 +295,46 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
               <span>Support</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          <SidebarMenuItem>
+          <SidebarMenuItem className="mb-4">
             <FeedbackLink />
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" className="cursor-default hover:bg-transparent">
+              <div className="flex items-center gap-3 w-full">
+                <div className="shrink-0">
+                  {isStaffMode ? (
+                    <BrandAvatar
+                      logoUrl={staffOverride?.companyLogo}
+                      brandName={staffOverride?.companyName || 'Company'}
+                      size="md"
+                    />
+                  ) : (
+                    <UserAvatar
+                      src={avatarUrl}
+                      name={displayName}
+                      size="md"
+                      useGeneratedAvatar={useGeneratedAvatar}
+                    />
+                  )}
+                </div>
+                <div className="flex flex-col min-w-0 flex-1 gap-0.5">
+                  <span className="truncate font-bold text-sm tracking-tight">{displayName}</span>
+                  <span className="truncate text-xs font-medium text-sidebar-foreground/70">
+                    {isStaffMode ? staffOverride?.companyName : user.email}
+                  </span>
+                </div>
+              </div>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
 
       {/* Rail for collapse/expand on hover */}
       <SidebarRail />
-
-      {/* Support Modal */}
-      <SupportModal isOpen={showSupportModal} onClose={() => setShowSupportModal(false)} />
     </Sidebar>
+
+    {/* Support Modal - Rendered outside sidebar to avoid z-index issues */}
+    <SupportModal isOpen={showSupportModal} onClose={() => setShowSupportModal(false)} />
+    </>
   );
 }

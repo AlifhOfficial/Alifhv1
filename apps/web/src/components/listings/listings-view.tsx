@@ -5,10 +5,11 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ListingsHeader } from './listings-header';
 import { ListingsSidebar } from './listings-sidebar';
 import { ListingsContent } from './listings-content';
+import { ListingsPagination } from './listings-pagination';
 import { useSearch } from '@/hooks/use-search';
 import { useUser } from '@/hooks/auth/use-auth';
 import { useFavoritesStatus } from '@/hooks/engagement';
@@ -69,6 +70,15 @@ export function ListingsView({ embedded = false }: ListingsViewProps) {
     goToPage,
   } = useSearch({ defaultLimit: 30 });
 
+  // Scroll to top when page changes
+  const prevPageRef = useRef(currentPage);
+  useEffect(() => {
+    if (prevPageRef.current !== currentPage && !isFetching) {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      prevPageRef.current = currentPage;
+    }
+  }, [currentPage, isFetching]);
+
   return (
     <TooltipProvider>
       <div className={cn(
@@ -114,11 +124,19 @@ export function ListingsView({ embedded = false }: ListingsViewProps) {
                 viewMode={viewMode}
                 clearFilters={clearFilters}
                 loadMore={loadMore}
-                currentPage={currentPage}
-                totalPages={totalPages}
-                goToPage={goToPage}
               />
             </main>
+
+            {/* Pagination - outside content panel */}
+            {!isLoading && !isFetching && listings.length > 0 && (
+              <ListingsPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalResults={meta?.total ?? 0}
+                isFetching={isFetching}
+                goToPage={goToPage}
+              />
+            )}
           </div>
 
           {/* Desktop Layout - Simple Flex */}
@@ -172,12 +190,22 @@ export function ListingsView({ embedded = false }: ListingsViewProps) {
                   viewMode={viewMode}
                   clearFilters={clearFilters}
                   loadMore={loadMore}
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  goToPage={goToPage}
                 />
               </main>
             </div>
+          </div>
+
+          {/* Pagination - below sidebar and content, full width */}
+          <div className="hidden lg:block">
+            {!isLoading && !isFetching && listings.length > 0 && (
+              <ListingsPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalResults={meta?.total ?? 0}
+                isFetching={isFetching}
+                goToPage={goToPage}
+              />
+            )}
           </div>
         </div>
       </div>
