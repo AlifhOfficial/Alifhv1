@@ -22,6 +22,7 @@ export interface PartnerStats {
   totalSales: number;
   responseTime: number | null;
   responseRate: number | null;
+  hasShowroom: boolean;
 }
 
 export interface UserStats {

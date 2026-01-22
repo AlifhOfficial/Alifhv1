@@ -485,10 +485,10 @@ export function TermsOfService() {
                   <div>
                     <p className="text-xs font-medium text-muted-foreground mb-2">Contact Email</p>
                     <a 
-                      href="mailto:support@alifh.com" 
+                      href="mailto:support@alifh.ae" 
                       className="text-sm font-semibold text-primary hover:underline"
                     >
-                      support@alifh.com
+                      support@alifh.ae
                     </a>
                   </div>
                 </div>

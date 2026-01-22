@@ -259,6 +259,19 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
         </Link>
       )}
 
+      {/* Showroom Link - Black Tier Only, with valid partner.id */}
+      {isBlackTier && partner.id && (
+        <Link
+          href={`/showroom/${partner.id}`}
+          prefetch={false}
+          className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+        >
+          <Sparkles className="w-4 h-4" />
+          <span>View Showroom</span>
+          <ExternalLink className="w-4 h-4 flex-shrink-0" />
+        </Link>
+      )}
+
       {/* Badges - Minimal, neutral design */}
       {badges.length > 0 && (
         <div className="flex flex-wrap gap-2">

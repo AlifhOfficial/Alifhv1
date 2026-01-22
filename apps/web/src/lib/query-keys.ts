@@ -234,6 +234,29 @@ export const queryKeys = {
   },
 
   // ==========================================================================
+  // SHOWROOM DOMAIN (Public)
+  // ==========================================================================
+  showroom: {
+    /**
+     * Invalidate ALL showroom queries
+     */
+    all: ['showroom'] as const,
+
+    /**
+     * Public showroom detail by slug or partner ID
+     * @param slugOrId - URL slug or partner ID
+     */
+    detail: (slugOrId: string) => [...queryKeys.showroom.all, 'detail', slugOrId] as const,
+
+    /**
+     * Showroom directory listing
+     * @param page - Page number
+     * @param limit - Items per page
+     */
+    list: (page?: number, limit?: number) => [...queryKeys.showroom.all, 'list', page, limit] as const,
+  },
+
+  // ==========================================================================
   // ENGAGEMENT DOMAIN
   // ==========================================================================
   engagement: {
@@ -296,6 +319,10 @@ export type AdminQueryKey =
   | ReturnType<typeof queryKeys.admin.partnerRequest>
   | ReturnType<typeof queryKeys.admin.partnerRequestCounts>;
 
+export type ShowroomQueryKey = 
+  | ReturnType<typeof queryKeys.showroom.detail>
+  | ReturnType<typeof queryKeys.showroom.list>;
+
 export type EngagementQueryKey = 
   | ReturnType<typeof queryKeys.engagement.favoritesStatus>
   | ReturnType<typeof queryKeys.engagement.favorites>;
@@ -310,6 +337,7 @@ export type QueryKey =
   | PartnerQueryKey
   | StaffQueryKey
   | AdminQueryKey
+  | ShowroomQueryKey
   | EngagementQueryKey;
 
 // ============================================================================

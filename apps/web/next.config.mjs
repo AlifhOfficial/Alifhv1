@@ -13,6 +13,14 @@ const nextConfig = {
   transpilePackages: ['@alifh/shared', '@alifh/database'],
   serverExternalPackages: ['better-auth', '@node-rs/argon2', '@node-rs/bcrypt'],
   
+  // Allow larger request bodies for video uploads (default is 1MB)
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '60mb',
+    },
+    middlewareClientMaxBodySize: '60mb',
+  },
+  
   // Content Security Policy
   async headers() {
     return [

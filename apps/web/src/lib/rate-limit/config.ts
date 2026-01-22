@@ -378,11 +378,11 @@ export const RATE_LIMITS_PARTNER = {
 
   /**
    * Update partner profile
-   * 30 per hour per partner
+   * 120 per hour per partner - generous for form editing
    */
   PROFILE_UPDATE: {
     windowSeconds: 60 * 60,
-    maxRequests: 30,
+    maxRequests: 120,
     keyPrefix: 'partner:profile-update',
     description: 'Partner profile updates',
   },

@@ -8,6 +8,7 @@
  * - users/{userId}/{YYYY}/{MM}/{DD}/avatar-{timestamp}.webp
  * - brands/{partnerId}/{YYYY}/{MM}/{DD}/logo-{timestamp}.webp
  * - brands/{partnerId}/{YYYY}/{MM}/{DD}/hero-{timestamp}.webp
+ * - brands/{partnerId}/showroom/{YYYY}/{MM}/{DD}/{type}-{timestamp}.webp
  */
 
 /**
@@ -80,4 +81,57 @@ export function generateBrandImageKey(options: BrandImageKeyOptions): string {
   const datePath = getDatePath(date);
   const filename = generateTimestampFilename(type);
   return `brands/${partnerId}/${datePath}/${filename}`;
+}
+
+// ============================================================================
+// Showroom Asset Keys (Black Tier)
+// ============================================================================
+
+export type ShowroomAssetType = 
+  | 'hero-video-thumb'     // Hero video thumbnail
+  | 'hero-image'           // Hero background image
+  | 'hero-video'           // Hero background video (MP4/WebM)
+  | 'brand-story-video-thumb' // Brand story video thumbnail
+  | 'brand-story-video'    // Brand story video (MP4/WebM)
+  | 'showroom-tour-video'  // Virtual tour / showroom video
+  | 'founder-image'        // Founder headshot
+  | 'gallery'              // Showroom gallery images
+  | 'exterior'             // Showroom exterior photos
+  | 'team-member'          // Team member photos
+  | 'achievement'          // Achievement badges/images
+  | 'client-logo'          // Client logo images
+  | 'testimonial'          // Customer testimonial photos
+  | 'press-logo'           // Press/media publication logos
+  | 'seo-image';           // OG/SEO image
+
+export interface ShowroomAssetKeyOptions {
+  partnerId: string;
+  type: ShowroomAssetType;
+  index?: number; // For arrays (gallery, team, etc.)
+  date?: Date;
+  extension?: string; // File extension (webp, mp4, webm)
+}
+
+/**
+ * Generate storage key for showroom assets (Black tier exclusive)
+ * Format: brands/{partnerId}/showroom/{YYYY}/{MM}/{DD}/{type}-{index?}-{timestamp}.{ext}
+ * 
+ * All showroom assets are stored under the partner's brand directory for easy management.
+ * 
+ * @example
+ * generateShowroomAssetKey({ partnerId: 'xyz789', type: 'hero-image' })
+ * // => "brands/xyz789/showroom/2026/01/19/hero-image-1737234567890.webp"
+ * 
+ * generateShowroomAssetKey({ partnerId: 'xyz789', type: 'hero-video', extension: 'mp4' })
+ * // => "brands/xyz789/showroom/2026/01/19/hero-video-1737234567890.mp4"
+ * 
+ * generateShowroomAssetKey({ partnerId: 'xyz789', type: 'gallery', index: 3 })
+ * // => "brands/xyz789/showroom/2026/01/19/gallery-3-1737234567890.webp"
+ */
+export function generateShowroomAssetKey(options: ShowroomAssetKeyOptions): string {
+  const { partnerId, type, index, date = new Date(), extension = 'webp' } = options;
+  const datePath = getDatePath(date);
+  const prefix = index !== undefined ? `${type}-${index}` : type;
+  const filename = generateTimestampFilename(prefix, extension);
+  return `brands/${partnerId}/showroom/${datePath}/${filename}`;
 }

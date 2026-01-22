@@ -236,7 +236,14 @@ export function SignUpModal({
 
             {/* Terms hint */}
             <p className="text-xs text-muted-foreground/60 text-center leading-relaxed">
-              By signing up, you agree to our Terms of Service and Privacy Policy
+              By signing up, you agree to our{" "}
+              <a href="/terms-of-service" target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-primary transition-colors">
+                Terms of Service
+              </a>
+              {" "}and{" "}
+              <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-primary transition-colors">
+                Privacy Policy
+              </a>
             </p>
           </div>
 

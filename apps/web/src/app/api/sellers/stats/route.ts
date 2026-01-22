@@ -19,6 +19,7 @@ import {
   CacheTTL,
   calculateUserStats,
   calculatePartnerStats,
+  hasPublishedShowroom,
 } from "@alifh/database";
 import {
   createRateLimiter,
@@ -77,7 +78,12 @@ export async function GET(req: NextRequest) {
     // Fetch stats based on type
     let stats;
     if (type === 'partner') {
-      stats = await calculatePartnerStats(id);
+      // Fetch partner stats and showroom status in parallel
+      const [partnerStats, hasShowroom] = await Promise.all([
+        calculatePartnerStats(id),
+        hasPublishedShowroom(id),
+      ]);
+      stats = { ...partnerStats, hasShowroom };
     } else {
       stats = await calculateUserStats(id);
     }

@@ -76,8 +76,7 @@ export function ListingsContent({
   totalPages,
   goToPage,
 }: ListingsContentProps) {
-  const { trackImpressions, flushImpressions } = useTrackImpressions();
-  const trackedIdsRef = useRef<Set<string>>(new Set());
+  const { trackImpressions } = useTrackImpressions();
   const prevPageRef = useRef(currentPage);
 
   // Scroll to top when page changes (after new data loads)
@@ -89,28 +88,14 @@ export function ListingsContent({
   }, [currentPage, isFetching]);
 
   // Track impressions when new listings appear (including infinite scroll)
+  // Note: Deduplication is handled at the module level in useTrackImpressions
   useEffect(() => {
-    if (listings.length > 0) {
-      // Find listings we haven't tracked yet
-      const newListingIds = listings
-        .map(l => l.id)
-        .filter(id => !trackedIdsRef.current.has(id));
-      
-      if (newListingIds.length > 0) {
-        // Mark as tracked
-        newListingIds.forEach(id => trackedIdsRef.current.add(id));
-        // Queue impressions (debounced)
-        trackImpressions(newListingIds);
-      }
+    if (listings.length > 0 && !isFetching) {
+      const listingIds = listings.map(l => l.id);
+      // Queue impressions (debounced, deduplicated at module level)
+      trackImpressions(listingIds);
     }
-  }, [listings, trackImpressions]);
-
-  // Flush any pending impressions on unmount
-  useEffect(() => {
-    return () => {
-      flushImpressions();
-    };
-  }, [flushImpressions]);
+  }, [listings, isFetching, trackImpressions]);
 
   // Error state
   if (error) {

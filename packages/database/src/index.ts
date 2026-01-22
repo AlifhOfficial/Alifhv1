@@ -47,6 +47,7 @@ export * from './queries/auth/user-auth-queries';
 export * from './queries/partner/car-dealer/partner-profile-comprehensive';
 export * from './queries/partner/car-dealer/partner-stats';
 export * from './queries/partner/staff-profile-query';
+export * from './queries/partner/showroom';
 
 // Explicit user stats/dashboard exports
 export * from './queries/user-stats';

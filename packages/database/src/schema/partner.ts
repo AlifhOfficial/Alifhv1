@@ -299,3 +299,232 @@ export const auditLog = pgTable('audit_log', {
   index('audit_log_entityType_entityId_idx').on(table.entityType, table.entityId),
 ]);
 
+// ============================================================================
+// Partner Showroom (Black Tier Exclusive)
+// ============================================================================
+
+export const showroomAmbientStyleEnum = pgEnum('showroom_ambient_style', ['modern', 'classic', 'industrial', 'luxury', 'minimal']);
+export const showroomHeroTypeEnum = pgEnum('showroom_hero_type', ['video', 'image', 'gradient']);
+
+/**
+ * Team Member Type
+ * Key staff members showcased on the showroom page
+ */
+export interface ShowroomTeamMember {
+  id: string;
+  name: string;
+  role: string;
+  image: string | null;
+  bio: string | null;
+  whatsapp: string | null;
+  order: number;
+}
+
+/**
+ * Achievement Type
+ * Awards, milestones, certifications
+ */
+export interface ShowroomAchievement {
+  id: string;
+  title: string;
+  issuer: string | null;
+  year: number | null;
+  image: string | null;
+  order: number;
+}
+
+/**
+ * Testimonial Type
+ * Featured customer testimonials (curated, not auto-pulled)
+ */
+export interface ShowroomTestimonial {
+  id: string;
+  customerName: string;
+  customerTitle: string | null;
+  customerImage: string | null;
+  content: string;
+  rating: number;
+  vehiclePurchased: string | null;
+  videoUrl: string | null;
+  order: number;
+}
+
+/**
+ * Signature Service Type
+ * Premium services offered by the showroom
+ */
+export interface ShowroomService {
+  id: string;
+  icon: string; // Icon name from predefined set
+  title: string;
+  description: string | null;
+  order: number;
+}
+
+/**
+ * Press Feature Type
+ * Media mentions and press coverage
+ */
+export interface ShowroomPressFeature {
+  id: string;
+  publication: string;
+  title: string;
+  url: string | null;
+  logo: string | null;
+  date: string | null;
+  order: number;
+}
+
+/**
+ * Partner Showroom Table
+ * Premium brand manifesto page for Black tier partners
+ * 1:1 relationship with partner table
+ */
+export const partnerShowroom = pgTable('partner_showroom', {
+  id: text('id').primaryKey(),
+  partnerId: text('partner_id').notNull().references(() => partner.id, { onDelete: 'cascade' }).unique(),
+  
+  // ========================================
+  // Hero Section (First Impression)
+  // ========================================
+  heroVideoUrl: text('hero_video_url'), // YouTube/Vimeo URL for cinematic intro
+  heroVideoFile: text('hero_video_file'), // Uploaded video file key (R2)
+  heroVideoThumbnail: text('hero_video_thumbnail'), // Custom poster frame
+  heroImage: text('hero_image'), // Fallback/alternative hero image
+  heroTagline: text('hero_tagline'), // Bold statement (max ~80 chars): "Where Dreams Meet the Road"
+  heroBackgroundType: showroomHeroTypeEnum('hero_background_type').default('image'),
+  heroCtaText: text('hero_cta_text').default('Talk to Us'), // CTA button text
+  heroCtaLink: text('hero_cta_link'), // Optional: external URL (e.g., website, WhatsApp). If null, links to contact section
+  heroCtaSecondaryText: text('hero_cta_secondary_text').default('Browse Collection'), // Secondary CTA
+  heroCtaSecondaryLink: text('hero_cta_secondary_link'), // Optional: external URL. If null, links to inventory
+  
+  // ========================================
+  // Brand Story (The Manifesto)
+  // ========================================
+  brandStoryTitle: text('brand_story_title').default('Our Story'), // Section title
+  brandStoryContent: text('brand_story_content'), // Rich narrative (2-3 paragraphs)
+  brandStoryVideoUrl: text('brand_story_video_url'), // Optional founder/story video
+  brandStoryVideoFile: text('brand_story_video_file'), // Uploaded video file key (R2)
+  brandPhilosophy: text('brand_philosophy'), // One-liner philosophy (max ~200 chars)
+  
+  // Founder Info (Personal Touch)
+  founderName: text('founder_name'),
+  founderTitle: text('founder_title'), // CEO, Founder, Managing Director
+  founderImage: text('founder_image'),
+  founderQuote: text('founder_quote'), // Personal quote from founder
+  
+  // ========================================
+  // Visual Gallery (Showroom Experience)
+  // ========================================
+  showroomImages: jsonb('showroom_images').$type<string[]>().default([]), // High-res interior/exterior (max 12)
+  showroomVideoTourUrl: text('showroom_video_tour_url'), // 360° virtual tour link
+  showroomVideoTourFile: text('showroom_video_tour_file'), // Uploaded tour video file (R2)
+  ambientStyle: showroomAmbientStyleEnum('ambient_style').default('luxury'), // Design theme
+  
+  // ========================================
+  // Signature Collection (Featured Inventory)
+  // ========================================
+  signatureVehicleIds: jsonb('signature_vehicle_ids').$type<string[]>().default([]), // Hand-picked listing IDs (max 6)
+  collectionTitle: text('collection_title').default('The Collection'), // "The Black Collection"
+  collectionDescription: text('collection_description'), // Why these cars matter
+  
+  // ========================================
+  // Team Showcase (Human Touch)
+  // ========================================
+  teamMembers: jsonb('team_members').$type<ShowroomTeamMember[]>().default([]), // Up to 6 key team members
+  teamSectionTitle: text('team_section_title').default('Meet the Team'),
+  
+  // ========================================
+  // Achievements & Trust (Social Proof)
+  // ========================================
+  achievements: jsonb('achievements').$type<ShowroomAchievement[]>().default([]), // Awards, milestones
+  totalCarsSold: integer('total_cars_sold'), // Impressive milestone number
+  yearsInBusiness: integer('years_in_business'), // Can be calculated from foundedYear
+  clientLogos: jsonb('client_logos').$type<string[]>().default([]), // Notable client logos
+  achievementsSectionTitle: text('achievements_section_title').default('Our Achievements'),
+  
+  // ========================================
+  // Testimonials (Voice of Customers)
+  // ========================================
+  featuredTestimonials: jsonb('featured_testimonials').$type<ShowroomTestimonial[]>().default([]), // Curated reviews (max 5)
+  testimonialsSectionTitle: text('testimonials_section_title').default('What Our Clients Say'),
+  
+  // ========================================
+  // Services & Experience
+  // ========================================
+  signatureServices: jsonb('signature_services').$type<ShowroomService[]>().default([]), // Premium services (max 6)
+  vipPerks: jsonb('vip_perks').$type<string[]>().default([]), // Bullet points of exclusive perks
+  servicesSectionTitle: text('services_section_title').default('Our Services'),
+  
+  // ========================================
+  // Contact & Location (Premium)
+  // ========================================
+  showroomAddress: text('showroom_address'), // Full formatted address
+  showroomMapEmbedUrl: text('showroom_map_embed_url'), // Custom Google Maps embed
+  showroomExteriorImages: jsonb('showroom_exterior_images').$type<string[]>().default([]), // Building shots
+  parkingInfo: text('parking_info'), // Valet, parking details
+  appointmentCtaText: text('appointment_cta_text').default('Book Your Private Viewing'),
+  
+  // ========================================
+  // Social & Media
+  // ========================================
+  instagramHandle: text('instagram_handle'),
+  instagramFeedEnabled: boolean('instagram_feed_enabled').default(false), // Show embedded feed
+  youtubeChannelUrl: text('youtube_channel_url'),
+  tiktokHandle: text('tiktok_handle'),
+  linkedinUrl: text('linkedin_url'),
+  pressFeatures: jsonb('press_features').$type<ShowroomPressFeature[]>().default([]), // Media mentions
+  
+  // ========================================
+  // Customization & Theming
+  // ========================================
+  primaryColor: text('primary_color'), // Brand color override
+  accentColor: text('accent_color'), // Secondary brand color
+  fontFamily: text('font_family'), // Custom font (from approved list)
+  customCss: text('custom_css'), // Advanced: custom CSS overrides (sanitized)
+  
+  // ========================================
+  // SEO & Meta
+  // ========================================
+  seoTitle: text('seo_title'), // Custom page title
+  seoDescription: text('seo_description'), // Meta description
+  seoImage: text('seo_image'), // OG image
+  slug: text('slug').unique(), // Custom URL: /showroom/luxury-motors
+  
+  // ========================================
+  // Publishing & Status
+  // ========================================
+  isPublished: boolean('is_published').default(false).notNull(),
+  publishedAt: timestamp('published_at'),
+  lastEditedAt: timestamp('last_edited_at'),
+  lastEditedBy: text('last_edited_by').references(() => user.id, { onDelete: 'set null' }),
+  
+  // Analytics
+  viewCount: integer('view_count').default(0).notNull(),
+  uniqueVisitors: integer('unique_visitors').default(0).notNull(),
+  avgTimeOnPage: integer('avg_time_on_page').default(0), // Seconds
+  lastViewedAt: timestamp('last_viewed_at'),
+  
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
+}, (table) => [
+  // Primary lookup - unique constraint already handles this but explicit index for clarity
+  index('partner_showroom_partnerId_idx').on(table.partnerId),
+  
+  // Public page lookup by slug (most critical for low latency)
+  index('partner_showroom_slug_idx').on(table.slug),
+  
+  // Filtering published showrooms
+  index('partner_showroom_isPublished_idx').on(table.isPublished),
+  
+  // Composite: Published showrooms sorted by date (for directory/listing pages)
+  index('partner_showroom_published_date_idx').on(table.isPublished, table.publishedAt),
+  
+  // Analytics queries
+  index('partner_showroom_viewCount_idx').on(table.viewCount),
+  
+  // Editor tracking
+  index('partner_showroom_lastEditedBy_idx').on(table.lastEditedBy),
+]);
+

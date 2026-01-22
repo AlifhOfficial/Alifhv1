@@ -262,7 +262,7 @@ export const Input = forwardRef<TextInput, InputProps>(
                 <TextInput
                   ref={ref}
                   style={[getInputStyle(), inputStyle]}
-                  placeholderTextColor={error ? danger + 99 : muted}
+                  placeholderTextColor={error ? danger + '99' : muted}
                   onFocus={handleFocus}
                   onBlur={handleBlur}
                   editable={!disabled}
@@ -296,8 +296,6 @@ export const Input = forwardRef<TextInput, InputProps>(
         )}
       </View>
     );
-
-    return renderInputContent();
   }
 );
 
@@ -420,24 +418,12 @@ export const GroupedInputItem = forwardRef<TextInput, GroupedInputItemProps>(
     },
     ref
   ) => {
-    const [isFocused, setIsFocused] = useState(false);
-
     const text = useColor('text');
     const muted = useColor('textMuted');
     const primary = useColor('primary');
     const danger = useColor('red');
 
     const isTextarea = type === 'textarea';
-
-    const handleFocus = (e: any) => {
-      setIsFocused(true);
-      onFocus?.(e);
-    };
-
-    const handleBlur = (e: any) => {
-      setIsFocused(false);
-      onBlur?.(e);
-    };
 
     const renderRightComponent = () => {
       if (!rightComponent) return null;
@@ -446,7 +432,7 @@ export const GroupedInputItem = forwardRef<TextInput, GroupedInputItemProps>(
         : rightComponent;
     };
 
-    const renderItemContent = () => (
+    return (
       <Pressable
         onPress={() => ref && 'current' in ref && ref.current?.focus()}
         disabled={disabled}
@@ -520,6 +506,7 @@ export const GroupedInputItem = forwardRef<TextInput, GroupedInputItemProps>(
                 style={[
                   {
                     fontSize: FONT_SIZE,
+                    fontFamily: FONT_FAMILY,
                     lineHeight: 20,
                     color: disabled ? muted : error ? danger : text,
                     textAlignVertical: 'top',
@@ -532,8 +519,8 @@ export const GroupedInputItem = forwardRef<TextInput, GroupedInputItemProps>(
                 placeholder={placeholder || 'Type your message...'}
                 editable={!disabled}
                 selectionColor={primary}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
+                onFocus={onFocus}
+                onBlur={onBlur}
                 {...props}
               />
             </>
@@ -586,6 +573,7 @@ export const GroupedInputItem = forwardRef<TextInput, GroupedInputItemProps>(
                     {
                       flex: 1,
                       fontSize: FONT_SIZE,
+                      fontFamily: FONT_FAMILY,
                       color: disabled ? muted : error ? danger : text,
                       paddingVertical: 0,
                     },
@@ -595,8 +583,8 @@ export const GroupedInputItem = forwardRef<TextInput, GroupedInputItemProps>(
                   placeholderTextColor={error ? danger + '99' : muted}
                   editable={!disabled}
                   selectionColor={primary}
-                  onFocus={handleFocus}
-                  onBlur={handleBlur}
+                  onFocus={onFocus}
+                  onBlur={onBlur}
                   {...props}
                 />
               </View>
@@ -608,7 +596,5 @@ export const GroupedInputItem = forwardRef<TextInput, GroupedInputItemProps>(
         </View>
       </Pressable>
     );
-
-    return renderItemContent();
   }
 );

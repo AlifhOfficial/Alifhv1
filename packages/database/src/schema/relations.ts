@@ -18,6 +18,7 @@ import {
   partnerReview,
   partnerRequest,
   auditLog,
+  partnerShowroom,
 } from './partner';
 import {
   carListing,
@@ -128,6 +129,12 @@ export const userSuperlikeQuotaRelations = relations(userSuperlikeQuota, ({ one 
 export const partnerRelations = relations(partner, ({ many, one }) => ({
   staff: many(partnerStaff),
   
+  // Black Tier Showroom (1:1)
+  showroom: one(partnerShowroom, {
+    fields: [partner.id],
+    references: [partnerShowroom.partnerId],
+  }),
+  
   // Listings
   listings: many(carListing),
   
@@ -161,6 +168,18 @@ export const partnerStaffRelations = relations(partnerStaff, ({ one, many }) => 
     references: [user.id],
   }),
   postedListings: many(carListing), // Listings posted by this staff member
+}));
+
+// Partner Showroom relations (Black Tier exclusive brand page)
+export const partnerShowroomRelations = relations(partnerShowroom, ({ one }) => ({
+  partner: one(partner, {
+    fields: [partnerShowroom.partnerId],
+    references: [partner.id],
+  }),
+  lastEditor: one(user, {
+    fields: [partnerShowroom.lastEditedBy],
+    references: [user.id],
+  }),
 }));
 
 // Partner Review relations
