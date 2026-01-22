@@ -14,7 +14,7 @@
  * 
  * Processing:
  * - Images: Converts to WebP, resizes, compresses
- * - Videos: Validates format and size (max 50MB), uploads to R2
+ * - Videos: Validates format and size (max 20MB), uploads to R2
  * - Stores under brands/{partnerId}/showroom/
  * 
  * Returns: { key, url, etag }
@@ -35,7 +35,7 @@ export const maxDuration = 60; // 60 seconds timeout for large uploads
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'image/avif'];
 const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-m4v'];
 const MAX_IMAGE_SIZE = 15 * 1024 * 1024; // 15MB for high-quality showroom images
-const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50MB for hero videos
+const MAX_VIDEO_SIZE = 20 * 1024 * 1024; // 20MB for hero videos
 
 const showroomAssetLimiter = createRateLimiter(RATE_LIMITS_STORAGE.UPLOAD_PARTNER);
 
@@ -161,7 +161,7 @@ export async function POST(req: NextRequest) {
       // Validate video file size
       if (file.size > MAX_VIDEO_SIZE) {
         return NextResponse.json({ 
-          error: 'Video too large. Maximum 50MB allowed' 
+          error: 'Video too large. Maximum 20MB allowed' 
         }, { status: 400 });
       }
     } else {

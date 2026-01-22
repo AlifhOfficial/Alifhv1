@@ -7,7 +7,7 @@
 
 import { useRef } from 'react';
 import Image from 'next/image';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+
 import { getPublicUrl } from '@/utils';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
@@ -24,50 +24,18 @@ export function ShowroomAchievements({ showroom }: ShowroomAchievementsProps) {
 
   const theme = getAmbientTheme(showroom.ambientStyle);
 
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollRef.current) {
-      const scrollAmount = 340;
-      scrollRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
-    }
-  };
-
   return (
     <section id="showroom-achievements" className={`${theme.sectionSpacing}`}>
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header */}
-        <div className="flex items-end justify-between mb-8 px-4 sm:px-6 lg:px-8">
-          <div>
-            <p className={`text-xs uppercase tracking-widest ${theme.labelClass} text-muted-foreground mb-4`}>
-              {showroom.achievementsSectionTitle || 'Recognition'}
-            </p>
-            <h2 className={`text-xl sm:text-2xl lg:text-3xl ${theme.headingClass} text-foreground tracking-tight`}>
-              Awards & Milestones
-            </h2>
-          </div>
-          
-          {/* Navigation Arrows */}
-          {achievements.length > 3 && (
-            <div className="hidden sm:flex items-center gap-2">
-              <button
-                onClick={() => scroll('left')}
-                className="w-10 h-10 rounded-full bg-sidebar hover:bg-sidebar-accent border border-sidebar-border flex items-center justify-center transition-colors"
-                aria-label="Scroll left"
-              >
-                <ChevronLeft className="h-5 w-5 text-sidebar-foreground" />
-              </button>
-              <button
-                onClick={() => scroll('right')}
-                className="w-10 h-10 rounded-full bg-sidebar hover:bg-sidebar-accent border border-sidebar-border flex items-center justify-center transition-colors"
-                aria-label="Scroll right"
-              >
-                <ChevronRight className="h-5 w-5 text-sidebar-foreground" />
-              </button>
-            </div>
-          )}
+        <div className="mb-8 px-4 sm:px-6 lg:px-8">
+          <p className={`text-xs uppercase tracking-widest ${theme.labelClass} text-muted-foreground mb-4`}>
+            {showroom.achievementsSectionTitle || 'Recognition'}
+          </p>
+          <h2 className={`text-xl sm:text-2xl lg:text-3xl ${theme.headingClass} text-foreground tracking-tight`}>
+            Awards & Milestones
+          </h2>
         </div>
         
         {/* Carousel */}

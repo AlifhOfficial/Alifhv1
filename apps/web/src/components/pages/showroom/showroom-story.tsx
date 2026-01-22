@@ -39,15 +39,15 @@ export function ShowroomStory({ showroom }: ShowroomStoryProps) {
               {showroom.brandStoryTitle || 'Our Story'}
             </p>
             
-            <h2 className={`text-xl sm:text-2xl lg:text-3xl ${theme.headingClass} text-foreground tracking-tight leading-tight mb-4`}>
+            <h2 className={`text-xl sm:text-2xl lg:text-3xl ${theme.headingClass} text-foreground tracking-tight leading-tight mb-6`}>
               The Story Behind
               <br />
               <span className="text-muted-foreground/70">{partner?.brandName}</span>
             </h2>
             
-            <div className={`text-sm sm:text-base ${theme.bodyClass} text-muted-foreground leading-relaxed`}>
+            <div className={`${theme.bodyClass} text-muted-foreground leading-relaxed`}>
               {showroom.brandStoryContent.split('\n\n').slice(0, 3).map((paragraph, idx) => (
-                <p key={idx} className={idx > 0 ? 'mt-3' : ''}>{paragraph}</p>
+                <p key={idx} className={idx > 0 ? 'mt-4' : ''} style={{ fontSize: '1.25rem', lineHeight: '1.75rem' }}>{paragraph}</p>
               ))}
             </div>
           </div>

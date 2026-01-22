@@ -5,9 +5,8 @@
 
 'use client';
 
-import { useRef } from 'react';
 import Image from 'next/image';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+
 import { getPublicUrl } from '@/utils';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
@@ -18,7 +17,6 @@ interface ShowroomServicesProps {
 
 export function ShowroomServices({ showroom }: ShowroomServicesProps) {
   const services = showroom.signatureServices;
-  const scrollRef = useRef<HTMLDivElement>(null);
   
   if (!services || services.length === 0) return null;
 
@@ -27,16 +25,6 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
   
   // Single ambient image (index 6)
   const ambientImage = showroom.showroomImages?.[6];
-
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollRef.current) {
-      const scrollAmount = 340;
-      scrollRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
-    }
-  };
 
   return (
     <section id="showroom-services" className={`${theme.sectionSpacing}`}>
@@ -51,57 +39,22 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
               fill
               className="object-cover"
             />
-            {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
-            
-            {/* Title overlay */}
-            <div className="absolute bottom-0 left-0 right-0 p-6">
-              <p className={`text-xs uppercase tracking-widest ${theme.labelClass} text-white/70 mb-2`}>
-                {showroom.servicesSectionTitle || 'What We Offer'}
-              </p>
-              <h2 className={`text-xl sm:text-2xl lg:text-3xl ${theme.headingClass} text-white tracking-tight`}>
-                Signature Services
-              </h2>
-            </div>
           </div>
         )}
 
-        {/* Header if no image */}
-        {!ambientImage && (
-          <div className="px-4 sm:px-6 lg:px-8 mb-8">
-            <p className={`text-xs uppercase tracking-widest ${theme.labelClass} text-muted-foreground mb-3`}>
-              {showroom.servicesSectionTitle || 'What We Offer'}
-            </p>
-            <h2 className={`text-xl sm:text-2xl lg:text-3xl ${theme.headingClass} text-foreground tracking-tight`}>
-              Signature Services
-            </h2>
-          </div>
-        )}
+        {/* Section Header - Above cards */}
+        <div className="px-4 sm:px-6 lg:px-8 mb-8">
+          <p className={`text-xs uppercase tracking-widest ${theme.labelClass} text-muted-foreground mb-3`}>
+            {showroom.servicesSectionTitle || 'What We Offer'}
+          </p>
+          <h2 className={`text-xl sm:text-2xl lg:text-3xl ${theme.headingClass} text-foreground tracking-tight`}>
+            Signature Services
+          </h2>
+        </div>
 
         {/* Services Carousel */}
         <div className="relative group/scroll">
-          {/* Navigation */}
-          {services.length > 3 && (
-            <div className="hidden sm:flex items-center gap-2 absolute -top-14 right-8 z-10">
-              <button
-                onClick={() => scroll('left')}
-                className="w-10 h-10 rounded-full bg-sidebar hover:bg-sidebar-accent border border-sidebar-border flex items-center justify-center transition-colors"
-                aria-label="Scroll left"
-              >
-                <ChevronLeft className="h-5 w-5 text-sidebar-foreground" />
-              </button>
-              <button
-                onClick={() => scroll('right')}
-                className="w-10 h-10 rounded-full bg-sidebar hover:bg-sidebar-accent border border-sidebar-border flex items-center justify-center transition-colors"
-                aria-label="Scroll right"
-              >
-                <ChevronRight className="h-5 w-5 text-sidebar-foreground" />
-              </button>
-            </div>
-          )}
-
           <div 
-            ref={scrollRef}
             className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-4 px-4 sm:px-6 lg:px-8"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >

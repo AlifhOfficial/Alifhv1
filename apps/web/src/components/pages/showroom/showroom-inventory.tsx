@@ -6,7 +6,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { ArrowRight, Car, ChevronLeft, ChevronRight, ChevronUp } from 'lucide-react';
+import { ArrowRight, Car, ChevronUp } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ListingsHeader } from '@/components/listings/listings-header';
@@ -297,36 +297,6 @@ function InventoryCarousel({
   theme,
 }: InventoryCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-
-  const checkScroll = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 0);
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 10);
-  }, []);
-
-  useEffect(() => {
-    checkScroll();
-    const el = scrollRef.current;
-    if (el) {
-      el.addEventListener('scroll', checkScroll);
-      window.addEventListener('resize', checkScroll);
-      return () => {
-        el.removeEventListener('scroll', checkScroll);
-        window.removeEventListener('resize', checkScroll);
-      };
-    }
-  }, [checkScroll, listings]);
-
-  const scroll = (direction: 'left' | 'right') => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const cardWidth = 340;
-    const scrollAmount = direction === 'left' ? -cardWidth : cardWidth;
-    el.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-  };
 
   if (isLoading) {
     return (
@@ -335,7 +305,7 @@ function InventoryCarousel({
           {[...Array(4)].map((_, i) => (
             <div 
               key={i} 
-              className="flex-none w-[300px] sm:w-[340px] aspect-[4/3] rounded-2xl bg-muted/30 animate-pulse" 
+              className="flex-shrink-0 w-[340px] sm:w-[380px] aspect-[4/3] rounded-2xl bg-muted/30 animate-pulse" 
             />
           ))}
         </div>
@@ -363,33 +333,12 @@ function InventoryCarousel({
   const previewListings = listings.slice(0, 8);
 
   return (
-    <div className="relative group">
-      {/* Navigation Arrows */}
-      {canScrollLeft && (
-        <button
-          onClick={() => scroll('left')}
-          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-background/90 backdrop-blur-sm border border-border/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background shadow-lg"
-          aria-label="Scroll left"
-        >
-          <ChevronLeft className="w-5 h-5 text-foreground" />
-        </button>
-      )}
-      
-      {canScrollRight && (
-        <button
-          onClick={() => scroll('right')}
-          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-background/90 backdrop-blur-sm border border-border/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background shadow-lg"
-          aria-label="Scroll right"
-        >
-          <ChevronRight className="w-5 h-5 text-foreground" />
-        </button>
-      )}
-
-      {/* Carousel */}
+    <div className="relative group/scroll">
+      {/* Carousel - Match achievements pattern */}
       <div
         ref={scrollRef}
-        className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth px-4 sm:px-6 lg:px-8"
-        style={{ scrollSnapType: 'x mandatory' }}
+        className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-4 px-4 sm:px-6 lg:px-8"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {previewListings.map((listing, idx) => (
           <ShowroomCarCard 
@@ -397,9 +346,25 @@ function InventoryCarousel({
             listing={listing}
             priority={idx < 3}
             index={idx}
+            theme={theme}
           />
         ))}
       </div>
+      
+      {/* Progress Dots (mobile) */}
+      {previewListings.length > 1 && (
+        <div className="flex justify-center gap-1.5 mt-4 sm:hidden">
+          {previewListings.slice(0, 5).map((_, idx) => (
+            <div 
+              key={idx} 
+              className="w-1.5 h-1.5 rounded-full bg-sidebar-border"
+            />
+          ))}
+          {previewListings.length > 5 && (
+            <span className="text-xs text-muted-foreground ml-1">+{previewListings.length - 5}</span>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -412,9 +377,10 @@ interface ShowroomCarCardProps {
   listing: any;
   priority?: boolean;
   index: number;
+  theme: ReturnType<typeof getAmbientTheme>;
 }
 
-function ShowroomCarCard({ listing, priority = false, index }: ShowroomCarCardProps) {
+function ShowroomCarCard({ listing, priority = false, index, theme }: ShowroomCarCardProps) {
   const displayImage = listing.thumbnail 
     ? getPublicUrl(listing.thumbnail) 
     : listing.images?.[0] 
@@ -424,43 +390,45 @@ function ShowroomCarCard({ listing, priority = false, index }: ShowroomCarCardPr
   return (
     <Link
       href={`/listings/${listing.id}`}
-      className={cn(
-        "flex-none w-[280px] sm:w-[320px]",
-        "group block",
-        "rounded-2xl overflow-hidden",
-        "bg-sidebar border border-sidebar-border",
-        "hover:border-sidebar-accent transition-colors",
-        "animate-in fade-in-0 duration-500"
-      )}
-      style={{ 
-        scrollSnapAlign: 'start',
-        animationDelay: `${index * 75}ms`, 
-        animationFillMode: 'both' 
-      }}
+      className="flex-shrink-0 w-[340px] sm:w-[380px] rounded-2xl bg-sidebar border border-sidebar-border hover:border-sidebar-accent transition-all duration-300 group overflow-hidden"
     >
       {/* Image Container */}
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-[16/10] overflow-hidden">
         <Image
           src={displayImage}
           alt={`${listing.year} ${listing.make} ${listing.model}`}
           fill
           priority={priority}
           className="object-cover transition-transform duration-500 group-hover:scale-105"
-          sizes="(max-width: 768px) 280px, 320px"
+          sizes="(max-width: 768px) 340px, 380px"
         />
-        
-        {/* Subtle gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
       
-      {/* Info - Compact Card Footer */}
-      <div className="p-4">
-        <h3 className="text-base font-medium text-sidebar-foreground group-hover:text-primary transition-colors truncate">
+      {/* Info - Match achievements card padding */}
+      <div className="p-6">
+        {/* Year - Large, faded like achievement year */}
+        <span className={`text-2xl font-light ${theme.headingClass} text-sidebar-foreground/20`}>
+          {listing.year}
+        </span>
+        
+        {/* Make & Model */}
+        <h3 className={`text-base ${theme.subheadingClass} text-sidebar-foreground leading-snug mt-2`}>
           {listing.make} {listing.model}
         </h3>
-        <p className="text-sm font-normal text-sidebar-foreground/60 mt-1">
-          {listing.year}
-        </p>
+        
+        {/* Variant/Trim if available */}
+        {listing.variant && (
+          <p className={`text-sm ${theme.bodyClass} text-sidebar-foreground/60 mt-1`}>
+            {listing.variant}
+          </p>
+        )}
+        
+        {/* Card Number - Match achievements */}
+        <div className="mt-4 pt-4 border-t border-sidebar-border/50">
+          <span className="text-sm text-sidebar-foreground/30">
+            {String(index + 1).padStart(2, '0')}
+          </span>
+        </div>
       </div>
     </Link>
   );

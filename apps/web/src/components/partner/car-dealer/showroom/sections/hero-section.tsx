@@ -200,7 +200,7 @@ export function HeroSection({
               onUpload={(file) => uploadVideo(file, 'hero-video', 'heroVideoFile')}
               onRemove={() => removeVideo('heroVideoFile')}
               aspectRatio="aspect-video"
-              label="MP4, WebM, or MOV • Max 50MB"
+              label="MP4, WebM, or MOV • Max 20MB"
               isUploading={videoUploading === 'heroVideoFile'}
               uploadProgress={uploadProgress}
             />

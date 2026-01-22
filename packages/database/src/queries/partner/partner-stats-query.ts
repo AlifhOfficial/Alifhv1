@@ -297,6 +297,7 @@ export async function getPartnerEngagementStats(partnerId: string): Promise<Part
     db
       .select({
         totalViews: sum(carListing.viewCount),
+        totalImpressions: sum(carListing.impressionCount),
         totalFavorites: sum(carListing.favouriteCount),
         totalSuperlikes: sum(carListing.superlikeCount),
         listingCount: count(),
@@ -358,6 +359,7 @@ export async function getPartnerEngagementStats(partnerId: string): Promise<Part
 
   const engagementStats = engagementStatsResult[0];
   const totalViews = Number(engagementStats?.totalViews ?? 0);
+  const totalImpressions = Number(engagementStats?.totalImpressions ?? 0);
   const totalFavorites = Number(engagementStats?.totalFavorites ?? 0);
   const totalSuperlikes = Number(engagementStats?.totalSuperlikes ?? 0);
   const listingCount = Number(engagementStats?.listingCount ?? 0);
@@ -386,7 +388,7 @@ export async function getPartnerEngagementStats(partnerId: string): Promise<Part
         : 0,
       thumbnail: l.thumbnail,
     })),
-    totalImpressions: totalViews, // For now, impressions = views
+    totalImpressions,
     totalFavorites,
     totalSuperlikes,
     viewToFavoriteRate,

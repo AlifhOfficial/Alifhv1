@@ -7,7 +7,7 @@
 
 import { useRef } from 'react';
 import Image from 'next/image';
-import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { getPublicUrl } from '@/utils';
 import type { ShowroomData, AmbientTheme } from './types';
 import { getAmbientTheme } from './types';
@@ -28,16 +28,6 @@ export function ShowroomTestimonials({ showroom }: ShowroomTestimonialsProps) {
   // Get an image for the section header
   const sectionImage = showroom.showroomImages?.[2] || showroom.showroomImages?.[0];
 
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollRef.current) {
-      const scrollAmount = 400;
-      scrollRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
-    }
-  };
-
   return (
     <section id="showroom-testimonials" className={`${theme.sectionSpacing}`}>
       <div className="max-w-[1600px] mx-auto">
@@ -57,35 +47,13 @@ export function ShowroomTestimonials({ showroom }: ShowroomTestimonialsProps) {
         )}
         
         {/* Header */}
-        <div className="flex items-end justify-between mb-8 px-4 sm:px-6 lg:px-8">
-          <div>
-            <p className={`text-xs uppercase tracking-widest ${theme.labelClass} text-muted-foreground mb-3`}>
-              {showroom.testimonialsSectionTitle || 'Client Stories'}
-            </p>
-            <h2 className={`text-xl sm:text-2xl lg:text-3xl ${theme.headingClass} text-foreground tracking-tight`}>
-              What Our Clients Say
-            </h2>
-          </div>
-          
-          {/* Navigation Arrows */}
-          {testimonials.length > 2 && (
-            <div className="hidden sm:flex items-center gap-2">
-              <button
-                onClick={() => scroll('left')}
-                className="w-10 h-10 rounded-full bg-sidebar hover:bg-sidebar-accent border border-sidebar-border flex items-center justify-center transition-colors"
-                aria-label="Scroll left"
-              >
-                <ChevronLeft className="h-5 w-5 text-sidebar-foreground" />
-              </button>
-              <button
-                onClick={() => scroll('right')}
-                className="w-10 h-10 rounded-full bg-sidebar hover:bg-sidebar-accent border border-sidebar-border flex items-center justify-center transition-colors"
-                aria-label="Scroll right"
-              >
-                <ChevronRight className="h-5 w-5 text-sidebar-foreground" />
-              </button>
-            </div>
-          )}
+        <div className="mb-8 px-4 sm:px-6 lg:px-8">
+          <p className={`text-xs uppercase tracking-widest ${theme.labelClass} text-muted-foreground mb-3`}>
+            {showroom.testimonialsSectionTitle || 'Client Stories'}
+          </p>
+          <h2 className={`text-xl sm:text-2xl lg:text-3xl ${theme.headingClass} text-foreground tracking-tight`}>
+            What Our Clients Say
+          </h2>
         </div>
 
         {/* Testimonials Carousel */}

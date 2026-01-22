@@ -150,9 +150,9 @@ export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
       return;
     }
     
-    const maxSize = 50 * 1024 * 1024; // 50MB
+    const maxSize = 20 * 1024 * 1024; // 20MB
     if (file.size > maxSize) {
-      toast({ title: 'Video too large. Max 50MB allowed', variant: 'destructive' });
+      toast({ title: 'Video too large. Max 20MB allowed', variant: 'destructive' });
       return;
     }
 

@@ -1,6 +1,7 @@
 /**
  * Showroom Hero
- * Content first, then full-width media, then stats.
+ * Full-bleed media first, then clean content block below.
+ * Immersive, minimal, lets the brand breathe.
  */
 
 'use client';
@@ -34,25 +35,25 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
   const { embedUrl: heroVideoEmbedUrl } = getVideoEmbedUrl(showroom.heroVideoUrl);
   
   // Priority: Video first, then image, then gradient
-  // Video > Image > Gradient (no background type preference needed)
   const hasUploadedVideo = !!heroVideoFileUrl;
   const hasEmbeddedVideo = !!heroVideoEmbedUrl;
   const hasImage = !!heroImageUrl;
   
-  // Show video if available (uploaded takes priority over embedded)
   const showUploadedVideo = hasUploadedVideo;
   const showEmbeddedVideo = !hasUploadedVideo && hasEmbeddedVideo;
   const showImage = !hasUploadedVideo && !hasEmbeddedVideo && hasImage;
   const showGradient = !hasUploadedVideo && !hasEmbeddedVideo && !hasImage;
 
-  // Brand colors for gradient (use showroom colors with fallbacks)
+  // Brand colors for gradient
   const primaryColor = showroom.primaryColor || '#000000';
   const accentColor = showroom.accentColor || '#c9a962';
 
-  // Preload video for instant playback
+  // Stats data
+  const hasStats = showroom.yearsInBusiness || showroom.totalCarsSold || partner.googleRating;
+
+  // Preload video
   useEffect(() => {
     if (heroVideoFileUrl) {
-      // Create preload link for the video
       const existingLink = document.querySelector(`link[href="${heroVideoFileUrl}"]`);
       if (!existingLink) {
         const link = document.createElement('link');
@@ -66,85 +67,103 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
   }, [heroVideoFileUrl]);
 
   return (
-    <section className={`${theme.sectionSpacing}`}>
+    <section className={theme.sectionSpacing}>
       <div className="max-w-[1600px] mx-auto">
-
-        {/* Brand Name - Top */}
-        <div className="px-4 sm:px-6 lg:px-8 mb-8">
-          <p className={`text-xs uppercase tracking-widest ${theme.labelClass} text-muted-foreground text-center`}>
+        
+        {/* Brand Name & Tagline - Top, Centered */}
+        <div className="px-4 sm:px-6 lg:px-8 mb-8 text-center">
+          <p className={`text-xs uppercase tracking-widest ${theme.labelClass} text-muted-foreground mb-3`}>
             {partner.brandName}
           </p>
+          <h1 className={`text-xl sm:text-2xl lg:text-3xl ${theme.headingClass} tracking-tight leading-tight`}>
+            {(() => {
+              const tagline = showroom.heroTagline || `Welcome to ${partner.brandName}`;
+              const words = tagline.split(' ');
+              const firstWord = words[0];
+              const restWords = words.slice(1).join(' ');
+              return (
+                <>
+                  <span className="text-foreground">{firstWord}</span>
+                  {restWords && <span className="text-muted-foreground"> {restWords}</span>}
+                </>
+              );
+            })()}
+          </h1>
         </div>
 
-        {/* Hero Media - Full Width */}
+        {/* ================================================================== */}
+        {/* HERO MEDIA - Consistent with other sections */}
+        {/* ================================================================== */}
         <div className="px-4 sm:px-6 lg:px-8">
-          {showUploadedVideo ? (
-            <div className="relative w-full aspect-[21/9] overflow-hidden rounded-2xl bg-muted group">
-              {/* Show image as poster while video loads */}
-              {heroImageUrl && (
-                <Image
-                  src={heroImageUrl}
-                  alt={showroom.heroTagline || partner.brandName}
-                  fill
-                  priority
-                  className="object-cover"
-                  sizes="100vw"
+          <div className="relative w-full aspect-[21/9] overflow-hidden rounded-2xl bg-muted group">
+            
+            {/* Media Layer */}
+            {showUploadedVideo ? (
+              <>
+                {/* Poster image while video loads */}
+                {heroImageUrl && (
+                  <Image
+                    src={heroImageUrl}
+                    alt={showroom.heroTagline || partner.brandName}
+                    fill
+                    priority
+                    className="object-cover"
+                    sizes="100vw"
+                  />
+                )}
+                <video
+                  ref={videoRef}
+                  src={heroVideoFileUrl}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  autoPlay
+                  muted={isMuted}
+                  loop
+                  playsInline
+                  controls={false}
+                  preload="auto"
+                  poster={heroImageUrl || undefined}
                 />
-              )}
-              <video
-                ref={videoRef}
-                src={heroVideoFileUrl}
-                className="absolute inset-0 w-full h-full object-cover"
-                autoPlay
-                muted={isMuted}
-                loop
-                playsInline
-                controls={false}
-                preload="auto"
-                poster={heroImageUrl || undefined}
-              />
-              
-              {/* Video Controls */}
-              <div className="absolute bottom-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
-                  onClick={() => {
-                    if (videoRef.current) {
-                      if (isPlaying) {
-                        videoRef.current.pause();
-                      } else {
-                        videoRef.current.play();
-                      }
-                      setIsPlaying(!isPlaying);
-                    }
-                  }}
-                  className="w-10 h-10 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-background transition-colors"
-                >
-                  {isPlaying ? (
-                    <Pause className="w-4 h-4 text-foreground" />
-                  ) : (
-                    <Play className="w-4 h-4 text-foreground ml-0.5" />
-                  )}
-                </button>
                 
-                <button
-                  onClick={() => {
-                    if (videoRef.current) {
-                      videoRef.current.muted = !isMuted;
-                      setIsMuted(!isMuted);
-                    }
-                  }}
-                  className="w-10 h-10 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-background transition-colors"
-                >
-                  {isMuted ? (
-                    <VolumeX className="w-4 h-4 text-foreground" />
-                  ) : (
-                    <Volume2 className="w-4 h-4 text-foreground" />
-                  )}
-                </button>
-              </div>
-            </div>
-          ) : showEmbeddedVideo ? (
-            <div className="relative w-full aspect-[21/9] overflow-hidden rounded-2xl bg-muted">
+                {/* Video Controls */}
+                <div className="absolute bottom-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={() => {
+                      if (videoRef.current) {
+                        if (isPlaying) {
+                          videoRef.current.pause();
+                        } else {
+                          videoRef.current.play();
+                        }
+                        setIsPlaying(!isPlaying);
+                      }
+                    }}
+                    className="w-10 h-10 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-background transition-colors"
+                  >
+                    {isPlaying ? (
+                      <Pause className="w-4 h-4 text-foreground" />
+                    ) : (
+                      <Play className="w-4 h-4 text-foreground ml-0.5" />
+                    )}
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      if (videoRef.current) {
+                        videoRef.current.muted = !isMuted;
+                        setIsMuted(!isMuted);
+                      }
+                    }}
+                    className="w-10 h-10 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-background transition-colors"
+                  >
+                    {isMuted ? (
+                      <VolumeX className="w-4 h-4 text-foreground" />
+                    ) : (
+                      <Volume2 className="w-4 h-4 text-foreground" />
+                    )}
+                  </button>
+                </div>
+              </>
+            ) : showEmbeddedVideo ? (
               <iframe
                 src={`${heroVideoEmbedUrl}?autoplay=1&mute=1&loop=1`}
                 title={showroom.heroTagline || partner.brandName}
@@ -152,9 +171,7 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
-            </div>
-          ) : showImage && heroImageUrl ? (
-            <div className="relative w-full aspect-[21/9] overflow-hidden rounded-2xl bg-muted">
+            ) : showImage && heroImageUrl ? (
               <Image
                 src={heroImageUrl}
                 alt={showroom.heroTagline || partner.brandName}
@@ -163,41 +180,54 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
                 className="object-cover"
                 sizes="100vw"
               />
-            </div>
-          ) : showGradient ? (
-            <div 
-              className="relative w-full aspect-[21/9] overflow-hidden rounded-2xl"
-              style={{
-                background: `linear-gradient(135deg, ${primaryColor} 0%, ${accentColor} 100%)`,
-              }}
-            />
-          ) : null}
+            ) : showGradient ? (
+              <div 
+                className="absolute inset-0"
+                style={{
+                  background: `linear-gradient(135deg, ${primaryColor} 0%, ${accentColor} 100%)`,
+                }}
+              />
+            ) : null}
+          </div>
         </div>
 
-        {/* Content - Below Media */}
+        {/* ================================================================== */}
+        {/* CONTENT BLOCK - Below media */}
+        {/* ================================================================== */}
         <div className="px-4 sm:px-6 lg:px-8 pt-12 lg:pt-16">
           
-          {/* Title with CTAs on right */}
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 lg:gap-8">
-            <h1 className={`text-xl sm:text-2xl lg:text-3xl ${theme.headingClass} text-foreground tracking-tight leading-tight`}>
-              {showroom.heroTagline || `Welcome to ${partner.brandName}`}
-            </h1>
+          {/* Philosophy + CTAs Row */}
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 lg:gap-12">
             
-            {/* CTAs - Far right */}
-            <div className="flex items-center gap-3 shrink-0">
+            {/* Philosophy */}
+            <div className="flex-1 max-w-2xl">
+              {showroom.brandPhilosophy && (
+                <>
+                  <p className={`text-xs uppercase tracking-widest ${theme.labelClass} text-muted-foreground mb-4`}>
+                    Philosophy
+                  </p>
+                  <p className={`text-lg sm:text-xl ${theme.bodyClass} text-foreground leading-relaxed`}>
+                    {showroom.brandPhilosophy}
+                  </p>
+                </>
+              )}
+            </div>
+
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
               {showroom.heroCtaLink ? (
                 <a
                   href={showroom.heroCtaLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="h-11 px-6 bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition-colors flex items-center justify-center"
+                  className="h-12 px-8 bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition-colors flex items-center justify-center"
                 >
                   {showroom.heroCtaText || 'Talk to Us'}
                 </a>
               ) : (
                 <button
                   onClick={() => document.getElementById('showroom-contact')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="h-11 px-6 bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition-colors flex items-center justify-center"
+                  className="h-12 px-8 bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition-colors flex items-center justify-center"
                 >
                   {showroom.heroCtaText || 'Talk to Us'}
                 </button>
@@ -209,65 +239,76 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
                     href={showroom.heroCtaSecondaryLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="h-11 px-6 bg-muted text-foreground text-sm font-medium rounded-full hover:bg-muted/80 transition-colors flex items-center justify-center"
+                    className="h-12 px-8 bg-muted text-foreground text-sm font-medium rounded-full hover:bg-muted/80 transition-colors flex items-center justify-center"
                   >
                     {showroom.heroCtaSecondaryText}
                   </a>
                 ) : (
-                  <Link
-                    href={`/dealer/${partner.id}/inventory`}
-                    className="h-11 px-6 bg-muted text-foreground text-sm font-medium rounded-full hover:bg-muted/80 transition-colors flex items-center justify-center"
+                  <button
+                    onClick={() => document.getElementById('inventory')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="h-12 px-8 bg-muted text-foreground text-sm font-medium rounded-full hover:bg-muted/80 transition-colors flex items-center justify-center"
                   >
                     {showroom.heroCtaSecondaryText}
-                  </Link>
+                  </button>
                 )
               )}
             </div>
           </div>
-          
-          {/* Philosophy */}
-          {showroom.brandPhilosophy && (
-            <p className={`text-sm sm:text-base ${theme.bodyClass} text-muted-foreground leading-relaxed max-w-3xl mt-4`}>
-              {showroom.brandPhilosophy}
-            </p>
-          )}
 
-          {/* Stats */}
-          {(showroom.yearsInBusiness || showroom.totalCarsSold || partner.googleRating) && (
-            <div className="flex items-center gap-6 mt-6">
-              {showroom.yearsInBusiness && (
-                <div className="flex items-baseline gap-1">
-                  <span className={`text-lg ${theme.subheadingClass} text-foreground`}>
-                    {showroom.yearsInBusiness}+
-                  </span>
-                  <span className="text-xs text-muted-foreground">years</span>
-                </div>
-              )}
-              {showroom.totalCarsSold && (
-                <div className="flex items-baseline gap-1">
-                  <span className={`text-lg ${theme.subheadingClass} text-foreground`}>
-                    {showroom.totalCarsSold.toLocaleString()}+
-                  </span>
-                  <span className="text-xs text-muted-foreground">sold</span>
-                </div>
-              )}
-              {partner.googleRating && (
-                <div className="flex items-baseline gap-1">
-                  <span className={`text-lg ${theme.subheadingClass} text-foreground`}>
-                    {partner.googleRating.toFixed(1)}
-                  </span>
-                  <span className="text-xs text-muted-foreground">rating</span>
-                </div>
-              )}
+          {/* Stats Row - Bold, Card-like presentation */}
+          {hasStats && (
+            <div className="mt-12 lg:mt-16">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+                
+                {showroom.yearsInBusiness && (
+                  <div className="p-6 rounded-2xl bg-sidebar border border-sidebar-border">
+                    <span className={`text-3xl sm:text-4xl ${theme.headingClass} text-foreground tabular-nums`}>
+                      {showroom.yearsInBusiness}+
+                    </span>
+                    <p className={`text-sm ${theme.bodyClass} text-muted-foreground mt-1`}>
+                      Years in Business
+                    </p>
+                  </div>
+                )}
+                
+                {showroom.totalCarsSold && (
+                  <div className="p-6 rounded-2xl bg-sidebar border border-sidebar-border">
+                    <span className={`text-3xl sm:text-4xl ${theme.headingClass} text-foreground tabular-nums`}>
+                      {showroom.totalCarsSold.toLocaleString()}+
+                    </span>
+                    <p className={`text-sm ${theme.bodyClass} text-muted-foreground mt-1`}>
+                      Vehicles Sold
+                    </p>
+                  </div>
+                )}
+                
+                {partner.googleRating && (
+                  <div className="p-6 rounded-2xl bg-sidebar border border-sidebar-border">
+                    <span className={`text-3xl sm:text-4xl ${theme.headingClass} text-foreground tabular-nums`}>
+                      {partner.googleRating.toFixed(1)}
+                    </span>
+                    <p className={`text-sm ${theme.bodyClass} text-muted-foreground mt-1`}>
+                      Google Rating
+                    </p>
+                  </div>
+                )}
+                
+                {partner.googleReviewCount > 0 && (
+                  <div className="p-6 rounded-2xl bg-sidebar border border-sidebar-border">
+                    <span className={`text-3xl sm:text-4xl ${theme.headingClass} text-foreground tabular-nums`}>
+                      {partner.googleReviewCount.toLocaleString()}
+                    </span>
+                    <p className={`text-sm ${theme.bodyClass} text-muted-foreground mt-1`}>
+                      Reviews
+                    </p>
+                  </div>
+                )}
+                
+              </div>
             </div>
           )}
         </div>
-
       </div>
     </section>
   );
 }
-
-// ============================================================================
-// Stats Sub-component (no longer needed, integrated above)
-// ============================================================================
