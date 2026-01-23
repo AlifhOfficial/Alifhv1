@@ -22,7 +22,7 @@ export interface CreateCommunicationInput {
   phone?: string;
   subject: string;
   message: string;
-  type?: 'inquiry' | 'support' | 'partnership' | 'feedback' | 'other';
+  type?: 'inquiry' | 'support' | 'partnership' | 'feedback' | 'report' | 'other';
 }
 
 /**
@@ -51,7 +51,7 @@ export async function createCommunication(
 
 export interface CommunicationsFilter {
   status?: 'new' | 'in_progress' | 'resolved' | 'archived';
-  type?: 'inquiry' | 'support' | 'partnership' | 'feedback' | 'other';
+  type?: 'inquiry' | 'support' | 'partnership' | 'feedback' | 'report' | 'other';
   isRead?: boolean;
   search?: string; // Search in name, email, subject
 }

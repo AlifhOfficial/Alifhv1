@@ -13,6 +13,7 @@ export const communicationTypeEnum = pgEnum('communication_type', [
   'support',      // Help/support request
   'partnership',  // Business/partnership inquiries
   'feedback',     // General feedback
+  'report',       // Report a problem/listing
   'other'         // Catch-all
 ]);
 

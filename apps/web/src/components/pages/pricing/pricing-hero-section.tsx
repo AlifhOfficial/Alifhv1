@@ -9,7 +9,7 @@ import Image from 'next/image';
 
 export function PricingHeroSection() {
   return (
-    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <section className="pt-28 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-[1600px] mx-auto">
         
         {/* Simple centered hero */}
@@ -23,7 +23,7 @@ export function PricingHeroSection() {
             <span className="text-muted-foreground/70">No games.</span>
           </h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Two options. Same platform. Same features. Different levels of attention.
+            Two options. Same platform. Same core features.<br />Different levels of attention and presence.
           </p>
         </div>
 

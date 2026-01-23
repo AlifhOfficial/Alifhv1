@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status') as 'new' | 'in_progress' | 'resolved' | 'archived' | null;
-    const type = searchParams.get('type') as 'inquiry' | 'support' | 'partnership' | 'feedback' | 'other' | null;
+    const type = searchParams.get('type') as 'inquiry' | 'support' | 'partnership' | 'feedback' | 'report' | 'other' | null;
     const isRead = searchParams.get('isRead');
     const search = searchParams.get('search');
     const statsOnly = searchParams.get('statsOnly') === 'true';

@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate type if provided
-    const validTypes = ['inquiry', 'support', 'partnership', 'feedback', 'other'];
+    const validTypes = ['inquiry', 'support', 'partnership', 'feedback', 'report', 'other'];
     if (type && !validTypes.includes(type)) {
       return NextResponse.json(
         { error: 'Invalid communication type' },

@@ -36,7 +36,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 // Types
 // ============================================================================
 
-type CommunicationType = 'inquiry' | 'support' | 'partnership' | 'feedback' | 'other';
+type CommunicationType = 'inquiry' | 'support' | 'partnership' | 'feedback' | 'report' | 'other';
 type CommunicationStatus = 'new' | 'in_progress' | 'resolved' | 'archived';
 
 interface Communication {
@@ -111,6 +111,7 @@ function getTypeIcon(type: CommunicationType) {
     case 'support': return MessageCircle;
     case 'partnership': return Briefcase;
     case 'feedback': return MessageSquare;
+    case 'report': return AlertCircle;
     default: return Mail;
   }
 }
@@ -121,6 +122,7 @@ function getTypeLabel(type: CommunicationType) {
     case 'support': return 'Support';
     case 'partnership': return 'Partnership';
     case 'feedback': return 'Feedback';
+    case 'report': return 'Report';
     default: return 'Other';
   }
 }

@@ -6,9 +6,8 @@
 import {
   PricingHeroSection,
   PricingTiersSection,
-  PricingCompareSection,
+  PricingFeaturesSection,
   PricingFaqSection,
-  PricingClosingSection,
 } from '@/components/pages/pricing';
 import { Metadata } from 'next';
 
@@ -25,11 +24,17 @@ export const metadata: Metadata = {
 export default function PricingPage() {
   return (
     <div className="min-h-screen bg-background">
+      {/* 1. Hero - Hook with core value props */}
       <PricingHeroSection />
+      
+      {/* 2. Tiers - Flow vs Black pricing with quick features */}
       <PricingTiersSection />
-      <PricingCompareSection />
+      
+      {/* 3. Features - Detailed breakdown for those who want to dig deeper */}
+      <PricingFeaturesSection />
+      
+      {/* 5. FAQ - Address objections */}
       <PricingFaqSection />
-      <PricingClosingSection />
     </div>
   );
 }

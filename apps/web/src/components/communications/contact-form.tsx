@@ -16,7 +16,7 @@ import { cn } from '@/utils/cn';
 // Types
 // ============================================================================
 
-type CommunicationType = 'inquiry' | 'support' | 'partnership' | 'feedback' | 'other';
+type CommunicationType = 'inquiry' | 'support' | 'partnership' | 'feedback' | 'report' | 'other';
 
 interface ContactFormProps {
   /** Default type for the form */
@@ -34,6 +34,7 @@ const COMMUNICATION_TYPES: { value: CommunicationType; label: string }[] = [
   { value: 'support', label: 'Support' },
   { value: 'partnership', label: 'Partnership' },
   { value: 'feedback', label: 'Feedback' },
+  { value: 'report', label: 'Report' },
   { value: 'other', label: 'Other' },
 ];
 
