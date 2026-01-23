@@ -9,11 +9,9 @@
  * @module queries/listings/car-detailed-query
  */
 
-import { eq, sql, or, SQL } from 'drizzle-orm';
+import { eq, sql, SQL } from 'drizzle-orm';
 import { db } from '../../../dbclient';
 import { carListing } from '../../../schema/listing';
-import { user } from '../../../schema/auth';
-import { userProfile } from '../../../schema/profile';
 import { isPublicSql } from './sql-fragments';
 import { isMissingColumnError } from './error-utils';
 import { memoryCache, CacheKeys, CacheTTL } from '../../../caches/memory-cache';
@@ -103,17 +101,6 @@ export interface CarDetailedData {
   price: number;
   currency: string;
   isNegotiable: boolean;
-  fairValue: number | null;
-  estimateMin: number | null;
-  estimateMax: number | null;
-  priceTrend: string | null;
-  qiScore: number | null;
-  aiConfidenceScore: number | null;
-  aiValueFactors: {
-    positives?: string[];
-    considerations?: string[];
-    marketContext?: string;
-  } | null;
   viewCount: number;
   favouriteCount: number;
   superlikeCount: number;
@@ -181,7 +168,7 @@ export interface CarDetailedData {
 
 /**
  * Build select fields for detailed query
- * Extracted to avoid duplication and allow expiry toggle
+ * Optimized: Single table query, no joins - seller data fetched separately
  */
 function buildDetailedSelectFields(includeExpiry: boolean) {
   return {
@@ -200,13 +187,6 @@ function buildDetailedSelectFields(includeExpiry: boolean) {
     price: carListing.price,
     currency: carListing.currency,
     isNegotiable: carListing.isNegotiable,
-    fairValue: carListing.fairValue,
-    estimateMin: carListing.estimateMin,
-    estimateMax: carListing.estimateMax,
-    priceTrend: carListing.priceTrend,
-    qiScore: carListing.qiScore,
-    aiConfidenceScore: carListing.aiConfidenceScore,
-    aiValueFactors: carListing.aiValueFactors,
     viewCount: carListing.viewCount,
     favouriteCount: carListing.favouriteCount,
     superlikeCount: carListing.superlikeCount,
@@ -248,8 +228,9 @@ function buildDetailedSelectFields(includeExpiry: boolean) {
     partnerBrandName: carListing.partnerBrandName,
     partnerVerified: carListing.partnerVerified,
     isBlkListing: carListing.isBlkListing,
-    sellerName: user.name,
-    sellerKycVerified: userProfile.kycVerified,
+    // Seller data now fetched separately - no joins needed
+    sellerName: sql<string | null>`null`,
+    sellerKycVerified: sql<boolean>`false`,
     createdAt: carListing.createdAt,
     updatedAt: carListing.updatedAt,
     lastEditedAt: carListing.lastEditedAt,
@@ -290,14 +271,12 @@ function transformToDetailedData(row: any): CarDetailedData {
 
 /**
  * Execute detailed listing query with where clause
- * Handles expiry column graceful degradation
+ * Optimized: Single table query with primary key lookup - no joins
  */
 async function executeDetailedQuery(whereClause: SQL): Promise<CarDetailedData | null> {
   const runQuery = (includeExpiry: boolean) => 
     db.select(buildDetailedSelectFields(includeExpiry))
       .from(carListing)
-      .leftJoin(user, eq(user.id, carListing.userId))
-      .leftJoin(userProfile, eq(userProfile.userId, user.id))
       .where(whereClause)
       .limit(1);
 

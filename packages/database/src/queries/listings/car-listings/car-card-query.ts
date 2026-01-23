@@ -48,7 +48,6 @@ export interface CarCardData {
   emirate: string | null;
   specs: string | null;
   thumbnail: string | null;
-  qiScore: number | null;
   isBlkListing: boolean | null;
   postedByRole: 'user' | 'staff' | null;
   moderationStatus: 'draft' | 'submitted' | 'pending_review' | 'approved' | 'rejected' | null;
@@ -79,7 +78,6 @@ function buildCardSelectFields(now: Date) {
     emirate: carListing.emirate,
     specs: carListing.specs,
     thumbnail: carListing.thumbnail,
-    qiScore: carListing.qiScore,
     isBlkListing: isBlkListingSql(),
     postedByRole: carListing.postedByRole,
     moderationStatus: carListing.moderationStatus,

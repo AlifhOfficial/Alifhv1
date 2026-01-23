@@ -196,16 +196,11 @@ export function CarCard({ listing }) {
 
             {/* Pricing */}
             <div className="mb-4">
-              <div className="text-xs font-semibold text-gray-700 mb-2">PRICING & VALUATION</div>
+              <div className="text-xs font-semibold text-gray-700 mb-2">PRICING</div>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div><span className="font-medium">Price:</span> {formattedPrice}</div>
                 <div><span className="font-medium">Currency:</span> {listing.currency}</div>
                 <div><span className="font-medium">Negotiable:</span> {listing.isNegotiable ? 'Yes' : 'No'}</div>
-                <div><span className="font-medium">Fair Value:</span> {listing.fairValue || 'N/A'}</div>
-                <div><span className="font-medium">Est. Min:</span> {listing.estimateMin || 'N/A'}</div>
-                <div><span className="font-medium">Est. Max:</span> {listing.estimateMax || 'N/A'}</div>
-                <div><span className="font-medium">Price Trend:</span> {listing.priceTrend || 'N/A'}</div>
-                {/* ❌ priceChanges removed - field doesn't exist */}
               </div>
             </div>
 

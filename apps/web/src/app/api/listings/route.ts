@@ -26,14 +26,12 @@ import {
   invalidateUserMyListings,
   db,
   carListing,
-  updateListingAIValuation,
   updateListingAIModeration,
   type CreateCarListingInput,
   eq, and, ne,
 } from '@alifh/database';
 import { getClientIp } from '@/lib/utils/get-client-ip';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_LISTINGS } from '@/lib/rate-limit';
-import { generateValuation, type ValuationInput } from '@alifh/ai/valuation';
 import { moderateListing, type ModerationInput } from '@alifh/ai/moderation';
 
 export const runtime = 'nodejs';
@@ -292,48 +290,6 @@ export async function POST(req: NextRequest) {
 
     // Create listing
     const listingId = await createCarListing(input);
-
-    // Generate AI valuation asynchronously using after() to ensure completion
-    // Only run for non-draft listings to save API calls
-    if (moderationStatus !== 'draft') {
-      // Pass only relevant data for valuation - lean input = better results
-      const valuationInput: ValuationInput = {
-        make: input.make,
-        model: input.model,
-        year: input.year,
-        trim: input.trim || null,
-        mileage: input.mileage,
-        specs: input.specs,
-        askingPrice: input.price,
-        emirate: input.emirate,
-        // Important specs only
-        bodyType: input.bodyType || null,
-        fuelType: input.fuelType || null,
-        transmission: input.transmission || null,
-        cylinders: input.cylinders || null,
-        warrantyType: input.warrantyType || null,
-        extras: input.extras || null,
-      };
-
-      // Use after() to ensure AI valuation completes after response is sent
-      after(async () => {
-        try {
-          const result = await generateValuation(valuationInput);
-          await updateListingAIValuation(listingId, {
-            fairValue: result.fairValue,
-            estimateMin: result.estimateMin,
-            estimateMax: result.estimateMax,
-            priceTrend: result.priceTrend,
-            qiScore: result.qiScore,
-            aiConfidenceScore: result.aiConfidenceScore,
-            valueFactors: result.valueFactors,
-          });
-          console.log(`[AI Valuation] Listing ${listingId}: QI=${result.qiScore}, Confidence=${result.aiConfidenceScore}`);
-        } catch (error) {
-          console.error(`[AI Valuation] Failed for listing ${listingId}:`, error);
-        }
-      });
-    }
 
     // AI Auto-Moderation for USER-posted listings only
     // Staff/dealer listings skip moderation as they are already trusted

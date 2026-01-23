@@ -13,7 +13,7 @@ import Image from 'next/image';
 import { 
   Share2, 
   Heart, 
-  Sparkles, 
+  Sparkles,
   CheckCircle2, 
   ChevronLeft, 
   ChevronRight, 
@@ -242,128 +242,6 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
   );
 }
 
-
-function PricingInsights({ listing }: { listing: CarDetailedData }) {
-  const valueFactors = listing.aiValueFactors;
-  const hasValueFactors = valueFactors && (
-    (valueFactors.positives && valueFactors.positives.length > 0) ||
-    (valueFactors.considerations && valueFactors.considerations.length > 0)
-  );
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <p className="text-xs uppercase tracking-wider font-bold text-muted-foreground/70">
-          AI Market Insights
-        </p>
-      </div>
-
-      {/* Price Trend & Fair Value Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <p className="text-xs font-medium text-muted-foreground/70">Price Trend</p>
-          <div className="relative h-14 bg-muted/30 rounded-lg p-3">
-            <svg className="w-full h-full" viewBox="0 0 100 20" preserveAspectRatio="none">
-              <path
-                d={listing.priceTrend === 'down' 
-                  ? "M 5 5 L 25 8 L 50 10 L 75 14 L 95 18" 
-                  : listing.priceTrend === 'up'
-                  ? "M 5 18 L 25 14 L 50 10 L 75 8 L 95 5"
-                  : "M 5 10 L 25 11 L 50 10 L 75 9 L 95 10"
-                }
-                stroke={listing.priceTrend === 'up' ? '#22c55e' : listing.priceTrend === 'down' ? '#ef4444' : '#a1a1aa'}
-                strokeWidth="2"
-                fill="none"
-              />
-            </svg>
-            <div className={cn(
-              "absolute top-1 right-2 text-xs font-semibold",
-              listing.priceTrend === 'up' && "text-green-500",
-              listing.priceTrend === 'down' && "text-red-500",
-              !listing.priceTrend && "text-muted-foreground"
-            )}>
-              {listing.priceTrend === 'up' && '↑ Rising'}
-              {listing.priceTrend === 'down' && '↓ Falling'}
-              {listing.priceTrend === 'stable' && '→ Stable'}
-              {!listing.priceTrend && '—'}
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <p className="text-xs font-medium text-muted-foreground/70">Estimated Value</p>
-          <div className="h-14 bg-muted/30 rounded-lg flex items-center justify-center">
-            <p className="text-lg font-bold tabular-nums text-foreground">
-              {listing.fairValue ? formatPriceShort(listing.fairValue) : '—'}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Value Range */}
-      <div className="p-4 bg-muted/30 rounded-xl border border-border/40 space-y-3">
-        <div className="space-y-1">
-          <p className="text-xs font-medium text-muted-foreground/70">Market Range</p>
-          <p className="text-base font-bold tabular-nums text-foreground">
-            {listing.estimateMin && listing.estimateMax 
-              ? `${formatPrice(listing.estimateMin)} - ${formatPrice(listing.estimateMax)}`
-              : '—'
-            }
-          </p>
-        </div>
-
-        <div className="flex justify-between pt-2 border-t border-border/40 text-xs">
-          <span className="font-medium text-muted-foreground/70">AI Confidence</span>
-          <span className="text-foreground font-bold">
-            {listing.aiConfidenceScore ? `${Math.round(listing.aiConfidenceScore * 100)}%` : '—'}
-          </span>
-        </div>
-      </div>
-
-      {/* Value Factors - Neutral, non-judgmental */}
-      {hasValueFactors && (
-        <div className="p-4 bg-muted/20 rounded-xl border border-border/30 space-y-3">
-          <p className="text-xs uppercase tracking-wider font-bold text-muted-foreground/70 flex items-center gap-1.5">
-            <Sparkles className="w-3 h-3" />
-            Value Factors
-          </p>
-          
-          {/* Positives */}
-          {valueFactors.positives && valueFactors.positives.length > 0 && (
-            <div className="space-y-1.5">
-              {valueFactors.positives.map((factor, idx) => (
-                <div key={idx} className="flex items-start gap-2 text-sm">
-                  <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                  <span className="font-medium text-foreground/80">{factor}</span>
-                </div>
-              ))}
-            </div>
-          )}
-          
-          {/* Considerations (neutral, not negatives) */}
-          {valueFactors.considerations && valueFactors.considerations.length > 0 && (
-            <div className="space-y-1.5 pt-2 border-t border-border/20">
-              <p className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider">Consider</p>
-              {valueFactors.considerations.map((factor, idx) => (
-                <div key={idx} className="flex items-start gap-2 text-sm">
-                  <span className="text-muted-foreground mt-0.5">•</span>
-                  <span className="font-medium text-muted-foreground">{factor}</span>
-                </div>
-              ))}
-            </div>
-          )}
-          
-          {/* Market Context */}
-          {valueFactors.marketContext && (
-            <p className="text-xs font-medium text-muted-foreground/70 pt-2 border-t border-border/20">
-              {valueFactors.marketContext}
-            </p>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ============================================================================
 // Main Component
@@ -738,17 +616,6 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
         </a>
       )}
 
-      {/* AI Pricing Insights - Experimental */}
-      <div className="space-y-4">
-        <div className="pt-4 border-t border-border/40 flex items-start gap-3">
-          <Sparkles className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-muted-foreground leading-relaxed font-medium">
-            <span className="font-bold text-foreground">Experimental:</span> AI-generated insights are for reference only. <span className="text-red-500 font-bold">Do not rely on this data.</span>
-          </p>
-        </div>
-        <PricingInsights listing={listing} />
-      </div>
-
       {/* Dialogs */}
       <SuperlikeConfirmationDialog
         isOpen={showSuperlikeConfirm}
@@ -875,25 +742,6 @@ function CarCardDetailedSkeletonComponent() {
             <Skeleton key={i} className="h-7 w-24 rounded-md" />
           ))}
         </div>
-      </div>
-
-      {/* AI Pricing Insights */}
-      <div className="space-y-4">
-        <div className="pt-4 border-t border-border">
-          <Skeleton className="h-3 w-32" />
-        </div>
-        
-        {/* Price Trend & Fair Value Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Skeleton className="h-20 w-full rounded-lg" />
-          <Skeleton className="h-20 w-full rounded-lg" />
-        </div>
-
-        {/* Value Range */}
-        <Skeleton className="h-24 w-full rounded-xl" />
-
-        {/* Value Factors */}
-        <Skeleton className="h-28 w-full rounded-xl" />
       </div>
     </div>
   );

@@ -11,7 +11,6 @@
 
 'use client';
 
-import { Navbar } from '@/components/shared/navbar';
 import { CarCardDetailed } from '@/components/inventory';
 import { BookingModal } from '@/components/features/bookings/shared';
 import { SellerProfileCard } from './seller-profile-card';
@@ -62,7 +61,6 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <Navbar />
         <main className="pt-20">
           <ListingDetailSkeleton />
         </main>
@@ -74,7 +72,6 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
   if (error || !listing) {
     return (
       <div className="min-h-screen bg-background">
-        <Navbar />
         <main className="pt-20">
           <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
@@ -102,7 +99,6 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
     if (!isAdmin && !isOwner) {
       return (
         <div className="min-h-screen bg-background">
-          <Navbar />
           <main className="pt-20">
             <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
               <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
@@ -189,8 +185,6 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      <Navbar />
-      
       <main className="pt-20">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
           {/* Breadcrumb */}

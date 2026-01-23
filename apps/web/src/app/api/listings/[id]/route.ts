@@ -28,14 +28,12 @@ import {
   deleteCarListingByStaff,
   invalidateListingCaches,
   updateListingAIModeration,
-  updateListingAIValuation,
   type UpdateCarListingInput,
 } from '@alifh/database';
 import { memoryCache, getListingDetailed } from '@alifh/database';
 import { getClientIp } from '@/lib/utils/get-client-ip';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_LISTINGS, RATE_LIMITS_GENERAL } from '@/lib/rate-limit';
 import { moderateListing, type ModerationInput } from '@alifh/ai/moderation';
-import { generateValuation, type ValuationInput } from '@alifh/ai/valuation';
 import { deleteListingImages } from '@/lib/storage/listing-image-cleanup';
 
 export const runtime = 'nodejs';
@@ -507,76 +505,6 @@ export async function PUT(
       const fullListing = await getListingDetailed(id);
       console.log(`[AI Moderation] Got full listing: ${!!fullListing}`);
       if (fullListing) {
-        // Check if CORE valuation fields changed (price, mileage, specs, etc.)
-        const coreFieldsChanged = 
-          (body.price !== undefined && body.price !== fullListing.price) ||
-          (body.mileage !== undefined && body.mileage !== fullListing.mileage) ||
-          (body.specs !== undefined && body.specs !== fullListing.specs) ||
-          (body.bodyType !== undefined) ||
-          (body.fuelType !== undefined) ||
-          (body.transmission !== undefined) ||
-          (body.cylinders !== undefined) ||
-          (body.warrantyType !== undefined) ||
-          (body.extras !== undefined);
-
-        // AI Valuation - only re-run if core fields changed
-        if (coreFieldsChanged) {
-          const changes: any = {};
-          if (body.price !== undefined && body.price !== fullListing.price) {
-            changes.price = { from: fullListing.price, to: body.price };
-          }
-          if (body.mileage !== undefined && body.mileage !== fullListing.mileage) {
-            changes.mileage = { from: fullListing.mileage, to: body.mileage };
-          }
-          if (body.specs !== undefined && body.specs !== fullListing.specs) {
-            changes.specs = { from: fullListing.specs, to: body.specs };
-          }
-          // TODO: Track extras changes (added/removed)
-          
-          const valuationInput: ValuationInput = {
-            make: fullListing.make,
-            model: fullListing.model,
-            year: fullListing.year,
-            trim: fullListing.trim || null,
-            mileage: fullListing.mileage,
-            specs: fullListing.specs,
-            askingPrice: fullListing.price,
-            emirate: fullListing.emirate,
-            bodyType: fullListing.bodyType || null,
-            fuelType: fullListing.fuelType || null,
-            transmission: fullListing.transmission || null,
-            cylinders: fullListing.cylinders || null,
-            warrantyType: fullListing.warrantyType || null,
-            extras: fullListing.extras || null,
-            // Pass previous valuation context
-            previousValuation: fullListing.fairValue ? {
-              fairValue: fullListing.fairValue,
-              qiScore: fullListing.qiScore || 50,
-              aiConfidenceScore: fullListing.aiConfidenceScore || 0.5,
-              changes: Object.keys(changes).length > 0 ? changes : undefined,
-            } : undefined,
-          };
-
-          generateValuation(valuationInput)
-            .then(async (result) => {
-              await updateListingAIValuation(id, {
-                fairValue: result.fairValue,
-                estimateMin: result.estimateMin,
-                estimateMax: result.estimateMax,
-                priceTrend: result.priceTrend,
-                qiScore: result.qiScore,
-                aiConfidenceScore: result.aiConfidenceScore,
-                valueFactors: result.valueFactors,
-              });
-              console.log(`[AI Valuation] Listing ${id} (edit): QI=${result.qiScore}, Confidence=${result.aiConfidenceScore}, CoreFieldsChanged=true`);
-            })
-            .catch((error) => {
-              console.error(`[AI Valuation] Failed for listing ${id}:`, error);
-            });
-        } else {
-          console.log(`[AI Valuation] Skipped for listing ${id}: No core field changes (only description/images/etc)`);
-        }
-
         // AI Moderation (fire and forget)
         const moderationInput: ModerationInput = {
           make: fullListing.make,
