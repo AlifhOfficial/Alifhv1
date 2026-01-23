@@ -4,5 +4,5 @@
 # Save exact versions for reproducible builds
 exact = true
 
-# Enable workspace support
-cache = true
+# Disable global disk cache
+cache = false

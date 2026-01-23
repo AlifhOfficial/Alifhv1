@@ -1,12 +1,13 @@
 /**
  * Pricing Features Section
- * Comprehensive feature comparison table - Flow vs Black
+ * Two-column feature breakdown - Flow vs Black
  */
 
 'use client';
 
 import { useState } from 'react';
-import { Check, Minus, ChevronDown, ChevronUp, Download, CheckCircle2 } from 'lucide-react';
+import { Check, ChevronDown, ChevronUp, CheckCircle2 } from 'lucide-react';
+import { PricingPdfGenerator } from './pricing-pdf-generator';
 
 type FeatureValue = boolean | string | number;
 
@@ -119,17 +120,6 @@ const blackExclusiveFeatures = [
     ],
   },
 ];
-
-function FeatureCell({ value }: { value: FeatureValue }) {
-  if (typeof value === 'boolean') {
-    return value ? (
-      <Check className="w-4 h-4 text-[#0066FF]" />
-    ) : (
-      <Minus className="w-4 h-4 text-muted-foreground/30" />
-    );
-  }
-  return <span className="text-xs font-medium text-foreground">{value}</span>;
-}
 
 function FlowCategorySection({ category, isExpanded, onToggle }: { 
   category: FeatureCategory; 
@@ -260,92 +250,6 @@ export function PricingFeaturesSection() {
   const totalFlowFeatures = featureCategories.reduce((acc, cat) => acc + cat.features.length, 0);
   const totalBlackFeatures = blackExclusiveFeatures.reduce((acc, cat) => acc + cat.features.length, 0);
 
-  const handleDownloadPDF = () => {
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
-
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Alifh Pricing - Feature Comparison</title>
-          <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 40px; color: #1a1a1a; }
-            h1 { font-size: 24px; font-weight: 600; margin-bottom: 8px; }
-            h2 { font-size: 18px; font-weight: 600; margin: 32px 0 16px; padding-bottom: 8px; border-bottom: 2px solid #0066FF; }
-            h3 { font-size: 18px; font-weight: 600; margin: 32px 0 16px; padding-bottom: 8px; border-bottom: 2px solid #1a1a1a; }
-            .subtitle { color: #666; font-size: 14px; margin-bottom: 32px; }
-            .pricing-row { display: flex; gap: 24px; margin-bottom: 32px; }
-            .pricing-box { flex: 1; padding: 16px; border-radius: 8px; text-align: center; }
-            .flow-box { background: #0066FF; color: white; }
-            .black-box { background: #1a1a1a; color: white; }
-            .price { font-size: 20px; font-weight: 600; }
-            .price-label { font-size: 12px; opacity: 0.7; }
-            .category { font-weight: 600; font-size: 13px; margin: 20px 0 8px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
-            .feature { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; font-size: 13px; }
-            .check { color: #0066FF; font-weight: bold; }
-            .check-black { color: #1a1a1a; font-weight: bold; }
-            .desc { color: #666; font-size: 11px; margin-left: 20px; }
-            @media print { body { padding: 20px; } }
-            .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666; }
-          </style>
-        </head>
-        <body>
-          <h1>Alifh Partner Plans</h1>
-          <p class="subtitle">Feature Breakdown · Flow & Black</p>
-          
-          <div class="pricing-row">
-            <div class="pricing-box flow-box">
-              <div class="price-label">FLOW</div>
-              <div class="price">AED 7,000/mo</div>
-            </div>
-            <div class="pricing-box black-box">
-              <div class="price-label">BLACK</div>
-              <div class="price">from AED 21,000/mo</div>
-            </div>
-          </div>
-
-          <h2>Flow — Everything you need</h2>
-          ${featureCategories.map(category => `
-            <div class="category">${category.name}</div>
-            ${category.features.map(feature => `
-              <div class="feature">
-                <span class="check">✓</span>
-                <span>${feature.name}</span>
-              </div>
-              ${feature.description ? `<div class="desc">${feature.description}</div>` : ''}
-            `).join('')}
-          `).join('')}
-
-          <h3>Black — Everything in Flow, plus</h3>
-          ${blackExclusiveFeatures.map(category => `
-            <div class="category">${category.name}</div>
-            ${category.features.map(feature => `
-              <div class="feature">
-                <span class="check-black">✓</span>
-                <span>${feature.name}</span>
-              </div>
-              ${feature.description ? `<div class="desc">${feature.description}</div>` : ''}
-            `).join('')}
-          `).join('')}
-          
-          <div class="footer">
-            <p>Alifh · alifh.com · Zero commission. Unlimited listings. No hidden fees.</p>
-            <p style="margin-top: 8px;">Same features. Same platform. Same rankings. Black is branding—not advantage.</p>
-          </div>
-
-          <script>
-            window.onload = function() { window.print(); }
-          </script>
-        </body>
-      </html>
-    `;
-
-    printWindow.document.write(htmlContent);
-    printWindow.document.close();
-  };
-
   return (
     <section id="features" className="pt-20 pb-24 px-4 sm:px-6 lg:px-8">
       <div className="max-w-[1600px] mx-auto">
@@ -361,13 +265,10 @@ export function PricingFeaturesSection() {
                 Full feature breakdown
               </h2>
             </div>
-            <button
-              onClick={handleDownloadPDF}
-              className="inline-flex items-center gap-2 h-10 px-5 bg-[#0066FF] text-white text-sm font-medium rounded-lg hover:bg-[#0066FF]/90 transition-colors"
-            >
-              <Download className="w-4 h-4" />
-              Download PDF
-            </button>
+            <PricingPdfGenerator 
+              flowCategories={featureCategories}
+              blackCategories={blackExclusiveFeatures}
+            />
           </div>
         </div>
 
