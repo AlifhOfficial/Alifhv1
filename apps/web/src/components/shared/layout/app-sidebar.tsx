@@ -279,15 +279,13 @@ function SidebarFooterContent({
                   {/* Divider */}
                   <div className="my-1.5 mx-3 border-t border-sidebar-border" />
                   
-                  <button
-                    onClick={() => {
-                      setShowSupportModal(true);
-                      setShowFooterMenu(false);
-                    }}
-                    className="w-full text-left px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                  <Link
+                    href="/faq"
+                    onClick={() => setShowFooterMenu(false)}
+                    className="w-full text-left px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors block"
                   >
                     Support
-                  </button>
+                  </Link>
                   <Link
                     href={pathname.startsWith('/partner-dashboard') ? '/partner-dashboard/feedback' : pathname.startsWith('/staff-dashboard') ? '/staff-dashboard/feedback' : '/user-dashboard/feedback'}
                     onClick={() => setShowFooterMenu(false)}

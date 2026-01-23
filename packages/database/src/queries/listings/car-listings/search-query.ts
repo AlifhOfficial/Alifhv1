@@ -239,7 +239,7 @@ function buildSearchConditions(params: SearchParams, now: Date): SQL[] {
  * (handles edge cases where anti-abuse wasn't triggered)
  */
 function buildOrderBy(params: SearchParams): SQL[] {
-  const { sortBy = 'newest', sortOrder } = params;
+  const { sortBy = 'relevance', sortOrder } = params;
 
   // COALESCE ensures we have a valid date even if originalPublishedAt is NULL
   const sortDateCol = sql`COALESCE(${carListing.originalPublishedAt}, ${carListing.publishedAt})`;
@@ -267,9 +267,54 @@ function buildOrderBy(params: SearchParams): SQL[] {
       ];
     case 'relevance':
     default:
-      // If text search, relevance would be based on match quality
-      // For now, default to originalPublishedAt (prevents abuse)
-      return [sql`${sortDateCol} desc`, desc(carListing.createdAt)];
+      // Quality-based ranking: photos, description, completeness, freshness, engagement, trust
+      // Total: 100 points - Quality(40) + Freshness(25) + Velocity(25) + Trust(10)
+      return [
+        sql`(
+          -- 1) QUALITY (40 points)
+          (
+            -- Photos (15): 10+ images = full score
+            LEAST(COALESCE(jsonb_array_length(${carListing.images}), 0), 10) / 10.0 * 15 +
+            -- Description (10): 250+ chars = full score
+            LEAST(COALESCE(length(${carListing.description}), 0), 250) / 250.0 * 10 +
+            -- Completeness (15): extras, tags, video
+            (
+              LEAST(COALESCE(jsonb_array_length(${carListing.extras}), 0), 6) / 6.0 * 0.5 +
+              LEAST(COALESCE(jsonb_array_length(${carListing.tags}), 0), 3) / 3.0 * 0.3 +
+              CASE WHEN ${carListing.videoUrl} IS NOT NULL THEN 0.2 ELSE 0 END
+            ) * 15
+          ) +
+          -- 2) FRESHNESS (25 points) — 24-day decay with power curve, floor of 3
+          GREATEST(
+            POWER(
+              GREATEST(
+                1 - EXTRACT(EPOCH FROM (now() - ${sortDateCol})) / 2073600,
+                0
+              ),
+              0.7
+            ) * 25,
+            3
+          ) +
+          -- 3) VELOCITY (25 points) — view-resistant engagement per day
+          (
+            LEAST(
+              (
+                LEAST(${carListing.viewCount}, 50) * 0.25 +
+                ${carListing.favouriteCount} * 5 +
+                ${carListing.superlikeCount} * 10
+              ) /
+              GREATEST(EXTRACT(EPOCH FROM (now() - ${sortDateCol})) / 86400, 1),
+              50
+            ) / 50.0 * 25
+          ) +
+          -- 4) TRUST (10 points) — verified bonus + rating
+          (
+            CASE WHEN ${carListing.partnerVerified} THEN 4 ELSE 0 END +
+            LEAST(COALESCE(${carListing.qiScore}, 50), 100) / 100.0 * 6
+          )
+        ) desc`,
+        desc(carListing.createdAt),
+      ];
   }
 }
 

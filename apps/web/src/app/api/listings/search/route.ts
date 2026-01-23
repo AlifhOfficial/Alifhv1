@@ -88,6 +88,11 @@ export async function GET(req: NextRequest) {
     // Parse search params from URL
     const { searchParams: urlParams } = new URL(req.url);
     const params = urlToSearchParams(urlParams);
+    
+    // Normalize sortBy to 'relevance' if not specified (ensures consistent cache keys)
+    if (!params.sortBy) {
+      params.sortBy = 'relevance';
+    }
 
     // Validate limit
     if (params.limit && (params.limit < 1 || params.limit > 100)) {

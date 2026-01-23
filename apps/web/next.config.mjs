@@ -18,7 +18,7 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '60mb',
     },
-    middlewareClientMaxBodySize: '60mb',
+    proxyClientMaxBodySize: '60mb',
   },
   
   // Content Security Policy

@@ -25,13 +25,13 @@ export function PricingClosingSection() {
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
             <Link
-              href="/become-partner?plan=flow"
+              href="/user-dashboard/requests"
               className="w-full sm:w-auto h-11 px-8 bg-[#0066FF] text-white text-sm font-medium rounded-lg hover:bg-[#0066FF]/90 transition-colors flex items-center justify-center shadow-sm"
             >
               Apply for Flow — AED 7K/mo
             </Link>
             <Link
-              href="/become-partner?plan=black"
+              href="/user-dashboard/requests"
               className="w-full sm:w-auto h-11 px-8 bg-muted border border-border/40 text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
             >
               Apply for Black — starts at AED 21K/mo

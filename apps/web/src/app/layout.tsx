@@ -16,6 +16,7 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://alifh.ae'),
   title: 'Alifh - Vehicle Marketplace',
   description: 'Buy and sell vehicles with AI-powered valuations',
 }

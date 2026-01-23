@@ -84,7 +84,6 @@ const navItems: NavItem[] = [
         items: [
           { label: "Partner with Alifh", href: "/partner" },
           { label: "Pricing", href: "/pricing" },
-          { label: "Become a Partner", href: "/become-partner" },
         ],
       },
     ],
@@ -145,6 +144,10 @@ const navItems: NavItem[] = [
         ],
       },
     ],
+  },
+  {
+    label: "Help",
+    href: "/faq",
   },
 ];
 

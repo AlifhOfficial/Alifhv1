@@ -31,7 +31,7 @@ export function PartnerHeroSection() {
         {/* Main CTAs */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-16">
           <Link
-            href="/become-partner"
+            href="/user-dashboard/requests"
             className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
           >
             Apply to Partner

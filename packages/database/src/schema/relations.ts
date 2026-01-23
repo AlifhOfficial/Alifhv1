@@ -42,6 +42,9 @@ import {
 import {
   feedback,
 } from './feedback';
+import {
+  communications,
+} from './communications';
 
 // Note: Removed tables (not imported):
 // - userBookingRestriction (simplified to app logic)
@@ -410,6 +413,18 @@ export const feedbackRelations = relations(feedback, ({ one }) => ({
   }),
   reviewer: one(user, {
     fields: [feedback.reviewedBy],
+    references: [user.id],
+  }),
+}));
+
+// Communications relations (many-to-one for admin assignments)
+export const communicationsRelations = relations(communications, ({ one }) => ({
+  assignedUser: one(user, {
+    fields: [communications.assignedTo],
+    references: [user.id],
+  }),
+  resolvedByUser: one(user, {
+    fields: [communications.resolvedBy],
     references: [user.id],
   }),
 }));

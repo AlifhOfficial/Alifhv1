@@ -264,7 +264,7 @@ export function ListingsHeader({
                     className="text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent cursor-pointer rounded-md px-3 py-2 flex items-center justify-between"
                   >
                     <span>{option.label}</span>
-                    {params.sortBy === option.value && (
+                    {(params.sortBy || 'relevance') === option.value && (
                       <CheckCircle2 className="size-4 text-foreground" />
                     )}
                   </DropdownMenuItem>

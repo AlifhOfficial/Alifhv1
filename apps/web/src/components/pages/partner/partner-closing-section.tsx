@@ -55,7 +55,7 @@ export function PartnerClosingSection() {
               See Pricing
             </Link>
             <Link
-              href="/become-partner"
+              href="/user-dashboard/requests"
               className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
             >
               Apply to Partner

@@ -9,7 +9,7 @@
  * @module hooks/use-search
  */
 
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef, useEffect } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { 
@@ -100,8 +100,24 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
       limit: defaultLimit, 
       ...initialParams,
       ...urlParams,
+      // Always default sortBy to 'relevance' for consistent state
+      sortBy: urlParams.sortBy || 'relevance',
     };
   }, [searchParams, initialParams, disableUrlSync, defaultLimit]);
+
+  // Sync default sort to URL on initial load (better UX - URL reflects actual state)
+  const hasInitializedSort = useRef(false);
+  useEffect(() => {
+    if (disableUrlSync || hasInitializedSort.current) return;
+    
+    // If no sort param in URL, add 'relevance' as default
+    if (!searchParams.get('sort')) {
+      hasInitializedSort.current = true;
+      const newUrlParams = new URLSearchParams(searchParams.toString());
+      newUrlParams.set('sort', 'relevance');
+      router.replace(`${pathname}?${newUrlParams.toString()}`, { scroll: false });
+    }
+  }, [searchParams, pathname, router, disableUrlSync]);
 
   // Generate stable query key
   const queryKey = useMemo(() => {

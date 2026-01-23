@@ -4,6 +4,7 @@
  */
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { Banknote, FileText, Calendar, Sparkles, Clock, PenLine, Zap, Timer, CheckCircle2 } from 'lucide-react';
 
 export function WhyUsSection() {
@@ -98,6 +99,12 @@ export function WhyUsSection() {
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Listings rank by photo quality, description completeness, response time, and seller rating. Not who pays the most.
               </p>
+              <Link 
+                href="/how-ranking-works" 
+                className="text-sm text-muted-foreground hover:text-[#0066FF] transition-colors mt-4 inline-flex items-center gap-1"
+              >
+                See how it works →
+              </Link>
             </div>
 
             {/* Feature Cards Row */}

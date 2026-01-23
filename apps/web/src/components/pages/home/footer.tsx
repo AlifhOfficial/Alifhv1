@@ -72,6 +72,8 @@ export function Footer() {
             <div className="flex flex-col gap-2.5">
               <Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">About</Link>
               <Link href="/vision" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Our Vision</Link>
+              <Link href="/how-ranking-works" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">How Ranking Works</Link>
+              <Link href="/faq" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">FAQ</Link>
               <Link href="/contact" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Contact</Link>
             </div>
           </div>

@@ -45,7 +45,7 @@ export function PricingTiersSection() {
               Everything you need for one showroom location. No limitations. No upsells. What 95% of dealers choose.
             </p>
             <Link
-              href="/become-partner?plan=flow"
+              href="/user-dashboard/requests"
               className="mt-auto h-11 px-6 bg-white text-[#0066FF] text-sm font-medium rounded-lg hover:bg-white/90 transition-colors flex items-center justify-center gap-2"
             >
               Start with Flow
@@ -127,7 +127,7 @@ export function PricingTiersSection() {
               Everything in Flow, plus dedicated brand tailoring. For brands where every detail matters.
             </p>
             <Link
-              href="/become-partner?plan=black"
+              href="/user-dashboard/requests"
               className="mt-auto h-11 px-6 bg-foreground text-background text-sm font-medium rounded-lg hover:bg-foreground/90 transition-colors flex items-center justify-center gap-2"
             >
               Apply for Black
