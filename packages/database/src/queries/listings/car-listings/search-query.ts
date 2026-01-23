@@ -854,6 +854,7 @@ export async function quickSearch(
       return [];
     }
     
+    // Query for make+model combinations (for make_model suggestions)
     makeModelQuery = db
       .select({
         make: carListing.make,
@@ -878,8 +879,27 @@ export async function quickSearch(
       .limit(limit * 2);
   }
 
-  // Run both queries in parallel
-  const [partnerResults, makeModelResults] = await Promise.all([
+  // Build make totals query - only needed when no context (showing makes)
+  const makeTotalsQuery = (!context?.make && searchTerm) 
+    ? db
+        .select({
+          make: carListing.make,
+          count: count(),
+        })
+        .from(carListing)
+        .where(
+          and(
+            ...conditions,
+            ilike(carListing.make, `%${searchTerm}%`)
+          )
+        )
+        .groupBy(carListing.make)
+        .orderBy(desc(count()))
+        .limit(limit)
+    : Promise.resolve([]);
+
+  // Run all queries in parallel
+  const [partnerResults, makeModelResults, makeTotalsResults] = await Promise.all([
     // Partner/Dealer search - only if query provided
     searchTerm 
       ? db
@@ -906,6 +926,7 @@ export async function quickSearch(
       : Promise.resolve([]),
     
     makeModelQuery,
+    makeTotalsQuery,
   ]);
 
   const suggestions: Array<{
@@ -968,24 +989,32 @@ export async function quickSearch(
     }
   } else {
     // Showing makes and make+model combinations
+    // Build make totals map from the dedicated query (accurate totals)
+    const makeTotals = new Map<string, number>();
+    for (const r of makeTotalsResults) {
+      if (r.make) {
+        makeTotals.set(r.make, Number(r.count));
+      }
+    }
+    
     const seenMakes = new Set<string>();
     const seenMakeModels = new Set<string>();
 
     for (const r of makeModelResults) {
       if (!r.make) continue;
 
-      // Add make suggestion if not seen
+      // Add make suggestion if not seen (use accurate total from makeTotalsQuery)
       if (!seenMakes.has(r.make) && r.make.toLowerCase().includes(searchTerm)) {
         seenMakes.add(r.make);
         suggestions.push({
           type: 'make',
           text: r.make,
           make: r.make,
-          count: Number(r.count),
+          count: makeTotals.get(r.make) || Number(r.count), // Use total, fallback to row count
         });
       }
 
-      // Add make+model suggestion
+      // Add make+model suggestion (individual count is correct here)
       if (r.model) {
         const makeModelKey = `${r.make}-${r.model}`;
         const makeModelText = `${r.make} ${r.model}`.toLowerCase();

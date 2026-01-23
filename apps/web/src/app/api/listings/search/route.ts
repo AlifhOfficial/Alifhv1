@@ -147,7 +147,7 @@ export async function GET(req: NextRequest) {
       needsSearch 
         ? searchListings(params, { 
             skipFacets: !needsFacets, // Skip if we have cached facets
-            skipTotalCount: !!cachedFacets, // Skip count if facets cached (use hasMore)
+            skipTotalCount: false, // Always fetch total count for accurate pagination
           })
         : Promise.resolve(cachedSearch!),
       needsFacets 
