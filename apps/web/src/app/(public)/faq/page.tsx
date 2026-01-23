@@ -43,13 +43,13 @@ export default function FAQPage() {
     : faqData;
 
   return (
-    <div className="min-h-screen bg-background pt-14 sm:pt-16">
+    <div className="bg-background pt-14 sm:pt-16">
       <div className="max-w-6xl mx-auto">
         <div className="flex">
           
-          {/* Fixed Left Sidebar - Desktop */}
+          {/* Left Sidebar - Desktop (sticky, not fixed) */}
           <aside className="hidden lg:block w-64 shrink-0">
-            <div className="fixed w-64 h-[calc(100vh-4rem)] overflow-y-auto pt-14 pb-10 px-6">
+            <div className="sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto pt-14 pb-10 px-6">
               <div className="mb-10">
                 <div className="flex items-center gap-3 mb-2">
                   <LifeBuoy className="w-6 h-6 text-muted-foreground" />
