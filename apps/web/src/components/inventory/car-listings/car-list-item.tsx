@@ -182,47 +182,41 @@ export function CarListItem({
 
   return (
     <div className={cn(
-      "group relative overflow-hidden rounded-xl transition-all duration-200 flex flex-col lg:flex-row w-full",
+      "group relative overflow-hidden rounded-lg transition-all duration-300 flex flex-col lg:flex-row w-full",
       isBlkListing 
-        ? "bg-zinc-950 border border-zinc-800/60 hover:border-zinc-700/80" 
-        : "bg-sidebar border border-border/40 hover:border-border/60",
+        ? "bg-black border border-zinc-800 hover:border-zinc-700 hover:shadow-2xl hover:shadow-zinc-900/50" 
+        : "bg-sidebar border border-sidebar-border hover:border-sidebar-border/80 hover:shadow-md",
       className
     )}>
       {/* Subtle top accent for BLK listings */}
       {isBlkListing && (
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-zinc-700 to-transparent" />
       )}
 
       {/* Image Section */}
-      <div className="p-3 w-full lg:w-80 flex-shrink-0">
+      <div className="p-3 w-full lg:w-72 flex-shrink-0">
         <Link href={`/listings/${id}`} className={cn(
           "relative aspect-[4/3] w-full overflow-hidden rounded-lg block",
-          isBlkListing ? "bg-white/5" : "bg-muted/20"
+          isBlkListing ? "bg-zinc-900" : "bg-muted/20"
         )}>
           <Image
             src={displayImage}
             alt={`${year} ${make} ${model}`}
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-            sizes="(max-width: 1024px) 100vw, 320px"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            sizes="(max-width: 1024px) 100vw, 288px"
           />
-          {/* BLK Badge */}
-          {isBlkListing && (
-            <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-zinc-900/90 backdrop-blur-sm">
-              <span className="text-[10px] font-bold tracking-wider text-white">BLK</span>
-            </div>
-          )}
         </Link>
       </div>
 
       {/* Content Section */}
-      <div className="flex flex-1 flex-col px-4 lg:px-6 py-4 lg:py-5 min-w-0 min-h-0">
+      <div className="flex flex-1 flex-col px-3 lg:px-4 py-3 lg:py-4 min-w-0 min-h-0">
         {/* Top Section - Title and Price */}
-        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-2 lg:gap-6 mb-3">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-1.5 lg:gap-4 mb-2">
           <Link href={`/listings/${id}`} className="group/title flex-1 min-w-0">
-            <div className="flex items-baseline gap-2 mb-1">
+            <div className="flex items-baseline gap-2">
               <h3 className={cn(
-                "text-[15px] lg:text-lg font-bold tracking-tight transition-colors line-clamp-1",
+                "text-[15px] font-bold tracking-tight transition-colors line-clamp-1",
                 isBlkListing 
                   ? "text-white group-hover/title:text-zinc-300" 
                   : "text-foreground group-hover/title:text-primary"
@@ -230,7 +224,7 @@ export function CarListItem({
                 {make} {model}
               </h3>
               <span className={cn(
-                "text-sm font-semibold flex-shrink-0",
+                "text-xs font-semibold tabular-nums flex-shrink-0",
                 isBlkListing ? "text-zinc-500" : "text-muted-foreground/70"
               )}>
                 {year}
@@ -238,7 +232,7 @@ export function CarListItem({
             </div>
             {trim && (
               <p className={cn(
-                "text-sm line-clamp-1",
+                "text-xs line-clamp-1 mt-0.5",
                 isBlkListing ? "text-zinc-500" : "text-muted-foreground/70"
               )}>
                 {trim}
@@ -247,31 +241,40 @@ export function CarListItem({
           </Link>
           <p className={cn(
             "text-lg font-bold tracking-tight whitespace-nowrap",
-            isBlkListing ? "text-white" : "text-foreground"
+            isBlkListing ? "text-white" : "text-blue-600"
           )}>
             {formatPrice(price)}
           </p>
         </div>
 
         {/* Specs Row */}
-        <div className={cn(
-          "flex flex-wrap items-center gap-2 text-sm mb-2",
-          isBlkListing ? "text-zinc-500" : "text-muted-foreground/70"
-        )}>
-          <span className="font-semibold">{formatMileage(mileage)} km</span>
-          <span className="text-muted-foreground/30">•</span>
-          <span className="font-semibold">{displaySpecs}</span>
-          <span className="text-muted-foreground/30">•</span>
-          <span className="font-semibold">{displayEmirate}</span>
+        <div className="flex items-center gap-1.5 text-sm">
+          <span className={cn(
+            "font-semibold",
+            isBlkListing ? "text-zinc-500" : "text-muted-foreground/70"
+          )}>
+            {formatMileage(mileage)} km
+          </span>
+          <span className={isBlkListing ? "text-zinc-700" : "text-muted-foreground/30"}>·</span>
+          <span className={cn(
+            "font-semibold",
+            isBlkListing ? "text-zinc-500" : "text-muted-foreground/70"
+          )}>
+            {displaySpecs}
+          </span>
+          <span className={isBlkListing ? "text-zinc-700" : "text-muted-foreground/30"}>·</span>
+          <span className={cn(
+            "font-semibold truncate",
+            isBlkListing ? "text-zinc-500" : "text-muted-foreground/70"
+          )}>
+            {displayEmirate}
+          </span>
         </div>
 
         {/* Bottom Section - Dealer and Actions */}
-        <div className={cn(
-          "flex items-center justify-between gap-4 pt-4 border-t mt-auto",
-          isBlkListing ? "border-zinc-800/60" : "border-border/40"
-        )}>
+        <div className="flex items-center justify-between pt-3 mt-auto">
           {/* Left - Dealer */}
-          <div className="flex items-center gap-2.5 min-w-0 flex-1">
+          <div className="flex items-center gap-2.5 min-w-0">
             {/* Avatar - with ring for Black tier */}
             {isBlackTierPartner ? (
               <div className="flex-shrink-0 rounded-full ring-2 ring-black ring-offset-1 ring-offset-background">
@@ -280,14 +283,20 @@ export function CarListItem({
                     logoUrl={partnerLogo}
                     brandName={displaySellerName}
                     size="xs"
-                    className="w-8 h-8 lg:w-9 lg:h-9"
+                    className={cn(
+                      "w-7 h-7",
+                      isBlkListing ? "bg-zinc-800 border-zinc-700" : "bg-muted/40 border-border/40"
+                    )}
                   />
                 ) : (
                   <UserAvatar
                     src={sellerAvatarUrl}
                     name={displaySellerName}
                     size="sm"
-                    className="w-8 h-8 lg:w-9 lg:h-9"
+                    className={cn(
+                      "w-7 h-7",
+                      isBlkListing ? "bg-zinc-800 border-zinc-700 text-zinc-500" : "bg-muted/40 border-border/40 text-muted-foreground/70"
+                    )}
                   />
                 )}
               </div>
@@ -296,42 +305,46 @@ export function CarListItem({
                 logoUrl={partnerLogo}
                 brandName={displaySellerName}
                 size="xs"
-                className="w-8 h-8 lg:w-9 lg:h-9 flex-shrink-0"
+                className={cn(
+                  "w-7 h-7 flex-shrink-0",
+                  isBlkListing ? "bg-zinc-800 border-zinc-700" : "bg-muted/40 border-border/40"
+                )}
               />
             ) : (
               <UserAvatar
                 src={sellerAvatarUrl}
                 name={displaySellerName}
                 size="sm"
-                className="w-8 h-8 lg:w-9 lg:h-9 flex-shrink-0"
+                className={cn(
+                  "w-7 h-7 flex-shrink-0",
+                  isBlkListing ? "bg-zinc-800 border-zinc-700 text-zinc-500" : "bg-muted/40 border-border/40 text-muted-foreground/70"
+                )}
               />
             )}
-            <div className="flex items-center gap-1.5 min-w-0">
-              <span className={cn(
-                "text-sm font-semibold truncate",
-                isBlkListing ? "text-zinc-400" : "text-muted-foreground/70"
-              )}>
-                {displaySellerName}
+            <span className={cn(
+              "text-[13px] font-medium",
+              isBlkListing ? "text-zinc-200" : "text-foreground"
+            )}>
+              {displaySellerName}
+            </span>
+            {!isBlackTierPartner && (partnerVerified || kycVerified) && (
+              <CheckCircle2 
+                className="w-[18px] h-[18px] flex-shrink-0 -ml-1 text-blue-500" 
+                aria-label="Verified" 
+              />
+            )}
+            {isBlackTierPartner && (
+              <span className="flex-shrink-0 px-1.5 h-4 inline-flex items-center text-[8px] font-black tracking-widest uppercase bg-black text-white">
+                BLK
               </span>
-              {!isBlackTierPartner && (partnerVerified || kycVerified) && (
-                <CheckCircle2 
-                  className="w-4 h-4 flex-shrink-0 text-blue-500" 
-                  aria-label="Verified" 
-                />
-              )}
-              {isBlackTierPartner && (
-                <span className="flex-shrink-0 px-1.5 h-4 inline-flex items-center text-[8px] font-black tracking-widest uppercase bg-black text-white">
-                  BLK
-                </span>
-              )}
-            </div>
+            )}
           </div>
 
           {/* Right - Actions */}
-          <div className="flex items-center gap-1 flex-shrink-0">
+          <div className="flex items-center -mr-1.5 flex-shrink-0">
             <button 
               className={cn(
-                "rounded-full p-2 transition-colors",
+                "rounded-full p-1.5 transition-colors",
                 isBlkListing 
                   ? "text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/50" 
                   : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50"
@@ -349,10 +362,12 @@ export function CarListItem({
             {/* Favorite Button */}
             <button 
               className={cn(
-                "relative rounded-full p-2 transition-all",
-                favorite.isUpdating && "opacity-50",
+                "relative rounded-full p-1.5 transition-all active:scale-95",
+                favorite.isUpdating && "opacity-50 cursor-not-allowed",
                 favorite.isFavorite
-                  ? "text-rose-500" 
+                  ? isBlkListing 
+                    ? "text-rose-400 hover:bg-zinc-800/50" 
+                    : "text-rose-500 hover:bg-muted/50"
                   : isBlkListing 
                     ? "text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/50" 
                     : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50"
@@ -368,9 +383,10 @@ export function CarListItem({
             >
               <Heart
                 className={cn(
-                  "h-4 w-4 transition-transform",
-                  heartScale && "scale-125"
+                  "h-4 w-4 transition-transform duration-200",
+                  heartScale && "scale-[1.3]"
                 )}
+                strokeWidth={favorite.isFavorite ? 2.5 : 1.5}
                 fill={favorite.isFavorite ? "currentColor" : "none"}
               />
             </button>
@@ -378,10 +394,12 @@ export function CarListItem({
             {/* Superlike Button */}
             <button
               className={cn(
-                "relative rounded-full p-2 transition-all",
-                superlike.isUpdating && "opacity-50",
+                "relative rounded-full p-1.5 transition-all active:scale-95",
+                superlike.isUpdating && "opacity-50 cursor-not-allowed",
                 superlike.isSuperliked
-                  ? "text-amber-500" 
+                  ? isBlkListing 
+                    ? "text-yellow-400 hover:bg-zinc-800/50" 
+                    : "text-yellow-500 hover:bg-muted/50"
                   : isBlkListing 
                     ? "text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/50" 
                     : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50"
@@ -396,7 +414,11 @@ export function CarListItem({
               }}
             >
               <Sparkles
-                className="h-4 w-4"
+                className={cn(
+                  "h-4 w-4 transition-transform duration-200",
+                  showSparkles && "scale-[1.3]"
+                )}
+                strokeWidth={superlike.isSuperliked ? 2.5 : 1.5}
                 fill={superlike.isSuperliked ? "currentColor" : "none"}
               />
             </button>
@@ -419,33 +441,6 @@ export function CarListItem({
         onClose={() => setShowSuperlikeLimit(false)}
         resetDate={superlike.quota?.periodEndDate}
       />
-
-      {/* Falling Sparkles Effect */}
-      {showSparkles && (
-        <div className="fixed inset-0 pointer-events-none overflow-hidden z-[9999]">
-          {Array.from({ length: 30 }, (_, i) => {
-            const left = (i * 3.33) + Math.random() * 2;
-            const delay = (i % 5) * 0.1;
-            const duration = 1.5 + (i % 3) * 0.3;
-            const size = 16 + (i % 4) * 4;
-            
-            return (
-              <span
-                key={i}
-                className="absolute animate-sparkle-fall"
-                style={{
-                  left: `${left}%`,
-                  animationDelay: `${delay}s`,
-                  animationDuration: `${duration}s`,
-                  fontSize: `${size}px`,
-                }}
-              >
-                {i % 3 === 0 ? '⭐' : i % 3 === 1 ? '✨' : '💫'}
-              </span>
-            );
-          })}
-        </div>
-      )}
     </div>
   );
 }
@@ -461,45 +456,45 @@ interface CarListItemSkeletonProps {
 function CarListItemSkeletonComponent({ className }: CarListItemSkeletonProps) {
   return (
     <div className={cn(
-      "overflow-hidden rounded-xl flex flex-col lg:flex-row w-full",
-      "bg-sidebar border border-border/40",
+      "overflow-hidden rounded-lg flex flex-col lg:flex-row w-full",
+      "bg-sidebar border border-sidebar-border",
       className
     )}>
       {/* Image Section */}
-      <div className="p-3 w-full lg:w-80 flex-shrink-0">
+      <div className="p-3 w-full lg:w-72 flex-shrink-0">
         <Skeleton className="aspect-[4/3] w-full rounded-lg" />
       </div>
 
       {/* Content Section */}
-      <div className="flex flex-1 flex-col px-4 lg:px-6 py-4 lg:py-5 min-w-0">
+      <div className="flex flex-1 flex-col px-3 lg:px-4 py-3 lg:py-4 min-w-0">
         {/* Top Section - Title and Price */}
-        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-2 lg:gap-6 mb-3">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-1.5 lg:gap-4 mb-2">
           <div className="flex-1 min-w-0 space-y-1">
             {/* Title with year */}
             <div className="flex items-baseline gap-2">
-              <Skeleton className="h-[15px] lg:h-[18px] w-32" />
-              <Skeleton className="h-3.5 w-10" />
+              <Skeleton className="h-[15px] w-32" />
+              <Skeleton className="h-3 w-8" />
             </div>
             {/* Trim */}
-            <Skeleton className="h-3.5 w-24" />
+            <Skeleton className="h-3 w-24" />
           </div>
           {/* Price */}
           <Skeleton className="h-[18px] w-28 flex-shrink-0" />
         </div>
 
         {/* Specs Row - mileage · specs · emirate */}
-        <div className="flex flex-wrap items-center gap-2 mb-2">
-          <Skeleton className="h-3.5 w-16" />
-          <Skeleton className="h-3.5 w-10" />
+        <div className="flex items-center gap-1.5">
           <Skeleton className="h-3.5 w-14" />
+          <Skeleton className="h-3.5 w-8" />
+          <Skeleton className="h-3.5 w-12" />
         </div>
 
         {/* Bottom Section - Seller and Actions */}
-        <div className="flex items-center justify-between gap-4 pt-4 border-t border-border/40 mt-auto">
+        <div className="flex items-center justify-between pt-3 mt-auto">
           {/* Left - Seller */}
-          <div className="flex items-center gap-2.5 min-w-0 flex-1">
-            <Skeleton className="w-8 h-8 lg:w-9 lg:h-9 rounded-full flex-shrink-0" />
-            <Skeleton className="h-3.5 w-28" />
+          <div className="flex items-center gap-2.5 min-w-0">
+            <Skeleton className="w-7 h-7 rounded-full flex-shrink-0" />
+            <Skeleton className="h-[13px] w-24" />
           </div>
 
           {/* Right - Actions */}

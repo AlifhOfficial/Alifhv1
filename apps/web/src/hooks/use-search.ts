@@ -294,11 +294,10 @@ interface QuickSearchResult {
   isLoading: boolean;
 }
 
-// Static popular makes for instant display (no API call)
-// Only show top 3 to avoid cluttering the dropdown
-const TOP_POPULAR_MAKES = ['Audi', 'BMW', 'Tesla'] as const;
+// Fallback for SSR or initial render before popular makes load
+const FALLBACK_MAKES = ['Audi', 'BMW', 'Tesla'] as const;
 
-const STATIC_POPULAR_SUGGESTIONS = TOP_POPULAR_MAKES.map(make => ({
+const FALLBACK_SUGGESTIONS = FALLBACK_MAKES.map(make => ({
   type: 'make' as const,
   text: make,
   make: make,
@@ -310,10 +309,24 @@ export function useQuickSearch(
   enabled = true,
   context?: { make?: string; model?: string }
 ): QuickSearchResult {
-  // Only call API when user has typed 2+ chars
-  const shouldFetchFromApi = query.length >= 2;
+  // Fetch popular makes when no query (dropdown open with empty input)
+  // Uses long staleTime since popular makes don't change often
+  const { data: popularData, isLoading: popularLoading } = useQuery({
+    queryKey: ['listings', 'suggest', 'popular'],
+    queryFn: async () => {
+      const response = await fetch('/api/listings/search/suggest?popular=true&limit=5');
+      if (!response.ok) return { suggestions: FALLBACK_SUGGESTIONS };
+      return response.json();
+    },
+    enabled: enabled && query.length < 2, // Only fetch when showing defaults
+    staleTime: 5 * 60 * 1000, // 5 minutes - popular makes rarely change
+    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+  });
+
+  // Fetch search suggestions when user types 2+ chars
+  const shouldFetchSearch = query.length >= 2;
   
-  const { data, isLoading } = useQuery({
+  const { data: searchData, isLoading: searchLoading } = useQuery({
     queryKey: ['listings', 'suggest', query, context?.make, context?.model],
     queryFn: async () => {
       // Build query params
@@ -330,16 +343,17 @@ export function useQuickSearch(
       if (!response.ok) return { suggestions: [] };
       return response.json();
     },
-    enabled: enabled && shouldFetchFromApi,
+    enabled: enabled && shouldFetchSearch,
     staleTime: 0, // Always fetch fresh - server handles caching
     gcTime: 0, // No client-side caching
   });
 
-  // Return static suggestions when no query, API suggestions when typing
+  // Return search suggestions when typing, popular makes otherwise
+  // Only show data once loaded - no static fallback on initial render
   return {
-    suggestions: shouldFetchFromApi 
-      ? (data?.suggestions ?? [])
-      : STATIC_POPULAR_SUGGESTIONS,
-    isLoading: shouldFetchFromApi ? isLoading : false,
+    suggestions: shouldFetchSearch 
+      ? (searchData?.suggestions ?? [])
+      : (popularData?.suggestions ?? []), // Empty until loaded
+    isLoading: shouldFetchSearch ? searchLoading : popularLoading,
   };
 }

@@ -14,7 +14,7 @@
 
 import { useState, useRef, useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, X, Loader2, CircleDot, Factory, FileKey2, Car } from 'lucide-react';
+import { Search, X, Loader2, CircleDot, Package, FileKey2, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { searchParamsToUrl, type SearchParams } from '@/lib/search-utils';
 import { useQuickSearch } from '@/hooks/use-search';
@@ -348,12 +348,12 @@ export function SearchBar({
   const getSuggestionIcon = (type: string) => {
     switch (type) {
       case 'vin_listing':
-        return <Car className="h-4 w-4 text-green-500" />;
+        return <FileText className="h-4 w-4 text-green-500" />;
       case 'vin_decode':
       case 'vin_partial':
         return <FileKey2 className="h-4 w-4 text-blue-500" />;
       case 'partner':
-        return <Factory className="h-4 w-4 text-muted-foreground/80" />;
+        return <Package className="h-4 w-4 text-muted-foreground/80" />;
       case 'make':
       case 'make_model':
       default:
