@@ -142,8 +142,6 @@ export interface CarDetailedData {
   partnerBrandName: string | null;
   partnerVerified: boolean;
   isBlkListing: boolean;
-  sellerName: string | null;
-  sellerKycVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
   lastEditedAt: Date;
@@ -228,9 +226,6 @@ function buildDetailedSelectFields(includeExpiry: boolean) {
     partnerBrandName: carListing.partnerBrandName,
     partnerVerified: carListing.partnerVerified,
     isBlkListing: carListing.isBlkListing,
-    // Seller data now fetched separately - no joins needed
-    sellerName: sql<string | null>`null`,
-    sellerKycVerified: sql<boolean>`false`,
     createdAt: carListing.createdAt,
     updatedAt: carListing.updatedAt,
     lastEditedAt: carListing.lastEditedAt,
@@ -262,7 +257,6 @@ function transformToDetailedData(row: any): CarDetailedData {
     badges: row.badges ?? [],
     tags: row.tags ?? [],
     partnerVerified: row.partnerVerified ?? false,
-    sellerKycVerified: row.sellerKycVerified ?? false,
     needsRemoderation: row.needsRemoderation ?? false,
     extensionCount: row.extensionCount ?? 0,
     extensionHistory: row.extensionHistory ?? [],

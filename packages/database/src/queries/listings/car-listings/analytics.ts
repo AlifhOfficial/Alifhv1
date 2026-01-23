@@ -33,20 +33,59 @@ export interface RecordViewInput {
   deviceType?: 'desktop' | 'mobile' | 'tablet' | null;
 }
 
+// Simple in-memory rate limiter for view spam prevention
+// Key: `${listingId}:${userId || sessionId || ipAddress}` -> last view timestamp
+const viewRateLimiter = new Map<string, number>();
+const VIEW_COOLDOWN_MS = 30_000; // 30 seconds between views of same listing by same user
+
+// Cleanup old entries periodically (prevent memory leak)
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, timestamp] of viewRateLimiter) {
+    if (now - timestamp > VIEW_COOLDOWN_MS * 2) {
+      viewRateLimiter.delete(key);
+    }
+  }
+}, 60_000); // Clean every minute
+
+/**
+ * Check if view should be rate limited
+ */
+function isViewRateLimited(input: RecordViewInput): boolean {
+  const identifier = input.userId || input.sessionId || input.ipAddress;
+  if (!identifier) return false; // Can't rate limit anonymous without any identifier
+  
+  const key = `${input.listingId}:${identifier}`;
+  const lastView = viewRateLimiter.get(key);
+  const now = Date.now();
+  
+  if (lastView && (now - lastView) < VIEW_COOLDOWN_MS) {
+    return true; // Rate limited
+  }
+  
+  viewRateLimiter.set(key, now);
+  return false;
+}
+
 /**
  * Record a listing view
+ * - Rate limited: 30s cooldown per user/session per listing
  * - Inserts detailed view record for analytics
- * - Increments viewCount on the listing (fire-and-forget)
+ * - Increments viewCount on the listing (fire-and-forget, only if insert succeeds)
  * 
- * @returns The created view record ID
+ * @returns The created view record ID, or null if rate limited
  */
-export async function recordListingView(input: RecordViewInput): Promise<string> {
+export async function recordListingView(input: RecordViewInput): Promise<string | null> {
+  // Check rate limit first
+  if (isViewRateLimited(input)) {
+    return null; // Silently skip rate-limited views
+  }
+  
   const viewId = makeViewId();
   
-  // Insert view record + increment counter in parallel
-  await Promise.all([
-    // Insert detailed view record
-    db.insert(listingView).values({
+  try {
+    // Insert view record first (must succeed before incrementing counter)
+    await db.insert(listingView).values({
       id: viewId,
       listingId: input.listingId,
       userId: input.userId ?? null,
@@ -55,17 +94,23 @@ export async function recordListingView(input: RecordViewInput): Promise<string>
       userAgent: input.userAgent ?? null,
       referrer: input.referrer ?? null,
       deviceType: input.deviceType ?? null,
-    }),
+    });
     
-    // Increment viewCount on listing
+    // Fire-and-forget: Increment viewCount (don't block response)
     db.update(carListing)
       .set({
         viewCount: sql`${carListing.viewCount} + 1`,
       })
-      .where(eq(carListing.id, input.listingId)),
-  ]);
-  
-  return viewId;
+      .where(eq(carListing.id, input.listingId))
+      .catch((err) => {
+        console.error(`[analytics] Failed to increment viewCount for ${input.listingId}:`, err.message);
+      });
+    
+    return viewId;
+  } catch (err) {
+    console.error(`[analytics] Failed to record view for ${input.listingId}:`, err);
+    return null;
+  }
 }
 
 /**

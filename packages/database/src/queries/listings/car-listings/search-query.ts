@@ -13,10 +13,9 @@
 import { eq, and, desc, inArray, SQL, sql, or, gte, lte, ilike, isNotNull, isNull, gt, asc, count } from 'drizzle-orm';
 import { db } from '../../../dbclient';
 import { carListing } from '../../../schema/listing';
-import { user } from '../../../schema/auth';
-import { userProfile } from '../../../schema/profile';
 import { partner } from '../../../schema/partner';
-import { isPublicSql, isBlkListingSql } from './sql-fragments';
+import { isBlkListingSql } from './sql-fragments';
+import { getListingCardsByIds, type CarCardData } from './car-card-query';
 import type { 
   SearchParams, 
   SearchResponse, 
@@ -693,44 +692,14 @@ export async function searchListings(
       const hasMoreFromFetch = listingIds.length > limit;
       const idsToFetch = listingIds.slice(0, limit).map(l => l.id);
 
-      // STEP 2: Batch fetch full details
-      const listings = await db
-        .select({
-          id: carListing.id,
-          slug: carListing.slug,
-          make: carListing.make,
-          model: carListing.model,
-          year: carListing.year,
-          trim: carListing.trim,
-          price: carListing.price,
-          mileage: carListing.mileage,
-          emirate: carListing.emirate,
-          specs: carListing.specs,
-          thumbnail: carListing.thumbnail,
-          // NOTE: images array intentionally excluded - only thumbnail needed for listings page
-          qiScore: carListing.qiScore,
-          isBlkListing: isBlkListingSql(),
-          sellerType: carListing.sellerType,
-          partnerName: sql<string | null>`coalesce(${carListing.partnerBrandName}, ${partner.brandName})`,
-          partnerLogo: partner.logo,
-          partnerVerified: sql<boolean | null>`coalesce(${carListing.partnerVerified}, ${partner.isVerified})`,
-          isBlackTierPartner: sql<boolean | null>`${partner.tier} = 'black'`,
-          sellerName: user.name,
-          sellerAvatarUrl: userProfile.avatar,
-          sellerKycVerified: userProfile.kycVerified,
-        })
-        .from(carListing)
-        .leftJoin(user, eq(user.id, carListing.userId))
-        .leftJoin(userProfile, eq(userProfile.userId, user.id))
-        .leftJoin(partner, eq(partner.id, carListing.partnerId))
-        .where(inArray(carListing.id, idsToFetch));
-
-      // Restore original sort order
-      const idOrder = new Map(idsToFetch.map((id, idx) => [id, idx]));
-      listings.sort((a, b) => (idOrder.get(a.id) ?? 0) - (idOrder.get(b.id) ?? 0));
+      // STEP 2: Use shared card query for batch fetch (avoids duplicate JOIN logic)
+      const cardData = await getListingCardsByIds(idsToFetch);
+      
+      // Map CarCardData to SearchResultItem (same fields, just type alignment)
+      const listings = cardData as unknown as SearchResultItem[];
 
       return {
-        listings: listings as SearchResultItem[],
+        listings,
         hasMoreFromFetch,
       };
     })(),

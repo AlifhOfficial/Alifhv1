@@ -39,6 +39,7 @@ export interface CarCardFilters {
 
 export interface CarCardData {
   id: string;
+  slug: string | null;
   make: string | null;
   model: string | null;
   year: number | null;
@@ -49,6 +50,7 @@ export interface CarCardData {
   specs: string | null;
   thumbnail: string | null;
   isBlkListing: boolean | null;
+  sellerType: 'private' | 'dealer' | null;
   postedByRole: 'user' | 'staff' | null;
   moderationStatus: 'draft' | 'submitted' | 'pending_review' | 'approved' | 'rejected' | null;
   lifecycleStatus: 'active' | 'archived' | 'sold' | 'expired' | 'deleted' | null;
@@ -56,6 +58,7 @@ export interface CarCardData {
   partnerName: string | null;
   partnerLogo: string | null;
   partnerVerified: boolean | null;
+  isBlackTierPartner: boolean | null;
   sellerName: string | null;
   sellerAvatarUrl: string | null;
   sellerKycVerified: boolean | null;
@@ -69,6 +72,7 @@ export interface CarCardData {
 function buildCardSelectFields(now: Date) {
   return {
     id: carListing.id,
+    slug: carListing.slug,
     make: carListing.make,
     model: carListing.model,
     year: carListing.year,
@@ -79,6 +83,7 @@ function buildCardSelectFields(now: Date) {
     specs: carListing.specs,
     thumbnail: carListing.thumbnail,
     isBlkListing: isBlkListingSql(),
+    sellerType: carListing.sellerType,
     postedByRole: carListing.postedByRole,
     moderationStatus: carListing.moderationStatus,
     lifecycleStatus: carListing.lifecycleStatus,
@@ -86,6 +91,7 @@ function buildCardSelectFields(now: Date) {
     partnerName: sql<string | null>`coalesce(${carListing.partnerBrandName}, ${partner.brandName})`,
     partnerLogo: partner.logo,
     partnerVerified: sql<boolean | null>`coalesce(${carListing.partnerVerified}, ${partner.isVerified})`,
+    isBlackTierPartner: sql<boolean | null>`${partner.tier} = 'black'`,
     sellerName: user.name,
     sellerAvatarUrl: userProfile.avatar,
     sellerKycVerified: userProfile.kycVerified,
@@ -276,4 +282,34 @@ export async function getListingCards(filters: CarCardFilters): Promise<CarCardD
     }
     throw err;
   }
+}
+
+/**
+ * Optimized batch fetch for listing cards by IDs
+ * Used by search-query to avoid duplicating JOIN logic
+ * 
+ * Features:
+ * - Single query with all JOINs (user, userProfile, partner)
+ * - Preserves input ID order for sorted results
+ * - No visibility filtering (caller handles that)
+ */
+export async function getListingCardsByIds(ids: string[]): Promise<CarCardData[]> {
+  if (ids.length === 0) return [];
+  
+  const now = new Date();
+  const selectFields = buildCardSelectFields(now);
+  
+  const listings = await db
+    .select(selectFields)
+    .from(carListing)
+    .leftJoin(user, eq(user.id, carListing.userId))
+    .leftJoin(userProfile, eq(userProfile.userId, user.id))
+    .leftJoin(partner, eq(partner.id, carListing.partnerId))
+    .where(inArray(carListing.id, ids));
+  
+  // Preserve original ID order from input
+  const idOrder = new Map(ids.map((id, idx) => [id, idx]));
+  listings.sort((a, b) => (idOrder.get(a.id) ?? 0) - (idOrder.get(b.id) ?? 0));
+  
+  return deduplicateById(listings);
 }

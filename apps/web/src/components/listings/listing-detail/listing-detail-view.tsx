@@ -183,6 +183,15 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
     ? (sellerData.type === 'partner' ? !!sellerData.partner : !!sellerData.userProfile)
     : false;
 
+  // Extract KYC verified status from seller data
+  // Partners are considered verified if partner.isVerified is true
+  // Users are verified if userProfile.kycVerified is true
+  const sellerKycVerified = sellerData
+    ? sellerData.type === 'partner'
+      ? sellerData.partner?.isVerified ?? false
+      : sellerData.userProfile?.kycVerified ?? false
+    : false;
+
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <main className="pt-20">
@@ -223,7 +232,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10 pb-6 lg:pb-8">
             {/* Main Column - Car Details (60%) */}
             <div className="lg:col-span-3 min-w-0">
-              <CarCardDetailed listing={listing} kycVerified={listing.sellerKycVerified} />
+              <CarCardDetailed listing={listing} kycVerified={sellerKycVerified} />
             </div>
 
             {/* Sidebar - Clean stacked cards (40%) */}

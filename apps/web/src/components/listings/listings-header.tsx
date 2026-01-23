@@ -429,13 +429,13 @@ export function ListingsHeader({
                   Models
                 </span>
                 {isLoading ? (
-                  /* Skeleton loading state */
+                  /* Skeleton loading state - deterministic widths to avoid hydration mismatch */
                   <>
-                    {[...Array(4)].map((_, i) => (
+                    {[72, 65, 80, 68].map((width, i) => (
                       <div
                         key={i}
                         className="h-7 rounded-full bg-muted/60 animate-pulse shrink-0"
-                        style={{ width: `${60 + Math.random() * 30}px` }}
+                        style={{ width: `${width}px` }}
                       />
                     ))}
                   </>
@@ -512,13 +512,13 @@ export function ListingsHeader({
                   Trims
                 </span>
                 {isLoading ? (
-                  /* Skeleton loading state */
+                  /* Skeleton loading state - deterministic widths to avoid hydration mismatch */
                   <>
-                    {[...Array(4)].map((_, i) => (
+                    {[58, 70, 62, 75].map((width, i) => (
                       <div
                         key={i}
                         className="h-7 rounded-full bg-muted/60 animate-pulse shrink-0"
-                        style={{ width: `${50 + Math.random() * 40}px` }}
+                        style={{ width: `${width}px` }}
                       />
                     ))}
                   </>

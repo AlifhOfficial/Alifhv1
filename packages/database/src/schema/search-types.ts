@@ -202,22 +202,19 @@ export interface SearchResponse {
 export interface SearchResultItem {
   id: string;
   slug: string | null;
-  make: string;
-  model: string;
-  year: number;
+  make: string | null;
+  model: string | null;
+  year: number | null;
   trim: string | null;
-  price: number;
-  mileage: number;
-  emirate: string;
+  price: number | null;
+  mileage: number | null;
+  emirate: string | null;
   specs: string | null;
   thumbnail: string | null;
-  // NOTE: images array intentionally excluded from search results for performance
-  // Use detail endpoint to get full images array
-  qiScore: number | null;
-  isBlkListing: boolean;
+  isBlkListing: boolean | null;
   
   // Seller info
-  sellerType: 'dealer' | 'private';
+  sellerType: 'dealer' | 'private' | null;
   partnerName: string | null;
   partnerLogo: string | null;
   partnerVerified: boolean | null;
@@ -226,8 +223,12 @@ export interface SearchResultItem {
   sellerAvatarUrl: string | null;
   sellerKycVerified: boolean | null;
   
-  // Search relevance
-  relevanceScore?: number;
+  // Additional fields from CarCardData (for compatibility)
+  postedByRole?: 'user' | 'staff' | null;
+  moderationStatus?: 'draft' | 'submitted' | 'pending_review' | 'approved' | 'rejected' | null;
+  lifecycleStatus?: 'active' | 'archived' | 'sold' | 'expired' | 'deleted' | null;
+  isPublic?: boolean | null;
+  sellerUseGeneratedAvatar?: boolean | null;
 }
 
 // ============================================================================
