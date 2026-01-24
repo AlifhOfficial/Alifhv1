@@ -70,7 +70,7 @@ export function VisionPillarsSection() {
                 Transparency as a foundation.
               </h3>
               <p className="text-sm text-white/70 leading-relaxed">
-                We aim to show the VIN on every listing. Verify every seller through KYC. Vet every dealer. 
+                We aim to show the VIN on every listing. Verify every seller through KYC. Check every dealer. 
                 Our goal is a marketplace where buyers can trust what they see—because transparency should be the standard.
               </p>
             </div>

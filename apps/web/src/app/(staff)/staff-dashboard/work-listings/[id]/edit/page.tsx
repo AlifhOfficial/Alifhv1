@@ -52,7 +52,7 @@ export default function StaffEditWorkListingPage({ params }: PageProps) {
   }
 
   if (!session) {
-    redirect(`/auth/sign-in?redirect=/staff-dashboard/work-listings/${id}/edit`);
+    redirect(`/?auth=signin&redirect=/staff-dashboard/work-listings/${id}/edit`);
   }
 
   if (error || !listing) {

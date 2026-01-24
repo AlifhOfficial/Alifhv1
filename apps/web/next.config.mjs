@@ -65,6 +65,14 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'cdn.alifh.ae',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.alifh.com',
+      },
+      {
+        protocol: 'https',
         hostname: 'images.unsplash.com',
       },
       {

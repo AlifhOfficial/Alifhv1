@@ -6,6 +6,49 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuthRequired } from '@/hooks/use-auth-required';
+import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
+
+function FlowApplyButton() {
+  const router = useRouter();
+  const { isAuthenticated, showModal, openModal, closeModal } = useAuthRequired({
+    feature: "apply for Flow",
+    redirectTo: "/user-dashboard/requests",
+  });
+
+  return (
+    <>
+      <button
+        onClick={() => isAuthenticated ? router.push('/user-dashboard/requests') : openModal()}
+        className="w-full h-10 bg-[#0066FF] text-white text-sm font-medium rounded-lg hover:bg-[#0066FF]/90 transition-colors flex items-center justify-center"
+      >
+        Start with Flow
+      </button>
+      <AuthRequiredModal open={showModal} onClose={closeModal} feature="apply for Flow" redirectTo="/user-dashboard/requests" />
+    </>
+  );
+}
+
+function BlackApplyButton() {
+  const router = useRouter();
+  const { isAuthenticated, showModal, openModal, closeModal } = useAuthRequired({
+    feature: "apply for Black",
+    redirectTo: "/user-dashboard/requests",
+  });
+
+  return (
+    <>
+      <button
+        onClick={() => isAuthenticated ? router.push('/user-dashboard/requests') : openModal()}
+        className="w-full h-10 bg-muted border border-border text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
+      >
+        Apply for Black
+      </button>
+      <AuthRequiredModal open={showModal} onClose={closeModal} feature="apply for Black" redirectTo="/user-dashboard/requests" />
+    </>
+  );
+}
 
 export function PricingTiersSection() {
   return (
@@ -29,17 +72,17 @@ export function PricingTiersSection() {
               Unlimited listings, bookings, leads, messaging, and analytics.
             </p>
 
-            <Link
-              href="/user-dashboard/requests"
-              className="block w-full h-10 bg-[#0066FF] text-white text-sm font-medium rounded-lg hover:bg-[#0066FF]/90 transition-colors flex items-center justify-center"
-            >
-              Start with Flow
-            </Link>
+            <FlowApplyButton />
           </div>
 
           {/* Black Card */}
           <div className="p-8 rounded-xl bg-sidebar border border-sidebar-border">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground mb-6">Black</p>
+            <div className="flex items-center justify-between mb-6">
+              <p className="text-xs uppercase tracking-widest text-muted-foreground">Black</p>
+              <span className="text-[10px] uppercase tracking-wider font-medium text-muted-foreground/70 px-2 py-0.5 rounded-full border border-border/50">
+                Limited spots
+              </span>
+            </div>
             
             <div className="flex items-baseline gap-1.5 mb-1">
               <span className="text-sm text-muted-foreground">from</span>
@@ -52,12 +95,7 @@ export function PricingTiersSection() {
               Everything in Flow, plus custom branding, a dedicated showroom page, and white-glove support.
             </p>
 
-            <Link
-              href="/user-dashboard/requests"
-              className="block w-full h-10 bg-muted border border-border text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
-            >
-              Apply for Black
-            </Link>
+            <BlackApplyButton />
           </div>
 
         </div>

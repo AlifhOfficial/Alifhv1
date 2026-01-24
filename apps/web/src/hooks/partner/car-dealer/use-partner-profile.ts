@@ -134,17 +134,28 @@ async function updatePartnerProfileAPI(partnerId: string, updates: PartnerProfil
 export function usePartnerProfile(partnerId: string | null | undefined) {
   const queryClient = useQueryClient();
 
+  // No client-side caching - server cache is source of truth
+  // staleTime: Infinity prevents auto-refetches (we trust setQueryData for mutations)
+  // gcTime: 0 means fresh fetch from server on each page visit
   const query = useQuery({
     queryKey: ['partner-profile', partnerId],
     queryFn: () => fetchPartnerProfile(partnerId!),
     enabled: !!partnerId,
+    staleTime: Infinity, // Never auto-refetch (mutations update via setQueryData)
+    gcTime: 0, // No caching when unmounted - fresh from server each time
+    refetchOnWindowFocus: false, // No auto refetch
+    refetchOnMount: true, // Fetch on mount if no data
+    refetchOnReconnect: false, // No auto refetch on reconnect
   });
 
   const mutation = useMutation({
     mutationFn: (updates: PartnerProfileUpdate) => updatePartnerProfileAPI(partnerId!, updates),
-    onSuccess: () => {
-      // Invalidate to refetch fresh data
-      queryClient.invalidateQueries({ queryKey: ['partner-profile', partnerId] });
+    onSuccess: (updatedProfile, variables) => {
+      // Update local cache directly - no refetch needed
+      queryClient.setQueryData(['partner-profile', partnerId], updatedProfile);
+      
+      // If logo or brandName changed, we need to refresh session for sidebar sync
+      // This is handled by the component calling refetchSession when needed
     },
   });
 

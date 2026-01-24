@@ -46,7 +46,7 @@ const navItems: NavItem[] = [
         items: [
           { label: "All Vehicles", href: "/listings" },
           { label: "Black Collection", href: "/listings?black=true" },
-          { label: "Ace Members", href: "/listings?blackTier=true" },
+          { label: "Black Members", href: "/listings?blackTier=true" },
           { label: "New Arrivals", href: "/listings?sort=newest" },
         ],
       },
@@ -55,7 +55,6 @@ const navItems: NavItem[] = [
         items: [
           { label: "Sedans", href: "/listings?bodyType=sedan" },
           { label: "SUVs", href: "/listings?bodyType=suv" },
-          { label: "Trucks", href: "/listings?bodyType=pickup" },
           { label: "Coupes", href: "/listings?bodyType=coupe" },
         ],
       },
@@ -96,6 +95,7 @@ const navItems: NavItem[] = [
         title: "Company",
         items: [
           { label: "About Alifh", href: "/about" },
+          { label: "How Ranking Works", href: "/how-ranking-works" },
           { label: "Badges", href: "/badges" },
         ],
       },
@@ -111,7 +111,6 @@ const navItems: NavItem[] = [
           { label: "VIN Decoder", href: "/tools/vin-decoder" },
           { label: "Compare Cars", href: "/tools/compare" },
           { label: "Car Valuation", href: "/tools/valuation" },
-          { label: "Vehicle History", href: "/tools/history" },
         ],
       },
       {

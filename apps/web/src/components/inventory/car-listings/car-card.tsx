@@ -15,7 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
 import { SuperlikeLimitDialog } from '@/components/engagement/favorites/superlike-limit-dialog';
-import { AuthRequiredDialog } from '@/components/auth/auth-required-dialog';
+import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 
@@ -510,19 +510,17 @@ export function CarCard({
         resetDate={superlike.quota?.periodEndDate}
       />
 
-      {/* Auth Required Dialogs - Separate for each feature */}
-      <AuthRequiredDialog
-        isOpen={favorite.authRequired}
+      {/* Auth Required Modals - Separate for each feature */}
+      <AuthRequiredModal
+        open={favorite.authRequired}
         onClose={favorite.dismissAuth}
-        message={favorite.authMessage}
-        feature="favorites"
+        feature="save favorites"
       />
       
-      <AuthRequiredDialog
-        isOpen={superlike.authRequired}
+      <AuthRequiredModal
+        open={superlike.authRequired}
         onClose={superlike.dismissAuth}
-        message={superlike.authMessage}
-        feature="superlikes"
+        feature="superlike listings"
       />
 
     </div>

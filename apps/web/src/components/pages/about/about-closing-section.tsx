@@ -29,16 +29,16 @@ export function AboutClosingSection() {
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-6">
             <Link
-              href="/listings"
+              href="/contact"
               className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
             >
-              Browse Listings
+              Get in Touch
             </Link>
             <Link
-              href="/dealers"
+              href="/knowledge/akh"
               className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
             >
-              Explore Dealers
+              Knowledge Hub
             </Link>
           </div>
         </div>

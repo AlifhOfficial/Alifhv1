@@ -52,7 +52,7 @@ export default function EditListingPage({ params }: PageProps) {
   }
 
   if (!session) {
-    redirect(`/auth/sign-in?redirect=/user-dashboard/listings/${id}/edit`);
+    redirect(`/?auth=signin&redirect=/user-dashboard/listings/${id}/edit`);
   }
 
   if (error || !listing) {

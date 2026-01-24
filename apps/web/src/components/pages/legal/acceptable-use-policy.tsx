@@ -73,12 +73,12 @@ export function AcceptableUsePolicy() {
           
           {/* Introduction */}
           <div className="mb-16 p-8 border-l-2 border-border/60 bg-background/50">
-            <p className="text-sm text-foreground leading-relaxed mb-3">
+            <p className="text-base text-muted-foreground leading-relaxed mb-3">
               This Acceptable Use Policy ("Policy") sets out the permitted and prohibited conduct 
               when accessing or using the ALIFH platform, website, and related services (collectively, 
               the "Platform").
             </p>
-            <p className="text-sm text-foreground leading-relaxed mb-3">
+            <p className="text-base text-muted-foreground leading-relaxed mb-3">
               This Policy forms part of the <Link href="/terms-of-service" className="text-primary hover:underline">ALIFH Terms of Service</Link> and applies to all users, including 
               dealers, registered accounts, and visitors.
             </p>
@@ -92,14 +92,14 @@ export function AcceptableUsePolicy() {
             
             {/* 1. Purpose */}
             <section id="purpose">
-              <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border/40">
+              <h2 className="text-lg font-medium text-foreground mb-4 pb-2 border-b border-border/40">
                 1. Purpose
               </h2>
               <div className="space-y-4 mt-6">
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   ALIFH is a curated digital platform.
                 </p>
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   This Policy exists to protect platform integrity, trust, and quality, and to ensure 
                   that use of the Platform remains lawful, accurate, and aligned with ALIFH standards.
                 </p>
@@ -108,21 +108,21 @@ export function AcceptableUsePolicy() {
 
             {/* 2. Permitted Use */}
             <section id="permitted">
-              <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border/40">
+              <h2 className="text-lg font-medium text-foreground mb-4 pb-2 border-b border-border/40">
                 2. Permitted Use
               </h2>
               <div className="space-y-4 mt-6">
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   The Platform may be used only for its intended purposes and in compliance with:
                 </p>
                 <ul className="space-y-2 pl-6">
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Applicable laws and regulations of the United Arab Emirates
                   </li>
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     The ALIFH Terms of Service
                   </li>
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     This Acceptable Use Policy
                   </li>
                 </ul>
@@ -131,11 +131,11 @@ export function AcceptableUsePolicy() {
 
             {/* 3. Prohibited Conduct */}
             <section id="prohibited">
-              <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border/40">
+              <h2 className="text-lg font-medium text-foreground mb-4 pb-2 border-b border-border/40">
                 3. Prohibited Conduct
               </h2>
               <div className="space-y-6 mt-6">
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   The following conduct is strictly prohibited:
                 </p>
 
@@ -145,13 +145,13 @@ export function AcceptableUsePolicy() {
                     a. Misrepresentation and False Content
                   </h3>
                   <ul className="space-y-2 pl-6">
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Posting inaccurate, misleading, deceptive, or incomplete information
                     </li>
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Misstating vehicle details, pricing, condition, ownership, history, or availability
                     </li>
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Listing items without legal authority or proper authorization
                     </li>
                   </ul>
@@ -163,13 +163,13 @@ export function AcceptableUsePolicy() {
                     b. Fraudulent or Abusive Activity
                   </h3>
                   <ul className="space-y-2 pl-6">
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Fraud, impersonation, or identity misrepresentation
                     </li>
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Manipulating listings, rankings, visibility, engagement, or platform mechanics
                     </li>
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Circumventing subscription limits, billing systems, safeguards, or access controls
                     </li>
                   </ul>
@@ -181,16 +181,16 @@ export function AcceptableUsePolicy() {
                     c. Platform Misuse
                   </h3>
                   <ul className="space-y-2 pl-6">
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Creating duplicate, fake, or misleading accounts
                     </li>
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Scraping, copying, extracting, or harvesting Platform data without authorization
                     </li>
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Using bots, scripts, automation, or similar processes without permission
                     </li>
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Introducing malware, malicious code, or security threats
                     </li>
                   </ul>
@@ -202,13 +202,13 @@ export function AcceptableUsePolicy() {
                     d. Improper Communications
                   </h3>
                   <ul className="space-y-2 pl-6">
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Spam, unsolicited outreach, or deceptive redirection
                     </li>
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Harassment, threats, abusive, or discriminatory conduct
                     </li>
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Using the Platform to mislead users into off-platform transactions
                     </li>
                   </ul>
@@ -220,10 +220,10 @@ export function AcceptableUsePolicy() {
                     e. Legal and Regulatory Violations
                   </h3>
                   <ul className="space-y-2 pl-6">
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Uploading unlawful, restricted, or prohibited content
                     </li>
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Using the Platform in violation of applicable consumer protection, advertising, 
                       trade, or licensing laws
                     </li>
@@ -234,25 +234,25 @@ export function AcceptableUsePolicy() {
 
             {/* 4. Enforcement */}
             <section id="enforcement">
-              <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border/40">
+              <h2 className="text-lg font-medium text-foreground mb-4 pb-2 border-b border-border/40">
                 4. Enforcement
               </h2>
               <div className="space-y-4 mt-6">
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   ALIFH may, at its discretion and where permitted by law:
                 </p>
                 <ul className="space-y-2 pl-6">
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Remove or restrict listings or content
                   </li>
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Limit, suspend, or terminate account access
                   </li>
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Take any action reasonably necessary to protect Platform integrity, users, or compliance
                   </li>
                 </ul>
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   Such actions may be taken with or without prior notice, depending on the circumstances.
                 </p>
               </div>
@@ -260,15 +260,15 @@ export function AcceptableUsePolicy() {
 
             {/* 5. No Obligation to Monitor */}
             <section id="monitoring">
-              <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border/40">
+              <h2 className="text-lg font-medium text-foreground mb-4 pb-2 border-b border-border/40">
                 5. No Obligation to Monitor
               </h2>
               <div className="space-y-4 mt-6">
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   ALIFH is not obligated to actively monitor user activity or content but reserves the 
                   right to do so.
                 </p>
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   Failure to enforce this Policy in any particular instance does not constitute a waiver 
                   of ALIFH's rights.
                 </p>
@@ -277,15 +277,15 @@ export function AcceptableUsePolicy() {
 
             {/* 6. Reporting Violations */}
             <section id="reporting">
-              <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border/40">
+              <h2 className="text-lg font-medium text-foreground mb-4 pb-2 border-b border-border/40">
                 6. Reporting Violations
               </h2>
               <div className="space-y-4 mt-6">
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   Suspected violations of this Policy may be reported through official ALIFH support 
                   channels.
                 </p>
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   ALIFH may review reported conduct and take appropriate action based on its assessment.
                 </p>
               </div>
@@ -293,14 +293,14 @@ export function AcceptableUsePolicy() {
 
             {/* 7. Governing Law */}
             <section id="governing">
-              <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border/40">
+              <h2 className="text-lg font-medium text-foreground mb-4 pb-2 border-b border-border/40">
                 7. Governing Law
               </h2>
               <div className="space-y-4 mt-6">
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   This Policy is governed by the laws of the United Arab Emirates.
                 </p>
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   This Policy is effective as of the "Last Updated" date and applies while you continue 
                   to access or use the Platform.
                 </p>

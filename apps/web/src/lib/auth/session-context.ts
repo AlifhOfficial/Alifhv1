@@ -27,7 +27,7 @@ const PROFILE_HEADER_KEY = "x-user-profile";
  * @returns Extended user with role and partner membership data, or null if unauthenticated
  * @example
  * const user = await getSessionUser();
- * if (!user) redirect('/sign-in');
+ * if (!user) redirect('/?auth=signin');
  */
 export const getSessionUser = cache(async (): Promise<ExtendedUser | null> => {
   try {

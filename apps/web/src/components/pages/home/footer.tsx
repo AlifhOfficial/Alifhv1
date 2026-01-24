@@ -7,8 +7,46 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
+import { useAuthRequired } from '@/hooks/use-auth-required';
+import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
+
+function SellLink() {
+  const router = useRouter();
+  const { isAuthenticated, showModal, openModal, closeModal } = useAuthRequired({
+    feature: "create listings",
+    redirectTo: "/user-dashboard/listings/new",
+  });
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isAuthenticated) {
+      router.push('/user-dashboard/listings/new');
+    } else {
+      openModal();
+    }
+  };
+
+  return (
+    <>
+      <a 
+        href="/user-dashboard/listings/new" 
+        onClick={handleClick}
+        className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+      >
+        Sell Your Car
+      </a>
+      <AuthRequiredModal
+        open={showModal}
+        onClose={closeModal}
+        feature="create listings"
+        redirectTo="/user-dashboard/listings/new"
+      />
+    </>
+  );
+}
 
 export function Footer() {
   const { resolvedTheme } = useTheme();
@@ -53,7 +91,7 @@ export function Footer() {
             <p className="text-[13px] font-bold text-foreground">Browse</p>
             <div className="flex flex-col gap-2.5">
               <Link href="/listings" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">All Cars</Link>
-              <Link href="/user-dashboard/listings/new" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Sell Your Car</Link>
+              <SellLink />
             </div>
           </div>
           
@@ -92,7 +130,7 @@ export function Footer() {
         {/* Bottom */}
         <div className="flex flex-col sm:flex-row justify-between items-center gap-3 pt-10 mt-10 border-t border-border/40">
           <p className="text-xs text-muted-foreground/70 font-medium">
-            © {new Date().getFullYear()} Alifh. All rights reserved.
+            © {new Date().getFullYear()} AISH CAPITALS FZCO. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <Link href="/refund-policy" className="text-xs text-muted-foreground/70 font-medium hover:text-muted-foreground transition-colors">Refunds</Link>

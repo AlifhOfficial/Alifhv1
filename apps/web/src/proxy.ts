@@ -48,7 +48,8 @@ export async function proxy(request: NextRequest) {
       // API routes handle their own 401 responses
       return NextResponse.next();
     }
-    const signInUrl = new URL("/sign-in", request.url);
+    const signInUrl = new URL("/", request.url);
+    signInUrl.searchParams.set("auth", "signin");
     signInUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(signInUrl);
   }
@@ -70,7 +71,10 @@ export async function proxy(request: NextRequest) {
         if (isApiRoute) {
           return NextResponse.next();
         }
-        return NextResponse.redirect(new URL("/sign-in", request.url));
+        const signInUrl = new URL("/", request.url);
+        signInUrl.searchParams.set("auth", "signin");
+        signInUrl.searchParams.set("redirect", pathname);
+        return NextResponse.redirect(signInUrl);
       }
 
       user = session.user;
@@ -84,7 +88,10 @@ export async function proxy(request: NextRequest) {
       if (isApiRoute) {
         return NextResponse.next();
       }
-      return NextResponse.redirect(new URL("/sign-in", request.url));
+      const signInUrl = new URL("/", request.url);
+      signInUrl.searchParams.set("auth", "signin");
+      signInUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(signInUrl);
     }
 
     // Check if user is banned - redirect to banned page
@@ -157,7 +164,10 @@ export async function proxy(request: NextRequest) {
     });
   } catch (error) {
     console.error("[Proxy] Error checking session:", error);
-    return NextResponse.redirect(new URL("/sign-in", request.url));
+    const signInUrl = new URL("/", request.url);
+    signInUrl.searchParams.set("auth", "signin");
+    signInUrl.searchParams.set("redirect", pathname);
+    return NextResponse.redirect(signInUrl);
   }
 }
 

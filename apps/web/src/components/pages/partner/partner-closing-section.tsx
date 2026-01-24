@@ -6,6 +6,42 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuthRequired } from '@/hooks/use-auth-required';
+import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
+
+function ApplyButton() {
+  const router = useRouter();
+  const { isAuthenticated, showModal, openModal, closeModal } = useAuthRequired({
+    feature: "apply to become a partner",
+    redirectTo: "/user-dashboard/requests",
+  });
+
+  const handleClick = () => {
+    if (isAuthenticated) {
+      router.push('/user-dashboard/requests');
+    } else {
+      openModal();
+    }
+  };
+
+  return (
+    <>
+      <button
+        onClick={handleClick}
+        className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
+      >
+        Apply to Partner
+      </button>
+      <AuthRequiredModal
+        open={showModal}
+        onClose={closeModal}
+        feature="apply to become a partner"
+        redirectTo="/user-dashboard/requests"
+      />
+    </>
+  );
+}
 
 export function PartnerClosingSection() {
   return (
@@ -54,12 +90,7 @@ export function PartnerClosingSection() {
             >
               See Pricing
             </Link>
-            <Link
-              href="/user-dashboard/requests"
-              className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
-            >
-              Apply to Partner
-            </Link>
+            <ApplyButton />
           </div>
           
           <div className="pt-4">

@@ -7,7 +7,6 @@
 
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/providers/auth-provider';
 import { usePartnerProfile } from '@/hooks/partner/car-dealer/use-partner-profile';
 import { usePartnerStats } from '@/hooks/partner/car-dealer/use-partner-stats';
 import { 
@@ -148,7 +147,6 @@ const EditableField = React.memo(function EditableField({
 
 export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormProps) {
   const { toast } = useToast();
-  const { refetch: refetchSession } = useAuth();
   const { profile, isLoading, updateProfile, isUpdating, refetchFresh } = usePartnerProfile(partnerId);
   const { stats, isLoading: statsLoading } = usePartnerStats(partnerId);
 
@@ -323,10 +321,6 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       
       await updateProfile({ [field]: data.key });
       updateField({ [field]: data.key });
-      // Refresh session to sync sidebar with new logo
-      if (field === 'logo') {
-        await refetchSession();
-      }
       toast({ title: `${field === 'logo' ? 'Logo' : 'Banner'} updated` });
     } catch {
       toast({ title: 'Upload failed', variant: 'destructive' });
@@ -534,9 +528,12 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
               logoUrl={profile.logoUrl || form.logo} 
               brandName={profile.brandName} 
               size="xl"
-              className="w-24 h-24 border-4 border-background"
+              className={cn("w-24 h-24 border-4 border-background", imageUploading && "opacity-50")}
             />
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className={cn(
+              "absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl transition-opacity",
+              imageUploading ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+            )}>
               {imageUploading ? (
                 <Loader2 className="w-5 h-5 text-white animate-spin" />
               ) : (
@@ -555,7 +552,6 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                 try {
                   await updateProfile({ logo: null });
                   updateField({ logo: null });
-                  await refetchSession(); // Sync sidebar
                   toast({ title: 'Logo removed' });
                 } catch {
                   toast({ title: 'Failed to remove', variant: 'destructive' });

@@ -11,6 +11,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Phone, MessageCircle, Copy, Check, Loader2, Calendar } from 'lucide-react';
 import { cn } from '@/utils';
+import { useAuthRequired } from '@/hooks/use-auth-required';
+import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 import type { SellerData } from '@/hooks/listings';
 
 interface ContactSectionProps {
@@ -48,6 +50,12 @@ export function ContactSection({
   const [showPhone, setShowPhone] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // Auth required modal for chat and booking
+  const { isAuthenticated, showModal: showAuthModal, openModal: openAuthModal, closeModal: closeAuthModal } = useAuthRequired({
+    feature: "contact the seller",
+    redirectTo: `/listings/${listingId}`,
+  });
+
   // Determine the phone number to display
   // Partner listings: staff phone → company phone → staff personal phone
   // User listings: user's phone (if privacy allows)
@@ -76,11 +84,19 @@ export function ContactSection({
   const blockedMessage = isOwnPartnerListing ? 'Your Dealership' : 'Your Listing';
 
   const handleChatClick = () => {
-    if (!currentUserId) {
-      router.push('/sign-in?redirectTo=' + encodeURIComponent(`/listings/${listingId}`));
+    if (!isAuthenticated) {
+      openAuthModal();
       return;
     }
     onStartChat?.();
+  };
+
+  const handleBookClick = () => {
+    if (!isAuthenticated) {
+      openAuthModal();
+      return;
+    }
+    onBookTestDrive?.();
   };
 
   const handleCopyPhone = async () => {
@@ -136,7 +152,7 @@ export function ContactSection({
         {/* Book Test Drive - If dealer listing and not own listing */}
         {showBooking && onBookTestDrive && !isBlocked && (
           <button
-            onClick={onBookTestDrive}
+            onClick={handleBookClick}
             className="flex-1 min-w-[100px] py-3 px-4 bg-green-500 text-white rounded-full text-sm font-bold hover:bg-green-600 transition-colors flex items-center justify-center gap-2.5 whitespace-nowrap"
           >
             <Calendar className="w-5 h-5" />
@@ -144,6 +160,14 @@ export function ContactSection({
           </button>
         )}
       </div>
+
+      {/* Auth Required Modal */}
+      <AuthRequiredModal
+        open={showAuthModal}
+        onClose={closeAuthModal}
+        feature="contact the seller"
+        redirectTo={`/listings/${listingId}`}
+      />
 
       {/* Phone number display when revealed */}
       {phoneNumber && showPhone && (

@@ -30,14 +30,14 @@ export const faqData: FAQCategory[] = [
       {
         id: "users-free-listing",
         question: "Is it free to list my car on Alifh?",
-        answer: "Yes, listing your car on Alifh is completely free. There are no listing fees, no boost fees, and no hidden charges. Individual sellers pay nothing to list, sell, or promote their vehicles on the platform.",
+        answer: "Yes, listing your car on Alifh is completely free. There are no listing fees, no boost fees, and no hidden charges. Private sellers pay nothing to list, sell, or promote their vehicles on the platform.",
         keywords: ["free", "cost", "price", "listing fee", "charge"],
         isPopular: true,
       },
       {
         id: "users-cost-to-sell",
         question: "How much does it cost to sell a car on Alifh?",
-        answer: "It costs AED 0 to sell a car on Alifh. Individual sellers pay no listing fees, no boost fees, and no commission on sales. The platform is completely free for private car sellers in the UAE.",
+        answer: "It costs AED 0 to sell a car on Alifh. Private sellers pay no listing fees, no boost fees, and no commission on sales. The platform is completely free for private car sellers in the UAE.",
         keywords: ["cost", "sell", "price", "fee", "commission"],
       },
       {
@@ -225,7 +225,7 @@ export const faqData: FAQCategory[] = [
       {
         id: "partners-sync-reviews",
         question: "Can I sync Google Reviews to my Alifh profile?",
-        answer: "Yes, you can sync your Google Reviews to your Alifh partner profile with one tap in settings. Reviews are pulled automatically and displayed on your showroom page, helping build trust with potential buyers.",
+        answer: "Yes, Google Reviews are automatically synced to your Alifh partner profile and displayed on your showroom page, helping build trust with potential buyers. Black partners receive custom review integration measures.",
         keywords: ["google reviews", "sync", "reviews", "rating"],
       },
       {
@@ -237,7 +237,7 @@ export const faqData: FAQCategory[] = [
       {
         id: "partners-cancel-refund",
         question: "Can I cancel my Alifh partner subscription anytime?",
-        answer: "Yes, you can cancel your subscription anytime from your dashboard. Cancellation takes effect at the end of your current billing period. For refund eligibility details, visit alifh.ae/refund-policy.",
+        answer: "Yes, you can cancel your subscription anytime from your dashboard. Cancellation takes effect at the end of your current billing period.",
         keywords: ["cancel", "refund", "subscription", "policy", "money back"],
       },
       {
@@ -257,7 +257,7 @@ export const faqData: FAQCategory[] = [
       {
         id: "general-what-is-alifh",
         question: "What is Alifh?",
-        answer: "Alifh is a car marketplace built for the UAE. Free for individuals, subscription-based for dealers. No paid boosts, no ads, no commissions. Just a clean platform where quality determines visibility—not how much you pay.",
+        answer: "Alifh is a car marketplace built for the UAE. Free for private sellers, subscription-based for dealers. No paid boosts, no ads, no commissions. Just a clean platform where quality determines visibility—not how much you pay.",
         keywords: ["what is", "alifh", "about", "platform"],
         isPopular: true,
       },
@@ -289,7 +289,7 @@ export const faqData: FAQCategory[] = [
       {
         id: "general-different",
         question: "How is Alifh different from other car platforms?",
-        answer: "Most platforms make money from ads, boosts, and commissions. Alifh doesn't. Individual listings are free. Rankings are quality-based. VIN is visible on every listing. No clutter, no pay-to-play. The business model is dealer subscriptions—that's it.",
+        answer: "Alifh was built to change how cars are bought and sold in the UAE. We believe in transparency—VIN on every listing. We believe in fairness—no paid boosts, no pay-to-win. We believe in clarity—clean design, no clutter, no ads. Most platforms optimize for their revenue. We optimize for trust. That's the difference.",
         keywords: ["different", "compare", "vs", "dubizzle", "carswitch", "cars24", "yallamotor"],
         isPopular: true,
       },
@@ -329,32 +329,32 @@ export const faqData: FAQCategory[] = [
       {
         id: "general-business-model",
         question: "How does Alifh make money?",
-        answer: "Monthly subscriptions from dealer partners. That's the entire revenue model. No ads, no commissions, no fees from individuals. Dealers pay a flat monthly rate for unlimited listings and full platform access.",
+        answer: "Monthly subscriptions from dealer partners. That's the entire revenue model. No ads, no commissions, no fees from private sellers. Dealers pay a flat monthly rate for unlimited listings and full platform access.",
         keywords: ["money", "business model", "revenue", "how"],
       },
       {
         id: "general-sustainable",
         question: "Is Alifh's free model sustainable?",
-        answer: "Yes. The model is simple: individuals list free, dealers subscribe. Dealer subscriptions fund the platform. There's no venture-funded growth hack that needs to flip later. Free for individuals is permanent—not a promotion.",
+        answer: "Yes. The model is simple: private sellers list free, dealers subscribe. Dealer subscriptions fund the platform. There's no venture-funded growth hack that needs to flip later. Free for private sellers is permanent—not a promotion.",
         keywords: ["sustainable", "free", "permanent", "business model"],
       },
       {
         id: "general-always-free",
-        question: "Will Alifh ever charge individual sellers?",
-        answer: "No, Alifh will never charge individual sellers. Free listings for private sellers is a core principle of the platform, not a temporary promotion. This commitment is permanent.",
-        keywords: ["charge", "free", "individuals", "future", "ever"],
+        question: "Will Alifh ever charge private sellers?",
+        answer: "No, Alifh will never charge private sellers. Free listings for private sellers is a core principle of the platform, not a temporary promotion. This commitment is permanent.",
+        keywords: ["charge", "free", "private", "future", "ever"],
       },
       // Contact & Support
       {
         id: "general-contact",
         question: "How do I contact Alifh support?",
-        answer: "To contact Alifh support, visit the Contact page on our website or send an email directly. We aim to respond to all inquiries within 24 hours on business days.",
+        answer: "To contact Alifh support, email us at support@alifh.ae or visit the Contact page on our website. We aim to respond to all inquiries within 24 hours on business days.",
         keywords: ["contact", "support", "help", "email", "reach"],
       },
       {
         id: "general-report",
         question: "How do I report a problem or suspicious listing on Alifh?",
-        answer: "To report a problem or suspicious listing, use the Contact page or email our support team directly. Include the listing URL (if applicable), a description of the issue, and any screenshots. Reports are typically reviewed within 24 hours on business days.",
+        answer: "To report a problem or suspicious listing, email support@alifh.ae with the listing URL (if applicable), a description of the issue, and any screenshots. Reports are typically reviewed within 24 hours on business days.",
         keywords: ["report", "problem", "issue", "bug", "complaint"],
       },
     ],
@@ -364,6 +364,13 @@ export const faqData: FAQCategory[] = [
     title: "Pricing & Plans",
     description: "Partner subscriptions, Flow vs Black, and billing",
     items: [
+      {
+        id: "pricing-black-listing",
+        question: "What is a Black listing?",
+        answer: "A Black listing is a premium presentation format for cars that deserve more than a standard listing. Not every car is the same—some are worth significantly more and deserve a richer showcase. Black listings give those cars the visual treatment they merit. Flow includes 1 Black listing, Black tier includes 5.",
+        keywords: ["black listing", "premium", "showcase", "featured"],
+        isPopular: true,
+      },
       {
         id: "pricing-rankings",
         question: "Will Black get me better rankings?",

@@ -16,6 +16,11 @@ import {
 export function PricingFaqSection() {
   const faqs = [
     {
+      id: 'black-listing',
+      q: 'What is a Black listing?',
+      a: 'A Black listing is a premium presentation format for cars that deserve more than a standard listing. Not every car is the same—some are worth significantly more and deserve a richer showcase. Black listings give those cars the visual treatment they merit, with an elevated design. Flow includes 1 Black listing, Black tier includes 5.',
+    },
+    {
       id: 'rankings',
       q: 'Will Black get me better rankings?',
       a: 'No. Listings rank the same for all partners. There is no boost, no priority placement, no algorithmic advantage. Black is about how your brand is presented—not how your listings perform.',

@@ -73,12 +73,12 @@ export function PrivacyPolicy() {
           
           {/* Introduction */}
           <div className="mb-16 p-8 border-l-2 border-border/60 bg-background/50">
-            <p className="text-sm text-foreground leading-relaxed mb-3">
+            <p className="text-base text-muted-foreground leading-relaxed mb-3">
               This Privacy Policy explains how ALIFH collects, uses, stores, and protects personal data 
               when you access or use the ALIFH platform, website, and related services (collectively, 
               the "Platform").
             </p>
-            <p className="text-sm text-foreground leading-relaxed mb-3">
+            <p className="text-base text-muted-foreground leading-relaxed mb-3">
               This Policy should be read together with <Link href="/terms-of-service" className="text-primary hover:underline">ALIFH's Terms of Service</Link> and <Link href="/disclaimer" className="text-primary hover:underline">Disclaimer</Link>.
             </p>
             <p className="text-sm text-muted-foreground text-xs">
@@ -91,15 +91,15 @@ export function PrivacyPolicy() {
             
             {/* 1. Scope */}
             <section id="scope">
-              <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border/40">
+              <h2 className="text-lg font-medium text-foreground mb-4 pb-2 border-b border-border/40">
                 1. Scope
               </h2>
               <div className="space-y-4 mt-6">
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   This Privacy Policy applies to all visitors, registered users, and dealers who access 
                   or use the Platform.
                 </p>
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   By accessing or using the Platform, you acknowledge that personal data will be 
                   processed in accordance with this Policy.
                 </p>
@@ -108,27 +108,27 @@ export function PrivacyPolicy() {
 
             {/* 2. Information We Collect */}
             <section id="information-collected">
-              <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border/40">
+              <h2 className="text-lg font-medium text-foreground mb-4 pb-2 border-b border-border/40">
                 2. Information We Collect
               </h2>
               <div className="space-y-6 mt-6">
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   ALIFH may collect the following categories of information:
                 </p>
 
                 <div>
                   <h3 className="text-base font-semibold text-foreground mb-3">a. Information You Provide</h3>
                   <ul className="space-y-2 pl-6">
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Name, email address, phone number
                     </li>
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Account registration and login details
                     </li>
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Business information provided by dealers
                     </li>
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Communications sent to ALIFH, including support requests or inquiries
                     </li>
                   </ul>
@@ -137,16 +137,16 @@ export function PrivacyPolicy() {
                 <div>
                   <h3 className="text-base font-semibold text-foreground mb-3">b. Information Collected Automatically</h3>
                   <ul className="space-y-2 pl-6">
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       IP address
                     </li>
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Device type, browser type, and operating system
                     </li>
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Usage data, interaction logs, and timestamps
                     </li>
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Cookies and similar tracking technologies
                     </li>
                   </ul>
@@ -155,14 +155,14 @@ export function PrivacyPolicy() {
                 <div>
                   <h3 className="text-base font-semibold text-foreground mb-3">c. Payment Information</h3>
                   <ul className="space-y-2 pl-6">
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Subscription and billing status
                     </li>
-                    <li className="text-sm text-foreground leading-relaxed list-disc">
+                    <li className="text-base text-muted-foreground leading-relaxed list-disc">
                       Transaction identifiers provided by payment processors
                     </li>
                   </ul>
-                  <p className="text-sm text-foreground leading-relaxed mt-4">
+                  <p className="text-base text-muted-foreground leading-relaxed mt-4">
                     ALIFH does not store full payment card details. Payment information is processed 
                     securely by third-party payment service providers in accordance with their own 
                     privacy and security standards.
@@ -174,37 +174,37 @@ export function PrivacyPolicy() {
 
             {/* 3. How We Use Information */}
             <section id="how-we-use">
-              <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border/40">
+              <h2 className="text-lg font-medium text-foreground mb-4 pb-2 border-b border-border/40">
                 3. How We Use Information
               </h2>
               <div className="space-y-4 mt-6">
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   ALIFH uses personal data to:
                 </p>
                 <ul className="space-y-2 pl-6">
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Provide, operate, and maintain the Platform
                   </li>
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Create and manage user accounts
                   </li>
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Process subscriptions and billing
                   </li>
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Communicate with users regarding accounts or services
                   </li>
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Improve Platform functionality and performance
                   </li>
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Detect, prevent, and address misuse, fraud, or security issues
                   </li>
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Comply with applicable legal and regulatory obligations
                   </li>
                 </ul>
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   ALIFH does not sell personal data.
                 </p>
               </div>
@@ -212,15 +212,15 @@ export function PrivacyPolicy() {
 
             {/* 4. Cookies and Analytics */}
             <section id="cookies">
-              <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border/40">
+              <h2 className="text-lg font-medium text-foreground mb-4 pb-2 border-b border-border/40">
                 4. Cookies and Analytics
               </h2>
               <div className="space-y-4 mt-6">
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   The Platform uses cookies and similar technologies to enable core functionality, 
                   analyze usage, and improve user experience.
                 </p>
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   You may manage cookies through your browser settings. Disabling cookies may affect 
                   Platform functionality.
                 </p>
@@ -229,32 +229,32 @@ export function PrivacyPolicy() {
 
             {/* 5. Data Sharing */}
             <section id="data-sharing">
-              <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border/40">
+              <h2 className="text-lg font-medium text-foreground mb-4 pb-2 border-b border-border/40">
                 5. Data Sharing
               </h2>
               <div className="space-y-4 mt-6">
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   ALIFH may share personal data with:
                 </p>
                 <ul className="space-y-2 pl-6">
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Payment processors
                   </li>
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Cloud hosting and infrastructure providers
                   </li>
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Analytics, messaging, and communication service providers
                   </li>
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Law enforcement or regulatory authorities where required by law
                   </li>
                 </ul>
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   All third-party service providers are required to process personal data in accordance 
                   with applicable data protection and confidentiality standards.
                 </p>
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   ALIFH does not share personal data for advertising resale or unauthorized profiling.
                 </p>
               </div>
@@ -262,15 +262,15 @@ export function PrivacyPolicy() {
 
             {/* 6. Data Storage and Security */}
             <section id="data-security">
-              <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border/40">
+              <h2 className="text-lg font-medium text-foreground mb-4 pb-2 border-b border-border/40">
                 6. Data Storage and Security
               </h2>
               <div className="space-y-4 mt-6">
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   Personal data is stored using secure cloud infrastructure and protected through 
                   appropriate technical and organizational safeguards.
                 </p>
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   While ALIFH implements reasonable measures designed to protect personal data, no 
                   system can be guaranteed to be completely secure. Users acknowledge and accept this 
                   inherent risk.
@@ -280,25 +280,25 @@ export function PrivacyPolicy() {
 
             {/* 7. Data Retention */}
             <section id="data-retention">
-              <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border/40">
+              <h2 className="text-lg font-medium text-foreground mb-4 pb-2 border-b border-border/40">
                 7. Data Retention
               </h2>
               <div className="space-y-4 mt-6">
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   Personal data is retained only for as long as necessary to:
                 </p>
                 <ul className="space-y-2 pl-6">
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Provide the Platform
                   </li>
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Fulfill contractual obligations
                   </li>
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Comply with legal or regulatory requirements
                   </li>
                 </ul>
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   Data may be deleted or anonymized when it is no longer required for these purposes.
                 </p>
               </div>
@@ -306,28 +306,28 @@ export function PrivacyPolicy() {
 
             {/* 8. User Rights */}
             <section id="user-rights">
-              <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border/40">
+              <h2 className="text-lg font-medium text-foreground mb-4 pb-2 border-b border-border/40">
                 8. User Rights
               </h2>
               <div className="space-y-4 mt-6">
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   Subject to applicable law, users may have the right to:
                 </p>
                 <ul className="space-y-2 pl-6">
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Access personal data
                   </li>
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Request correction of inaccurate data
                   </li>
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Request deletion of personal data
                   </li>
-                  <li className="text-sm text-foreground leading-relaxed list-disc">
+                  <li className="text-base text-muted-foreground leading-relaxed list-disc">
                     Withdraw consent where processing is based on consent
                   </li>
                 </ul>
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   Requests may be submitted using the contact details below.
                 </p>
               </div>
@@ -335,11 +335,11 @@ export function PrivacyPolicy() {
 
             {/* 9. Third-Party Links */}
             <section id="third-party">
-              <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border/40">
+              <h2 className="text-lg font-medium text-foreground mb-4 pb-2 border-b border-border/40">
                 9. Third-Party Links
               </h2>
               <div className="space-y-4 mt-6">
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   The Platform may contain links to third-party websites or services. ALIFH is not 
                   responsible for the privacy practices or content of third parties.
                 </p>
@@ -348,17 +348,17 @@ export function PrivacyPolicy() {
 
             {/* 10. Changes to This Policy */}
             <section id="policy-changes">
-              <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border/40">
+              <h2 className="text-lg font-medium text-foreground mb-4 pb-2 border-b border-border/40">
                 10. Changes to This Policy
               </h2>
               <div className="space-y-4 mt-6">
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   ALIFH may update this Privacy Policy from time to time.
                 </p>
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   Changes will be reflected by updating the "Last Updated" date.
                 </p>
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   Continued use of the Platform constitutes acknowledgment of the updated Policy.
                 </p>
               </div>
@@ -366,7 +366,7 @@ export function PrivacyPolicy() {
 
             {/* 11. Contact Information */}
             <section id="contact">
-              <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border/40">
+              <h2 className="text-lg font-medium text-foreground mb-4 pb-2 border-b border-border/40">
                 11. Contact Information
               </h2>
               <div className="p-8 border border-border/60 bg-background mt-6">
@@ -394,11 +394,11 @@ export function PrivacyPolicy() {
 
             {/* 12. Entire Policy */}
             <section id="entire-policy">
-              <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border/40">
+              <h2 className="text-lg font-medium text-foreground mb-4 pb-2 border-b border-border/40">
                 12. Entire Policy
               </h2>
               <div className="space-y-4 mt-6">
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-base text-muted-foreground leading-relaxed">
                   This Privacy Policy forms part of the agreement between you and ALIFH and governs the 
                   processing of personal data in connection with use of the Platform.
                 </p>

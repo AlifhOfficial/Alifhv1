@@ -75,19 +75,19 @@ export function Disclaimer() {
           <div className="space-y-8">
             
             <div className="p-8 border-l-2 border-border/60 bg-background/50">
-              <p className="text-sm text-foreground leading-relaxed mb-4">
+              <p className="text-base text-muted-foreground leading-relaxed mb-4">
                 ALIFH is a technology platform operated by AISH CAPITALS FZCO. We do not buy, sell, own, or take custody of any items listed on the Platform, and do not inspect, verify, or certify the condition, history, legality, pricing, or accuracy of any listings.
               </p>
-              <p className="text-sm text-foreground leading-relaxed">
+              <p className="text-base text-muted-foreground leading-relaxed">
                 ALIFH is not a party to, and bears no responsibility for, any transaction, payment, agreement, or arrangement made between users. All transactions and interactions occur solely between the involved parties. Listings are published by independent dealers or users, who are solely responsible for the content, representations, and compliance with applicable laws and regulations.
               </p>
             </div>
 
             <div className="p-8 border-l-2 border-border/60 bg-background/50">
-              <p className="text-sm text-foreground leading-relaxed mb-4">
+              <p className="text-base text-muted-foreground leading-relaxed mb-4">
                 Use of the Platform is at your own discretion and risk. ALIFH does not guarantee any outcomes, results, availability, leads, or transactions arising from use of the Platform.
               </p>
-              <p className="text-sm text-foreground leading-relaxed">
+              <p className="text-base text-muted-foreground leading-relaxed">
                 This Disclaimer should be read together with our <Link href="/terms-of-service" className="text-primary hover:underline">Terms of Service</Link>, <Link href="/privacy-policy" className="text-primary hover:underline">Privacy Policy</Link>, and <Link href="/acceptable-use-policy" className="text-primary hover:underline">Acceptable Use Policy</Link>.
               </p>
             </div>

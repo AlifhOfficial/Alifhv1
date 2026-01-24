@@ -7,16 +7,44 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useAuth } from '@/providers/auth-provider';
+import { useRouter } from 'next/navigation';
+import { useAuthRequired } from '@/hooks/use-auth-required';
+import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
+
+function SellButton() {
+  const router = useRouter();
+  const { isAuthenticated, showModal, openModal, closeModal } = useAuthRequired({
+    feature: "create listings",
+    redirectTo: "/user-dashboard/listings/new",
+  });
+
+  const handleClick = () => {
+    if (isAuthenticated) {
+      router.push('/user-dashboard/listings/new');
+    } else {
+      openModal();
+    }
+  };
+
+  return (
+    <>
+      <button
+        onClick={handleClick}
+        className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
+      >
+        Sell Your Car
+      </button>
+      <AuthRequiredModal
+        open={showModal}
+        onClose={closeModal}
+        feature="create listings"
+        redirectTo="/user-dashboard/listings/new"
+      />
+    </>
+  );
+}
 
 export function HeroSection() {
-  const { session } = useAuth();
-
-  // If signed in, go to new listing. Otherwise, trigger sign-in modal with redirect
-  const sellHref = session 
-    ? '/user-dashboard/listings/new' 
-    : '/?auth=signin&redirect=/user-dashboard/listings/new';
-
   return (
     <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-[1600px] mx-auto">
@@ -44,12 +72,7 @@ export function HeroSection() {
           >
             Browse Cars
           </Link>
-          <Link
-            href={sellHref}
-            className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
-          >
-            Sell Your Car
-          </Link>
+          <SellButton />
         </div>
 
         {/* Hero Image */}

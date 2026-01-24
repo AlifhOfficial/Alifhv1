@@ -27,7 +27,7 @@ import { cn } from '@/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
 import { SuperlikeLimitDialog } from '@/components/engagement/favorites/superlike-limit-dialog';
-import { AuthRequiredDialog } from '@/components/auth/auth-required-dialog';
+import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 import { ImageLightbox } from '@/components/ui/image-lightbox';
 import { ImageGridModal } from '@/components/ui/image-grid-modal';
 import type { CarDetailedData } from '@alifh/database';
@@ -631,18 +631,16 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
         resetDate={superlike.quota?.periodEndDate}
       />
       
-      <AuthRequiredDialog
-        isOpen={favorite.authRequired}
+      <AuthRequiredModal
+        open={favorite.authRequired}
         onClose={favorite.dismissAuth}
-        message={favorite.authMessage}
-        feature="favorites"
+        feature="save favorites"
       />
       
-      <AuthRequiredDialog
-        isOpen={superlike.authRequired}
+      <AuthRequiredModal
+        open={superlike.authRequired}
         onClose={superlike.dismissAuth}
-        message={superlike.authMessage}
-        feature="superlikes"
+        feature="superlike listings"
       />
     </div>
   );

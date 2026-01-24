@@ -55,7 +55,7 @@ type EditingField = null | 'firstName' | 'lastName' | 'phone' | 'bio' | 'tags';
 // ============================================================================
 
 export function ProfileView() {
-  const { session: user, refetch: refetchSession } = useAuth();
+  const { session: user } = useAuth();
   const { profile, updateProfile, refresh, isLoading: profileLoading, stats } = useUserProfile();
   const { toast } = useToast();
 
@@ -139,8 +139,8 @@ export function ProfileView() {
           break;
       }
 
+      // updateProfile's onSuccess handles cache update and session refresh
       await updateProfile(payload);
-      await refresh();
       setEditingField(null);
     } catch {
       toast({ title: 'Failed to save', variant: 'destructive' });
@@ -188,8 +188,8 @@ export function ProfileView() {
       const res = await fetch('/api/storage/upload-avatar', { method: 'POST', body: fd, credentials: 'include' });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Upload failed');
+      // updateProfile handles session refresh automatically via mutation onSuccess
       await updateProfile({ avatar: data.key });
-      await refetchSession(); // Refresh session to sync sidebar
       toast({ title: 'Photo updated' });
     } catch {
       toast({ title: 'Upload failed', variant: 'destructive' });
@@ -204,8 +204,8 @@ export function ProfileView() {
     
     setAvatarUploading(true);
     try {
+      // updateProfile handles session refresh automatically via mutation onSuccess
       await updateProfile({ avatar: null });
-      await refetchSession(); // Refresh session to sync sidebar
       toast({ title: 'Photo removed' });
     } catch {
       toast({ title: 'Failed to remove', variant: 'destructive' });
@@ -454,20 +454,23 @@ export function ProfileView() {
             />
             <label 
               htmlFor="avatar" 
-              className={cn(
-                "block cursor-pointer transition-opacity",
-                avatarUploading ? "opacity-50" : "hover:opacity-90"
-              )}
+              className="block cursor-pointer"
             >
               <UserAvatar 
                 key={profile?.avatarUrl || 'no-avatar'}
                 src={profile?.avatarUrl}
                 name={displayName}
                 size="xl" 
-                className="w-24 h-24 border-4 border-background shadow-sm"
+                className={cn(
+                  "w-24 h-24 border-4 border-background shadow-sm transition-opacity",
+                  avatarUploading && "opacity-50"
+                )}
                 useGeneratedAvatar={profile?.preferences?.useGeneratedAvatar ?? true}
               />
-              <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className={cn(
+                "absolute inset-0 flex items-center justify-center bg-black/40 rounded-full transition-opacity",
+                avatarUploading ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+              )}>
                 {avatarUploading ? (
                   <Loader2 className="w-5 h-5 text-white animate-spin" />
                 ) : (

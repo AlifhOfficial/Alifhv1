@@ -7,6 +7,42 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuthRequired } from '@/hooks/use-auth-required';
+import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
+
+function ApplyButton() {
+  const router = useRouter();
+  const { isAuthenticated, showModal, openModal, closeModal } = useAuthRequired({
+    feature: "apply to become a partner",
+    redirectTo: "/user-dashboard/requests",
+  });
+
+  const handleClick = () => {
+    if (isAuthenticated) {
+      router.push('/user-dashboard/requests');
+    } else {
+      openModal();
+    }
+  };
+
+  return (
+    <>
+      <button
+        onClick={handleClick}
+        className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
+      >
+        Apply to Partner
+      </button>
+      <AuthRequiredModal
+        open={showModal}
+        onClose={closeModal}
+        feature="apply to become a partner"
+        redirectTo="/user-dashboard/requests"
+      />
+    </>
+  );
+}
 
 export function PartnerHeroSection() {
   return (
@@ -30,12 +66,7 @@ export function PartnerHeroSection() {
 
         {/* Main CTAs */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-16">
-          <Link
-            href="/user-dashboard/requests"
-            className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
-          >
-            Apply to Partner
-          </Link>
+          <ApplyButton />
           <Link
             href="/pricing"
             className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"

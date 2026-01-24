@@ -6,6 +6,49 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuthRequired } from '@/hooks/use-auth-required';
+import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
+
+function FlowApplyButton() {
+  const router = useRouter();
+  const { isAuthenticated, showModal, openModal, closeModal } = useAuthRequired({
+    feature: "apply for Flow",
+    redirectTo: "/user-dashboard/requests",
+  });
+
+  return (
+    <>
+      <button
+        onClick={() => isAuthenticated ? router.push('/user-dashboard/requests') : openModal()}
+        className="w-full sm:w-auto h-11 px-8 bg-[#0066FF] text-white text-sm font-medium rounded-lg hover:bg-[#0066FF]/90 transition-colors flex items-center justify-center shadow-sm"
+      >
+        Apply for Flow — AED 7K/mo
+      </button>
+      <AuthRequiredModal open={showModal} onClose={closeModal} feature="apply for Flow" redirectTo="/user-dashboard/requests" />
+    </>
+  );
+}
+
+function BlackApplyButton() {
+  const router = useRouter();
+  const { isAuthenticated, showModal, openModal, closeModal } = useAuthRequired({
+    feature: "apply for Black",
+    redirectTo: "/user-dashboard/requests",
+  });
+
+  return (
+    <>
+      <button
+        onClick={() => isAuthenticated ? router.push('/user-dashboard/requests') : openModal()}
+        className="w-full sm:w-auto h-11 px-8 bg-muted border border-border/40 text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
+      >
+        Apply for Black — starts at AED 21K/mo
+      </button>
+      <AuthRequiredModal open={showModal} onClose={closeModal} feature="apply for Black" redirectTo="/user-dashboard/requests" />
+    </>
+  );
+}
 
 export function PricingClosingSection() {
   return (
@@ -24,18 +67,8 @@ export function PricingClosingSection() {
           </h2>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
-            <Link
-              href="/user-dashboard/requests"
-              className="w-full sm:w-auto h-11 px-8 bg-[#0066FF] text-white text-sm font-medium rounded-lg hover:bg-[#0066FF]/90 transition-colors flex items-center justify-center shadow-sm"
-            >
-              Apply for Flow — AED 7K/mo
-            </Link>
-            <Link
-              href="/user-dashboard/requests"
-              className="w-full sm:w-auto h-11 px-8 bg-muted border border-border/40 text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
-            >
-              Apply for Black — starts at AED 21K/mo
-            </Link>
+            <FlowApplyButton />
+            <BlackApplyButton />
           </div>
           
           <div className="pt-2">

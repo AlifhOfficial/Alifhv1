@@ -13,7 +13,7 @@ export default function PartnerBookingsPage() {
   const { session } = useAuth();
   
   if (!session) {
-    redirect('/auth/sign-in?redirect=/partner-dashboard/bookings');
+    redirect('/?auth=signin&redirect=/partner-dashboard/bookings');
   }
 
   // Get partner membership

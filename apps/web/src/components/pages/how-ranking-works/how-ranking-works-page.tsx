@@ -7,8 +7,10 @@
 
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { 
   Camera, 
   FileText, 
@@ -22,8 +24,22 @@ import {
   CheckCircle2,
   XCircle
 } from 'lucide-react';
+import { useAuth } from '@/providers/auth-provider';
+import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 
 export function HowRankingWorksPage() {
+  const router = useRouter();
+  const { session } = useAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  const handleCreateListing = () => {
+    if (session) {
+      router.push('/user-dashboard/listings/new');
+    } else {
+      setShowAuthModal(true);
+    }
+  };
+
   return (
     <main className="bg-background">
       
@@ -112,7 +128,7 @@ export function HowRankingWorksPage() {
               <CheckCircle2 className="w-5 h-5 text-[#0066FF] mb-3" />
               <h3 className="text-sm font-medium text-foreground mb-1">Useful details</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Features, tags, video if available. Help buyers understand your car.
+                Features, specs, and tags. Help buyers understand your car.
               </p>
             </div>
 
@@ -271,12 +287,12 @@ export function HowRankingWorksPage() {
             </h2>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
-              <Link
-                href="/listings/new"
+              <button
+                onClick={handleCreateListing}
                 className="w-full sm:w-auto h-11 px-8 bg-[#0066FF] text-white text-sm font-medium rounded-lg hover:bg-[#0066FF]/90 transition-colors flex items-center justify-center shadow-sm"
               >
                 Create a Listing
-              </Link>
+              </button>
               <Link
                 href="/listings"
                 className="w-full sm:w-auto h-11 px-8 bg-muted border border-border/40 text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
@@ -297,6 +313,13 @@ export function HowRankingWorksPage() {
         </div>
       </section>
 
+      {/* Auth Required Modal */}
+      <AuthRequiredModal
+        open={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        feature="create listings"
+        redirectTo="/user-dashboard/listings/new"
+      />
     </main>
   );
 }
