@@ -373,7 +373,7 @@ export function SettingsView() {
 
       {/* Delete Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-background/40 backdrop-blur-2xl flex items-center justify-center z-50 p-4">
           <div className="bg-background border border-border/40 rounded-xl p-6 max-w-sm w-full shadow-xl">
             <h2 className="text-lg font-semibold tracking-tight mb-2">Delete Account?</h2>
             <p className="text-sm text-muted-foreground mb-4">

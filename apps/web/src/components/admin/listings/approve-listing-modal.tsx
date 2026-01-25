@@ -60,7 +60,7 @@ export function ApproveListingModal({ open, listing, onClose, onSuccess }: Appro
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 bg-background/40 backdrop-blur-2xl"
         onClick={onClose}
       />
 

@@ -17,12 +17,12 @@ export function BadgesHeroSection() {
           <p className="text-xs uppercase tracking-widest text-muted-foreground">
             Honours & Recognition
           </p>
-          <h1 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+          <h1 className="text-2xl sm:text-3xl font-medium text-foreground tracking-tight leading-tight">
             Badges at Alifh.
             <br />
             <span className="text-muted-foreground/70">Earned. Not bought.</span>
           </h1>
-          <p className="text-sm text-muted-foreground leading-relaxed max-w-xl mx-auto pt-2">
+          <p className="text-base text-muted-foreground leading-relaxed max-w-xl mx-auto pt-2">
             Hand-picked by Team Alifh. Recognition for those who embody our values.
           </p>
         </div>
@@ -42,15 +42,15 @@ export function BadgesHeroSection() {
         {/* Trust Indicators */}
         <div className="flex items-center justify-center gap-12 md:gap-20 pt-8 border-t border-border/40">
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">10</div>
+            <div className="text-xl font-semibold tracking-tight text-[#0066FF]">10</div>
             <div className="text-xs text-muted-foreground">Badge types</div>
           </div>
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">0</div>
+            <div className="text-xl font-semibold tracking-tight text-[#0066FF]">0</div>
             <div className="text-xs text-muted-foreground">For sale</div>
           </div>
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">1</div>
+            <div className="text-xl font-semibold tracking-tight text-[#0066FF]">1</div>
             <div className="text-xs text-muted-foreground">Team decides</div>
           </div>
         </div>

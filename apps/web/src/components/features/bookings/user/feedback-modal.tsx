@@ -36,7 +36,7 @@ export function FeedbackModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-background/40 backdrop-blur-2xl" onClick={onClose} />
       
       {/* Modal */}
       <div className="relative z-50 w-full max-w-xs rounded-xl border border-border/40 bg-card p-6 shadow-xl">

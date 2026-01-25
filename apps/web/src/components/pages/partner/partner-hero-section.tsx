@@ -50,16 +50,16 @@ export function PartnerHeroSection() {
       <div className="max-w-[1600px] mx-auto">
         
         {/* Brand & Tagline */}
-        <div className="text-center mb-16 space-y-4">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">
+        <div className="text-center mb-16 space-y-5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
             For Dealers
           </p>
-          <h1 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground tracking-tight leading-[1.15]">
             They take. We don't.
             <br />
-            <span className="text-muted-foreground/70">Simple as that.</span>
+            <span className="text-muted-foreground/60">Simple as that.</span>
           </h1>
-          <p className="text-sm text-muted-foreground leading-relaxed max-w-xl mx-auto pt-2">
+          <p className="text-[15px] text-muted-foreground leading-relaxed max-w-md mx-auto">
             Zero commission. Flat monthly fee. Everything included.
           </p>
         </div>
@@ -90,16 +90,18 @@ export function PartnerHeroSection() {
         {/* Trust Indicators */}
         <div className="flex items-center justify-center gap-12 md:gap-20 pt-8 border-t border-border/40">
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">0%</div>
-            <div className="text-xs text-muted-foreground">Commission</div>
+            <div className="text-xl font-bold tracking-tight text-[#0066FF]">0%</div>
+            <div className="text-[13px] text-muted-foreground">Commission</div>
           </div>
+          <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">∞</div>
-            <div className="text-xs text-muted-foreground">Listings</div>
+            <div className="text-xl font-bold tracking-tight text-[#0066FF]">∞</div>
+            <div className="text-[13px] text-muted-foreground">Listings</div>
           </div>
+          <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">0</div>
-            <div className="text-xs text-muted-foreground">Cars we sell</div>
+            <div className="text-2xl font-bold tracking-tight text-[#0066FF]">0</div>
+            <div className="text-[13px] text-muted-foreground">Cars we sell</div>
           </div>
         </div>
 

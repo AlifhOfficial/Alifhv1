@@ -50,16 +50,16 @@ export function HeroSection() {
       <div className="max-w-[1600px] mx-auto">
         
         {/* Brand & Tagline */}
-        <div className="text-center mb-16 space-y-4">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">
+        <div className="text-center mb-16 space-y-5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
             Alifh
           </p>
-          <h1 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground tracking-tight leading-[1.15]">
             List Your Car. For Free.
             <br />
-            <span className="text-muted-foreground/70">Like It Should Be.</span>
+            <span className="text-muted-foreground/60">Like It Should Be.</span>
           </h1>
-          <p className="text-sm text-muted-foreground leading-relaxed max-w-xl mx-auto pt-2">
+          <p className="text-[15px] text-muted-foreground leading-relaxed max-w-md mx-auto">
             Browse. Book test drives. Sell. No fees. No ads. No catch.
           </p>
         </div>
@@ -88,18 +88,20 @@ export function HeroSection() {
         </div>
 
         {/* Trust Indicators */}
-        <div className="flex items-center justify-center gap-12 md:gap-20 pt-8 border-t border-border/40">
+        <div className="flex items-center justify-center gap-10 md:gap-16">
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">Free</div>
-            <div className="text-xs text-muted-foreground">For individuals</div>
+            <div className="text-xl font-bold tracking-tight text-[#0066FF]">Free</div>
+            <div className="text-[13px] text-muted-foreground">For private sellers</div>
           </div>
+          <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">VIN</div>
-            <div className="text-xs text-muted-foreground">Every listing</div>
+            <div className="text-xl font-bold tracking-tight text-[#0066FF]">VIN</div>
+            <div className="text-[13px] text-muted-foreground">Every listing</div>
           </div>
+          <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">Book</div>
-            <div className="text-xs text-muted-foreground">Test drives</div>
+            <div className="text-xl font-bold tracking-tight text-[#0066FF]">Book</div>
+            <div className="text-[13px] text-muted-foreground">Test drives</div>
           </div>
         </div>
 

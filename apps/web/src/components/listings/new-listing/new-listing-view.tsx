@@ -18,7 +18,7 @@ interface NewListingViewProps {
 function SubmissionModal({ onClose }: { onClose: () => void }) {
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] bg-background/40 backdrop-blur-2xl flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div 

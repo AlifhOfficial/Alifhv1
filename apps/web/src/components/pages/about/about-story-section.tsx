@@ -14,17 +14,17 @@ export function AboutStorySection() {
         
         {/* The Problem */}
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start mb-20">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
+          <div className="space-y-5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
               The problem
             </p>
-            <h2 className="text-2xl sm:text-3xl font-medium text-foreground tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground tracking-tight leading-[1.15]">
               The car market in the UAE
               <br />
-              <span className="text-muted-foreground/70">has been broken for a while.</span>
+              <span className="text-muted-foreground/60">has been broken for a while.</span>
             </h2>
           </div>
-          <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
+          <div className="space-y-4 text-[15px] text-muted-foreground leading-relaxed">
             <p>
               Listings with "full service history" that can't be verified. Prices that make 
               zero sense. That sinking feeling you're about to get played.
@@ -49,17 +49,17 @@ export function AboutStorySection() {
 
         {/* The Answer */}
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
+          <div className="space-y-5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
               The answer
             </p>
-            <h2 className="text-2xl sm:text-3xl font-medium text-foreground tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground tracking-tight leading-[1.15]">
               We're not reinventing the wheel.
               <br />
-              <span className="text-muted-foreground/70">Just doing what should've been done.</span>
+              <span className="text-muted-foreground/60">Just doing what should've been done.</span>
             </h2>
           </div>
-          <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
+          <div className="space-y-4 text-[15px] text-muted-foreground leading-relaxed">
             <p>
               Treating people like adults. Being straight about what we know and what we don't. 
               Building systems that actually protect instead of leaving people exposed.

@@ -16,12 +16,12 @@ export function VisionPillarsSection() {
           <p className="text-xs uppercase tracking-widest text-muted-foreground">
             The Four Pillars
           </p>
-          <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+          <h2 className="text-2xl sm:text-3xl font-medium text-foreground tracking-tight leading-tight">
             Forward Society. Forward Economy.
             <br />
             <span className="text-muted-foreground/70">Forward Diplomacy. Forward Ecosystem.</span>
           </h2>
-          <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+          <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto">
             The 'We the UAE 2031' vision is built on four pillars covering society, economy, diplomacy, and ecosystem. 
             Here's how we aspire to contribute to each pillar through our work in the automotive sector.
           </p>
@@ -37,17 +37,17 @@ export function VisionPillarsSection() {
                 <Users className="w-3.5 h-3.5" />
                 Pillar 1
               </div>
-              <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+              <h2 className="text-2xl sm:text-3xl font-medium text-foreground tracking-tight leading-tight">
                 Forward Society.
                 <br />
                 <span className="text-muted-foreground/70">Prosperity through trust.</span>
               </h2>
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
+              <p className="text-base text-muted-foreground leading-relaxed max-w-lg">
                 The UAE envisions "an integrated social system that empowers and unleashes the potential of Emiratis, 
                 protects cultural heritage, and instills national identity and human values." A society built on 
                 "harmony, tolerance and generosity."
               </p>
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
+              <p className="text-base text-muted-foreground leading-relaxed max-w-lg">
                 <strong className="text-foreground">In automotive, trust can be strengthened.</strong> With visible VINs. 
                 Clear pricing. Verified sellers. We want to help build that trust—one transparent transaction at a time.
               </p>
@@ -66,10 +66,10 @@ export function VisionPillarsSection() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="lg:col-span-2 p-8 rounded-lg bg-[#0066FF] text-white flex flex-col justify-center">
               <p className="text-xs uppercase tracking-widest text-white/60 mb-4">Our Aspiration</p>
-              <h3 className="text-2xl font-semibold mb-3 tracking-tight">
+              <h3 className="text-lg font-medium mb-3 tracking-tight">
                 Transparency as a foundation.
               </h3>
-              <p className="text-sm text-white/70 leading-relaxed">
+              <p className="text-base text-white/70 leading-relaxed">
                 We aim to show the VIN on every listing. Verify every seller through KYC. Check every dealer. 
                 Our goal is a marketplace where buyers can trust what they see—because transparency should be the standard.
               </p>
@@ -102,12 +102,12 @@ export function VisionPillarsSection() {
               <TrendingUp className="w-3.5 h-3.5" />
               Pillar 2
             </div>
-            <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-3xl font-medium text-foreground tracking-tight leading-tight">
               Forward Economy.
               <br />
               <span className="text-muted-foreground/70">Growth through empowerment.</span>
             </h2>
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+            <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto">
               The UAE aims for "a competitive value-adding, diversified economy that grows at a high rate" with 
               a goal to "double the country's GDP from AED 1.49 trillion to AED 3 trillion" and "generate AED 800 billion 
               in non-oil exports."
@@ -128,10 +128,10 @@ export function VisionPillarsSection() {
 
             {/* Highlight */}
             <div className="lg:col-span-2 p-8 rounded-lg border border-border/40 bg-background flex flex-col justify-center">
-              <h3 className="text-2xl font-semibold text-foreground mb-3 tracking-tight">
+              <h3 className="text-lg font-medium text-foreground mb-3 tracking-tight">
                 Fair pricing. Full margins.
               </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <p className="text-base text-muted-foreground leading-relaxed">
                 Industry-standard commission models can take 2-5% per transaction. On a AED 200,000 car, that's AED 4,000-10,000. 
                 We believe in a model that lets dealers keep more of their earnings—
                 supporting growth, hiring, and reinvestment in the UAE economy.
@@ -191,16 +191,16 @@ export function VisionPillarsSection() {
                 <Heart className="w-3.5 h-3.5" />
                 Pillar 3
               </div>
-              <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+              <h2 className="text-2xl sm:text-3xl font-medium text-foreground tracking-tight leading-tight">
                 Forward Diplomacy.
                 <br />
                 <span className="text-muted-foreground/70">A force for good.</span>
               </h2>
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
+              <p className="text-base text-muted-foreground leading-relaxed max-w-lg">
                 The UAE positions itself as "a significant force in global diplomacy, a trusted bridge for trade 
                 and partnerships" and "a leading country in supporting the global agenda for environmental sustainability."
               </p>
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
+              <p className="text-base text-muted-foreground leading-relaxed max-w-lg">
                 <strong className="text-foreground">The automotive sector is evolving.</strong> Electric vehicles. 
                 Sustainable practices. Green innovation. We aim to build a platform that supports this transition—
                 making it easier to buy and sell EVs, promoting sustainable choices, and reducing friction in the market.
@@ -252,12 +252,12 @@ export function VisionPillarsSection() {
               <Cpu className="w-3.5 h-3.5" />
               Pillar 4
             </div>
-            <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-3xl font-medium text-foreground tracking-tight leading-tight">
               Forward Ecosystem.
               <br />
               <span className="text-muted-foreground/70">Digital infrastructure.</span>
             </h2>
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+            <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto">
               The UAE aims to be "the most seamlessly connected country in the world" with "a cutting-edge, 
               next generation digital infrastructure" and "the world's smartest, most dynamic and agile government, 
               capable of achieving the impossible."
@@ -269,10 +269,10 @@ export function VisionPillarsSection() {
             {/* Highlight */}
             <div className="lg:col-span-2 p-8 rounded-lg bg-[#0066FF] text-white flex flex-col justify-center">
               <p className="text-xs uppercase tracking-widest text-white/60 mb-4">Our Aspiration</p>
-              <h3 className="text-2xl font-semibold mb-3 tracking-tight">
+              <h3 className="text-lg font-medium mb-3 tracking-tight">
                 Infrastructure for automotive commerce.
               </h3>
-              <p className="text-sm text-white/70 leading-relaxed">
+              <p className="text-base text-white/70 leading-relaxed">
                 We aspire to build digital rails for automotive transactions in the UAE. Online test drive booking. 
                 Secure messaging. Verified listings. Real-time inventory. A platform designed for how the UAE 
                 will do business in 2031 and beyond.

@@ -6,8 +6,8 @@
 // Home Page
 export * from './home';
 
-// Showcase Pages
-export * from './showcase';
+// Showroom Pages
+export * from './showroom';
 
 // Legal Pages
 export * from './legal';

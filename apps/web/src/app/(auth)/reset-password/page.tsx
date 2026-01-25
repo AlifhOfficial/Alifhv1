@@ -64,7 +64,7 @@ function ResetPasswordForm() {
   // Invalid token state
   if (!isValidToken) {
     return (
-      <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-[9999] bg-background/40 backdrop-blur-2xl flex items-center justify-center p-4">
         <div className="max-w-sm w-full bg-card border border-border/40 rounded-xl shadow-xl p-6">
           <div className="flex flex-col items-center space-y-4">
             <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
@@ -98,7 +98,7 @@ function ResetPasswordForm() {
   }
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[9999] bg-background/40 backdrop-blur-2xl flex items-center justify-center p-4">
       <div className="max-w-sm w-full bg-card border border-border/40 rounded-xl shadow-xl">
         {/* Header */}
         <div className="p-6 relative">

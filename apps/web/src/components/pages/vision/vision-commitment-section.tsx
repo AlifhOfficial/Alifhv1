@@ -19,14 +19,14 @@ export function VisionCommitmentSection() {
             <p className="text-xs uppercase tracking-widest text-muted-foreground">
               Our Commitment
             </p>
-            <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-3xl font-medium text-foreground tracking-tight leading-tight">
               Built in the UAE.
               <br />
               <span className="text-muted-foreground/70">For the UAE.</span>
             </h2>
           </div>
 
-          <div className="space-y-6 text-sm text-muted-foreground leading-relaxed">
+          <div className="space-y-6 text-base text-muted-foreground leading-relaxed">
             <p>
               Alifh isn't a foreign platform adapted for this market. We're built here, by people who understand 
               the UAE's unique automotive culture, business environment, and national aspirations.

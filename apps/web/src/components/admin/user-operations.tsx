@@ -200,7 +200,7 @@ export function AdminUserOperations({
 
       {/* Ban Modal */}
       {showBanModal && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-background/40 backdrop-blur-2xl flex items-center justify-center z-50">
           <div className="bg-card rounded-lg border border-border p-6 max-w-md w-full mx-4">
             <h3 className="font-semibold text-lg mb-4">Ban User</h3>
             

@@ -14,22 +14,22 @@ export function PartnerPhilosophySection() {
           
           {/* Content Side */}
           <div className="space-y-6">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
               Our philosophy
             </p>
             
-            <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground tracking-tight leading-[1.15]">
               We don't sell cars.
               <br />
-              <span className="text-muted-foreground/70">We never will.</span>
+              <span className="text-muted-foreground/60">We never will.</span>
             </h2>
             
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
+            <p className="text-[15px] text-muted-foreground leading-relaxed max-w-lg">
               You're the expert. We're just infrastructure—your sales channel. Nothing more.
             </p>
 
             {/* Principles */}
-            <div className="pt-4 border-t border-border/40 space-y-3">
+            <div className="pt-4 space-y-3">
               {[
                 { title: 'Infrastructure only', desc: 'We build roads, you drive' },
                 { title: 'Never competing', desc: 'Zero cars owned by Alifh' },
@@ -37,8 +37,8 @@ export function PartnerPhilosophySection() {
               ].map((principle, i) => (
                 <div key={i} className="flex items-center gap-3">
                   <CheckCircle2 className="w-4 h-4 text-[#0066FF] shrink-0" />
-                  <span className="text-sm font-medium text-foreground">{principle.title}</span>
-                  <span className="text-xs text-muted-foreground">— {principle.desc}</span>
+                  <span className="text-[13px] font-semibold text-foreground">{principle.title}</span>
+                  <span className="text-[13px] text-muted-foreground">— {principle.desc}</span>
                 </div>
               ))}
             </div>

@@ -178,7 +178,7 @@ export function PartnerRequestStatusCard({ onUpdate }: PartnerRequestStatusCardP
       </div>
 
       {showCancelConfirm && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-md flex items-center justify-center z-50 animate-in fade-in duration-200">
+        <div className="fixed inset-0 bg-background/40 backdrop-blur-2xl flex items-center justify-center z-50 animate-in fade-in duration-200">
           <div className="bg-card rounded-2xl border border-border/40 shadow-2xl p-8 max-w-md w-full mx-4 animate-in zoom-in-95 duration-200">
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center flex-shrink-0">

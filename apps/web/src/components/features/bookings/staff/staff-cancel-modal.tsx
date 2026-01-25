@@ -60,7 +60,7 @@ export function StaffCancelModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-background/40 backdrop-blur-2xl"
         onClick={() => !isSubmitting && onClose()}
       />
 

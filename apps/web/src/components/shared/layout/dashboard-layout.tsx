@@ -104,7 +104,7 @@ export function DashboardLayout({ children, enableRightPanel = false }: Dashboar
             </div>
             {rightPanelOpen && (
               <div
-                className="md:hidden fixed inset-0 bg-black/60 z-20"
+                className="md:hidden fixed inset-0 bg-background/40 backdrop-blur-2xl z-20"
                 onClick={closeRightPanel}
                 aria-hidden="true"
               />

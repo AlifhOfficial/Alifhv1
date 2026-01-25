@@ -59,16 +59,16 @@ export function PricingTiersSection() {
         <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           
           {/* Flow Card */}
-          <div className="p-8 rounded-xl bg-sidebar border border-sidebar-border">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground mb-6">Flow</p>
+          <div className="p-8 rounded-xl bg-sidebar border border-border/40">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF] mb-6">Flow</p>
             
             <div className="flex items-baseline gap-1.5 mb-1">
               <span className="text-3xl font-semibold tracking-tight text-foreground">AED 7,000</span>
-              <span className="text-sm text-muted-foreground">/mo</span>
+              <span className="text-[13px] text-muted-foreground/60">/mo</span>
             </div>
-            <p className="text-xs text-muted-foreground/70 mb-6">per showroom</p>
+            <p className="text-[13px] text-muted-foreground/60 mb-6">per showroom</p>
             
-            <p className="text-sm text-muted-foreground leading-relaxed mb-8">
+            <p className="text-[15px] text-muted-foreground leading-relaxed mb-8">
               Unlimited listings, bookings, leads, messaging, and analytics.
             </p>
 
@@ -76,22 +76,22 @@ export function PricingTiersSection() {
           </div>
 
           {/* Black Card */}
-          <div className="p-8 rounded-xl bg-sidebar border border-sidebar-border">
+          <div className="p-8 rounded-xl bg-sidebar border border-border/40">
             <div className="flex items-center justify-between mb-6">
-              <p className="text-xs uppercase tracking-widest text-muted-foreground">Black</p>
-              <span className="text-[10px] uppercase tracking-wider font-medium text-muted-foreground/70 px-2 py-0.5 rounded-full border border-border/50">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-foreground">Black</p>
+              <span className="text-[10px] uppercase tracking-wider font-medium text-muted-foreground/60 px-2 py-0.5 rounded-full border border-border/40">
                 Limited spots
               </span>
             </div>
             
             <div className="flex items-baseline gap-1.5 mb-1">
-              <span className="text-sm text-muted-foreground">from</span>
+              <span className="text-[13px] text-muted-foreground/60">from</span>
               <span className="text-3xl font-semibold tracking-tight text-foreground">AED 21,000</span>
-              <span className="text-sm text-muted-foreground">/mo</span>
+              <span className="text-[13px] text-muted-foreground/60">/mo</span>
             </div>
-            <p className="text-xs text-muted-foreground/70 mb-6">per showroom</p>
+            <p className="text-[13px] text-muted-foreground/60 mb-6">per showroom</p>
             
-            <p className="text-sm text-muted-foreground leading-relaxed mb-8">
+            <p className="text-[15px] text-muted-foreground leading-relaxed mb-8">
               Everything in Flow, plus custom branding, a dedicated showroom page, and white-glove support.
             </p>
 
@@ -101,7 +101,7 @@ export function PricingTiersSection() {
         </div>
 
         {/* Note */}
-        <p className="text-center text-xs text-muted-foreground/70 mt-8 max-w-md mx-auto">
+        <p className="text-center text-[13px] text-muted-foreground/60 mt-10 max-w-md mx-auto">
           Same features. Same platform. Same rankings. Black is branding—not advantage.
         </p>
 

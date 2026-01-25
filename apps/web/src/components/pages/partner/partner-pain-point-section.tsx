@@ -25,32 +25,34 @@ export function PartnerPainPointSection() {
 
           {/* Content Side */}
           <div className="space-y-6">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
               The marketplace game
             </p>
             
-            <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground tracking-tight leading-[1.15]">
               Commission. Credits. Upsells.
               <br />
-              <span className="text-muted-foreground/70">Sound familiar?</span>
+              <span className="text-muted-foreground/60">Sound familiar?</span>
             </h2>
             
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
+            <p className="text-[15px] text-muted-foreground leading-relaxed max-w-lg">
               They compete with you by selling their own cars. Then charge you for visibility on their platform.
             </p>
             
-            <div className="flex items-center gap-8 pt-4 border-t border-border/40">
+            <div className="flex items-center gap-8 pt-4">
               <div className="text-center space-y-1">
-                <div className="text-2xl font-semibold tracking-tight text-foreground">3-5%</div>
-                <div className="text-xs text-muted-foreground">Their cut</div>
+                <div className="text-xl font-bold tracking-tight text-foreground">3-5%</div>
+                <div className="text-[13px] text-muted-foreground">Their cut</div>
               </div>
+              <div className="w-px h-10 bg-border/30" />
               <div className="text-center space-y-1">
-                <div className="text-2xl font-semibold tracking-tight text-foreground">AED 99+</div>
-                <div className="text-xs text-muted-foreground">Per listing</div>
+                <div className="text-xl font-bold tracking-tight text-foreground">AED 99+</div>
+                <div className="text-[13px] text-muted-foreground">Per listing</div>
               </div>
+              <div className="w-px h-10 bg-border/30" />
               <div className="text-center space-y-1">
-                <div className="text-2xl font-semibold tracking-tight text-foreground">∞</div>
-                <div className="text-xs text-muted-foreground">Add-ons</div>
+                <div className="text-xl font-bold tracking-tight text-foreground">∞</div>
+                <div className="text-[13px] text-muted-foreground">Add-ons</div>
               </div>
             </div>
           </div>
@@ -60,8 +62,8 @@ export function PartnerPainPointSection() {
         <div className="grid sm:grid-cols-2 gap-px bg-border/40 rounded-lg overflow-hidden border border-border/40 max-w-4xl mx-auto mt-20">
           
           {/* Others */}
-          <div className="p-8 bg-background">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground mb-8">Others</p>
+          <div className="p-8 bg-sidebar">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-muted-foreground/60 mb-8">Others</p>
             <div className="space-y-4">
               {[
                 'Commission on every sale',
@@ -70,14 +72,14 @@ export function PartnerPainPointSection() {
                 'Premium to be seen',
                 'They sell cars too',
               ].map((item, i) => (
-                <p key={i} className="text-sm text-muted-foreground/60">{item}</p>
+                <p key={i} className="text-[13px] text-muted-foreground/60">{item}</p>
               ))}
             </div>
           </div>
 
           {/* Alifh */}
           <div className="p-8 bg-[#0066FF] text-white">
-            <p className="text-xs uppercase tracking-widest text-white/60 mb-8">Alifh</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-white/60 mb-8">Alifh</p>
             <div className="space-y-4">
               {[
                 'Zero commission',
@@ -88,7 +90,7 @@ export function PartnerPainPointSection() {
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-white/60" />
-                  <span className="text-sm font-medium">{item}</span>
+                  <span className="text-[13px] font-semibold">{item}</span>
                 </div>
               ))}
             </div>

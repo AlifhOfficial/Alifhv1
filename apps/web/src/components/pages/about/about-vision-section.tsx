@@ -14,17 +14,17 @@ export function AboutVisionSection() {
         
         {/* Section Header */}
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start mb-16">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
+          <div className="space-y-5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
               Vision
             </p>
-            <h2 className="text-2xl sm:text-3xl font-medium text-foreground tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground tracking-tight leading-[1.15]">
               More than a marketplace.
               <br />
-              <span className="text-muted-foreground/70">The complete automotive ecosystem.</span>
+              <span className="text-muted-foreground/60">The complete automotive ecosystem.</span>
             </h2>
           </div>
-          <div className="text-sm text-muted-foreground leading-relaxed">
+          <div className="text-[15px] text-muted-foreground leading-relaxed">
             <p>
               We're still building. Still learning. Still figuring some things out. 
               But we're doing it the right way, and we think that matters.
@@ -53,9 +53,9 @@ export function AboutVisionSection() {
             { name: 'Knowledge', desc: 'Guides & resources' },
             { name: 'Events', desc: 'Meets & track days' },
           ].map((item, i) => (
-            <div key={i} className={`p-5 rounded-lg ${i === 0 ? 'bg-[#0066FF] text-white' : 'border border-border/40 bg-background'}`}>
-              <h3 className={`text-sm font-medium mb-1 ${i === 0 ? '' : 'text-foreground'}`}>{item.name}</h3>
-              <p className={`text-xs ${i === 0 ? 'text-white/70' : 'text-muted-foreground'}`}>{item.desc}</p>
+            <div key={i} className={`p-5 rounded-lg ${i === 0 ? 'bg-[#0066FF] text-white' : 'border border-border/40 bg-sidebar'}`}>
+              <h3 className={`text-[15px] font-semibold mb-1 ${i === 0 ? '' : 'text-foreground'}`}>{item.name}</h3>
+              <p className={`text-[13px] ${i === 0 ? 'text-white/70' : 'text-muted-foreground'}`}>{item.desc}</p>
             </div>
           ))}
         </div>

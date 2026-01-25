@@ -1,21 +1,18 @@
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+} from '@expo-google-fonts/inter';
 import { useFonts as useExpoFonts } from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-
-// Prevent the splash screen from auto-hiding before fonts are loaded
-SplashScreen.preventAutoHideAsync();
 
 export function useFonts() {
   const [loaded, error] = useExpoFonts({
-    Inter: require('@/assets/fonts/InterVariable.ttf'),
-    'Inter-Italic': require('@/assets/fonts/InterVariable-Italic.ttf'),
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
   });
-
-  useEffect(() => {
-    if (loaded || error) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded, error]);
 
   return { loaded, error };
 }

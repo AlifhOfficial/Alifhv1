@@ -28,7 +28,7 @@ export function PartnerApplicationFeedbackModal({
   const isLoading = isSubmitting && !success && !isError;
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[9999] bg-background/40 backdrop-blur-2xl flex items-center justify-center p-4">
       <div 
         className="max-w-xs w-full bg-card border border-border/40 rounded-xl shadow-xl p-6"
         onClick={(e) => e.stopPropagation()}

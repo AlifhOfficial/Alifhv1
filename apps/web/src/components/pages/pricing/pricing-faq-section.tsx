@@ -93,30 +93,30 @@ export function PricingFaqSection() {
         
         {/* Section Header */}
         <div className="mb-8">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF] mb-3">
             Questions
           </p>
-          <h2 className="text-xl font-semibold text-foreground tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-foreground tracking-tight leading-[1.15]">
             Common questions
           </h2>
         </div>
 
         {/* FAQ Accordion */}
-        <div className="rounded-xl border border-sidebar-border bg-sidebar overflow-hidden">
+        <div className="rounded-xl border border-border/40 bg-sidebar overflow-hidden">
           <Accordion type="single" collapsible className="w-full">
             {faqs.map((faq) => (
               <AccordionItem 
                 key={faq.id} 
                 value={faq.id}
-                className="border-b border-sidebar-border/50 last:border-0"
+                className="border-b border-border/30 last:border-0"
               >
                 <AccordionTrigger className="px-5 py-4 text-left hover:no-underline hover:bg-muted/30 transition-colors [&>svg]:text-muted-foreground/50 [&[data-state=open]]:bg-muted/20">
-                  <span className="text-sm font-medium text-foreground pr-4">
+                  <span className="text-[15px] font-medium text-foreground pr-4">
                     {faq.q}
                   </span>
                 </AccordionTrigger>
                 <AccordionContent className="px-5 pb-5 pt-0">
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-[15px] text-muted-foreground/70 leading-relaxed">
                     {faq.a}
                   </p>
                 </AccordionContent>
@@ -126,8 +126,8 @@ export function PricingFaqSection() {
         </div>
 
         {/* Contact CTA */}
-        <div className="mt-10 text-center">
-          <p className="text-sm text-muted-foreground">
+        <div className="mt-12 text-center">
+          <p className="text-[15px] text-muted-foreground/70">
             Not sure which plan fits?{' '}
             <Link href="/contact" className="text-[#0066FF] hover:underline">
               Reach out

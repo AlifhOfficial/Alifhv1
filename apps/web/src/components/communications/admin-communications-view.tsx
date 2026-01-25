@@ -325,7 +325,7 @@ function CommunicationDetailModal({ communication, onClose, onUpdate }: DetailMo
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/40 backdrop-blur-2xl">
       <div className="bg-background rounded-2xl border border-border/40 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 bg-background border-b border-border/40 p-5 flex items-start justify-between">

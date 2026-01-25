@@ -49,7 +49,7 @@ export const Text = forwardRef<RNText, TextProps>(
           return {
             ...baseStyle,
             fontSize: 28,
-            fontWeight: '600',
+            fontVariations: [{ wght: 600 }],
             letterSpacing: -0.6,
             lineHeight: 34,
           };
@@ -60,7 +60,7 @@ export const Text = forwardRef<RNText, TextProps>(
           return {
             ...baseStyle,
             fontSize: 20,
-            fontWeight: '700',
+            fontVariations: [{ wght: 700 }],
             letterSpacing: -0.5,
             lineHeight: 26,
           };
@@ -71,7 +71,7 @@ export const Text = forwardRef<RNText, TextProps>(
           return {
             ...baseStyle,
             fontSize: 15,
-            fontWeight: '600',
+            fontVariations: [{ wght: 600 }],
             color: `${mutedColor}B3`, // 70% opacity
             lineHeight: 20,
           };
@@ -82,7 +82,7 @@ export const Text = forwardRef<RNText, TextProps>(
           return {
             ...baseStyle,
             fontSize: 32,
-            fontWeight: '700',
+            fontVariations: [{ wght: 700 }],
             letterSpacing: -0.8,
             lineHeight: 38,
           };
@@ -93,7 +93,7 @@ export const Text = forwardRef<RNText, TextProps>(
           return {
             ...baseStyle,
             fontSize: 16,
-            fontWeight: '600',
+            fontVariations: [{ wght: 600 }],
             lineHeight: 24,
           };
         
@@ -103,7 +103,7 @@ export const Text = forwardRef<RNText, TextProps>(
           return {
             ...baseStyle,
             fontSize: 16,
-            fontWeight: '500',
+            fontVariations: [{ wght: 500 }],
             lineHeight: 24,
           };
         
@@ -113,7 +113,7 @@ export const Text = forwardRef<RNText, TextProps>(
           return {
             ...baseStyle,
             fontSize: 13,
-            fontWeight: '400',
+            fontVariations: [{ wght: 400 }],
             color: `${mutedColor}B3`, // 70% opacity
             lineHeight: 18,
           };
@@ -124,7 +124,7 @@ export const Text = forwardRef<RNText, TextProps>(
           return {
             ...baseStyle,
             fontSize: 14,
-            fontWeight: '400',
+            fontVariations: [{ wght: 400 }],
             lineHeight: 20,
           };
         
@@ -134,7 +134,7 @@ export const Text = forwardRef<RNText, TextProps>(
           return {
             ...baseStyle,
             fontSize: 16,
-            fontWeight: '500',
+            fontVariations: [{ wght: 500 }],
             textDecorationLine: 'underline',
             lineHeight: 24,
           };
@@ -145,7 +145,7 @@ export const Text = forwardRef<RNText, TextProps>(
           return {
             ...baseStyle,
             fontSize: 16,
-            fontWeight: '500',
+            fontVariations: [{ wght: 500 }],
             lineHeight: 24,
           };
       }

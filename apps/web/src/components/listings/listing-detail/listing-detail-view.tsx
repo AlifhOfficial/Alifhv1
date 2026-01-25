@@ -135,7 +135,8 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
   const handleChatWithSeller = async () => {
     // Check if user is authenticated
     if (!user?.id) {
-      router.push(`/listings/${listing.id}?auth=signin&redirect=${encodeURIComponent(`/listings/${listing.id}`)}`);
+      // Always use "/" as base URL for auth modals for consistency
+      window.location.href = `/?auth=signin&redirect=${encodeURIComponent(`/listings/${listing.id}`)}`;
       return;
     }
 
@@ -170,7 +171,8 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
   };
 
   const handleLoginRequired = () => {
-    router.push(`/listings/${listing.id}?auth=signin&redirect=${encodeURIComponent(`/listings/${listing.id}`)}`);
+    // Always use "/" as base URL for auth modals for consistency
+    window.location.href = `/?auth=signin&redirect=${encodeURIComponent(`/listings/${listing.id}`)}`;
   };
 
   // Get partner address for booking modal

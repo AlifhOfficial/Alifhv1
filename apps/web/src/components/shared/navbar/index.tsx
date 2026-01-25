@@ -292,18 +292,13 @@ export function Navbar() {
   useEffect(() => {
     if (!searchParams) return;
     
-    let rafId: number;
-
     // Handle auth modal triggers from error page (?auth=signin or ?auth=signup)
     const authParam = searchParams.get("auth");
     const redirectParam = searchParams.get("redirect");
     
-    // Reset the ref when there's no auth param (allows re-triggering on new navigations)
-    if (!authParam) {
-      hasHandledAuthParamRef.current = false;
-    }
-    
+    // Only process if we have an auth param and haven't handled it yet
     if ((authParam === "signin" || authParam === "signup") && !hasHandledAuthParamRef.current) {
+      // Mark as handled immediately to prevent double-processing
       hasHandledAuthParamRef.current = true;
       
       // Store redirect for after auth success
@@ -311,16 +306,23 @@ export function Navbar() {
         pendingRedirectRef.current = redirectParam;
       }
       
-      rafId = requestAnimationFrame(() => {
-        setCurrentAuthModal(authParam);
-      });
-
+      // Clean URL first, then open modal after URL is updated
       const params = new URLSearchParams(searchParams.toString());
       params.delete("auth");
       params.delete("redirect");
       const queryString = params.toString();
-      router.replace(`${pathname}${queryString ? `?${queryString}` : ""}`, { scroll: false });
-      return () => cancelAnimationFrame(rafId);
+      
+      // Use queueMicrotask to ensure state updates happen in correct order
+      queueMicrotask(() => {
+        router.replace(`${pathname}${queryString ? `?${queryString}` : ""}`, { scroll: false });
+        // Open modal after URL cleanup is queued
+        requestAnimationFrame(() => {
+          setCurrentAuthModal(authParam);
+        });
+      });
+    } else if (!authParam) {
+      // Reset the ref when there's no auth param (allows re-triggering on new navigations)
+      hasHandledAuthParamRef.current = false;
     }
   }, [searchParams, pathname, router]);
 

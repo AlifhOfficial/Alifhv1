@@ -43,13 +43,13 @@ export function AuthErrorView() {
     setTimeout(() => {
       switch (action) {
         case "SIGN_IN":
-          // Navigate to home and trigger sign-in modal
-          router.push("/?auth=signin");
+          // Use window.location for reliable auth modal trigger (avoids race conditions)
+          window.location.href = "/?auth=signin";
           break;
         
         case "SIGN_UP":
-          // Navigate to home and trigger sign-up modal
-          router.push("/?auth=signup");
+          // Use window.location for reliable auth modal trigger (avoids race conditions)
+          window.location.href = "/?auth=signup";
           break;
         
         case "RETRY":

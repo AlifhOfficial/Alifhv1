@@ -16,7 +16,7 @@ export function BadgesListSection() {
           <p className="text-xs uppercase tracking-widest text-muted-foreground">
             For Users
           </p>
-          <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+          <h2 className="text-2xl sm:text-3xl font-medium text-foreground tracking-tight leading-tight">
             User Badges.
             <br />
             <span className="text-muted-foreground/70">Part of the journey.</span>
@@ -39,10 +39,10 @@ export function BadgesListSection() {
           {/* Highlight Card - Alifh First */}
           <div className="lg:col-span-2 p-8 rounded-lg bg-[#0066FF] text-white flex flex-col justify-center">
             <p className="text-xs uppercase tracking-widest text-white/60 mb-4">Early believers</p>
-            <h3 className="text-2xl font-semibold mb-3 tracking-tight">
+            <h3 className="text-lg font-medium mb-3 tracking-tight">
               Alifh First
             </h3>
-            <p className="text-sm text-white/70 leading-relaxed">
+            <p className="text-base text-white/70 leading-relaxed">
               Those who believed in us from the very beginning. A badge of honour for trusting the vision before anyone else did.
             </p>
           </div>
@@ -86,7 +86,7 @@ export function BadgesListSection() {
           <p className="text-xs uppercase tracking-widest text-muted-foreground">
             For Dealers
           </p>
-          <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+          <h2 className="text-2xl sm:text-3xl font-medium text-foreground tracking-tight leading-tight">
             Dealer Badges.
             <br />
             <span className="text-muted-foreground/70">Trust. Earned.</span>
@@ -99,10 +99,10 @@ export function BadgesListSection() {
           {/* Highlight Card - Alifh Choice */}
           <div className="lg:col-span-2 p-8 rounded-lg bg-[#0066FF] text-white flex flex-col justify-center">
             <p className="text-xs uppercase tracking-widest text-white/60 mb-4">Team pick</p>
-            <h3 className="text-2xl font-semibold mb-3 tracking-tight">
+            <h3 className="text-lg font-medium mb-3 tracking-tight">
               Alifh Choice
             </h3>
-            <p className="text-sm text-white/70 leading-relaxed">
+            <p className="text-base text-white/70 leading-relaxed">
               Hand-picked by Team Alifh. Dealers who exemplify excellence, integrity, and genuine customer care. Our personal recommendation.
             </p>
           </div>

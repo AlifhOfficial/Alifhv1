@@ -19,12 +19,12 @@ export function VisionHeroSection() {
           <p className="text-xs uppercase tracking-widest text-muted-foreground">
             Inspired by We the UAE 2031
           </p>
-          <h1 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+          <h1 className="text-2xl sm:text-3xl font-medium text-foreground tracking-tight leading-tight">
             Towards New Peaks.
             <br />
             <span className="text-muted-foreground/70">In Automotive.</span>
           </h1>
-          <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl mx-auto pt-2">
+          <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto pt-2">
             'We the UAE 2031' represents a national plan to continue the UAE's development path over the next decade. 
             As a private sector company, we're inspired by this vision as we build digital infrastructure 
             for automotive commerce in the UAE.
@@ -46,12 +46,12 @@ export function VisionHeroSection() {
         {/* Official Reference */}
         <div className="max-w-2xl mx-auto mb-16">
           <div className="p-6 rounded-lg border border-border/40 bg-sidebar">
-            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+            <p className="text-base text-muted-foreground leading-relaxed mb-4">
               On 22 November 2022, the UAE Government launched 'We the UAE 2031' during the UAE's Government Annual Meetings. 
               This 10-year framework aims to double the country's GDP from AED 1.49 trillion to AED 3 trillion, 
               positioning the UAE as a global partner and an attractive economic hub.
             </p>
-            <p className="text-xs text-muted-foreground/60 mb-4 italic">
+            <p className="text-sm text-muted-foreground/60 mb-4 italic">
               Note: Alifh is an independent private company. We are not affiliated with, endorsed by, or officially 
               partnered with the UAE Government. This page reflects our aspiration to contribute to national goals.
             </p>

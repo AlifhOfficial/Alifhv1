@@ -459,7 +459,7 @@ export function ListingCard({
 
       {/* Delete Confirmation */}
       {deleteConfirm === listing.id && (
-        <div className="absolute inset-0 flex items-center justify-center bg-card/95 backdrop-blur-sm rounded-xl z-10">
+        <div className="absolute inset-0 flex items-center justify-center bg-background/40 backdrop-blur-2xl rounded-xl z-10">
           <div className="text-center px-6">
             <p className="text-sm font-semibold text-foreground mb-3">Delete this listing?</p>
             <div className="flex items-center justify-center gap-2">

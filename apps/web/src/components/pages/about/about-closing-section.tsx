@@ -13,16 +13,16 @@ export function AboutClosingSection() {
       <div className="max-w-[1600px] mx-auto">
         
         {/* Final message */}
-        <div className="max-w-2xl mx-auto text-center space-y-6">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">
+        <div className="max-w-2xl mx-auto text-center space-y-5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
             Car enthusiasts first
           </p>
-          <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground tracking-tight leading-[1.15]">
             We're not building a company.
             <br />
-            <span className="text-muted-foreground/70">We're building a culture.</span>
+            <span className="text-muted-foreground/60">We're building a culture.</span>
           </h2>
-          <p className="text-sm text-muted-foreground leading-relaxed pt-2">
+          <p className="text-[15px] text-muted-foreground leading-relaxed">
             If this resonates—if you're tired of the games and want something real—we'd 
             love to have you. Not as a customer. As part of the community.
           </p>
@@ -44,18 +44,20 @@ export function AboutClosingSection() {
         </div>
 
         {/* Bottom Stats */}
-        <div className="flex items-center justify-center gap-12 md:gap-20 pt-16 mt-16 border-t border-border/40">
+        <div className="flex items-center justify-center gap-10 md:gap-16 pt-16 mt-16 border-t border-border/40">
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">Trust</div>
-            <div className="text-xs text-muted-foreground">First</div>
+            <div className="text-xl font-bold tracking-tight text-[#0066FF]">Trust</div>
+            <div className="text-[13px] text-muted-foreground">First</div>
           </div>
+          <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-foreground">Clarity</div>
-            <div className="text-xs text-muted-foreground">Always</div>
+            <div className="text-xl font-bold tracking-tight text-[#0066FF]">Clarity</div>
+            <div className="text-[13px] text-muted-foreground">Always</div>
           </div>
+          <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-foreground">Less</div>
-            <div className="text-xs text-muted-foreground">Is more</div>
+            <div className="text-xl font-bold tracking-tight text-[#0066FF]">Less</div>
+            <div className="text-[13px] text-muted-foreground">Is more</div>
           </div>
         </div>
 

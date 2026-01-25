@@ -635,7 +635,7 @@ function getActiveFilterChips(
     chips.push({ key: 'isBlkListing', label: 'Black Listings' });
   }
   if (params.isBlackTierPartner) {
-    chips.push({ key: 'isBlackTierPartner', label: 'Ace Members' });
+    chips.push({ key: 'isBlackTierPartner', label: 'Black Members' });
   }
 
   // Sort chip (only show when not default)

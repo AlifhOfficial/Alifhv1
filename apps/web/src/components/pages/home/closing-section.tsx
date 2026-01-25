@@ -19,25 +19,25 @@ export function ClosingSection() {
             
             {/* Content Side */}
             <div className="space-y-6">
-              <p className="text-xs uppercase tracking-widest text-muted-foreground">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
                 What we stand for
               </p>
               
-              <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground tracking-tight leading-[1.15]">
                 Built by Car People.
                 <br />
-                <span className="text-muted-foreground/70">For Car People.</span>
+                <span className="text-muted-foreground/60">For Car People.</span>
               </h2>
               
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
+              <p className="text-[15px] text-muted-foreground leading-relaxed max-w-lg">
                 We're the same people at track days and car meets. We built this because listing fees never made sense to us.
               </p>
 
-              {/* Principles - Simplified */}
-              <div className="pt-4 border-t border-border/40 flex flex-wrap gap-x-6 gap-y-2">
-                <span className="text-sm text-foreground flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#0066FF]" />Clarity over noise</span>
-                <span className="text-sm text-foreground flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#0066FF]" />Honesty over pressure</span>
-                <span className="text-sm text-foreground flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#0066FF]" />Quality over volume</span>
+              {/* Principles - inline */}
+              <div className="flex flex-wrap gap-x-6 gap-y-3">
+                <span className="text-[13px] font-medium text-foreground flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#0066FF]" />Clarity over noise</span>
+                <span className="text-[13px] font-medium text-foreground flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#0066FF]" />Honesty over pressure</span>
+                <span className="text-[13px] font-medium text-foreground flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-[#0066FF]" />Quality over volume</span>
               </div>
             </div>
 
@@ -60,14 +60,14 @@ export function ClosingSection() {
       <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-[1600px] mx-auto">
           
-          <div className="text-center mb-16 space-y-4">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">
+          <div className="text-center mb-16 space-y-5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
               How it works
             </p>
-            <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground tracking-tight leading-[1.15]">
               Browse. Book. Done.
               <br />
-              <span className="text-muted-foreground/70">No Friction.</span>
+              <span className="text-muted-foreground/60">No Friction.</span>
             </h2>
           </div>
 

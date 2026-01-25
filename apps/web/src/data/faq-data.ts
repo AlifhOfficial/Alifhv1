@@ -224,9 +224,9 @@ export const faqData: FAQCategory[] = [
       },
       {
         id: "partners-sync-reviews",
-        question: "Can I sync Google Reviews to my Alifh profile?",
-        answer: "Yes, Google Reviews are automatically synced to your Alifh partner profile and displayed on your showroom page, helping build trust with potential buyers. Black partners receive custom review integration measures.",
-        keywords: ["google reviews", "sync", "reviews", "rating"],
+        question: "Can I sync Google Ratings to my Alifh profile?",
+        answer: "Yes, Google Ratings are automatically synced to your Alifh partner profile and displayed on your showroom page, helping build trust with potential buyers. Black partners receive custom review integration measures.",
+        keywords: ["google ratings", "sync", "ratings", "rating"],
       },
       {
         id: "partners-non-uae-specs",
@@ -354,7 +354,7 @@ export const faqData: FAQCategory[] = [
       {
         id: "general-report",
         question: "How do I report a problem or suspicious listing on Alifh?",
-        answer: "To report a problem or suspicious listing, email support@alifh.ae with the listing URL (if applicable), a description of the issue, and any screenshots. Reports are typically reviewed within 24 hours on business days.",
+        answer: "To report a problem or suspicious listing, email support@alifh.ae with the listing URL (if applicable), a description of the issue. Reports are typically reviewed within 24 hours on business days.",
         keywords: ["report", "problem", "issue", "bug", "complaint"],
       },
     ],

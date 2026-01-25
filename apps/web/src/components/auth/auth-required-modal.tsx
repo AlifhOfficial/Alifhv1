@@ -8,8 +8,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import { Lock } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { cn } from "@/utils/cn";
 
 interface AuthRequiredModalProps {
@@ -33,7 +32,6 @@ export function AuthRequiredModal({
   description,
   redirectTo,
 }: AuthRequiredModalProps) {
-  const router = useRouter();
   const pathname = usePathname();
   const [showContent, setShowContent] = useState(false);
   const contentTimeoutRef = useRef<number | null>(null);
@@ -48,7 +46,7 @@ export function AuthRequiredModal({
       return;
     }
 
-    contentTimeoutRef.current = window.setTimeout(() => setShowContent(true), 100);
+    contentTimeoutRef.current = window.setTimeout(() => setShowContent(true), 50);
 
     return () => {
       if (contentTimeoutRef.current) {
@@ -83,79 +81,70 @@ export function AuthRequiredModal({
 
   if (!open) return null;
 
+  // Always use "/" as base URL for auth modals for consistency
+  // The redirect param will bring user back to current page after auth
   const handleSignIn = () => {
     const callbackUrl = redirectTo || pathname || "/";
-    // Use query params to trigger auth modal (handled by navbar)
-    router.push(`${pathname}?auth=signin&redirect=${encodeURIComponent(callbackUrl)}`);
     onClose();
+    setTimeout(() => {
+      window.location.href = `/?auth=signin&redirect=${encodeURIComponent(callbackUrl)}`;
+    }, 50);
   };
 
   const handleSignUp = () => {
     const callbackUrl = redirectTo || pathname || "/";
-    // Use query params to trigger auth modal (handled by navbar)
-    router.push(`${pathname}?auth=signup&redirect=${encodeURIComponent(callbackUrl)}`);
     onClose();
+    setTimeout(() => {
+      window.location.href = `/?auth=signup&redirect=${encodeURIComponent(callbackUrl)}`;
+    }, 50);
   };
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] bg-background/40 backdrop-blur-2xl flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div 
         className={cn(
-          "max-w-sm w-full bg-card border border-border/40 rounded-xl shadow-xl p-6",
-          "transform transition-all duration-200",
+          "max-w-xs w-full bg-card rounded-2xl shadow-2xl p-5",
+          "transform transition-all duration-150 ease-out",
           showContent ? "scale-100 opacity-100" : "scale-95 opacity-0"
         )}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex flex-col items-center space-y-4">
-          {/* Icon */}
-          <div className="w-12 h-12 rounded-full bg-muted/30 flex items-center justify-center">
-            <Lock className="w-5 h-5 text-muted-foreground" />
-          </div>
+        <div className="flex flex-col items-center text-center">
+          {/* Welcome Text */}
+          <h2 className="text-lg font-semibold text-foreground">
+            {title || "Welcome"}
+          </h2>
           
-          {/* Content */}
-          <div className="text-center space-y-1">
-            <h2 className="text-base font-semibold tracking-tight text-foreground">
-              {title || "Sign in required"}
-            </h2>
-            
-            <p className="text-sm text-muted-foreground">
-              {description || `Sign in to ${feature}`}
-            </p>
-          </div>
+          <p className="text-sm text-muted-foreground mt-1 mb-5">
+            {description || `Sign in to ${feature}`}
+          </p>
 
           {/* Actions */}
-          <div className="w-full space-y-2 pt-2">
+          <div className="w-full space-y-2.5">
             <button
               onClick={handleSignIn}
-              className={cn(
-                "w-full h-10 px-4 rounded-lg text-sm font-semibold transition-colors",
-                "bg-[#0066FF] text-white hover:bg-[#0066FF]/90"
-              )}
+              className="w-full h-10 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
             >
               Sign in
             </button>
             
             <button
               onClick={handleSignUp}
-              className={cn(
-                "w-full h-10 px-4 rounded-lg text-sm font-semibold transition-colors",
-                "bg-muted/30 text-foreground hover:bg-muted/50"
-              )}
+              className="w-full h-10 rounded-xl text-sm font-semibold bg-muted/50 text-foreground hover:bg-muted/70 transition-colors"
             >
               Create account
             </button>
           </div>
 
-          {/* Cancel */}
+          {/* Dismiss */}
           <button
             onClick={onClose}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="mt-4 text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors"
           >
-            Maybe later
+            Not now
           </button>
         </div>
       </div>

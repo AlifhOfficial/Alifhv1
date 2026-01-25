@@ -47,16 +47,16 @@ export function HowRankingWorksPage() {
       <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-[1600px] mx-auto">
           
-          <div className="max-w-2xl mx-auto text-center mb-12">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
+          <div className="max-w-2xl mx-auto text-center mb-12 space-y-5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
               Transparency
             </p>
-            <h1 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight mb-4">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground tracking-tight leading-[1.15]">
               How Listings Rank on Alifh.
               <br />
-              <span className="text-muted-foreground/70">No boosts. No tricks. Just quality.</span>
+              <span className="text-muted-foreground/60">No boosts. No tricks. Just quality.</span>
             </h1>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-[15px] text-muted-foreground leading-relaxed max-w-md mx-auto">
               Alifh does not sell boosts or promoted listings. Listings earn visibility through quality, transparency, and genuine buyer interest — not payment.
             </p>
           </div>
@@ -75,7 +75,7 @@ export function HowRankingWorksPage() {
 
           {/* Core Principle */}
           <div className="max-w-2xl mx-auto text-center">
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-[15px] text-muted-foreground leading-relaxed">
               We believe buyers deserve to see the most genuine, complete, and relevant cars — not the ones where sellers paid the most. Ranking on Alifh is designed to reward effort, honesty, and real demand.
             </p>
           </div>
@@ -86,64 +86,64 @@ export function HowRankingWorksPage() {
       <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-[1600px] mx-auto">
           
-          <div className="text-center mb-16 space-y-4">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">
+          <div className="text-center mb-16 space-y-5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
               What helps your listing
             </p>
-            <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground tracking-tight leading-[1.15]">
               Earn Visibility.
               <br />
-              <span className="text-muted-foreground/70">Don't buy it.</span>
+              <span className="text-muted-foreground/60">Don't buy it.</span>
             </h2>
           </div>
 
           {/* Helps Grid */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             
-            <div className="p-6 rounded-lg border border-border/40 bg-background">
+            <div className="p-6 rounded-lg border border-border/40 bg-sidebar">
               <Camera className="w-5 h-5 text-[#0066FF] mb-3" />
-              <h3 className="text-sm font-medium text-foreground mb-1">Clear, real photos</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <h3 className="text-[15px] font-semibold text-foreground mb-1">Clear, real photos</h3>
+              <p className="text-[13px] text-muted-foreground leading-relaxed">
                 Multiple angles. Good lighting. Show the actual car — not stock images.
               </p>
             </div>
 
-            <div className="p-6 rounded-lg border border-border/40 bg-background">
+            <div className="p-6 rounded-lg border border-border/40 bg-sidebar">
               <FileText className="w-5 h-5 text-[#0066FF] mb-3" />
-              <h3 className="text-sm font-medium text-foreground mb-1">Honest, complete descriptions</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <h3 className="text-[15px] font-semibold text-foreground mb-1">Honest, complete descriptions</h3>
+              <p className="text-[13px] text-muted-foreground leading-relaxed">
                 Tell buyers what they need to know. Features, condition, history.
               </p>
             </div>
 
-            <div className="p-6 rounded-lg border border-border/40 bg-background">
+            <div className="p-6 rounded-lg border border-border/40 bg-sidebar">
               <MessageCircle className="w-5 h-5 text-[#0066FF] mb-3" />
-              <h3 className="text-sm font-medium text-foreground mb-1">Responding quickly</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <h3 className="text-[15px] font-semibold text-foreground mb-1">Responding quickly</h3>
+              <p className="text-[13px] text-muted-foreground leading-relaxed">
                 Buyers appreciate sellers who reply. Fast responses help your listing perform better.
               </p>
             </div>
 
-            <div className="p-6 rounded-lg border border-border/40 bg-background">
+            <div className="p-6 rounded-lg border border-border/40 bg-sidebar">
               <CheckCircle2 className="w-5 h-5 text-[#0066FF] mb-3" />
-              <h3 className="text-sm font-medium text-foreground mb-1">Useful details</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <h3 className="text-[15px] font-semibold text-foreground mb-1">Useful details</h3>
+              <p className="text-[13px] text-muted-foreground leading-relaxed">
                 Features, specs, and tags. Help buyers understand your car.
               </p>
             </div>
 
-            <div className="p-6 rounded-lg border border-border/40 bg-background">
+            <div className="p-6 rounded-lg border border-border/40 bg-sidebar">
               <Heart className="w-5 h-5 text-[#0066FF] mb-3" />
-              <h3 className="text-sm font-medium text-foreground mb-1">Genuine buyer interest</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <h3 className="text-[15px] font-semibold text-foreground mb-1">Genuine buyer interest</h3>
+              <p className="text-[13px] text-muted-foreground leading-relaxed">
                 Favourites, saves, test drive bookings. Real demand matters.
               </p>
             </div>
 
-            <div className="p-6 rounded-lg border border-border/40 bg-background">
+            <div className="p-6 rounded-lg border border-border/40 bg-sidebar">
               <ShieldCheck className="w-5 h-5 text-[#0066FF] mb-3" />
-              <h3 className="text-sm font-medium text-foreground mb-1">Verified sellers</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <h3 className="text-[15px] font-semibold text-foreground mb-1">Verified sellers</h3>
+              <p className="text-[13px] text-muted-foreground leading-relaxed">
                 Verified dealers and trusted private sellers build confidence with buyers.
               </p>
             </div>
@@ -155,65 +155,65 @@ export function HowRankingWorksPage() {
       <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-[1600px] mx-auto">
           
-          <div className="text-center mb-16 space-y-4">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">
+          <div className="text-center mb-16 space-y-5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
               What doesn't help
             </p>
-            <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground tracking-tight leading-[1.15]">
               Gaming Doesn't Work Here.
               <br />
-              <span className="text-muted-foreground/70">We designed it that way.</span>
+              <span className="text-muted-foreground/60">We designed it that way.</span>
             </h2>
           </div>
 
           {/* Doesn't Help Grid */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             
-            <div className="p-6 rounded-lg border border-border/40 bg-background">
+            <div className="p-6 rounded-lg border border-border/40 bg-sidebar">
               <RefreshCw className="w-5 h-5 text-red-500/70 mb-3" />
-              <h3 className="text-sm font-medium text-foreground mb-1">Reposting the same car</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <h3 className="text-[15px] font-semibold text-foreground mb-1">Reposting the same car</h3>
+              <p className="text-[13px] text-muted-foreground leading-relaxed">
                 Deleting and reposting doesn't reset your ranking. We track original publish dates.
               </p>
             </div>
 
-            <div className="p-6 rounded-lg border border-border/40 bg-background">
+            <div className="p-6 rounded-lg border border-border/40 bg-sidebar">
               <AlertTriangle className="w-5 h-5 text-amber-500/70 mb-3" />
-              <h3 className="text-sm font-medium text-foreground mb-1">Editing to "bump"</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <h3 className="text-[15px] font-semibold text-foreground mb-1">Editing to "bump"</h3>
+              <p className="text-[13px] text-muted-foreground leading-relaxed">
                 Small edits to trigger updates don't improve visibility.
               </p>
             </div>
 
-            <div className="p-6 rounded-lg border border-border/40 bg-background">
+            <div className="p-6 rounded-lg border border-border/40 bg-sidebar">
               <XCircle className="w-5 h-5 text-red-500/70 mb-3" />
-              <h3 className="text-sm font-medium text-foreground mb-1">Artificial engagement</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <h3 className="text-[15px] font-semibold text-foreground mb-1">Artificial engagement</h3>
+              <p className="text-[13px] text-muted-foreground leading-relaxed">
                 Fake views or manufactured interest is detectable and ignored.
               </p>
             </div>
 
-            <div className="p-6 rounded-lg border border-border/40 bg-background">
+            <div className="p-6 rounded-lg border border-border/40 bg-sidebar">
               <FileWarning className="w-5 h-5 text-amber-500/70 mb-3" />
-              <h3 className="text-sm font-medium text-foreground mb-1">Misleading descriptions</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <h3 className="text-[15px] font-semibold text-foreground mb-1">Misleading descriptions</h3>
+              <p className="text-[13px] text-muted-foreground leading-relaxed">
                 Inaccurate info or missing VINs hurt trust — and ranking.
               </p>
             </div>
 
-            <div className="p-6 rounded-lg border border-border/40 bg-background">
+            <div className="p-6 rounded-lg border border-border/40 bg-sidebar">
               <ImageOff className="w-5 h-5 text-red-500/70 mb-3" />
-              <h3 className="text-sm font-medium text-foreground mb-1">Low-effort listings</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <h3 className="text-[15px] font-semibold text-foreground mb-1">Low-effort listings</h3>
+              <p className="text-[13px] text-muted-foreground leading-relaxed">
                 Poor photos, empty descriptions. Buyers scroll past. So does the algorithm.
               </p>
             </div>
 
             <div className="p-6 rounded-lg bg-muted/30 border border-border/40">
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <p className="text-[13px] text-muted-foreground leading-relaxed">
                 Alifh uses anti-abuse protections to keep the marketplace fair for everyone. Manipulation doesn't improve ranking — it may reduce it.
               </p>
-              <p className="text-sm text-muted-foreground leading-relaxed mt-2">
+              <p className="text-[13px] text-muted-foreground leading-relaxed mt-2">
                 Focus on presenting your car honestly. That's what the system is built to reward.
               </p>
             </div>
@@ -239,32 +239,34 @@ export function HowRankingWorksPage() {
 
             {/* Content */}
             <div className="space-y-6">
-              <p className="text-xs uppercase tracking-widest text-muted-foreground">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
                 Why we rank this way
               </p>
               
-              <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground tracking-tight leading-[1.15]">
                 Quality Wins.
                 <br />
-                <span className="text-muted-foreground/70">That's the whole point.</span>
+                <span className="text-muted-foreground/60">That's the whole point.</span>
               </h2>
               
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <p className="text-[15px] text-muted-foreground leading-relaxed">
                 Other platforms let you pay for visibility. We don't think that's fair to buyers or honest sellers. On Alifh, the best listings rise — not the ones with the biggest ad budget.
               </p>
               
-              <div className="flex items-center gap-8 pt-4 border-t border-border/40">
+              <div className="flex items-center gap-8 pt-4">
                 <div className="text-center space-y-1">
-                  <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">0</div>
-                  <div className="text-xs text-muted-foreground">Paid boosts</div>
+                  <div className="text-xl font-bold tracking-tight text-[#0066FF]">0</div>
+                  <div className="text-[13px] text-muted-foreground">Paid boosts</div>
                 </div>
+                <div className="w-px h-10 bg-border/30" />
                 <div className="text-center space-y-1">
-                  <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">0</div>
-                  <div className="text-xs text-muted-foreground">Promoted listings</div>
+                  <div className="text-xl font-bold tracking-tight text-[#0066FF]">0</div>
+                  <div className="text-[13px] text-muted-foreground">Promoted listings</div>
                 </div>
+                <div className="w-px h-10 bg-border/30" />
                 <div className="text-center space-y-1">
-                  <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">100%</div>
-                  <div className="text-xs text-muted-foreground">Quality-based</div>
+                  <div className="text-xl font-bold tracking-tight text-[#0066FF]">100%</div>
+                  <div className="text-[13px] text-muted-foreground">Quality-based</div>
                 </div>
               </div>
             </div>
@@ -276,14 +278,14 @@ export function HowRankingWorksPage() {
       <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-[1600px] mx-auto">
           
-          <div className="text-center space-y-6 max-w-2xl mx-auto">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">
+          <div className="text-center space-y-5 max-w-2xl mx-auto">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
               Ready?
             </p>
-            <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground tracking-tight leading-[1.15]">
               Put effort in.
               <br />
-              <span className="text-muted-foreground/70">Get visibility out.</span>
+              <span className="text-muted-foreground/60">Get visibility out.</span>
             </h2>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">

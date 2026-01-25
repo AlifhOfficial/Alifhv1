@@ -22,7 +22,7 @@ export function AdminPartnerDetailModal({ partnerId, onClose }: AdminPartnerDeta
   });
 
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-background/40 backdrop-blur-2xl flex items-center justify-center z-50 p-4">
       <div className="bg-card rounded-xl border border-border max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {/* Sticky Header */}
         <div className="flex items-center justify-between px-8 py-6 border-b border-border sticky top-0 bg-card z-10">

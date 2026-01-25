@@ -18,7 +18,7 @@ export function BadgesClosingSection() {
           <p className="text-xs uppercase tracking-widest text-muted-foreground">
             How it works
           </p>
-          <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
+          <h2 className="text-2xl sm:text-3xl font-medium text-foreground tracking-tight leading-tight">
             Assigned by Team Alifh.
             <br />
             <span className="text-muted-foreground/70">Not algorithms.</span>
@@ -40,10 +40,10 @@ export function BadgesClosingSection() {
 
           {/* Big Feature Card */}
           <div className="lg:col-span-2 p-8 rounded-lg border border-border/40 bg-background flex flex-col justify-center">
-            <h3 className="text-2xl font-semibold text-foreground mb-3 tracking-tight">
+            <h3 className="text-lg font-medium text-foreground mb-3 tracking-tight">
               Character over numbers
             </h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-base text-muted-foreground leading-relaxed">
               We look for people and dealers who embody our values: transparency, integrity, and genuine care for the automotive community.
             </p>
           </div>
@@ -85,19 +85,19 @@ export function BadgesClosingSection() {
         {/* Bottom Stats */}
         <div className="flex items-center justify-center gap-12 md:gap-20 pt-16 mt-16 border-t border-border/40">
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">5</div>
+            <div className="text-xl font-semibold tracking-tight text-[#0066FF]">5</div>
             <div className="text-xs text-muted-foreground">User badges</div>
           </div>
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">5</div>
+            <div className="text-xl font-semibold tracking-tight text-[#0066FF]">5</div>
             <div className="text-xs text-muted-foreground">Dealer badges</div>
           </div>
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">0</div>
+            <div className="text-xl font-semibold tracking-tight text-[#0066FF]">0</div>
             <div className="text-xs text-muted-foreground">Shortcuts</div>
           </div>
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">∞</div>
+            <div className="text-xl font-semibold tracking-tight text-[#0066FF]">∞</div>
             <div className="text-xs text-muted-foreground">Integrity</div>
           </div>
         </div>

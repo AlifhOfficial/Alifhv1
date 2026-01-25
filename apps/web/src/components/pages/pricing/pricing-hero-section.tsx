@@ -14,15 +14,15 @@ export function PricingHeroSection() {
         
         {/* Simple centered hero */}
         <div className="max-w-2xl mx-auto text-center mb-12">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF] mb-4">
             Pricing
           </p>
-          <h1 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight mb-4">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground tracking-tight leading-[1.15] mb-4">
             Simple. Transparent.
             <br />
-            <span className="text-muted-foreground/70">No games.</span>
+            <span className="text-muted-foreground/60">No games.</span>
           </h1>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="text-[15px] text-muted-foreground/70 leading-relaxed">
             Two options. Same platform. Same core features.<br />Different levels of attention and presence.
           </p>
         </div>
@@ -39,19 +39,21 @@ export function PricingHeroSection() {
           />
         </div>
 
-        {/* Stats row */}
-        <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto">
-          <div className="p-6 rounded-lg bg-[#0066FF] text-white text-center">
-            <div className="text-2xl font-semibold tracking-tight mb-1">0%</div>
-            <div className="text-xs text-white/70">Commission</div>
+        {/* Stats row - floating style */}
+        <div className="flex items-center justify-center gap-8 sm:gap-12 max-w-2xl mx-auto">
+          <div className="text-center">
+            <div className="text-2xl font-semibold tracking-tight text-[#0066FF] mb-1">0%</div>
+            <div className="text-[13px] text-muted-foreground/60">Commission</div>
           </div>
-          <div className="p-6 rounded-lg border border-border/40 bg-background text-center">
+          <div className="w-px h-10 bg-border/30" />
+          <div className="text-center">
             <div className="text-2xl font-semibold tracking-tight text-foreground mb-1">∞</div>
-            <div className="text-xs text-muted-foreground">Listings per showroom</div>
+            <div className="text-[13px] text-muted-foreground/60">Listings per showroom</div>
           </div>
-          <div className="p-6 rounded-lg border border-border/40 bg-background text-center">
+          <div className="w-px h-10 bg-border/30" />
+          <div className="text-center">
             <div className="text-2xl font-semibold tracking-tight text-foreground mb-1">0</div>
-            <div className="text-xs text-muted-foreground">Hidden fees</div>
+            <div className="text-[13px] text-muted-foreground/60">Hidden fees</div>
           </div>
         </div>
 

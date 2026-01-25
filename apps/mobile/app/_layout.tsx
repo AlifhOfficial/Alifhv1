@@ -1,95 +1,60 @@
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { useFonts } from '@/hooks/useFonts';
-import { Colors } from '@/theme/colors';
-import { ThemeProvider } from '@/theme/theme-provider';
-import { osName } from 'expo-device';
-import { isLiquidGlassAvailable } from 'expo-glass-effect';
-import * as NavigationBar from 'expo-navigation-bar';
+import { DarkTheme, DefaultTheme, ThemeProvider as NavThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { setBackgroundColorAsync } from 'expo-system-ui';
-import React, { useEffect } from 'react';
-import { Platform } from 'react-native';
+import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
-SplashScreen.setOptions({
-  duration: 200,
-  fade: true,
-});
+import { useFonts } from '@/hooks/useFonts';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { ThemeProvider } from '@/theme/theme-provider';
+
+export {
+  // Catch any errors thrown by the Layout component.
+  ErrorBoundary,
+} from 'expo-router';
+
+export const unstable_settings = {
+  // Ensure that reloading on `/modal` keeps a back button present.
+  initialRouteName: '(tabs)',
+};
+
+// Prevent the splash screen from auto-hiding before asset loading is complete.
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const { loaded, error } = useFonts();
-  const colorScheme = useColorScheme() || 'light';
+
+  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
 
   useEffect(() => {
-    if (Platform.OS === 'android') {
-      NavigationBar.setButtonStyleAsync(
-        colorScheme === 'light' ? 'dark' : 'light'
-      );
+    if (loaded) {
+      SplashScreen.hideAsync();
     }
-  }, [colorScheme]);
+  }, [loaded]);
 
-  // Keep the root view background color in sync with the current theme
-  useEffect(() => {
-    setBackgroundColorAsync(
-      colorScheme === 'dark' ? Colors.dark.background : Colors.light.background
-    );
-  }, [colorScheme]);
-
-  if (!loaded && !error) {
+  if (!loaded) {
     return null;
   }
+
+  return <RootLayoutNav />;
+}
+
+function RootLayoutNav() {
+  const colorScheme = useColorScheme();
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider>
-        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} animated />
-
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
-
-          <Stack.Screen
-            name='sheet'
-            options={{
-              headerShown: false,
-              sheetGrabberVisible: true,
-              sheetAllowedDetents: [0.4, 0.7, 1],
-              contentStyle: {
-                backgroundColor: isLiquidGlassAvailable()
-                  ? 'transparent'
-                  : colorScheme === 'dark'
-                  ? Colors.dark.card
-                  : Colors.light.card,
-              },
-              headerTransparent: Platform.OS === 'ios' ? true : false,
-              headerLargeTitle: false,
-              title: '',
-              presentation:
-                Platform.OS === 'ios'
-                  ? isLiquidGlassAvailable() && osName !== 'iPadOS'
-                    ? 'formSheet'
-                    : 'modal'
-                  : 'modal',
-              sheetInitialDetentIndex: 0,
-              headerStyle: {
-                backgroundColor:
-                  Platform.OS === 'ios'
-                    ? 'transparent'
-                    : colorScheme === 'dark'
-                    ? Colors.dark.card
-                    : Colors.light.card,
-              },
-              headerBlurEffect: isLiquidGlassAvailable()
-                ? undefined
-                : colorScheme === 'dark'
-                ? 'dark'
-                : 'light',
-            }}
-          />
-          <Stack.Screen name='+not-found' />
-        </Stack>
+        <NavThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+          </Stack>
+        </NavThemeProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
   );

@@ -13,16 +13,16 @@ export function AboutHeroSection() {
       <div className="max-w-[1600px] mx-auto">
         
         {/* Simple centered opening */}
-        <div className="max-w-2xl mx-auto text-center mb-12">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
+        <div className="max-w-2xl mx-auto text-center mb-12 space-y-5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
             About
           </p>
-          <h1 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight mb-4">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground tracking-tight leading-[1.15]">
             We got tired of complaining.
             <br />
-            <span className="text-muted-foreground/70">So we built something.</span>
+            <span className="text-muted-foreground/60">So we built something.</span>
           </h1>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="text-[15px] text-muted-foreground leading-relaxed max-w-md mx-auto">
             The clean, honest automotive ecosystem the UAE should have had years ago.
           </p>
         </div>

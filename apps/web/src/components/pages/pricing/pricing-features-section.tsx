@@ -153,21 +153,21 @@ function FlowCategorySection({ category, isExpanded, onToggle }: {
   onToggle: () => void;
 }) {
   return (
-    <div className="border-b border-sidebar-border/40 last:border-b-0">
+    <div className="border-b border-border/30 last:border-b-0">
       <button
         onClick={onToggle}
         className="w-full flex items-center justify-between py-4 px-6 hover:bg-muted/20 transition-colors text-left"
       >
-        <span className="text-sm font-medium text-foreground">{category.name}</span>
+        <span className="text-[15px] font-medium text-foreground">{category.name}</span>
         {isExpanded ? (
-          <ChevronUp className="w-4 h-4 text-muted-foreground/40" />
+          <ChevronUp className="w-4 h-4 text-muted-foreground/50" />
         ) : (
-          <ChevronDown className="w-4 h-4 text-muted-foreground/40" />
+          <ChevronDown className="w-4 h-4 text-muted-foreground/50" />
         )}
       </button>
       
       {isExpanded && (
-        <div className="border-t border-sidebar-border/30 pb-2">
+        <div className="border-t border-border/20 pb-2">
           {category.features.map((feature, idx) => (
             <div
               key={idx}
@@ -175,9 +175,9 @@ function FlowCategorySection({ category, isExpanded, onToggle }: {
             >
               <Check className="w-4 h-4 text-[#0066FF] mt-0.5 shrink-0" />
               <div>
-                <p className="text-sm text-foreground">{feature.name}</p>
+                <p className="text-[15px] font-medium text-foreground">{feature.name}</p>
                 {feature.description && (
-                  <p className="text-xs text-muted-foreground/60 mt-0.5">{feature.description}</p>
+                  <p className="text-[13px] text-muted-foreground/70 mt-0.5">{feature.description}</p>
                 )}
               </div>
             </div>
@@ -194,21 +194,21 @@ function BlackCategorySection({ category, isExpanded, onToggle }: {
   onToggle: () => void;
 }) {
   return (
-    <div className="border-b border-sidebar-border/40 last:border-b-0">
+    <div className="border-b border-border/30 last:border-b-0">
       <button
         onClick={onToggle}
         className="w-full flex items-center justify-between py-4 px-6 hover:bg-muted/20 transition-colors text-left"
       >
-        <span className="text-sm font-medium text-foreground">{category.name}</span>
+        <span className="text-[15px] font-medium text-foreground">{category.name}</span>
         {isExpanded ? (
-          <ChevronUp className="w-4 h-4 text-muted-foreground/40" />
+          <ChevronUp className="w-4 h-4 text-muted-foreground/50" />
         ) : (
-          <ChevronDown className="w-4 h-4 text-muted-foreground/40" />
+          <ChevronDown className="w-4 h-4 text-muted-foreground/50" />
         )}
       </button>
       
       {isExpanded && (
-        <div className="border-t border-sidebar-border/30 pb-2">
+        <div className="border-t border-border/20 pb-2">
           {category.features.map((feature, idx) => (
             <div
               key={idx}
@@ -216,9 +216,9 @@ function BlackCategorySection({ category, isExpanded, onToggle }: {
             >
               <Check className="w-4 h-4 text-foreground mt-0.5 shrink-0" />
               <div>
-                <p className="text-sm text-foreground">{feature.name}</p>
+                <p className="text-[15px] font-medium text-foreground">{feature.name}</p>
                 {feature.description && (
-                  <p className="text-xs text-muted-foreground/60 mt-0.5">{feature.description}</p>
+                  <p className="text-[13px] text-muted-foreground/70 mt-0.5">{feature.description}</p>
                 )}
               </div>
             </div>
@@ -284,10 +284,10 @@ export function PricingFeaturesSection() {
         <div className="max-w-5xl mx-auto mb-12">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
-              <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF] mb-3">
                 Details
               </p>
-              <h2 className="text-2xl font-semibold text-foreground tracking-tight">
+              <h2 className="text-2xl sm:text-3xl font-semibold text-foreground tracking-tight leading-[1.15]">
                 Full feature breakdown
               </h2>
             </div>
@@ -307,18 +307,18 @@ export function PricingFeaturesSection() {
               <div className="flex items-center gap-2.5">
                 <CheckCircle2 className="w-5 h-5 text-[#0066FF]" />
                 <h3 className="text-lg font-semibold text-foreground">Flow</h3>
-                <span className="text-xs text-muted-foreground hidden sm:inline">{totalFlowFeatures} features</span>
+                <span className="text-[13px] text-muted-foreground/60 hidden sm:inline">{totalFlowFeatures} features</span>
               </div>
               <button 
                 onClick={toggleAllFlow}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
+                className="text-[13px] text-muted-foreground/60 hover:text-foreground transition-colors whitespace-nowrap"
               >
                 {expandedFlow.size > 0 ? 'Collapse' : 'Expand'}
               </button>
             </div>
-            <p className="text-sm text-muted-foreground mb-4">Everything you need to run your showroom.</p>
+            <p className="text-[15px] text-muted-foreground/70 mb-4">Everything you need to run your showroom.</p>
             
-            <div className="rounded-xl border border-sidebar-border bg-sidebar overflow-hidden">
+            <div className="rounded-xl border border-border/40 bg-sidebar overflow-hidden">
               {featureCategories.map((category) => (
                 <FlowCategorySection
                   key={category.name}
@@ -338,18 +338,18 @@ export function PricingFeaturesSection() {
                   BLK
                 </span>
                 <h3 className="text-lg font-semibold text-foreground">Black adds</h3>
-                <span className="text-xs text-muted-foreground hidden sm:inline">{totalBlackFeatures} extras</span>
+                <span className="text-[13px] text-muted-foreground/60 hidden sm:inline">{totalBlackFeatures} extras</span>
               </div>
               <button 
                 onClick={toggleAllBlack}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
+                className="text-[13px] text-muted-foreground/60 hover:text-foreground transition-colors whitespace-nowrap"
               >
                 {expandedBlack.size > 0 ? 'Collapse' : 'Expand'}
               </button>
             </div>
-            <p className="text-sm text-muted-foreground mb-4">Everything in Flow, plus white-glove branding.</p>
+            <p className="text-[15px] text-muted-foreground/70 mb-4">Everything in Flow, plus white-glove branding.</p>
             
-            <div className="rounded-xl border border-sidebar-border bg-sidebar overflow-hidden">
+            <div className="rounded-xl border border-border/40 bg-sidebar overflow-hidden">
               {blackExclusiveFeatures.map((category) => (
                 <BlackCategorySection
                   key={category.name}
