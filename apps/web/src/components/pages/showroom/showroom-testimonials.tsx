@@ -9,6 +9,7 @@ import { useRef } from 'react';
 import Image from 'next/image';
 import { Star } from 'lucide-react';
 import { getPublicUrl } from '@/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { ShowroomData, AmbientTheme } from './types';
 import { getAmbientTheme } from './types';
 import type { ShowroomTestimonial } from '@alifh/database';
@@ -124,3 +125,30 @@ function TestimonialCard({
     </div>
   );
 }
+
+// Skeleton
+function ShowroomTestimonialsSkeleton() {
+  return (
+    <section className="py-16 sm:py-20 lg:py-24">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10">
+          <Skeleton className="h-3 w-24 mx-auto mb-4" />
+          <Skeleton className="h-8 w-52 mx-auto" />
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="rounded-xl bg-sidebar p-6 space-y-4">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-2/3" />
+              <div className="pt-4 border-t border-sidebar-border/50">
+                <Skeleton className="h-4 w-24" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+ShowroomTestimonials.Skeleton = ShowroomTestimonialsSkeleton;

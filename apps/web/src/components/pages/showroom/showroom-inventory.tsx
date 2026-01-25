@@ -18,6 +18,7 @@ import { useUser } from '@/hooks/auth/use-auth';
 import { useFavoritesStatus } from '@/hooks/engagement';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { getPublicUrl } from '@/utils';
 import type { ShowroomData } from './types';
@@ -448,3 +449,30 @@ function ShowroomCarCard({ listing, priority = false, index, theme }: ShowroomCa
     </Link>
   );
 }
+
+// Skeleton
+function ShowroomInventorySkeleton() {
+  return (
+    <section className="py-16 sm:py-20 lg:py-24">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-10">
+          <div className="space-y-3">
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-8 w-40" />
+          </div>
+          <Skeleton className="h-10 w-32 rounded-xl" />
+        </div>
+        <div className="flex gap-4 overflow-hidden">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="flex-shrink-0 w-72">
+              <Skeleton className="aspect-[4/3] rounded-xl mb-4" />
+              <Skeleton className="h-4 w-20 mb-2" />
+              <Skeleton className="h-5 w-32" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+ShowroomInventory.Skeleton = ShowroomInventorySkeleton;

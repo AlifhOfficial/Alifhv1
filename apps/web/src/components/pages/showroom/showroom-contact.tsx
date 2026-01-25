@@ -8,6 +8,7 @@
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { MapPin, Phone } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -35,25 +36,25 @@ export function ShowroomContact({ showroom }: ShowroomContactProps) {
   const hasLocation = (partner?.locationLat && partner?.locationLng) || fullAddress;
 
   return (
-    <section id="showroom-contact" className={theme.sectionSpacing}>
+    <section id="showroom-contact" className={`${theme.sectionSpacing} overflow-hidden`}>
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
-        <div className="mb-8">
-          <p className={`text-xs uppercase tracking-widest ${theme.labelClass} text-muted-foreground mb-3`}>
+        <div className="mb-6 sm:mb-8">
+          <p className={`text-xs uppercase tracking-widest ${theme.labelClass} text-muted-foreground mb-2 sm:mb-3`}>
             Contact
           </p>
-          <h2 className={`text-xl sm:text-2xl lg:text-3xl ${theme.headingClass} text-foreground tracking-tight leading-tight`}>
+          <h2 className={`text-lg sm:text-xl md:text-2xl lg:text-3xl ${theme.headingClass} text-foreground tracking-tight leading-tight`}>
             {showroom.appointmentCtaText || 'Get in Touch'}
           </h2>
         </div>
 
         {/* Main Content - Map + Info */}
-        <div className="grid lg:grid-cols-5 gap-6 mb-10">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6 mb-8 sm:mb-10">
           
           {/* Map - Takes more space */}
           {hasLocation && (
-            <div className="lg:col-span-3">
+            <div className="lg:col-span-3 order-2 lg:order-1">
               <LeafletMap 
                 lat={partner?.locationLat || 25.2048} 
                 lng={partner?.locationLng || 55.2708}
@@ -63,7 +64,7 @@ export function ShowroomContact({ showroom }: ShowroomContactProps) {
           )}
           
           {/* Contact Info Cards - Stacked */}
-          <div className={`${hasLocation ? 'lg:col-span-2' : 'lg:col-span-5'} flex flex-col gap-4 h-full`}>
+          <div className={`${hasLocation ? 'lg:col-span-2' : 'lg:col-span-5'} flex flex-col gap-3 sm:gap-4 order-1 lg:order-2`}>
             
             {/* Location Card */}
             {fullAddress && (
@@ -71,16 +72,16 @@ export function ShowroomContact({ showroom }: ShowroomContactProps) {
                 href={mapUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group p-6 rounded-2xl bg-sidebar border border-sidebar-border hover:border-sidebar-accent/50 transition-colors flex items-start gap-4 flex-1"
+                className="group p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-sidebar border border-sidebar-border hover:border-sidebar-accent/50 transition-colors flex items-start gap-3 sm:gap-4 flex-1"
               >
-                <div className="w-10 h-10 rounded-full bg-sidebar-accent/10 flex items-center justify-center flex-shrink-0 group-hover:bg-sidebar-accent/20 transition-colors">
-                  <MapPin className="w-5 h-5 text-sidebar-foreground" />
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-sidebar-accent/10 flex items-center justify-center flex-shrink-0 group-hover:bg-sidebar-accent/20 transition-colors">
+                  <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-sidebar-foreground" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className={`text-sm ${theme.subheadingClass} text-sidebar-foreground mb-1`}>
                     Location
                   </h3>
-                  <p className="text-sm text-sidebar-foreground/60 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-sidebar-foreground/60 leading-relaxed break-words">
                     {fullAddress}
                   </p>
                   <p className="text-xs text-sidebar-foreground/40 mt-2 group-hover:text-sidebar-foreground/60 transition-colors">
@@ -94,16 +95,16 @@ export function ShowroomContact({ showroom }: ShowroomContactProps) {
             {partner?.phone && (
               <a 
                 href={`tel:${partner.phone}`}
-                className="group p-6 rounded-2xl bg-sidebar border border-sidebar-border hover:border-sidebar-accent/50 transition-colors flex items-start gap-4 flex-1"
+                className="group p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-sidebar border border-sidebar-border hover:border-sidebar-accent/50 transition-colors flex items-start gap-3 sm:gap-4 flex-1"
               >
-                <div className="w-10 h-10 rounded-full bg-sidebar-accent/10 flex items-center justify-center flex-shrink-0 group-hover:bg-sidebar-accent/20 transition-colors">
-                  <Phone className="w-5 h-5 text-sidebar-foreground" />
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-sidebar-accent/10 flex items-center justify-center flex-shrink-0 group-hover:bg-sidebar-accent/20 transition-colors">
+                  <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-sidebar-foreground" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className={`text-sm ${theme.subheadingClass} text-sidebar-foreground mb-1`}>
                     Phone
                   </h3>
-                  <p className="text-sm text-sidebar-foreground/60 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-sidebar-foreground/60 leading-relaxed">
                     {partner.phone}
                   </p>
                   <p className="text-xs text-sidebar-foreground/40 mt-2 group-hover:text-sidebar-foreground/60 transition-colors">
@@ -117,20 +118,20 @@ export function ShowroomContact({ showroom }: ShowroomContactProps) {
 
         {/* Social Links */}
         {hasSocials && (
-          <div className="flex flex-wrap items-center gap-3">
-            <span className={`text-xs uppercase tracking-widest ${theme.labelClass} text-muted-foreground mr-2`}>
-              Follow Us
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 overflow-hidden">
+            <span className={`text-xs uppercase tracking-widest ${theme.labelClass} text-muted-foreground mr-1 sm:mr-2 flex-shrink-0`}>
+              Follow
             </span>
             {showroom.instagramHandle && (
               <a
                 href={`https://instagram.com/${showroom.instagramHandle.replace('@', '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="h-10 px-4 rounded-full bg-sidebar border border-sidebar-border flex items-center gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:border-sidebar-accent/50 transition-colors"
+                className="h-9 sm:h-10 px-3 sm:px-4 rounded-full bg-sidebar border border-sidebar-border flex items-center gap-1.5 sm:gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:border-sidebar-accent/50 transition-colors"
                 aria-label="Instagram"
               >
                 <InstagramIcon />
-                <span className="text-sm">Instagram</span>
+                <span className="text-xs sm:text-sm hidden sm:inline">Instagram</span>
               </a>
             )}
             {showroom.youtubeChannelUrl && (
@@ -138,11 +139,11 @@ export function ShowroomContact({ showroom }: ShowroomContactProps) {
                 href={showroom.youtubeChannelUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="h-10 px-4 rounded-full bg-sidebar border border-sidebar-border flex items-center gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:border-sidebar-accent/50 transition-colors"
+                className="h-9 sm:h-10 px-3 sm:px-4 rounded-full bg-sidebar border border-sidebar-border flex items-center gap-1.5 sm:gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:border-sidebar-accent/50 transition-colors"
                 aria-label="YouTube"
               >
                 <YouTubeIcon />
-                <span className="text-sm">YouTube</span>
+                <span className="text-xs sm:text-sm hidden sm:inline">YouTube</span>
               </a>
             )}
             {showroom.linkedinUrl && (
@@ -150,11 +151,11 @@ export function ShowroomContact({ showroom }: ShowroomContactProps) {
                 href={showroom.linkedinUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="h-10 px-4 rounded-full bg-sidebar border border-sidebar-border flex items-center gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:border-sidebar-accent/50 transition-colors"
+                className="h-9 sm:h-10 px-3 sm:px-4 rounded-full bg-sidebar border border-sidebar-border flex items-center gap-1.5 sm:gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:border-sidebar-accent/50 transition-colors"
                 aria-label="LinkedIn"
               >
                 <LinkedInIcon />
-                <span className="text-sm">LinkedIn</span>
+                <span className="text-xs sm:text-sm hidden sm:inline">LinkedIn</span>
               </a>
             )}
             {showroom.tiktokHandle && (
@@ -162,11 +163,11 @@ export function ShowroomContact({ showroom }: ShowroomContactProps) {
                 href={`https://tiktok.com/${showroom.tiktokHandle.replace('@', '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="h-10 px-4 rounded-full bg-sidebar border border-sidebar-border flex items-center gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:border-sidebar-accent/50 transition-colors"
+                className="h-9 sm:h-10 px-3 sm:px-4 rounded-full bg-sidebar border border-sidebar-border flex items-center gap-1.5 sm:gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:border-sidebar-accent/50 transition-colors"
                 aria-label="TikTok"
               >
                 <TikTokIcon />
-                <span className="text-sm">TikTok</span>
+                <span className="text-xs sm:text-sm hidden sm:inline">TikTok</span>
               </a>
             )}
           </div>
@@ -284,8 +285,28 @@ function LeafletMap({ lat, lng, markerTitle }: LeafletMapProps) {
   return (
     <div 
       ref={mapRef} 
-      className="relative aspect-[21/9] w-full rounded-2xl overflow-hidden bg-muted z-0"
-      style={{ minHeight: '300px' }}
+      className="relative aspect-[4/3] sm:aspect-video lg:aspect-[21/9] w-full rounded-xl sm:rounded-2xl overflow-hidden bg-muted z-0"
     />
   );
 }
+
+// Skeleton
+function ShowroomContactSkeleton() {
+  return (
+    <section className="py-16 sm:py-20 lg:py-24">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10">
+          <Skeleton className="h-3 w-20 mx-auto mb-4" />
+          <Skeleton className="h-8 w-40 mx-auto" />
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-24 rounded-xl" />
+          ))}
+        </div>
+        <Skeleton className="aspect-[4/3] sm:aspect-video lg:aspect-[21/9] rounded-xl" />
+      </div>
+    </section>
+  );
+}
+ShowroomContact.Skeleton = ShowroomContactSkeleton;

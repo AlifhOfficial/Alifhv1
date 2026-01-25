@@ -9,6 +9,7 @@ import { useRef } from 'react';
 import Image from 'next/image';
 
 import { getPublicUrl } from '@/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -115,3 +116,23 @@ export function ShowroomAchievements({ showroom }: ShowroomAchievementsProps) {
     </section>
   );
 }
+
+// Skeleton
+function ShowroomAchievementsSkeleton() {
+  return (
+    <section className="py-16 sm:py-20 lg:py-24">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10">
+          <Skeleton className="h-3 w-24 mx-auto mb-4" />
+          <Skeleton className="h-8 w-56 mx-auto" />
+        </div>
+        <div className="flex gap-6 overflow-hidden">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="flex-shrink-0 w-72 h-40 rounded-xl" />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+ShowroomAchievements.Skeleton = ShowroomAchievementsSkeleton;

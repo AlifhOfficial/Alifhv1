@@ -9,6 +9,7 @@
 import { useState, useMemo } from 'react';
 import { Calculator, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface EMICalculatorProps {
   price: number;
@@ -184,3 +185,17 @@ export function EMICalculator({ price, currency = 'AED', className }: EMICalcula
     </div>
   );
 }
+
+function EMICalculatorSkeleton({ className }: { className?: string }) {
+  return (
+    <div className={cn("space-y-4", className)}>
+      <Skeleton className="h-4 w-28" />
+      <div className="flex justify-between items-center">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-6 w-24 sm:w-20" />
+      </div>
+    </div>
+  );
+}
+
+EMICalculator.Skeleton = EMICalculatorSkeleton;

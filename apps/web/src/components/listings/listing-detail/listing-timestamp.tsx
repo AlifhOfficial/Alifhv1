@@ -8,6 +8,7 @@
 
 import { Clock } from 'lucide-react';
 import { cn } from '@/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ListingTimestampProps {
   createdAt: Date | string;
@@ -78,3 +79,13 @@ export function ListingTimestamp({
     </div>
   );
 }
+
+function ListingTimestampSkeleton({ className }: { className?: string }) {
+  return (
+    <div className={cn("py-4", className)}>
+      <Skeleton className="h-4 w-24" />
+    </div>
+  );
+}
+
+ListingTimestamp.Skeleton = ListingTimestampSkeleton;

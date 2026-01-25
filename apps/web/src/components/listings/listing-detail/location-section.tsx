@@ -8,6 +8,7 @@
 
 import { MapPin, ExternalLink, Navigation } from 'lucide-react';
 import { cn } from '@/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { SellerData } from '@/hooks/listings';
 
 interface LocationSectionProps {
@@ -120,3 +121,18 @@ export function LocationSection({ sellerData, className }: LocationSectionProps)
     </div>
   );
 }
+
+function LocationSectionSkeleton({ className }: { className?: string }) {
+  return (
+    <div className={cn("space-y-4", className)}>
+      <Skeleton className="h-3 w-16" />
+      <Skeleton className="h-4 w-full sm:w-40" />
+      <div className="flex flex-col sm:flex-row gap-2">
+        <Skeleton className="h-10 w-full sm:flex-1 rounded-full" />
+        <Skeleton className="h-10 w-full sm:flex-1 rounded-full" />
+      </div>
+    </div>
+  );
+}
+
+LocationSection.Skeleton = LocationSectionSkeleton;

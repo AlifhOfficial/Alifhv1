@@ -5,6 +5,7 @@
 
 import Image from 'next/image';
 import { getPublicUrl } from '@/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -70,3 +71,25 @@ export function ShowroomFounder({ showroom }: ShowroomFounderProps) {
     </section>
   );
 }
+
+// Skeleton
+function ShowroomFounderSkeleton() {
+  return (
+    <section className="py-16 sm:py-20 lg:py-24">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="flex justify-center">
+            <Skeleton className="w-48 h-48 rounded-full" />
+          </div>
+          <div className="space-y-4">
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-6 w-40" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+ShowroomFounder.Skeleton = ShowroomFounderSkeleton;

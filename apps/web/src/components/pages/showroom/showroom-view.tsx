@@ -21,8 +21,9 @@ import {
   ShowroomContact,
   ShowroomFooter,
 } from '@/components/pages/showroom';
-import { ChevronLeft, Loader2 } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ShowroomViewProps {
   slug: string;
@@ -34,30 +35,61 @@ interface ShowroomViewProps {
 function ShowroomSkeleton() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Skeleton */}
-      <section className="pt-32 pb-24 px-4 sm:px-6 lg:px-8">
+      {/* Hero Section Skeleton - matches showroom-hero layout */}
+      <section className="py-16 sm:py-20 lg:py-24">
         <div className="max-w-[1600px] mx-auto">
-          <div className="max-w-2xl mx-auto text-center mb-12">
-            {/* Logo skeleton */}
-            <div className="w-14 h-14 mx-auto mb-6 rounded-lg bg-muted animate-pulse" />
-            {/* Brand name skeleton */}
-            <div className="h-3 w-24 mx-auto mb-4 bg-muted animate-pulse rounded" />
-            {/* Tagline skeleton */}
-            <div className="h-8 w-96 max-w-full mx-auto mb-4 bg-muted animate-pulse rounded" />
+          {/* Brand Name & Tagline - Top, Centered */}
+          <div className="px-4 sm:px-6 lg:px-8 mb-8 text-center">
+            {/* Brand name label */}
+            <Skeleton className="h-3 w-20 mx-auto mb-3" />
+            {/* Tagline */}
+            <Skeleton className="h-8 w-80 max-w-full mx-auto" />
           </div>
-          {/* Hero image skeleton */}
-          <div className="aspect-[16/9] max-h-[600px] rounded-2xl bg-muted animate-pulse" />
+          
+          {/* Hero Media - 21/9 aspect ratio */}
+          <div className="px-4 sm:px-6 lg:px-8">
+            <Skeleton className="w-full aspect-[21/9] rounded-2xl" />
+          </div>
         </div>
       </section>
       
-      {/* Content skeleton */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto space-y-8">
-          <div className="h-6 w-48 bg-muted animate-pulse rounded" />
-          <div className="space-y-3">
-            <div className="h-4 w-full bg-muted animate-pulse rounded" />
-            <div className="h-4 w-full bg-muted animate-pulse rounded" />
-            <div className="h-4 w-3/4 bg-muted animate-pulse rounded" />
+      {/* Inventory Preview Skeleton */}
+      <section className="py-16 sm:py-20 lg:py-24">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-8">
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-4 w-20" />
+          </div>
+          {/* Car cards grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="space-y-3">
+                <Skeleton className="aspect-[16/10] rounded-xl" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      
+      {/* Story Section Skeleton */}
+      <section className="py-16 sm:py-20 lg:py-24">
+        <div className="max-w-[1600px] mx-auto">
+          <div className="px-4 sm:px-6 lg:px-8 mb-8">
+            <div className="max-w-3xl">
+              <Skeleton className="h-3 w-16 mb-3" />
+              <Skeleton className="h-8 w-64 mb-2" />
+              <Skeleton className="h-6 w-48 mb-6" />
+              <div className="space-y-4">
+                <Skeleton className="h-5 w-full" />
+                <Skeleton className="h-5 w-full" />
+                <Skeleton className="h-5 w-3/4" />
+              </div>
+            </div>
+          </div>
+          <div className="px-4 sm:px-6 lg:px-8">
+            <Skeleton className="w-full aspect-[21/9] rounded-2xl" />
           </div>
         </div>
       </section>

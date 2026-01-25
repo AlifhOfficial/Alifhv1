@@ -18,8 +18,8 @@ import { ContactSection } from './contact-section';
 import { EMICalculator } from './emi-calculator';
 import { LocationSection } from './location-section';
 import { ListingTimestamp } from './listing-timestamp';
-import { ListingDetailSkeleton } from './listing-detail-skeleton';
 import { SimilarListings } from './similar-listings';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ChevronLeft, AlertTriangle, Loader2, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -62,7 +62,24 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
     return (
       <div className="min-h-screen bg-background">
         <main className="pt-20">
-          <ListingDetailSkeleton />
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10">
+              {/* Main Column */}
+              <div className="lg:col-span-3 space-y-4">
+                <Skeleton className="aspect-[16/10] w-full rounded-xl" />
+                <Skeleton className="h-7 w-3/4" />
+                <Skeleton className="h-5 w-1/2" />
+              </div>
+              {/* Sidebar */}
+              <div className="lg:col-span-2 space-y-6">
+                <SellerProfileCard.Skeleton />
+                <ContactSection.Skeleton />
+                <ListingTimestamp.Skeleton />
+                <EMICalculator.Skeleton />
+                <LocationSection.Skeleton />
+              </div>
+            </div>
+          </div>
         </main>
       </div>
     );

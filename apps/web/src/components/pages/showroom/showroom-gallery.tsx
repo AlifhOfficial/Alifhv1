@@ -9,6 +9,7 @@ import { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { Expand, Images, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getPublicUrl } from '@/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import { getVideoEmbedUrl } from '@/components/partner/car-dealer/showroom/components';
 import { ImageLightbox } from '@/components/ui/image-lightbox';
 import type { ShowroomData } from './types';
@@ -299,3 +300,23 @@ export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
     </>
   );
 }
+
+// Skeleton
+function ShowroomGallerySkeleton() {
+  return (
+    <section className="py-16 sm:py-20 lg:py-24">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10">
+          <Skeleton className="h-3 w-16 mx-auto mb-4" />
+          <Skeleton className="h-8 w-40 mx-auto" />
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <Skeleton key={i} className="aspect-square rounded-xl" />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+ShowroomGallery.Skeleton = ShowroomGallerySkeleton;

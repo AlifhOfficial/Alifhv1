@@ -8,6 +8,7 @@
 import Image from 'next/image';
 
 import { getPublicUrl } from '@/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -102,3 +103,27 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
     </section>
   );
 }
+
+// Skeleton
+function ShowroomTeamSkeleton() {
+  return (
+    <section className="py-16 sm:py-20 lg:py-24">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10">
+          <Skeleton className="h-3 w-16 mx-auto mb-4" />
+          <Skeleton className="h-8 w-40 mx-auto" />
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="text-center space-y-3">
+              <Skeleton className="w-20 h-20 rounded-full mx-auto" />
+              <Skeleton className="h-4 w-24 mx-auto" />
+              <Skeleton className="h-3 w-16 mx-auto" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+ShowroomTeam.Skeleton = ShowroomTeamSkeleton;

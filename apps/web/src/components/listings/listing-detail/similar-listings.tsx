@@ -90,25 +90,10 @@ export function SimilarListings({
  */
 function SimilarListingSkeleton() {
   return (
-    <div className="bg-card rounded-xl overflow-hidden border border-border">
-      {/* Image skeleton */}
-      <Skeleton className="aspect-[16/10] w-full" />
-      
-      {/* Content skeleton */}
-      <div className="p-4 space-y-3">
-        {/* Title */}
-        <Skeleton className="h-5 w-3/4" />
-        
-        {/* Price */}
-        <Skeleton className="h-6 w-1/2" />
-        
-        {/* Details */}
-        <div className="flex gap-2">
-          <Skeleton className="h-4 w-16" />
-          <Skeleton className="h-4 w-16" />
-          <Skeleton className="h-4 w-16" />
-        </div>
-      </div>
+    <div className="space-y-3">
+      <Skeleton className="aspect-[16/10] w-full rounded-xl" />
+      <Skeleton className="h-5 w-3/4" />
+      <Skeleton className="h-4 w-1/2" />
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { useRef, useState } from 'react';
 import Image from 'next/image';
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { getPublicUrl } from '@/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import { getVideoEmbedUrl } from '@/components/partner/car-dealer/showroom/components';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
@@ -175,3 +176,26 @@ function StoryMedia({ storyVideoFileUrl, embedUrl, firstImage, title }: StoryMed
     </div>
   );
 }
+
+// Skeleton
+function ShowroomStorySkeleton() {
+  return (
+    <section className="py-16 sm:py-20 lg:py-24">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10">
+          <Skeleton className="h-3 w-20 mx-auto mb-4" />
+          <Skeleton className="h-8 w-48 mx-auto" />
+        </div>
+        <div className="grid lg:grid-cols-2 gap-12">
+          <div className="space-y-4">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+          </div>
+          <Skeleton className="aspect-[21/9] rounded-xl" />
+        </div>
+      </div>
+    </section>
+  );
+}
+ShowroomStory.Skeleton = ShowroomStorySkeleton;

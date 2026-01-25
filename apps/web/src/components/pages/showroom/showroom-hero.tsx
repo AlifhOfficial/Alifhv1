@@ -11,6 +11,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Volume2, VolumeX, Pause, Play } from 'lucide-react';
 import { getPublicUrl } from '@/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import { getVideoEmbedUrl } from '@/components/partner/car-dealer/showroom/components';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
@@ -312,3 +313,21 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
     </section>
   );
 }
+
+// Skeleton
+function ShowroomHeroSkeleton() {
+  return (
+    <section className="py-16 sm:py-20 lg:py-24">
+      <div className="max-w-[1600px] mx-auto">
+        <div className="px-4 sm:px-6 lg:px-8 mb-8 text-center">
+          <Skeleton className="h-3 w-24 mx-auto mb-4" />
+          <Skeleton className="h-8 w-64 max-w-full mx-auto" />
+        </div>
+        <div className="px-4 sm:px-6 lg:px-8">
+          <Skeleton className="w-full aspect-[16/9] md:aspect-[21/9] rounded-xl" />
+        </div>
+      </div>
+    </section>
+  );
+}
+ShowroomHero.Skeleton = ShowroomHeroSkeleton;

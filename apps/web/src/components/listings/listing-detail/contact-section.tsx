@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Phone, MessageCircle, Copy, Check, Loader2, Calendar } from 'lucide-react';
 import { cn } from '@/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthRequired } from '@/hooks/use-auth-required';
 import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 import type { SellerData } from '@/hooks/listings';
@@ -231,3 +232,16 @@ export function ContactSection({
     </div>
   );
 }
+
+function ContactSectionSkeleton({ className }: { className?: string }) {
+  return (
+    <div className={cn("space-y-4", className)}>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <Skeleton className="h-12 w-full sm:flex-1 rounded-full" />
+        <Skeleton className="h-12 w-full sm:flex-1 rounded-full" />
+      </div>
+    </div>
+  );
+}
+
+ContactSection.Skeleton = ContactSectionSkeleton;

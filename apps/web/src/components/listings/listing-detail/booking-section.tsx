@@ -8,6 +8,7 @@
 
 import { Calendar } from 'lucide-react';
 import { cn } from '@/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface BookingSectionProps {
   onBookTestDrive: () => void;
@@ -40,3 +41,15 @@ export function BookingSection({
     </div>
   );
 }
+
+function BookingSectionSkeleton({ className }: { className?: string }) {
+  return (
+    <div className={cn("space-y-4", className)}>
+      <Skeleton className="h-3 w-16" />
+      <Skeleton className="h-12 w-full rounded-full" />
+      <Skeleton className="h-4 w-full sm:w-40 mx-auto" />
+    </div>
+  );
+}
+
+BookingSection.Skeleton = BookingSectionSkeleton;
