@@ -176,9 +176,9 @@ export function ListingsHeader({
       "[&:not(:first-child)]:border-sidebar-border/50",
       embedded ? "top-0" : "top-14 sm:top-16"
     )}>
-      <div className="py-3 sm:py-4 relative">
+      <div className="py-2.5 sm:py-4 relative">
         {/* Search Row */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2">
           {/* Sidebar Toggle (Desktop) - Use opacity/pointer-events instead of conditional render */}
           <button
             onClick={() => onSidebarToggle(true)}
@@ -196,29 +196,77 @@ export function ListingsHeader({
           {/* Mobile Filters */}
           <Sheet open={mobileFiltersOpen} onOpenChange={onMobileFiltersToggle}>
             <SheetTrigger asChild>
-              <button className="lg:hidden relative p-2 -ml-2 text-muted-foreground hover:text-foreground transition-colors">
-                <SlidersHorizontal className="h-4 w-4" />
+              <button className="lg:hidden relative p-2.5 -ml-1 text-muted-foreground hover:text-foreground active:text-foreground transition-colors touch-manipulation">
+                <SlidersHorizontal className="h-5 w-5 sm:h-4 sm:w-4" />
                 {activeFilterCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 text-[10px] font-medium bg-foreground text-background rounded-full flex items-center justify-center">
+                  <span className="absolute top-0.5 right-0.5 min-w-[18px] h-[18px] px-1 text-[10px] font-bold bg-foreground text-background rounded-full flex items-center justify-center">
                     {activeFilterCount}
                   </span>
                 )}
               </button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="h-[85vh] p-4 sm:p-6 bg-background text-foreground border-border">
+            <SheetContent 
+              side="bottom" 
+              className="h-[90vh] p-0 bg-background text-foreground border-t-0 rounded-t-3xl flex flex-col shadow-2xl"
+              overlayClassName="bg-black/60"
+            >
               <SheetTitle className="sr-only">Filters</SheetTitle>
-              <div className="overflow-y-auto h-full pb-4">
+              
+              {/* Drag Handle */}
+              <div className="flex justify-center pt-3 pb-2 shrink-0">
+                <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
+              </div>
+
+              {/* Header */}
+              <div className="px-5 pb-4 border-b border-border shrink-0">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-bold tracking-tight">Filters</h3>
+                    {activeFilterCount > 0 && (
+                      <p className="text-sm text-muted-foreground mt-0.5">
+                        {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''} applied
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {activeFilterCount > 0 && (
+                      <button
+                        onClick={clearFilters}
+                        className="text-sm font-semibold text-muted-foreground hover:text-foreground touch-manipulation px-3 py-1.5 rounded-lg hover:bg-muted transition-colors"
+                      >
+                        Reset
+                      </button>
+                    )}
+                    <button
+                      onClick={() => onMobileFiltersToggle(false)}
+                      className="p-2 -mr-2 rounded-full hover:bg-muted transition-colors touch-manipulation"
+                    >
+                      <X className="h-5 w-5 text-muted-foreground" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Scrollable Filter Content */}
+              <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4">
                 <FilterSidebar
                   params={params}
                   facets={facets}
                   isLoading={isLoading}
-                  onFilterChange={(filters) => {
-                    setFilters(filters);
-                    onMobileFiltersToggle(false);
-                  }}
+                  onFilterChange={setFilters}
                   onClearFilters={clearFilters}
                   activeFilterCount={activeFilterCount}
                 />
+              </div>
+
+              {/* Sticky Footer with Apply Button */}
+              <div className="shrink-0 px-5 py-4 border-t border-border bg-background/95 backdrop-blur-sm pb-safe">
+                <button
+                  onClick={() => onMobileFiltersToggle(false)}
+                  className="w-full h-12 bg-primary text-primary-foreground font-semibold text-base rounded-2xl hover:bg-primary/90 active:scale-[0.98] transition-all touch-manipulation shadow-lg"
+                >
+                  Show {meta?.total ?? 0} results
+                </button>
               </div>
             </SheetContent>
           </Sheet>
@@ -235,24 +283,25 @@ export function ListingsHeader({
           </div>
 
           {/* Search Bar - Full width on mobile, flexible on desktop */}
-          <div className="w-full sm:flex-1 sm:min-w-[200px] order-last sm:order-none">
+          <div className="w-full sm:flex-1 sm:min-w-[200px] order-last sm:order-none mt-2 sm:mt-0">
             <SearchBar
               size="sm"
-              placeholder="Search make, model, dealer..."
+              placeholder="Search make, model..."
               redirectOnSearch={false}
               onSearch={setFilters}
             />
           </div>
 
           {/* Right Controls Group */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {/* Sort Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button 
-                  className="flex items-center gap-2 h-9 px-4 text-sm font-semibold bg-sidebar border border-sidebar-border rounded-full text-sidebar-foreground/70 hover:text-sidebar-foreground shadow-sm transition-colors"
+                  className="flex items-center gap-1.5 sm:gap-2 h-9 px-2.5 sm:px-4 text-sm font-semibold bg-sidebar border border-sidebar-border rounded-full text-sidebar-foreground/70 hover:text-sidebar-foreground shadow-sm transition-colors touch-manipulation"
                 >
-                  <span>{SORT_OPTIONS.find(s => s.value === (params.sortBy || 'relevance'))?.label || 'Default'}</span>
+                  <span className="hidden xs:inline">{SORT_OPTIONS.find(s => s.value === (params.sortBy || 'relevance'))?.label || 'Sort'}</span>
+                  <span className="xs:hidden">Sort</span>
                   <ChevronDown className="size-3.5" />
                 </button>
               </DropdownMenuTrigger>
@@ -273,11 +322,11 @@ export function ListingsHeader({
             </DropdownMenu>
 
             {/* View Toggle */}
-            <div className="flex items-center h-9 px-1 bg-sidebar border border-sidebar-border rounded-full shadow-sm">
+            <div className="flex items-center h-9 px-0.5 sm:px-1 bg-sidebar border border-sidebar-border rounded-full shadow-sm">
               <button
                 onClick={() => onViewModeChange('grid')}
                 className={cn(
-                  "flex items-center justify-center w-7 h-7 rounded-full transition-colors",
+                  "flex items-center justify-center w-8 h-8 sm:w-7 sm:h-7 rounded-full transition-colors touch-manipulation",
                   viewMode === 'grid' ? "text-foreground bg-muted/50" : "text-muted-foreground hover:text-foreground"
                 )}
                 title="Grid view"
@@ -287,7 +336,7 @@ export function ListingsHeader({
               <button
                 onClick={() => onViewModeChange('minimal')}
                 className={cn(
-                  "flex items-center justify-center w-7 h-7 rounded-full transition-colors",
+                  "flex items-center justify-center w-8 h-8 sm:w-7 sm:h-7 rounded-full transition-colors touch-manipulation",
                   viewMode === 'minimal' ? "text-foreground bg-muted/50" : "text-muted-foreground hover:text-foreground"
                 )}
                 title="Minimal view"
@@ -318,6 +367,156 @@ export function ListingsHeader({
               onFilterChange={setFilters}
             />
           </div>
+        </div>
+
+        {/* Mobile: Active filters strip + results count */}
+        <div className="flex sm:hidden items-center gap-2 mt-2 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-1">
+          {/* Results count on mobile */}
+          {!isLoading && (
+            <span className="text-xs font-medium text-muted-foreground whitespace-nowrap shrink-0">
+              {meta?.total ?? 0} cars
+            </span>
+          )}
+          
+          {/* Breadcrumb on mobile */}
+          {breadcrumbItems.length > 1 && (
+            <>
+              <div className="w-px h-4 bg-border shrink-0" />
+              <nav className="flex items-center gap-1 shrink-0">
+                {breadcrumbItems.map((item, index) => (
+                  <div key={item.href} className="flex items-center gap-1">
+                    {index > 0 && <ChevronRight className="size-3 text-muted-foreground/40" />}
+                    {index === breadcrumbItems.length - 1 ? (
+                      <span className="text-xs font-bold text-foreground whitespace-nowrap">{item.label}</span>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          if (index === 0) {
+                            setFilters({ make: undefined, model: undefined, trim: undefined });
+                          } else if (index === 1) {
+                            setFilters({ model: undefined, trim: undefined });
+                          }
+                        }}
+                        className="text-xs font-medium text-muted-foreground whitespace-nowrap touch-manipulation"
+                      >
+                        {item.label}
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </nav>
+            </>
+          )}
+          
+          {/* Active filter chips on mobile (excluding make/model/trim shown in breadcrumb) */}
+          {activeChips.filter(c => !['make', 'model', 'trim'].includes(c.key)).length > 0 && (
+            <>
+              <div className="w-px h-4 bg-border shrink-0" />
+              {activeChips.filter(c => !['make', 'model', 'trim'].includes(c.key)).slice(0, 2).map((chip) => (
+                <button
+                  key={chip.key}
+                  onClick={() => handleChipRemove(chip.key)}
+                  className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium bg-muted/50 text-foreground/80 hover:bg-muted/70 rounded-full transition-colors whitespace-nowrap shrink-0 touch-manipulation"
+                >
+                  <span className="max-w-[80px] truncate">{chip.label}</span>
+                  <X className="h-2.5 w-2.5" />
+                </button>
+              ))}
+              {activeChips.filter(c => !['make', 'model', 'trim'].includes(c.key)).length > 2 && (
+                <span className="text-[11px] text-muted-foreground whitespace-nowrap shrink-0">+{activeChips.filter(c => !['make', 'model', 'trim'].includes(c.key)).length - 2}</span>
+              )}
+            </>
+          )}
+          
+          {/* Clear all on mobile */}
+          {activeFilterCount > 0 && (
+            <button
+              onClick={clearFilters}
+              className="ml-auto shrink-0 px-2 py-1 text-[11px] font-medium text-muted-foreground hover:text-foreground rounded-full transition-colors touch-manipulation"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+
+        {/* Mobile: Quick-Select Pills */}
+        <div className="sm:hidden mt-2 -mx-1 px-1">
+          {/* Make Quick-Select */}
+          {!params.make?.length && (facets?.make ?? []).length > 0 && (
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
+                Makes
+              </span>
+              {(facets?.make ?? []).slice(0, 6).map((make) => (
+                <button
+                  key={make.value}
+                  onClick={() => setFilters({ make: [make.value], model: undefined, trim: undefined })}
+                  className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-foreground/80 bg-muted/40 active:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0 touch-manipulation"
+                >
+                  <span>{make.label}</span>
+                  <span className="text-[10px] text-muted-foreground tabular-nums">{make.count}</span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Model Quick-Select */}
+          {params.make?.length && !params.model?.length && (
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
+                Models
+              </span>
+              {isLoading ? (
+                <>
+                  {[1,2,3,4].map((i) => (
+                    <div key={i} className="h-7 w-16 rounded-full bg-muted/60 animate-pulse shrink-0" />
+                  ))}
+                </>
+              ) : (facets?.model ?? []).length > 0 ? (
+                <>
+                  {(facets?.model ?? []).slice(0, 8).map((model) => (
+                    <button
+                      key={model.value}
+                      onClick={() => setFilters({ model: [model.value] })}
+                      className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-foreground/80 bg-muted/40 active:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0 touch-manipulation"
+                    >
+                      <span>{model.label}</span>
+                      <span className="text-[10px] text-muted-foreground tabular-nums">{model.count}</span>
+                    </button>
+                  ))}
+                </>
+              ) : null}
+            </div>
+          )}
+
+          {/* Trim Quick-Select */}
+          {params.make?.length && params.model?.length && !params.trim?.length && (facets?.trim ?? []).length > 0 && (
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
+                Trims
+              </span>
+              {isLoading ? (
+                <>
+                  {[1,2,3].map((i) => (
+                    <div key={i} className="h-7 w-14 rounded-full bg-muted/60 animate-pulse shrink-0" />
+                  ))}
+                </>
+              ) : (
+                <>
+                  {(facets?.trim ?? []).slice(0, 8).map((trim) => (
+                    <button
+                      key={trim.value}
+                      onClick={() => setFilters({ trim: [trim.value] })}
+                      className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-foreground/80 bg-muted/40 active:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0 touch-manipulation"
+                    >
+                      <span>{trim.label}</span>
+                      <span className="text-[10px] text-muted-foreground tabular-nums">{trim.count}</span>
+                    </button>
+                  ))}
+                </>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Dynamic Island - Fixed height container that morphs content */}

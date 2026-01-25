@@ -22,6 +22,12 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import type { SearchParams, SearchFacets } from '@/lib/search-utils';
 
 // Import static data from centralized constants (client-side, no DB calls)
@@ -49,7 +55,8 @@ export function AdvancedFilters({
   activeCount = 0,
   children,
 }: AdvancedFiltersProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [desktopOpen, setDesktopOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const advancedCount = countAdvancedFilters(params);
@@ -73,84 +80,41 @@ export function AdvancedFilters({
   };
 
   const handleClose = () => {
-    setIsOpen(false);
+    setMobileOpen(false);
+    setDesktopOpen(false);
   };
 
-  // Close on click outside
+  // Close desktop panel on click outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
+        setDesktopOpen(false);
       }
     };
 
-    if (isOpen) {
+    if (desktopOpen) {
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [isOpen]);
+  }, [desktopOpen]);
 
   // Close on escape
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setIsOpen(false);
+        setDesktopOpen(false);
       }
     };
 
-    if (isOpen) {
+    if (desktopOpen) {
       document.addEventListener('keydown', handleEscape);
       return () => document.removeEventListener('keydown', handleEscape);
     }
-  }, [isOpen]);
+  }, [desktopOpen]);
 
-  return (
-    <div ref={containerRef} className="relative">
-      {/* Trigger Button */}
-      {children ? (
-        <div onClick={() => setIsOpen(!isOpen)}>
-          {children}
-        </div>
-      ) : (
-        <button 
-          type="button"
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 h-9 px-4 text-sm font-semibold bg-sidebar border border-sidebar-border rounded-full text-sidebar-foreground/70 hover:text-sidebar-foreground shadow-sm transition-colors"
-        >
-          <SlidersHorizontal className="h-4 w-4" />
-          <span className="hidden sm:inline">More Filters</span>
-          <span className="sm:hidden">Filters</span>
-        </button>
-      )}
-
-      {/* Floating Panel */}
-      {isOpen && (
-        <div 
-          className={cn(
-            "absolute top-full right-0 z-50 mt-2",
-            "w-[360px] sm:w-[420px]",
-            "bg-sidebar border border-sidebar-border rounded-2xl shadow-xl",
-            "overflow-hidden",
-            "animate-in fade-in-0 slide-in-from-top-2 duration-150"
-          )}
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-sidebar-border">
-            <div className="flex items-center gap-2.5">
-              <SlidersHorizontal className="h-4 w-4 text-muted-foreground/70" />
-              <h3 className="text-[15px] font-semibold tracking-tight text-sidebar-foreground/80">More Filters</h3>
-            </div>
-            <button 
-              type="button"
-              onClick={handleClose}
-              className="p-1.5 rounded-full hover:bg-muted transition-colors"
-            >
-              <X className="h-4 w-4 text-muted-foreground" />
-            </button>
-          </div>
-
-          {/* Scrollable Content */}
-          <div className="max-h-[70vh] overflow-y-auto p-3 space-y-0.5">
+  // Content component to avoid duplication
+  const FilterContent = () => (
+    <div className="space-y-0.5">
             {/* Body Type */}
             <FilterGroup
               title="Body Type"
@@ -233,50 +197,194 @@ export function AdvancedFilters({
               defaultOpen={true}
             />
 
-            {/* Seller Type */}
-            <FilterGroup
-              title="Seller Type"
-              options={[
-                { 
-                  value: 'dealer', 
-                  label: 'Dealer', 
-                  count: facets?.sellerType.find(x => x.value === 'dealer')?.count ?? 0 
-                },
-                { 
-                  value: 'private', 
-                  label: 'Private', 
-                  count: facets?.sellerType.find(x => x.value === 'private')?.count ?? 0 
-                },
-              ]}
-              selected={params.sellerType ? [params.sellerType] : []}
-              onChange={(sellerType) => handleFilterChange({ 
-                sellerType: sellerType[0] as 'dealer' | 'private' | undefined 
-              })}
-              singleSelect
-              defaultOpen={true}
-            />
-          </div>
+      {/* Seller Type */}
+      <FilterGroup
+        title="Seller Type"
+        options={[
+          { 
+            value: 'dealer', 
+            label: 'Dealer', 
+            count: facets?.sellerType.find(x => x.value === 'dealer')?.count ?? 0 
+          },
+          { 
+            value: 'private', 
+            label: 'Private', 
+            count: facets?.sellerType.find(x => x.value === 'private')?.count ?? 0 
+          },
+        ]}
+        selected={params.sellerType ? [params.sellerType] : []}
+        onChange={(sellerType) => handleFilterChange({ 
+          sellerType: sellerType[0] as 'dealer' | 'private' | undefined 
+        })}
+        singleSelect
+        defaultOpen={true}
+      />
+    </div>
+  );
 
-          {/* Footer */}
-          {advancedCount > 0 && (
-            <div className="px-4 py-3 border-t border-sidebar-border">
+  // Footer component
+  const FilterFooter = () => advancedCount > 0 ? (
+    <div className="px-4 py-3 border-t border-sidebar-border">
+      <button
+        type="button"
+        onClick={(e) => handleReset(e)}
+        className={cn(
+          "w-full px-3 py-2 text-sm font-medium",
+          "text-muted-foreground/70 hover:text-sidebar-foreground/80",
+          "hover:bg-muted/40 rounded-lg",
+          "transition-colors"
+        )}
+      >
+        Reset all filters
+      </button>
+    </div>
+  ) : null;
+
+  return (
+    <>
+      {/* Mobile: Use Sheet with pill-style trigger */}
+      <div className="sm:hidden">
+        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+          <SheetTrigger asChild>
+            <button 
+              type="button"
+              className={cn(
+                "flex items-center gap-1.5 h-9 px-3.5 text-sm font-semibold rounded-full transition-colors touch-manipulation",
+                advancedCount > 0
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <span>More</span>
+              {advancedCount > 0 && (
+                <span className="min-w-[18px] h-[18px] px-1 text-[10px] font-bold bg-primary-foreground text-primary rounded-full flex items-center justify-center">
+                  {advancedCount}
+                </span>
+              )}
+            </button>
+          </SheetTrigger>
+          <SheetContent 
+            side="bottom" 
+            className="h-[90vh] p-0 bg-background text-foreground border-t-0 rounded-t-3xl flex flex-col shadow-2xl"
+            overlayClassName="bg-black/60"
+          >
+            <SheetTitle className="sr-only">More Filters</SheetTitle>
+            
+            {/* Drag Handle */}
+            <div className="flex justify-center pt-3 pb-2 shrink-0">
+              <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
+            </div>
+
+            {/* Header */}
+            <div className="px-5 pb-4 border-b border-border shrink-0">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-bold tracking-tight">More Filters</h3>
+                  {advancedCount > 0 && (
+                    <p className="text-sm text-muted-foreground mt-0.5">
+                      {advancedCount} filter{advancedCount > 1 ? 's' : ''} selected
+                    </p>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  {advancedCount > 0 && (
+                    <button
+                      type="button"
+                      onClick={(e) => handleReset(e)}
+                      className="text-sm font-semibold text-muted-foreground hover:text-foreground touch-manipulation px-3 py-1.5 rounded-lg hover:bg-muted transition-colors"
+                    >
+                      Reset
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setMobileOpen(false)}
+                    className="p-2 -mr-2 rounded-full hover:bg-muted transition-colors touch-manipulation"
+                  >
+                    <X className="h-5 w-5 text-muted-foreground" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4">
+              <FilterContent />
+            </div>
+
+            {/* Sticky Footer with Apply Button */}
+            <div className="shrink-0 px-5 py-4 border-t border-border bg-background/95 backdrop-blur-sm pb-safe">
               <button
                 type="button"
-                onClick={(e) => handleReset(e)}
-                className={cn(
-                  "w-full px-3 py-2 text-sm font-medium",
-                  "text-muted-foreground/70 hover:text-sidebar-foreground/80",
-                  "hover:bg-muted/40 rounded-lg",
-                  "transition-colors"
-                )}
+                onClick={() => setMobileOpen(false)}
+                className="w-full h-12 bg-primary text-primary-foreground font-semibold text-base rounded-2xl hover:bg-primary/90 active:scale-[0.98] transition-all touch-manipulation shadow-lg"
               >
-                Reset all filters
+                Apply Filters
               </button>
             </div>
-          )}
-        </div>
-      )}
-    </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      {/* Desktop: Use floating panel */}
+      <div ref={containerRef} className="relative hidden sm:block">
+        {/* Trigger Button */}
+        {children ? (
+          <div onClick={() => setDesktopOpen(!desktopOpen)}>
+            {children}
+          </div>
+        ) : (
+          <button 
+            type="button"
+            onClick={() => setDesktopOpen(!desktopOpen)}
+            className="flex items-center gap-2 h-9 px-4 text-sm font-semibold bg-sidebar border border-sidebar-border rounded-full text-sidebar-foreground/70 hover:text-sidebar-foreground shadow-sm transition-colors"
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            <span>More Filters</span>
+            {advancedCount > 0 && (
+              <span className="min-w-[18px] h-[18px] px-1 text-[10px] font-bold bg-foreground text-background rounded-full flex items-center justify-center">
+                {advancedCount}
+              </span>
+            )}
+          </button>
+        )}
+
+        {/* Floating Panel */}
+        {desktopOpen && (
+          <div 
+            className={cn(
+              "absolute top-full right-0 z-50 mt-2",
+              "w-[420px]",
+              "bg-sidebar border border-sidebar-border rounded-2xl shadow-xl",
+              "overflow-hidden",
+              "animate-in fade-in-0 slide-in-from-top-2 duration-150"
+            )}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-sidebar-border">
+              <div className="flex items-center gap-2.5">
+                <SlidersHorizontal className="h-4 w-4 text-muted-foreground/70" />
+                <h3 className="text-[15px] font-semibold tracking-tight text-sidebar-foreground/80">More Filters</h3>
+              </div>
+              <button 
+                type="button"
+                onClick={() => setDesktopOpen(false)}
+                className="p-1.5 rounded-full hover:bg-muted transition-colors"
+              >
+                <X className="h-4 w-4 text-muted-foreground" />
+              </button>
+            </div>
+
+            {/* Scrollable Content */}
+            <div className="max-h-[70vh] overflow-y-auto p-3">
+              <FilterContent />
+            </div>
+
+            <FilterFooter />
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 

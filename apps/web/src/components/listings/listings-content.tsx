@@ -149,7 +149,7 @@ export function ListingsContent({
       {/* Mobile/Tablet: grid or minimal */}
       <div className="lg:hidden">
         {showSkeletons ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
               viewMode === 'minimal' 
                 ? <CarCardMinimal.Skeleton key={i} />
@@ -157,7 +157,7 @@ export function ListingsContent({
             ))}
           </div>
         ) : viewMode === 'minimal' ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
             {listings.map((listing, index) => (
               <CarCardMinimal
                 key={listing.id}
@@ -178,7 +178,7 @@ export function ListingsContent({
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
             {listings.map((listing, index) => (
               <CarCard
                 key={listing.id}

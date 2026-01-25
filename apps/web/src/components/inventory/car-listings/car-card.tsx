@@ -264,7 +264,7 @@ export function CarCard({
 
       {/* Image Section */}
       <Link href={`/listings/${id}`} className={cn(
-        "relative aspect-[4/3] sm:aspect-[3/2] lg:aspect-[16/10] w-full overflow-hidden block",
+        "relative aspect-[4/3] xs:aspect-[16/10] sm:aspect-[3/2] lg:aspect-[16/10] w-full overflow-hidden block",
         isBlkListing ? "bg-zinc-900" : "bg-muted/20"
       )}>
         <Image
@@ -273,7 +273,7 @@ export function CarCard({
           fill
           priority={priority}
           className="object-cover transition-transform duration-300 group-hover:scale-105"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
         />
       </Link>
 
@@ -401,13 +401,13 @@ export function CarCard({
           </div>
 
           {/* Right - Actions */}
-          <div className="flex items-center -mr-1.5 flex-shrink-0">
+          <div className="flex items-center -mr-2 sm:-mr-1.5 flex-shrink-0">
             <button 
               className={cn(
-                "rounded-full p-1.5 transition-colors",
+                "rounded-full p-2 sm:p-1.5 transition-colors touch-manipulation",
                 isBlkListing 
-                  ? "text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/50" 
-                  : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50"
+                  ? "text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/50 active:bg-zinc-700/50" 
+                  : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50 active:bg-muted/70"
               )}
               aria-label="Share"
               onClick={(event) => {
@@ -422,15 +422,15 @@ export function CarCard({
             {/* Favorite Button */}
             <button 
               className={cn(
-                "relative rounded-full p-1.5 transition-all active:scale-95",
+                "relative rounded-full p-2 sm:p-1.5 transition-all active:scale-95 touch-manipulation",
                 favorite.isUpdating && "opacity-50 cursor-not-allowed",
                 favorite.isFavorite
                   ? isBlkListing 
                     ? "text-rose-400 hover:bg-zinc-800/50" 
                     : "text-rose-500 hover:bg-muted/50"
                   : isBlkListing 
-                    ? "text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/50" 
-                    : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50"
+                    ? "text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/50 active:bg-zinc-700/50" 
+                    : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50 active:bg-muted/70"
               )}
               aria-label={favorite.isFavorite ? "Remove favorite" : "Add to favorites"}
               aria-pressed={favorite.isFavorite}
@@ -458,15 +458,15 @@ export function CarCard({
             {/* Superlike Button */}
             <button
               className={cn(
-                "relative rounded-full p-1.5 transition-all active:scale-95",
+                "relative rounded-full p-2 sm:p-1.5 transition-all active:scale-95 touch-manipulation",
                 superlike.isUpdating && "opacity-50 cursor-not-allowed",
                 superlike.isSuperliked
                   ? isBlkListing 
                     ? "text-yellow-400 hover:bg-zinc-800/50" 
                     : "text-yellow-500 hover:bg-muted/50"
                   : isBlkListing 
-                    ? "text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/50" 
-                    : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50"
+                    ? "text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/50 active:bg-zinc-700/50" 
+                    : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50 active:bg-muted/70"
               )}
               aria-label={superlike.isSuperliked ? "Remove superlike" : "Superlike"}
               aria-pressed={superlike.isSuperliked}
@@ -543,7 +543,7 @@ function CarCardSkeletonComponent({ className }: CarCardSkeletonProps) {
       className
     )}>
       {/* Image Section - matches CarCard aspect ratios */}
-      <Skeleton className="aspect-[4/3] sm:aspect-[3/2] lg:aspect-[16/10] w-full" />
+      <Skeleton className="aspect-[4/3] xs:aspect-[16/10] sm:aspect-[3/2] lg:aspect-[16/10] w-full" />
       
       {/* Content Section */}
       <div className="flex flex-1 flex-col p-3 sm:p-4 gap-1.5">

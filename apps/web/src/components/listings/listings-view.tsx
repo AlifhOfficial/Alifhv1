@@ -113,7 +113,7 @@ export function ListingsView({ embedded = false }: ListingsViewProps) {
             />
 
             {/* Content */}
-            <main className="py-4 sm:py-6">
+            <main className="py-3 sm:py-6">
               <ListingsContent
                 listings={listings}
                 meta={meta}

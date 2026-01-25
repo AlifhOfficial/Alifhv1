@@ -64,10 +64,9 @@ export function CarCardMinimal({
           : 'bg-sidebar border border-sidebar-border hover:border-sidebar-border/80 hover:shadow-sm',
         className
       )}
-    >
-      {/* Image - Compact */}
+    >      {/* Image - Compact */}
       <div className={cn(
-        "relative aspect-[16/10] w-full overflow-hidden",
+        "relative aspect-[4/3] xs:aspect-[16/10] w-full overflow-hidden",
         isBlkListing ? "bg-zinc-900" : "bg-muted/20"
       )}>
         <Image
@@ -76,7 +75,7 @@ export function CarCardMinimal({
           fill
           priority={priority}
           className="object-cover transition-transform duration-300 group-hover:scale-105"
-          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+          sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
         />
       </div>
 
@@ -177,7 +176,7 @@ function CarCardMinimalSkeletonComponent({ className }: CarCardMinimalSkeletonPr
       className
     )}>
       {/* Image */}
-      <Skeleton className="aspect-[16/10] w-full" />
+      <Skeleton className="aspect-[4/3] xs:aspect-[16/10] w-full" />
 
       {/* Content - Clean & Minimal */}
       <div className="flex items-center justify-between gap-3 p-3">

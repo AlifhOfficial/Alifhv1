@@ -331,11 +331,11 @@ export function SearchBar({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Size classes
+  // Size classes - use text-base (16px) on mobile to prevent iOS auto-zoom
   const sizeClasses = {
-    sm: 'h-10 text-sm px-1',
-    md: 'h-11 text-sm px-1',
-    lg: 'h-12 text-base px-2',
+    sm: 'h-11 sm:h-10 text-base sm:text-sm px-1',
+    md: 'h-12 sm:h-11 text-base sm:text-sm px-1',
+    lg: 'h-14 sm:h-12 text-base px-2',
   };
 
   const iconSizes = {
@@ -374,14 +374,14 @@ export function SearchBar({
         sizeClasses[size]
       )}>
         <Search className={cn(
-          'absolute left-3.5 transition-colors',
+          'absolute left-3 sm:left-3.5 transition-colors',
           isFocused ? 'text-primary' : 'text-sidebar-foreground/60',
           iconSizes[size]
         )} />
         
         {/* Styled display overlay - hides dots completely */}
         {query && (
-          <div className="absolute left-11 right-10 pointer-events-none font-semibold tracking-tight text-sidebar-foreground truncate">
+          <div className="absolute left-10 sm:left-11 right-12 sm:right-10 pointer-events-none font-semibold tracking-tight text-sidebar-foreground truncate">
             {query.split(/(\s*\.\s*)/).map((part, i) => 
               part.match(/^\s*\.\s*$/) 
                 ? <span key={i} className="text-transparent select-none">{part}</span>
@@ -399,10 +399,15 @@ export function SearchBar({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           autoFocus={autoFocus}
+          // Prevent iOS zoom on focus
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck="false"
           className={cn(
-            'w-full h-full bg-transparent pl-11 pr-10',
+            'w-full h-full bg-transparent pl-10 sm:pl-11 pr-12 sm:pr-10',
             'placeholder:text-sidebar-foreground/50 placeholder:font-medium',
-            'focus:outline-none',
+            'focus:outline-none touch-manipulation',
             'font-semibold tracking-tight',
             // Hide text when showing styled overlay (but keep for caret positioning)
             query ? 'text-transparent caret-sidebar-foreground' : 'text-sidebar-foreground'
@@ -420,8 +425,8 @@ export function SearchBar({
           <button
             onClick={() => setQuery('')}
             className={cn(
-              "absolute right-3 p-1 rounded-full transition-all",
-              "text-muted-foreground/50 hover:text-foreground hover:bg-muted"
+              "absolute right-2 sm:right-3 p-2 sm:p-1 rounded-full transition-all touch-manipulation",
+              "text-muted-foreground/50 hover:text-foreground hover:bg-muted active:bg-muted"
             )}
             aria-label="Clear search"
           >

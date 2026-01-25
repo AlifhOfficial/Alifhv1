@@ -30,22 +30,22 @@ export function ListingsPagination({
   if (totalPages <= 1) return null;
 
   return (
-    <div className="flex flex-col items-center gap-3 py-6 sm:py-8 md:py-10">
+    <div className="flex flex-col items-center gap-4 py-6 sm:py-8 md:py-10 px-4">
       {/* Page info */}
-      <p className="text-xs sm:text-sm text-muted-foreground">
+      <p className="text-xs sm:text-sm text-muted-foreground text-center">
         Page {currentPage} of {totalPages} • {totalResults} results
       </p>
       
       {/* Pagination controls */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 sm:gap-1.5">
         {/* Previous button */}
         <button
           onClick={() => goToPage(currentPage - 1)}
           disabled={currentPage === 1 || isFetching}
-          className="p-2 rounded-lg hover:bg-secondary/50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="p-2.5 sm:p-2 rounded-lg hover:bg-secondary/50 active:bg-secondary/70 disabled:opacity-30 disabled:cursor-not-allowed transition-colors touch-manipulation"
           aria-label="Previous page"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="w-5 h-5 sm:w-4 sm:h-4" />
         </button>
         
         {/* Page numbers */}
@@ -89,7 +89,7 @@ export function ListingsPagination({
           return pages.map((page, idx) => {
             if (page === 'ellipsis') {
               return (
-                <span key={`ellipsis-${idx}`} className="w-8 h-8 flex items-center justify-center text-muted-foreground">
+                <span key={`ellipsis-${idx}`} className="w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center text-muted-foreground">
                   …
                 </span>
               );
@@ -100,10 +100,10 @@ export function ListingsPagination({
                 key={page}
                 onClick={() => goToPage(page)}
                 disabled={isFetching}
-                className={`w-8 h-8 rounded-lg text-sm transition-colors disabled:cursor-not-allowed ${
+                className={`min-w-[36px] h-9 sm:min-w-[32px] sm:h-8 px-2 sm:px-1.5 rounded-lg text-sm transition-colors disabled:cursor-not-allowed touch-manipulation ${
                   currentPage === page
                     ? 'bg-foreground text-background font-medium'
-                    : 'text-muted-foreground hover:bg-secondary/50'
+                    : 'text-muted-foreground hover:bg-secondary/50 active:bg-secondary/70'
                 }`}
               >
                 {page}
@@ -116,10 +116,10 @@ export function ListingsPagination({
         <button
           onClick={() => goToPage(currentPage + 1)}
           disabled={currentPage === totalPages || isFetching}
-          className="p-2 rounded-lg hover:bg-secondary/50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="p-2.5 sm:p-2 rounded-lg hover:bg-secondary/50 active:bg-secondary/70 disabled:opacity-30 disabled:cursor-not-allowed transition-colors touch-manipulation"
           aria-label="Next page"
         >
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-5 h-5 sm:w-4 sm:h-4" />
         </button>
       </div>
     </div>
