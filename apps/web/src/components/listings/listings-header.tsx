@@ -273,13 +273,9 @@ export function ListingsHeader({
 
           {/* Results count - hidden on mobile, shows on larger screens */}
           <div className="hidden sm:flex items-center h-9 px-4 bg-sidebar border border-sidebar-border rounded-full shadow-sm">
-            {isLoading ? (
-              <span className="inline-block w-10 h-4 bg-muted/50 rounded animate-pulse" />
-            ) : (
-              <span className="text-sm font-semibold text-sidebar-foreground/70 tabular-nums whitespace-nowrap">
-                {meta?.total ?? 0} cars
-              </span>
-            )}
+            <span className="text-sm font-semibold text-sidebar-foreground/70 tabular-nums whitespace-nowrap">
+              {meta?.total ?? 0} cars
+            </span>
           </div>
 
           {/* Search Bar - Full width on mobile, flexible on desktop */}
@@ -554,22 +550,30 @@ export function ListingsHeader({
           {/* Quick-Select Options (contextual) */}
           <div className="flex-1 flex items-center gap-2 overflow-x-auto scrollbar-hide">
             {/* Make Quick-Select - when no make selected */}
-            {!params.make?.length && (facets?.make ?? []).length > 0 && (
+            {!params.make?.length && (isLoading || (facets?.make ?? []).length > 0) && (
               <>
                 <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
                   Makes
                 </span>
-                {(facets?.make ?? []).slice(0, VISIBLE_COUNT).map((make) => (
-                  <button
-                    key={make.value}
-                    onClick={() => setFilters({ make: [make.value], model: undefined, trim: undefined })}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
-                  >
-                    <span>{make.label}</span>
-                    <span className="text-xs text-muted-foreground tabular-nums">{make.count}</span>
-                  </button>
-                ))}
-                {(facets?.make ?? []).length > VISIBLE_COUNT && (
+                {isLoading ? (
+                  <>
+                    <Skeleton className="h-7 w-16 rounded-full shrink-0" />
+                    <Skeleton className="h-7 w-20 rounded-full shrink-0" />
+                    <Skeleton className="h-7 w-14 rounded-full shrink-0" />
+                  </>
+                ) : (
+                  <>
+                    {(facets?.make ?? []).slice(0, VISIBLE_COUNT).map((make) => (
+                      <button
+                        key={make.value}
+                        onClick={() => setFilters({ make: [make.value], model: undefined, trim: undefined })}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
+                      >
+                        <span>{make.label}</span>
+                        <span className="text-xs text-muted-foreground tabular-nums">{make.count}</span>
+                      </button>
+                    ))}
+                    {(facets?.make ?? []).length > VISIBLE_COUNT && (
                   <Popover open={makesOpen} onOpenChange={setMakesOpen}>
                     <PopoverTrigger asChild>
                       <button
@@ -617,6 +621,8 @@ export function ListingsHeader({
                       </Command>
                     </PopoverContent>
                   </Popover>
+                    )}
+                  </>
                 )}
               </>
             )}

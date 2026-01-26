@@ -31,7 +31,9 @@ function attachCardUrls(showroom: any) {
     partnerId: showroom.partnerId,
     slug: showroom.slug,
     
-    // Hero
+    // Hero - Video first, then image fallback
+    heroVideoUrl: showroom.heroVideoUrl || null,
+    heroVideoFileUrl: getPublicUrl(showroom.heroVideoFile, cacheBuster),
     heroImageUrl: getPublicUrl(showroom.heroImage, cacheBuster),
     heroTagline: showroom.heroTagline,
     
@@ -39,6 +41,7 @@ function attachCardUrls(showroom: any) {
     partner: {
       brandName: showroom.partner.brandName,
       logoUrl: getPublicUrl(showroom.partner.logo, cacheBuster),
+      heroImageUrl: getPublicUrl(showroom.partner.heroImage, cacheBuster),
       isVerified: showroom.partner.isVerified,
       tier: showroom.partner.tier,
       googleRating: showroom.partner.googleRating,

@@ -357,6 +357,8 @@ export async function PATCH(req: NextRequest) {
     if (updatedShowroom.slug) {
       revalidatePath(`/showroom/${updatedShowroom.slug}`);
     }
+    // Revalidate directory pages
+    revalidatePath('/black');
     
     // Attach image URLs
     const showroomWithUrls = attachImageUrls(updatedShowroom, updatedShowroom.updatedAt);

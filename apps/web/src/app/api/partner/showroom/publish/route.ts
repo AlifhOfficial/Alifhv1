@@ -15,6 +15,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { getSessionUser } from '@/lib/auth/session-context';
 import {
@@ -115,6 +116,13 @@ export async function POST(req: NextRequest) {
       
       const published = await publishShowroom(showroom.id);
       
+      // Invalidate caches
+      revalidatePath('/black');
+      revalidatePath(`/showroom/${membership.partnerId}`);
+      if (published.slug) {
+        revalidatePath(`/showroom/${published.slug}`);
+      }
+      
       return NextResponse.json({
         success: true,
         isPublished: true,
@@ -124,6 +132,13 @@ export async function POST(req: NextRequest) {
       });
     } else {
       const unpublished = await unpublishShowroom(showroom.id);
+      
+      // Invalidate caches
+      revalidatePath('/black');
+      revalidatePath(`/showroom/${membership.partnerId}`);
+      if (showroom.slug) {
+        revalidatePath(`/showroom/${showroom.slug}`);
+      }
       
       return NextResponse.json({
         success: true,
