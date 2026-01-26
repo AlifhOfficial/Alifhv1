@@ -107,22 +107,30 @@ export function GallerySection({
                     
                     setImageUploading('showroomImages');
                     try {
+                      // Upload in parallel batches of 3 for speed while respecting rate limits
+                      const batchSize = 3;
                       const uploadedKeys: string[] = [];
                       
-                      for (const file of toUpload) {
-                        const fd = new FormData();
-                        fd.append('file', file);
-                        fd.append('type', 'gallery');
-                        fd.append('partnerId', partnerId);
+                      for (let i = 0; i < toUpload.length; i += batchSize) {
+                        const batch = toUpload.slice(i, i + batchSize);
+                        const results = await Promise.all(
+                          batch.map(async (file) => {
+                            const fd = new FormData();
+                            fd.append('file', file);
+                            fd.append('type', 'gallery');
+                            fd.append('partnerId', partnerId);
 
-                        const res = await fetch('/api/storage/upload-showroom-asset', {
-                          method: 'POST',
-                          body: fd,
-                          credentials: 'include',
-                        });
-                        if (!res.ok) throw new Error();
-                        const data = await res.json();
-                        uploadedKeys.push(data.key);
+                            const res = await fetch('/api/storage/upload-showroom-asset', {
+                              method: 'POST',
+                              body: fd,
+                              credentials: 'include',
+                            });
+                            if (!res.ok) throw new Error();
+                            const data = await res.json();
+                            return data.key;
+                          })
+                        );
+                        uploadedKeys.push(...results);
                       }
 
                       const updated = [...(form.showroomImages || []), ...uploadedKeys];

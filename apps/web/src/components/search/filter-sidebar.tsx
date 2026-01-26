@@ -48,12 +48,12 @@ export function FilterSidebar({
               'flex items-center justify-between w-full min-h-[48px] py-3 px-4 rounded-xl touch-manipulation',
               'text-base transition-all duration-150 active:scale-[0.98]',
               params.condition === 'new'
-                ? 'text-primary font-semibold bg-primary/10'
+                ? 'text-foreground font-semibold bg-muted'
                 : 'text-muted-foreground font-medium hover:text-foreground hover:bg-muted/50 active:bg-muted/70'
             )}
           >
             <span>New Cars</span>
-            {params.condition === 'new' && <CheckCircle2 className="h-5 w-5 text-primary" />}
+            {params.condition === 'new' && <CheckCircle2 className="h-4 w-4 text-muted-foreground" />}
           </button>
           <button
             type="button"
@@ -62,12 +62,12 @@ export function FilterSidebar({
               'flex items-center justify-between w-full min-h-[48px] py-3 px-4 rounded-xl touch-manipulation',
               'text-base transition-all duration-150 active:scale-[0.98]',
               params.isBlkListing
-                ? 'text-primary font-semibold bg-primary/10'
+                ? 'text-foreground font-semibold bg-muted'
                 : 'text-muted-foreground font-medium hover:text-foreground hover:bg-muted/50 active:bg-muted/70'
             )}
           >
             <span>Black Listings</span>
-            {params.isBlkListing && <CheckCircle2 className="h-5 w-5 text-primary" />}
+            {params.isBlkListing && <CheckCircle2 className="h-4 w-4 text-muted-foreground" />}
           </button>
           <button
             type="button"
@@ -76,12 +76,12 @@ export function FilterSidebar({
               'flex items-center justify-between w-full min-h-[48px] py-3 px-4 rounded-xl touch-manipulation',
               'text-base transition-all duration-150 active:scale-[0.98]',
               params.isBlackTierPartner
-                ? 'text-primary font-semibold bg-primary/10'
+                ? 'text-foreground font-semibold bg-muted'
                 : 'text-muted-foreground font-medium hover:text-foreground hover:bg-muted/50 active:bg-muted/70'
             )}
           >
             <span>Black Members</span>
-            {params.isBlackTierPartner && <CheckCircle2 className="h-5 w-5 text-primary" />}
+            {params.isBlackTierPartner && <CheckCircle2 className="h-4 w-4 text-muted-foreground" />}
           </button>
         </div>
       </FilterSection>
@@ -151,7 +151,7 @@ export function FilterSidebar({
           )}
         >
           <span>Negotiable prices only</span>
-          {params.isNegotiable && <CheckCircle2 className="h-5 w-5 text-primary" />}
+          {params.isNegotiable && <CheckCircle2 className="h-4 w-4 text-muted-foreground" />}
         </button>
       </FilterSection>
 
@@ -253,7 +253,7 @@ function MultiSelectFilter({
               'flex items-center justify-between w-full min-h-[48px] py-3 px-4 rounded-xl touch-manipulation',
               'text-base transition-all duration-150 active:scale-[0.98]',
               isSelected
-                ? 'text-primary font-semibold bg-primary/10'
+                ? 'text-foreground font-semibold bg-muted'
                 : 'text-muted-foreground font-medium hover:text-foreground hover:bg-muted/50 active:bg-muted/70'
             )}
           >
@@ -261,11 +261,11 @@ function MultiSelectFilter({
             <div className="flex items-center gap-2.5">
               <span className={cn(
                 "text-sm tabular-nums",
-                isSelected ? "font-semibold text-primary/70" : "font-medium text-muted-foreground"
+                isSelected ? "font-semibold text-foreground/70" : "font-medium text-muted-foreground"
               )}>
                 {option.count}
               </span>
-              {isSelected && <CheckCircle2 className="h-5 w-5 text-primary" />}
+              {isSelected && <CheckCircle2 className="h-4 w-4 text-muted-foreground" />}
             </div>
           </button>
         );
@@ -275,7 +275,7 @@ function MultiSelectFilter({
         <button
           type="button"
           onClick={() => setShowAll(!showAll)}
-          className="min-h-[44px] text-sm font-semibold text-primary hover:text-primary/80 py-3 px-4 text-left transition-colors touch-manipulation"
+          className="min-h-[44px] text-sm font-semibold text-muted-foreground hover:text-foreground py-3 px-4 text-left transition-colors touch-manipulation"
         >
           {showAll ? 'Show less' : `+ Show ${options.length - maxVisible} more`}
         </button>
@@ -365,7 +365,7 @@ function RangeFilter({
                 className={cn(
                   'px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-150 touch-manipulation active:scale-[0.97]',
                   isActive
-                    ? 'bg-primary text-primary-foreground'
+                    ? 'bg-foreground text-background'
                     : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80 active:bg-muted'
                 )}
               >
@@ -420,7 +420,7 @@ function RangeFilter({
           <button
             type="button"
             onClick={handleClear}
-            className="text-primary hover:text-primary/80 transition-colors font-semibold text-sm touch-manipulation px-2 py-1 -mr-2"
+            className="text-muted-foreground hover:text-foreground transition-colors font-semibold text-sm touch-manipulation px-2 py-1 -mr-2"
           >
             Clear
           </button>

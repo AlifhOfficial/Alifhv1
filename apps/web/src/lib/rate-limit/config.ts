@@ -227,12 +227,12 @@ export const RATE_LIMITS_STORAGE = {
   },
 
   /**
-   * Partner image uploads (logo, hero)
-   * 10 per hour per partner - branding updates
+   * Partner image uploads (logo, hero, showroom gallery)
+   * 60 per hour per partner - showroom has up to 12 interior + 12 exterior images
    */
   UPLOAD_PARTNER: {
     windowSeconds: 60 * 60,
-    maxRequests: 10,
+    maxRequests: 60,
     keyPrefix: 'storage:partner',
     description: 'Partner image uploads',
   },

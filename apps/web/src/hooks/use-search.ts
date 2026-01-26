@@ -25,6 +25,8 @@ import {
 interface UseSearchOptions {
   /** Initial search params (overridden by URL params) */
   initialParams?: Partial<SearchParams>;
+  /** Forced params that cannot be overridden by URL (applied last) */
+  forcedParams?: Partial<SearchParams>;
   /** Disable URL sync (useful for embedded search) */
   disableUrlSync?: boolean;
   /** Default limit */
@@ -81,6 +83,7 @@ async function fetchSearch(params: SearchParams): Promise<SearchResponse> {
 export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
   const { 
     initialParams = {}, 
+    forcedParams = {},
     disableUrlSync = false,
     defaultLimit = 30,
   } = options;
@@ -92,7 +95,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
   // Parse current params from URL (or use initial params if URL sync disabled)
   const params = useMemo<SearchParams>(() => {
     if (disableUrlSync) {
-      return { limit: defaultLimit, ...initialParams };
+      return { limit: defaultLimit, ...initialParams, ...forcedParams };
     }
     
     const urlParams = urlToSearchParams(searchParams);
@@ -102,8 +105,10 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
       ...urlParams,
       // Always default sortBy to 'relevance' for consistent state
       sortBy: urlParams.sortBy || 'relevance',
+      // Apply forced params last - cannot be overridden by URL
+      ...forcedParams,
     };
-  }, [searchParams, initialParams, disableUrlSync, defaultLimit]);
+  }, [searchParams, initialParams, forcedParams, disableUrlSync, defaultLimit]);
 
   // Sync default sort to URL on initial load (better UX - URL reflects actual state)
   const hasInitializedSort = useRef(false);
