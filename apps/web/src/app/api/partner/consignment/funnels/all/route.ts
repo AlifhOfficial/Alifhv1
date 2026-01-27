@@ -4,11 +4,19 @@
  * 
  * Purpose: Get all funnels across the partner organization with staff attribution
  * Authentication: Required (partner manager or owner only)
+ * 
+ * Query Params:
+ * - partnerId: Partner ID (optional, uses first manager/owner membership if not provided)
+ * - staffId: Filter by staff member
+ * - q: Search query (searches name and description)
+ * - limit: Results per page (default: 12, max: 100)
+ * - offset: Pagination offset (default: 0)
+ * - includeStats: Include stats and staff list (default: false)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { getAllPartnerFunnels, getPartnerFunnelCounts } from '@alifh/database';
+import { getAllPartnerFunnels, getPartnerFunnelStats, getPartnerFunnelStaff } from '@alifh/database';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_GENERAL } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
@@ -34,8 +42,10 @@ export async function GET(req: NextRequest) {
       return rateLimitResponse(rateLimitResult);
     }
 
+    const { searchParams } = new URL(req.url);
+    
     // Get partnerId from query or membership
-    const requestedPartnerId = req.nextUrl.searchParams.get('partnerId');
+    const requestedPartnerId = searchParams.get('partnerId');
     
     // Find a membership for the requested partner (must be manager/owner)
     const membership = (user as any).partnerMemberships?.find(
@@ -57,11 +67,43 @@ export async function GET(req: NextRequest) {
 
     const partnerId = membership.partnerId;
 
-    // Get all funnels for the partner with staff info
-    const funnels = await getAllPartnerFunnels(partnerId);
+    // Parse query params
+    const staffId = searchParams.get('staffId') || undefined;
+    const q = searchParams.get('q') || undefined;
+    const includeStats = searchParams.get('includeStats') === '1' || searchParams.get('includeStats') === 'true';
+    const limit = Math.min(parseInt(searchParams.get('limit') || '12'), 100);
+    const offset = parseInt(searchParams.get('offset') || '0');
+
+    // Get funnels with filters
+    const funnelsPromise = getAllPartnerFunnels(partnerId, {
+      staffId,
+      q,
+      limit,
+      offset,
+    });
+
+    // Optionally get stats and staff list in parallel
+    let statsPromise: Promise<Awaited<ReturnType<typeof getPartnerFunnelStats>> | undefined> = Promise.resolve(undefined);
+    let staffPromise: Promise<Awaited<ReturnType<typeof getPartnerFunnelStaff>> | undefined> = Promise.resolve(undefined);
+
+    if (includeStats) {
+      statsPromise = getPartnerFunnelStats(partnerId);
+      staffPromise = getPartnerFunnelStaff(partnerId);
+    }
+
+    const [funnels, stats, staffList] = await Promise.all([funnelsPromise, statsPromise, staffPromise]);
 
     return NextResponse.json(
-      { funnels },
+      { 
+        funnels,
+        stats,
+        staffList,
+        meta: {
+          count: funnels.length,
+          limit,
+          offset,
+        },
+      },
       {
         headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, private', 'Pragma': 'no-cache' },
       }

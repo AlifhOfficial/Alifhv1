@@ -2,15 +2,14 @@
  * Partner Lead Funnels View
  * Shows all lead funnels across the partner organization
  * Manager/Owner view - can see which staff created each funnel
+ * Uses server-side filtering for proper pagination
  */
 
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { 
   Loader2,
-  Inbox,
   RefreshCw,
   ChevronDown,
   ChevronLeft,
@@ -25,6 +24,7 @@ import { Combobox } from '@/components/ui/forms/combobox';
 import Image from 'next/image';
 import Link from 'next/link';
 import { DashboardPageWrapper, DashboardPageHeader } from '@/components/shared/layout/dashboard-page-wrapper';
+import { useDebouncedCallback } from 'use-debounce';
 
 // ============================================================================
 // Constants
@@ -61,7 +61,13 @@ interface ConsignmentFunnel {
   staffName: string | null;
 }
 
-interface StaffStats {
+interface FunnelStats {
+  total: number;
+  active: number;
+  staffCount: number;
+}
+
+interface StaffMember {
   staffId: string;
   staffName: string;
   funnelCount: number;
@@ -86,100 +92,134 @@ interface PartnerLeadFunnelsViewProps {
 // ============================================================================
 
 export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFunnelsViewProps) {
-  // UI State
+  // Data state
+  const [funnels, setFunnels] = useState<ConsignmentFunnel[]>([]);
+  const [stats, setStats] = useState<FunnelStats | null>(null);
+  const [staffList, setStaffList] = useState<StaffMember[]>([]);
+  
+  // Server-side filter state
   const [selectedStaffFilter, setSelectedStaffFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  
+  // UI state
+  const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [expandedFunnels, setExpandedFunnels] = useState<Set<string>>(new Set());
+  const hasFetchedInitialRef = useRef(false);
+  const abortRef = useRef<AbortController | null>(null);
 
-  // Fetch all funnels
-  const { data, isLoading, error, refetch } = useQuery<{ funnels: ConsignmentFunnel[] }>({
-    queryKey: ['partner-all-funnels', partnerId],
-    queryFn: async () => {
-      const res = await fetch(`/api/partner/consignment/funnels/all?partnerId=${partnerId}&_t=${Date.now()}`, {
-        cache: 'no-store',
-      });
-      if (!res.ok) throw new Error('Failed to fetch funnels');
-      return res.json();
-    },
-    staleTime: 0,
-    refetchOnMount: 'always',
-    gcTime: 0,
-  });
+  // Debounce search input
+  const debouncedSetSearch = useDebouncedCallback((value: string) => {
+    setDebouncedSearch(value);
+    setCurrentPage(1);
+  }, 400);
 
-  const funnels = useMemo(() => data?.funnels || [], [data?.funnels]);
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchQuery(value);
+    debouncedSetSearch(value);
+  }, [debouncedSetSearch]);
 
-  // Calculate staff stats
-  const staffStats: StaffStats[] = useMemo(() => {
-    const staffMap = new Map<string, StaffStats>();
+  // Fetch funnels with server-side filters
+  const fetchFunnels = useCallback(async (isRefresh = false) => {
+    if (!partnerId) return;
     
-    funnels.forEach(funnel => {
-      const existing = staffMap.get(funnel.staffId);
-      if (existing) {
-        existing.funnelCount++;
-      } else {
-        staffMap.set(funnel.staffId, {
-          staffId: funnel.staffId,
-          staffName: funnel.staffName || 'Unknown Staff',
-          funnelCount: 1,
-        });
-      }
-    });
+    abortRef.current?.abort();
+    abortRef.current = new AbortController();
 
-    return Array.from(staffMap.values()).sort((a, b) => b.funnelCount - a.funnelCount);
-  }, [funnels]);
+    try {
+      if (isRefresh) {
+        setIsRefreshing(true);
+      } else {
+        setIsLoading(true);
+      }
+      setError(null);
+
+      // Build query params
+      const params = new URLSearchParams({
+        partnerId,
+        includeStats: '1',
+        limit: String(ITEMS_PER_PAGE),
+        offset: String((currentPage - 1) * ITEMS_PER_PAGE),
+      });
+
+      if (selectedStaffFilter !== 'all') {
+        params.set('staffId', selectedStaffFilter);
+      }
+
+      if (debouncedSearch.trim()) {
+        params.set('q', debouncedSearch.trim());
+      }
+
+      const response = await fetch(`/api/partner/consignment/funnels/all?${params.toString()}`, {
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store',
+        signal: abortRef.current.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch funnels');
+      }
+
+      const data = await response.json();
+      setFunnels(data.funnels || []);
+      
+      if (data.stats) {
+        setStats(data.stats);
+      }
+      
+      if (data.staffList) {
+        setStaffList(data.staffList);
+      }
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') return;
+      setError(err instanceof Error ? err.message : 'Failed to fetch funnels');
+      console.error('[PartnerLeadFunnelsView] Error:', err);
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  }, [partnerId, currentPage, selectedStaffFilter, debouncedSearch]);
+
+  // Initial fetch
+  useEffect(() => {
+    if (!hasFetchedInitialRef.current) {
+      hasFetchedInitialRef.current = true;
+    }
+    fetchFunnels();
+    return () => { abortRef.current?.abort(); };
+  }, [fetchFunnels]);
+
+  // Filter change handlers
+  const handleStaffFilterChange = useCallback((value: string) => {
+    setSelectedStaffFilter(value);
+    setCurrentPage(1);
+  }, []);
 
   // Staff options for combobox
   const staffOptions = useMemo(() => {
     const options = [{ value: 'all', label: 'All Staff' }];
-    staffStats.forEach(staff => {
+    staffList.forEach(staff => {
       options.push({
         value: staff.staffId,
         label: `${staff.staffName} (${staff.funnelCount})`,
       });
     });
     return options;
-  }, [staffStats]);
+  }, [staffList]);
 
-  // Filter funnels by staff and search
-  const filteredFunnels = useMemo(() => {
-    let result = funnels;
-    
-    // Staff filter
-    if (selectedStaffFilter !== 'all') {
-      result = result.filter(f => f.staffId === selectedStaffFilter);
-    }
-    
-    // Search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(f => 
-        f.name.toLowerCase().includes(query) ||
-        (f.staffName?.toLowerCase().includes(query)) ||
-        (f.description?.toLowerCase().includes(query))
-      );
-    }
-    
-    return result;
-  }, [funnels, selectedStaffFilter, searchQuery]);
-
-  // Pagination
-  const totalPages = Math.ceil(filteredFunnels.length / ITEMS_PER_PAGE);
-  const paginatedFunnels = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredFunnels.slice(start, start + ITEMS_PER_PAGE);
-  }, [filteredFunnels, currentPage]);
-
-  // Reset page when filters change
-  useMemo(() => {
-    setCurrentPage(1);
-  }, [selectedStaffFilter, searchQuery]);
+  // Calculate total pages from stats
+  const totalItems = stats?.total ?? 0;
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
   // Clear filters
   const clearFilters = useCallback(() => {
     setSelectedStaffFilter('all');
     setSearchQuery('');
+    setDebouncedSearch('');
     setCurrentPage(1);
   }, []);
 
@@ -187,9 +227,7 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
 
   // Handle refresh
   const handleRefresh = async () => {
-    setIsRefreshing(true);
-    await refetch();
-    setIsRefreshing(false);
+    await fetchFunnels(true);
   };
 
   // Toggle funnel expansion
@@ -223,21 +261,19 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
       </DashboardPageHeader>
 
         {/* Stats */}
-        {!isLoading && funnels.length > 0 && (
+        {!isLoading && stats && (
           <div className="flex items-center gap-10">
             <div>
               <span className="text-xs text-muted-foreground">Total Funnels</span>
-              <p className="text-xl font-semibold tracking-tight mt-1 text-blue-500">{funnels.length}</p>
+              <p className="text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.total}</p>
             </div>
             <div>
               <span className="text-xs text-muted-foreground">Active</span>
-              <p className="text-xl font-semibold tracking-tight mt-1 text-green-500">
-                {funnels.filter(f => f.isActive).length}
-              </p>
+              <p className="text-xl font-semibold tracking-tight mt-1 text-green-500">{stats.active}</p>
             </div>
             <div>
               <span className="text-xs text-muted-foreground">Staff Members</span>
-              <p className="text-xl font-semibold tracking-tight mt-1">{staffStats.length}</p>
+              <p className="text-xl font-semibold tracking-tight mt-1">{stats.staffCount}</p>
             </div>
           </div>
         )}
@@ -251,12 +287,12 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
             type="text"
             placeholder="Search funnels..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="w-full h-10 pl-10 pr-8 rounded-xl bg-secondary/50 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
           />
           {searchQuery && (
             <button
-              onClick={() => setSearchQuery('')}
+              onClick={() => handleSearchChange('')}
               className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-secondary"
             >
               <X className="w-3.5 h-3.5 text-muted-foreground" />
@@ -265,12 +301,12 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
         </div>
 
         {/* Staff Combobox */}
-        {staffStats.length > 0 && (
+        {staffList.length > 0 && (
           <div className="w-48">
             <Combobox
               options={staffOptions}
               value={selectedStaffFilter}
-              onValueChange={setSelectedStaffFilter}
+              onValueChange={handleStaffFilterChange}
               placeholder="All Staff"
               searchPlaceholder="Search staff..."
               className="h-10 rounded-xl bg-secondary/50 border-0"
@@ -304,14 +340,19 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
       )}
 
       {/* Funnels List */}
-      {!isLoading && !error && filteredFunnels.length > 0 && (
-        <>
+      {!isLoading && !error && funnels.length > 0 && (
+        <div className={cn("transition-opacity duration-200", isRefreshing && "opacity-50 pointer-events-none")}>
           {/* Count */}
           <div className="flex items-center justify-between mb-6">
-            <p className="text-xs text-muted-foreground">
-              {filteredFunnels.length} funnel{filteredFunnels.length !== 1 ? 's' : ''}
-              {selectedStaffFilter !== 'all' && ` by ${staffStats.find(s => s.staffId === selectedStaffFilter)?.staffName}`}
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-xs text-muted-foreground">
+                {totalItems} funnel{totalItems !== 1 ? 's' : ''}
+                {selectedStaffFilter !== 'all' && ` by ${staffList.find(s => s.staffId === selectedStaffFilter)?.staffName}`}
+              </p>
+              {isRefreshing && (
+                <div className="w-3 h-3 border border-muted-foreground/30 border-t-muted-foreground rounded-full animate-spin" />
+              )}
+            </div>
             {totalPages > 1 && (
               <p className="text-xs text-muted-foreground">{currentPage} / {totalPages}</p>
             )}
@@ -319,7 +360,7 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
 
           {/* List */}
           <div className="space-y-4">
-            {paginatedFunnels.map((funnel) => (
+            {funnels.map((funnel) => (
               <FunnelRow
                 key={funnel.id}
                 funnel={funnel}
@@ -376,11 +417,11 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
               </button>
             </div>
           )}
-        </>
+        </div>
       )}
 
-      {/* Empty - No Data */}
-      {!isLoading && !error && funnels.length === 0 && (
+      {/* Empty - No Data (no filters, just empty) */}
+      {!isLoading && !error && funnels.length === 0 && !hasActiveFilters && (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <Filter className="w-12 h-12 text-muted-foreground/20 mb-3" />
           <h3 className="text-base font-semibold mb-1">No lead funnels yet</h3>
@@ -388,8 +429,8 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
         </div>
       )}
 
-      {/* Empty - No Results */}
-      {!isLoading && !error && funnels.length > 0 && filteredFunnels.length === 0 && (
+      {/* Empty - No Results (filters applied but no results) */}
+      {!isLoading && !error && funnels.length === 0 && hasActiveFilters && (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <Search className="w-12 h-12 text-muted-foreground/20 mb-3" />
           <h3 className="text-base font-semibold mb-1">No results</h3>
@@ -418,18 +459,29 @@ interface FunnelRowProps {
 
 function FunnelRow({ funnel, isExpanded, onToggle }: FunnelRowProps) {
   const filterTags = getFilterTags(funnel.filters);
+  
+  // Preview state
+  const [previewData, setPreviewData] = useState<FunnelPreview[]>([]);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewFetched, setPreviewFetched] = useState(false);
 
-  // Fetch preview when expanded
-  const { data: previewData, isLoading: previewLoading } = useQuery<{ listings: FunnelPreview[] }>({
-    queryKey: ['funnel-preview', funnel.id],
-    queryFn: async () => {
-      const res = await fetch(`/api/partner/consignment/funnels/${funnel.id}/matches?limit=6`);
-      if (!res.ok) throw new Error('Failed to fetch preview');
-      return res.json();
-    },
-    enabled: isExpanded,
-    staleTime: 10 * 60 * 1000,
-  });
+  // Fetch preview when expanded (only once)
+  useEffect(() => {
+    if (isExpanded && !previewFetched) {
+      setPreviewLoading(true);
+      fetch(`/api/partner/consignment/funnels/${funnel.id}/matches?limit=6`)
+        .then(res => res.ok ? res.json() : Promise.reject())
+        .then(data => {
+          setPreviewData(data.listings || []);
+          setPreviewFetched(true);
+        })
+        .catch(() => {
+          setPreviewData([]);
+          setPreviewFetched(true);
+        })
+        .finally(() => setPreviewLoading(false));
+    }
+  }, [isExpanded, previewFetched, funnel.id]);
 
   return (
     <div className="rounded-xl border border-border/40 bg-card hover:border-border/60 hover:shadow-sm transition-all overflow-hidden">
@@ -506,7 +558,7 @@ function FunnelRow({ funnel, isExpanded, onToggle }: FunnelRowProps) {
           )}
 
           {/* Preview Empty */}
-          {!previewLoading && (!previewData?.listings || previewData.listings.length === 0) && (
+          {!previewLoading && previewFetched && previewData.length === 0 && (
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <ImageIcon className="w-8 h-8 text-muted-foreground/20 mb-2" />
               <p className="text-xs text-muted-foreground/50">No matching listings</p>
@@ -514,10 +566,9 @@ function FunnelRow({ funnel, isExpanded, onToggle }: FunnelRowProps) {
           )}
 
           {/* Preview Grid */}
-          {!previewLoading && previewData?.listings && previewData.listings.length > 0 && (
-            <>
+          {!previewLoading && previewData.length > 0 && (
             <div className="flex gap-3 overflow-x-auto pb-2 sm:pb-0 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 sm:overflow-visible scrollbar-hide">
-              {previewData.listings.map((listing) => (
+              {previewData.map((listing) => (
                 <Link
                   key={listing.id}
                   href={`/listings/${listing.id}`}
@@ -554,7 +605,6 @@ function FunnelRow({ funnel, isExpanded, onToggle }: FunnelRowProps) {
                 </Link>
               ))}
             </div>
-            </>
           )}
         </div>
       )}

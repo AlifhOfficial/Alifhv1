@@ -112,7 +112,7 @@ export function BlackShowroomCard({ showroom, priority = false, index }: BlackSh
       )}
     >
       {/* Main Layout - Stacked mobile, split desktop */}
-      <div className="flex flex-col lg:flex-row lg:min-h-[420px]">
+      <div className="flex flex-col lg:flex-row lg:min-h-[520px]">
         
         {/* ================================================================ */}
         {/* Media Section - 75% on desktop */}
@@ -201,13 +201,13 @@ export function BlackShowroomCard({ showroom, priority = false, index }: BlackSh
                 )}
                 
                 {/* Brand Name */}
-                <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground">
+                <h2 className="text-xl font-semibold tracking-tight text-foreground">
                   {partner.brandName}
                 </h2>
                 
                 {/* Tagline */}
                 {showroom.heroTagline && (
-                  <p className="text-base text-muted-foreground mt-1.5 line-clamp-2 leading-relaxed">
+                  <p className="text-base text-muted-foreground mt-1.5 line-clamp-2">
                     {showroom.heroTagline}
                   </p>
                 )}
@@ -254,16 +254,16 @@ export function BlackShowroomCard({ showroom, priority = false, index }: BlackSh
           </div>
           
           {/* Footer: Location + Experience CTA */}
-          <div className="flex items-center justify-between pt-5 mt-6 border-t border-border/40">
+          <div className="flex items-center justify-between pt-5 mt-5 border-t border-border/40">
             {/* Location */}
             <span className="text-base text-muted-foreground">
               {location || 'UAE'}
             </span>
             
             {/* Experience CTA */}
-            <span className="flex items-center gap-2 text-base font-semibold text-primary transition-colors">
+            <span className="flex items-center gap-2 text-base font-medium text-primary transition-colors">
               Visit
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </span>
           </div>
         </div>

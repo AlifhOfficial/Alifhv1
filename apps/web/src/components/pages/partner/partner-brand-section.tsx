@@ -1,80 +1,107 @@
 /**
  * Partner Brand Section - Alifh Partners Page
- * Visual showcase - how we present partners
+ * Visual showcase - full listing detail page mockup
  */
 
-import Image from 'next/image';
-import { Star, Clock, Package, TrendingUp, CheckCircle2 } from 'lucide-react';
+'use client';
+
+import { Star, Clock, Package, CheckCircle2 } from 'lucide-react';
 
 export function PartnerBrandSection() {
   return (
     <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-[1600px] mx-auto">
         
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+        {/* Header */}
+        <div className="text-center mb-16 space-y-5">
+          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+            Your brand
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            We make you look good.
+            <br />
+            <span className="text-muted-foreground">Really good.</span>
+          </h2>
+        </div>
+
+        {/* Infographic - Full listing detail page mockup */}
+        <div className="mb-12">
+          <ListingDetailInfographic />
+        </div>
+
+        {/* Description */}
+        <p className="text-base text-muted-foreground leading-relaxed max-w-lg mx-auto text-center mb-16">
+          Others show your name and phone. We show inventory, response time, Google reviews, location—everything that builds trust.
+        </p>
+
+        {/* Feature highlights */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+          <FeatureCard 
+            icon={Star}
+            title="Google Reviews sync"
+            description="One tap. We handle the rest."
+          />
+          <FeatureCard 
+            icon={Package}
+            title="Live inventory count"
+            description="Always up to date."
+          />
+          <FeatureCard 
+            icon={Clock}
+            title="Response metrics"
+            description="Show buyers you're responsive."
+          />
           
-          {/* Content Side */}
-          <div className="space-y-6">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
-              Your brand
+          {/* Highlighted Card */}
+          <div className="p-6 rounded-xl bg-primary text-primary-foreground">
+            <CheckCircle2 className="w-5 h-5 text-white/70 mb-3" />
+            <h3 className="text-base font-semibold mb-1">Verified badge</h3>
+            <p className="text-sm text-white/60">
+              Build trust instantly.
             </p>
-            
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground tracking-tight leading-[1.15]">
-              We make you look good.
-              <br />
-              <span className="text-muted-foreground/60">Really good.</span>
-            </h2>
-            
-            <p className="text-[15px] text-muted-foreground leading-relaxed max-w-lg">
-              Others show your name and phone. We show inventory, sales, response time, Google reviews, location—everything that builds trust.
-            </p>
-
-            {/* Quick Stats Preview */}
-            <div className="grid grid-cols-4 gap-3 pt-4">
-              <div className="text-center space-y-1">
-                <Package className="w-4 h-4 text-[#0066FF] mx-auto mb-1" />
-                <p className="text-[15px] font-bold text-foreground">47</p>
-                <p className="text-[13px] text-muted-foreground">Cars</p>
-              </div>
-              <div className="text-center space-y-1">
-                <TrendingUp className="w-4 h-4 text-[#0066FF] mx-auto mb-1" />
-                <p className="text-[15px] font-bold text-foreground">234</p>
-                <p className="text-[13px] text-muted-foreground">Sales</p>
-              </div>
-              <div className="text-center space-y-1">
-                <Clock className="w-4 h-4 text-[#0066FF] mx-auto mb-1" />
-                <p className="text-[15px] font-bold text-foreground">&lt;2h</p>
-                <p className="text-[13px] text-muted-foreground">Response</p>
-              </div>
-              <div className="text-center space-y-1">
-                <Star className="w-4 h-4 text-yellow-500 mx-auto mb-1" />
-                <p className="text-[15px] font-bold text-foreground">4.8</p>
-                <p className="text-[13px] text-muted-foreground">Rating</p>
-              </div>
-            </div>
-
-            {/* Trust Badge */}
-            <div className="flex items-center gap-3 pt-2">
-              <CheckCircle2 className="w-4 h-4 text-[#0066FF] shrink-0" />
-              <span className="text-[13px] font-semibold text-foreground">Google Reviews sync</span>
-              <span className="text-[13px] text-muted-foreground">— One tap. We handle the rest.</span>
-            </div>
-          </div>
-
-          {/* Image Side */}
-          <div className="relative">
-            <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
-              <Image
-                src="/Abstract/rs22.png"
-                alt="Abstract design"
-                fill
-                className="object-cover"
-              />
-            </div>
           </div>
         </div>
 
       </div>
     </section>
+  );
+}
+
+// ============================================================================
+// SUB-COMPONENTS
+// ============================================================================
+
+interface FeatureCardProps {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  description: string;
+}
+
+function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
+  return (
+    <div className="p-6 rounded-xl border border-border/40 bg-sidebar">
+      <Icon className="w-5 h-5 text-primary/80 mb-3" />
+      <h3 className="text-base font-semibold mb-1">{title}</h3>
+      <p className="text-sm text-muted-foreground">{description}</p>
+    </div>
+  );
+}
+
+// ============================================================================
+// INFOGRAPHIC: Full listing detail page mockup (matches actual UI)
+// ============================================================================
+
+function ListingDetailInfographic() {
+  return (
+    <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 py-6 sm:py-8 lg:py-10">
+      <video 
+        src="/Marketing/lookgood3.mp4" 
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="w-full h-full object-contain"
+      />
+    </div>
   );
 }

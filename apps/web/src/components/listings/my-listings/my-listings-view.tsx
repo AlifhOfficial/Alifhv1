@@ -1,13 +1,20 @@
 /**
  * My Listings View Component
- * Clean, fast, zero-latency state toggling
+ * Server-side filtering for accurate pagination
  */
 
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 import Link from 'next/link';
-import { AlertTriangle, Package, Search, RefreshCw, Plus, X, Clock, FileText, XCircle, Archive, CheckCircle2, Timer, Ban } from 'lucide-react';
+import { AlertTriangle, Package, Search, RefreshCw, Plus, X, Clock, FileText, XCircle, Archive, CheckCircle2, Timer, Ban, ChevronDown, Filter } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 // Empty state config - context-aware messages for each status
 const EMPTY_STATE_CONFIG: Record<string, { icon: React.ElementType; color: string; message: string; subMessage: string }> = {
@@ -116,8 +123,12 @@ interface MyListingsViewProps {
   listingType?: ListingType;
 }
 
+const ITEMS_PER_PAGE = 50;
+
 export function MyListingsView({ userId, listingType = 'personal' }: MyListingsViewProps) {
-  const [allListings, setAllListings] = useState<ListingData[]>([]);
+  // Server-filtered listings
+  const [listings, setListings] = useState<ListingData[]>([]);
+  const [totalListings, setTotalListings] = useState(0);
   const [stats, setStats] = useState<ListingStats>({
     all: 0,
     active: 0,
@@ -136,10 +147,12 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   
-  // UI state - client-side filtering
+  // Filter state - sent to server
   const [selectedStatus, setSelectedStatus] = useState<ListingStatus>('active');
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [sort, setSort] = useState<ListingsSort>('newest');
+  const [currentPage, setCurrentPage] = useState(1);
   
   // Confirmation modal state
   const [confirmModal, setConfirmModal] = useState<ConfirmModalState>({
@@ -157,26 +170,78 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
   const [blackQuota, setBlackQuota] = useState<BlackQuotaData | null>(null);
   const [togglingBlkId, setTogglingBlkId] = useState<string | null>(null);
 
-  // Fetch ALL listings once
-  const fetchData = useCallback(async () => {
+  // Debounced search handler
+  const debouncedSetSearch = useDebouncedCallback((value: string) => {
+    setDebouncedSearch(value);
+    setCurrentPage(1);
+  }, 400);
+
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchQuery(value);
+    debouncedSetSearch(value);
+  }, [debouncedSetSearch]);
+
+  // Map UI status to API params
+  const getApiParams = useCallback((status: ListingStatus) => {
+    switch (status) {
+      case 'active':
+        return { lifecycleStatus: 'active' };
+      case 'public':
+        return { lifecycleStatus: 'active' }; // Will filter isPublic client-side or add API support
+      case 'in_review':
+        return { status: 'in_review' };
+      case 'draft':
+        return { moderationStatus: 'draft' };
+      case 'rejected':
+        return { moderationStatus: 'rejected' };
+      case 'archived':
+        return { lifecycleStatus: 'archived' };
+      case 'sold':
+        return { lifecycleStatus: 'sold' };
+      case 'expired':
+        return { lifecycleStatus: 'expired' };
+      case 'suspended':
+        return { status: 'suspended' };
+      default:
+        return {};
+    }
+  }, []);
+
+  // Fetch listings with server-side filtering
+  const fetchData = useCallback(async (isRefresh = false) => {
     abortRef.current?.abort();
     abortRef.current = new AbortController();
     
-    setIsLoading(true);
+    if (!isRefresh) {
+      setIsLoading(true);
+    }
     setError(null);
 
     try {
       const params = new URLSearchParams();
       params.set('listingType', listingType);
+      params.set('includeStats', '1');
+      params.set('limit', String(ITEMS_PER_PAGE));
+      params.set('offset', String((currentPage - 1) * ITEMS_PER_PAGE));
+      params.set('sort', sort);
       
       // For work listings, pass staffMemberUserId
       if (listingType === 'work' && userId) {
         params.set('staffMemberUserId', userId);
       }
       
-      params.set('includeStats', '1');
-      // Fetch all statuses EXCEPT deleted (we handle deleted separately)
-      // The API will return all listings that are not deleted by default
+      // Add status filter params
+      if (selectedStatus !== 'all') {
+        const apiParams = getApiParams(selectedStatus);
+        Object.entries(apiParams).forEach(([key, value]) => {
+          if (value) params.set(key, value);
+        });
+      }
+      
+      // Add search query
+      if (debouncedSearch.trim()) {
+        params.set('q', debouncedSearch.trim());
+      }
 
       const response = await fetch(`/api/listings/my-listings?${params}`, {
         credentials: 'include',
@@ -191,42 +256,30 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
 
       const data = await response.json();
       
-      setAllListings(data.data || data.listings || []);
+      const fetchedListings = data.data || data.listings || [];
+      setListings(fetchedListings);
+      setTotalListings(data.total || fetchedListings.length);
       
-      // Recalculate stats from actual listings (excluding deleted)
-      const visibleListings = (data.data || data.listings || []).filter((l: ListingData) => l.lifecycleStatus !== 'deleted');
-      
-      const recalculatedStats = {
-        all: visibleListings.length,
-        active: visibleListings.filter((l: ListingData) => l.lifecycleStatus === 'active' && l.isPublic).length,
-        public: visibleListings.filter((l: ListingData) => l.isPublic).length,
-        inReview: visibleListings.filter((l: ListingData) => l.moderationStatus === 'pending_review' || l.moderationStatus === 'submitted').length,
-        draft: visibleListings.filter((l: ListingData) => l.moderationStatus === 'draft').length,
-        rejected: visibleListings.filter((l: ListingData) => l.moderationStatus === 'rejected').length,
-        // Exclude rejected and suspended from archived count - they should only count in their own tabs
-        archived: visibleListings.filter((l: ListingData) => l.lifecycleStatus === 'archived' && l.moderationStatus !== 'rejected' && l.suspendedAt === null).length,
-        suspended: visibleListings.filter((l: ListingData) => l.suspendedAt !== null).length,
-        sold: visibleListings.filter((l: ListingData) => l.lifecycleStatus === 'sold').length,
-        expired: visibleListings.filter((l: ListingData) => l.lifecycleStatus === 'expired').length,
-        deleted: 0, // Never show deleted
-        deepInventory: 0, // Will calculate below
-      };
-      
-      recalculatedStats.deepInventory = 
-        recalculatedStats.archived + 
-        recalculatedStats.suspended + 
-        recalculatedStats.sold + 
-        recalculatedStats.expired;
-      
-      setStats(recalculatedStats);
-      
-      // Old stats logic - keep for reference but use recalculated instead
+      // Use stats from API if available
       if (data.stats) {
-        // Keep this for potential future use, but we're using recalculated stats above
+        setStats({
+          all: data.stats.all || 0,
+          active: data.stats.active || 0,
+          public: data.stats.public || 0,
+          inReview: data.stats.inReview || data.stats.in_review || 0,
+          draft: data.stats.draft || 0,
+          rejected: data.stats.rejected || 0,
+          archived: data.stats.archived || 0,
+          suspended: data.stats.suspended || 0,
+          sold: data.stats.sold || 0,
+          expired: data.stats.expired || 0,
+          deleted: 0,
+          deepInventory: (data.stats.archived || 0) + (data.stats.suspended || 0) + (data.stats.sold || 0) + (data.stats.expired || 0),
+        });
       }
       
-      // Fetch BLK quota for work listings only
-      if (listingType === 'work') {
+      // Fetch BLK quota for work listings only (once)
+      if (listingType === 'work' && !blackQuota) {
         try {
           const quotaResponse = await fetch('/api/partner/black-quota', {
             credentials: 'include',
@@ -246,86 +299,60 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
       if (err instanceof Error && err.name === 'AbortError') return;
       console.error('Error fetching listings:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch listings');
-      setAllListings([]);
+      setListings([]);
     } finally {
       setIsLoading(false);
     }
-  }, [listingType, userId]);
+  }, [listingType, userId, currentPage, sort, selectedStatus, debouncedSearch, getApiParams, blackQuota]);
 
   useEffect(() => {
     fetchData();
     return () => { abortRef.current?.abort(); };
   }, [fetchData]);
 
-  // Client-side filtering for zero-latency toggling
-  const filteredAndSortedListings = (() => {
-    // Always exclude deleted listings from view
-    let filtered = allListings.filter(listing => listing.lifecycleStatus !== 'deleted');
+  // Handle filter changes - reset page
+  const handleStatusChange = useCallback((status: ListingStatus) => {
+    setSelectedStatus(status);
+    setCurrentPage(1);
+  }, []);
 
-    // Filter by status
-    if (selectedStatus !== 'all') {
-      filtered = filtered.filter(listing => {
-        switch (selectedStatus) {
-          case 'active':
-            return listing.lifecycleStatus === 'active' && listing.isPublic;
-          case 'public':
-            return listing.isPublic;
-          case 'in_review':
-            return listing.moderationStatus === 'pending_review' || listing.moderationStatus === 'submitted';
-          case 'draft':
-            return listing.moderationStatus === 'draft';
-          case 'rejected':
-            return listing.moderationStatus === 'rejected';
-          case 'archived':
-            // Exclude rejected and suspended listings from archived - they should only show in their own tabs
-            return listing.lifecycleStatus === 'archived' && listing.moderationStatus !== 'rejected' && listing.suspendedAt === null;
-          case 'sold':
-            return listing.lifecycleStatus === 'sold';
-          case 'expired':
-            return listing.lifecycleStatus === 'expired';
-          case 'suspended':
-            return listing.suspendedAt !== null;
-          default:
-            return true;
-        }
-      });
-    }
+  const handleSortChange = useCallback((newSort: ListingsSort) => {
+    setSort(newSort);
+    setCurrentPage(1);
+  }, []);
 
-    // Filter by search query
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(listing => 
-        listing.make.toLowerCase().includes(query) ||
-        listing.model.toLowerCase().includes(query) ||
-        listing.year.toString().includes(query)
-      );
-    }
+  // Pagination
+  const totalPages = Math.ceil(totalListings / ITEMS_PER_PAGE);
+  const hasActiveFilters = selectedStatus !== 'all' || debouncedSearch.trim() !== '';
 
-    // Sort
-    const sorted = [...filtered].sort((a, b) => {
-      switch (sort) {
-        case 'newest':
-          return new Date(b.publishedAt || b.createdAt).getTime() - new Date(a.publishedAt || a.createdAt).getTime();
-        case 'oldest':
-          return new Date(a.publishedAt || a.createdAt).getTime() - new Date(b.publishedAt || b.createdAt).getTime();
-        case 'updated':
-          return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-        case 'expiring':
-          if (!a.expiresAt) return 1;
-          if (!b.expiresAt) return -1;
-          return new Date(a.expiresAt).getTime() - new Date(b.expiresAt).getTime();
-        default:
-          return 0;
-      }
-    });
+  // Main tabs always shown in tab bar
+  const mainStatusTabs: Array<{ key: ListingStatus; label: string; count: number; color?: string }> = [
+    { key: 'all', label: 'All', count: stats.all, color: 'purple' },
+    { key: 'public', label: 'Public', count: stats.public, color: 'green' },
+    { key: 'in_review', label: 'Review', count: stats.inReview, color: 'blue' },
+    { key: 'archived', label: 'Archived', count: stats.archived, color: 'gray' },
+  ];
 
-    return sorted;
-  })();
+  // Secondary statuses in dropdown (less frequently accessed)
+  const allSecondaryTabs = [
+    { key: 'draft' as const, label: 'Drafts', count: stats.draft, color: 'yellow' },
+    { key: 'active' as const, label: 'Active', count: stats.active, color: 'blue' },
+    { key: 'rejected' as const, label: 'Rejected', count: stats.rejected, color: 'red' },
+    { key: 'sold' as const, label: 'Sold', count: stats.sold, color: 'green' },
+    { key: 'expired' as const, label: 'Expired', count: stats.expired, color: 'orange' },
+    { key: 'suspended' as const, label: 'Suspended', count: stats.suspended, color: 'red' },
+  ];
+  const secondaryStatusTabs = allSecondaryTabs.filter(tab => tab.count > 0);
+
+  // Check if current selection is a secondary status
+  const isSecondaryStatusSelected = secondaryStatusTabs.some(tab => tab.key === selectedStatus);
+  const selectedSecondaryTab = secondaryStatusTabs.find(tab => tab.key === selectedStatus);
 
   // Action handlers
   const handleBulkClear = () => {
-    const count = filteredAndSortedListings.length;
-    const statusLabel = statusTabs.find(t => t.key === selectedStatus)?.label.toLowerCase() || 'these';
+    const count = listings.length;
+    const allTabs = [...mainStatusTabs, ...allSecondaryTabs];
+    const statusLabel = allTabs.find(t => t.key === selectedStatus)?.label.toLowerCase() || 'these';
     
     if (count === 0) return;
     
@@ -341,7 +368,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
   };
 
   const handleArchive = (listingId: string) => {
-    const listing = allListings.find((l) => l.id === listingId);
+    const listing = listings.find((l) => l.id === listingId);
     const isArchived = listing?.lifecycleStatus === 'archived';
     
     setConfirmModal({
@@ -356,7 +383,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
   };
 
   const handleDelete = (listingId: string) => {
-    const listing = allListings.find((l) => l.id === listingId);
+    const listing = listings.find((l) => l.id === listingId);
     setConfirmModal({
       isOpen: true,
       action: 'delete',
@@ -369,7 +396,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
   };
 
   const handleMarkSold = (listingId: string) => {
-    const listing = allListings.find((l) => l.id === listingId);
+    const listing = listings.find((l) => l.id === listingId);
     setConfirmModal({
       isOpen: true,
       action: 'markSold',
@@ -382,7 +409,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
   };
 
   const handleExtend = (listingId: string, days: 7 | 14) => {
-    const listing = allListings.find((l) => l.id === listingId);
+    const listing = listings.find((l) => l.id === listingId);
     const expiresAt = listing?.expiresAt ? new Date(listing.expiresAt) : null;
     const newExpiresAt = expiresAt ? new Date(expiresAt.getTime() + days * 24 * 60 * 60 * 1000) : null;
     const formattedNewDate = newExpiresAt?.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -406,7 +433,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
     try {
       if (confirmModal.action === 'bulkClear') {
         // Bulk delete all filtered listings
-        const listingIds = filteredAndSortedListings.map(l => l.id);
+        const listingIds = listings.map(l => l.id);
         
         const response = await fetch('/api/listings/bulk-delete', {
           method: 'POST',
@@ -421,7 +448,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
         }
       } else if (confirmModal.action === 'archive' || confirmModal.action === 'unarchive') {
         if (!confirmModal.listingId) return;
-        const listing = allListings.find((l) => l.id === confirmModal.listingId);
+        const listing = listings.find((l) => l.id === confirmModal.listingId);
         const nextLifecycleStatus = listing?.lifecycleStatus === 'archived' ? 'active' : 'archived';
         
         const response = await fetch(`/api/listings/${confirmModal.listingId}`, {
@@ -501,7 +528,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
       const result = await response.json();
       
       // Update local state immediately
-      setAllListings(prev => prev.map(l => 
+      setListings(prev => prev.map(l => 
         l.id === listingId ? { ...l, isBlkListing: !currentlyBlk } : l
       ));
       
@@ -524,25 +551,6 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
   const newListingUrl = listingType === 'work' 
     ? '/staff-dashboard/work-listings/new' 
     : '/user-dashboard/listings/new';
-
-  // Status tabs with inline counts
-  // Core tabs always shown, others only if count > 0
-  const allStatusTabs: Array<{ key: ListingStatus; label: string; count: number; color?: string; alwaysShow?: boolean }> = [
-    { key: 'all', label: 'All', count: stats.all, color: 'purple', alwaysShow: true },
-    { key: 'active', label: 'Active', count: stats.active, color: 'blue', alwaysShow: true },
-    { key: 'public', label: 'Public', count: stats.public, color: 'green', alwaysShow: true },
-    { key: 'draft', label: 'Drafts', count: stats.draft, color: 'yellow', alwaysShow: true },
-    { key: 'in_review', label: 'In Review', count: stats.inReview, color: 'blue' },
-    { key: 'rejected', label: 'Rejected', count: stats.rejected, color: 'red' },
-    { key: 'archived', label: 'Archived', count: stats.archived, color: 'yellow' },
-    { key: 'sold', label: 'Sold', count: stats.sold, color: 'green' },
-    { key: 'expired', label: 'Expired', count: stats.expired, color: 'orange' },
-    { key: 'suspended', label: 'Suspended', count: stats.suspended, color: 'red' },
-    // Note: 'deleted' is intentionally excluded from the UI
-  ];
-
-  // Filter: show always-visible tabs OR tabs with count > 0
-  const statusTabs = allStatusTabs.filter(tab => tab.alwaysShow || tab.count > 0);
 
   return (
     <DashboardPageWrapper>
@@ -614,12 +622,12 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
             type="text"
             placeholder="Search..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="w-full h-10 pl-10 pr-8 rounded-xl bg-secondary/50 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
           />
           {searchQuery && (
             <button
-              onClick={() => setSearchQuery('')}
+              onClick={() => handleSearchChange('')}
               className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-secondary"
             >
               <X className="w-3.5 h-3.5 text-muted-foreground" />
@@ -629,13 +637,13 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
 
         {/* Status Pills */}
         <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl">
-          {statusTabs.map((tab) => {
+          {mainStatusTabs.map((tab) => {
             const isActive = selectedStatus === tab.key;
             const count = tab.count;
             return (
               <button
                 key={tab.key}
-                onClick={() => setSelectedStatus(tab.key)}
+                onClick={() => handleStatusChange(tab.key)}
                 className={`px-3 py-1.5 rounded-lg text-xs transition-all capitalize ${
                   isActive
                     ? 'bg-background text-foreground shadow-sm'
@@ -649,10 +657,49 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
               </button>
             );
           })}
+          
+          {/* More dropdown for secondary statuses */}
+          {secondaryStatusTabs.length > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className={`px-3 py-1.5 rounded-lg text-xs transition-all flex items-center gap-1 ${
+                    isSecondaryStatusSelected
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {isSecondaryStatusSelected && selectedSecondaryTab ? (
+                    <>
+                      {selectedSecondaryTab.label}
+                      <span className="text-muted-foreground">{selectedSecondaryTab.count}</span>
+                    </>
+                  ) : (
+                    <>More</>  
+                  )}
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-[140px]">
+                {secondaryStatusTabs.map((tab) => (
+                  <DropdownMenuItem
+                    key={tab.key}
+                    onClick={() => handleStatusChange(tab.key)}
+                    className={`text-xs cursor-pointer ${
+                      selectedStatus === tab.key ? 'bg-secondary' : ''
+                    }`}
+                  >
+                    <span className="flex-1">{tab.label}</span>
+                    <span className="text-muted-foreground ml-2">{tab.count}</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
 
         {/* Sort */}
-        <Select value={sort} onValueChange={(v) => setSort(v as ListingsSort)}>
+        <Select value={sort} onValueChange={(v) => handleSortChange(v as ListingsSort)}>
           <SelectTrigger className="h-10 w-32 border-0 bg-secondary/50 rounded-xl text-sm">
             <SelectValue placeholder="Sort" />
           </SelectTrigger>
@@ -676,12 +723,13 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
       {/* Count & Actions */}
       <div className="flex items-center justify-between mb-6">
         <p className="text-xs text-muted-foreground">
-          {filteredAndSortedListings.length} listing{filteredAndSortedListings.length !== 1 ? 's' : ''}
-          {searchQuery && <span> matching "{searchQuery}"</span>}
+          {totalListings} listing{totalListings !== 1 ? 's' : ''}
+          {hasActiveFilters && <span> (filtered)</span>}
+          {totalPages > 1 && <span className="ml-2">· Page {currentPage} of {totalPages}</span>}
         </p>
           
         {/* Bulk Clear Button */}
-        {filteredAndSortedListings.length > 0 && 
+        {listings.length > 0 && 
          ['sold', 'archived', 'expired', 'rejected', 'suspended'].includes(selectedStatus) && (
           <button
             onClick={handleBulkClear}
@@ -708,7 +756,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
       )}
 
       {/* Empty State - No Data */}
-      {!isLoading && !error && allListings.length === 0 && (
+      {!isLoading && !error && !hasActiveFilters && listings.length === 0 && (
         <div className="flex flex-col items-center justify-center py-32 text-center">
           <Package className="w-5 h-5 text-foreground mb-3" strokeWidth={2} />
           <h3 className="text-sm font-semibold tracking-tight">No listings yet</h3>
@@ -722,8 +770,8 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
       )}
 
       {/* Empty State - No Results */}
-      {!isLoading && !error && allListings.length > 0 && filteredAndSortedListings.length === 0 && (() => {
-        const config = searchQuery 
+      {!isLoading && !error && hasActiveFilters && listings.length === 0 && (() => {
+        const config = debouncedSearch 
           ? { icon: Search, color: 'text-foreground', message: 'No matches found', subMessage: 'Try adjusting your search' }
           : (EMPTY_STATE_CONFIG[selectedStatus] || EMPTY_STATE_CONFIG.all);
         const Icon = config.icon;
@@ -738,10 +786,10 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
       })()}
 
       {/* Listings */}
-      {!isLoading && !error && filteredAndSortedListings.length > 0 && (
+      {!isLoading && !error && listings.length > 0 && (
         <>
           <div className="space-y-1">
-            {filteredAndSortedListings.map((listing) => (
+            {listings.map((listing) => (
               <ListingCard
                 key={listing.id}
                 listing={listing}
@@ -758,6 +806,29 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
               />
             ))}
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-8">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1.5 rounded-lg text-xs bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                Previous
+              </button>
+              <span className="text-xs text-muted-foreground">
+                {currentPage} / {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1.5 rounded-lg text-xs bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </>
       )}
 

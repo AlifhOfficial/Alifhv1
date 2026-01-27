@@ -365,12 +365,14 @@ export async function getUserBookings(
   userId: string,
   options: {
     status?: BookingStatus[];
+    q?: string;
+    sort?: 'newest' | 'oldest';
     limit?: number;
     offset?: number;
     upcoming?: boolean;
   } = {}
 ): Promise<{ bookings: BookingWithDetails[]; total: number }> {
-  const { status, limit = BOOKING_CONFIG.DEFAULT_PAGE_LIMIT, offset = 0, upcoming } = options;
+  const { status, q, sort = 'newest', limit = BOOKING_CONFIG.DEFAULT_PAGE_LIMIT, offset = 0, upcoming } = options;
 
   const conditions: SQL[] = [eq(booking.userId, userId)];
 
@@ -380,6 +382,18 @@ export async function getUserBookings(
 
   if (upcoming) {
     conditions.push(gte(booking.scheduledStartTime, new Date()));
+  }
+
+  // Search by listing title, partner name, or confirmation token
+  if (q && q.trim()) {
+    const searchTerm = `%${q.trim().toLowerCase()}%`;
+    conditions.push(
+      or(
+        sql`lower(concat(${carListing.year}::text, ' ', ${carListing.make}, ' ', ${carListing.model})) like ${searchTerm}`,
+        sql`lower(${partner.businessName}) like ${searchTerm}`,
+        sql`lower(${booking.confirmationToken}) like ${searchTerm}`
+      )!
+    );
   }
 
   return withErrorHandling('getUserBookings', async () => {
@@ -392,13 +406,15 @@ export async function getUserBookings(
         .leftJoin(userProfile, eq(user.id, userProfile.userId))
         .leftJoin(partner, eq(booking.partnerId, partner.id))
         .where(and(...conditions))
-        .orderBy(asc(booking.scheduledStartTime))
+        .orderBy(sort === 'oldest' ? asc(booking.scheduledStartTime) : desc(booking.scheduledStartTime))
         .limit(limit)
         .offset(offset),
 
       db
         .select({ count: sql<number>`count(*)::int` })
         .from(booking)
+        .leftJoin(carListing, eq(booking.listingId, carListing.id))
+        .leftJoin(partner, eq(booking.partnerId, partner.id))
         .where(and(...conditions)),
     ]);
 
@@ -418,11 +434,12 @@ export async function getPartnerBookings(
     status?: BookingStatus[];
     date?: Date;
     listingId?: string;
+    q?: string;
     limit?: number;
     offset?: number;
   } = {}
 ): Promise<{ bookings: BookingWithDetails[]; total: number }> {
-  const { status, date, listingId, limit = BOOKING_CONFIG.DEFAULT_PAGE_LIMIT, offset = 0 } = options;
+  const { status, date, listingId, q, limit = BOOKING_CONFIG.DEFAULT_PAGE_LIMIT, offset = 0 } = options;
 
   const conditions: SQL[] = [eq(booking.partnerId, partnerId)];
 
@@ -444,24 +461,50 @@ export async function getPartnerBookings(
     );
   }
 
+  // Search by customer name, email, or vehicle info
+  if (q && q.trim()) {
+    const searchTerm = `%${q.trim().toLowerCase()}%`;
+    conditions.push(
+      or(
+        sql`lower(${booking.userName}) like ${searchTerm}`,
+        sql`lower(${booking.userEmail}) like ${searchTerm}`,
+        sql`lower(${carListing.make}) like ${searchTerm}`,
+        sql`lower(${carListing.model}) like ${searchTerm}`,
+        sql`lower(concat(${carListing.year}::text, ' ', ${carListing.make}, ' ', ${carListing.model})) like ${searchTerm}`
+      )!
+    );
+  }
+
   return withErrorHandling('getPartnerBookings', async () => {
+    // Build base query with joins for search
+    const baseQuery = db
+      .select(bookingWithDetailsSelect)
+      .from(booking)
+      .leftJoin(carListing, eq(booking.listingId, carListing.id))
+      .leftJoin(user, eq(carListing.userId, user.id))
+      .leftJoin(userProfile, eq(user.id, userProfile.userId))
+      .leftJoin(partner, eq(booking.partnerId, partner.id));
+
+    // Build count query with same joins if searching
+    const countQuery = q?.trim()
+      ? db
+          .select({ count: sql<number>`count(*)::int` })
+          .from(booking)
+          .leftJoin(carListing, eq(booking.listingId, carListing.id))
+          .where(and(...conditions))
+      : db
+          .select({ count: sql<number>`count(*)::int` })
+          .from(booking)
+          .where(and(...conditions));
+
     const [results, countResult] = await Promise.all([
-      db
-        .select(bookingWithDetailsSelect)
-        .from(booking)
-        .leftJoin(carListing, eq(booking.listingId, carListing.id))
-        .leftJoin(user, eq(carListing.userId, user.id))
-        .leftJoin(userProfile, eq(user.id, userProfile.userId))
-        .leftJoin(partner, eq(booking.partnerId, partner.id))
+      baseQuery
         .where(and(...conditions))
         .orderBy(asc(booking.scheduledStartTime))
         .limit(limit)
         .offset(offset),
 
-      db
-        .select({ count: sql<number>`count(*)::int` })
-        .from(booking)
-        .where(and(...conditions)),
+      countQuery,
     ]);
 
     return {
@@ -479,11 +522,13 @@ export async function getStaffListingsBookings(
   partnerId: string,
   options: {
     status?: BookingStatus[];
+    q?: string;
+    sort?: 'newest' | 'oldest';
     limit?: number;
     offset?: number;
   } = {}
 ): Promise<{ bookings: BookingWithDetails[]; total: number }> {
-  const { status, limit = BOOKING_CONFIG.DEFAULT_PAGE_LIMIT, offset = 0 } = options;
+  const { status, q, sort = 'newest', limit = BOOKING_CONFIG.DEFAULT_PAGE_LIMIT, offset = 0 } = options;
 
   // Get listings posted by this staff member
   const conditions: SQL[] = [
@@ -492,6 +537,20 @@ export async function getStaffListingsBookings(
 
   if (status && status.length > 0) {
     conditions.push(inArray(booking.status, status));
+  }
+
+  // Search by customer name, email, or vehicle info
+  if (q && q.trim()) {
+    const searchTerm = `%${q.trim().toLowerCase()}%`;
+    conditions.push(
+      or(
+        sql`lower(${booking.userName}) like ${searchTerm}`,
+        sql`lower(${booking.userEmail}) like ${searchTerm}`,
+        sql`lower(${carListing.make}) like ${searchTerm}`,
+        sql`lower(${carListing.model}) like ${searchTerm}`,
+        sql`lower(concat(${carListing.year}::text, ' ', ${carListing.make}, ' ', ${carListing.model})) like ${searchTerm}`
+      )!
+    );
   }
 
   // Join with carListing to filter by staff's posted listings
@@ -508,7 +567,7 @@ export async function getStaffListingsBookings(
         .leftJoin(userProfile, eq(user.id, userProfile.userId))
         .leftJoin(partner, eq(booking.partnerId, partner.id))
         .where(and(...conditions))
-        .orderBy(asc(booking.scheduledStartTime))
+        .orderBy(sort === 'oldest' ? asc(booking.scheduledStartTime) : desc(booking.scheduledStartTime))
         .limit(limit)
         .offset(offset),
 

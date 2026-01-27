@@ -29,7 +29,7 @@ function ApplyButton() {
     <>
       <button
         onClick={handleClick}
-        className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
+        className="w-full sm:w-auto h-12 px-10 bg-muted text-foreground text-base font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
       >
         Apply to Partner
       </button>
@@ -50,13 +50,13 @@ export function PartnerClosingSection() {
         
         {/* Video Showcase */}
         <div className="text-center mb-16 space-y-5">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
+          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
             See it in action
-          </p>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground tracking-tight leading-[1.15]">
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
             Clean. Fast. Simple.
             <br />
-            <span className="text-muted-foreground/60">The way it should be.</span>
+            <span className="text-muted-foreground">The way it should be.</span>
           </h2>
         </div>
 
@@ -75,10 +75,10 @@ export function PartnerClosingSection() {
 
         {/* Final CTA Section */}
         <div className="text-center space-y-6">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground tracking-tight leading-[1.15]">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
             Ready to stop playing games?
           </h2>
-          <p className="text-[15px] text-muted-foreground max-w-lg mx-auto">
+          <p className="text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
             Two options. Same platform. Same features. Different levels of attention.
             Most dealers start with Flow.
           </p>
@@ -86,7 +86,7 @@ export function PartnerClosingSection() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
             <Link
               href="/pricing"
-              className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
+              className="w-full sm:w-auto h-12 px-10 bg-primary text-primary-foreground text-base font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
             >
               See Pricing
             </Link>
@@ -96,7 +96,7 @@ export function PartnerClosingSection() {
           <div className="pt-4">
             <Link
               href="/contact"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="text-base text-muted-foreground hover:text-foreground transition-colors"
             >
               Have questions? Talk to us →
             </Link>
@@ -106,23 +106,23 @@ export function PartnerClosingSection() {
         {/* Bottom Stats */}
         <div className="flex items-center justify-center gap-10 md:gap-16 pt-16 mt-16 border-t border-border/40">
           <div className="text-center space-y-1">
-            <div className="text-2xl font-bold tracking-tight text-[#0066FF]">0%</div>
-            <div className="text-[13px] text-muted-foreground">Commission</div>
+            <div className="text-3xl font-bold tracking-tight text-primary">0%</div>
+            <div className="text-sm text-muted-foreground">Commission</div>
           </div>
           <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <div className="text-2xl font-bold tracking-tight text-[#0066FF]">∞</div>
-            <div className="text-[13px] text-muted-foreground">Listings</div>
+            <div className="text-3xl font-bold tracking-tight text-primary">∞</div>
+            <div className="text-sm text-muted-foreground">Listings</div>
           </div>
           <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <div className="text-2xl font-bold tracking-tight text-[#0066FF]">1</div>
-            <div className="text-[13px] text-muted-foreground">Flat fee</div>
+            <div className="text-3xl font-bold tracking-tight text-primary">1</div>
+            <div className="text-sm text-muted-foreground">Flat fee</div>
           </div>
           <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <div className="text-2xl font-bold tracking-tight text-[#0066FF]">0</div>
-            <div className="text-[13px] text-muted-foreground">Games</div>
+            <div className="text-3xl font-bold tracking-tight text-primary">0</div>
+            <div className="text-sm text-muted-foreground">Games</div>
           </div>
         </div>
 

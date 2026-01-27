@@ -4,7 +4,12 @@
  */
 
 import { HeroSection } from '@/components/pages/home/hero-section';
-import { WhyUsSection } from '@/components/pages/home/why-us-section';
+import {
+  ProblemSection,
+  DifferentiatorsSection,
+  ComparisonSection,
+  FeaturesSection,
+} from '@/components/pages/home';
 import { ClosingSection } from '@/components/pages/home/closing-section';
 import { Metadata } from 'next';
 
@@ -23,7 +28,10 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <HeroSection />
-      <WhyUsSection />
+      <ProblemSection />
+      <DifferentiatorsSection />
+      <ComparisonSection />
+      <FeaturesSection />
       <ClosingSection />
     </div>
   );

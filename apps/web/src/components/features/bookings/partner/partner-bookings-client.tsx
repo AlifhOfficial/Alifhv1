@@ -1,6 +1,6 @@
 /**
  * Partner Bookings Client Component
- * Minimal macOS-inspired design with client-side filtering
+ * Minimal macOS-inspired design with server-side filtering
  */
 
 'use client';
@@ -9,6 +9,7 @@ import { UserAvatar } from "@/components/ui/data-display/user-avatar";
 import { Combobox } from "@/components/ui/forms/combobox";
 import { Box, RefreshCw, Search, ChevronLeft, ChevronRight, Calendar, X } from "lucide-react";
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
+import { useDebouncedCallback } from "use-debounce";
 import { DashboardPageWrapper, DashboardPageHeader } from '@/components/shared/layout/dashboard-page-wrapper';
 
 interface PartnerBookingsClientProps {
@@ -91,16 +92,18 @@ export function PartnerBookingsClient({
   partnerName,
   userRole,
 }: PartnerBookingsClientProps) {
-  // Data state
-  const [allBookings, setAllBookings] = useState<BookingData[]>([]);
+  // Data state - now holds server-filtered results
+  const [bookings, setBookings] = useState<BookingData[]>([]);
+  const [totalBookings, setTotalBookings] = useState(0);
   const [stats, setStats] = useState<BookingStats | null>(null);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [ownerUserId, setOwnerUserId] = useState<string | null>(null);
   
-  // Filter state (all client-side)
+  // Filter state - sent to server
   const [selectedStaffFilter, setSelectedStaffFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   
   // UI state
@@ -109,57 +112,31 @@ export function PartnerBookingsClient({
   const [error, setError] = useState<string | null>(null);
   
   // Refs
-  const hasFetchedRef = useRef(false);
+  const hasFetchedTeamRef = useRef(false);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const fetchData = useCallback(async (isRefresh = false) => {
-    // Cancel any in-flight request to prevent race conditions
-    abortControllerRef.current?.abort();
-    abortControllerRef.current = new AbortController();
+  // Debounced search handler
+  const debouncedSetSearch = useDebouncedCallback((value: string) => {
+    setDebouncedSearch(value);
+    setCurrentPage(1);
+  }, 400);
 
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchQuery(value);
+    debouncedSetSearch(value);
+  }, [debouncedSetSearch]);
+
+  // Fetch team data once on mount
+  const fetchTeamData = useCallback(async () => {
     try {
-      if (isRefresh) {
-        setIsRefreshing(true);
-      } else {
-        setIsLoading(true);
-      }
-      setError(null);
-
-      const params = new URLSearchParams({
-        partnerId,
-        includeStats: '1',
-        limit: '100',
+      const response = await fetch('/api/partner/staff', {
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store',
       });
 
-      // Fetch bookings and team data in parallel
-      const [bookingsResponse, teamResponse] = await Promise.all([
-        fetch(`/api/bookings/partner-bookings?${params}`, {
-          credentials: 'include',
-          cache: 'no-store',
-          signal: abortControllerRef.current.signal,
-        }),
-        fetch('/api/partner/staff', {
-          method: 'GET',
-          credentials: 'include',
-          cache: 'no-store',
-          signal: abortControllerRef.current.signal,
-        }),
-      ]);
-
-      if (!bookingsResponse.ok) {
-        const errorData = await bookingsResponse.json().catch(() => ({ error: 'Failed to fetch bookings' }));
-        throw new Error(errorData.error || 'Failed to fetch bookings');
-      }
-
-      const data = await bookingsResponse.json();
-      setAllBookings(data.data || []);
-      if (data.stats) {
-        setStats(data.stats);
-      }
-
-      // Process team data if available
-      if (teamResponse.ok) {
-        const teamData = await teamResponse.json();
+      if (response.ok) {
+        const teamData = await response.json();
         const allStaff = teamData.data || [];
         
         // Find and store owner's userId
@@ -182,6 +159,60 @@ export function PartnerBookingsClient({
         setTeamMembers(members);
       }
     } catch (err) {
+      console.error('Error fetching team data:', err);
+    }
+  }, []);
+
+  // Fetch bookings with server-side filtering
+  const fetchBookings = useCallback(async (isRefresh = false) => {
+    // Cancel any in-flight request to prevent race conditions
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = new AbortController();
+
+    try {
+      if (isRefresh) {
+        setIsRefreshing(true);
+      } else {
+        setIsLoading(true);
+      }
+      setError(null);
+
+      const params = new URLSearchParams({
+        partnerId,
+        includeStats: '1',
+        limit: String(ITEMS_PER_PAGE),
+        offset: String((currentPage - 1) * ITEMS_PER_PAGE),
+      });
+
+      // Add server-side filters
+      if (selectedStaffFilter !== 'all') {
+        params.set('staffUserId', selectedStaffFilter);
+      }
+      if (statusFilter !== 'all') {
+        params.set('status', statusFilter);
+      }
+      if (debouncedSearch.trim()) {
+        params.set('q', debouncedSearch.trim());
+      }
+
+      const response = await fetch(`/api/bookings/partner-bookings?${params}`, {
+        credentials: 'include',
+        cache: 'no-store',
+        signal: abortControllerRef.current.signal,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Failed to fetch bookings' }));
+        throw new Error(errorData.error || 'Failed to fetch bookings');
+      }
+
+      const data = await response.json();
+      setBookings(data.data || []);
+      setTotalBookings(data.total || 0);
+      if (data.stats) {
+        setStats(data.stats);
+      }
+    } catch (err) {
       // Ignore aborted requests - they are intentional
       if (err instanceof Error && err.name === 'AbortError') {
         return;
@@ -192,19 +223,36 @@ export function PartnerBookingsClient({
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, [partnerId]);
+  }, [partnerId, currentPage, selectedStaffFilter, statusFilter, debouncedSearch]);
 
+  // Initial team fetch
   useEffect(() => {
-    if (!hasFetchedRef.current) {
-      hasFetchedRef.current = true;
-      fetchData();
+    if (!hasFetchedTeamRef.current) {
+      hasFetchedTeamRef.current = true;
+      fetchTeamData();
     }
+  }, [fetchTeamData]);
+
+  // Fetch bookings when filters change
+  useEffect(() => {
+    fetchBookings();
     
     // Cleanup: abort in-flight requests on unmount
     return () => {
       abortControllerRef.current?.abort();
     };
-  }, [fetchData]);
+  }, [fetchBookings]);
+
+  // Reset page when filters change (except page itself)
+  const handleStaffFilterChange = useCallback((value: string) => {
+    setSelectedStaffFilter(value);
+    setCurrentPage(1);
+  }, []);
+
+  const handleStatusFilterChange = useCallback((value: StatusFilter) => {
+    setStatusFilter(value);
+    setCurrentPage(1);
+  }, []);
 
   // Create a Map for O(1) team member lookups
   const teamMemberMap = useMemo(() => {
@@ -214,117 +262,49 @@ export function PartnerBookingsClient({
   }, [teamMembers]);
 
   // Calculate all staff data including those with 0 bookings
+  // Note: We no longer have all bookings, so we just use team members
   const allStaffData = useMemo(() => {
-    const staffMap = new Map<string, StaffBookingStats>();
+    // For server-side filtering, we build staff list from team members only
+    const allStaff = teamMembers
+      .filter(m => m.status === 'active')
+      .map(m => ({
+        staffUserId: m.userId,
+        staffName: m.displayName,
+        bookingCount: 0, // We don't track counts with server-side filtering
+        isActive: true,
+        avatar: m.avatar,
+      }));
     
-    // Build stats from bookings (for staff who have bookings)
-    allBookings.forEach(booking => {
-      if (booking.staffUserId && booking.staffName && booking.staffUserId !== ownerUserId) {
-        const existing = staffMap.get(booking.staffUserId);
-        if (existing) {
-          existing.bookingCount++;
-        } else {
-          const teamMember = teamMemberMap.get(booking.staffUserId);
-          const isActive = teamMember ? teamMember.status === 'active' : true;
-          
-          staffMap.set(booking.staffUserId, {
-            staffUserId: booking.staffUserId,
-            staffName: booking.staffName,
-            bookingCount: 1,
-            avatar: teamMember?.avatar || booking.staffAvatar,
-            isActive,
-          });
-        }
-      }
-    });
-    
-    // Add active team members who don't have any bookings yet
-    teamMembers.forEach(m => {
-      if (m.status === 'active' && !staffMap.has(m.userId)) {
-        staffMap.set(m.userId, {
-          staffUserId: m.userId,
-          staffName: m.displayName,
-          bookingCount: 0,
-          isActive: true,
-          avatar: m.avatar,
-        });
-      }
-    });
-    
-    // Convert to array and sort: active staff first, then resigned, each sorted by booking count
-    const allStaff = Array.from(staffMap.values()).sort((a, b) => {
-      if (a.isActive !== b.isActive) return a.isActive ? -1 : 1;
-      return b.bookingCount - a.bookingCount;
-    });
-    
-    const activeStaff = allStaff.filter(s => s.isActive !== false);
-    const staffWithBookings = allStaff.filter(s => s.bookingCount > 0);
-    
-    return { allStaff, activeStaff, staffWithBookings };
-  }, [allBookings, teamMembers, teamMemberMap, ownerUserId]);
+    return { allStaff, activeStaff: allStaff, staffWithBookings: [] };
+  }, [teamMembers]);
 
   // Derived values
   const allStaffForDisplay = allStaffData.allStaff;
 
-  // Multi-filter bookings: staff + status + search (all client-side)
-  const filteredBookings = useMemo(() => {
-    let result = allBookings;
-    
-    // Staff filter
-    if (selectedStaffFilter !== 'all') {
-      result = result.filter(b => b.staffUserId === selectedStaffFilter);
-    }
-    
-    // Status filter - normalize status before comparing
-    if (statusFilter !== 'all') {
-      result = result.filter(b => normalizeStatus(b.status) === statusFilter);
-    }
-    
-    // Search filter (customer name, vehicle, email)
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase().trim();
-      result = result.filter(b => 
-        b.userName.toLowerCase().includes(query) ||
-        b.userEmail.toLowerCase().includes(query) ||
-        b.listingTitle.toLowerCase().includes(query) ||
-        b.listingMake?.toLowerCase().includes(query) ||
-        b.listingModel?.toLowerCase().includes(query)
-      );
-    }
-    
-    return result;
-  }, [allBookings, selectedStaffFilter, statusFilter, searchQuery]);
+  // Pagination is now server-side - calculate total pages from server total
+  const totalPages = Math.ceil(totalBookings / ITEMS_PER_PAGE);
 
-  // Pagination (client-side)
-  const totalPages = Math.ceil(filteredBookings.length / ITEMS_PER_PAGE);
-  const paginatedBookings = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredBookings.slice(start, start + ITEMS_PER_PAGE);
-  }, [filteredBookings, currentPage]);
-
-  // Reset page when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedStaffFilter, statusFilter, searchQuery]);
-
-  // Calculate status counts for filter badges - normalize status
+  // Status counts from server stats
   const statusCounts = useMemo(() => {
-    const counts: Record<StatusFilter, number> = {
-      all: allBookings.length,
-      pending: 0,
-      confirmed: 0,
-      completed: 0,
-      cancelled: 0,
-      no_show: 0,
+    if (!stats) {
+      return {
+        all: 0,
+        pending: 0,
+        confirmed: 0,
+        completed: 0,
+        cancelled: 0,
+        no_show: 0,
+      };
+    }
+    return {
+      all: stats.totalBookings,
+      pending: stats.pendingBookings,
+      confirmed: stats.confirmedBookings,
+      completed: stats.completedBookings,
+      cancelled: stats.cancelledBookings,
+      no_show: stats.noShowBookings,
     };
-    allBookings.forEach(b => {
-      const normalized = normalizeStatus(b.status);
-      if (normalized in counts && normalized !== 'all') {
-        counts[normalized]++;
-      }
-    });
-    return counts;
-  }, [allBookings]);
+  }, [stats]);
 
   // Staff options for combobox
   const staffOptions = useMemo(() => {
@@ -343,10 +323,11 @@ export function PartnerBookingsClient({
     setSelectedStaffFilter('all');
     setStatusFilter('all');
     setSearchQuery('');
+    setDebouncedSearch('');
     setCurrentPage(1);
   }, []);
 
-  const hasActiveFilters = selectedStaffFilter !== 'all' || statusFilter !== 'all' || searchQuery.trim() !== '';
+  const hasActiveFilters = selectedStaffFilter !== 'all' || statusFilter !== 'all' || debouncedSearch.trim() !== '';
 
   // Format date helper
   const formatBookingDate = (date: Date) => {
@@ -376,7 +357,7 @@ export function PartnerBookingsClient({
         description={partnerName}
       >
         <button
-          onClick={() => fetchData(true)}
+          onClick={() => fetchBookings(true)}
           disabled={isRefreshing}
           className="p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
           aria-label="Refresh"
@@ -416,12 +397,12 @@ export function PartnerBookingsClient({
             type="text"
             placeholder="Search..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="w-full h-10 pl-10 pr-8 rounded-xl bg-secondary/50 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
           />
           {searchQuery && (
             <button
-              onClick={() => setSearchQuery('')}
+              onClick={() => handleSearchChange('')}
               className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-secondary"
             >
               <X className="w-3.5 h-3.5 text-muted-foreground" />
@@ -438,7 +419,7 @@ export function PartnerBookingsClient({
             return (
               <button
                 key={status}
-                onClick={() => setStatusFilter(status)}
+                onClick={() => handleStatusFilterChange(status)}
                 className={`px-3 py-1.5 rounded-lg text-xs transition-all ${
                   isActive
                     ? 'bg-background text-foreground shadow-sm'
@@ -460,7 +441,7 @@ export function PartnerBookingsClient({
             <Combobox
               options={staffOptions}
               value={selectedStaffFilter}
-              onValueChange={setSelectedStaffFilter}
+              onValueChange={handleStaffFilterChange}
               placeholder="All Staff"
               searchPlaceholder="Search staff..."
               className="h-10 rounded-xl bg-secondary/50 border-0"
@@ -494,12 +475,13 @@ export function PartnerBookingsClient({
       )}
 
       {/* Bookings List */}
-      {!isLoading && !error && filteredBookings.length > 0 && (
+      {!isLoading && !error && bookings.length > 0 && (
         <>
           {/* Count */}
           <div className="flex items-center justify-between mb-6">
             <p className="text-xs text-muted-foreground">
-              {filteredBookings.length} booking{filteredBookings.length !== 1 ? 's' : ''}
+              {totalBookings} booking{totalBookings !== 1 ? 's' : ''}
+              {hasActiveFilters && ` (filtered)`}
             </p>
             {totalPages > 1 && (
               <p className="text-xs text-muted-foreground">{currentPage} / {totalPages}</p>
@@ -508,7 +490,7 @@ export function PartnerBookingsClient({
 
           {/* List */}
           <div className="space-y-1">
-            {paginatedBookings.map((booking) => {
+            {bookings.map((booking) => {
               const normalizedStatus = normalizeStatus(booking.status);
               const statusLabel = STATUS_CONFIG[normalizedStatus]?.label || booking.status;
               const teamMember = booking.staffUserId ? teamMemberMap.get(booking.staffUserId) : null;
@@ -615,7 +597,7 @@ export function PartnerBookingsClient({
       )}
 
       {/* Empty - No Data */}
-      {!isLoading && !error && allBookings.length === 0 && (
+      {!isLoading && !error && !hasActiveFilters && bookings.length === 0 && (
         <div className="flex flex-col items-center justify-center py-32 text-center">
           <Calendar className="w-10 h-10 text-muted-foreground/20 mb-4" />
           <h3 className="text-lg font-medium tracking-tight">No bookings yet</h3>
@@ -624,7 +606,7 @@ export function PartnerBookingsClient({
       )}
 
       {/* Empty - No Results */}
-      {!isLoading && !error && allBookings.length > 0 && filteredBookings.length === 0 && (
+      {!isLoading && !error && hasActiveFilters && bookings.length === 0 && (
         <div className="flex flex-col items-center justify-center py-32 text-center">
           <Search className="w-10 h-10 text-muted-foreground/20 mb-4" />
           <h3 className="text-lg font-medium tracking-tight">No results</h3>

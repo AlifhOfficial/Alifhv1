@@ -8,7 +8,7 @@
  */
 
 import { createId } from '@paralleldrive/cuid2';
-import { eq, and, asc, desc, isNull, inArray, lte, gte, sql } from 'drizzle-orm';
+import { eq, and, asc, desc, isNull, inArray, lte, gte, sql, or, ilike } from 'drizzle-orm';
 import { db } from '../../dbclient';
 import { consignmentFunnel, type ConsignmentFunnelFilters } from '../../schema/consignment';
 import { carListing } from '../../schema/listing';
@@ -41,6 +41,20 @@ export type UpdateFunnelInput = Partial<{
   isActive: boolean;
 }>;
 
+export type GetAllPartnerFunnelsOptions = {
+  staffId?: string;
+  q?: string;
+  isActive?: boolean;
+  limit?: number;
+  offset?: number;
+};
+
+export type PartnerFunnelStats = {
+  total: number;
+  active: number;
+  staffCount: number;
+};
+
 // ============================================================================
 // Funnel CRUD
 // ============================================================================
@@ -61,8 +75,35 @@ export async function getPartnerFunnels(partnerId: string, staffId: string): Pro
 /**
  * Get all funnels for a partner (all staff) with staff info
  * Used by partner managers/owners to see all funnels across the organization
+ * Supports server-side filtering by staffId, search query, and pagination
  */
-export async function getAllPartnerFunnels(partnerId: string): Promise<(ConsignmentFunnelRecord & { staffName: string | null })[]> {
+export async function getAllPartnerFunnels(
+  partnerId: string,
+  options?: GetAllPartnerFunnelsOptions
+): Promise<(ConsignmentFunnelRecord & { staffName: string | null })[]> {
+  const { staffId, q, isActive, limit = 50, offset = 0 } = options ?? {};
+  
+  // Build where conditions
+  const whereConditions = [eq(consignmentFunnel.partnerId, partnerId)];
+  
+  if (staffId) {
+    whereConditions.push(eq(consignmentFunnel.staffId, staffId));
+  }
+  
+  if (typeof isActive === 'boolean') {
+    whereConditions.push(eq(consignmentFunnel.isActive, isActive));
+  }
+  
+  if (q?.trim()) {
+    const searchTerm = `%${q.trim()}%`;
+    whereConditions.push(
+      or(
+        ilike(consignmentFunnel.name, searchTerm),
+        ilike(consignmentFunnel.description, searchTerm)
+      )!
+    );
+  }
+
   const results = await db
     .select({
       id: consignmentFunnel.id,
@@ -80,8 +121,10 @@ export async function getAllPartnerFunnels(partnerId: string): Promise<(Consignm
     })
     .from(consignmentFunnel)
     .leftJoin(userProfile, eq(consignmentFunnel.staffId, userProfile.userId))
-    .where(eq(consignmentFunnel.partnerId, partnerId))
-    .orderBy(desc(consignmentFunnel.createdAt));
+    .where(and(...whereConditions))
+    .orderBy(desc(consignmentFunnel.createdAt))
+    .limit(limit)
+    .offset(offset);
   
   return results.map(r => ({
     id: r.id,
@@ -97,6 +140,52 @@ export async function getAllPartnerFunnels(partnerId: string): Promise<(Consignm
     staffName: r.staffFirstName && r.staffLastName 
       ? `${r.staffFirstName} ${r.staffLastName}`
       : r.staffFirstName || r.staffLastName || null,
+  }));
+}
+
+/**
+ * Get funnel stats for a partner (total, active, staff count)
+ */
+export async function getPartnerFunnelStats(partnerId: string): Promise<PartnerFunnelStats> {
+  const [result] = await db
+    .select({
+      total: sql<number>`count(*)`,
+      active: sql<number>`count(*) filter (where ${consignmentFunnel.isActive} = true)`,
+      staffCount: sql<number>`count(distinct ${consignmentFunnel.staffId})`,
+    })
+    .from(consignmentFunnel)
+    .where(eq(consignmentFunnel.partnerId, partnerId));
+  
+  return {
+    total: Number(result?.total ?? 0),
+    active: Number(result?.active ?? 0),
+    staffCount: Number(result?.staffCount ?? 0),
+  };
+}
+
+/**
+ * Get staff members who have funnels (for filtering dropdown)
+ */
+export async function getPartnerFunnelStaff(partnerId: string): Promise<{ staffId: string; staffName: string; funnelCount: number }[]> {
+  const results = await db
+    .select({
+      staffId: consignmentFunnel.staffId,
+      staffFirstName: userProfile.firstName,
+      staffLastName: userProfile.lastName,
+      funnelCount: sql<number>`count(*)`,
+    })
+    .from(consignmentFunnel)
+    .leftJoin(userProfile, eq(consignmentFunnel.staffId, userProfile.userId))
+    .where(eq(consignmentFunnel.partnerId, partnerId))
+    .groupBy(consignmentFunnel.staffId, userProfile.firstName, userProfile.lastName)
+    .orderBy(sql`count(*) desc`);
+  
+  return results.map(r => ({
+    staffId: r.staffId,
+    staffName: r.staffFirstName && r.staffLastName 
+      ? `${r.staffFirstName} ${r.staffLastName}`
+      : r.staffFirstName || r.staffLastName || 'Unknown',
+    funnelCount: Number(r.funnelCount),
   }));
 }
 

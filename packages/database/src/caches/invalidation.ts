@@ -27,13 +27,14 @@ export { CacheKeys };
  */
 export function invalidateSearchCaches(): void {
   const deletedSearch = memoryCache.deleteByPrefix(CachePrefixes.search);
+  const deletedSuggest = memoryCache.deleteByPrefix('suggest:');
   const deletedBlack = memoryCache.deleteByPrefix('listings:black:');
   const deletedCards = memoryCache.deleteByPrefix('listings:cards:');
   const deletedPartner = memoryCache.deleteByPrefix('listings:partner:');
   
-  const total = deletedSearch + deletedBlack + deletedCards + deletedPartner;
+  const total = deletedSearch + deletedSuggest + deletedBlack + deletedCards + deletedPartner;
   if (total > 0) {
-    console.log(`[cache] Invalidated search caches: ${deletedSearch} search, ${deletedCards} cards, ${deletedPartner} partner, ${deletedBlack} black`);
+    console.log(`[cache] Invalidated search caches: ${deletedSearch} search, ${deletedSuggest} suggest, ${deletedCards} cards, ${deletedPartner} partner, ${deletedBlack} black`);
   }
 }
 

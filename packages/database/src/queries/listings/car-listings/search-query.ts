@@ -905,7 +905,7 @@ export async function quickSearch(
       ? db
           .select({
             partnerId: carListing.partnerId,
-            partnerName: sql<string>`coalesce(${carListing.partnerBrandName}, ${partner.brandName})`,
+            partnerName: sql<string>`coalesce(${partner.brandName}, ${carListing.partnerBrandName})`,
             count: count(),
           })
           .from(carListing)

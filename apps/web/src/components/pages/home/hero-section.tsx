@@ -30,7 +30,7 @@ function SellButton() {
     <>
       <button
         onClick={handleClick}
-        className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
+        className="w-full sm:w-auto h-12 px-10 bg-muted text-foreground text-base font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
       >
         Sell Your Car
       </button>
@@ -50,17 +50,17 @@ export function HeroSection() {
       <div className="max-w-[1600px] mx-auto">
         
         {/* Brand & Tagline */}
-        <div className="text-center mb-16 space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
+        <div className="text-center mb-16 space-y-5">
+          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
             Alifh
-          </p>
-          <h1 className="text-2xl sm:text-3xl lg:text-[2.5rem] font-semibold text-foreground tracking-tight leading-[1.2]">
-            List Your Car. For Free.
+          </span>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight">
+            List your car for free.
             <br />
-            <span className="text-muted-foreground/60">Like It Should Be.</span>
+            <span className="text-muted-foreground">Always.</span>
           </h1>
-          <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-lg mx-auto">
-            Browse. Book test drives. Sell. No fees. No ads. No catch.
+          <p className="text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
+            Unlimited listings. Unlimited revisions. Book test drives. No fees. No ads. No unfair rankings.
           </p>
         </div>
 
@@ -68,40 +68,40 @@ export function HeroSection() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-16">
           <Link
             href="/listings"
-            className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
+            className="w-full sm:w-auto h-12 px-10 bg-primary text-primary-foreground text-base font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
           >
             Browse Cars
           </Link>
           <SellButton />
         </div>
 
-        {/* Hero Image */}
-        <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] overflow-hidden rounded-lg mb-16">
-          <Image
-            src="/Images/Hero_img.png"
-            alt="Automotive marketplace"
-            fill
-            priority
-            className="object-cover"
-            sizes="(max-width: 1400px) 100vw, 1400px"
+        {/* Hero Video */}
+        <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 py-6 sm:py-8 lg:py-10">
+          <video
+            src="/Marketing/3minlist.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-contain"
           />
         </div>
 
         {/* Trust Indicators */}
-        <div className="flex items-center justify-center gap-10 md:gap-16">
+        <div className="flex items-center justify-center gap-12 md:gap-20 pt-8 border-t border-border/40">
           <div className="text-center space-y-1">
-            <div className="text-lg font-semibold tracking-tight text-[#0066FF]">Free</div>
-            <div className="text-sm text-muted-foreground">For private sellers</div>
+            <p className="text-xl font-semibold tracking-tight text-primary">Free</p>
+            <span className="text-sm text-muted-foreground">Private listings</span>
           </div>
           <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <div className="text-lg font-semibold tracking-tight text-[#0066FF]">VIN</div>
-            <div className="text-sm text-muted-foreground">Every listing</div>
+            <p className="text-xl font-semibold tracking-tight text-primary">VIN</p>
+            <span className="text-sm text-muted-foreground">Verified</span>
           </div>
           <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <div className="text-lg font-semibold tracking-tight text-[#0066FF]">Book</div>
-            <div className="text-sm text-muted-foreground">Test drives</div>
+            <p className="text-xl font-semibold tracking-tight text-primary">∞</p>
+            <span className="text-sm text-muted-foreground">Listings</span>
           </div>
         </div>
 

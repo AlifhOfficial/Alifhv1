@@ -264,15 +264,19 @@ export async function GET(req: NextRequest) {
       }
 
       // Wait for both in parallel
-      const [listings, statsToUse] = await Promise.all([listingsPromise, statsPromise]);
+      const [listingsResult, statsToUse] = await Promise.all([listingsPromise, statsPromise]);
+
+      const { listings, total } = listingsResult;
 
       return NextResponse.json({
         success: true,
         data: listings,
         listings, // backwards compatibility for older dashboard components
+        total,
         stats: statsToUse,
         meta: {
           count: listings.length,
+          total,
           limit,
           offset,
         },
@@ -281,7 +285,7 @@ export async function GET(req: NextRequest) {
 
     // ⚡ OPTIMIZATION: Check cache first for personal listings
     // Work listings are handled separately above and use partner inventory cache
-    type CachedResponse = { listings: unknown[]; stats?: unknown };
+    type CachedResponse = { listings: unknown[]; total?: number; stats?: unknown };
     const cached = memoryCache.get<CachedResponse>(myCacheKey);
     if (cached) {
       logTiming('cache-hit');
@@ -289,9 +293,11 @@ export async function GET(req: NextRequest) {
         success: true,
         data: cached.listings,
         listings: cached.listings,
+        total: cached.total,
         stats: cached.stats,
         meta: {
           count: cached.listings.length,
+          total: cached.total,
           limit,
           offset,
         },
@@ -321,7 +327,7 @@ export async function GET(req: NextRequest) {
       limit,
       offset,
     }).then(result => {
-      if (DEBUG_TIMING) console.log(`[my-listings] listings-query: ${(performance.now() - listingsStart).toFixed(0)}ms (${result.length} rows)`);
+      if (DEBUG_TIMING) console.log(`[my-listings] listings-query: ${(performance.now() - listingsStart).toFixed(0)}ms (${result.listings.length} rows)`);
       return result;
     });
 
@@ -343,19 +349,23 @@ export async function GET(req: NextRequest) {
     }
 
     // Wait for both in parallel
-    const [listings, statsToUse] = await Promise.all([listingsPromise, statsPromise]);
+    const [listingsResult, statsToUse] = await Promise.all([listingsPromise, statsPromise]);
     logTiming('queries-done');
 
+    const { listings, total } = listingsResult;
+
     // Cache the result for personal listings (2 min TTL)
-    memoryCache.set(myCacheKey, { listings, stats: statsToUse }, CacheTTL.userMyListings);
+    memoryCache.set(myCacheKey, { listings, total, stats: statsToUse }, CacheTTL.userMyListings);
 
     return NextResponse.json({
       success: true,
       data: listings,
       listings, // backwards compatibility for older dashboard components
+      total,
       stats: statsToUse,
       meta: {
         count: listings.length,
+        total,
         limit,
         offset,
       },

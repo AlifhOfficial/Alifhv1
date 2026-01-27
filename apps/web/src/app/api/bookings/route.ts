@@ -48,12 +48,14 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const statusParam = searchParams.get('status')?.split(',');
     const status = statusParam as BookingStatus[] | undefined;
+    const q = searchParams.get('q') || undefined;
+    const sort = (searchParams.get('sort') || 'newest') as 'newest' | 'oldest';
     const upcoming = searchParams.get('upcoming') === 'true';
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
 
     // Build cache key from query params
-    const cacheKeyParams = `${status?.join(',') || 'all'}-${upcoming}-${limit}-${offset}`;
+    const cacheKeyParams = `${status?.join(',') || 'all'}-${q || ''}-${sort}-${upcoming}-${limit}-${offset}`;
     const bookingsCacheKey = `user:${user.id}:bookings:${cacheKeyParams}`;
 
     // Check cache first
@@ -65,6 +67,8 @@ export async function GET(req: NextRequest) {
 
     const result = await getUserBookings(user.id, {
       status,
+      q,
+      sort,
       limit,
       offset,
       upcoming,

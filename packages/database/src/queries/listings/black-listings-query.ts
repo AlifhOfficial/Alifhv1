@@ -97,9 +97,9 @@ export async function getPartnerBlackListings(
       lifecycleStatus: carListing.lifecycleStatus,
       publishedAt: carListing.publishedAt,
       createdAt: carListing.createdAt,
-      partnerName: sql<string | null>`coalesce(${carListing.partnerBrandName}, ${partner.brandName})`,
+      partnerName: sql<string | null>`coalesce(${partner.brandName}, ${carListing.partnerBrandName})`,
       partnerLogo: partner.logo,
-      partnerVerified: sql<boolean | null>`coalesce(${carListing.partnerVerified}, ${partner.isVerified})`,
+      partnerVerified: sql<boolean | null>`coalesce(${partner.isVerified}, ${carListing.partnerVerified})`,
       sellerName: user.name,
       sellerAvatarUrl: userProfile.avatar,
     })
@@ -201,9 +201,9 @@ export async function getPublicBlackListings(options?: {
       lifecycleStatus: carListing.lifecycleStatus,
       publishedAt: carListing.publishedAt,
       createdAt: carListing.createdAt,
-      partnerName: sql<string | null>`coalesce(${carListing.partnerBrandName}, ${partner.brandName})`,
+      partnerName: sql<string | null>`coalesce(${partner.brandName}, ${carListing.partnerBrandName})`,
       partnerLogo: partner.logo,
-      partnerVerified: sql<boolean | null>`coalesce(${carListing.partnerVerified}, ${partner.isVerified})`,
+      partnerVerified: sql<boolean | null>`coalesce(${partner.isVerified}, ${carListing.partnerVerified})`,
       sellerName: user.name,
       sellerAvatarUrl: userProfile.avatar,
     })

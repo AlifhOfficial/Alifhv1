@@ -55,6 +55,7 @@ export async function GET(req: NextRequest) {
     const partnerId = searchParams.get('partnerId');
     const staffUserId = searchParams.get('staffUserId');
     const statusParam = searchParams.get('status');
+    const q = searchParams.get('q');
     const includeStats = searchParams.get('includeStats') === '1' || searchParams.get('includeStats') === 'true';
     const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100);
     const offset = parseInt(searchParams.get('offset') || '0');
@@ -87,6 +88,7 @@ export async function GET(req: NextRequest) {
       // Get bookings for specific staff member's listings
       bookingsData = await getStaffListingsBookings(staffUserId, partnerId, {
         status,
+        q: q || undefined,
         limit,
         offset,
       });
@@ -94,6 +96,7 @@ export async function GET(req: NextRequest) {
       // Get all partner bookings
       bookingsData = await getPartnerBookings(partnerId, {
         status,
+        q: q || undefined,
         limit,
         offset,
       });

@@ -4,6 +4,11 @@
  */
 
 export { HeroSection } from './hero-section';
-export { WhyUsSection } from './why-us-section';
 export { ClosingSection } from './closing-section';
 export { Footer } from './footer';
+
+// Value Proposition Sections
+export { ProblemSection } from './problem-section';
+export { DifferentiatorsSection } from './differentiators-section';
+export { ComparisonSection } from './comparison-section';
+export { FeaturesSection } from './features-section';

@@ -195,7 +195,7 @@ function getListingSummaryFields(now: Date) {
 export async function getListingsByUserId(
   userId: string,
   options?: GetListingsByUserOptions
-): Promise<ListingSummary[]> {
+): Promise<{ listings: ListingSummary[]; total: number }> {
   const { status, moderationStatus, lifecycleStatus, q, sort = 'newest', limit = 50, offset = 0, listingType } = options ?? {};
   const now = new Date();
 
@@ -215,13 +215,24 @@ export async function getListingsByUserId(
   const searchCondition = buildSearchConditions(q);
   if (searchCondition) whereConditions.push(searchCondition);
 
-  return db
-    .select(getListingSummaryFields(now))
-    .from(carListing)
-    .where(and(...whereConditions))
-    .orderBy(...buildOrderBy(sort))
-    .limit(limit)
-    .offset(offset) as Promise<ListingSummary[]>;
+  const [listings, countResult] = await Promise.all([
+    db
+      .select(getListingSummaryFields(now))
+      .from(carListing)
+      .where(and(...whereConditions))
+      .orderBy(...buildOrderBy(sort))
+      .limit(limit)
+      .offset(offset) as Promise<ListingSummary[]>,
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(carListing)
+      .where(and(...whereConditions)),
+  ]);
+
+  return {
+    listings,
+    total: countResult[0]?.count ?? 0,
+  };
 }
 
 /**
@@ -231,7 +242,7 @@ export async function getListingsByUserId(
 export async function getListingsByPartnerId(
   partnerId: string,
   options?: GetListingsByPartnerOptions
-): Promise<ListingSummaryWithPoster[]> {
+): Promise<{ listings: ListingSummaryWithPoster[]; total: number }> {
   const { status, moderationStatus, lifecycleStatus, userId, q, sort = 'newest', limit = 50, offset = 0 } = options ?? {};
   const now = new Date();
 
@@ -247,21 +258,32 @@ export async function getListingsByPartnerId(
   const searchCondition = buildSearchConditions(q);
   if (searchCondition) whereConditions.push(searchCondition);
 
-  return db
-    .select({
-      ...getListingSummaryFields(now),
-      postedByUserId: carListing.userId,
-      postedByDisplayName: user.name,
-      postedByEmail: user.email,
-      postedByAvatar: userProfile.avatar,
-    })
-    .from(carListing)
-    .leftJoin(user, eq(carListing.userId, user.id))
-    .leftJoin(userProfile, eq(user.id, userProfile.userId))
-    .where(and(...whereConditions))
-    .orderBy(...buildOrderBy(sort))
-    .limit(limit)
-    .offset(offset) as Promise<ListingSummaryWithPoster[]>;
+  const [listings, countResult] = await Promise.all([
+    db
+      .select({
+        ...getListingSummaryFields(now),
+        postedByUserId: carListing.userId,
+        postedByDisplayName: user.name,
+        postedByEmail: user.email,
+        postedByAvatar: userProfile.avatar,
+      })
+      .from(carListing)
+      .leftJoin(user, eq(carListing.userId, user.id))
+      .leftJoin(userProfile, eq(user.id, userProfile.userId))
+      .where(and(...whereConditions))
+      .orderBy(...buildOrderBy(sort))
+      .limit(limit)
+      .offset(offset) as Promise<ListingSummaryWithPoster[]>,
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(carListing)
+      .where(and(...whereConditions)),
+  ]);
+
+  return {
+    listings,
+    total: countResult[0]?.count ?? 0,
+  };
 }
 
 /**

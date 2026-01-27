@@ -5,7 +5,8 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 import { AlertCircle, RefreshCw, CheckCircle2, Settings, Search, X, ChevronDown } from 'lucide-react';
 import type { BookingData, BookingStats, AvailabilityRule, BookingSettings } from './types';
 import { BookingList } from './booking-list';
@@ -53,12 +54,15 @@ function getColorClasses(color?: string) {
 export function StaffBookingsView() {
   const [activeTab, setActiveTab] = useState<TabType>('bookings');
   const [bookings, setBookings] = useState<BookingData[]>([]);
+  const [totalBookings, setTotalBookings] = useState(0);
   const [stats, setStats] = useState<BookingStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>('confirmed');
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [sort, setSort] = useState<BookingSort>('newest');
+  const [currentPage, setCurrentPage] = useState(1);
   
   // Availability state
   const [availability, setAvailability] = useState<AvailabilityRule[]>([]);
@@ -83,7 +87,15 @@ export function StaffBookingsView() {
   // Abort controller for cancelling in-flight requests
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  // Fetch ALL bookings once - filtering happens client-side
+  const ITEMS_PER_PAGE = 50;
+
+  // Debounced search handler
+  const handleSearchChange = useDebouncedCallback((value: string) => {
+    setDebouncedSearch(value);
+    setCurrentPage(1);
+  }, 400);
+
+  // Server-side filtered fetch
   const fetchBookings = useCallback(async () => {
     // Cancel any in-flight request to prevent race conditions
     abortControllerRef.current?.abort();
@@ -93,8 +105,28 @@ export function StaffBookingsView() {
     setError(null);
 
     try {
-      // Fetch ALL bookings with stats - no status filter, client-side filtering for zero-latency toggling
-      const res = await fetch(`/api/bookings/manage?stats=true`, {
+      // Build query params for server-side filtering
+      const params = new URLSearchParams();
+      params.set('stats', 'true');
+      params.set('limit', String(ITEMS_PER_PAGE));
+      params.set('offset', String((currentPage - 1) * ITEMS_PER_PAGE));
+      params.set('sort', sort);
+      
+      // Status filter (handle 'no_show' which includes 'expired')
+      if (selectedStatus !== 'all') {
+        if (selectedStatus === 'no_show') {
+          params.set('status', 'no_show,expired');
+        } else {
+          params.set('status', selectedStatus);
+        }
+      }
+      
+      // Search query
+      if (debouncedSearch.trim()) {
+        params.set('q', debouncedSearch.trim());
+      }
+
+      const res = await fetch(`/api/bookings/manage?${params.toString()}`, {
         signal: abortControllerRef.current.signal,
       });
       const data = await res.json();
@@ -104,6 +136,7 @@ export function StaffBookingsView() {
       }
 
       setBookings(data.bookings || []);
+      setTotalBookings(data.total || 0);
       setStats(data.stats || null);
     } catch (err) {
       // Ignore aborted requests
@@ -112,43 +145,7 @@ export function StaffBookingsView() {
     } finally {
       setIsLoading(false);
     }
-  }, []); // No dependencies - only fetch on mount or manual refresh
-
-  // Client-side filtered bookings for instant status switching with search
-  const filteredBookings = useMemo(() => {
-    let filtered = bookings;
-
-    // Filter by status (note: 'no_show' tab includes 'expired' bookings)
-    if (selectedStatus !== 'all') {
-      if (selectedStatus === 'no_show') {
-        filtered = filtered.filter(b => b.status === 'no_show' || b.status === 'expired');
-      } else {
-        filtered = filtered.filter(b => b.status === selectedStatus);
-      }
-    }
-
-    // Filter by search query
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(booking =>
-        booking.listingTitle.toLowerCase().includes(query) ||
-        booking.userName.toLowerCase().includes(query) ||
-        booking.userEmail.toLowerCase().includes(query) ||
-        (booking.userPhone && booking.userPhone.toLowerCase().includes(query)) ||
-        booking.confirmationToken.toLowerCase().includes(query) ||
-        booking.scheduledDate.includes(query)
-      );
-    }
-
-    // Sort by scheduled date
-    const sorted = [...filtered].sort((a, b) => {
-      const dateA = new Date(`${a.scheduledDate}T${a.scheduledStartTime}`).getTime();
-      const dateB = new Date(`${b.scheduledDate}T${b.scheduledStartTime}`).getTime();
-      return sort === 'newest' ? dateB - dateA : dateA - dateB;
-    });
-
-    return sorted;
-  }, [bookings, selectedStatus, searchQuery, sort]);
+  }, [selectedStatus, debouncedSearch, sort, currentPage]);
 
   const fetchAvailability = useCallback(async () => {
     setAvailabilityLoading(true);
@@ -167,7 +164,7 @@ export function StaffBookingsView() {
     }
   }, []);
 
-  // Fetch bookings only once on mount
+  // Fetch bookings when filters change
   useEffect(() => {
     fetchBookings();
     
@@ -451,12 +448,18 @@ export function StaffBookingsView() {
                   type="text"
                   placeholder="Search..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    handleSearchChange(e.target.value);
+                  }}
                   className="w-full h-10 pl-10 pr-8 rounded-xl bg-secondary/50 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
                 />
                 {searchQuery && (
                   <button
-                    onClick={() => setSearchQuery('')}
+                    onClick={() => {
+                      setSearchQuery('');
+                      handleSearchChange('');
+                    }}
                     className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-secondary"
                   >
                     <X className="w-3.5 h-3.5 text-muted-foreground" />
@@ -467,17 +470,25 @@ export function StaffBookingsView() {
               {/* Status Pills */}
               <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl">
                 {STATUS_TABS.map((tab) => {
-                  const count = tab.key === 'all' 
-                    ? bookings.length 
-                    : tab.key === 'no_show'
-                      ? bookings.filter(b => b.status === 'no_show' || b.status === 'expired').length
-                      : bookings.filter(b => b.status === tab.key).length;
+                  // Use stats for counts (server-side accurate)
+                  const count = stats ? (
+                    tab.key === 'all' ? stats.totalBookings
+                    : tab.key === 'pending' ? stats.pendingBookings
+                    : tab.key === 'confirmed' ? stats.confirmedBookings
+                    : tab.key === 'completed' ? stats.completedBookings
+                    : tab.key === 'cancelled' ? stats.cancelledBookings
+                    : tab.key === 'no_show' ? stats.noShowBookings
+                    : 0
+                  ) : 0;
                   const isActive = selectedStatus === tab.key;
                   
                   return (
                     <button
                       key={tab.key}
-                      onClick={() => setSelectedStatus(tab.key)}
+                      onClick={() => {
+                        setSelectedStatus(tab.key);
+                        setCurrentPage(1);
+                      }}
                       className={`px-3 py-1.5 rounded-lg text-xs transition-all capitalize ${
                         isActive
                           ? 'bg-background text-foreground shadow-sm'
@@ -494,7 +505,10 @@ export function StaffBookingsView() {
               </div>
 
               {/* Sort */}
-              <Select value={sort} onValueChange={(v) => setSort(v as BookingSort)}>
+              <Select value={sort} onValueChange={(v) => {
+                setSort(v as BookingSort);
+                setCurrentPage(1);
+              }}>
                 <SelectTrigger className="h-10 w-32 border-0 bg-secondary/50 rounded-xl text-sm">
                   <SelectValue placeholder="Sort" />
                 </SelectTrigger>
@@ -590,14 +604,44 @@ export function StaffBookingsView() {
               </div>
             )}
 
-            {/* Booking List - now with client-filtered bookings */}
+            {/* Booking List - server-filtered bookings */}
             <BookingList
-              bookings={filteredBookings}
+              bookings={bookings}
               isLoading={isLoading}
               selectedStatus={selectedStatus}
-              searchQuery={searchQuery}
+              searchQuery={debouncedSearch}
               onAction={handleBookingAction}
             />
+
+            {/* Pagination */}
+            {(() => {
+              const totalPages = Math.ceil(totalBookings / ITEMS_PER_PAGE);
+              if (totalPages <= 1) return null;
+              
+              return (
+                <div className="flex items-center justify-between pt-6 border-t border-border/40">
+                  <p className="text-xs text-muted-foreground">
+                    Page {currentPage} of {totalPages} · {totalBookings} booking{totalBookings !== 1 ? 's' : ''}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage === 1 || isLoading}
+                      className="px-3 py-1.5 text-xs font-medium rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Previous
+                    </button>
+                    <button
+                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages || isLoading}
+                      className="px-3 py-1.5 text-xs font-medium rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         )}
 

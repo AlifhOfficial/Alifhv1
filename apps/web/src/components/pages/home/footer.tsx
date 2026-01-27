@@ -34,7 +34,7 @@ function SellLink() {
       <a 
         href="/user-dashboard/listings/new" 
         onClick={handleClick}
-        className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
       >
         Sell Your Car
       </a>
@@ -78,51 +78,51 @@ export function Footer() {
                 className="h-5 w-auto"
               />
             </Link>
-            <p className="text-sm text-muted-foreground font-medium max-w-[200px]">
+            <p className="text-xs text-muted-foreground font-medium max-w-[200px]">
               Where quality beats ads.
             </p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               Dubai, UAE 🇦🇪
             </p>
           </div>
 
           {/* Browse */}
           <div className="space-y-3">
-            <p className="text-[13px] font-bold text-foreground">Browse</p>
+            <p className="text-xs font-medium text-foreground">Browse</p>
             <div className="flex flex-col gap-2.5">
-              <Link href="/listings" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">All Cars</Link>
+              <Link href="/listings" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">All Cars</Link>
               <SellLink />
             </div>
           </div>
           
           {/* Dealers */}
           <div className="space-y-3">
-            <p className="text-[13px] font-bold text-foreground">Dealers</p>
+            <p className="text-xs font-medium text-foreground">Dealers</p>
             <div className="flex flex-col gap-2.5">
-              <Link href="/partner" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Partner With Us</Link>
-              <Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
+              <Link href="/partner" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">Partner With Us</Link>
+              <Link href="/pricing" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
             </div>
           </div>
 
           {/* Company */}
           <div className="space-y-3">
-            <p className="text-[13px] font-bold text-foreground">Company</p>
+            <p className="text-xs font-medium text-foreground">Company</p>
             <div className="flex flex-col gap-2.5">
-              <Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">About</Link>
-              <Link href="/vision" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Our Vision</Link>
-              <Link href="/how-ranking-works" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">How Ranking Works</Link>
-              <Link href="/faq" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">FAQ</Link>
-              <Link href="/contact" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Contact</Link>
+              <Link href="/about" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">About</Link>
+              <Link href="/vision" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">Our Vision</Link>
+              <Link href="/how-ranking-works" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">How Ranking Works</Link>
+              <Link href="/faq" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">FAQ</Link>
+              <Link href="/contact" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">Contact</Link>
             </div>
           </div>
           
           {/* Legal - Consolidated */}
           <div className="space-y-3">
-            <p className="text-[13px] font-bold text-foreground">Legal</p>
+            <p className="text-xs font-medium text-foreground">Legal</p>
             <div className="flex flex-col gap-2.5">
-              <Link href="/terms-of-service" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Terms</Link>
-              <Link href="/privacy-policy" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Privacy</Link>
-              <Link href="/dealer-agreement" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Dealer Agreement</Link>
+              <Link href="/terms-of-service" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">Terms</Link>
+              <Link href="/privacy-policy" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">Privacy</Link>
+              <Link href="/dealer-agreement" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">Dealer Agreement</Link>
             </div>
           </div>
         </div>

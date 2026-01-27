@@ -56,12 +56,14 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const statusParam = searchParams.get('status')?.split(',');
     const status = statusParam as BookingStatus[] | undefined;
+    const q = searchParams.get('q') || undefined;
+    const sort = searchParams.get('sort') || 'newest'; // newest or oldest
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
     const includeStats = searchParams.get('stats') === 'true';
 
     // Run bookings and stats queries in parallel for better performance
-    const bookingsKey = `bookings:staff:${user.id}:${membership.partnerId}:${status?.join(',') || 'all'}:${limit}:${offset}`;
+    const bookingsKey = `bookings:staff:${user.id}:${membership.partnerId}:${status?.join(',') || 'all'}:${q || ''}:${sort}:${limit}:${offset}`;
     
     const [result, stats] = await Promise.all([
       // Bookings list (with short-lived cache)
@@ -70,6 +72,8 @@ export async function GET(req: NextRequest) {
         if (!cachedBookings) {
           cachedBookings = await getStaffListingsBookings(user.id, membership.partnerId, {
             status,
+            q,
+            sort: sort as 'newest' | 'oldest',
             limit,
             offset,
           });

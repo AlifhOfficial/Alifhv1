@@ -1,14 +1,13 @@
 /**
  * Partner Inventory Client Component
- * Minimal macOS-inspired design with client-side filtering
+ * Minimal macOS-inspired design with server-side filtering
  */
 
 'use client';
 
 import Image from "next/image";
-import { UserAvatar } from "@/components/ui/data-display/user-avatar";
 import { Combobox } from "@/components/ui/forms/combobox";
-import { CheckCircle2, Clock, Archive, ShoppingCart, AlertCircle, XCircle, User, RefreshCw, Crown, Search, ChevronLeft, ChevronRight, X, Box } from "lucide-react";
+import { ShoppingCart, User, RefreshCw, Crown, Search, ChevronLeft, ChevronRight, X, Box } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import { cn } from "@/utils";
@@ -20,8 +19,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/forms/select';
+import { useDebouncedCallback } from 'use-debounce';
 
-// Status tab types
+// Status tab types - maps to lifecycleStatus API param
 type StatusTab = 'active' | 'sold' | 'archived' | 'expired' | 'all';
 
 interface DealerInventoryProps {
@@ -95,14 +95,6 @@ interface ListingStats {
   deleted: number;
 }
 
-interface StaffMemberStats {
-  userId: string;
-  displayName: string;
-  username: string;
-  listingCount: number;
-  isActive?: boolean;
-}
-
 interface TeamMember {
   id: string;
   userId: string;
@@ -111,22 +103,6 @@ interface TeamMember {
   username: string;
   avatar: string | null;
 }
-
-// Status config with colors
-const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  active: { label: 'Active', color: 'text-green-600', bg: 'bg-green-500/10' },
-  public: { label: 'Public', color: 'text-green-600', bg: 'bg-green-500/10' },
-  draft: { label: 'Draft', color: 'text-yellow-600', bg: 'bg-yellow-500/10' },
-  in_review: { label: 'In Review', color: 'text-blue-600', bg: 'bg-blue-500/10' },
-  pending_review: { label: 'In Review', color: 'text-blue-600', bg: 'bg-blue-500/10' },
-  submitted: { label: 'In Review', color: 'text-blue-600', bg: 'bg-blue-500/10' },
-  rejected: { label: 'Rejected', color: 'text-red-600', bg: 'bg-red-500/10' },
-  archived: { label: 'Archived', color: 'text-muted-foreground', bg: 'bg-secondary' },
-  sold: { label: 'Sold', color: 'text-purple-600', bg: 'bg-purple-500/10' },
-  expired: { label: 'Expired', color: 'text-orange-600', bg: 'bg-orange-500/10' },
-  suspended: { label: 'Suspended', color: 'text-red-600', bg: 'bg-red-500/10' },
-  deleted: { label: 'Deleted', color: 'text-red-600', bg: 'bg-red-500/10' },
-};
 
 const ITEMS_PER_PAGE = 15;
 
@@ -140,20 +116,20 @@ export function DealerInventory({
   const [listings, setListings] = useState<ListingData[]>([]);
   const [stats, setStats] = useState<ListingStats | null>(null);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
-  const [ownerUserId, setOwnerUserId] = useState<string | null>(null);
   const [blackQuota, setBlackQuota] = useState<BlackQuotaData | null>(null);
   
-  // Filter state
+  // Server-side filter state (these trigger API calls)
   const [selectedStaffFilter, setSelectedStaffFilter] = useState<string>('all');
   const [selectedStatusTab, setSelectedStatusTab] = useState<StatusTab>('active');
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   
   // UI state
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const hasFetchedRef = useRef(false);
+  const hasFetchedInitialRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
   
   // Reassign modal state
@@ -170,6 +146,68 @@ export function DealerInventory({
   // Check if user can reassign (owner or admin)
   const canReassign = userRole === 'owner' || userRole === 'admin';
 
+  // Debounce search input to avoid too many API calls
+  const debouncedSetSearch = useDebouncedCallback((value: string) => {
+    setDebouncedSearch(value);
+    setCurrentPage(1); // Reset to first page on new search
+  }, 400);
+
+  // Handle search input change
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchQuery(value);
+    debouncedSetSearch(value);
+  }, [debouncedSetSearch]);
+
+  // Fetch team members once on mount
+  const fetchTeamData = useCallback(async (signal: AbortSignal) => {
+    try {
+      const [teamResponse, blackQuotaResponse] = await Promise.all([
+        fetch('/api/partner/staff', {
+          method: 'GET',
+          credentials: 'include',
+          cache: 'no-store',
+          signal,
+        }),
+        fetch('/api/partner/black-quota', {
+          method: 'GET',
+          credentials: 'include',
+          cache: 'no-store',
+          signal,
+        }),
+      ]);
+
+      // Process team data
+      if (teamResponse.ok) {
+        const teamData = await teamResponse.json();
+        const allStaff: StaffApiResponse[] = teamData.data || [];
+        
+        const members = allStaff
+          .filter((m) => !m.isOwner && m.role !== 'owner')
+          .map((m) => ({
+            id: m.id,
+            userId: m.userId,
+            status: m.status,
+            displayName: m.displayName || m.userName || m.userEmail,
+            username: m.userEmail?.split('@')[0] || '',
+            avatar: m.userAvatar,
+          }));
+        setTeamMembers(members);
+      }
+
+      // Process black quota
+      if (blackQuotaResponse.ok) {
+        const quotaData = await blackQuotaResponse.json();
+        if (quotaData.success && quotaData.data) {
+          setBlackQuota(quotaData.data);
+        }
+      }
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') return;
+      console.error('[DealerInventory] Error fetching team data:', err);
+    }
+  }, []);
+
+  // Fetch listings with server-side filters
   const fetchListings = useCallback(async (isRefresh = false) => {
     if (!partnerId) return;
     
@@ -185,74 +223,47 @@ export function DealerInventory({
       }
       setError(null);
 
-      // Fetch listings, team data, and black quota in parallel
-      const [listingsResponse, teamResponse, blackQuotaResponse] = await Promise.all([
-        fetch(
-          `/api/listings/my-listings?listingType=work&partnerId=${partnerId}&includeStats=1`,
-          {
-            method: 'GET',
-            credentials: 'include',
-            cache: 'no-store',
-            signal: abortRef.current.signal,
-          }
-        ),
-        fetch('/api/partner/staff', {
-          method: 'GET',
-          credentials: 'include',
-          cache: 'no-store',
-          signal: abortRef.current.signal,
-        }),
-        fetch('/api/partner/black-quota', {
-          method: 'GET',
-          credentials: 'include',
-          cache: 'no-store',
-          signal: abortRef.current.signal,
-        }),
-      ]);
+      // Build query params for server-side filtering
+      const params = new URLSearchParams({
+        listingType: 'work',
+        partnerId,
+        includeStats: '1',
+        limit: String(ITEMS_PER_PAGE),
+        offset: String((currentPage - 1) * ITEMS_PER_PAGE),
+      });
 
-      if (!listingsResponse.ok) {
-        const errorData = await listingsResponse.json().catch(() => ({}));
-        throw new Error(errorData.error || `Failed to fetch partner listings: ${listingsResponse.status}`);
+      // Add lifecycle status filter (maps to our status tabs)
+      if (selectedStatusTab !== 'all') {
+        params.set('lifecycleStatus', selectedStatusTab);
       }
 
-      const listingsData = await listingsResponse.json();
-      setListings(listingsData.data || listingsData.listings || []);
+      // Add staff filter
+      if (selectedStaffFilter !== 'all') {
+        params.set('staffMemberUserId', selectedStaffFilter);
+      }
+
+      // Add search query
+      if (debouncedSearch.trim()) {
+        params.set('q', debouncedSearch.trim());
+      }
+
+      const response = await fetch(`/api/listings/my-listings?${params.toString()}`, {
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store',
+        signal: abortRef.current.signal,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to fetch listings: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setListings(data.data || data.listings || []);
       
-      if (listingsData.stats) {
-        setStats(listingsData.stats);
-      }
-
-      // Process team data if available
-      if (teamResponse.ok) {
-        const teamData = await teamResponse.json();
-        const allStaff: StaffApiResponse[] = teamData.data || [];
-        
-        // Find and store owner's userId (check both isOwner flag and role)
-        const owner = allStaff.find((m) => m.isOwner || m.role === 'owner');
-        if (owner) {
-          setOwnerUserId(owner.userId);
-        }
-        
-        // Filter out owners - they shouldn't appear in staff inventory
-        const members = allStaff
-          .filter((m) => !m.isOwner && m.role !== 'owner')
-          .map((m) => ({
-            id: m.id,
-            userId: m.userId, // Use actual userId, not staff record id
-            status: m.status,
-            displayName: m.displayName || m.userName || m.userEmail,
-            username: m.userEmail?.split('@')[0] || '',
-            avatar: m.userAvatar, // Use personal avatar for internal ops
-          }));
-        setTeamMembers(members);
-      }
-
-      // Process black quota if available
-      if (blackQuotaResponse.ok) {
-        const quotaData = await blackQuotaResponse.json();
-        if (quotaData.success && quotaData.data) {
-          setBlackQuota(quotaData.data);
-        }
+      if (data.stats) {
+        setStats(data.stats);
       }
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') return;
@@ -263,15 +274,34 @@ export function DealerInventory({
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, [partnerId]);
+  }, [partnerId, currentPage, selectedStatusTab, selectedStaffFilter, debouncedSearch]);
 
+  // Initial fetch - team data once, listings will be fetched by effect below
   useEffect(() => {
-    if (!hasFetchedRef.current) {
-      hasFetchedRef.current = true;
-      fetchListings();
+    if (!hasFetchedInitialRef.current) {
+      hasFetchedInitialRef.current = true;
+      const controller = new AbortController();
+      fetchTeamData(controller.signal);
+      return () => controller.abort();
     }
+  }, [fetchTeamData]);
+
+  // Fetch listings whenever filters change
+  useEffect(() => {
+    fetchListings();
     return () => { abortRef.current?.abort(); };
   }, [fetchListings]);
+
+  // Reset page when filters change (except for page itself)
+  const handleStatusTabChange = useCallback((tab: StatusTab) => {
+    setSelectedStatusTab(tab);
+    setCurrentPage(1);
+  }, []);
+
+  const handleStaffFilterChange = useCallback((value: string) => {
+    setSelectedStaffFilter(value);
+    setCurrentPage(1);
+  }, []);
 
   // Handle reassigning a listing to a different staff member
   const handleReassign = async () => {
@@ -313,129 +343,49 @@ export function DealerInventory({
     return map;
   }, [teamMembers]);
 
-  // Calculate staff member stats with active/resigned status (excluding owner)
-  // Also includes team members with 0 listings for complete staff display
-  // Listing count is based on the selected status tab for consistency
-  const allStaffData = useMemo(() => {
-    const staffMap = new Map<string, StaffMemberStats & { avatar?: string | null }>();
-    
-    // Filter listings by selected status tab first
-    const listingsForStats = selectedStatusTab === 'all' 
-      ? listings 
-      : listings.filter(l => l.lifecycleStatus === selectedStatusTab);
-    
-    // Build stats from filtered listings (for staff who have posted)
-    listingsForStats.forEach(listing => {
-      // Skip listings created by the owner
-      if (listing.postedByUserId && listing.postedByDisplayName && listing.postedByUserId !== ownerUserId) {
-        const existing = staffMap.get(listing.postedByUserId);
-        if (existing) {
-          existing.listingCount++;
-        } else {
-          const teamMember = teamMemberMap.get(listing.postedByUserId);
-          const isActive = teamMember ? teamMember.status === 'active' : true;
-          
-          staffMap.set(listing.postedByUserId, {
-            userId: listing.postedByUserId,
-            displayName: listing.postedByDisplayName,
-            username: listing.postedByUsername || '',
-            listingCount: 1,
-            avatar: teamMember?.avatar || listing.postedByAvatar, // Prefer personal avatar
-            isActive,
-          });
-        }
-      }
-    });
-    
-    // Add active team members who don't have any listings yet
-    teamMembers.forEach(m => {
-      if (m.status === 'active' && !staffMap.has(m.userId)) {
-        staffMap.set(m.userId, {
-          userId: m.userId,
-          displayName: m.displayName,
-          username: m.displayName?.split(' ')[0]?.toLowerCase() || '',
-          listingCount: 0,
-          isActive: true,
-          avatar: m.avatar,
-        });
-      }
-    });
-    
-    // Convert to array and sort: active staff first, then resigned, each sorted by listing count
-    const allStaff = Array.from(staffMap.values()).sort((a, b) => {
-      if (a.isActive !== b.isActive) return a.isActive ? -1 : 1;
-      return b.listingCount - a.listingCount;
-    });
-    
-    // Separate for different uses
-    const activeStaff = allStaff.filter(s => s.isActive !== false);
-    const staffWithListings = allStaff.filter(s => s.listingCount > 0);
-    
-    return { allStaff, activeStaff, staffWithListings };
-  }, [listings, teamMembers, teamMemberMap, ownerUserId, selectedStatusTab]);
+  // Active staff for reassignment and filtering
+  const activeStaff = useMemo(() => {
+    return teamMembers.filter(m => m.status === 'active');
+  }, [teamMembers]);
 
-  // Derived values for different use cases
-  const allStaffForDisplay = allStaffData.allStaff;
-  const staffStats = allStaffData.staffWithListings;
-
-  // Staff options for combobox
+  // Staff options for combobox - simple list from team members
+  // (listing counts removed since with server-side filtering we only see current page)
   const staffOptions = useMemo(() => {
     const options = [{ value: 'all', label: 'All Staff' }];
-    allStaffForDisplay.forEach(staff => {
+    activeStaff.forEach(staff => {
       options.push({
         value: staff.userId,
-        label: `${staff.displayName} (${staff.listingCount})`,
+        label: staff.displayName,
       });
     });
     return options;
-  }, [allStaffForDisplay]);
+  }, [activeStaff]);
 
-  // Multi-filter listings: staff + status + search
-  const filteredListings = useMemo(() => {
-    let filtered = listings;
-    
-    // Filter by staff
-    if (selectedStaffFilter !== 'all') {
-      filtered = filtered.filter(l => l.postedByUserId === selectedStaffFilter);
-    }
-    
-    // Filter by status tab
-    if (selectedStatusTab !== 'all') {
-      filtered = filtered.filter(l => l.lifecycleStatus === selectedStatusTab);
-    }
-    
-    // Search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(l => 
-        l.make.toLowerCase().includes(query) ||
-        l.model.toLowerCase().includes(query) ||
-        (l.trim && l.trim.toLowerCase().includes(query)) ||
-        l.year.toString().includes(query) ||
-        l.postedByDisplayName?.toLowerCase().includes(query)
-      );
-    }
-    
-    return filtered;
-  }, [listings, selectedStaffFilter, selectedStatusTab, searchQuery]);
+  // With server-side filtering, listings are already filtered - no client-side filtering needed
+  // The listings we receive are already the result for current page
 
-  // Pagination
-  const totalPages = Math.ceil(filteredListings.length / ITEMS_PER_PAGE);
-  const paginatedListings = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredListings.slice(start, start + ITEMS_PER_PAGE);
-  }, [filteredListings, currentPage]);
+  // Calculate total pages from stats based on current filter
+  const getTotalForCurrentFilter = useCallback(() => {
+    if (!stats) return 0;
+    switch (selectedStatusTab) {
+      case 'active': return stats.active;
+      case 'sold': return stats.sold;
+      case 'archived': return stats.archived;
+      case 'expired': return stats.expired;
+      case 'all': return stats.all;
+      default: return stats.all;
+    }
+  }, [stats, selectedStatusTab]);
 
-  // Reset page when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedStaffFilter, selectedStatusTab, searchQuery]);
+  const totalItems = getTotalForCurrentFilter();
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
   // Clear filters
   const clearFilters = useCallback(() => {
     setSelectedStaffFilter('all');
     setSelectedStatusTab('active');
     setSearchQuery('');
+    setDebouncedSearch('');
     setCurrentPage(1);
   }, []);
 
@@ -543,12 +493,12 @@ export function DealerInventory({
             type="text"
             placeholder="Search..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="w-full h-10 pl-10 pr-8 rounded-xl bg-secondary/50 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
           />
           {searchQuery && (
             <button
-              onClick={() => setSearchQuery('')}
+              onClick={() => handleSearchChange('')}
               className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-secondary"
             >
               <X className="w-3.5 h-3.5 text-muted-foreground" />
@@ -566,7 +516,7 @@ export function DealerInventory({
             return (
               <button
                 key={status}
-                onClick={() => setSelectedStatusTab(status)}
+                onClick={() => handleStatusTabChange(status)}
                 className={`px-3 py-1.5 rounded-lg text-xs transition-all capitalize ${
                   isActive
                     ? 'bg-background text-foreground shadow-sm'
@@ -583,12 +533,12 @@ export function DealerInventory({
         </div>
 
         {/* Staff Combobox */}
-        {allStaffForDisplay.length > 0 && (
+        {activeStaff.length > 0 && (
           <div className="w-48">
             <Combobox
               options={staffOptions}
               value={selectedStaffFilter}
-              onValueChange={setSelectedStaffFilter}
+              onValueChange={handleStaffFilterChange}
               placeholder="All Staff"
               searchPlaceholder="Search staff..."
               className="h-10 rounded-xl bg-secondary/50 border-0"
@@ -622,14 +572,19 @@ export function DealerInventory({
       )}
 
       {/* Listings */}
-      {!isLoading && !error && filteredListings.length > 0 && (
-        <>
+      {!isLoading && !error && listings.length > 0 && (
+        <div className={cn("transition-opacity duration-200", isRefreshing && "opacity-50 pointer-events-none")}>
           {/* Count */}
           <div className="flex items-center justify-between mb-6">
-            <p className="text-xs text-muted-foreground">
-              {filteredListings.length} listing{filteredListings.length !== 1 ? 's' : ''}
-              {selectedStaffFilter !== 'all' && ` by ${staffStats.find(s => s.userId === selectedStaffFilter)?.displayName}`}
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-xs text-muted-foreground">
+                {totalItems} listing{totalItems !== 1 ? 's' : ''}
+                {selectedStaffFilter !== 'all' && ` by ${activeStaff.find(s => s.userId === selectedStaffFilter)?.displayName}`}
+              </p>
+              {isRefreshing && (
+                <div className="w-3 h-3 border border-muted-foreground/30 border-t-muted-foreground rounded-full animate-spin" />
+              )}
+            </div>
             {totalPages > 1 && (
               <p className="text-xs text-muted-foreground">{currentPage} / {totalPages}</p>
             )}
@@ -637,7 +592,7 @@ export function DealerInventory({
 
           {/* List */}
           <div className="space-y-1">
-            {paginatedListings.map((listing) => {
+            {listings.map((listing) => {
               const statusBadge = getStatusBadge(listing);
               const teamMember = listing.postedByUserId ? teamMemberMap.get(listing.postedByUserId) : null;
               
@@ -696,7 +651,7 @@ export function DealerInventory({
                         View
                       </button>
                     </Link>
-                    {canReassign && allStaffData.activeStaff.length > 0 && (
+                    {canReassign && activeStaff.length > 0 && (
                       <button
                         onClick={() => setReassignModal({
                           open: true,
@@ -769,11 +724,11 @@ export function DealerInventory({
               </button>
             </div>
           )}
-        </>
+        </div>
       )}
 
-      {/* Empty - No Data */}
-      {!isLoading && !error && listings.length === 0 && (
+      {/* Empty - No Data (no filters, just empty inventory) */}
+      {!isLoading && !error && listings.length === 0 && !hasActiveFilters && (
         <div className="flex flex-col items-center justify-center py-32 text-center">
           <ShoppingCart className="w-10 h-10 text-muted-foreground/20 mb-4" />
           <h3 className="text-lg font-medium tracking-tight">No listings yet</h3>
@@ -781,8 +736,8 @@ export function DealerInventory({
         </div>
       )}
 
-      {/* Empty - No Results */}
-      {!isLoading && !error && listings.length > 0 && filteredListings.length === 0 && (
+      {/* Empty - No Results (filters applied but no results) */}
+      {!isLoading && !error && listings.length === 0 && hasActiveFilters && (
         <div className="flex flex-col items-center justify-center py-32 text-center">
           <Search className="w-10 h-10 text-muted-foreground/20 mb-4" />
           <h3 className="text-lg font-medium tracking-tight">No results</h3>
@@ -824,11 +779,11 @@ export function DealerInventory({
                   <SelectValue placeholder="Select staff member..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {allStaffData.activeStaff
+                  {activeStaff
                     .filter(staff => staff.userId !== reassignModal.currentManagerId)
                     .map(staff => (
                       <SelectItem key={staff.userId} value={staff.userId}>
-                        {staff.displayName} ({staff.listingCount} listings)
+                        {staff.displayName}
                       </SelectItem>
                     ))}
                 </SelectContent>
