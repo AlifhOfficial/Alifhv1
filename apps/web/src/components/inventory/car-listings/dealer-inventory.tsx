@@ -11,7 +11,6 @@ import { ShoppingCart, User, RefreshCw, Crown, Search, ChevronLeft, ChevronRight
 import Link from "next/link";
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import { cn } from "@/utils";
-import { DashboardPageWrapper, DashboardPageHeader } from '@/components/shared/layout/dashboard-page-wrapper';
 import {
   Select,
   SelectContent,
@@ -425,30 +424,33 @@ export function DealerInventory({
   };
 
   return (
-    <DashboardPageWrapper>
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <DashboardPageHeader
-        title="Inventory"
-        description="Manage your dealership listings"
-      >
-        {/* BLK Quota Badge */}
-        {blackQuota && (
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-800/80 text-zinc-100">
-            <Crown className="w-3 h-3" />
-            <span className="text-xs font-medium">
-              {blackQuota.activeBlackListingsCount}/{blackQuota.blackListingQuota} BLK
-            </span>
-          </div>
-        )}
-        <button
-          onClick={() => fetchListings(true)}
-          disabled={isRefreshing}
-          className="p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
-          aria-label="Refresh"
-        >
-          <RefreshCw className={cn("w-4 h-4 text-muted-foreground", isRefreshing && "animate-spin")} />
-        </button>
-      </DashboardPageHeader>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-base sm:text-lg font-semibold text-foreground">Inventory</h1>
+          <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">Manage your dealership listings</p>
+        </div>
+        <div className="flex items-center gap-2">
+          {/* BLK Quota Badge */}
+          {blackQuota && (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-800/80 text-zinc-100">
+              <Crown className="w-3 h-3" />
+              <span className="text-xs font-medium">
+                {blackQuota.activeBlackListingsCount}/{blackQuota.blackListingQuota} BLK
+              </span>
+            </div>
+          )}
+          <button
+            onClick={() => fetchListings(true)}
+            disabled={isRefreshing}
+            className="p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
+            aria-label="Refresh"
+          >
+            <RefreshCw className={cn("w-4 h-4 text-muted-foreground", isRefreshing && "animate-spin")} />
+          </button>
+        </div>
+      </div>
 
         {/* Stats */}
         {stats && (
@@ -821,6 +823,6 @@ export function DealerInventory({
           </div>
         </div>
       )}
-    </DashboardPageWrapper>
+    </div>
   );
 }

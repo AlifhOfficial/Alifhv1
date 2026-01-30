@@ -73,28 +73,26 @@ export function UserBookingList({
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-24">
+      <div className="flex flex-col items-center justify-center py-16 sm:py-24">
         <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
-        <p className="text-xs text-muted-foreground mt-4">Loading...</p>
+        <p className="text-[11px] sm:text-xs text-muted-foreground mt-3 sm:mt-4">Loading...</p>
       </div>
     );
   }
 
   if (bookings.length === 0) {
     const config = searchQuery 
-      ? { icon: Calendar, color: 'text-foreground', message: 'No matches found', subMessage: 'Try adjusting your search' }
+      ? { icon: Calendar, color: 'text-muted-foreground/20', message: 'No matches found', subMessage: 'Try adjusting your search' }
       : (EMPTY_STATE_CONFIG[selectedStatus] || EMPTY_STATE_CONFIG.all);
     const Icon = config.icon;
     
     return (
-      <div className="flex flex-col items-center justify-center py-32 text-center">
-        <Icon className={`w-5 h-5 ${config.color} mb-3`} strokeWidth={2} />
-        <h3 className="text-sm font-semibold tracking-tight">
-          {config.message}
-        </h3>
-        <p className="text-xs text-muted-foreground mt-1">
-          {config.subMessage}
-        </p>
+      <div className="flex items-center justify-center min-h-[40vh]">
+        <div className="text-center max-w-xs">
+          <Icon className={`w-8 h-8 mx-auto mb-4 ${searchQuery ? 'text-muted-foreground/20' : config.color}`} strokeWidth={1.5} />
+          <h3 className="text-sm font-semibold text-foreground mb-1">{config.message}</h3>
+          <p className="text-xs text-muted-foreground/60 leading-relaxed">{config.subMessage}</p>
+        </div>
       </div>
     );
   }
@@ -102,13 +100,13 @@ export function UserBookingList({
   return (
     <div>
       {/* Section Header */}
-      <p className="text-xs text-muted-foreground mb-6">
+      <p className="text-[11px] sm:text-xs text-muted-foreground mb-4 sm:mb-6">
         {bookings.length} booking{bookings.length !== 1 ? 's' : ''}
         {searchQuery && <span> matching "{searchQuery}"</span>}
       </p>
 
       {/* List */}
-      <div className="space-y-1">
+      <div className="space-y-2 sm:space-y-1">
       {bookings.map(booking => (
         <UserBookingCard
           key={booking.id}

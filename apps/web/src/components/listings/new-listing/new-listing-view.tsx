@@ -18,46 +18,46 @@ interface NewListingViewProps {
 function SubmissionModal({ onClose }: { onClose: () => void }) {
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-background/40 backdrop-blur-2xl flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] bg-background/40 backdrop-blur-2xl flex items-center justify-center p-3 sm:p-4"
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-sm bg-card border border-border/40 rounded-xl shadow-xl overflow-hidden"
+        className="w-full max-w-[calc(100vw-1.5rem)] sm:max-w-sm bg-card border border-border/40 rounded-xl sm:rounded-2xl shadow-xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-6 pb-4 relative">
+        <div className="p-4 sm:p-6 pb-3 sm:pb-4 relative">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
+            className="absolute top-3 right-3 sm:top-4 sm:right-4 p-1.5 sm:p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
           
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center">
-              <Clock className="w-5 h-5 text-amber-500" />
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-amber-500/10 flex items-center justify-center">
+              <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-foreground">Sit Tight!</h2>
-              <p className="text-xs text-muted-foreground">Listing submitted</p>
+              <h2 className="text-base sm:text-lg font-semibold text-foreground">Sit Tight!</h2>
+              <p className="text-[11px] sm:text-xs text-muted-foreground/60">Listing submitted</p>
             </div>
           </div>
         </div>
 
         {/* Content */}
-        <div className="px-6 pb-4">
-          <p className="text-sm text-muted-foreground leading-relaxed">
+        <div className="px-4 sm:px-6 pb-3 sm:pb-4">
+          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
             Most listings go live within <span className="font-semibold text-foreground">5 minutes</span>. 
             If manual review is needed, we'll check within 24 hours.
           </p>
         </div>
 
         {/* Footer */}
-        <div className="border-t border-border/40 p-4">
+        <div className="border-t border-border/40 p-3 sm:p-4">
           <button
             onClick={onClose}
-            className="w-full h-10 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
+            className="w-full h-9 sm:h-10 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-xs sm:text-sm font-semibold hover:bg-primary/90 transition-colors"
           >
             View My Listings
           </button>
@@ -159,21 +159,21 @@ export function NewListingView({ userId }: NewListingViewProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background -mx-4">
       {/* Success Modal */}
       {showSuccessModal && <SubmissionModal onClose={handleModalClose} />}
 
       {/* Error Message */}
       {error && (
-        <div className="max-w-4xl mx-auto px-6 mt-6">
-          <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
-            <p className="text-sm text-red-500">{error}</p>
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6">
+          <div className="rounded-xl sm:rounded-2xl border border-red-500/20 bg-red-500/10 p-3 sm:p-4">
+            <p className="text-xs sm:text-sm text-red-500">{error}</p>
           </div>
         </div>
       )}
 
       {/* Form */}
-      <div className="py-8">
+      <div>
         <ListingForm
           mode="create"
           onSubmit={handleSubmit}

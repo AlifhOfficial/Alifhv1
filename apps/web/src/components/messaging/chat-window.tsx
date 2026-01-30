@@ -202,36 +202,36 @@ export function ChatWindow({
 
   return (
     <div className={cn('flex flex-col h-full w-full min-h-0 bg-background overflow-hidden', className)}>
-      {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-border/40 bg-background">
+      {/* Header - fixed at top, never scrolls */}
+      <div className="flex-shrink-0 flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 border-b border-border/40 bg-background z-10">
         {onBack && (
-          <button onClick={onBack} className="p-2 hover:bg-sidebar rounded-lg transition-colors lg:hidden" aria-label="Back">
-            <ArrowLeft className="w-5 h-5 text-muted-foreground" />
+          <button onClick={onBack} className="p-1.5 sm:p-2 hover:bg-sidebar rounded-lg transition-colors lg:hidden" aria-label="Back">
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
           </button>
         )}
 
         <div className="relative flex-shrink-0">
           {isPartnerBrand ? (
-            <BrandAvatar logoUrl={partner?.logo} brandName={partner?.name || 'Partner'} size="sm" className="w-10 h-10" />
+            <BrandAvatar logoUrl={partner?.logo} brandName={partner?.name || 'Partner'} size="sm" className="w-8 h-8 sm:w-10 sm:h-10" />
           ) : (
-            <UserAvatar src={otherParticipant?.avatarUrl} name={displayName} size="md" className="w-10 h-10" />
+            <UserAvatar src={otherParticipant?.avatarUrl} name={displayName} size="md" className="w-8 h-8 sm:w-10 sm:h-10" />
           )}
         </div>
 
         <div className="flex-1 min-w-0">
-          <h3 className="text-[15px] font-bold tracking-tight truncate text-foreground">{displayName}</h3>
+          <h3 className="text-sm sm:text-[15px] font-bold tracking-tight truncate text-foreground">{displayName}</h3>
           <div className="flex items-center gap-1.5 mt-0.5">
             {isOtherOnline && (
               <div className="flex items-center gap-1">
                 <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                <span className="text-xs font-semibold text-green-600 dark:text-green-400">Active</span>
+                <span className="text-[10px] sm:text-xs font-semibold text-green-600 dark:text-green-400">Active</span>
               </div>
             )}
             {!isOtherOnline && lastActiveAt && (
-              <span className="text-xs font-medium text-muted-foreground/70">Last seen {getLastSeenText(lastActiveAt)}</span>
+              <span className="text-[10px] sm:text-xs font-medium text-muted-foreground/70">Last seen {getLastSeenText(lastActiveAt)}</span>
             )}
             {!isOtherOnline && !lastActiveAt && (
-              <span className="text-xs font-medium text-muted-foreground/50">Away</span>
+              <span className="text-[10px] sm:text-xs font-medium text-muted-foreground/50">Away</span>
             )}
           </div>
         </div>
@@ -239,7 +239,7 @@ export function ChatWindow({
         {onBack && (
           <button 
             onClick={onBack} 
-            className="p-2 hover:bg-sidebar rounded-lg transition-colors hidden lg:flex" 
+            className="p-1.5 sm:p-2 hover:bg-sidebar rounded-lg transition-colors hidden lg:flex" 
             aria-label="Close"
             title="Close"
           >
@@ -248,33 +248,33 @@ export function ChatWindow({
         )}
       </div>
 
-      <div ref={containerRef} onScroll={handleScroll} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-4 bg-background flex flex-col-reverse gap-2">
+      <div ref={containerRef} onScroll={handleScroll} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-3 sm:p-4 bg-background flex flex-col-reverse gap-1.5 sm:gap-2">
         {isFetchingMore && (
-          <div className="flex justify-center py-4">
-            <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+          <div className="flex justify-center py-3 sm:py-4">
+            <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin text-muted-foreground" />
           </div>
         )}
 
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
-            <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+            <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-muted-foreground" />
           </div>
         ) : messages.length === 0 ? (
-          <div className="min-h-[300px] flex items-center justify-center">
-            <div className="text-center space-y-3">
-              <div className="w-12 h-12 mx-auto rounded-full bg-sidebar flex items-center justify-center">
-                <MessageCircle className="w-5 h-5 text-muted-foreground/40" />
+          <div className="min-h-[250px] sm:min-h-[300px] flex items-center justify-center">
+            <div className="text-center space-y-2.5 sm:space-y-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto rounded-full bg-sidebar flex items-center justify-center">
+                <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground/40" />
               </div>
-              <p className="text-sm font-medium text-muted-foreground/70">Start a conversation</p>
+              <p className="text-xs sm:text-sm font-medium text-muted-foreground/70">Start a conversation</p>
             </div>
           </div>
         ) : (
           <div className="contents">
             {isOtherTyping && (
-              <div key="typing" className="flex items-start gap-2.5 mb-1.5 px-2">
-                <div className="w-8 flex-shrink-0" />
-                <div className="flex items-center gap-2 px-3 py-2 bg-sidebar border border-border/30 rounded-xl rounded-bl-md">
-                  <span className="text-xs font-medium text-muted-foreground/70">typing...</span>
+              <div key="typing" className="flex items-start gap-2 sm:gap-2.5 mb-1.5 px-1.5 sm:px-2">
+                <div className="w-6 sm:w-8 flex-shrink-0" />
+                <div className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 bg-sidebar border border-border/30 rounded-xl rounded-bl-md">
+                  <span className="text-[10px] sm:text-xs font-medium text-muted-foreground/70">typing...</span>
                 </div>
               </div>
             )}
@@ -294,8 +294,8 @@ export function ChatWindow({
               return (
                 <div key={message.id}>
                   {showDateSeparator && (
-                    <div className="flex justify-center py-2">
-                      <span className="text-xs rounded-full bg-muted/60 px-3 py-1 text-muted-foreground/70 font-semibold">
+                    <div className="flex justify-center py-1.5 sm:py-2">
+                      <span className="text-[10px] sm:text-xs rounded-full bg-muted/60 px-2.5 sm:px-3 py-0.5 sm:py-1 text-muted-foreground/70 font-semibold">
                         {format(messageDate, 'EEE, MMM d')}
                       </span>
                     </div>

@@ -19,12 +19,14 @@ import { cn } from '@/lib/utils';
 interface ListingsViewProps {
   /** When true, removes top padding for embedding in dashboards */
   embedded?: boolean;
+  /** When false, starts with filters sidebar closed (default: true) */
+  defaultFiltersOpen?: boolean;
 }
 
-export function ListingsView({ embedded = false }: ListingsViewProps) {
+export function ListingsView({ embedded = false, defaultFiltersOpen = true }: ListingsViewProps) {
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'minimal'>('list'); // Default to list
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(defaultFiltersOpen);
 
   const { isSignedIn } = useUser();
 

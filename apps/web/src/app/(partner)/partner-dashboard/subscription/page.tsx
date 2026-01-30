@@ -9,7 +9,6 @@
 import React from 'react';
 import { useAuth } from '@/providers/auth-provider';
 import { redirect } from 'next/navigation';
-import { DashboardPageWrapper, DashboardPageHeader } from '@/components/shared/layout/dashboard-page-wrapper';
 import { CreditCard } from 'lucide-react';
 
 export default function PartnerBillingPage() {
@@ -17,15 +16,19 @@ export default function PartnerBillingPage() {
 
   if (authLoading) {
     return (
-      <DashboardPageWrapper>
-        <DashboardPageHeader 
-          title="Billing" 
-          description="Manage your subscription and billing" 
-        />
+      <div className="space-y-4 sm:space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-base sm:text-lg font-semibold text-foreground">Billing</h1>
+            <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">Manage your subscription and billing</p>
+          </div>
+          <div className="flex items-center gap-2">
+          </div>
+        </div>
         <div className="animate-pulse space-y-6">
           <div className="h-64 bg-muted/20 rounded-xl" />
         </div>
-      </DashboardPageWrapper>
+      </div>
     );
   }
 
@@ -43,11 +46,15 @@ export default function PartnerBillingPage() {
   }
 
   return (
-    <DashboardPageWrapper>
-      <DashboardPageHeader 
-        title="Billing" 
-        description="Manage your subscription, view invoices, and update payment methods" 
-      />
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-base sm:text-lg font-semibold text-foreground">Billing</h1>
+          <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">Manage your subscription, view invoices, and update payment methods</p>
+        </div>
+        <div className="flex items-center gap-2">
+        </div>
+      </div>
       
       {/* Placeholder - Stripe integration coming soon */}
       <div className="rounded-xl border border-border/40 bg-sidebar p-12 text-center">
@@ -59,6 +66,6 @@ export default function PartnerBillingPage() {
           We're working on a seamless billing experience. Your partner account is fully active in the meantime.
         </p>
       </div>
-    </DashboardPageWrapper>
+    </div>
   );
 }

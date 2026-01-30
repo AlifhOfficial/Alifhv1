@@ -79,7 +79,6 @@ const EMPTY_STATE_CONFIG: Record<string, { icon: React.ElementType; color: strin
     subMessage: 'Listings flagged for policy review will appear here' 
   },
 };
-import { DashboardPageWrapper, DashboardPageHeader } from '@/components/shared/layout/dashboard-page-wrapper';
 import {
   Select,
   SelectContent,
@@ -553,17 +552,23 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
     : '/user-dashboard/listings/new';
 
   return (
-    <DashboardPageWrapper>
+    <div className="space-y-4 sm:space-y-6">
         {/* Header */}
-        <DashboardPageHeader
-          title={listingType === 'work' ? 'Inventory' : 'My Listings'}
-          description={listingType === 'work' 
-            ? 'Manage your dealership inventory' 
-            : 'Manage your personal car listings'}
-        >
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-base sm:text-lg font-semibold text-foreground">
+              {listingType === 'work' ? 'Inventory' : 'My Listings'}
+            </h1>
+            <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">
+              {listingType === 'work' 
+                ? 'Manage your dealership inventory' 
+                : 'Manage your personal car listings'}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
             {listingType === 'work' && blackQuota && (
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-800/80 text-zinc-100">
-                <span className="text-xs font-medium">
+              <div className="flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-zinc-800/80 text-zinc-100">
+                <span className="text-[10px] sm:text-xs font-medium">
                   {blackQuota.activeBlackListingsCount}/{blackQuota.blackListingQuota} BLK
                 </span>
               </div>
@@ -572,136 +577,75 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
             <button 
               onClick={() => fetchData()} 
               disabled={isLoading}
-              className="p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
+              className="p-1.5 sm:p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
               aria-label="Refresh"
             >
-              <RefreshCw className={`w-4 h-4 text-muted-foreground ${isLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground ${isLoading ? 'animate-spin' : ''}`} />
             </button>
-        </DashboardPageHeader>
+          </div>
+        </div>
 
         {/* Stats */}
         {stats && (
-          <div className="flex flex-wrap items-center gap-6 sm:gap-10">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6 lg:gap-10">
             <div>
-              <span className="text-xs text-muted-foreground">Active</span>
-              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.active}</p>
+              <span className="text-[10px] sm:text-xs text-muted-foreground">Active</span>
+              <p className="text-base sm:text-lg lg:text-xl font-semibold tracking-tight mt-0.5 sm:mt-1 text-blue-500">{stats.active}</p>
             </div>
             <div>
-              <span className="text-xs text-muted-foreground">Public</span>
-              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-green-500">{stats.public}</p>
+              <span className="text-[10px] sm:text-xs text-muted-foreground">Public</span>
+              <p className="text-base sm:text-lg lg:text-xl font-semibold tracking-tight mt-0.5 sm:mt-1 text-green-500">{stats.public}</p>
             </div>
             <div>
-              <span className="text-xs text-muted-foreground">Draft</span>
-              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-yellow-500">{stats.draft}</p>
+              <span className="text-[10px] sm:text-xs text-muted-foreground">Draft</span>
+              <p className="text-base sm:text-lg lg:text-xl font-semibold tracking-tight mt-0.5 sm:mt-1 text-yellow-500">{stats.draft}</p>
             </div>
             {stats.inReview > 0 && (
               <div>
-                <span className="text-xs text-muted-foreground">In Review</span>
-                <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.inReview}</p>
+                <span className="text-[10px] sm:text-xs text-muted-foreground">In Review</span>
+                <p className="text-base sm:text-lg lg:text-xl font-semibold tracking-tight mt-0.5 sm:mt-1 text-blue-500">{stats.inReview}</p>
               </div>
             )}
             {stats.sold > 0 && (
               <div>
-                <span className="text-xs text-muted-foreground">Sold</span>
-                <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-purple-500">{stats.sold}</p>
+                <span className="text-[10px] sm:text-xs text-muted-foreground">Sold</span>
+                <p className="text-base sm:text-lg lg:text-xl font-semibold tracking-tight mt-0.5 sm:mt-1 text-purple-500\">{stats.sold}</p>
               </div>
             )}
             <div>
-              <span className="text-xs text-muted-foreground">Total</span>
-              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1">{stats.all}</p>
+              <span className="text-[10px] sm:text-xs text-muted-foreground">Total</span>
+              <p className="text-base sm:text-lg lg:text-xl font-semibold tracking-tight mt-0.5 sm:mt-1">{stats.all}</p>
             </div>
           </div>
         )}
 
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
-        {/* Search */}
-        <div className="relative flex-1 sm:max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full h-10 pl-10 pr-8 rounded-xl bg-secondary/50 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => handleSearchChange('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-secondary"
-            >
-              <X className="w-3.5 h-3.5 text-muted-foreground" />
-            </button>
-          )}
-        </div>
-
-        {/* Status Pills */}
-        <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl overflow-x-auto scrollbar-hide">
-          {mainStatusTabs.map((tab) => {
-            const isActive = selectedStatus === tab.key;
-            const count = tab.count;
-            return (
+      <div className="flex flex-col gap-3 mb-6 sm:mb-8">
+        {/* Row 1: Search + Sort + New */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Search */}
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              className="w-full h-9 sm:h-10 pl-9 sm:pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-xs sm:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+            />
+            {searchQuery && (
               <button
-                key={tab.key}
-                onClick={() => handleStatusChange(tab.key)}
-                className={`px-3 py-1.5 rounded-lg text-xs transition-all capitalize ${
-                  isActive
-                    ? 'bg-background text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
+                onClick={() => handleSearchChange('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-secondary"
               >
-                {tab.label === 'All' ? 'All' : tab.label.replace(/([A-Z])/g, ' $1').trim().toLowerCase()}
-                {count !== undefined && count > 0 && (
-                  <span className="ml-1.5 text-muted-foreground">{count}</span>
-                )}
+                <X className="w-3.5 h-3.5 text-muted-foreground" />
               </button>
-            );
-          })}
-          
-          {/* More dropdown for secondary statuses */}
-          {secondaryStatusTabs.length > 0 && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  className={`px-3 py-1.5 rounded-lg text-xs transition-all flex items-center gap-1 ${
-                    isSecondaryStatusSelected
-                      ? 'bg-background text-foreground shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  {isSecondaryStatusSelected && selectedSecondaryTab ? (
-                    <>
-                      {selectedSecondaryTab.label}
-                      <span className="text-muted-foreground">{selectedSecondaryTab.count}</span>
-                    </>
-                  ) : (
-                    <>More</>  
-                  )}
-                  <ChevronDown className="w-3 h-3" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="min-w-[140px]">
-                {secondaryStatusTabs.map((tab) => (
-                  <DropdownMenuItem
-                    key={tab.key}
-                    onClick={() => handleStatusChange(tab.key)}
-                    className={`text-xs cursor-pointer ${
-                      selectedStatus === tab.key ? 'bg-secondary' : ''
-                    }`}
-                  >
-                    <span className="flex-1">{tab.label}</span>
-                    <span className="text-muted-foreground ml-2">{tab.count}</span>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-        </div>
+            )}
+          </div>
 
-        {/* Sort & New Listing */}
-        <div className="flex items-center gap-2 sm:gap-4">
+          {/* Sort */}
           <Select value={sort} onValueChange={(v) => handleSortChange(v as ListingsSort)}>
-            <SelectTrigger className="h-10 w-28 sm:w-32 border-0 bg-secondary/50 rounded-xl text-sm shrink-0">
+            <SelectTrigger className="h-9 sm:h-10 w-24 sm:w-28 border-0 bg-secondary/50 rounded-lg sm:rounded-xl text-xs sm:text-sm shrink-0">
               <SelectValue placeholder="Sort" />
             </SelectTrigger>
             <SelectContent>
@@ -714,17 +658,82 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
 
           {/* New Listing */}
           <Link href={newListingUrl}>
-            <button className="h-10 px-3 sm:px-4 rounded-xl bg-primary text-primary-foreground text-sm font-medium transition-colors hover:bg-primary/90 flex items-center gap-2 shrink-0">
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">New</span>
+            <button className="h-9 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-xs sm:text-sm font-medium transition-colors hover:bg-primary/90 flex items-center gap-1.5 sm:gap-2 shrink-0">
+              <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden xs:inline">New</span>
             </button>
           </Link>
+        </div>
+
+        {/* Row 2: Status Pills - Horizontal scroll */}
+        <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-hide">
+          <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl w-fit">
+            {mainStatusTabs.map((tab) => {
+              const isActive = selectedStatus === tab.key;
+              const count = tab.count;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => handleStatusChange(tab.key)}
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs transition-all capitalize whitespace-nowrap ${
+                    isActive
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {tab.label === 'All' ? 'All' : tab.label.replace(/([A-Z])/g, ' $1').trim().toLowerCase()}
+                  {count !== undefined && count > 0 && (
+                    <span className="ml-1 sm:ml-1.5 text-muted-foreground">{count}</span>
+                  )}
+                </button>
+              );
+            })}
+            
+            {/* More dropdown for secondary statuses */}
+            {secondaryStatusTabs.length > 0 && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs transition-all flex items-center gap-1 whitespace-nowrap ${
+                      isSecondaryStatusSelected
+                        ? 'bg-background text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {isSecondaryStatusSelected && selectedSecondaryTab ? (
+                      <>
+                        {selectedSecondaryTab.label}
+                        <span className="text-muted-foreground">{selectedSecondaryTab.count}</span>
+                      </>
+                    ) : (
+                      <>More</>  
+                    )}
+                    <ChevronDown className="w-3 h-3" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="min-w-[140px]">
+                  {secondaryStatusTabs.map((tab) => (
+                    <DropdownMenuItem
+                      key={tab.key}
+                      onClick={() => handleStatusChange(tab.key)}
+                      className={`text-xs cursor-pointer ${
+                        selectedStatus === tab.key ? 'bg-secondary' : ''
+                      }`}
+                    >
+                      <span className="flex-1">{tab.label}</span>
+                      <span className="text-muted-foreground ml-2">{tab.count}</span>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Count & Actions */}
-      <div className="flex items-center justify-between mb-4 sm:mb-6">
-        <p className="text-xs text-muted-foreground">
+      <div className="flex items-center justify-between mb-3 sm:mb-6">
+        <p className="text-[11px] sm:text-xs text-muted-foreground">
           {totalListings} listing{totalListings !== 1 ? 's' : ''}
           {hasActiveFilters && <span className="hidden xs:inline"> (filtered)</span>}
           {totalPages > 1 && <span className="ml-2 hidden sm:inline">· Page {currentPage} of {totalPages}</span>}
@@ -735,7 +744,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
          ['sold', 'archived', 'expired', 'rejected', 'suspended'].includes(selectedStatus) && (
           <button
             onClick={handleBulkClear}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="text-[11px] sm:text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             Clear all
           </button>
@@ -744,7 +753,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
 
       {/* Error */}
       {error && (
-        <div className="mb-8 p-4 rounded-xl bg-secondary/50 text-sm">
+        <div className="mb-6 sm:mb-8 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-secondary/50 text-xs sm:text-sm">
           {error}
         </div>
       )}
@@ -753,36 +762,40 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
       {isLoading && (
         <div className="flex flex-col items-center justify-center py-16 sm:py-24">
           <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
-          <p className="text-xs text-muted-foreground mt-4">Loading...</p>
+          <p className="text-[11px] sm:text-xs text-muted-foreground mt-3 sm:mt-4">Loading...</p>
         </div>
       )}
 
       {/* Empty State - No Data */}
       {!isLoading && !error && !hasActiveFilters && listings.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-16 sm:py-32 text-center px-4">
-          <Package className="w-5 h-5 text-foreground mb-3" strokeWidth={2} />
-          <h3 className="text-sm font-semibold tracking-tight">No listings yet</h3>
-          <p className="text-xs text-muted-foreground mt-1">Create your first listing to get started</p>
-          <Link href={newListingUrl} className="mt-4">
-            <button className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium transition-colors hover:bg-primary/90">
-              Create Listing
-            </button>
-          </Link>
+        <div className="flex items-center justify-center min-h-[40vh]">
+          <div className="text-center max-w-xs">
+            <Package className="w-8 h-8 mx-auto text-muted-foreground/20 mb-4" strokeWidth={1.5} />
+            <h3 className="text-sm font-semibold text-foreground mb-1">No listings yet</h3>
+            <p className="text-xs text-muted-foreground/60 leading-relaxed mb-4">Create your first listing to get started</p>
+            <Link href={newListingUrl}>
+              <button className="px-4 py-2 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-xs sm:text-sm font-medium transition-colors hover:bg-primary/90">
+                Create Listing
+              </button>
+            </Link>
+          </div>
         </div>
       )}
 
       {/* Empty State - No Results */}
       {!isLoading && !error && hasActiveFilters && listings.length === 0 && (() => {
         const config = debouncedSearch 
-          ? { icon: Search, color: 'text-foreground', message: 'No matches found', subMessage: 'Try adjusting your search' }
+          ? { icon: Search, color: 'text-muted-foreground/20', message: 'No matches found', subMessage: 'Try adjusting your search' }
           : (EMPTY_STATE_CONFIG[selectedStatus] || EMPTY_STATE_CONFIG.all);
         const Icon = config.icon;
         
         return (
-          <div className="flex flex-col items-center justify-center py-16 sm:py-32 text-center px-4">
-            <Icon className={`w-5 h-5 ${config.color} mb-3`} strokeWidth={2} />
-            <h3 className="text-sm font-semibold tracking-tight">{config.message}</h3>
-            <p className="text-xs text-muted-foreground mt-1">{config.subMessage}</p>
+          <div className="flex items-center justify-center min-h-[40vh]">
+            <div className="text-center max-w-xs">
+              <Icon className={`w-8 h-8 mx-auto mb-4 ${debouncedSearch ? 'text-muted-foreground/20' : config.color}`} strokeWidth={1.5} />
+              <h3 className="text-sm font-semibold text-foreground mb-1">{config.message}</h3>
+              <p className="text-xs text-muted-foreground/60 leading-relaxed">{config.subMessage}</p>
+            </div>
           </div>
         );
       })()}
@@ -790,7 +803,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
       {/* Listings */}
       {!isLoading && !error && listings.length > 0 && (
         <>
-          <div className="space-y-1">
+          <div className="space-y-2 sm:space-y-1">
             {listings.map((listing) => (
               <ListingCard
                 key={listing.id}
@@ -811,24 +824,26 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-8">
-              <button
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="px-3 py-1.5 rounded-lg text-xs bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              >
-                Previous
-              </button>
-              <span className="text-xs text-muted-foreground">
-                {currentPage} / {totalPages}
-              </span>
-              <button
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className="px-3 py-1.5 rounded-lg text-xs bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              >
-                Next
-              </button>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-border/30">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1.5 rounded-md sm:rounded-lg text-[11px] sm:text-xs bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                >
+                  Previous
+                </button>
+                <span className="text-[11px] sm:text-xs text-muted-foreground tabular-nums">
+                  {currentPage} / {totalPages}
+                </span>
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1.5 rounded-md sm:rounded-lg text-[11px] sm:text-xs bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                >
+                  Next
+                </button>
+              </div>
             </div>
           )}
         </>
@@ -891,6 +906,6 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
           </div>
         </DialogContent>
       </Dialog>
-    </DashboardPageWrapper>
+    </div>
   );
 }

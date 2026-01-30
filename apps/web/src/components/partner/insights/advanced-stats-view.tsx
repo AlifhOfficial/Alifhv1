@@ -8,10 +8,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { TrendBadge, ProgressStat, TopListings, ColdListings } from './insight-components';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DashboardPageWrapper, DashboardPageHeader } from '@/components/shared/layout/dashboard-page-wrapper';
 import {
   Tooltip,
   TooltipContent,
@@ -32,9 +30,7 @@ import {
   Calendar,
   AlertCircle,
   Sparkles,
-  ChevronRight,
   Info,
-  ArrowUpRight,
   Layers,
 } from 'lucide-react';
 import { 
@@ -379,14 +375,14 @@ function CompositionDonutCard({ data, title, icon: Icon, colorPalette = DONUT_CO
 // Stat Label with Tooltip
 // ============================================================================
 
-function StatLabel({ children, tooltip }: { children: React.ReactNode; tooltip: string }) {
+function StatLabel({ label, tooltip }: { label: string; tooltip: string }) {
   return (
     <TooltipProvider delayDuration={200}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className="text-sm font-semibold text-muted-foreground/70 inline-flex items-center gap-1 cursor-help">
-            {children}
-            <Info className="w-3 h-3 opacity-50" />
+          <span className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium inline-flex items-center gap-1 cursor-help group">
+            {label}
+            <Info className="w-3 h-3 opacity-40 group-hover:opacity-70 transition-opacity" />
           </span>
         </TooltipTrigger>
         <TooltipContent side="top" className="max-w-[200px] text-xs">
@@ -403,7 +399,7 @@ function StatLabel({ children, tooltip }: { children: React.ReactNode; tooltip: 
 
 function AdvancedStatsSkeleton() {
   return (
-    <DashboardPageWrapper>
+    <div className="space-y-4 sm:space-y-6">
         {/* Header Skeleton */}
         <header>
           <div className="flex items-start justify-between gap-4">
@@ -504,7 +500,7 @@ function AdvancedStatsSkeleton() {
           <Skeleton className="h-4 w-48" />
           <Skeleton className="h-4 w-32" />
         </footer>
-    </DashboardPageWrapper>
+    </div>
   );
 }
 
@@ -898,12 +894,6 @@ function AlertBanner({ listing }: AlertBannerProps) {
           {listing.daysSincePublished} days — consider updating
         </p>
       </div>
-      <a 
-        href={`/partner-dashboard/inventory?edit=${listing.id}`}
-        className="text-xs font-medium text-foreground hover:text-foreground/70 transition-colors whitespace-nowrap"
-      >
-        Review →
-      </a>
     </div>
   );
 }
@@ -1020,16 +1010,19 @@ export function AdvancedStatsView() {
   }));
 
   return (
-    <DashboardPageWrapper>
+    <div className="space-y-4 sm:space-y-6">
 
         {/* Header */}
-        <DashboardPageHeader
-          title="Analytics"
-          description="Detailed performance metrics and insights"
-        >
-          <Sparkles className="w-4 h-4 text-purple-500" />
-          <span className="text-sm"><span className="text-purple-600 dark:text-purple-400 font-bold">Experimental</span> <span className="text-muted-foreground font-medium">· Data may not be fully accurate</span></span>
-        </DashboardPageHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-base sm:text-lg font-semibold text-foreground">Analytics</h1>
+            <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">Detailed performance metrics and insights</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-purple-500" />
+            <span className="text-sm"><span className="text-purple-600 dark:text-purple-400 font-bold">Experimental</span> <span className="text-muted-foreground font-medium">· Data may not be fully accurate</span></span>
+          </div>
+        </div>
         
         {/* Slowest Listing Alert */}
         {sales.slowestActiveListing && sales.slowestActiveListing.daysSincePublished > 30 && (
@@ -1465,14 +1458,8 @@ export function AdvancedStatsView() {
           <p className="text-[11px] text-muted-foreground/50">
             Updated {new Date(stats.generatedAt).toLocaleString()}
           </p>
-          <a 
-            href="/knowledge/partners" 
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Learn more →
-          </a>
         </footer>
 
-    </DashboardPageWrapper>
+    </div>
   );
 }

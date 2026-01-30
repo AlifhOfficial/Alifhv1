@@ -11,6 +11,7 @@
     "build:all": "turbo run build",
     "build:web": "turbo run build --filter=@alifh/web",
     "build:mobile": "turbo run build --filter=@alifh/mobile",
+    "start": "cd apps/web && bun run start",
     "test": "turbo run test",
     "lint": "turbo run lint",
     "format": "turbo run format",
@@ -34,7 +35,7 @@
     "eslint": "9.28.0",
     "pg": "8.16.3",
     "prettier": "3.5.3",
-    "turbo": "2.7.6",
+    "turbo": "2.8.0",
     "typescript": "5.9.3"
   },
   "overrides": {

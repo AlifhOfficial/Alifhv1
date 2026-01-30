@@ -8,10 +8,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { TrendBadge } from './insight-components';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DashboardPageWrapper } from '@/components/shared/layout/dashboard-page-wrapper';
 import { HealthStatus } from '@/components/shared/health-status';
 import {
   Tooltip,
@@ -21,10 +19,8 @@ import {
 } from '@/components/ui/tooltip';
 import { 
   AlertCircle, 
-  ArrowUpRight, 
   Calendar,
   CheckCircle2, 
-  ChevronRight,
   Database,
   Heart,
   Info, 
@@ -246,7 +242,7 @@ function ActivityDots({ activeDays, days = 28 }: { activeDays?: boolean[]; days?
 
 function InsightsSkeleton() {
   return (
-    <DashboardPageWrapper>
+    <div className="space-y-4 sm:space-y-6">
         {/* Header Skeleton */}
         <header>
           <div className="flex items-start justify-between gap-4">
@@ -354,7 +350,7 @@ function InsightsSkeleton() {
             <Skeleton className="h-3 w-24" />
           </div>
         </div>
-    </DashboardPageWrapper>
+    </div>
   );
 }
 
@@ -383,14 +379,14 @@ function formatNumber(value: number): string {
 // Stat Label with Tooltip
 // ============================================================================
 
-function StatLabel({ children, tooltip }: { children: React.ReactNode; tooltip: string }) {
+function StatLabel({ label, tooltip }: { label: string; tooltip: string }) {
   return (
     <TooltipProvider delayDuration={200}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className="text-sm font-semibold text-muted-foreground/70 inline-flex items-center gap-1 cursor-help">
-            {children}
-            <Info className="w-3 h-3 opacity-50" />
+          <span className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium inline-flex items-center gap-1 cursor-help group">
+            {label}
+            <Info className="w-3 h-3 opacity-40 group-hover:opacity-70 transition-opacity" />
           </span>
         </TooltipTrigger>
         <TooltipContent side="top" className="max-w-[200px] text-xs">
@@ -484,7 +480,7 @@ export function PartnerInsightsView() {
 
   return (
     <>
-      <DashboardPageWrapper>
+      <div className="space-y-4 sm:space-y-6">
 
           {/* Header */}
           <header>
@@ -515,33 +511,37 @@ export function PartnerInsightsView() {
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 border border-border/20 rounded-lg divide-x divide-y md:divide-y-0 divide-border/20 bg-muted/5">
             <div className="p-5 sm:p-6 flex flex-col gap-2">
-              <span className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium">
-                Active
-              </span>
+              <StatLabel 
+                label="Active" 
+                tooltip="Number of listings currently live and visible to buyers" 
+              />
               <span className="text-2xl font-semibold text-blue-500">
                 {inventory.activeCount}
               </span>
             </div>
             <div className="p-5 sm:p-6 flex flex-col gap-2">
-              <span className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium">
-                Views
-              </span>
+              <StatLabel 
+                label="Views" 
+                tooltip="Total listing views this month across all your inventory" 
+              />
               <span className="text-2xl font-semibold text-purple-500">
                 {formatNumber(engagement.totalViewsThisMonth)}
               </span>
             </div>
             <div className="p-5 sm:p-6 flex flex-col gap-2">
-              <span className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium">
-                Favorites
-              </span>
+              <StatLabel 
+                label="Favorites" 
+                tooltip="How many times users have saved your listings to favorites" 
+              />
               <span className="text-2xl font-semibold text-amber-500">
                 {formatNumber(engagement.totalFavorites ?? 0)}
               </span>
             </div>
             <div className="p-5 sm:p-6 flex flex-col gap-2">
-              <span className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium">
-                Sold
-              </span>
+              <StatLabel 
+                label="Sold" 
+                tooltip="Vehicles sold this month" 
+              />
               <span className="text-2xl font-semibold text-green-500">
                 {sales.soldThisMonth}
               </span>
@@ -599,23 +599,21 @@ export function PartnerInsightsView() {
               </div>
 
               {/* Bookings Widget */}
-              <Link 
-                href="/partner-dashboard/bookings"
-                className="group block rounded-lg border border-border/20 bg-muted/5 p-5 hover:border-border/40 transition-colors flex-1"
+              <div 
+                className="block rounded-lg border border-border/20 bg-muted/5 p-5 flex-1"
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-muted-foreground" />
                     <span className="text-sm font-semibold text-muted-foreground/70">Bookings</span>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
                 </div>
                 <div>
                   <span className="text-2xl font-bold text-blue-500">{bookings.pendingBookings}</span>
                   <span className="text-sm text-muted-foreground/60 ml-1.5">pending</span>
                 </div>
                 <p className="text-xs text-muted-foreground/50 mt-1">{bookings.confirmedBookings} confirmed · {bookings.completedThisMonth} completed</p>
-              </Link>
+              </div>
             </div>
           </div>
 
@@ -660,19 +658,17 @@ export function PartnerInsightsView() {
             </div>
 
             {/* Engagement Widget */}
-            <Link 
-              href="/partner-dashboard/analytics"
-              className="col-span-12 sm:col-span-6 lg:col-span-4 group block rounded-lg border border-border/20 bg-muted/5 p-5 hover:border-border/40 transition-colors"
+            <div 
+              className="col-span-12 sm:col-span-6 lg:col-span-4 block rounded-lg border border-border/20 bg-muted/5 p-5"
             >
               <div className="flex items-center justify-between mb-3">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium">Engagement</p>
-                <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:translate-x-0.5 transition-transform" />
               </div>
               <div>
                 <span className="text-2xl font-semibold text-rose-500">{engagement.totalFavorites ?? 0}</span>
                 <span className="text-sm text-muted-foreground ml-1.5">favorites</span>
               </div>
-            </Link>
+            </div>
           </div>
 
           {/* Month Comparison - Full Width */}
@@ -721,23 +717,9 @@ export function PartnerInsightsView() {
             <span className="text-xs text-muted-foreground/50">
               Last updated {new Date(stats.generatedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
             </span>
-            <div className="flex items-center gap-4">
-              <Link 
-                href="/knowledge/partners" 
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Help center
-              </Link>
-              <Link 
-                href="/partner-dashboard/analytics" 
-                className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors"
-              >
-                Full analytics <ArrowUpRight className="w-3 h-3" />
-              </Link>
-            </div>
           </div>
 
-        </DashboardPageWrapper>
+        </div>
     </>
   );
 }

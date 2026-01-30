@@ -400,14 +400,13 @@ export function StaffBookingsView() {
   }
 
   return (
-    <div className="min-h-full bg-background">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
+    <div className="space-y-4 sm:space-y-6">
         {/* Header Section */}
-        <header className="flex items-start justify-between gap-4">
+        <div className="flex items-center justify-between">
           {/* Left: Title */}
-          <div className="space-y-1.5">
-            <h1 className="text-2xl font-bold tracking-tight">Bookings</h1>
-            <p className="text-[15px] font-medium text-muted-foreground/70">
+          <div>
+            <h1 className="text-base sm:text-lg font-semibold text-foreground">Bookings</h1>
+            <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">
               Manage test drive bookings
             </p>
           </div>
@@ -416,117 +415,82 @@ export function StaffBookingsView() {
           <div className="flex items-center gap-1">
             <button
               onClick={() => setActiveTab(activeTab === 'settings' ? 'bookings' : 'settings')}
-              className={`p-2 rounded-full transition-colors ${
+              className={`p-1.5 sm:p-2 rounded-full transition-colors ${
                 activeTab === 'settings' 
                   ? 'bg-primary/10 text-primary' 
                   : 'hover:bg-secondary/50 text-muted-foreground'
               }`}
               title="Settings"
             >
-              <Settings className="w-4 h-4" />
+              <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
             <button
               onClick={activeTab === 'bookings' ? fetchBookings : fetchAvailability}
               disabled={activeTab === 'bookings' ? isLoading : availabilityLoading}
-              className="p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
+              className="p-1.5 sm:p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
               title="Refresh"
             >
-              <RefreshCw className={`w-4 h-4 text-muted-foreground ${(activeTab === 'bookings' ? isLoading : availabilityLoading) ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground ${(activeTab === 'bookings' ? isLoading : availabilityLoading) ? 'animate-spin' : ''}`} />
             </button>
           </div>
-        </header>
+        </div>
 
         {/* Bookings Tab */}
         {activeTab === 'bookings' && (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Toolbar */}
-            <div className="flex items-center gap-4 mb-8">
-              {/* Search */}
-              <div className="relative flex-1 max-w-xs">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    handleSearchChange(e.target.value);
-                  }}
-                  className="w-full h-10 pl-10 pr-8 rounded-xl bg-secondary/50 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => {
-                      setSearchQuery('');
-                      handleSearchChange('');
+            <div className="flex flex-col gap-3">
+              {/* Row 1: Search + Sort + Check-in */}
+              <div className="flex items-center gap-2 sm:gap-3">
+                {/* Search */}
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      handleSearchChange(e.target.value);
                     }}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-secondary"
-                  >
-                    <X className="w-3.5 h-3.5 text-muted-foreground" />
-                  </button>
-                )}
-              </div>
-
-              {/* Status Pills */}
-              <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl">
-                {STATUS_TABS.map((tab) => {
-                  // Use stats for counts (server-side accurate)
-                  const count = stats ? (
-                    tab.key === 'all' ? stats.totalBookings
-                    : tab.key === 'pending' ? stats.pendingBookings
-                    : tab.key === 'confirmed' ? stats.confirmedBookings
-                    : tab.key === 'completed' ? stats.completedBookings
-                    : tab.key === 'cancelled' ? stats.cancelledBookings
-                    : tab.key === 'no_show' ? stats.noShowBookings
-                    : 0
-                  ) : 0;
-                  const isActive = selectedStatus === tab.key;
-                  
-                  return (
+                    className="w-full h-9 sm:h-10 pl-9 sm:pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-xs sm:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+                  />
+                  {searchQuery && (
                     <button
-                      key={tab.key}
                       onClick={() => {
-                        setSelectedStatus(tab.key);
-                        setCurrentPage(1);
+                        setSearchQuery('');
+                        handleSearchChange('');
                       }}
-                      className={`px-3 py-1.5 rounded-lg text-xs transition-all capitalize ${
-                        isActive
-                          ? 'bg-background text-foreground shadow-sm'
-                          : 'text-muted-foreground hover:text-foreground'
-                      }`}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-secondary"
                     >
-                      {tab.label}
-                      {count > 0 && (
-                        <span className="ml-1.5 text-muted-foreground">{count}</span>
-                      )}
+                      <X className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-muted-foreground" />
                     </button>
-                  );
-                })}
-              </div>
+                  )}
+                </div>
 
-              {/* Sort */}
-              <Select value={sort} onValueChange={(v) => {
-                setSort(v as BookingSort);
-                setCurrentPage(1);
-              }}>
-                <SelectTrigger className="h-10 w-32 border-0 bg-secondary/50 rounded-xl text-sm">
-                  <SelectValue placeholder="Sort" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="newest">Newest</SelectItem>
-                  <SelectItem value="oldest">Oldest</SelectItem>
-                </SelectContent>
-              </Select>
+                {/* Sort */}
+                <Select value={sort} onValueChange={(v) => {
+                  setSort(v as BookingSort);
+                  setCurrentPage(1);
+                }}>
+                  <SelectTrigger className="h-9 sm:h-10 w-24 sm:w-28 border-0 bg-secondary/50 rounded-lg sm:rounded-xl text-xs sm:text-sm shrink-0">
+                    <SelectValue placeholder="Sort" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest</SelectItem>
+                    <SelectItem value="oldest">Oldest</SelectItem>
+                  </SelectContent>
+                </Select>
 
-              {/* Quick Check-in Dropdown */}
-              <Popover open={quickCheckOpen} onOpenChange={setQuickCheckOpen}>
-                <PopoverTrigger asChild>
-                  <button className="h-10 px-4 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-medium flex items-center gap-2 transition-colors flex-shrink-0">
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span className="hidden sm:inline">Check-in</span>
-                    <ChevronDown className="w-3.5 h-3.5" />
-                  </button>
-                </PopoverTrigger>
+                {/* Quick Check-in Dropdown */}
+                <Popover open={quickCheckOpen} onOpenChange={setQuickCheckOpen}>
+                  <PopoverTrigger asChild>
+                    <button className="h-9 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 text-xs sm:text-sm font-medium flex items-center gap-1.5 sm:gap-2 transition-colors flex-shrink-0">
+                      <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      <span className="hidden sm:inline">Check-in</span>
+                      <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                    </button>
+                  </PopoverTrigger>
                 <PopoverContent align="end" className="w-[280px] p-0" sideOffset={8}>
                   <div className="p-3 border-b border-border/40">
                     <p className="text-sm font-semibold text-foreground">Quick Check-in</p>
@@ -597,9 +561,49 @@ export function StaffBookingsView() {
               </Popover>
             </div>
 
+              {/* Row 2: Status Pills - Horizontal scroll */}
+              <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-hide">
+                <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl w-fit">
+                  {STATUS_TABS.map((tab) => {
+                    // Use stats for counts (server-side accurate)
+                    const count = stats ? (
+                      tab.key === 'all' ? stats.totalBookings
+                      : tab.key === 'pending' ? stats.pendingBookings
+                      : tab.key === 'confirmed' ? stats.confirmedBookings
+                      : tab.key === 'completed' ? stats.completedBookings
+                      : tab.key === 'cancelled' ? stats.cancelledBookings
+                      : tab.key === 'no_show' ? stats.noShowBookings
+                      : 0
+                    ) : 0;
+                    const isActive = selectedStatus === tab.key;
+                    
+                    return (
+                      <button
+                        key={tab.key}
+                        onClick={() => {
+                          setSelectedStatus(tab.key);
+                          setCurrentPage(1);
+                        }}
+                        className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs transition-all capitalize whitespace-nowrap ${
+                          isActive
+                            ? 'bg-background text-foreground shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        {tab.label}
+                        {count > 0 && (
+                          <span className="ml-1 sm:ml-1.5 text-muted-foreground">{count}</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
             {/* Error Alert */}
             {error && (
-              <div className="mb-8 p-4 rounded-xl bg-secondary/50 text-sm">
+              <div className="mb-6 sm:mb-8 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-secondary/50 text-xs sm:text-sm">
                 {error}
               </div>
             )}
@@ -619,22 +623,22 @@ export function StaffBookingsView() {
               if (totalPages <= 1) return null;
               
               return (
-                <div className="flex items-center justify-between pt-6 border-t border-border/40">
-                  <p className="text-xs text-muted-foreground">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-border/30">
+                  <p className="text-[11px] sm:text-xs text-muted-foreground">
                     Page {currentPage} of {totalPages} · {totalBookings} booking{totalBookings !== 1 ? 's' : ''}
                   </p>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                       disabled={currentPage === 1 || isLoading}
-                      className="px-3 py-1.5 text-xs font-medium rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="px-3 py-1.5 text-[11px] sm:text-xs font-medium rounded-md sm:rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
                       Previous
                     </button>
                     <button
                       onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                       disabled={currentPage === totalPages || isLoading}
-                      className="px-3 py-1.5 text-xs font-medium rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="px-3 py-1.5 text-[11px] sm:text-xs font-medium rounded-md sm:rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
                       Next
                     </button>
@@ -647,17 +651,17 @@ export function StaffBookingsView() {
 
         {/* Settings Tab */}
         {activeTab === 'settings' && (
-          <div className="pb-32">
+          <div className="pb-24 sm:pb-32">
             <button
               onClick={() => setActiveTab('bookings')}
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-4"
+              className="text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-4"
             >
               ← Back to bookings
             </button>
 
             {/* Error Alert */}
             {error && (
-              <div className="mb-8 p-4 rounded-xl bg-secondary/50 text-sm">
+              <div className="mb-6 sm:mb-8 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-secondary/50 text-xs sm:text-sm">
                 {error}
               </div>
             )}
@@ -686,7 +690,6 @@ export function StaffBookingsView() {
           onSubmit={handleSubmitCancel}
           onClose={handleCloseCancel}
         />
-      </div>
     </div>
   );
 }

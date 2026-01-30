@@ -23,7 +23,6 @@ import { cn } from '@/lib/utils';
 import { Combobox } from '@/components/ui/forms/combobox';
 import Image from 'next/image';
 import Link from 'next/link';
-import { DashboardPageWrapper, DashboardPageHeader } from '@/components/shared/layout/dashboard-page-wrapper';
 import { useDebouncedCallback } from 'use-debounce';
 
 // ============================================================================
@@ -244,21 +243,24 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
   };
 
   return (
-    <DashboardPageWrapper>
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <DashboardPageHeader
-        title="Lead Funnels"
-        description={`View all lead funnels across ${partnerName}`}
-      >
-        <button
-          onClick={handleRefresh}
-          disabled={isRefreshing || isLoading}
-          className="p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
-          aria-label="Refresh"
-        >
-          <RefreshCw className={cn("w-4 h-4 text-muted-foreground", isRefreshing && "animate-spin")} />
-        </button>
-      </DashboardPageHeader>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-base sm:text-lg font-semibold text-foreground">Lead Funnels</h1>
+          <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">View all lead funnels across {partnerName}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleRefresh}
+            disabled={isRefreshing || isLoading}
+            className="p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
+            aria-label="Refresh"
+          >
+            <RefreshCw className={cn("w-4 h-4 text-muted-foreground", isRefreshing && "animate-spin")} />
+          </button>
+        </div>
+      </div>
 
         {/* Stats */}
         {!isLoading && stats && (
@@ -326,16 +328,22 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
 
       {/* Error */}
       {error && (
-        <div className="text-center py-16 rounded-xl bg-secondary/50">
-          <p className="text-sm text-destructive font-medium">Failed to load funnels. Please try again.</p>
+        <div className="flex flex-col items-center justify-center py-16 sm:py-20">
+          <p className="text-xs sm:text-sm text-destructive font-medium">Failed to load funnels</p>
+          <button
+            onClick={handleRefresh}
+            className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Try again
+          </button>
         </div>
       )}
 
       {/* Loading */}
       {isLoading && (
-        <div className="flex flex-col items-center justify-center py-24">
-          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground/40 mb-3" />
-          <p className="text-sm text-muted-foreground/60 font-medium">Loading...</p>
+        <div className="flex flex-col items-center justify-center py-16 sm:py-20">
+          <Loader2 className="w-5 h-5 animate-spin text-muted-foreground/40 mb-2" />
+          <p className="text-xs text-muted-foreground/60">Loading funnels...</p>
         </div>
       )}
 
@@ -422,28 +430,32 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
 
       {/* Empty - No Data (no filters, just empty) */}
       {!isLoading && !error && funnels.length === 0 && !hasActiveFilters && (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <Filter className="w-12 h-12 text-muted-foreground/20 mb-3" />
-          <h3 className="text-base font-semibold mb-1">No lead funnels yet</h3>
-          <p className="text-sm text-muted-foreground/60">Staff members haven't created any lead funnels</p>
+        <div className="flex flex-col items-center justify-center py-16 sm:py-20 text-center">
+          <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center mb-3">
+            <Filter className="w-4 h-4 text-muted-foreground/40" />
+          </div>
+          <p className="text-sm font-medium text-foreground">No lead funnels yet</p>
+          <p className="text-xs text-muted-foreground/60 mt-1">Staff members haven't created any funnels</p>
         </div>
       )}
 
       {/* Empty - No Results (filters applied but no results) */}
       {!isLoading && !error && funnels.length === 0 && hasActiveFilters && (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <Search className="w-12 h-12 text-muted-foreground/20 mb-3" />
-          <h3 className="text-base font-semibold mb-1">No results</h3>
-          <p className="text-sm text-muted-foreground/60">Try a different search or filter</p>
+        <div className="flex flex-col items-center justify-center py-16 sm:py-20 text-center">
+          <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center mb-3">
+            <Search className="w-4 h-4 text-muted-foreground/40" />
+          </div>
+          <p className="text-sm font-medium text-foreground">No results found</p>
+          <p className="text-xs text-muted-foreground/60 mt-1">Try a different search or filter</p>
           <button
             onClick={clearFilters}
-            className="mt-4 text-sm text-foreground hover:underline"
+            className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             Clear filters
           </button>
         </div>
       )}
-    </DashboardPageWrapper>
+    </div>
   );
 }
 
@@ -551,16 +563,18 @@ function FunnelRow({ funnel, isExpanded, onToggle }: FunnelRowProps) {
 
           {/* Preview Loading */}
           {previewLoading && (
-            <div className="flex flex-col items-center justify-center py-8 gap-2">
-              <Loader2 className="w-5 h-5 animate-spin text-muted-foreground/30" />
-              <p className="text-xs text-muted-foreground/50">Loading...</p>
+            <div className="flex items-center justify-center py-8 gap-2">
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground/40" />
+              <p className="text-xs text-muted-foreground/50">Loading matches...</p>
             </div>
           )}
 
           {/* Preview Empty */}
           {!previewLoading && previewFetched && previewData.length === 0 && (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <ImageIcon className="w-8 h-8 text-muted-foreground/20 mb-2" />
+              <div className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center mb-2">
+                <ImageIcon className="w-3.5 h-3.5 text-muted-foreground/40" />
+              </div>
               <p className="text-xs text-muted-foreground/50">No matching listings</p>
             </div>
           )}

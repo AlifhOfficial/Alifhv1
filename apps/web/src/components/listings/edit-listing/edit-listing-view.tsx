@@ -122,51 +122,47 @@ export function EditListingView({ listing, userId, listingType = 'personal' }: E
   };
 
   return (
-    <div className="min-h-screen bg-background pb-32">
-      <div className="max-w-4xl mx-auto px-8 py-16 space-y-8">
-        {/* Header */}
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Edit Listing</h1>
-          <p className="text-sm text-muted-foreground/70 mt-2">
-            {listing.year} {listing.make} {listing.model}
-          </p>
-        </div>
+    <div className="min-h-screen bg-background -mx-4">
+      {/* Alert Banners - shown at top if listing has issues */}
+      {(listing.lifecycleStatus === 'archived' && (listing.specialNotes?.suspensionReason || moderationReason)) ||
+       (listing.moderationStatus === 'rejected' && (listing.rejectionReason || listing.specialNotes?.rejectionReason)) ||
+       error ? (
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-4 sm:pt-6 space-y-3 sm:space-y-4">
+          {listing.lifecycleStatus === 'archived' &&
+            (listing.specialNotes?.suspensionReason || moderationReason) && (
+              <div className="rounded-xl sm:rounded-2xl border border-red-500/20 bg-red-500/10 p-3 sm:p-4">
+                <p className="text-xs sm:text-sm text-red-500">
+                  Suspended: {listing.specialNotes?.suspensionReason || moderationReason}
+                </p>
+                <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-1 sm:mt-1.5">
+                  You can edit and resubmit this listing, but it will stay hidden until an admin unsuspends it.
+                </p>
+              </div>
+            )}
 
-        {listing.lifecycleStatus === 'archived' &&
-          (listing.specialNotes?.suspensionReason || moderationReason) && (
-            <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
-              <p className="text-sm text-red-500">
-                Suspended: {listing.specialNotes?.suspensionReason || moderationReason}
-              </p>
-              <p className="text-xs text-muted-foreground/70 mt-2">
-                You can edit and resubmit this listing, but it will stay hidden until an admin unsuspends it.
+          {listing.moderationStatus === 'rejected' && (listing.rejectionReason || listing.specialNotes?.rejectionReason) && (
+            <div className="rounded-xl sm:rounded-2xl border border-red-500/20 bg-red-500/10 p-3 sm:p-4">
+              <p className="text-xs sm:text-sm text-red-500">
+                Rejected: {listing.rejectionReason || listing.specialNotes?.rejectionReason}
               </p>
             </div>
           )}
 
-        {listing.moderationStatus === 'rejected' && (listing.rejectionReason || listing.specialNotes?.rejectionReason) && (
-          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
-            <p className="text-sm text-red-500">
-              Rejected: {listing.rejectionReason || listing.specialNotes?.rejectionReason}
-            </p>
-          </div>
-        )}
+          {error && (
+            <div className="rounded-xl sm:rounded-2xl border border-red-500/20 bg-red-500/10 p-3 sm:p-4">
+              <p className="text-xs sm:text-sm text-red-500">{error}</p>
+            </div>
+          )}
+        </div>
+      ) : null}
 
-        {/* Error Message */}
-        {error && (
-          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
-            <p className="text-sm text-red-500">{error}</p>
-          </div>
-        )}
-
-        {/* Form */}
-        <ListingForm
-          mode="edit"
-          initialData={initialData}
-          onSubmit={handleSubmit}
-          onCancel={handleCancel}
-        />
-      </div>
+      {/* Form */}
+      <ListingForm
+        mode="edit"
+        initialData={initialData}
+        onSubmit={handleSubmit}
+        onCancel={handleCancel}
+      />
     </div>
   );
 }

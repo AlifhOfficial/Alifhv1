@@ -124,9 +124,10 @@ interface DashboardContentProps {
   children: ReactNode;
   header?: ReactNode;
   fullHeight?: boolean;
+  noPadding?: boolean;
 }
 
-export function DashboardContent({ children, header, fullHeight = false }: DashboardContentProps) {
+export function DashboardContent({ children, header, fullHeight = false, noPadding = false }: DashboardContentProps) {
   const { resolvedTheme } = useTheme();
   const onSignOut = async () => {
     await handleSignOut();
@@ -165,7 +166,11 @@ export function DashboardContent({ children, header, fullHeight = false }: Dashb
       
       {/* Main content - full height for chat, scrollable with padding for others */}
       {fullHeight ? (
-        <div className="flex-1 min-h-0 overflow-hidden">
+        <div className="flex-1 min-h-0 overflow-hidden p-4">
+          {children}
+        </div>
+      ) : noPadding ? (
+        <div className="flex-1 overflow-y-auto">
           {children}
         </div>
       ) : (

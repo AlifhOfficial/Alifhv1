@@ -4,10 +4,9 @@ import { useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { Loader2, RefreshCw, Sparkles } from 'lucide-react';
-import { CarCard } from '@/components/inventory';
+import { CarListItem } from '@/components/inventory';
 import { SuperlikeQuotaBadge } from '@/components/engagement';
 import { useSuperlikesListings, useFavoritesStatus } from '@/hooks/engagement';
-import { DashboardPageWrapper, DashboardPageHeader } from '@/components/shared/layout/dashboard-page-wrapper';
 
 export default function SuperlikesPage() {
   const queryClient = useQueryClient();
@@ -38,34 +37,37 @@ export default function SuperlikesPage() {
   };
 
   return (
-    <DashboardPageWrapper>
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <DashboardPageHeader
-        title="Superlikes"
-        description={`${validSuperlikeIds.length} saved`}
-      >
-        <SuperlikeQuotaBadge quota={quota} />
-        <button
-          onClick={handleRefresh}
-          disabled={isLoading}
-          className="p-2 rounded-lg hover:bg-sidebar transition-colors disabled:opacity-50"
-          aria-label="Refresh superlikes"
-        >
-          <RefreshCw className={`h-4 w-4 text-muted-foreground ${isLoading ? 'animate-spin' : ''}`} />
-        </button>
-      </DashboardPageHeader>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-base sm:text-lg font-semibold text-foreground">Superlikes</h1>
+          <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">{validSuperlikeIds.length} saved</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <SuperlikeQuotaBadge quota={quota} />
+          <button
+            onClick={handleRefresh}
+            disabled={isLoading}
+            className="p-1.5 sm:p-2 rounded-lg hover:bg-sidebar transition-colors disabled:opacity-50"
+            aria-label="Refresh superlikes"
+          >
+            <RefreshCw className={`h-4 w-4 text-muted-foreground ${isLoading ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
+      </div>
 
       {/* Loading State */}
       {isLoading && (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+        <div className="flex items-center justify-center py-12 sm:py-20">
+          <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin text-muted-foreground" />
         </div>
       )}
 
       {/* Error State */}
       {error && (
-        <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4">
-          <p className="text-sm text-red-500">{error}</p>
+        <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-red-500">{error}</p>
         </div>
       )}
 
@@ -73,26 +75,22 @@ export default function SuperlikesPage() {
       {!isLoading && !error && (
         <>
           {validSuperlikeIds.length === 0 ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="flex flex-col items-center text-center space-y-3">
-                <div className="w-12 h-12 rounded-full bg-sidebar flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-muted-foreground/40" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-muted-foreground">No superlikes yet</p>
-                  <p className="text-sm text-muted-foreground/60">
-                    Superlike listings to show extra interest
-                  </p>
-                </div>
+            <div className="flex items-center justify-center min-h-[50vh]">
+              <div className="text-center max-w-xs">
+                <Sparkles className="w-8 h-8 mx-auto text-muted-foreground/20 mb-4" strokeWidth={1.5} />
+                <h3 className="text-sm font-semibold text-foreground mb-1">No superlikes yet</h3>
+                <p className="text-xs text-muted-foreground/60 leading-relaxed">
+                  Use superlikes to show extra interest in listings you love
+                </p>
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3 sm:gap-4 lg:gap-5">
+            <div className="space-y-2 sm:space-y-3">
               {validSuperlikeIds.map((listingId) => {
                 const listing = listingsById.get(listingId)!;
                 
                 return (
-                  <CarCard
+                  <CarListItem
                     key={listingId}
                     id={listing.id}
                     make={listing.make ?? ''}
@@ -119,6 +117,6 @@ export default function SuperlikesPage() {
           )}
         </>
       )}
-    </DashboardPageWrapper>
+    </div>
   );
 }

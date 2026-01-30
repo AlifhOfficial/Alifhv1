@@ -178,14 +178,14 @@ export function ListingCard({
   const status = getStatus();
 
   return (
-    <div className="group relative rounded-xl bg-card border border-border/40 overflow-hidden hover:border-border/60 transition-colors">
+    <div className="group relative rounded-lg sm:rounded-xl bg-card border border-border/40 overflow-hidden hover:border-border/60 transition-colors">
       {/* Main Card Content */}
       <div className="flex flex-col sm:flex-row">
         {/* Image */}
-        <div className="p-2.5 sm:w-44 md:w-52 lg:w-56 flex-shrink-0">
+        <div className="p-2 sm:p-2.5 sm:w-44 md:w-52 lg:w-56 flex-shrink-0">
           <Link 
             href={`/listings/${listing.id}`} 
-            className="relative aspect-[16/10] sm:aspect-[4/3] w-full overflow-hidden rounded-lg block bg-muted/30"
+            className="relative aspect-[16/9] sm:aspect-[4/3] w-full overflow-hidden rounded-md sm:rounded-lg block bg-muted/30"
           >
             <Image
               src={displayImage}
@@ -210,22 +210,22 @@ export function ListingCard({
         </div>
 
         {/* Content */}
-        <div className="flex-1 p-3 sm:py-3 sm:pr-3 sm:pl-0.5 flex flex-col min-w-0">
+        <div className="flex-1 px-2 pb-2 sm:p-3 sm:py-3 sm:pr-3 sm:pl-0.5 flex flex-col min-w-0">
           {/* Header */}
-          <div className="flex items-start justify-between gap-2 mb-1.5">
+          <div className="flex items-start justify-between gap-2 mb-1 sm:mb-1.5">
             <Link href={`/listings/${listing.id}`} className="flex-1 min-w-0">
-              <h3 className="text-sm font-semibold text-foreground line-clamp-1">
+              <h3 className="text-xs sm:text-sm font-semibold text-foreground line-clamp-1">
                 {listing.year} {listing.make} {listing.model}
               </h3>
               {listing.trim && (
-                <p className="text-xs text-muted-foreground/60 mt-0.5 line-clamp-1">{listing.trim}</p>
+                <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5 line-clamp-1">{listing.trim}</p>
               )}
             </Link>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="w-7 h-7 -mr-1 flex items-center justify-center rounded-lg text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted/50 transition-colors">
-                  <MoreHorizontal className="w-4 h-4" />
+                <button className="w-6 h-6 sm:w-7 sm:h-7 -mr-1 flex items-center justify-center rounded-md sm:rounded-lg text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted/50 transition-colors">
+                  <MoreHorizontal className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-44">
@@ -288,15 +288,15 @@ export function ListingCard({
           </div>
 
           {/* Price Row */}
-          <p className="text-base font-bold text-primary tabular-nums mb-auto">
-            {listing.price.toLocaleString()} <span className="text-xs font-semibold text-muted-foreground">AED</span>
+          <p className="text-sm sm:text-base font-bold text-primary tabular-nums mb-auto">
+            {listing.price.toLocaleString()} <span className="text-[10px] sm:text-xs font-semibold text-muted-foreground">AED</span>
           </p>
 
           {/* Status + Stats Row */}
-          <div className="flex items-center justify-between gap-2 pt-2 mt-2 border-t border-border/30">
+          <div className="flex items-center justify-between gap-2 pt-1.5 sm:pt-2 mt-1.5 sm:mt-2 border-t border-border/30">
             {/* Left: Status + Days Left + Hot */}
             <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap">
-              <span className={cn("text-[11px] font-semibold px-1.5 py-0.5 rounded", 
+              <span className={cn("text-[10px] sm:text-[11px] font-semibold px-1.5 py-0.5 rounded", 
                 status.label === 'Live' ? 'bg-emerald-500/10 text-emerald-600' :
                 status.label === 'Sold' ? 'bg-emerald-500/10 text-emerald-600' :
                 status.label === 'Draft' ? 'bg-amber-500/10 text-amber-600' :
@@ -309,31 +309,31 @@ export function ListingCard({
                 {status.label}
               </span>
               {listing.isPublic && daysRemaining !== null && daysRemaining > 0 && !isExpiringSoon && (
-                <span className="text-[11px] text-muted-foreground/60 tabular-nums">
+                <span className="text-[10px] sm:text-[11px] text-muted-foreground/60 tabular-nums">
                   {daysRemaining}d
                 </span>
               )}
               {hotScore >= 40 && (
-                <span className={cn("flex items-center gap-0.5 text-[11px] font-semibold", hotLevel.color)}>
-                  <Flame className="w-3 h-3" />
+                <span className={cn("flex items-center gap-0.5 text-[10px] sm:text-[11px] font-semibold", hotLevel.color)}>
+                  <Flame className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                   {hotLevel.label}
                 </span>
               )}
             </div>
             
             {/* Right: Stats */}
-            <div className="flex items-center gap-2 sm:gap-2.5 text-[11px] text-muted-foreground/60 shrink-0">
-              <span className="flex items-center gap-1">
-                <Eye className="w-3 h-3" />
+            <div className="flex items-center gap-1.5 sm:gap-2.5 text-[10px] sm:text-[11px] text-muted-foreground/60 shrink-0">
+              <span className="flex items-center gap-0.5 sm:gap-1">
+                <Eye className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                 <span className="font-semibold text-foreground/80 tabular-nums">{views}</span>
               </span>
-              <span className="flex items-center gap-1">
-                <Heart className="w-3 h-3" strokeWidth={1.5} />
+              <span className="flex items-center gap-0.5 sm:gap-1">
+                <Heart className="w-2.5 h-2.5 sm:w-3 sm:h-3" strokeWidth={1.5} />
                 <span className="font-semibold text-foreground/80 tabular-nums">{saves}</span>
               </span>
               {superlikes > 0 && (
-                <span className="flex items-center gap-1 text-amber-500">
-                  <Sparkles className="w-3 h-3" />
+                <span className="flex items-center gap-0.5 sm:gap-1 text-amber-500">
+                  <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                   <span className="font-semibold tabular-nums">{superlikes}</span>
                 </span>
               )}
@@ -342,8 +342,8 @@ export function ListingCard({
 
           {/* Rejection Reason */}
           {isRejected && listing.rejectionReason && (
-            <div className="mt-2 px-2 py-1.5 rounded-md bg-red-500/5 border border-red-500/10">
-              <p className="text-[11px] text-red-600 line-clamp-2">
+            <div className="mt-1.5 sm:mt-2 px-2 py-1 sm:py-1.5 rounded-md bg-red-500/5 border border-red-500/10">
+              <p className="text-[10px] sm:text-[11px] text-red-600 line-clamp-2">
                 <span className="font-semibold">Reason:</span> {listing.rejectionReason}
               </p>
             </div>
@@ -351,8 +351,8 @@ export function ListingCard({
 
           {/* AI Moderation Reason for Pending Review */}
           {isInReview && listing.aiModeration?.reasoning && (
-            <div className="mt-2 px-2 py-1.5 rounded-md bg-blue-500/5 border border-blue-500/10">
-              <p className="text-[11px] text-blue-600 line-clamp-2">
+            <div className="mt-1.5 sm:mt-2 px-2 py-1 sm:py-1.5 rounded-md bg-blue-500/5 border border-blue-500/10">
+              <p className="text-[10px] sm:text-[11px] text-blue-600 line-clamp-2">
                 <span className="font-semibold">Under Review:</span> {listing.aiModeration.reasoning}
               </p>
             </div>
@@ -360,8 +360,8 @@ export function ListingCard({
 
           {/* Suspension Reason */}
           {isSuspended && listing.suspensionReason && (
-            <div className="mt-2 px-2 py-1.5 rounded-md bg-red-500/5 border border-red-500/10">
-              <p className="text-[11px] text-red-600 line-clamp-2">
+            <div className="mt-1.5 sm:mt-2 px-2 py-1 sm:py-1.5 rounded-md bg-red-500/5 border border-red-500/10">
+              <p className="text-[10px] sm:text-[11px] text-red-600 line-clamp-2">
                 <span className="font-semibold">Reason:</span> {listing.suspensionReason}
               </p>
             </div>
@@ -373,31 +373,31 @@ export function ListingCard({
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className={cn(
-          "w-full flex items-center justify-between px-3 py-2 border-t border-border/30 hover:bg-muted/30 transition-colors",
+          "w-full flex items-center justify-between px-2 sm:px-3 py-1.5 sm:py-2 border-t border-border/30 hover:bg-muted/30 transition-colors",
           isExpanded && "bg-muted/20"
         )}
       >
-        <span className="text-[11px] font-medium text-muted-foreground/60">
+        <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground/60">
           {isExpanded ? 'Hide insights' : 'View insights'}
         </span>
         <ChevronDown className={cn(
-          "w-3.5 h-3.5 text-muted-foreground/40 transition-transform duration-200",
+          "w-3 h-3 sm:w-3.5 sm:h-3.5 text-muted-foreground/40 transition-transform duration-200",
           isExpanded && "rotate-180"
         )} />
       </button>
 
       {/* Expanded Insights Panel - Full Width */}
       {isExpanded && (
-        <div className="px-3 pb-3 pt-2 bg-muted/10 animate-in slide-in-from-top-2 duration-200">
+        <div className="px-2 sm:px-3 pb-2 sm:pb-3 pt-2 bg-muted/10 animate-in slide-in-from-top-2 duration-200">
           {/* Metrics Grid */}
-          <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4 mb-3">
+          <div className="grid grid-cols-2 gap-2 sm:gap-4 mb-2 sm:mb-3">
             {/* Click Rate */}
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[11px] font-medium text-muted-foreground/60">Click Rate</span>
-                <span className="text-xs font-bold tabular-nums text-foreground">{ctr}%</span>
+              <div className="flex items-center justify-between mb-1 sm:mb-1.5">
+                <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground/60">Click Rate</span>
+                <span className="text-[11px] sm:text-xs font-bold tabular-nums text-foreground">{ctr}%</span>
               </div>
-              <div className="h-1.5 bg-muted/50 rounded-full overflow-hidden">
+              <div className="h-1 sm:h-1.5 bg-muted/50 rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-primary rounded-full transition-all duration-500"
                   style={{ width: `${Math.min(parseFloat(ctr) * 10, 100)}%` }}
@@ -407,11 +407,11 @@ export function ListingCard({
             
             {/* Engagement */}
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[11px] font-medium text-muted-foreground/60">Engagement</span>
-                <span className={cn("text-xs font-bold tabular-nums", hotLevel.color)}>{hotScore}/100</span>
+              <div className="flex items-center justify-between mb-1 sm:mb-1.5">
+                <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground/60">Engagement</span>
+                <span className={cn("text-[11px] sm:text-xs font-bold tabular-nums", hotLevel.color)}>{hotScore}/100</span>
               </div>
-              <div className="h-1.5 bg-muted/50 rounded-full overflow-hidden">
+              <div className="h-1 sm:h-1.5 bg-muted/50 rounded-full overflow-hidden">
                 <div 
                   className={cn(
                     "h-full rounded-full transition-all duration-500",
@@ -427,10 +427,10 @@ export function ListingCard({
           </div>
 
           {/* Additional Stats Row */}
-          <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-1.5 xs:gap-0 pt-2 border-t border-border/30">
-            <div className="flex items-center gap-3 sm:gap-4 text-[11px] text-muted-foreground/60">
+          <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-1 xs:gap-0 pt-2 border-t border-border/30">
+            <div className="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-[11px] text-muted-foreground/60">
               <span className="flex items-center gap-1">
-                <BarChart3 className="w-3 h-3" />
+                <BarChart3 className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                 <span className="font-semibold text-foreground/80 tabular-nums">{impressions.toLocaleString()}</span>
                 <span>impr</span>
               </span>
@@ -440,7 +440,7 @@ export function ListingCard({
                 </span>
               )}
             </div>
-            <span className="text-[11px] text-muted-foreground/50">
+            <span className="text-[10px] sm:text-[11px] text-muted-foreground/50">
               {formatRelativeDate(listing.publishedAt || listing.createdAt)}
             </span>
           </div>
@@ -448,7 +448,7 @@ export function ListingCard({
           {/* Expiry Date */}
           {expiresAt && (
             <p className={cn(
-              "text-[11px] mt-2",
+              "text-[10px] sm:text-[11px] mt-1.5 sm:mt-2",
               isExpiringSoon ? "text-amber-600 font-medium" : "text-muted-foreground/50"
             )}>
               Expires {formatDate(expiresAt)}
@@ -459,19 +459,19 @@ export function ListingCard({
 
       {/* Delete Confirmation */}
       {deleteConfirm === listing.id && (
-        <div className="absolute inset-0 flex items-center justify-center bg-background/40 backdrop-blur-2xl rounded-xl z-10">
-          <div className="text-center px-6">
-            <p className="text-sm font-semibold text-foreground mb-3">Delete this listing?</p>
+        <div className="absolute inset-0 flex items-center justify-center bg-background/40 backdrop-blur-2xl rounded-lg sm:rounded-xl z-10">
+          <div className="text-center px-4 sm:px-6">
+            <p className="text-xs sm:text-sm font-semibold text-foreground mb-2 sm:mb-3">Delete this listing?</p>
             <div className="flex items-center justify-center gap-2">
               <button 
                 onClick={onCancelDelete}
-                className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted/50 transition-colors"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground rounded-md sm:rounded-lg hover:bg-muted/50 transition-colors"
               >
                 Cancel
               </button>
               <button 
                 onClick={() => onDelete(listing.id)}
-                className="px-4 py-2 text-sm font-semibold text-white bg-destructive hover:bg-destructive/90 rounded-lg transition-colors"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-white bg-destructive hover:bg-destructive/90 rounded-md sm:rounded-lg transition-colors"
               >
                 Delete
               </button>

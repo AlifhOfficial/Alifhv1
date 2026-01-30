@@ -10,7 +10,6 @@ import Link from 'next/link';
 import { Users, Clock, ArrowRight, RefreshCw, Mail, UserPlus } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { cn } from '@/lib/utils';
-import { DashboardPageWrapper, DashboardPageHeader } from '@/components/shared/layout/dashboard-page-wrapper';
 
 interface StaffStats {
   totalStaff: number;
@@ -72,21 +71,24 @@ export function StaffOverview() {
   };
 
   return (
-    <DashboardPageWrapper>
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <DashboardPageHeader
-        title="Staff"
-        description="Manage your team members and access"
-      >
-        <button
-          onClick={() => refetch()}
-          disabled={isRefetching}
-          className="p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
-          aria-label="Refresh"
-        >
-          <RefreshCw className={cn("w-4 h-4 text-muted-foreground", isRefetching && "animate-spin")} />
-        </button>
-      </DashboardPageHeader>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-base sm:text-lg font-semibold text-foreground">Staff</h1>
+          <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">Manage your team members and access</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => refetch()}
+            disabled={isRefetching}
+            className="p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
+            aria-label="Refresh"
+          >
+            <RefreshCw className={cn("w-4 h-4 text-muted-foreground", isRefetching && "animate-spin")} />
+          </button>
+        </div>
+      </div>
 
         {/* Stats */}
         {stats && (
@@ -252,6 +254,6 @@ export function StaffOverview() {
           )}
         </>
       )}
-    </DashboardPageWrapper>
+    </div>
   );
 }

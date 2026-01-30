@@ -56,8 +56,8 @@ export function MessageBubble({
   return (
     <div
       className={cn(
-        'flex mb-1.5 group animate-in fade-in slide-in-from-bottom-2 duration-200',
-        compact ? 'gap-1.5' : 'gap-2.5',
+        'flex mb-1 sm:mb-1.5 group animate-in fade-in slide-in-from-bottom-2 duration-200',
+        compact ? 'gap-1.5' : 'gap-2 sm:gap-2.5',
         isOwn ? 'flex-row-reverse' : 'flex-row',
         isOptimistic && 'opacity-70'
       )}
@@ -70,30 +70,30 @@ export function MessageBubble({
             src={otherUserAvatar ?? sender.avatarUrl}
             name={otherUserName ?? sender.name}
             size="sm"
-            className={cn(compact ? 'w-6 h-6' : 'w-8 h-8', 'flex-shrink-0')}
+            className={cn(compact ? 'w-6 h-6' : 'w-6 h-6 sm:w-8 sm:h-8', 'flex-shrink-0')}
           />
         ) : (
-          <div className={cn(compact ? 'w-6' : 'w-8', 'flex-shrink-0')} />
+          <div className={cn(compact ? 'w-6' : 'w-6 sm:w-8', 'flex-shrink-0')} />
         )
       )}
 
       {/* Message Content */}
       <div className={cn(
         'flex flex-col min-w-0',
-        compact ? 'max-w-[85%]' : 'max-w-[80%] md:max-w-[65%]',
+        compact ? 'max-w-[85%]' : 'max-w-[85%] sm:max-w-[80%] md:max-w-[65%]',
         isOwn ? 'items-end' : 'items-start'
       )}>
         {/* Sender Name (only for received messages with avatar) */}
         {/* Use otherUserName (partner name when available) instead of individual sender name */}
         {!isOwn && showAvatar && (
-          <small className="text-xs text-muted-foreground/70 mb-1 px-2 font-semibold">
+          <small className="text-[10px] sm:text-xs text-muted-foreground/70 mb-0.5 sm:mb-1 px-1.5 sm:px-2 font-semibold">
             {otherUserName ?? sender.name ?? 'User'}
           </small>
         )}
 
         {/* Listing Preview - rendered OUTSIDE the bubble */}
         {listing && (
-          <div className="mb-2 max-w-[280px] rounded-xl overflow-hidden border border-border/30 bg-card shadow-sm">
+          <div className="mb-1.5 sm:mb-2 max-w-[240px] sm:max-w-[280px] rounded-xl overflow-hidden border border-border/30 bg-card shadow-sm">
             {listing.thumbnail ? (
               <img 
                 src={listing.thumbnail} 
@@ -103,8 +103,8 @@ export function MessageBubble({
             ) : (
               <div className="w-full aspect-[4/3] bg-muted/40" />
             )}
-            <div className="p-2.5 bg-card">
-              <p className="text-sm font-bold text-foreground line-clamp-2">
+            <div className="p-2 sm:p-2.5 bg-card">
+              <p className="text-xs sm:text-sm font-bold text-foreground line-clamp-2">
                 {listing.title}
               </p>
             </div>
@@ -117,7 +117,7 @@ export function MessageBubble({
           <div
             className={cn(
               'break-words transition-all duration-200',
-              compact ? 'rounded-xl px-3 py-2' : 'rounded-[18px] px-4 py-2.5',
+              compact ? 'rounded-xl px-3 py-2' : 'rounded-2xl sm:rounded-[18px] px-3 sm:px-4 py-2 sm:py-2.5',
               isOwn
                 ? 'bg-blue-500 text-white rounded-br-md'
                 : 'bg-sidebar border border-border/30 text-foreground rounded-bl-md',

@@ -65,10 +65,10 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
     <div className={cn('flex h-full min-h-0 flex-col overflow-hidden border-t border-border/50', className)}>
       {/* Main */}
       <div className="flex min-h-0 flex-1 overflow-hidden">
-        {/* List */}
+        {/* List - Full width on mobile when visible, fixed width on desktop */}
         <div className={cn(
           'flex-shrink-0 transition-all duration-200',
-          listOpen ? 'w-full lg:w-96' : 'w-0 lg:w-0',
+          listOpen ? 'w-full lg:w-80 xl:w-96' : 'w-0 lg:w-0',
           showMobile && 'hidden lg:block'
         )}>
           <ConversationList
@@ -90,13 +90,13 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
           />
         </div>
 
-        {/* Chat */}
+        {/* Chat - Full width on mobile, flex on desktop */}
         <div className={cn('flex-1 min-w-0 hidden lg:flex relative', showMobile && 'flex')}>
           {/* Show list button when collapsed AND no chat selected */}
           {!listOpen && !selected && !selectedId && (
             <button
               onClick={() => setListOpen(true)}
-              className="absolute top-4 left-4 z-10 p-2 text-muted-foreground hover:text-foreground transition-colors bg-background border border-border/50 rounded-lg shadow-sm"
+              className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 p-1.5 sm:p-2 text-muted-foreground hover:text-foreground transition-colors bg-background border border-border/50 rounded-lg shadow-sm"
               title="Show messages"
             >
               <PanelLeft className="h-4 w-4" />
@@ -118,17 +118,17 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
             />
           ) : selectedId && isLoading ? (
             // Loading state when conversation ID is selected but not yet in list
-            <div className="min-h-[400px] flex items-center justify-center h-full w-full bg-background">
-              <div className="text-center space-y-4">
-                <Loader2 className="w-8 h-8 mx-auto text-muted-foreground animate-spin" />
-                <p className="text-sm font-medium text-muted-foreground/70">Loading conversation...</p>
+            <div className="min-h-[300px] sm:min-h-[400px] flex items-center justify-center h-full w-full bg-background">
+              <div className="text-center space-y-3 sm:space-y-4">
+                <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-muted-foreground animate-spin" />
+                <p className="text-xs sm:text-sm font-medium text-muted-foreground/70">Loading conversation...</p>
               </div>
             </div>
           ) : (
-            <div className="min-h-[400px] flex items-center justify-center h-full w-full bg-background">
-              <div className="text-center space-y-4">
-                <MessageCircle className="w-12 h-12 mx-auto text-muted-foreground/40 stroke-[1.5]" />
-                <p className="text-sm font-medium text-muted-foreground/70">Select a conversation</p>
+            <div className="min-h-[300px] sm:min-h-[400px] flex items-center justify-center h-full w-full bg-background">
+              <div className="text-center space-y-3 sm:space-y-4">
+                <MessageCircle className="w-10 h-10 sm:w-12 sm:h-12 mx-auto text-muted-foreground/40 stroke-[1.5]" />
+                <p className="text-xs sm:text-sm font-medium text-muted-foreground/70">Select a conversation</p>
               </div>
             </div>
           )}

@@ -12,7 +12,7 @@ export default function StaffInventoryPage() {
     <Suspense fallback={<PageSkeleton />}>
       {/* DashboardContent wraps pages in p-4; cancel horizontal margins for full-bleed listings */}
       <div className="-mx-4 -mb-4">
-        <ListingsView embedded />
+        <ListingsView embedded defaultFiltersOpen={false} />
       </div>
     </Suspense>
   );

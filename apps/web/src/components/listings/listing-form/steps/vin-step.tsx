@@ -142,9 +142,11 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
             excludeListingId={excludeListingId}
           />
           
-          <div className="flex items-center gap-2 text-xs">
-            <Sparkles className="w-3.5 h-3.5 text-purple-500" />
-            <span className="font-semibold text-purple-500">Experimental</span>
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs">
+            <div className="flex items-center gap-1.5">
+              <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-purple-500 shrink-0" />
+              <span className="font-semibold text-purple-500">Experimental</span>
+            </div>
             <span className="text-muted-foreground/70">— Some VINs may not decode, especially Japanese-made vehicles.</span>
           </div>
         </div>

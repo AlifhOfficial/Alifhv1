@@ -18,7 +18,6 @@ const navSections = [
       { label: "My Listings", href: "/user-dashboard/listings/my-listings", icon: "package" },
       { label: "Bookings", href: "/user-dashboard/bookings", icon: "calendar" },
       { label: "Messages", href: "/user-dashboard/messaging", icon: "message-circle" },
-      { label: "Requests", href: "/user-dashboard/requests", icon: "inbox" },
     ]
   },
   {
@@ -31,6 +30,8 @@ const navSections = [
     items: [
       { label: "Profile", href: "/user-dashboard/profile", icon: "user" },
       { label: "Settings", href: "/user-dashboard/settings", icon: "settings" },
+      { label: "Requests", href: "/user-dashboard/requests", icon: "inbox" },
+
     ]
   },
 ];

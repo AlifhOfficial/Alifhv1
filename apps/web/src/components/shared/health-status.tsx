@@ -74,9 +74,8 @@ export function HealthStatus() {
               <TooltipTrigger asChild>
                 <div className="flex items-center gap-1.5 cursor-help">
                   <div className={cn(
-                    'w-2 h-2 rounded-full',
-                    statusColor,
-                    service.status === 'healthy' && 'shadow-[0_0_4px_currentColor]'
+                    'w-1.5 h-1.5 rounded-full',
+                    statusColor
                   )} />
                   <span className="text-[11px] text-muted-foreground/50 uppercase tracking-wider font-medium">
                     {label}

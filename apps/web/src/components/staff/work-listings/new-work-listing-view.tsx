@@ -103,33 +103,25 @@ export function NewWorkListingView({ userId, partnerId }: NewWorkListingViewProp
   };
 
   return (
-    <div className="min-h-screen bg-background pb-32">
-      <div className="max-w-4xl mx-auto px-8 py-16 space-y-8">
-        {/* Header */}
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Add New Inventory</h1>
-          <p className="text-sm text-muted-foreground/70 mt-2">
-            Create a new listing for your dealership
-          </p>
-        </div>
-
-        {/* Error Message */}
-        {error && (
-          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
-            <p className="text-sm text-red-500">{error}</p>
+    <div className="min-h-screen bg-background -mx-4">
+      {/* Error Message */}
+      {error && (
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6">
+          <div className="rounded-xl sm:rounded-2xl border border-red-500/20 bg-red-500/10 p-3 sm:p-4">
+            <p className="text-xs sm:text-sm text-red-500">{error}</p>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Form */}
-        <ListingForm
-          mode="create"
-          onSubmit={handleSubmit}
-          onSaveDraft={handleSaveDraft}
-          onCancel={handleCancel}
-          isStaff={true}
-          partnerId={partnerId}
-        />
-      </div>
+      {/* Form */}
+      <ListingForm
+        mode="create"
+        onSubmit={handleSubmit}
+        onSaveDraft={handleSaveDraft}
+        onCancel={handleCancel}
+        isStaff={true}
+        partnerId={partnerId}
+      />
     </div>
   );
 }

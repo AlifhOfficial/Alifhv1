@@ -21,7 +21,7 @@ function HeroInfographic() {
       {/* Listing UI video - full width showcase */}
       <div className="relative w-full rounded-lg overflow-hidden border border-border/30 shadow-2xl">
         <video 
-          src="/Marketing/hero2.mp4" 
+          src="/Marketing/Hero2.mp4" 
           autoPlay 
           loop 
           muted 

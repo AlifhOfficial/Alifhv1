@@ -10,7 +10,6 @@ import { Combobox } from "@/components/ui/forms/combobox";
 import { Box, RefreshCw, Search, ChevronLeft, ChevronRight, Calendar, X } from "lucide-react";
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import { DashboardPageWrapper, DashboardPageHeader } from '@/components/shared/layout/dashboard-page-wrapper';
 
 interface PartnerBookingsClientProps {
   partnerId: string;
@@ -350,21 +349,24 @@ export function PartnerBookingsClient({
   };
 
   return (
-    <DashboardPageWrapper>
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <DashboardPageHeader
-        title="Bookings"
-        description={partnerName}
-      >
-        <button
-          onClick={() => fetchBookings(true)}
-          disabled={isRefreshing}
-          className="p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
-          aria-label="Refresh"
-        >
-          <RefreshCw className={`w-4 h-4 text-muted-foreground ${isRefreshing ? 'animate-spin' : ''}`} />
-        </button>
-      </DashboardPageHeader>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-base sm:text-lg font-semibold text-foreground">Bookings</h1>
+          <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">{partnerName}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => fetchBookings(true)}
+            disabled={isRefreshing}
+            className="p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
+            aria-label="Refresh"
+          >
+            <RefreshCw className={`w-4 h-4 text-muted-foreground ${isRefreshing ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
+      </div>
 
         {/* Stats */}
         {stats && (
@@ -461,16 +463,22 @@ export function PartnerBookingsClient({
 
       {/* Error */}
       {error && (
-        <div className="mb-8 p-4 rounded-xl bg-secondary/50 text-sm">
-          {error}
+        <div className="flex flex-col items-center justify-center py-16 sm:py-20">
+          <p className="text-xs sm:text-sm text-destructive font-medium">{error}</p>
+          <button
+            onClick={() => fetchBookings(true)}
+            className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Try again
+          </button>
         </div>
       )}
 
       {/* Loading */}
       {isLoading && (
-        <div className="flex flex-col items-center justify-center py-24">
+        <div className="flex flex-col items-center justify-center py-16 sm:py-20">
           <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
-          <p className="text-xs text-muted-foreground mt-4">Loading...</p>
+          <p className="text-xs text-muted-foreground/60 mt-3">Loading bookings...</p>
         </div>
       )}
 
@@ -598,27 +606,31 @@ export function PartnerBookingsClient({
 
       {/* Empty - No Data */}
       {!isLoading && !error && !hasActiveFilters && bookings.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-32 text-center">
-          <Calendar className="w-10 h-10 text-muted-foreground/20 mb-4" />
-          <h3 className="text-lg font-medium tracking-tight">No bookings yet</h3>
-          <p className="text-sm text-muted-foreground mt-1">Customer appointments will appear here</p>
+        <div className="flex flex-col items-center justify-center py-16 sm:py-20 text-center">
+          <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center mb-3">
+            <Calendar className="w-4 h-4 text-muted-foreground/40" />
+          </div>
+          <p className="text-sm font-medium text-foreground">No bookings yet</p>
+          <p className="text-xs text-muted-foreground/60 mt-1">Customer appointments will appear here</p>
         </div>
       )}
 
       {/* Empty - No Results */}
       {!isLoading && !error && hasActiveFilters && bookings.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-32 text-center">
-          <Search className="w-10 h-10 text-muted-foreground/20 mb-4" />
-          <h3 className="text-lg font-medium tracking-tight">No results</h3>
-          <p className="text-sm text-muted-foreground mt-1">Try a different search or filter</p>
+        <div className="flex flex-col items-center justify-center py-16 sm:py-20 text-center">
+          <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center mb-3">
+            <Search className="w-4 h-4 text-muted-foreground/40" />
+          </div>
+          <p className="text-sm font-medium text-foreground">No results found</p>
+          <p className="text-xs text-muted-foreground/60 mt-1">Try a different search or filter</p>
           <button
             onClick={clearFilters}
-            className="mt-4 text-sm text-foreground hover:underline"
+            className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             Clear filters
           </button>
         </div>
       )}
-    </DashboardPageWrapper>
+    </div>
   );
 }

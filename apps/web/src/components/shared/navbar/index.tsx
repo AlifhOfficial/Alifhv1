@@ -65,7 +65,6 @@ const navItems: NavItem[] = [
           { label: "Under AED 100k", href: "/listings?priceMax=100000" },
           { label: "Low Mileage", href: "/listings?mileageMax=50000" },
           { label: "Negotiable", href: "/listings?negotiable=true" },
-
         ],
       },
     ],
@@ -97,49 +96,6 @@ const navItems: NavItem[] = [
           { label: "About Alifh", href: "/about" },
           { label: "How Ranking Works", href: "/how-ranking-works" },
           { label: "Badges", href: "/badges" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Car Tools",
-    href: "/tools",
-    submenu: [
-      {
-        title: "Tools",
-        items: [
-          { label: "VIN Decoder", href: "/tools/vin-decoder" },
-          { label: "Compare Cars", href: "/tools/compare" },
-          { label: "Car Valuation", href: "/tools/valuation" },
-        ],
-      },
-      {
-        title: "Resources",
-        items: [
-          { label: "All Tools", href: "/tools" },
-          { label: "Knowledge Hub", href: "/knowledge/akh" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Knowledge",
-    href: "/knowledge/akh",
-    submenu: [
-      {
-        title: "Learn",
-        items: [
-          { label: "About AKH", href: "/knowledge/akh" },
-          { label: "Getting Started", href: "/knowledge/basics" },
-          { label: "Buying & Selling", href: "/knowledge/buying" },
-          { label: "Legal & Finance", href: "/knowledge/legal" },
-          { label: "Maintenance", href: "/knowledge/maintenance" },
-        ],
-      },
-      {
-        title: "Guides",
-        items: [
-          { label: "VIN Guide", href: "/knowledge/basics/vin-guide" },
         ],
       },
     ],
