@@ -73,19 +73,25 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
         
         {/* Brand Name & Tagline - Top, Centered */}
         <div className="px-4 sm:px-6 lg:px-8 mb-8 text-center">
-          <p className={`text-xs uppercase tracking-widest ${theme.labelClass} text-muted-foreground mb-3`}>
+          <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-4 block">
             {partner.brandName}
-          </p>
-          <h1 className={`text-xl sm:text-2xl lg:text-3xl ${theme.headingClass} tracking-tight leading-tight`}>
+          </span>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
             {(() => {
               const tagline = showroom.heroTagline || `Welcome to ${partner.brandName}`;
               const words = tagline.split(' ');
-              const firstWord = words[0];
-              const restWords = words.slice(1).join(' ');
+              const midPoint = Math.ceil(words.length / 2);
+              const firstHalf = words.slice(0, midPoint).join(' ');
+              const secondHalf = words.slice(midPoint).join(' ');
               return (
                 <>
-                  <span className="text-foreground">{firstWord}</span>
-                  {restWords && <span className="text-muted-foreground"> {restWords}</span>}
+                  {firstHalf}
+                  {secondHalf && (
+                    <>
+                      <br />
+                      <span className="text-muted-foreground">{secondHalf}</span>
+                    </>
+                  )}
                 </>
               );
             })()}
@@ -96,7 +102,7 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
         {/* HERO MEDIA - Consistent with other sections */}
         {/* ================================================================== */}
         <div className="px-4 sm:px-6 lg:px-8">
-          <div className="relative w-full aspect-[21/9] overflow-hidden rounded-2xl bg-muted group">
+          <div className="relative w-full aspect-[16/9] lg:aspect-[21/9] overflow-hidden rounded-xl bg-sidebar border border-border/40 group">
             
             {/* Media Layer */}
             {showUploadedVideo ? (
@@ -204,10 +210,10 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
             <div className="flex-1 max-w-2xl">
               {showroom.brandPhilosophy && (
                 <>
-                  <p className={`text-xs uppercase tracking-widest ${theme.labelClass} text-muted-foreground mb-4`}>
+                  <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-4 block">
                     Philosophy
-                  </p>
-                  <p className={`text-lg sm:text-xl ${theme.bodyClass} text-foreground leading-relaxed`}>
+                  </span>
+                  <p className="text-base text-muted-foreground leading-relaxed">
                     {showroom.brandPhilosophy}
                   </p>
                 </>
@@ -221,14 +227,14 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
                   href={showroom.heroCtaLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="h-12 px-8 bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition-colors flex items-center justify-center"
+                  className="h-11 px-8 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center"
                 >
                   {showroom.heroCtaText || 'Talk to Us'}
                 </a>
               ) : (
                 <button
                   onClick={() => document.getElementById('showroom-contact')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="h-12 px-8 bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition-colors flex items-center justify-center"
+                  className="h-11 px-8 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center"
                 >
                   {showroom.heroCtaText || 'Talk to Us'}
                 </button>
@@ -240,14 +246,14 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
                     href={showroom.heroCtaSecondaryLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="h-12 px-8 bg-muted text-foreground text-sm font-medium rounded-full hover:bg-muted/80 transition-colors flex items-center justify-center"
+                    className="h-11 px-8 bg-muted text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
                   >
                     {showroom.heroCtaSecondaryText}
                   </a>
                 ) : (
                   <button
                     onClick={() => document.getElementById('inventory')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="h-12 px-8 bg-muted text-foreground text-sm font-medium rounded-full hover:bg-muted/80 transition-colors flex items-center justify-center"
+                    className="h-11 px-8 bg-muted text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
                   >
                     {showroom.heroCtaSecondaryText}
                   </button>
@@ -259,47 +265,47 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
           {/* Stats Row - Bold, Card-like presentation */}
           {hasStats && (
             <div className="mt-12 lg:mt-16">
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 
                 {showroom.yearsInBusiness && (
-                  <div className="p-6 rounded-2xl bg-sidebar border border-sidebar-border">
-                    <span className={`text-3xl sm:text-4xl ${theme.headingClass} text-foreground tabular-nums`}>
+                  <div className="p-6 rounded-xl bg-sidebar border border-border/40">
+                    <span className="text-2xl sm:text-3xl font-semibold text-foreground tabular-nums">
                       {showroom.yearsInBusiness}+
                     </span>
-                    <p className={`text-sm ${theme.bodyClass} text-muted-foreground mt-1`}>
+                    <p className="text-sm text-muted-foreground mt-1">
                       Years in Business
                     </p>
                   </div>
                 )}
                 
                 {showroom.totalCarsSold && (
-                  <div className="p-6 rounded-2xl bg-sidebar border border-sidebar-border">
-                    <span className={`text-3xl sm:text-4xl ${theme.headingClass} text-foreground tabular-nums`}>
+                  <div className="p-6 rounded-xl bg-sidebar border border-border/40">
+                    <span className="text-2xl sm:text-3xl font-semibold text-foreground tabular-nums">
                       {showroom.totalCarsSold.toLocaleString()}+
                     </span>
-                    <p className={`text-sm ${theme.bodyClass} text-muted-foreground mt-1`}>
+                    <p className="text-sm text-muted-foreground mt-1">
                       Vehicles Sold
                     </p>
                   </div>
                 )}
                 
                 {partner.googleRating && (
-                  <div className="p-6 rounded-2xl bg-sidebar border border-sidebar-border">
-                    <span className={`text-3xl sm:text-4xl ${theme.headingClass} text-foreground tabular-nums`}>
+                  <div className="p-6 rounded-xl bg-sidebar border border-border/40">
+                    <span className="text-2xl sm:text-3xl font-semibold text-foreground tabular-nums">
                       {partner.googleRating.toFixed(1)}
                     </span>
-                    <p className={`text-sm ${theme.bodyClass} text-muted-foreground mt-1`}>
+                    <p className="text-sm text-muted-foreground mt-1">
                       Google Rating
                     </p>
                   </div>
                 )}
                 
                 {partner.googleReviewCount > 0 && (
-                  <div className="p-6 rounded-2xl bg-sidebar border border-sidebar-border">
-                    <span className={`text-3xl sm:text-4xl ${theme.headingClass} text-foreground tabular-nums`}>
+                  <div className="p-6 rounded-xl bg-sidebar border border-border/40">
+                    <span className="text-2xl sm:text-3xl font-semibold text-foreground tabular-nums">
                       {partner.googleReviewCount.toLocaleString()}
                     </span>
-                    <p className={`text-sm ${theme.bodyClass} text-muted-foreground mt-1`}>
+                    <p className="text-sm text-muted-foreground mt-1">
                       Reviews
                     </p>
                   </div>
@@ -317,14 +323,14 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
 // Skeleton
 function ShowroomHeroSkeleton() {
   return (
-    <section className="py-16 sm:py-20 lg:py-24">
+    <section className="pt-28 pb-20">
       <div className="max-w-[1600px] mx-auto">
         <div className="px-4 sm:px-6 lg:px-8 mb-8 text-center">
-          <Skeleton className="h-3 w-24 mx-auto mb-4" />
-          <Skeleton className="h-8 w-64 max-w-full mx-auto" />
+          <Skeleton className="h-4 w-24 mx-auto mb-4" />
+          <Skeleton className="h-10 w-80 max-w-full mx-auto" />
         </div>
         <div className="px-4 sm:px-6 lg:px-8">
-          <Skeleton className="w-full aspect-[16/9] md:aspect-[21/9] rounded-xl" />
+          <Skeleton className="w-full aspect-[16/9] lg:aspect-[21/9] rounded-xl" />
         </div>
       </div>
     </section>

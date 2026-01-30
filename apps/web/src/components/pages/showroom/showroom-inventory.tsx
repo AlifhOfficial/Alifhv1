@@ -116,23 +116,15 @@ export function ShowroomInventory({ showroom }: ShowroomInventoryProps) {
         <div className="px-4 sm:px-6 lg:px-8 mb-10">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
             {/* Left: Title & Count */}
-            <div className="space-y-3">
-              <p className={cn(
-                'text-xs uppercase tracking-widest',
-                theme.labelClass,
-                'text-muted-foreground'
-              )}>
+            <div className="space-y-4">
+              <span className="text-sm font-semibold uppercase tracking-wider text-primary block">
                 Inventory
-              </p>
-              <h2 className={cn(
-                'text-xl sm:text-2xl lg:text-3xl',
-                theme.headingClass,
-                'text-foreground tracking-tight leading-tight'
-              )}>
+              </span>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
                 Our Collection
               </h2>
               {totalCount > 0 && (
-                <p className={cn('text-sm', theme.bodyClass, 'text-muted-foreground')}>
+                <p className="text-sm text-muted-foreground">
                   {totalCount} {totalCount === 1 ? 'vehicle' : 'vehicles'} available
                 </p>
               )}
@@ -143,7 +135,7 @@ export function ShowroomInventory({ showroom }: ShowroomInventoryProps) {
               {!isExpanded && totalCount > 0 && (
                 <Button
                   onClick={handleExpand}
-                  className="h-11 px-6 bg-primary text-primary-foreground text-sm font-medium rounded-full hover:bg-primary/90 transition-colors"
+                  className="h-11 px-6 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors"
                 >
                   View All
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -154,7 +146,7 @@ export function ShowroomInventory({ showroom }: ShowroomInventoryProps) {
                 <Button
                   variant="ghost"
                   onClick={handleCollapse}
-                  className="h-11 px-6 text-sm font-medium text-muted-foreground hover:text-foreground rounded-full"
+                  className="h-11 px-6 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg"
                 >
                   <ChevronUp className="w-4 h-4 mr-2" />
                   Show Less
@@ -290,6 +282,13 @@ export function ShowroomInventory({ showroom }: ShowroomInventoryProps) {
             theme={theme}
           />
         )}
+
+        {/* Description - Below Content */}
+        <div className="px-4 sm:px-6 lg:px-8 mt-8">
+          <p className="text-base text-muted-foreground max-w-2xl leading-relaxed">
+            Curated selection of vehicles.
+          </p>
+        </div>
       </div>
     </section>
   );
@@ -321,8 +320,14 @@ function InventoryCarousel({
           {[...Array(4)].map((_, i) => (
             <div 
               key={i} 
-              className="flex-shrink-0 w-[340px] sm:w-[380px] aspect-[4/3] rounded-2xl bg-muted/30 animate-pulse" 
-            />
+              className="flex-shrink-0 w-[300px] sm:w-[340px] rounded-xl bg-sidebar border border-border/40 overflow-hidden" 
+            >
+              <div className="aspect-[4/3] bg-muted/30 animate-pulse" />
+              <div className="p-4 space-y-2">
+                <div className="h-4 w-3/4 bg-muted/30 rounded animate-pulse" />
+                <div className="h-3 w-1/2 bg-muted/30 rounded animate-pulse" />
+              </div>
+            </div>
           ))}
         </div>
       </div>
@@ -333,12 +338,12 @@ function InventoryCarousel({
     return (
       <div className="px-4 sm:px-6 lg:px-8">
         <div className={cn(
-          'flex flex-col items-center justify-center py-20',
-          'border border-dashed border-border/40 rounded-2xl',
-          'bg-muted/5'
+          'flex flex-col items-center justify-center py-16',
+          'border border-dashed border-border/40 rounded-xl',
+          'bg-sidebar'
         )}>
-          <Car className="w-12 h-12 text-muted-foreground/20 mb-4" />
-          <p className="text-sm text-muted-foreground/60">
+          <Car className="w-10 h-10 text-muted-foreground/30 mb-3" />
+          <p className="text-sm text-muted-foreground">
             {error ? 'Unable to load inventory' : 'No vehicles currently available'}
           </p>
         </div>
@@ -403,48 +408,43 @@ function ShowroomCarCard({ listing, priority = false, index, theme }: ShowroomCa
       ? getPublicUrl(listing.images[0]) 
       : '/assets/cars/car1.avif';
 
+  const price = listing.price ? `AED ${listing.price.toLocaleString()}` : null;
+
   return (
     <Link
       href={`/listings/${listing.id}`}
-      className="flex-shrink-0 w-[340px] sm:w-[380px] rounded-2xl bg-sidebar border border-sidebar-border hover:border-sidebar-accent transition-all duration-300 group overflow-hidden"
+      className="flex-shrink-0 w-[300px] sm:w-[340px] rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 group overflow-hidden"
     >
       {/* Image Container */}
-      <div className="relative aspect-[16/10] overflow-hidden">
+      <div className="relative aspect-[4/3] overflow-hidden">
         <Image
           src={displayImage}
           alt={`${listing.year} ${listing.make} ${listing.model}`}
           fill
           priority={priority}
           className="object-cover transition-transform duration-500 group-hover:scale-105"
-          sizes="(max-width: 768px) 340px, 380px"
+          sizes="(max-width: 768px) 300px, 340px"
         />
       </div>
       
-      {/* Info - Match achievements card padding */}
-      <div className="p-6">
-        {/* Year - Large, faded like achievement year */}
-        <span className={`text-2xl font-light ${theme.headingClass} text-sidebar-foreground/20`}>
-          {listing.year}
-        </span>
-        
+      {/* Info */}
+      <div className="p-4">
         {/* Make & Model */}
-        <h3 className={`text-base ${theme.subheadingClass} text-sidebar-foreground leading-snug mt-2`}>
+        <h3 className="text-base font-semibold text-foreground leading-snug">
           {listing.make} {listing.model}
         </h3>
         
-        {/* Variant/Trim if available */}
-        {listing.variant && (
-          <p className={`text-sm ${theme.bodyClass} text-sidebar-foreground/60 mt-1`}>
-            {listing.variant}
+        {/* Year & Variant */}
+        <p className="text-sm text-muted-foreground mt-1">
+          {listing.year}{listing.variant ? ` · ${listing.variant}` : ''}
+        </p>
+        
+        {/* Price */}
+        {price && (
+          <p className="text-sm font-medium text-foreground mt-3">
+            {price}
           </p>
         )}
-        
-        {/* Card Number - Match achievements */}
-        <div className="mt-4 pt-4 border-t border-sidebar-border/50">
-          <span className="text-sm text-sidebar-foreground/30">
-            {String(index + 1).padStart(2, '0')}
-          </span>
-        </div>
       </div>
     </Link>
   );
@@ -464,10 +464,12 @@ function ShowroomInventorySkeleton() {
         </div>
         <div className="flex gap-4 overflow-hidden">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="flex-shrink-0 w-72">
-              <Skeleton className="aspect-[4/3] rounded-xl mb-4" />
-              <Skeleton className="h-4 w-20 mb-2" />
-              <Skeleton className="h-5 w-32" />
+            <div key={i} className="flex-shrink-0 w-[300px] sm:w-[340px] rounded-xl bg-sidebar border border-border/40 overflow-hidden">
+              <Skeleton className="aspect-[4/3]" />
+              <div className="p-4 space-y-2">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
             </div>
           ))}
         </div>

@@ -37,7 +37,7 @@ function GalleryImage({
 }) {
   return (
     <div 
-      className={`relative overflow-hidden rounded-2xl cursor-pointer group ${className}`}
+      className={`relative overflow-hidden rounded-xl cursor-pointer group ${className}`}
       onClick={onClick}
     >
       <Image
@@ -91,7 +91,7 @@ function ImageSlider({
   if (images.length === 0) return null;
 
   return (
-    <div className="relative aspect-[16/9] md:aspect-[21/9] rounded-2xl overflow-hidden bg-muted group">
+    <div className="relative aspect-[16/9] lg:aspect-[21/9] rounded-xl overflow-hidden bg-sidebar border border-border/40 group">
       {/* Main Image */}
       <div 
         className="absolute inset-0 cursor-pointer"
@@ -206,13 +206,13 @@ export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
       <section id="showroom-gallery" className={`${theme.sectionSpacing} px-4 sm:px-6 lg:px-8`}>
         <div className="max-w-[1600px] mx-auto">
           
-          {/* Header */}
-          <div className="flex items-end justify-between mb-8">
+          {/* Header - Above Media */}
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
             <div>
-              <p className={`text-xs uppercase tracking-widest ${theme.labelClass} text-muted-foreground mb-3`}>
+              <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-4 block">
                 The Space
-              </p>
-              <h2 className={`text-xl sm:text-2xl lg:text-3xl ${theme.headingClass} text-foreground tracking-tight`}>
+              </span>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
                 Our Showroom
               </h2>
             </div>
@@ -230,7 +230,7 @@ export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
           {/* Video Tour - Full Width */}
           {hasVideoTour && (
             <div className="mb-8">
-              <div className="relative aspect-video rounded-2xl overflow-hidden bg-muted">
+              <div className="relative aspect-video rounded-xl overflow-hidden bg-sidebar border border-border/40">
                 {videoTourFileUrl ? (
                   <video
                     src={videoTourFileUrl}
@@ -251,7 +251,7 @@ export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
                   />
                 ) : null}
               </div>
-              <p className={`text-center mt-3 text-sm ${theme.bodyClass} text-muted-foreground`}>
+              <p className="text-center mt-3 text-sm text-muted-foreground">
                 Virtual Showroom Tour
               </p>
             </div>
@@ -285,6 +285,11 @@ export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
               })}
             </div>
           )}
+
+          {/* Description - Below Media */}
+          <p className="text-base text-muted-foreground max-w-2xl leading-relaxed mt-8">
+            Where every detail is crafted with care.
+          </p>
         </div>
       </section>
       

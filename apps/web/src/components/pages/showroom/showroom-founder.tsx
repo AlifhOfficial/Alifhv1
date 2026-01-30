@@ -27,7 +27,7 @@ export function ShowroomFounder({ showroom }: ShowroomFounderProps) {
           
           {/* Image Side */}
           {founderImageUrl && (
-            <div className="relative aspect-[4/5] lg:aspect-auto lg:min-h-[500px] rounded-2xl lg:rounded-r-none overflow-hidden">
+            <div className="relative aspect-[4/5] lg:aspect-auto lg:min-h-[500px] rounded-xl lg:rounded-r-none overflow-hidden">
               <Image
                 src={founderImageUrl}
                 alt={showroom.founderName}
@@ -38,29 +38,29 @@ export function ShowroomFounder({ showroom }: ShowroomFounderProps) {
           )}
 
           {/* Content Side */}
-          <div className={`p-8 sm:p-12 rounded-2xl ${founderImageUrl ? 'lg:rounded-l-none' : ''} bg-sidebar border border-sidebar-border ${founderImageUrl ? 'lg:border-l-0' : ''} flex flex-col justify-center`}>
+          <div className={`p-8 sm:p-12 rounded-xl ${founderImageUrl ? 'lg:rounded-l-none' : ''} bg-sidebar border border-border/40 ${founderImageUrl ? 'lg:border-l-0' : ''} flex flex-col justify-center`}>
             
             {/* Label */}
-            <p className={`text-xs uppercase tracking-widest ${theme.labelClass} text-sidebar-foreground/50 mb-4`}>
+            <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-4 block">
               Leadership
-            </p>
+            </span>
             
             {/* Quote */}
             {showroom.founderQuote && (
               <blockquote className="mb-6">
-                <p className={`text-lg sm:text-xl lg:text-2xl ${theme.headingClass} text-sidebar-foreground leading-relaxed`}>
+                <p className="text-lg sm:text-xl font-semibold text-foreground leading-relaxed">
                   "{showroom.founderQuote}"
                 </p>
               </blockquote>
             )}
             
             {/* Founder Info */}
-            <div className="mt-auto pt-6 border-t border-sidebar-border/50">
-              <p className={`text-base ${theme.subheadingClass} text-sidebar-foreground`}>
+            <div className="mt-auto pt-6 border-t border-border/40">
+              <p className="text-base font-semibold text-foreground">
                 {showroom.founderName}
               </p>
               {showroom.founderTitle && (
-                <p className="text-sm text-sidebar-foreground/60 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {showroom.founderTitle}
                 </p>
               )}

@@ -31,10 +31,10 @@ export function ShowroomAchievements({ showroom }: ShowroomAchievementsProps) {
         
         {/* Header */}
         <div className="mb-8 px-4 sm:px-6 lg:px-8">
-          <p className={`text-xs uppercase tracking-widest ${theme.labelClass} text-muted-foreground mb-4`}>
+          <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-4 block">
             {showroom.achievementsSectionTitle || 'Recognition'}
-          </p>
-          <h2 className={`text-xl sm:text-2xl lg:text-3xl ${theme.headingClass} text-foreground tracking-tight`}>
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
             Awards & Milestones
           </h2>
         </div>
@@ -49,25 +49,25 @@ export function ShowroomAchievements({ showroom }: ShowroomAchievementsProps) {
             {achievements.map((achievement, index) => (
               <div 
                 key={achievement.id} 
-                className="flex-shrink-0 w-[340px] sm:w-[380px] min-h-[280px] p-8 rounded-2xl bg-sidebar border border-sidebar-border hover:border-sidebar-accent transition-all duration-300 group flex flex-col"
+                className="flex-shrink-0 w-[340px] sm:w-[380px] min-h-[280px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 group flex flex-col"
               >
                 {/* Top Row - Year & Image */}
                 <div className="flex items-start justify-between mb-6">
                   {/* Year */}
                   {achievement.year && (
-                    <span className={`text-3xl font-light ${theme.headingClass} text-sidebar-foreground/20`}>
+                    <span className="text-2xl font-semibold text-muted-foreground/30">
                       {achievement.year}
                     </span>
                   )}
                   
                   {/* Achievement Image */}
                   {achievement.image && (
-                    <div className="w-16 h-16 rounded-2xl overflow-hidden bg-sidebar-accent/50 ring-1 ring-sidebar-border">
+                    <div className="w-14 h-14 rounded-xl overflow-hidden bg-muted ring-1 ring-border/40">
                       <Image
                         src={getPublicUrl(achievement.image) || achievement.image}
                         alt={achievement.title}
-                        width={64}
-                        height={64}
+                        width={56}
+                        height={56}
                         className="object-cover w-full h-full"
                       />
                     </div>
@@ -76,26 +76,33 @@ export function ShowroomAchievements({ showroom }: ShowroomAchievementsProps) {
 
                 {/* Content */}
                 <div className="space-y-2 flex-1">
-                  <h3 className={`text-base ${theme.subheadingClass} text-sidebar-foreground leading-snug`}>
+                  <h3 className="text-base font-semibold text-foreground leading-snug">
                     {achievement.title}
                   </h3>
                   
                   {achievement.issuer && (
-                    <p className={`text-sm ${theme.bodyClass} text-sidebar-foreground/60`}>
+                    <p className="text-sm text-muted-foreground">
                       {achievement.issuer}
                     </p>
                   )}
                 </div>
 
                 {/* Card Number */}
-                <div className="mt-6 pt-4 border-t border-sidebar-border/50">
-                  <span className="text-sm text-sidebar-foreground/30">
+                <div className="mt-6 pt-4 border-t border-border/40">
+                  <span className="text-sm text-muted-foreground/50">
                     {String(index + 1).padStart(2, '0')}
                   </span>
                 </div>
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Description - Below Carousel */}
+        <div className="mt-8 px-4 sm:px-6 lg:px-8">
+          <p className="text-base text-muted-foreground max-w-2xl leading-relaxed">
+            Years of dedication, recognized.
+          </p>
         </div>
 
         {/* Progress Dots (mobile) */}

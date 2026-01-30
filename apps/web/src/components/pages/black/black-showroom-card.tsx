@@ -107,8 +107,8 @@ export function BlackShowroomCard({ showroom, priority = false, index }: BlackSh
       className={cn(
         'group relative block w-full',
         'rounded-xl overflow-hidden',
-        'bg-sidebar border border-sidebar-border',
-        'hover:border-sidebar-accent/40 transition-all duration-300'
+        'bg-sidebar border border-border/40',
+        'hover:border-primary/30 transition-all duration-300'
       )}
     >
       {/* Main Layout - Stacked mobile, split desktop */}
@@ -201,13 +201,13 @@ export function BlackShowroomCard({ showroom, priority = false, index }: BlackSh
                 )}
                 
                 {/* Brand Name */}
-                <h2 className="text-xl font-semibold tracking-tight text-foreground">
+                <h2 className="text-base font-semibold tracking-tight text-foreground">
                   {partner.brandName}
                 </h2>
                 
                 {/* Tagline */}
                 {showroom.heroTagline && (
-                  <p className="text-base text-muted-foreground mt-1.5 line-clamp-2">
+                  <p className="text-sm text-muted-foreground mt-1.5 line-clamp-2 leading-relaxed">
                     {showroom.heroTagline}
                   </p>
                 )}
@@ -254,16 +254,16 @@ export function BlackShowroomCard({ showroom, priority = false, index }: BlackSh
           </div>
           
           {/* Footer: Location + Experience CTA */}
-          <div className="flex items-center justify-between pt-5 mt-5 border-t border-border/40">
+          <div className="flex items-center justify-between pt-4 mt-4 border-t border-border/40">
             {/* Location */}
-            <span className="text-base text-muted-foreground">
+            <span className="text-sm text-muted-foreground">
               {location || 'UAE'}
             </span>
             
             {/* Experience CTA */}
-            <span className="flex items-center gap-2 text-base font-medium text-primary transition-colors">
+            <span className="flex items-center gap-1.5 text-sm font-medium text-primary transition-colors">
               Visit
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
             </span>
           </div>
         </div>
@@ -278,7 +278,7 @@ export function BlackShowroomCard({ showroom, priority = false, index }: BlackSh
 
 export function BlackShowroomCardSkeleton() {
   return (
-    <div className="w-full rounded-xl bg-sidebar border border-sidebar-border overflow-hidden">
+    <div className="w-full rounded-xl bg-sidebar border border-border/40 overflow-hidden">
       <div className="flex flex-col lg:flex-row lg:min-h-[420px]">
         {/* Media Section - 75% */}
         <Skeleton className="w-full lg:w-[75%] aspect-[16/9] lg:aspect-auto" />

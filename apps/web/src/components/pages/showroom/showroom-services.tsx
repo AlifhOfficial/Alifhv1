@@ -31,26 +31,35 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
     <section id="showroom-services" className={`${theme.sectionSpacing}`}>
       <div className="max-w-[1600px] mx-auto">
         
+        {/* Header - Above Image */}
+        <div className="px-4 sm:px-6 lg:px-8 mb-8">
+          <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-4 block">
+            {showroom.servicesSectionTitle || 'What We Offer'}
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            Signature Services
+          </h2>
+        </div>
+
         {/* Full Width Image */}
         {ambientImage && (
-          <div className="relative aspect-[21/9] w-full overflow-hidden rounded-2xl mx-4 sm:mx-6 lg:mx-8 mb-12" style={{ width: 'calc(100% - 2rem)', marginLeft: '1rem', marginRight: '1rem' }}>
-            <Image
-              src={getPublicUrl(ambientImage) || ambientImage}
-              alt="Showroom Services"
-              fill
-              className="object-cover"
-            />
+          <div className="px-4 sm:px-6 lg:px-8 mb-8">
+            <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full overflow-hidden rounded-xl bg-sidebar border border-border/40">
+              <Image
+                src={getPublicUrl(ambientImage) || ambientImage}
+                alt="Showroom Services"
+                fill
+                className="object-cover"
+              />
+            </div>
           </div>
         )}
 
-        {/* Section Header - Above cards */}
+        {/* Description - Below Image */}
         <div className="px-4 sm:px-6 lg:px-8 mb-8">
-          <p className={`text-xs uppercase tracking-widest ${theme.labelClass} text-muted-foreground mb-3`}>
-            {showroom.servicesSectionTitle || 'What We Offer'}
+          <p className="text-base text-muted-foreground max-w-2xl leading-relaxed">
+            Tailored experiences designed around you.
           </p>
-          <h2 className={`text-xl sm:text-2xl lg:text-3xl ${theme.headingClass} text-foreground tracking-tight`}>
-            Signature Services
-          </h2>
         </div>
 
         {/* Services Carousel */}
@@ -62,20 +71,20 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
             {services.map((service, index) => (
               <div 
                 key={service.id} 
-                className="flex-shrink-0 w-[280px] sm:w-[320px] min-h-[200px] p-6 rounded-2xl bg-sidebar border border-sidebar-border hover:border-sidebar-accent transition-all duration-300 flex flex-col"
+                className="flex-shrink-0 w-[280px] sm:w-[320px] min-h-[200px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 flex flex-col"
               >
                 {/* Number */}
-                <span className={`text-2xl font-light ${theme.headingClass} text-sidebar-foreground/15 mb-3`}>
+                <span className="text-xl font-semibold text-muted-foreground/30 mb-3">
                   {String(index + 1).padStart(2, '0')}
                 </span>
 
                 {/* Content */}
                 <div className="flex-1">
-                  <h3 className={`text-base ${theme.subheadingClass} text-sidebar-foreground leading-snug mb-2`}>
+                  <h3 className="text-base font-semibold text-foreground leading-snug mb-2">
                     {service.title}
                   </h3>
                   {service.description && (
-                    <p className="text-sm text-sidebar-foreground/60 line-clamp-3">
+                    <p className="text-sm text-muted-foreground line-clamp-3">
                       {service.description}
                     </p>
                   )}
@@ -86,10 +95,10 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
             {/* VIP Card - in the same carousel */}
             {vipPerks && vipPerks.length > 0 && (
               <div 
-                className="flex-shrink-0 w-[280px] sm:w-[320px] min-h-[200px] p-6 rounded-2xl bg-sidebar border border-sidebar-border hover:border-sidebar-accent transition-all duration-300 flex flex-col"
+                className="flex-shrink-0 w-[280px] sm:w-[320px] min-h-[200px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 flex flex-col"
               >
                 {/* VIP Label */}
-                <span className={`text-2xl font-light ${theme.headingClass} text-sidebar-foreground/15 mb-3`}>
+                <span className="text-xl font-semibold text-muted-foreground/30 mb-3">
                   VIP
                 </span>
 
@@ -97,12 +106,12 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
                 <div className="flex-1 space-y-2">
                   {vipPerks.slice(0, 4).map((perk, idx) => (
                     <div key={idx} className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-sidebar-foreground/40 flex-shrink-0" />
-                      <span className="text-sm text-sidebar-foreground/60">{perk}</span>
+                      <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 flex-shrink-0" />
+                      <span className="text-sm text-muted-foreground">{perk}</span>
                     </div>
                   ))}
                   {vipPerks.length > 4 && (
-                    <span className="text-xs text-sidebar-foreground/40">+{vipPerks.length - 4} more</span>
+                    <span className="text-xs text-muted-foreground/60">+{vipPerks.length - 4} more</span>
                   )}
                 </div>
               </div>

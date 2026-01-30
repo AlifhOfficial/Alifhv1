@@ -73,48 +73,56 @@ export function BlackDirectoryView() {
   const showNoResults = !isLoading && !error && searchQuery && filteredShowrooms.length === 0;
 
   return (
-    <div className="min-h-screen bg-background pt-16">
-      {/* Header */}
-      <header className="sticky top-16 z-30 bg-background">
-        <div className="py-6 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-[1600px] mx-auto space-y-4">
-            {/* Title */}
-            <h1 className="text-xl sm:text-2xl font-semibold text-foreground tracking-tight text-center">
-              Black
+    <div className="min-h-screen bg-background">
+      {/* Hero Header */}
+      <section className="pt-28 pb-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto">
+          {/* Header */}
+          <div className="text-center mb-12 space-y-4">
+            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+              Black Members
+            </span>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+              Every detail matters.
+              <br />
+              <span className="text-muted-foreground">Every single one.</span>
             </h1>
-            
-            {/* Search - Full width */}
-            <div className="relative w-full">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Search black members..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={cn(
-                  'w-full h-12 pl-11 pr-11',
-                  'bg-sidebar border border-sidebar-border rounded-xl',
-                  'text-sm text-foreground placeholder:text-muted-foreground',
-                  'focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50',
-                  'transition-all'
-                )}
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors"
-                >
-                  <X className="w-3 h-3 text-muted-foreground" />
-                </button>
+            <p className="text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
+              Showrooms that care about the small things.
+            </p>
+          </div>
+
+          {/* Search */}
+          <div className="relative w-full max-w-xl mx-auto">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search members..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={cn(
+                'w-full h-12 pl-11 pr-11',
+                'bg-sidebar border border-border/40 rounded-xl',
+                'text-sm text-foreground placeholder:text-muted-foreground',
+                'focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50',
+                'transition-all'
               )}
-            </div>
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors"
+              >
+                <X className="w-3 h-3 text-muted-foreground" />
+              </button>
+            )}
           </div>
         </div>
-      </header>
+      </section>
       
       {/* Directory Grid */}
-      <main className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <div className="max-w-[1600px] mx-auto space-y-4">
+      <main className="px-4 sm:px-6 lg:px-8 pb-20">
+        <div className="max-w-[1600px] mx-auto space-y-6">
           {/* Loading State */}
           {isLoading && (
             <>

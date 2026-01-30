@@ -30,26 +30,35 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
     <section id="showroom-team" className={`${theme.sectionSpacing}`}>
       <div className="max-w-[1600px] mx-auto">
         
+        {/* Header - Above Image */}
+        <div className="px-4 sm:px-6 lg:px-8 mb-8">
+          <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-4 block">
+            {showroom.teamSectionTitle || 'Our Team'}
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            Meet The Team
+          </h2>
+        </div>
+
         {/* Full Width Hero Image */}
         {ambientImage && (
-          <div className="relative aspect-[21/9] w-full overflow-hidden rounded-2xl mx-4 sm:mx-6 lg:mx-8 mb-12" style={{ width: 'calc(100% - 2rem)', marginLeft: '1rem', marginRight: '1rem' }}>
-            <Image
-              src={getPublicUrl(ambientImage) || ambientImage}
-              alt="Our Team"
-              fill
-              className="object-cover"
-            />
+          <div className="px-4 sm:px-6 lg:px-8 mb-8">
+            <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full overflow-hidden rounded-xl bg-sidebar border border-border/40">
+              <Image
+                src={getPublicUrl(ambientImage) || ambientImage}
+                alt="Our Team"
+                fill
+                className="object-cover"
+              />
+            </div>
           </div>
         )}
 
-        {/* Section Header - Above cards */}
+        {/* Description - Below Image */}
         <div className="px-4 sm:px-6 lg:px-8 mb-8">
-          <p className={`text-xs uppercase tracking-widest ${theme.labelClass} text-muted-foreground mb-3`}>
-            {showroom.teamSectionTitle || 'Our Team'}
+          <p className="text-base text-muted-foreground max-w-2xl leading-relaxed">
+            The people behind every experience.
           </p>
-          <h2 className={`text-xl sm:text-2xl lg:text-3xl ${theme.headingClass} text-foreground tracking-tight`}>
-            Meet The Team
-          </h2>
         </div>
 
         {/* Team Carousel */}
@@ -61,10 +70,10 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
             {members.map((member) => (
               <div 
                 key={member.id} 
-                className="flex-shrink-0 w-[260px] sm:w-[280px] p-6 rounded-2xl bg-sidebar border border-sidebar-border hover:border-sidebar-accent transition-all duration-300 group"
+                className="flex-shrink-0 w-[260px] sm:w-[280px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 group"
               >
                 {/* Avatar */}
-                <div className="relative w-16 h-16 rounded-full overflow-hidden bg-sidebar-accent/30 mb-4 ring-2 ring-sidebar-border group-hover:ring-sidebar-accent transition-colors">
+                <div className="relative w-14 h-14 rounded-full overflow-hidden bg-muted mb-4 ring-2 ring-border/40 group-hover:ring-primary/30 transition-colors">
                   {member.image ? (
                     <Image
                       src={getPublicUrl(member.image) || member.image}
@@ -74,7 +83,7 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
                     />
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className={`text-lg ${theme.headingClass} text-sidebar-foreground/40`}>
+                      <span className="text-lg font-semibold text-muted-foreground">
                         {member.name.charAt(0)}
                       </span>
                     </div>
@@ -83,14 +92,14 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
 
                 {/* Content */}
                 <div>
-                  <h3 className={`text-sm ${theme.subheadingClass} text-sidebar-foreground`}>
+                  <h3 className="text-base font-semibold text-foreground">
                     {member.name}
                   </h3>
-                  <p className="text-xs text-sidebar-foreground/60 mt-0.5">
+                  <p className="text-sm text-muted-foreground mt-0.5">
                     {member.role}
                   </p>
                   {member.bio && (
-                    <p className={`text-xs ${theme.bodyClass} text-sidebar-foreground/50 mt-2 line-clamp-3`}>
+                    <p className="text-sm text-muted-foreground/70 mt-2 line-clamp-3">
                       {member.bio}
                     </p>
                   )}

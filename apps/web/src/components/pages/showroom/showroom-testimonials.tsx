@@ -33,10 +33,20 @@ export function ShowroomTestimonials({ showroom }: ShowroomTestimonialsProps) {
     <section id="showroom-testimonials" className={`${theme.sectionSpacing}`}>
       <div className="max-w-[1600px] mx-auto">
         
+        {/* Header - Above Image */}
+        <div className="mb-8 px-4 sm:px-6 lg:px-8">
+          <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-4 block">
+            {showroom.testimonialsSectionTitle || 'Client Stories'}
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            What Our Clients Say
+          </h2>
+        </div>
+
         {/* Section Image */}
         {sectionImage && (
           <div className="px-4 sm:px-6 lg:px-8 mb-12">
-            <div className="relative aspect-[21/9] w-full rounded-2xl overflow-hidden bg-muted">
+            <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full rounded-xl overflow-hidden bg-sidebar border border-border/40">
               <Image
                 src={getPublicUrl(sectionImage)}
                 alt="Client experiences"
@@ -47,14 +57,11 @@ export function ShowroomTestimonials({ showroom }: ShowroomTestimonialsProps) {
           </div>
         )}
         
-        {/* Header */}
+        {/* Description - Below Image */}
         <div className="mb-8 px-4 sm:px-6 lg:px-8">
-          <p className={`text-xs uppercase tracking-widest ${theme.labelClass} text-muted-foreground mb-3`}>
-            {showroom.testimonialsSectionTitle || 'Client Stories'}
+          <p className="text-base text-muted-foreground max-w-2xl leading-relaxed">
+            Real experiences from real people.
           </p>
-          <h2 className={`text-xl sm:text-2xl lg:text-3xl ${theme.headingClass} text-foreground tracking-tight`}>
-            What Our Clients Say
-          </h2>
         </div>
 
         {/* Testimonials Carousel */}
@@ -91,7 +98,7 @@ function TestimonialCard({
   index: number;
 }) {
   return (
-    <div className="flex-shrink-0 w-[320px] sm:w-[380px] min-h-[260px] p-6 rounded-2xl bg-sidebar border border-sidebar-border hover:border-sidebar-accent transition-all duration-300 flex flex-col">
+    <div className="flex-shrink-0 w-[320px] sm:w-[380px] min-h-[260px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 flex flex-col">
       {/* Rating */}
       <div className="flex items-center gap-1 mb-4">
         {[1, 2, 3, 4, 5].map((star) => (
@@ -99,25 +106,25 @@ function TestimonialCard({
             key={star}
             className={`w-4 h-4 ${
               star <= testimonial.rating
-                ? 'text-sidebar-foreground fill-sidebar-foreground'
-                : 'text-sidebar-foreground/20'
+                ? 'text-foreground fill-foreground'
+                : 'text-muted-foreground/30'
             }`}
           />
         ))}
       </div>
       
       {/* Content */}
-      <p className={`text-sm ${theme.bodyClass} leading-relaxed text-sidebar-foreground/90 flex-1`}>
+      <p className="text-sm leading-relaxed text-muted-foreground flex-1">
         "{testimonial.content}"
       </p>
 
       {/* Author Info */}
-      <div className="mt-4 pt-4 border-t border-sidebar-border/50">
-        <p className={`text-sm ${theme.subheadingClass} text-sidebar-foreground`}>
+      <div className="mt-4 pt-4 border-t border-border/40">
+        <p className="text-base font-semibold text-foreground">
           {testimonial.customerName}
         </p>
         {testimonial.vehiclePurchased && (
-          <p className="text-xs text-sidebar-foreground/50 mt-0.5">
+          <p className="text-sm text-muted-foreground mt-0.5">
             {testimonial.vehiclePurchased}
           </p>
         )}

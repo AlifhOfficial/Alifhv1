@@ -33,35 +33,35 @@ export function ShowroomStory({ showroom }: ShowroomStoryProps) {
     <section id="showroom-story" className={`${theme.sectionSpacing}`}>
       <div className="max-w-[1600px] mx-auto">
         
-        {/* Content - Top */}
+        {/* Header - Above Media */}
         <div className="px-4 sm:px-6 lg:px-8 mb-8">
-          <div className="max-w-3xl">
-            <p className={`text-xs uppercase tracking-widest ${theme.labelClass} text-muted-foreground mb-3`}>
-              {showroom.brandStoryTitle || 'Our Story'}
-            </p>
-            
-            <h2 className={`text-xl sm:text-2xl lg:text-3xl ${theme.headingClass} text-foreground tracking-tight leading-tight mb-6`}>
-              The Story Behind
-              <br />
-              <span className="text-muted-foreground/70">{partner?.brandName}</span>
-            </h2>
-            
-            <div className={`${theme.bodyClass} text-muted-foreground leading-relaxed`}>
-              {showroom.brandStoryContent.split('\n\n').slice(0, 3).map((paragraph, idx) => (
-                <p key={idx} className={idx > 0 ? 'mt-4' : ''} style={{ fontSize: '1.25rem', lineHeight: '1.75rem' }}>{paragraph}</p>
-              ))}
-            </div>
-          </div>
+          <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-4 block">
+            {showroom.brandStoryTitle || 'Our Story'}
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            The Story Behind
+            <br />
+            <span className="text-muted-foreground">{partner?.brandName}</span>
+          </h2>
         </div>
-        
-        {/* Media - Full Width Bottom */}
-        <div className="px-4 sm:px-6 lg:px-8">
+
+        {/* Media */}
+        <div className="px-4 sm:px-6 lg:px-8 mb-12">
           <StoryMedia 
             storyVideoFileUrl={storyVideoFileUrl}
             embedUrl={embedUrl}
             firstImage={firstImage}
             title={showroom.brandStoryTitle || 'Brand Story'}
           />
+        </div>
+
+        {/* Description - Below Media */}
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl space-y-4">
+            {showroom.brandStoryContent.split('\n\n').slice(0, 3).map((paragraph, idx) => (
+              <p key={idx} className="text-base text-muted-foreground leading-relaxed">{paragraph}</p>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -86,7 +86,7 @@ function StoryMedia({ storyVideoFileUrl, embedUrl, firstImage, title }: StoryMed
 
   if (storyVideoFileUrl) {
     return (
-      <div className="relative aspect-[21/9] w-full rounded-2xl overflow-hidden bg-muted group">
+      <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full rounded-xl overflow-hidden bg-sidebar border border-border/40 group">
         <video
           ref={videoRef}
           src={storyVideoFileUrl}
@@ -143,7 +143,7 @@ function StoryMedia({ storyVideoFileUrl, embedUrl, firstImage, title }: StoryMed
 
   if (embedUrl) {
     return (
-      <div className="relative aspect-[21/9] w-full rounded-2xl overflow-hidden bg-muted">
+      <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full rounded-xl overflow-hidden bg-sidebar border border-border/40">
         <iframe
           src={`${embedUrl}?autoplay=1&mute=1&loop=1`}
           title={title}
@@ -157,7 +157,7 @@ function StoryMedia({ storyVideoFileUrl, embedUrl, firstImage, title }: StoryMed
 
   if (firstImage) {
     return (
-      <div className="relative aspect-[21/9] w-full rounded-2xl overflow-hidden bg-muted">
+      <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full rounded-xl overflow-hidden bg-sidebar border border-border/40">
         <Image
           src={getPublicUrl(firstImage) || firstImage}
           alt="Showroom"
@@ -169,7 +169,7 @@ function StoryMedia({ storyVideoFileUrl, embedUrl, firstImage, title }: StoryMed
   }
 
   return (
-    <div className="relative aspect-[21/9] w-full rounded-2xl overflow-hidden bg-muted">
+    <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full rounded-xl overflow-hidden bg-sidebar border border-border/40">
       <div className="absolute inset-0 flex items-center justify-center">
         <Play className="w-12 h-12 text-muted-foreground/30" />
       </div>
