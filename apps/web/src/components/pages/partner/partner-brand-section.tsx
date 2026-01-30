@@ -93,15 +93,17 @@ function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
 
 function ListingDetailInfographic() {
   return (
-    <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 py-6 sm:py-8 lg:py-10">
-      <video 
-        src="/Marketing/lookgood3.mp4" 
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="w-full h-full object-contain"
-      />
+    <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-14">
+      <div className="relative w-full rounded-lg overflow-hidden border border-border/30 shadow-2xl">
+        <video 
+          src="/Marketing/lookgood6.mp4" 
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-auto"
+        />
+      </div>
     </div>
   );
 }

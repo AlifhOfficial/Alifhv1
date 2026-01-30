@@ -1,6 +1,6 @@
 /**
  * Badges Hero Section - Alifh Badges Page
- * Clean hero - honour and recognition
+ * Clean hero - simple and direct
  */
 
 'use client';
@@ -12,23 +12,20 @@ export function BadgesHeroSection() {
     <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-[1600px] mx-auto">
         
-        {/* Brand & Tagline */}
-        <div className="text-center mb-16 space-y-4">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">
-            Honours & Recognition
-          </p>
-          <h1 className="text-2xl sm:text-3xl font-medium text-foreground tracking-tight leading-tight">
+        {/* Header */}
+        <div className="text-center mb-12 space-y-4">
+          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+            Recognition
+          </span>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
             Badges at Alifh.
             <br />
-            <span className="text-muted-foreground/70">Earned. Not bought.</span>
+            <span className="text-muted-foreground">Earned. Not bought.</span>
           </h1>
-          <p className="text-base text-muted-foreground leading-relaxed max-w-xl mx-auto pt-2">
-            Hand-picked by Team Alifh. Recognition for those who embody our values.
-          </p>
         </div>
 
         {/* Hero Image */}
-        <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] overflow-hidden rounded-lg mb-16">
+        <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40">
           <Image
             src="/Abstract/b1.png"
             alt="Alifh Badges"
@@ -39,21 +36,10 @@ export function BadgesHeroSection() {
           />
         </div>
 
-        {/* Trust Indicators */}
-        <div className="flex items-center justify-center gap-12 md:gap-20 pt-8 border-t border-border/40">
-          <div className="text-center space-y-1">
-            <div className="text-xl font-semibold tracking-tight text-[#0066FF]">10</div>
-            <div className="text-xs text-muted-foreground">Badge types</div>
-          </div>
-          <div className="text-center space-y-1">
-            <div className="text-xl font-semibold tracking-tight text-[#0066FF]">0</div>
-            <div className="text-xs text-muted-foreground">For sale</div>
-          </div>
-          <div className="text-center space-y-1">
-            <div className="text-xl font-semibold tracking-tight text-[#0066FF]">1</div>
-            <div className="text-xs text-muted-foreground">Team decides</div>
-          </div>
-        </div>
+        {/* Description */}
+        <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mt-8 leading-relaxed">
+          Hand-picked by Team Alifh. Recognition for those who embody our values.
+        </p>
 
       </div>
     </section>

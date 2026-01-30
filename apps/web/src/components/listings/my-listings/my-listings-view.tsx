@@ -581,42 +581,42 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
 
         {/* Stats */}
         {stats && (
-          <div className="flex items-center gap-10">
+          <div className="flex flex-wrap items-center gap-6 sm:gap-10">
             <div>
               <span className="text-xs text-muted-foreground">Active</span>
-              <p className="text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.active}</p>
+              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.active}</p>
             </div>
             <div>
               <span className="text-xs text-muted-foreground">Public</span>
-              <p className="text-xl font-semibold tracking-tight mt-1 text-green-500">{stats.public}</p>
+              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-green-500">{stats.public}</p>
             </div>
             <div>
               <span className="text-xs text-muted-foreground">Draft</span>
-              <p className="text-xl font-semibold tracking-tight mt-1 text-yellow-500">{stats.draft}</p>
+              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-yellow-500">{stats.draft}</p>
             </div>
             {stats.inReview > 0 && (
               <div>
                 <span className="text-xs text-muted-foreground">In Review</span>
-                <p className="text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.inReview}</p>
+                <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.inReview}</p>
               </div>
             )}
             {stats.sold > 0 && (
               <div>
                 <span className="text-xs text-muted-foreground">Sold</span>
-                <p className="text-xl font-semibold tracking-tight mt-1 text-purple-500">{stats.sold}</p>
+                <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-purple-500">{stats.sold}</p>
               </div>
             )}
             <div>
               <span className="text-xs text-muted-foreground">Total</span>
-              <p className="text-xl font-semibold tracking-tight mt-1">{stats.all}</p>
+              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1">{stats.all}</p>
             </div>
           </div>
         )}
 
       {/* Toolbar */}
-      <div className="flex items-center gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
         {/* Search */}
-        <div className="relative flex-1 max-w-xs">
+        <div className="relative flex-1 sm:max-w-xs">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
@@ -636,7 +636,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
         </div>
 
         {/* Status Pills */}
-        <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl">
+        <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl overflow-x-auto scrollbar-hide">
           {mainStatusTabs.map((tab) => {
             const isActive = selectedStatus === tab.key;
             const count = tab.count;
@@ -698,34 +698,36 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
           )}
         </div>
 
-        {/* Sort */}
-        <Select value={sort} onValueChange={(v) => handleSortChange(v as ListingsSort)}>
-          <SelectTrigger className="h-10 w-32 border-0 bg-secondary/50 rounded-xl text-sm">
-            <SelectValue placeholder="Sort" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="newest">Newest</SelectItem>
-            <SelectItem value="oldest">Oldest</SelectItem>
-            <SelectItem value="updated">Updated</SelectItem>
-            <SelectItem value="expiring">Expiring</SelectItem>
-          </SelectContent>
-        </Select>
+        {/* Sort & New Listing */}
+        <div className="flex items-center gap-2 sm:gap-4">
+          <Select value={sort} onValueChange={(v) => handleSortChange(v as ListingsSort)}>
+            <SelectTrigger className="h-10 w-28 sm:w-32 border-0 bg-secondary/50 rounded-xl text-sm shrink-0">
+              <SelectValue placeholder="Sort" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="newest">Newest</SelectItem>
+              <SelectItem value="oldest">Oldest</SelectItem>
+              <SelectItem value="updated">Updated</SelectItem>
+              <SelectItem value="expiring">Expiring</SelectItem>
+            </SelectContent>
+          </Select>
 
-        {/* New Listing */}
-        <Link href={newListingUrl}>
-          <button className="h-10 px-4 rounded-xl bg-primary text-primary-foreground text-sm font-medium transition-colors hover:bg-primary/90 flex items-center gap-2">
-            <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">New</span>
-          </button>
-        </Link>
+          {/* New Listing */}
+          <Link href={newListingUrl}>
+            <button className="h-10 px-3 sm:px-4 rounded-xl bg-primary text-primary-foreground text-sm font-medium transition-colors hover:bg-primary/90 flex items-center gap-2 shrink-0">
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">New</span>
+            </button>
+          </Link>
+        </div>
       </div>
 
       {/* Count & Actions */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
         <p className="text-xs text-muted-foreground">
           {totalListings} listing{totalListings !== 1 ? 's' : ''}
-          {hasActiveFilters && <span> (filtered)</span>}
-          {totalPages > 1 && <span className="ml-2">· Page {currentPage} of {totalPages}</span>}
+          {hasActiveFilters && <span className="hidden xs:inline"> (filtered)</span>}
+          {totalPages > 1 && <span className="ml-2 hidden sm:inline">· Page {currentPage} of {totalPages}</span>}
         </p>
           
         {/* Bulk Clear Button */}
@@ -749,7 +751,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
 
       {/* Loading */}
       {isLoading && (
-        <div className="flex flex-col items-center justify-center py-24">
+        <div className="flex flex-col items-center justify-center py-16 sm:py-24">
           <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
           <p className="text-xs text-muted-foreground mt-4">Loading...</p>
         </div>
@@ -757,7 +759,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
 
       {/* Empty State - No Data */}
       {!isLoading && !error && !hasActiveFilters && listings.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-32 text-center">
+        <div className="flex flex-col items-center justify-center py-16 sm:py-32 text-center px-4">
           <Package className="w-5 h-5 text-foreground mb-3" strokeWidth={2} />
           <h3 className="text-sm font-semibold tracking-tight">No listings yet</h3>
           <p className="text-xs text-muted-foreground mt-1">Create your first listing to get started</p>
@@ -777,7 +779,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
         const Icon = config.icon;
         
         return (
-          <div className="flex flex-col items-center justify-center py-32 text-center">
+          <div className="flex flex-col items-center justify-center py-16 sm:py-32 text-center px-4">
             <Icon className={`w-5 h-5 ${config.color} mb-3`} strokeWidth={2} />
             <h3 className="text-sm font-semibold tracking-tight">{config.message}</h3>
             <p className="text-xs text-muted-foreground mt-1">{config.subMessage}</p>

@@ -21,7 +21,7 @@ function FlowApplyButton() {
     <>
       <button
         onClick={() => isAuthenticated ? router.push('/user-dashboard/requests') : openModal()}
-        className="w-full sm:w-auto h-11 px-8 bg-[#0066FF] text-white text-sm font-medium rounded-lg hover:bg-[#0066FF]/90 transition-colors flex items-center justify-center shadow-sm"
+        className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
       >
         Apply for Flow — AED 7K/mo
       </button>
@@ -41,7 +41,7 @@ function BlackApplyButton() {
     <>
       <button
         onClick={() => isAuthenticated ? router.push('/user-dashboard/requests') : openModal()}
-        className="w-full sm:w-auto h-11 px-8 bg-muted border border-border/40 text-foreground text-sm font-medium rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
+        className="w-full sm:w-auto h-11 px-8 bg-muted border border-border/40 text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
       >
         Apply for Black — starts at AED 21K/mo
       </button>
@@ -57,13 +57,13 @@ export function PricingClosingSection() {
         
         {/* Final CTA */}
         <div className="text-center space-y-6 max-w-2xl mx-auto">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">
+          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
             Ready?
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight leading-tight">
-            Most dealers should start with Flow.
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            Most dealers start with Flow.
             <br />
-            <span className="text-muted-foreground/70">We'll tell you honestly if you need more.</span>
+            <span className="text-muted-foreground">We’ll tell you if you need more.</span>
           </h2>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
@@ -84,20 +84,20 @@ export function PricingClosingSection() {
         {/* Bottom Stats */}
         <div className="flex items-center justify-center gap-12 md:gap-20 pt-16 mt-16 border-t border-border/40">
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">0%</div>
-            <div className="text-xs text-muted-foreground">Commission</div>
+            <div className="text-2xl font-semibold tracking-tight text-primary">0%</div>
+            <div className="text-sm text-muted-foreground">Commission</div>
           </div>
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">∞</div>
-            <div className="text-xs text-muted-foreground">Per showroom</div>
+            <div className="text-2xl font-semibold tracking-tight text-primary">∞</div>
+            <div className="text-sm text-muted-foreground">Per showroom</div>
           </div>
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">0</div>
-            <div className="text-xs text-muted-foreground">Lock-ins</div>
+            <div className="text-2xl font-semibold tracking-tight text-primary">0</div>
+            <div className="text-sm text-muted-foreground">Lock-ins</div>
           </div>
           <div className="text-center space-y-1">
-            <div className="text-2xl font-semibold tracking-tight text-[#0066FF]">0</div>
-            <div className="text-xs text-muted-foreground">Games</div>
+            <div className="text-2xl font-semibold tracking-tight text-primary">0</div>
+            <div className="text-sm text-muted-foreground">Games</div>
           </div>
         </div>
 
@@ -105,7 +105,7 @@ export function PricingClosingSection() {
         <div className="text-center mt-12">
           <Link
             href="/partner"
-            className="text-sm text-muted-foreground hover:text-[#0066FF] transition-colors"
+            className="text-sm text-muted-foreground hover:text-primary transition-colors"
           >
             Learn more about partnering with Alifh →
           </Link>

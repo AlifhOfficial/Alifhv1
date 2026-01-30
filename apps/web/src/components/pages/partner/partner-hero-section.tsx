@@ -17,24 +17,17 @@ import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 
 function HeroInfographic() {
   return (
-    <div className="relative w-full aspect-[16/9] sm:aspect-[2.2/1] rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-5 lg:p-8">
+    <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-14">
       {/* Listing UI video - full width showcase */}
-      <div className="relative w-full h-full rounded-lg overflow-hidden border border-border/30 shadow-2xl">
+      <div className="relative w-full rounded-lg overflow-hidden border border-border/30 shadow-2xl">
         <video 
-          src="/Marketing/lisitng.mp4" 
+          src="/Marketing/hero2.mp4" 
           autoPlay 
           loop 
           muted 
           playsInline
-          className="w-full h-full object-cover object-top"
+          className="w-full h-auto"
         />
-      </div>
-      
-      {/* Subtle label */}
-      <div className="absolute bottom-5 sm:bottom-7 lg:bottom-10 left-1/2 -translate-x-1/2">
-        <span className="px-3 sm:px-4 py-1.5 rounded-full bg-background/90 backdrop-blur-sm border border-border/50 text-[10px] sm:text-xs font-medium text-muted-foreground shadow-lg">
-          Your listings look this good
-        </span>
       </div>
     </div>
   );
@@ -59,7 +52,7 @@ function ApplyButton() {
     <>
       <button
         onClick={handleClick}
-        className="w-full sm:w-auto h-12 px-10 bg-primary text-primary-foreground text-base font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
+        className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
       >
         Apply to Partner
       </button>
@@ -83,13 +76,13 @@ export function PartnerHeroSection() {
           <span className="text-sm font-semibold uppercase tracking-wider text-primary">
             For Dealers
           </span>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight">
-            They take. We don't.
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            Keep 100%.
             <br />
-            <span className="text-muted-foreground">Simple as that.</span>
+            <span className="text-muted-foreground">Zero commission.</span>
           </h1>
-          <p className="text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
-            Zero commission. Flat monthly fee. Everything included.
+          <p className="text-base text-muted-foreground">
+            Flat fee. Unlimited listings.
           </p>
         </div>
 
@@ -98,7 +91,7 @@ export function PartnerHeroSection() {
           <ApplyButton />
           <Link
             href="/pricing"
-            className="w-full sm:w-auto h-12 px-10 bg-muted text-foreground text-base font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
+            className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
           >
             See Pricing
           </Link>
@@ -122,8 +115,8 @@ export function PartnerHeroSection() {
           </div>
           <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <div className="text-3xl font-bold tracking-tight text-primary">0</div>
-            <div className="text-sm text-muted-foreground">Cars we sell</div>
+            <div className="text-2xl font-bold tracking-tight text-primary">1</div>
+            <div className="text-sm text-muted-foreground">Flat fee</div>
           </div>
         </div>
 

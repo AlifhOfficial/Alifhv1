@@ -44,7 +44,7 @@ export function ShowroomInventory({ showroom }: ShowroomInventoryProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   
   // Listings state
-  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'minimal'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'minimal'>('list');
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   

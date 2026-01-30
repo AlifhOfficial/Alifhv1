@@ -182,17 +182,17 @@ export function ListingCard({
       {/* Main Card Content */}
       <div className="flex flex-col sm:flex-row">
         {/* Image */}
-        <div className="p-2.5 sm:w-52 lg:w-56 flex-shrink-0">
+        <div className="p-2.5 sm:w-44 md:w-52 lg:w-56 flex-shrink-0">
           <Link 
             href={`/listings/${listing.id}`} 
-            className="relative aspect-[4/3] w-full overflow-hidden rounded-lg block bg-muted/30"
+            className="relative aspect-[16/10] sm:aspect-[4/3] w-full overflow-hidden rounded-lg block bg-muted/30"
           >
             <Image
               src={displayImage}
               alt={`${listing.year} ${listing.make} ${listing.model}`}
               fill
               className="object-cover"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 208px, 224px"
+              sizes="(max-width: 640px) 100vw, (max-width: 768px) 176px, (max-width: 1024px) 208px, 224px"
             />
             
             {listing.isBlkListing && (
@@ -293,9 +293,9 @@ export function ListingCard({
           </p>
 
           {/* Status + Stats Row */}
-          <div className="flex items-center justify-between pt-2 mt-2 border-t border-border/30">
+          <div className="flex items-center justify-between gap-2 pt-2 mt-2 border-t border-border/30">
             {/* Left: Status + Days Left + Hot */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap">
               <span className={cn("text-[11px] font-semibold px-1.5 py-0.5 rounded", 
                 status.label === 'Live' ? 'bg-emerald-500/10 text-emerald-600' :
                 status.label === 'Sold' ? 'bg-emerald-500/10 text-emerald-600' :
@@ -322,7 +322,7 @@ export function ListingCard({
             </div>
             
             {/* Right: Stats */}
-            <div className="flex items-center gap-2.5 text-[11px] text-muted-foreground/60">
+            <div className="flex items-center gap-2 sm:gap-2.5 text-[11px] text-muted-foreground/60 shrink-0">
               <span className="flex items-center gap-1">
                 <Eye className="w-3 h-3" />
                 <span className="font-semibold text-foreground/80 tabular-nums">{views}</span>
@@ -390,7 +390,7 @@ export function ListingCard({
       {isExpanded && (
         <div className="px-3 pb-3 pt-2 bg-muted/10 animate-in slide-in-from-top-2 duration-200">
           {/* Metrics Grid */}
-          <div className="grid grid-cols-2 gap-4 mb-3">
+          <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4 mb-3">
             {/* Click Rate */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
@@ -427,8 +427,8 @@ export function ListingCard({
           </div>
 
           {/* Additional Stats Row */}
-          <div className="flex items-center justify-between pt-2 border-t border-border/30">
-            <div className="flex items-center gap-4 text-[11px] text-muted-foreground/60">
+          <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-1.5 xs:gap-0 pt-2 border-t border-border/30">
+            <div className="flex items-center gap-3 sm:gap-4 text-[11px] text-muted-foreground/60">
               <span className="flex items-center gap-1">
                 <BarChart3 className="w-3 h-3" />
                 <span className="font-semibold text-foreground/80 tabular-nums">{impressions.toLocaleString()}</span>

@@ -79,9 +79,18 @@ const config: Config = {
   			sparkle: 'sparkle 2s ease-in-out infinite',
   			'sparkle-fall': 'sparkle-fall 2s ease-out forwards',
   			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
+  			'accordion-up': 'accordion-up 0.2s ease-out',
+  			'float': 'float 3s ease-in-out infinite'
   		},
   		keyframes: {
+  			'float': {
+  				'0%, 100%': {
+  					transform: 'translateY(0px)'
+  				},
+  				'50%': {
+  					transform: 'translateY(-8px)'
+  				}
+  			},
   			'sparkle-fall': {
   				'0%': {
   					transform: 'translateY(-20px) rotate(0deg) scale(0)',

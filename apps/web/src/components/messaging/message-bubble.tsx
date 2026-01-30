@@ -93,18 +93,18 @@ export function MessageBubble({
 
         {/* Listing Preview - rendered OUTSIDE the bubble */}
         {listing && (
-          <div className="mb-2 w-full rounded-xl overflow-hidden border border-border/30 bg-card shadow-sm">
+          <div className="mb-2 max-w-[280px] rounded-xl overflow-hidden border border-border/30 bg-card shadow-sm">
             {listing.thumbnail ? (
               <img 
                 src={listing.thumbnail} 
                 alt={listing.title} 
-                className="w-full aspect-[16/10] object-cover" 
+                className="w-full aspect-[4/3] object-cover" 
               />
             ) : (
-              <div className="w-full aspect-[16/10] bg-muted/40" />
+              <div className="w-full aspect-[4/3] bg-muted/40" />
             )}
-            <div className="p-3 bg-card">
-              <p className="text-sm font-bold text-foreground">
+            <div className="p-2.5 bg-card">
+              <p className="text-sm font-bold text-foreground line-clamp-2">
                 {listing.title}
               </p>
             </div>

@@ -93,10 +93,10 @@ export function PricingFaqSection() {
         
         {/* Section Header */}
         <div className="mb-8">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF] mb-3">
+          <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-4 block">
             Questions
-          </p>
-          <h2 className="text-2xl sm:text-3xl font-semibold text-foreground tracking-tight leading-[1.15]">
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
             Common questions
           </h2>
         </div>
@@ -111,12 +111,12 @@ export function PricingFaqSection() {
                 className="border-b border-border/30 last:border-0"
               >
                 <AccordionTrigger className="px-5 py-4 text-left hover:no-underline hover:bg-muted/30 transition-colors [&>svg]:text-muted-foreground/50 [&[data-state=open]]:bg-muted/20">
-                  <span className="text-[15px] font-medium text-foreground pr-4">
+                  <span className="text-base font-medium pr-4">
                     {faq.q}
                   </span>
                 </AccordionTrigger>
                 <AccordionContent className="px-5 pb-5 pt-0">
-                  <p className="text-[15px] text-muted-foreground/70 leading-relaxed">
+                  <p className="text-base text-muted-foreground leading-relaxed">
                     {faq.a}
                   </p>
                 </AccordionContent>
@@ -127,9 +127,9 @@ export function PricingFaqSection() {
 
         {/* Contact CTA */}
         <div className="mt-12 text-center">
-          <p className="text-[15px] text-muted-foreground/70">
+          <p className="text-base text-muted-foreground">
             Not sure which plan fits?{' '}
-            <Link href="/contact" className="text-[#0066FF] hover:underline">
+            <Link href="/contact" className="text-primary hover:underline">
               Reach out
             </Link>
           </p>

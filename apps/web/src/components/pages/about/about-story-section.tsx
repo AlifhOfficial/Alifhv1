@@ -15,29 +15,29 @@ export function AboutStorySection() {
         {/* The Problem */}
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start mb-20">
           <div className="space-y-5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
+            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
               The problem
-            </p>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground tracking-tight leading-[1.15]">
+            </span>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
               The car market in the UAE
               <br />
-              <span className="text-muted-foreground/60">has been broken for a while.</span>
+              <span className="text-muted-foreground">has been broken for a while.</span>
             </h2>
           </div>
-          <div className="space-y-4 text-[15px] text-muted-foreground leading-relaxed">
+          <div className="space-y-4 text-base text-muted-foreground leading-relaxed">
             <p>
-              Listings with "full service history" that can't be verified. Prices that make 
-              zero sense. That sinking feeling you're about to get played.
+              Unverifiable service histories. Arbitrary pricing. That familiar feeling 
+              you're about to get played.
             </p>
             <p>
-              Dealers stuck paying per listing. Buyers stuck wondering who pays first. 
-              Everyone stuck in a system designed to extract, not to serve.
+              Dealers paying per listing. Buyers unsure who to trust. A system built 
+              to extract—not to serve.
             </p>
           </div>
         </div>
 
         {/* Image */}
-        <div className="relative w-full aspect-[16/9] sm:aspect-[3/1] overflow-hidden rounded-lg mb-20">
+        <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[3/1] overflow-hidden rounded-lg mb-20">
           <Image
             src="/Abstract/rsxx8.png"
             alt="Alifh"
@@ -50,23 +50,23 @@ export function AboutStorySection() {
         {/* The Answer */}
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
           <div className="space-y-5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
+            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
               The answer
-            </p>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground tracking-tight leading-[1.15]">
+            </span>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
               We're not reinventing the wheel.
               <br />
-              <span className="text-muted-foreground/60">Just doing what should've been done.</span>
+              <span className="text-muted-foreground">Just doing what should've been done.</span>
             </h2>
           </div>
-          <div className="space-y-4 text-[15px] text-muted-foreground leading-relaxed">
+          <div className="space-y-4 text-base text-muted-foreground leading-relaxed">
             <p>
-              Treating people like adults. Being straight about what we know and what we don't. 
-              Building systems that actually protect instead of leaving people exposed.
+              Transparency by default. Systems that protect. Information that's actually 
+              useful.
             </p>
             <p>
-              No corporate jargon. No fake urgency. Just real people who love cars, 
-              building something real.
+              No jargon. No urgency tactics. Just people who love cars, building 
+              what should already exist.
             </p>
           </div>
         </div>

@@ -17,9 +17,7 @@ export function PartnerCompareSection() {
             Side by side
           </span>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
-            Elsewhere vs. Here.
-            <br />
-            <span className="text-muted-foreground">You decide.</span>
+            The difference.
           </h2>
         </div>
 
@@ -57,10 +55,10 @@ export function PartnerCompareSection() {
             <div className="space-y-6">
               {[
                 { label: 'Commission', value: 'Zero. Forever.' },
-                { label: 'Listings', value: 'Unlimited per showroom' },
-                { label: 'Visibility', value: 'Quality-based' },
+                { label: 'Listings', value: 'Unlimited' },
+                { label: 'Visibility', value: 'Earned, not paid' },
                 { label: 'Features', value: 'All included' },
-                { label: 'Our inventory', value: 'We don\'t sell cars' },
+                { label: 'Our inventory', value: 'None. We don\'t sell.' },
                 { label: 'Your profile', value: 'Full brand page' },
               ].map((item, i) => (
                 <div key={i} className="flex justify-between items-center">

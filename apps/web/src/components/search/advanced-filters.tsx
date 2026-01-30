@@ -179,7 +179,7 @@ export function AdvancedFilters({
               selected={params.exteriorColor ?? []}
               onChange={(exteriorColor) => handleFilterChange({ exteriorColor: exteriorColor as any })}
               showColors
-              defaultOpen={true}
+              defaultOpen={false}
             />
 
             {/* Interior Color */}
@@ -194,7 +194,7 @@ export function AdvancedFilters({
               selected={params.interiorColor ?? []}
               onChange={(interiorColor) => handleFilterChange({ interiorColor: interiorColor as any })}
               showColors
-              defaultOpen={true}
+              defaultOpen={false}
             />
 
       {/* Seller Type */}
@@ -217,7 +217,7 @@ export function AdvancedFilters({
           sellerType: sellerType[0] as 'dealer' | 'private' | undefined 
         })}
         singleSelect
-        defaultOpen={true}
+        defaultOpen={false}
       />
     </div>
   );

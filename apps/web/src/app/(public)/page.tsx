@@ -14,12 +14,12 @@ import { ClosingSection } from '@/components/pages/home/closing-section';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Alifh - Free Car Listings UAE | Buy & Sell Used Cars Dubai',
-  description: 'List and sell used cars in UAE with zero listing fees. Best car marketplace in Dubai, Abu Dhabi, Sharjah. VIN required on every car. Book test drives online. Trusted platform for buying and selling cars in UAE. No ads, no hidden charges.',
-  keywords: 'cars uae, used cars dubai, car marketplace uae, sell car uae, buy used car dubai, cars for sale uae, dubai cars, uae car listings, trusted car marketplace uae, car classifieds uae',
+  title: 'Buy and Sell Cars in Dubai | Free Forever | Alifh',
+  description: 'Buy and sell new and used cars in Dubai. Free for private sellers. No fees, no ads, no paid boosts. VIN verified cars. Book test drives online. The UAE car marketplace done right.',
+  keywords: 'buy cars dubai, sell cars dubai, used cars uae, new cars dubai, free car listing uae, car marketplace dubai, cars for sale uae, sell my car dubai, buy used car uae',
   openGraph: {
-    title: 'Alifh - Free Car Listings UAE | Buy & Sell Used Cars Dubai',
-    description: 'The trusted car marketplace in UAE. List for free, VIN required, book test drives online. Find used cars in Dubai, Abu Dhabi, Sharjah.',
+    title: 'Buy and Sell Cars in Dubai | Free Forever | Alifh',
+    description: 'Buy and sell new and used cars in Dubai. Free for private sellers. No fees, no ads. VIN verified. Book test drives online.',
     type: 'website',
   },
 };

@@ -220,11 +220,12 @@ export async function reviewPartnerRequest(input: ReviewPartnerRequestInput) {
  * The unique constraint is (partnerId, userId) - one person, one seat per company.
  * This allows the same user to be owner of Company A AND staff at Company B.
  */
-export async function createPartnerFromRequest(requestId: string, requestData: any) {
+export async function createPartnerFromRequest(requestId: string, requestData: any, approvedBy: string) {
   const partnerId = createId();
   const staffId = createId();
+  const now = new Date();
 
-  // Create partner record
+  // Create partner record (auto-verified on approval)
   const newPartnerResult = await db
     .insert(partner)
     .values({
@@ -241,6 +242,13 @@ export async function createPartnerFromRequest(requestId: string, requestData: a
       email: requestData.userEmail || requestData.email,
       phone: requestData.userPhone || '+971000000000', // Default phone
       showroomCount: 1,
+      // Auto-verify on approval
+      isVerified: true,
+      verifiedAt: now,
+      verifiedBy: approvedBy,
+      approvedAt: now,
+      approvedBy: approvedBy,
+      activatedAt: now,
     })
     .returning();
   

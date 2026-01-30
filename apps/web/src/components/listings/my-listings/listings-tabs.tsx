@@ -67,9 +67,9 @@ export function ListingsTabs({
   const activeDeepFilter = deepFilters.find(f => f.key === deepInventoryFilter);
 
   return (
-    <div className="flex items-center justify-between gap-4">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
       {/* Main Tabs */}
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto scrollbar-hide w-full sm:w-auto pb-1 sm:pb-0">
         {mainTabs
           .filter((t) => !(t.hideWhenZero && t.count === 0))
           .map((tab) => {
@@ -101,7 +101,7 @@ export function ListingsTabs({
 
       {/* Deep Inventory Dropdown */}
       {deepInventoryTotal > 0 && (
-        <div className="relative">
+        <div className="relative shrink-0">
           <button
             onClick={() => setIsDeepOpen(!isDeepOpen)}
             onBlur={() => setTimeout(() => setIsDeepOpen(false), 150)}
@@ -131,7 +131,7 @@ export function ListingsTabs({
 
           {/* Dropdown Menu */}
           {isDeepOpen && (
-            <div className="absolute right-0 top-full mt-2 w-48 py-2 rounded-xl bg-sidebar border border-sidebar-border shadow-lg z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+            <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-48 py-2 rounded-xl bg-sidebar border border-sidebar-border shadow-lg z-50 animate-in fade-in slide-in-from-top-2 duration-150">
               {/* All option */}
               <button
                 onClick={() => {

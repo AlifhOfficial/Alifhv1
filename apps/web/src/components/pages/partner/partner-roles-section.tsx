@@ -20,7 +20,7 @@ export function PartnerRolesSection() {
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
             Owner. Staff.
             <br />
-            <span className="text-muted-foreground">That's it.</span>
+            <span className="text-muted-foreground">Clean separation.</span>
           </h2>
         </div>
 
@@ -104,33 +104,33 @@ function RolesInfographic() {
   return (
     <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40">
       {/* Tab Switcher */}
-      <div className="flex items-center justify-center gap-2 p-4 border-b border-border/20">
+      <div className="flex items-center justify-center gap-1.5 sm:gap-2 p-3 sm:p-4 border-b border-border/20">
         <button
           onClick={() => setActiveRole('owner')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+          className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
             activeRole === 'owner' 
               ? 'bg-primary text-primary-foreground' 
               : 'bg-muted/50 text-muted-foreground hover:bg-muted'
           }`}
         >
-          <Crown className="w-4 h-4" />
+          <Crown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           Owner
         </button>
         <button
           onClick={() => setActiveRole('staff')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+          className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
             activeRole === 'staff' 
               ? 'bg-primary text-primary-foreground' 
               : 'bg-muted/50 text-muted-foreground hover:bg-muted'
           }`}
         >
-          <UserCog className="w-4 h-4" />
+          <UserCog className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           Staff
         </button>
       </div>
       
       {/* Screenshot Display */}
-      <div className="relative aspect-[16/9] sm:aspect-[2/1] overflow-hidden">
+      <div className="relative aspect-[4/3] sm:aspect-[16/9] md:aspect-[2/1] overflow-hidden">
         {screens.map((src, index) => (
           <img
             key={src}
@@ -144,12 +144,12 @@ function RolesInfographic() {
       </div>
       
       {/* Dots indicator */}
-      <div className="flex items-center justify-center gap-1.5 p-4 border-t border-border/20">
+      <div className="flex items-center justify-center gap-1 sm:gap-1.5 p-3 sm:p-4 border-t border-border/20">
         {screens.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`w-1.5 h-1.5 rounded-full transition-colors ${
+            className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-colors ${
               index === currentIndex ? 'bg-primary' : 'bg-muted-foreground/30'
             }`}
           />

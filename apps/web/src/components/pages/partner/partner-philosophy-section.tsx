@@ -19,9 +19,9 @@ export function PartnerPhilosophySection() {
           </span>
           
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
-            We don't sell cars.
+            We're infrastructure.
             <br />
-            <span className="text-muted-foreground">We never will.</span>
+            <span className="text-muted-foreground">Not competition.</span>
           </h2>
         </div>
 

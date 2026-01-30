@@ -15,9 +15,9 @@ export function PricingCompareSection() {
         {/* Simple inline comparison */}
         <div className="max-w-2xl mx-auto">
           
-          <p className="text-xs uppercase tracking-widest text-muted-foreground text-center mb-8">
+          <span className="text-sm font-semibold uppercase tracking-wider text-primary text-center mb-8 block">
             What's different
-          </p>
+          </span>
 
           <div className="space-y-4">
             {[
@@ -31,8 +31,8 @@ export function PricingCompareSection() {
                 <span className="text-sm text-muted-foreground">{row.label}</span>
                 <span className="text-sm text-muted-foreground/60 line-through">{row.others}</span>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#0066FF] shrink-0" />
-                  <span className="text-sm font-medium text-foreground">{row.alifh}</span>
+                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                  <span className="text-sm font-medium">{row.alifh}</span>
                 </div>
               </div>
             ))}

@@ -222,7 +222,7 @@ export async function POST(req: NextRequest) {
           userId: existingRequest.request.userId,
           userEmail: existingRequest.user?.email,
           userName: existingRequest.user?.name,
-        });
+        }, user.id);
         
         // Invalidate user's session cache so they see their new partner membership
         invalidateUserSessions(existingRequest.request.userId);

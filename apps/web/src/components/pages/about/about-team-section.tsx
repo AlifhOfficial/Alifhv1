@@ -9,16 +9,14 @@ export function AboutTeamSection() {
   return (
     <section className="py-16 px-4 sm:px-6 lg:px-8 border-b border-border/40">
       <div className="max-w-3xl mx-auto text-center space-y-5">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF]">
+        <span className="text-sm font-semibold uppercase tracking-wider text-primary block">
           Who we are
-        </p>
-        <p className="text-[15px] text-muted-foreground leading-relaxed">
-          A small team based in Dubai. Some of us have been in automotive for years. 
-          Some of us are engineers who just really, really love cars. All of us have 
-          been burned by the same broken system we're trying to fix. We're not funded 
-          by VCs who want 10x returns by next quarter. We're building this for the long 
-          haul—the way you build a project car. Slowly. Carefully. With obsessive 
-          attention to what matters.
+        </span>
+        <p className="text-base text-muted-foreground leading-relaxed">
+          A small team in Dubai. Automotive veterans and engineers who happen to 
+          love cars. No VC funding. No pressure for quick exits. We're building this 
+          the way you'd build a project car—slowly, carefully, with attention to 
+          what actually matters.
         </p>
       </div>
     </section>

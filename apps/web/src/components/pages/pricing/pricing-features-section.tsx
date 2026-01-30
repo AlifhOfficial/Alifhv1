@@ -1,13 +1,12 @@
 /**
  * Pricing Features Section
- * Two-column feature breakdown - Flow vs Black
+ * Minimal two-column feature breakdown - Flow vs Black
  */
 
 'use client';
 
 import { useState } from 'react';
-import { Check, ChevronDown, ChevronUp, CheckCircle2 } from 'lucide-react';
-import { PricingPdfGenerator } from './pricing-pdf-generator';
+import { CheckCircle2, Plus, Minus } from 'lucide-react';
 
 type FeatureValue = boolean | string | number;
 
@@ -23,6 +22,16 @@ interface FeatureCategory {
   features: Feature[];
 }
 
+interface SimpleFeature {
+  name: string;
+  description?: string;
+}
+
+interface SimpleCategory {
+  name: string;
+  features: SimpleFeature[];
+}
+
 const featureCategories: FeatureCategory[] = [
   {
     name: 'Listings & Media',
@@ -36,7 +45,7 @@ const featureCategories: FeatureCategory[] = [
     ],
   },
   {
-    name: 'Test Drive Booking System',
+    name: 'Test Drive Booking',
     features: [
       { name: 'Built-in booking calendar', flow: true, black: true, description: 'Customers book test drives directly' },
       { name: 'Set your own schedule', flow: true, black: true, description: 'Choose your available days and times' },
@@ -113,7 +122,7 @@ const featureCategories: FeatureCategory[] = [
 ];
 
 // Black-exclusive features
-const blackExclusiveFeatures = [
+const blackExclusiveFeatures: SimpleCategory[] = [
   {
     name: 'Brand & Showroom',
     features: [
@@ -147,78 +156,50 @@ const blackExclusiveFeatures = [
   },
 ];
 
-function FlowCategorySection({ category, isExpanded, onToggle }: { 
-  category: FeatureCategory; 
+function CategoryAccordion({ 
+  name, 
+  features, 
+  isExpanded, 
+  onToggle,
+  variant = 'flow'
+}: { 
+  name: string;
+  features: SimpleFeature[];
   isExpanded: boolean;
   onToggle: () => void;
+  variant?: 'flow' | 'black';
 }) {
   return (
-    <div className="border-b border-border/30 last:border-b-0">
+    <div>
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between py-4 px-6 hover:bg-muted/20 transition-colors text-left"
+        className="group w-full flex items-center justify-between py-3.5 text-left transition-colors"
       >
-        <span className="text-[15px] font-medium text-foreground">{category.name}</span>
-        {isExpanded ? (
-          <ChevronUp className="w-4 h-4 text-muted-foreground/50" />
-        ) : (
-          <ChevronDown className="w-4 h-4 text-muted-foreground/50" />
-        )}
-      </button>
-      
-      {isExpanded && (
-        <div className="border-t border-border/20 pb-2">
-          {category.features.map((feature, idx) => (
-            <div
-              key={idx}
-              className="flex items-start gap-3 py-3 px-6"
-            >
-              <Check className="w-4 h-4 text-[#0066FF] mt-0.5 shrink-0" />
-              <div>
-                <p className="text-[15px] font-medium text-foreground">{feature.name}</p>
-                {feature.description && (
-                  <p className="text-[13px] text-muted-foreground/70 mt-0.5">{feature.description}</p>
-                )}
-              </div>
-            </div>
-          ))}
+        <span className="text-[15px] font-medium text-foreground/90 group-hover:text-foreground transition-colors">
+          {name}
+        </span>
+        <div className="flex items-center justify-center w-5 h-5 rounded-full border border-border/60 group-hover:border-border transition-colors">
+          {isExpanded ? (
+            <Minus className="w-3 h-3 text-muted-foreground" />
+          ) : (
+            <Plus className="w-3 h-3 text-muted-foreground" />
+          )}
         </div>
-      )}
-    </div>
-  );
-}
-
-function BlackCategorySection({ category, isExpanded, onToggle }: { 
-  category: { name: string; features: { name: string; description?: string }[] }; 
-  isExpanded: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <div className="border-b border-border/30 last:border-b-0">
-      <button
-        onClick={onToggle}
-        className="w-full flex items-center justify-between py-4 px-6 hover:bg-muted/20 transition-colors text-left"
-      >
-        <span className="text-[15px] font-medium text-foreground">{category.name}</span>
-        {isExpanded ? (
-          <ChevronUp className="w-4 h-4 text-muted-foreground/50" />
-        ) : (
-          <ChevronDown className="w-4 h-4 text-muted-foreground/50" />
-        )}
       </button>
       
       {isExpanded && (
-        <div className="border-t border-border/20 pb-2">
-          {category.features.map((feature, idx) => (
-            <div
-              key={idx}
-              className="flex items-start gap-3 py-3 px-6"
-            >
-              <Check className="w-4 h-4 text-foreground mt-0.5 shrink-0" />
-              <div>
-                <p className="text-[15px] font-medium text-foreground">{feature.name}</p>
+        <div className="pb-4 space-y-2.5">
+          {features.map((feature, idx) => (
+            <div key={idx} className="flex items-start gap-2.5 pl-0.5">
+              <CheckCircle2 
+                className={`w-4 h-4 mt-0.5 shrink-0 ${
+                  variant === 'black' ? 'text-foreground' : 'text-primary'
+                }`} 
+              />
+              <div className="space-y-0.5">
+                <p className="text-sm font-medium text-foreground/80">{feature.name}</p>
                 {feature.description && (
-                  <p className="text-[13px] text-muted-foreground/70 mt-0.5">{feature.description}</p>
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">{feature.description}</p>
                 )}
               </div>
             </div>
@@ -277,54 +258,51 @@ export function PricingFeaturesSection() {
   const totalBlackFeatures = blackExclusiveFeatures.reduce((acc, cat) => acc + cat.features.length, 0);
 
   return (
-    <section id="features" className="pt-20 pb-24 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-[1600px] mx-auto">
+    <section id="features" className="py-24 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto">
 
         {/* Section Header */}
-        <div className="max-w-5xl mx-auto mb-12">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#0066FF] mb-3">
-                Details
-              </p>
-              <h2 className="text-2xl sm:text-3xl font-semibold text-foreground tracking-tight leading-[1.15]">
-                Full feature breakdown
-              </h2>
-            </div>
-            <PricingPdfGenerator 
-              flowCategories={featureCategories}
-              blackCategories={blackExclusiveFeatures}
-            />
-          </div>
+        <div className="text-center mb-16">
+          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight mb-3">
+            Full feature breakdown
+          </h2>
+          <p className="text-muted-foreground text-base max-w-xl mx-auto">
+            Compare what&apos;s included in each plan
+          </p>
         </div>
 
         {/* Two Column Layout */}
-        <div className="max-w-5xl mx-auto grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
           
           {/* Flow Section */}
           <div>
-            <div className="flex items-center justify-between mb-4 gap-2">
-              <div className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-5 h-5 text-[#0066FF]" />
-                <h3 className="text-lg font-semibold text-foreground">Flow</h3>
-                <span className="text-[13px] text-muted-foreground/60 hidden sm:inline">{totalFlowFeatures} features</span>
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-border/40">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="w-5 h-5 text-primary" />
+                <h3 className="text-lg font-semibold">Flow</h3>
+                <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
+                  {totalFlowFeatures} features
+                </span>
               </div>
               <button 
                 onClick={toggleAllFlow}
-                className="text-[13px] text-muted-foreground/60 hover:text-foreground transition-colors whitespace-nowrap"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
-                {expandedFlow.size > 0 ? 'Collapse' : 'Expand'}
+                {expandedFlow.size > 0 ? 'Collapse all' : 'Expand all'}
               </button>
             </div>
-            <p className="text-[15px] text-muted-foreground/70 mb-4">Everything you need to run your showroom.</p>
             
-            <div className="rounded-xl border border-border/40 bg-sidebar overflow-hidden">
+            {/* Feature List */}
+            <div className="divide-y divide-border/30">
               {featureCategories.map((category) => (
-                <FlowCategorySection
+                <CategoryAccordion
                   key={category.name}
-                  category={category}
+                  name={category.name}
+                  features={category.features}
                   isExpanded={expandedFlow.has(category.name)}
                   onToggle={() => toggleFlowCategory(category.name)}
+                  variant="flow"
                 />
               ))}
             </div>
@@ -332,30 +310,33 @@ export function PricingFeaturesSection() {
 
           {/* Black Section */}
           <div>
-            <div className="flex items-center justify-between mb-4 gap-2">
-              <div className="flex items-center gap-2.5">
-                <span className="flex-shrink-0 px-1.5 h-5 inline-flex items-center text-[9px] font-black tracking-widest uppercase bg-black text-white">
-                  BLK
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-border/40">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="w-5 h-5 text-foreground" />
+                <h3 className="text-lg font-semibold">Black adds</h3>
+                <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
+                  {totalBlackFeatures} extras
                 </span>
-                <h3 className="text-lg font-semibold text-foreground">Black adds</h3>
-                <span className="text-[13px] text-muted-foreground/60 hidden sm:inline">{totalBlackFeatures} extras</span>
               </div>
               <button 
                 onClick={toggleAllBlack}
-                className="text-[13px] text-muted-foreground/60 hover:text-foreground transition-colors whitespace-nowrap"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
-                {expandedBlack.size > 0 ? 'Collapse' : 'Expand'}
+                {expandedBlack.size > 0 ? 'Collapse all' : 'Expand all'}
               </button>
             </div>
-            <p className="text-[15px] text-muted-foreground/70 mb-4">Everything in Flow, plus white-glove branding.</p>
             
-            <div className="rounded-xl border border-border/40 bg-sidebar overflow-hidden">
+            {/* Feature List */}
+            <div className="divide-y divide-border/30">
               {blackExclusiveFeatures.map((category) => (
-                <BlackCategorySection
+                <CategoryAccordion
                   key={category.name}
-                  category={category}
+                  name={category.name}
+                  features={category.features}
                   isExpanded={expandedBlack.has(category.name)}
                   onToggle={() => toggleBlackCategory(category.name)}
+                  variant="black"
                 />
               ))}
             </div>

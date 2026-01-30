@@ -5,16 +5,15 @@
 
 'use client';
 
-import Link from 'next/link';
-import { CheckCircle2, X } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 
 const COMPARISON_DATA = [
-  { label: 'Listing cost', others: 'Up to AED 1,000+', alifh: 'Free for individuals' },
-  { label: 'Visibility', others: 'Pay to appear first', alifh: 'Quality-based ranking' },
-  { label: 'Experience', others: 'Ads everywhere', alifh: 'Zero ads, ever' },
-  { label: 'Transparency', others: 'VIN optional', alifh: 'VIN required' },
-  { label: 'Test drives', others: 'Call and negotiate', alifh: 'Book online 24/7' },
-  { label: 'Stale listings', others: 'Stay up forever', alifh: 'Auto-expire' },
+  { label: 'Listing cost', others: 'AED 500–1,000+', alifh: 'Free' },
+  { label: 'Get seen', others: 'Pay to rank higher', alifh: 'Quality ranks higher' },
+  { label: 'Ads', others: 'Everywhere', alifh: 'None' },
+  { label: 'Car history', others: 'VIN hidden', alifh: 'VIN shown' },
+  { label: 'Test drives', others: 'Phone calls', alifh: 'Book online' },
+  { label: 'Old listings', others: 'Stay forever', alifh: 'Auto-removed' },
 ];
 
 export function ComparisonSection() {
@@ -25,12 +24,12 @@ export function ComparisonSection() {
         {/* Header */}
         <div className="text-center mb-12 space-y-4">
           <span className="text-sm font-semibold uppercase tracking-wider text-primary">
-            Side by side
+            The Difference
           </span>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
-            What You Get Elsewhere.
+            Us vs them.
             <br />
-            <span className="text-muted-foreground">What You Get Here.</span>
+            <span className="text-muted-foreground">You decide.</span>
           </h2>
         </div>
 
@@ -39,55 +38,37 @@ export function ComparisonSection() {
           <ComparisonInfographic />
         </div>
 
-        {/* Description */}
-        <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mb-16 leading-relaxed">
-          A direct comparison. No marketing speak.
-        </p>
-
-        {/* Clean Comparison Table */}
-        <div className="max-w-2xl mx-auto mb-16">
-          <div className="space-y-0">
-            {/* Table Header */}
-            <div className="grid grid-cols-[1fr,1fr,1fr] gap-4 pb-4 border-b border-border/40">
-              <span className="text-sm font-semibold uppercase tracking-wider text-muted-foreground/60">Feature</span>
-              <span className="text-sm font-semibold uppercase tracking-wider text-muted-foreground/60">Others</span>
-              <span className="text-sm font-semibold uppercase tracking-wider text-primary">Alifh</span>
+        {/* Clean Comparison Grid - like partner compare */}
+        <div className="grid sm:grid-cols-2 gap-px bg-border/40 rounded-lg overflow-hidden border border-border/40 max-w-4xl mx-auto">
+          
+          {/* Others */}
+          <div className="p-8 bg-sidebar">
+            <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground/60 mb-8">Typical platforms</p>
+            <div className="space-y-6">
+              {COMPARISON_DATA.map((item, i) => (
+                <div key={i} className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">{item.label}</span>
+                  <span className="text-sm text-foreground/60">{item.others}</span>
+                </div>
+              ))}
             </div>
-
-            {/* Table Rows */}
-            {COMPARISON_DATA.map((item, i) => (
-              <div 
-                key={i} 
-                className="grid grid-cols-[1fr,1fr,1fr] gap-4 items-center py-4 border-b border-border/30 last:border-0"
-              >
-                <span className="text-base font-medium">{item.label}</span>
-                <div className="flex items-center gap-2">
-                  <X className="w-4 h-4 text-muted-foreground/30" />
-                  <span className="text-sm text-muted-foreground/60">{item.others}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-semibold">{item.alifh}</span>
-                </div>
-              </div>
-            ))}
           </div>
-        </div>
 
-        {/* CTA */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <Link
-            href="/sell"
-            className="w-full sm:w-auto h-12 px-10 bg-primary text-primary-foreground text-base font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
-          >
-            List your car free
-          </Link>
-          <Link
-            href="/listings"
-            className="w-full sm:w-auto h-12 px-10 bg-muted text-foreground text-base font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
-          >
-            Browse listings
-          </Link>
+          {/* Alifh */}
+          <div className="p-8 bg-primary text-primary-foreground">
+            <p className="text-sm font-semibold uppercase tracking-wider text-white/60 mb-8">Alifh</p>
+            <div className="space-y-6">
+              {COMPARISON_DATA.map((item, i) => (
+                <div key={i} className="flex justify-between items-center">
+                  <span className="text-sm text-white/70">{item.label}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold">{item.alifh}</span>
+                    <CheckCircle2 className="w-4 h-4 text-white/60" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -100,140 +81,111 @@ export function ComparisonSection() {
 
 function ComparisonInfographic() {
   return (
-    <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] rounded-lg overflow-hidden bg-sidebar border border-border/40">
+    <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-12">
       {/* CSS Animations */}
       <style jsx>{`
         @keyframes scroll-feed {
           0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-20px); }
-        }
-        @keyframes focus-card {
-          0%, 40% { transform: scale(0.95); opacity: 0.8; }
-          60%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: translateY(-12px); }
         }
       `}</style>
 
-      <div className="h-full flex">
-        {/* Left - Others: Your car lost in the noise */}
-        <div className="flex-1 flex flex-col border-r border-border/20 p-4 sm:p-6 lg:p-10">
-          <span className="text-xs font-medium text-muted-foreground/60 mb-4">What buyers see elsewhere</span>
-          
-          <div className="flex-1 flex items-center justify-center">
-            <div 
-              className="relative w-full max-w-[200px] sm:max-w-[260px] lg:max-w-[300px]"
-              style={{ animation: 'scroll-feed 8s ease-in-out infinite' }}
-            >
-              {/* Scrolling feed of tiny listings - your car buried */}
-              <div className="space-y-2 sm:space-y-3">
-                {/* Ad banner */}
-                <div className="h-8 sm:h-10 rounded bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-                  <span className="text-[8px] sm:text-[10px] text-amber-600/60">SPONSORED</span>
-                </div>
-                
-                {/* Other listing */}
-                <div className="flex gap-2 sm:gap-3 p-2 sm:p-3 rounded bg-muted/50 border border-border/30">
-                  <div className="w-12 sm:w-16 lg:w-20 h-9 sm:h-12 lg:h-14 rounded bg-border/40" />
-                  <div className="flex-1 space-y-1 sm:space-y-2">
-                    <div className="h-1.5 sm:h-2 w-3/4 rounded bg-border/40" />
-                    <div className="h-1.5 sm:h-2 w-1/2 rounded bg-border/30" />
-                  </div>
-                </div>
-                
-                {/* YOUR listing - small, lost */}
-                <div className="flex gap-2 sm:gap-3 p-2 sm:p-3 rounded bg-muted/30 border border-border/20 opacity-60">
-                  <div className="w-12 sm:w-16 lg:w-20 h-9 sm:h-12 lg:h-14 rounded overflow-hidden">
-                    <img src="/Marketing/m12.jpeg" alt="" className="w-full h-full object-cover opacity-70" />
-                  </div>
-                  <div className="flex-1 space-y-1 sm:space-y-2">
-                    <div className="h-1.5 sm:h-2 w-3/4 rounded bg-border/30" />
-                    <div className="h-1.5 sm:h-2 w-1/2 rounded bg-border/20" />
-                  </div>
-                </div>
-                
-                {/* Featured listing (paid) */}
-                <div className="flex gap-2 sm:gap-3 p-2 sm:p-3 rounded bg-muted border border-amber-500/30">
-                  <div className="w-12 sm:w-16 lg:w-20 h-9 sm:h-12 lg:h-14 rounded bg-border/40" />
-                  <div className="flex-1 space-y-1 sm:space-y-2">
-                    <div className="h-1.5 sm:h-2 w-3/4 rounded bg-border/40" />
-                    <div className="flex items-center gap-1 mt-1">
-                      <span className="text-[6px] sm:text-[8px] px-1 py-0.5 rounded bg-amber-500/20 text-amber-600/70">FEATURED</span>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Another ad */}
-                <div className="h-6 sm:h-8 rounded bg-muted/50 border border-border/20 flex items-center justify-center">
-                  <span className="text-[7px] sm:text-[9px] text-muted-foreground/30">AD</span>
-                </div>
-              </div>
+      {/* macOS Window Frame */}
+      <div className="rounded-lg overflow-hidden shadow-2xl border border-white/10">
+        {/* macOS Title Bar */}
+        <div className="bg-[#28282a] px-3 sm:px-5 py-2 sm:py-3 flex items-center gap-2 sm:gap-3 border-b border-black/20">
+          {/* Traffic Light Buttons */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ff5f57]" />
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#febc2e]" />
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#28c840]" />
+          </div>
+          {/* Navigation Arrows - hidden on mobile */}
+          <div className="hidden sm:flex items-center gap-1 ml-1">
+            <div className="w-5 h-5 flex items-center justify-center text-white/30">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+            </div>
+            <div className="w-5 h-5 flex items-center justify-center text-white/30">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
             </div>
           </div>
-          
-          <p className="text-xs text-muted-foreground/40 text-center mt-4">Your car. Buried. Ignored.</p>
+          {/* URL Bar */}
+          <div className="flex-1 flex justify-center">
+            <div className="bg-[#1c1c1e] rounded-md px-2 sm:px-4 py-1 sm:py-1.5 flex items-center gap-1.5 sm:gap-2 max-w-[140px] sm:max-w-[280px]">
+              <svg className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white/40 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+              </svg>
+              <span className="text-[8px] sm:text-sm text-white/60 font-medium truncate">car-listings.com</span>
+            </div>
+          </div>
+          {/* Right spacer */}
+          <div className="w-6 sm:w-24" />
         </div>
         
-        {/* Right - Alifh: Your car showcased */}
-        <div className="flex-1 flex flex-col p-4 sm:p-6 lg:p-10">
-          <span className="text-xs font-medium text-primary mb-4">What buyers see on Alifh</span>
-          
-          <div className="flex-1 flex items-center justify-center">
-            <div className="relative">
-              {/* Main showcased card - mimics actual car card design */}
+        {/* Window Content - Split View */}
+        <div className="bg-[#000] flex flex-col md:flex-row min-h-[400px] sm:min-h-[480px] lg:min-h-[560px]">
+          {/* Left - Others: Cluttered feed with media */}
+          <div className="w-full md:w-[40%] flex flex-col border-b md:border-b-0 md:border-r border-white/10 p-4 sm:p-6 lg:p-8">
+            <span className="text-[9px] sm:text-xs font-medium text-white/40 mb-3 sm:mb-5">Elsewhere</span>
+            
+            <div className="flex-1 flex items-center justify-center overflow-hidden">
               <div 
-                className="w-52 sm:w-64 lg:w-80 xl:w-96 rounded-lg overflow-hidden bg-sidebar border border-sidebar-border shadow-lg"
-                style={{ animation: 'focus-card 8s ease-out infinite' }}
+                className="w-full max-w-[280px] sm:max-w-[260px] space-y-2.5 sm:space-y-3"
+                style={{ animation: 'scroll-feed 6s ease-in-out infinite' }}
               >
-                {/* Image - 4:3 aspect ratio */}
-                <div className="aspect-[4/3] overflow-hidden">
-                  <img 
-                    src="/Marketing/m4.jpeg" 
-                    alt="" 
-                    className="w-full h-full object-cover"
-                  />
+                {/* Ad banner */}
+                <div className="h-7 sm:h-8 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center">
+                  <span className="text-[8px] sm:text-[10px] text-amber-500/70 font-medium tracking-wide">SPONSORED</span>
                 </div>
                 
-                {/* Content */}
-                <div className="p-2.5 sm:p-3 lg:p-4 space-y-1 sm:space-y-2">
-                  {/* Title + Year */}
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-[10px] sm:text-xs lg:text-sm font-bold text-foreground">BMW M4</span>
-                    <span className="text-[8px] sm:text-[10px] lg:text-xs text-muted-foreground">2024</span>
+                {/* Listing with image */}
+                <div className="p-2 sm:p-2.5 rounded-lg bg-white/5 border border-white/10">
+                  <div className="aspect-[16/9] rounded overflow-hidden bg-white/10 mb-2">
+                    <img src="/Marketing/m8.jpeg" alt="" className="w-full h-full object-cover opacity-70 grayscale-[30%]" />
                   </div>
-                  
-                  {/* Price */}
-                  <p className="text-xs sm:text-sm font-medium text-primary">AED 385,000</p>
-                  
-                  {/* Stats */}
-                  <div className="flex items-center gap-1 sm:gap-2 text-[8px] sm:text-[9px] lg:text-[11px] text-muted-foreground">
-                    <span>12k km</span>
-                    <span className="text-muted-foreground/30">·</span>
-                    <span>GCC</span>
-                    <span className="text-muted-foreground/30">·</span>
-                    <span>Dubai</span>
+                  <div className="h-2 sm:h-2.5 w-3/4 rounded bg-white/15" />
+                </div>
+                
+                {/* Your listing - buried and faded */}
+                <div className="p-2 sm:p-2.5 rounded-lg bg-white/5 border border-white/5 opacity-40">
+                  <div className="aspect-[16/9] rounded overflow-hidden bg-white/10 mb-2">
+                    <img src="/Marketing/m12.jpeg" alt="" className="w-full h-full object-cover opacity-50 grayscale" />
                   </div>
-                  
-                  {/* Seller */}
-                  <div className="flex items-center gap-1.5 pt-1">
-                    <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-muted" />
-                    <span className="text-[8px] sm:text-[9px] text-muted-foreground">Private Seller</span>
-                    <CheckCircle2 className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-primary" />
+                  <div className="flex items-center justify-between">
+                    <div className="h-1.5 sm:h-2 w-1/2 rounded bg-white/10" />
+                    <p className="text-[7px] sm:text-[9px] text-white/40">Your listing</p>
                   </div>
                 </div>
-              </div>
-              
-              {/* Mouse cursor */}
-              <div 
-                className="absolute -bottom-2 -right-2 sm:-bottom-3 sm:-right-3"
-                style={{ animation: 'cursor-click 8s ease-in-out infinite' }}
-              >
-                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-foreground drop-shadow-md" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M4 4l16 6.5-6.5 2-2 6.5z"/>
-                </svg>
+                
+                {/* Ad */}
+                <div className="h-6 sm:h-7 rounded-lg bg-white/5 flex items-center justify-center border border-white/5">
+                  <span className="text-[7px] sm:text-[9px] text-white/30">AD</span>
+                </div>
               </div>
             </div>
+            
+            <p className="text-[8px] sm:text-xs text-white/30 mt-3 sm:mt-5 text-center">Buried in the noise</p>
           </div>
           
-          <p className="text-xs text-primary/70 text-center mt-4">Your car. Seen. Sold.</p>
+          {/* Right - Alifh: Clean "No Noise" */}
+          <div className="w-full md:w-[60%] flex flex-col p-6 sm:p-8 lg:p-12">
+            <span className="text-[10px] sm:text-xs font-medium text-primary mb-3 sm:mb-5">Alifh</span>
+            
+            <div className="flex-1 flex items-center justify-center py-8 sm:py-0">
+              <div className="text-center">
+                <p className="text-5xl sm:text-6xl lg:text-8xl font-bold text-white tracking-tight">
+                  No Noise
+                </p>
+                <p className="text-base sm:text-lg lg:text-xl text-white/40 mt-4 sm:mt-5">Just cars.</p>
+              </div>
+            </div>
+            
+            <p className="text-[9px] sm:text-xs text-primary/70 mt-3 sm:mt-5 text-center">Your car. Seen. Sold.</p>
+          </div>
         </div>
       </div>
     </div>

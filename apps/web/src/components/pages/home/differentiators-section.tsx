@@ -6,7 +6,7 @@
 'use client';
 
 import Link from 'next/link';
-import { CircleDollarSign, FileKey, CalendarCheck, Layout, MousePointer2, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { CircleDollarSign, FileKey, CalendarCheck, Layout, CheckCircle2 } from 'lucide-react';
 
 export function DifferentiatorsSection() {
   return (
@@ -16,12 +16,12 @@ export function DifferentiatorsSection() {
         {/* Header */}
         <div className="text-center mb-12 space-y-4">
           <span className="text-sm font-semibold uppercase tracking-wider text-primary">
-            What makes us different
+            How It Works
           </span>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
-            Human First.
+            Quality wins.
             <br />
-            <span className="text-muted-foreground">Not Corporate First.</span>
+            <span className="text-muted-foreground">Not money.</span>
           </h2>
         </div>
 
@@ -31,55 +31,50 @@ export function DifferentiatorsSection() {
         </div>
 
         {/* Description */}
-        <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mb-16 leading-relaxed">
-          Listings rank by photo quality, description completeness, response time, and seller rating. Not who pays the most.
+        <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mb-6 leading-relaxed">
+          Good photos + honest description = higher rank. No paid boosts. Better listings win.
         </p>
 
+        {/* CTA to How Ranking Works */}
+        <div className="text-center mb-12">
+          <Link
+            href="/how-ranking-works"
+            className="text-sm text-primary hover:text-primary/80 transition-colors font-medium"
+          >
+            See how ranking works →
+          </Link>
+        </div>
+
         {/* Feature Cards Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto mb-16">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
           <FeatureCard 
             icon={CircleDollarSign}
-            title="No listing fee"
-            description="Not now. Not ever. Not even later."
+            title="Always free"
+            description="List unlimited cars. No fees. No catches."
           />
 
           <FeatureCard 
             icon={FileKey}
-            title="VIN is public"
-            description="Because transparency builds trust."
+            title="VIN required"
+            description="Every listing shows the VIN. Check the history yourself."
           />
 
           <FeatureCard 
             icon={CalendarCheck}
-            title="Test drives book themselves"
-            description="Instant scheduling. No back and forth."
+            title="Easy test drives"
+            description="Buyers book online. No back and forth."
           />
 
           {/* Highlighted Card */}
           <div className="p-6 rounded-xl bg-primary text-primary-foreground">
             <Layout className="w-5 h-5 text-primary-foreground/70 mb-3" />
-            <h3 className="text-base font-semibold mb-1.5">No ads. Zero clutter.</h3>
+            <h3 className="text-base font-semibold mb-1.5">No ads anywhere</h3>
             <p className="text-sm text-primary-foreground/70 leading-relaxed">
-              Clean, fast, focused experience.
+              Clean pages. Fast loading. Just cars.
             </p>
           </div>
         </div>
 
-        {/* CTA */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <Link
-            href="/how-ranking-works"
-            className="w-full sm:w-auto h-12 px-10 bg-primary text-primary-foreground text-base font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
-          >
-            See how ranking works
-          </Link>
-          <Link
-            href="/listings"
-            className="w-full sm:w-auto h-12 px-10 bg-muted text-foreground text-base font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
-          >
-            Browse listings
-          </Link>
-        </div>
       </div>
     </div>
   );
@@ -113,8 +108,8 @@ function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
 
 function HumanFirstInfographic() {
   return (
-    <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] rounded-lg overflow-hidden bg-sidebar border border-border/40">
-      {/* CSS Animations - slow and controlled */}
+    <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40">
+      {/* CSS Animations */}
       <style jsx>{`
         @keyframes fade-check-1 {
           0%, 15% { opacity: 0; transform: scale(0.5); }
@@ -133,102 +128,112 @@ function HumanFirstInfographic() {
           70%, 100% { opacity: 1; transform: scale(1); }
         }
         @keyframes card-elevate {
-          0%, 70% { transform: translateY(0); box-shadow: 0 4px 20px rgba(0, 102, 255, 0.1); }
-          85%, 100% { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0, 102, 255, 0.25); }
+          0%, 70% { transform: translateY(0); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
+          85%, 100% { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); }
         }
-        @keyframes rank-appear {
+        @keyframes fade-in-text {
           0%, 75% { opacity: 0; transform: translateY(10px); }
-          90%, 100% { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes glow-pulse {
-          0%, 80% { opacity: 0; }
-          90%, 100% { opacity: 1; }
+          85%, 100% { opacity: 1; transform: translateY(0); }
         }
       `}</style>
 
-      <div className="h-full flex items-center justify-center gap-8 sm:gap-16 lg:gap-32 xl:gap-40 p-6 sm:p-10 lg:p-12">
-        {/* Left - Quality Checklist */}
-        <div className="flex flex-col gap-3 sm:gap-4 lg:gap-5">
-          <span className="text-xs font-medium text-muted-foreground/60 mb-2">What helps your listing</span>
-          
-          {/* Quality Items */}
-          <div 
-            className="flex items-center gap-3 lg:gap-4"
-            style={{ animation: 'fade-check-1 6s ease-out infinite' }}
-          >
-            <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-primary" />
-            <span className="text-xs sm:text-sm text-foreground/80">Clear, real photos</span>
-          </div>
+      <div className="flex min-h-[320px] sm:min-h-[480px] lg:min-h-[720px]">
+        {/* macOS Window - fills the space */}
+        <div className="flex-1 flex flex-col p-3 sm:p-6 lg:p-12">
+          <div className="flex-1 flex flex-col">
+            <div className="rounded-lg overflow-hidden shadow-2xl border border-white/10 flex-1 flex flex-col">
+              {/* macOS Title Bar */}
+              <div className="bg-[#28282a] px-3 sm:px-5 py-2 sm:py-3 flex items-center gap-2 sm:gap-3 border-b border-black/20">
+                {/* Traffic Light Buttons */}
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ff5f57]" />
+                  <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#febc2e]" />
+                  <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#28c840]" />
+                </div>
+                {/* Navigation Arrows - hidden on mobile */}
+                <div className="hidden sm:flex items-center gap-1 ml-1">
+                  <div className="w-5 h-5 flex items-center justify-center text-white/30">
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    </svg>
+                  </div>
+                  <div className="w-5 h-5 flex items-center justify-center text-white/30">
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                  </div>
+                </div>
+                {/* URL Bar */}
+                <div className="flex-1 flex justify-center">
+                  <div className="bg-[#1c1c1e] rounded-md px-2 sm:px-4 py-1 sm:py-1.5 flex items-center gap-1.5 sm:gap-2 max-w-[100px] sm:max-w-[280px]">
+                    <svg className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white/40 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+                    </svg>
+                    <span className="text-[8px] sm:text-sm text-white/60 font-medium truncate">alifh.ae/search</span>
+                  </div>
+                </div>
+                {/* Right spacer */}
+                <div className="w-6 sm:w-24" />
+              </div>
+              
+              {/* Window Content */}
+              <div className="bg-[#000] flex-1 flex items-center justify-center p-4 sm:p-8 lg:p-14">
+                <div className="flex flex-col lg:flex-row items-center justify-between gap-10 sm:gap-16 lg:gap-0 w-full max-w-5xl">
+                  {/* Quality Checklist - Left */}
+                  <div className="flex flex-col gap-3 sm:gap-5 lg:gap-6 lg:pr-12">
+                    <span className="text-[10px] sm:text-xs font-medium text-white/40 mb-1 sm:mb-3">What ranks you higher</span>
+                    
+                    <div 
+                      className="flex items-center gap-2.5 sm:gap-4"
+                      style={{ animation: 'fade-check-1 6s ease-out infinite' }}
+                    >
+                      <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-primary flex-shrink-0" />
+                      <span className="text-xs sm:text-sm lg:text-base text-white/70">Clear, real photos</span>
+                    </div>
 
-          <div 
-            className="flex items-center gap-3 lg:gap-4"
-            style={{ animation: 'fade-check-2 6s ease-out infinite' }}
-          >
-            <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-primary" />
-            <span className="text-xs sm:text-sm text-foreground/80">Honest descriptions</span>
-          </div>
+                    <div 
+                      className="flex items-center gap-2.5 sm:gap-4"
+                      style={{ animation: 'fade-check-2 6s ease-out infinite' }}
+                    >
+                      <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-primary flex-shrink-0" />
+                      <span className="text-xs sm:text-sm lg:text-base text-white/70">Honest descriptions</span>
+                    </div>
 
-          <div 
-            className="flex items-center gap-3 lg:gap-4"
-            style={{ animation: 'fade-check-3 6s ease-out infinite' }}
-          >
-            <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-primary" />
-            <span className="text-xs sm:text-sm text-foreground/80">Quick responses</span>
-          </div>
+                    <div 
+                      className="flex items-center gap-2.5 sm:gap-4"
+                      style={{ animation: 'fade-check-3 6s ease-out infinite' }}
+                    >
+                      <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-primary flex-shrink-0" />
+                      <span className="text-xs sm:text-sm lg:text-base text-white/70">Quick responses</span>
+                    </div>
 
-          <div 
-            className="flex items-center gap-3 lg:gap-4"
-            style={{ animation: 'fade-check-4 6s ease-out infinite' }}
-          >
-            <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-primary" />
-            <span className="text-xs sm:text-sm text-foreground/80">Genuine buyer interest</span>
-          </div>
-        </div>
+                    <div 
+                      className="flex items-center gap-2.5 sm:gap-4"
+                      style={{ animation: 'fade-check-4 6s ease-out infinite' }}
+                    >
+                      <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-primary flex-shrink-0" />
+                      <span className="text-xs sm:text-sm lg:text-base text-white/70">Genuine buyer interest</span>
+                    </div>
+                  </div>
 
-        {/* Center - Arrow */}
-        <div className="hidden sm:flex flex-col items-center gap-2">
-          <ArrowRight className="w-5 h-5 lg:w-6 lg:h-6 text-muted-foreground/30" />
-        </div>
-
-        {/* Right - Elevated Card Result */}
-        <div className="flex flex-col items-center">
-          <span className="text-xs font-medium text-primary mb-4">Result</span>
-          
-          <div className="relative">
-            {/* Glow effect */}
-            <div 
-              className="absolute -inset-3 lg:-inset-4 rounded-2xl bg-primary/10 blur-xl"
-              style={{ animation: 'glow-pulse 6s ease-out infinite' }}
-            />
-            
-            {/* Card */}
-            <div 
-              className="relative w-40 sm:w-56 lg:w-72 xl:w-80 aspect-[4/3] rounded-xl overflow-hidden"
-              style={{ animation: 'card-elevate 6s ease-out infinite' }}
-            >
-              <img 
-                src="/Marketing/m12.jpeg" 
-                alt="" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                  {/* Elevated Card Result - Right */}
+                  <div className="relative lg:pl-12">
+                    {/* Card */}
+                    <div 
+                      className="relative w-48 sm:w-72 lg:w-[460px] aspect-[4/3] rounded-xl overflow-hidden border border-white/10"
+                      style={{ animation: 'card-elevate 6s ease-out infinite' }}
+                    >
+                      <img 
+                        src="/Marketing/m12.jpeg" 
+                        alt="" 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-
-            {/* Rank Badge */}
-            <div 
-              className="absolute -bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary shadow-lg shadow-primary/30"
-              style={{ animation: 'rank-appear 6s ease-out infinite' }}
-            >
-              <span className="text-[10px] sm:text-xs font-medium text-primary-foreground">#1 in search</span>
-            </div>
           </div>
-          
-          <p 
-            className="text-xs text-muted-foreground/50 mt-8 text-center"
-            style={{ animation: 'rank-appear 6s ease-out infinite' }}
-          >
-            No payment required
-          </p>
         </div>
       </div>
     </div>

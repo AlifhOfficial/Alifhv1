@@ -9,6 +9,9 @@ export * from './layout';
 // Navigation
 export * from './navbar';
 
+// Footer
+export * from './footer';
+
 // Providers
 export * from './providers';
 

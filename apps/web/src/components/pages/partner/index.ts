@@ -9,6 +9,7 @@ export { PartnerFlatFeeSection } from './partner-flat-fee-section';
 export { PartnerToolsSection } from './partner-tools-section';
 export { PartnerRolesSection } from './partner-roles-section';
 export { PartnerBrandSection } from './partner-brand-section';
-export { PartnerCompareSection } from './partner-compare-section';
-export { PartnerPhilosophySection } from './partner-philosophy-section';
 export { PartnerClosingSection } from './partner-closing-section';
+
+// Deprecated - kept for potential future use
+// export { PartnerPhilosophySection } from './partner-philosophy-section';

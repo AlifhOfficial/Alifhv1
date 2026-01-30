@@ -39,7 +39,7 @@ export function FilterSidebar({
 }: FilterSidebarProps) {
   return (
     <div className="flex flex-col">
-      <FilterSection title="Popular" defaultOpen>
+      <FilterSection title="Popular">
         <div className="flex flex-col gap-1">
           <button
             type="button"
@@ -87,7 +87,7 @@ export function FilterSidebar({
       </FilterSection>
 
       {/* Price Range */}
-      <FilterSection title="Price" defaultOpen>
+      <FilterSection title="Price">
         <RangeFilter
           minValue={params.priceMin}
           maxValue={params.priceMax}
@@ -101,7 +101,7 @@ export function FilterSidebar({
       </FilterSection>
 
       {/* Year Range */}
-      <FilterSection title="Year" defaultOpen>
+      <FilterSection title="Year">
         <RangeFilter
           minValue={params.yearMin}
           maxValue={params.yearMax}

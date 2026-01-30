@@ -22,7 +22,7 @@ interface ListingsViewProps {
 }
 
 export function ListingsView({ embedded = false }: ListingsViewProps) {
-  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'minimal'>('grid'); // Default to grid
+  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'minimal'>('list'); // Default to list
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 

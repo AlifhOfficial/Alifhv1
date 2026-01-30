@@ -5,7 +5,6 @@
 
 export { HeroSection } from './hero-section';
 export { ClosingSection } from './closing-section';
-export { Footer } from './footer';
 
 // Value Proposition Sections
 export { ProblemSection } from './problem-section';

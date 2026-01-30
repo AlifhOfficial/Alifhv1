@@ -6,7 +6,43 @@
 'use client';
 
 import Link from 'next/link';
-import { CheckCircle2, ArrowRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { CheckCircle2 } from 'lucide-react';
+import { useAuthRequired } from '@/hooks/use-auth-required';
+import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
+
+function SellButton() {
+  const router = useRouter();
+  const { isAuthenticated, showModal, openModal, closeModal } = useAuthRequired({
+    feature: "create listings",
+    redirectTo: "/user-dashboard/listings/new",
+  });
+
+  const handleClick = () => {
+    if (isAuthenticated) {
+      router.push('/user-dashboard/listings/new');
+    } else {
+      openModal();
+    }
+  };
+
+  return (
+    <>
+      <button
+        onClick={handleClick}
+        className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
+      >
+        Sell Your Car
+      </button>
+      <AuthRequiredModal
+        open={showModal}
+        onClose={closeModal}
+        feature="create listings"
+        redirectTo="/user-dashboard/listings/new"
+      />
+    </>
+  );
+}
 
 export function ClosingSection() {
   return (
@@ -19,12 +55,10 @@ export function ClosingSection() {
           {/* Header */}
           <div className="text-center mb-12 space-y-4">
             <span className="text-sm font-semibold uppercase tracking-wider text-primary">
-              What we stand for
+              Built by car people
             </span>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
-              Built by Car People.
-              <br />
-              <span className="text-muted-foreground">For Car People.</span>
+              We get it.
             </h2>
           </div>
 
@@ -34,67 +68,32 @@ export function ClosingSection() {
           </div>
 
           {/* Description */}
-          <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mb-16 leading-relaxed">
-            We're the same people at track days and car meets. We built this because listing fees never made sense to us.
+          <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
+            We built the marketplace we wished existed. No fees, no clutter, just cars.
           </p>
 
           {/* Principles */}
-          <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 mb-16">
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 mb-12">
             <span className="text-sm font-medium flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-primary" />Clarity over noise
+              <CheckCircle2 className="w-4 h-4 text-primary" />Free for private sellers
             </span>
             <span className="text-sm font-medium flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-primary" />Honesty over pressure
+              <CheckCircle2 className="w-4 h-4 text-primary" />New & used cars
             </span>
             <span className="text-sm font-medium flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-primary" />Quality over volume
+              <CheckCircle2 className="w-4 h-4 text-primary" />Based in Dubai
             </span>
           </div>
 
-          {/* CTA */}
+          {/* CTA - Main page CTA */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
-              href="/about"
-              className="w-full sm:w-auto h-12 px-10 bg-primary text-primary-foreground text-base font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
+              href="/listings"
+              className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
             >
-              Our story
+              Browse Cars
             </Link>
-            <Link
-              href="/sell"
-              className="w-full sm:w-auto h-12 px-10 bg-muted text-foreground text-base font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
-            >
-              List your car
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Section 2: Video Showcase */}
-      <div className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-[1600px] mx-auto">
-          
-          <div className="text-center mb-16 space-y-4">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
-              How it works
-            </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
-              Browse. Book. Done.
-              <br />
-              <span className="text-muted-foreground">No Friction.</span>
-            </h2>
-          </div>
-
-          {/* Video Container */}
-          <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] overflow-hidden rounded-lg">
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="absolute inset-0 w-full h-full object-cover"
-            >
-              <source src="/video/hero1x.mp4" type="video/mp4" />
-            </video>
+            <SellButton />
           </div>
         </div>
       </div>
@@ -104,108 +103,60 @@ export function ClosingSection() {
 }
 
 // ============================================================================
-// INFOGRAPHIC: Car People - Weekend to Weekday visualization
+// INFOGRAPHIC: Car People - Video in macOS window
 // ============================================================================
 
 function CarPeopleInfographic() {
   return (
-    <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] rounded-lg overflow-hidden bg-sidebar border border-border/40">
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-8px); }
-        }
-        @keyframes slide-in {
-          0%, 100% { transform: translateX(0); opacity: 1; }
-          50% { transform: translateX(4px); opacity: 0.8; }
-        }
-      `}</style>
-
-      <div className="h-full flex">
-        {/* Left - Our Passion */}
-        <div className="flex-1 flex flex-col border-r border-border/20">
-          <div className="px-6 sm:px-8 lg:px-10 pt-6 sm:pt-8 lg:pt-10">
-            <span className="text-xs font-medium text-primary">Our weekends</span>
-          </div>
-          
-          <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-4">
-            <div className="relative">
-              {/* Main car image */}
-              <div 
-                className="w-48 sm:w-64 lg:w-80 xl:w-96 aspect-[4/3] rounded-xl overflow-hidden border border-border/30 shadow-lg"
-                style={{ animation: 'float 4s ease-in-out infinite' }}
-              >
-                <img src="/Marketing/m4.jpeg" alt="" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+    <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-4 lg:p-12">
+      <div className="min-h-[220px] sm:min-h-[320px] lg:min-h-[480px]">
+        {/* macOS Window Frame */}
+        <div className="rounded-lg overflow-hidden shadow-2xl border border-white/10 h-full flex flex-col">
+          {/* macOS Title Bar */}
+          <div className="bg-[#28282a] px-3 sm:px-5 py-2 sm:py-3 flex items-center gap-2 sm:gap-3 border-b border-black/20">
+            {/* Traffic Light Buttons */}
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ff5f57]" />
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#febc2e]" />
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#28c840]" />
+            </div>
+            {/* Navigation Arrows - hidden on mobile */}
+            <div className="hidden sm:flex items-center gap-1 ml-1">
+              <div className="w-5 h-5 flex items-center justify-center text-white/30">
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                </svg>
               </div>
-              
-              {/* Floating stats */}
-              <div 
-                className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 lg:-top-4 lg:-right-4 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg bg-sidebar border border-border/40 shadow-lg"
-                style={{ animation: 'float 4s ease-in-out infinite 0.5s' }}
-              >
-                <span className="text-[10px] sm:text-xs font-medium text-foreground">12+ Track Days</span>
-              </div>
-              
-              <div 
-                className="absolute -bottom-2 -left-2 sm:-bottom-3 sm:-left-3 lg:-bottom-4 lg:-left-4 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg bg-sidebar border border-border/40 shadow-lg"
-                style={{ animation: 'float 4s ease-in-out infinite 1s' }}
-              >
-                <span className="text-[10px] sm:text-xs font-medium text-foreground">6 Cars Owned</span>
+              <div className="w-5 h-5 flex items-center justify-center text-white/30">
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                </svg>
               </div>
             </div>
-          </div>
-          
-          <div className="px-6 sm:px-8 lg:px-10 pb-6 sm:pb-8 lg:pb-10">
-            <p className="text-xs text-muted-foreground/60 text-center">Same passion as you</p>
-          </div>
-        </div>
-        
-        {/* Right - What We Built */}
-        <div className="flex-1 flex flex-col">
-          <div className="px-6 sm:px-8 lg:px-10 pt-6 sm:pt-8 lg:pt-10">
-            <span className="text-xs font-medium text-muted-foreground/60">What we built</span>
-          </div>
-          
-          <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-4">
-            {/* Simple value cards */}
-            <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:gap-4 w-full max-w-[200px] sm:max-w-[280px] lg:max-w-[360px]">
-              <div 
-                className="p-3 sm:p-4 lg:p-5 rounded-xl bg-muted/30 border border-border/30 text-center"
-                style={{ animation: 'slide-in 3s ease-in-out infinite' }}
-              >
-                <div className="text-lg sm:text-xl font-medium text-primary mb-1">0</div>
-                <div className="text-[9px] sm:text-[10px] text-muted-foreground">Listing Fee</div>
-              </div>
-              
-              <div 
-                className="p-3 sm:p-4 lg:p-5 rounded-xl bg-muted/30 border border-border/30 text-center"
-                style={{ animation: 'slide-in 3s ease-in-out infinite 0.2s' }}
-              >
-                <div className="text-lg sm:text-xl font-medium text-primary mb-1">0</div>
-                <div className="text-[9px] sm:text-[10px] text-muted-foreground">Ads</div>
-              </div>
-              
-              <div 
-                className="p-3 sm:p-4 lg:p-5 rounded-xl bg-muted/30 border border-border/30 text-center"
-                style={{ animation: 'slide-in 3s ease-in-out infinite 0.4s' }}
-              >
-                <div className="text-lg sm:text-xl font-medium text-primary mb-1">∞</div>
-                <div className="text-[9px] sm:text-[10px] text-muted-foreground">Listings</div>
-              </div>
-              
-              <div 
-                className="p-3 sm:p-4 lg:p-5 rounded-xl bg-muted/30 border border-border/30 text-center"
-                style={{ animation: 'slide-in 3s ease-in-out infinite 0.6s' }}
-              >
-                <div className="text-lg sm:text-xl font-medium text-primary mb-1">100%</div>
-                <div className="text-[9px] sm:text-[10px] text-muted-foreground">VIN Visible</div>
+            {/* URL Bar */}
+            <div className="flex-1 flex justify-center">
+              <div className="bg-[#1c1c1e] rounded-md px-2 sm:px-4 py-1 sm:py-1.5 flex items-center gap-1.5 sm:gap-2 max-w-[100px] sm:max-w-[200px]">
+                <svg className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white/40 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+                </svg>
+                <span className="text-[8px] sm:text-sm text-white/60 font-medium truncate">alifh.ae</span>
               </div>
             </div>
+            {/* Right spacer */}
+            <div className="w-6 sm:w-20" />
           </div>
           
-          <div className="px-6 sm:px-8 lg:px-10 pb-6 sm:pb-8 lg:pb-10">
-            <p className="text-xs text-primary/70 text-center">What we wished existed</p>
+          {/* Window Content - Video */}
+          <div className="bg-[#000] flex-1">
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="w-full h-full min-h-[160px] sm:min-h-[260px] lg:min-h-[400px] object-cover"
+            >
+              <source src="/Marketing/classiccar.mp4" type="video/mp4" />
+            </video>
           </div>
         </div>
       </div>
