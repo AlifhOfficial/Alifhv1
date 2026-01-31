@@ -12,6 +12,45 @@ import { sessionCache, CacheTTL } from "@alifh/database";
 // Request-scoped session cache key
 const SESSION_HEADER_KEY = "x-auth-user";
 
+// Public API routes that skip proxy entirely (no session caching needed)
+// These are high-traffic public endpoints for marketplace, search, and system operations
+const PUBLIC_API_ROUTES = [
+  '/api/auth/',           // Better Auth handlers
+  '/api/bookings/slots',  // View available booking slots
+  '/api/cron/',           // Cron jobs (expire-listings, sync-google-reviews)
+  '/api/health',          // Health check
+  '/api/internal/',       // Internal operations (warm-cache)
+  '/api/listings/search', // Marketplace search & suggest
+  '/api/listings/car-card',
+  '/api/listings/check-vin',
+  '/api/listings/impressions',
+  '/api/listings/black',  // Black listings public view
+  '/api/sellers/stats',   // Public seller stats
+  '/api/showroom',        // Public showroom views
+  '/api/storage/status',  // Storage status check
+  '/api/communications',  // Public communications
+  '/api/dev/',            // Dev tools (email-log)
+];
+
+// Dynamic public routes that need pattern matching
+const PUBLIC_API_PATTERNS = [
+  /^\/api\/listings\/[^/]+\/detailed$/, // /api/listings/[id]/detailed
+  /^\/api\/listings\/[^/]+\/similar$/,  // /api/listings/[id]/similar
+  /^\/api\/showroom\/[^/]+$/,           // /api/showroom/[slug]
+];
+
+function isPublicApiRoute(pathname: string): boolean {
+  // Check exact prefix matches
+  if (PUBLIC_API_ROUTES.some(route => pathname.startsWith(route))) {
+    return true;
+  }
+  // Check dynamic patterns
+  if (PUBLIC_API_PATTERNS.some(pattern => pattern.test(pathname))) {
+    return true;
+  }
+  return false;
+}
+
 function isExtendedUser(user: unknown): user is ExtendedUser {
   if (!user || typeof user !== "object") return false;
   const u = user as Record<string, unknown>;
@@ -27,6 +66,12 @@ function isExtendedUser(user: unknown): user is ExtendedUser {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isApiRoute = pathname.startsWith('/api/');
+  
+  // Skip public API routes entirely - no session caching overhead
+  if (isApiRoute && isPublicApiRoute(pathname)) {
+    return NextResponse.next();
+  }
+  
   const isProtectedRoute = 
     pathname.startsWith('/user-dashboard') ||
     pathname.startsWith('/admin-dashboard') ||

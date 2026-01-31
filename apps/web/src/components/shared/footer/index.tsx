@@ -125,6 +125,7 @@ export function Footer() {
                 <p className="text-sm font-semibold text-foreground">Company</p>
                 <div className="flex flex-col gap-3">
                   <Link href="/about" className={link}>About</Link>
+                  <Link href="/vision" className={link}>Vision 2031</Link>
                   <Link href="/faq" className={link}>FAQ</Link>
                   <Link href="/contact" className={link}>Contact</Link>
                 </div>
