@@ -9,7 +9,7 @@
 
 import { useState, useRef, useEffect, KeyboardEvent, ClipboardEvent } from "react";
 import { X, ArrowLeft, Loader2 } from "lucide-react";
-import { cn } from "@/utils/cn";
+import { cn } from "@/lib/utils";
 
 interface OTPVerificationModalProps {
   open: boolean;
@@ -145,43 +145,43 @@ export function OTPVerificationModal({
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-background/40 backdrop-blur-2xl flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] bg-background/60 backdrop-blur-xl flex items-center justify-center p-4"
       onClick={() => onOpenChange(false)}
     >
       <div 
-        className="max-w-sm w-full bg-card border border-border/40 rounded-xl shadow-xl p-6 relative"
+        className="max-w-[420px] w-full bg-card border border-border/50 rounded-2xl shadow-2xl p-8 relative"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-8">
           <button
             onClick={onBack}
-            className="p-2 -ml-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
+            className="p-2 -ml-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
             aria-label="Go back"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
           <button
             onClick={() => onOpenChange(false)}
-            className="p-2 -mr-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
+            className="p-2 -mr-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
             aria-label="Close"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="text-center space-y-2 mb-6">
-          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+        <div className="text-center space-y-3 mb-8">
+          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             Verify your email
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-[13px] text-muted-foreground">
             We sent a 6-digit code to{" "}
             <span className="font-medium text-foreground">{email}</span>
           </p>
         </div>
 
         {/* OTP Input */}
-        <div className="flex justify-center gap-2 mb-6">
+        <div className="flex justify-center gap-3 mb-8">
           {otp.map((digit, index) => (
             <input
               key={index}
@@ -195,8 +195,8 @@ export function OTPVerificationModal({
               onPaste={handlePaste}
               disabled={isLoading}
               className={cn(
-                "w-11 h-12 text-center text-lg font-semibold",
-                "bg-muted/20 border border-border/40 rounded-lg",
+                "w-12 h-14 text-center text-xl font-semibold",
+                "bg-muted/30 border border-border/50 rounded-xl",
                 "text-foreground placeholder:text-muted-foreground/50",
                 "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50",
                 "transition-all disabled:opacity-50",
@@ -209,8 +209,8 @@ export function OTPVerificationModal({
 
         {/* Error Message */}
         {error && (
-          <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 mb-4">
-            <p className="text-sm text-destructive text-center">{error}</p>
+          <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3 mb-6">
+            <p className="text-[13px] text-destructive text-center">{error}</p>
           </div>
         )}
 
@@ -219,7 +219,7 @@ export function OTPVerificationModal({
           onClick={handleSubmit}
           disabled={isLoading || otp.join("").length !== 6}
           className={cn(
-            "w-full h-10 px-4 rounded-lg text-sm font-semibold transition-colors",
+            "w-full h-11 px-4 rounded-xl text-sm font-semibold transition-colors",
             "bg-primary text-primary-foreground hover:bg-primary/90",
             "disabled:opacity-50 disabled:cursor-not-allowed",
             "flex items-center justify-center gap-2"
@@ -236,8 +236,8 @@ export function OTPVerificationModal({
         </button>
 
         {/* Resend Section */}
-        <div className="mt-6 text-center">
-          <p className="text-xs text-muted-foreground">
+        <div className="mt-8 text-center">
+          <p className="text-[13px] text-muted-foreground">
             Didn't receive the code?{" "}
             <button
               onClick={handleResend}

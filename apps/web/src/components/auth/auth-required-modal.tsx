@@ -9,7 +9,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { cn } from "@/utils/cn";
+import { cn } from "@/lib/utils";
 
 interface AuthRequiredModalProps {
   open: boolean;
@@ -101,12 +101,12 @@ export function AuthRequiredModal({
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-background/40 backdrop-blur-2xl flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] bg-background/60 backdrop-blur-xl flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div 
         className={cn(
-          "max-w-xs w-full bg-card rounded-2xl shadow-2xl p-5",
+          "max-w-[340px] w-full bg-card border border-border/50 rounded-2xl shadow-2xl p-6",
           "transform transition-all duration-150 ease-out",
           showContent ? "scale-100 opacity-100" : "scale-95 opacity-0"
         )}
@@ -114,26 +114,26 @@ export function AuthRequiredModal({
       >
         <div className="flex flex-col items-center text-center">
           {/* Welcome Text */}
-          <h2 className="text-lg font-semibold text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">
             {title || "Welcome"}
           </h2>
           
-          <p className="text-sm text-muted-foreground mt-1 mb-5">
+          <p className="text-[13px] text-muted-foreground mt-2 mb-6">
             {description || `Sign in to ${feature}`}
           </p>
 
           {/* Actions */}
-          <div className="w-full space-y-2.5">
+          <div className="w-full space-y-3">
             <button
               onClick={handleSignIn}
-              className="w-full h-10 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              className="w-full h-11 rounded-xl text-[15px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
             >
               Sign in
             </button>
             
             <button
               onClick={handleSignUp}
-              className="w-full h-10 rounded-xl text-sm font-semibold bg-muted/50 text-foreground hover:bg-muted/70 transition-colors"
+              className="w-full h-11 rounded-xl text-[15px] font-semibold border border-border/50 bg-muted/20 text-foreground hover:bg-muted/40 transition-colors"
             >
               Create account
             </button>
@@ -142,7 +142,7 @@ export function AuthRequiredModal({
           {/* Dismiss */}
           <button
             onClick={onClose}
-            className="mt-4 text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+            className="mt-5 text-[13px] text-muted-foreground/60 hover:text-muted-foreground transition-colors"
           >
             Not now
           </button>

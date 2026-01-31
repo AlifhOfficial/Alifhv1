@@ -27,7 +27,7 @@ export function BadgesHeroSection() {
         {/* Hero Image */}
         <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[2.4/1] overflow-hidden rounded-lg">
           <Image
-            src="/Abstract/rsx1.png"
+            src="/Abstract/signin.png"
             alt="Alifh Badges"
             fill
             priority

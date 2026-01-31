@@ -23,13 +23,13 @@ export type SearchSortOption =
 export const SORT_OPTIONS: { value: SearchSortOption; label: string }[] = [
   { value: 'relevance', label: 'Default' },
   { value: 'popular', label: 'Most Popular' },
-  { value: 'newest', label: 'Newest First' },
-  { value: 'oldest', label: 'Oldest First' },
+  { value: 'newest', label: 'Recently Listed' },
+  { value: 'oldest', label: 'Oldest Listings' },
   { value: 'price_low', label: 'Price: Low → High' },
   { value: 'price_high', label: 'Price: High → Low' },
   { value: 'mileage_low', label: 'Lowest Mileage' },
-  { value: 'year_new', label: 'Newest Year' },
-  { value: 'year_old', label: 'Oldest Year' },
+  { value: 'year_new', label: 'Year: Newest' },
+  { value: 'year_old', label: 'Year: Oldest' },
 ];
 
 export interface SearchParams {

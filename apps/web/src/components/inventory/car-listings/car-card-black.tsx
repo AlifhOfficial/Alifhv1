@@ -11,7 +11,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { cn } from '@/utils';
+import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 

@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
-import { cn } from '@/utils';
+import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
 import { SuperlikeLimitDialog } from '@/components/engagement/favorites/superlike-limit-dialog';
@@ -306,7 +306,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
 
   const handleFavoriteClick = useCallback(() => {
     if (!isSignedIn) {
-      favorite.toggle();
+      favorite.requireAuth();
       return;
     }
     setHeartScale(true);
@@ -317,7 +317,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
 
   const handleSuperlikeClick = useCallback(() => {
     if (!isSignedIn) {
-      superlike.toggle();
+      superlike.requireAuth();
       return;
     }
     if (superlike.isSuperliked) {

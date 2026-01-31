@@ -174,11 +174,9 @@ export function CarCard({
   const showSuperlikeLimit = showSuperlikeLimitRaw && !authDialogOpen;
 
   const handleSuperlikeClick = useCallback(() => {
-    // Check if user is authenticated first
+    // Check if user is authenticated first - show auth modal without API call
     if (!isSignedIn) {
-      // Directly trigger the auth flow by calling toggle
-      // which will set authRequired state in the superlike hook
-      superlike.toggle();
+      superlike.requireAuth();
       return;
     }
 
@@ -222,10 +220,9 @@ export function CarCard({
   }, [superlike]);
 
   const handleFavoriteClick = useCallback(() => {
-    // Check if user is authenticated first
+    // Check if user is authenticated first - show auth modal without API call
     if (!isSignedIn) {
-      // Directly trigger the auth flow
-      favorite.toggle();
+      favorite.requireAuth();
       return;
     }
 

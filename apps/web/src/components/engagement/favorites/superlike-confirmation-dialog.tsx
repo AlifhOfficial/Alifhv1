@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Sparkles, X } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { type FavoritesStatusData } from '@/hooks/engagement';
 
 type SuperlikeQuota = FavoritesStatusData['quota'];
@@ -21,13 +22,15 @@ export function SuperlikeConfirmationDialog({
   quota,
   listingTitle,
 }: SuperlikeConfirmationDialogProps) {
-  const [isClosing, setIsClosing] = useState(false);
+  const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      setIsClosing(false);
       document.body.style.overflow = 'hidden';
+      const timer = setTimeout(() => setShowContent(true), 50);
+      return () => clearTimeout(timer);
     } else {
+      setShowContent(false);
       document.body.style.overflow = 'unset';
     }
     return () => {
@@ -35,125 +38,61 @@ export function SuperlikeConfirmationDialog({
     };
   }, [isOpen]);
 
-  if (!isOpen && !isClosing) return null;
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) onClose();
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
 
   const remaining = quota?.remaining ?? 0;
   const total = (quota?.maxSuperlikesPerMonth ?? 0) + (quota?.premiumSuperlikesBonus ?? 0);
 
-  const handleClose = () => {
-    setIsClosing(true);
-    setTimeout(() => {
-      onClose();
-      setIsClosing(false);
-    }, 200);
-  };
-
-  const handleConfirm = () => {
-    onConfirm();
-    handleClose();
-  };
-
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-background/40 backdrop-blur-2xl transition-opacity duration-200 ${
-        isClosing ? 'opacity-0' : 'opacity-100'
-      }`}
-      onClick={handleClose}
+      className="fixed inset-0 z-[9999] bg-background/60 backdrop-blur-xl flex items-center justify-center p-4"
+      onClick={onClose}
     >
       <div
-        className={`relative w-full max-w-md rounded-2xl bg-card border border-border p-6 shadow-2xl transition-all duration-200 mx-4 ${
-          isClosing ? 'scale-95 opacity-0' : 'scale-100 opacity-100'
-        }`}
+        className={cn(
+          "max-w-sm w-full bg-card border border-border/50 rounded-2xl shadow-2xl p-6",
+          "transform transition-all duration-150 ease-out",
+          showContent ? "scale-100 opacity-100" : "scale-95 opacity-0"
+        )}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close button */}
-        <button
-          onClick={handleClose}
-          className="absolute right-4 top-4 rounded-full p-2 hover:bg-muted transition-colors"
-          aria-label="Close"
-        >
-          <X className="h-4 w-4 text-muted-foreground" />
-        </button>
-
-        {/* Icon */}
-        <div className="mb-6 flex justify-center">
-          <Sparkles className="h-8 w-8 text-yellow-500" strokeWidth={2.5} fill="currentColor" />
-        </div>
-
-        {/* Title */}
-        <h2 className="mb-1 text-center text-lg font-semibold text-foreground">
-          Superlike this listing?
-        </h2>
-
-        {/* Subtitle */}
-        {listingTitle && (
-          <p className="mb-5 text-center text-sm text-muted-foreground font-medium">
-            {listingTitle}
-          </p>
-        )}
-
-        {/* Learn more link */}
-        <div className="mb-5 flex justify-center">
-          <button
-            type="button"
-            className="text-xs text-primary hover:underline font-medium"
-            onClick={(e) => {
-              e.stopPropagation();
-              // TODO: Add link to superlike documentation
-            }}
-          >
-            Learn how superlikes work
-          </button>
-        </div>
-
-        {/* Quota info */}
-        <div className="mb-5 rounded-lg border border-border/50 bg-muted/30 p-4">
-          <div className="flex items-baseline justify-between mb-1">
-            <span className="text-xs font-medium text-muted-foreground">Remaining</span>
-            <span className="text-2xl font-bold text-foreground tabular-nums">
-              {remaining}<span className="text-base text-muted-foreground font-normal"> / {total}</span>
-            </span>
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-4">
+          <Sparkles className="w-5 h-5 text-yellow-500 flex-shrink-0" fill="currentColor" />
+          <div className="flex-1 min-w-0">
+            <h2 className="text-[15px] font-semibold text-foreground">Superlike this listing?</h2>
+            {listingTitle && (
+              <p className="text-[13px] text-muted-foreground truncate">{listingTitle}</p>
+            )}
           </div>
-          {quota?.periodEndDate && (
-            <p className="text-xs text-muted-foreground text-right">
-              Resets {new Date(quota.periodEndDate).toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric',
-                year: 'numeric'
-              })}
-            </p>
-          )}
+          <span className="text-[13px] font-semibold text-muted-foreground tabular-nums flex-shrink-0">
+            {remaining}/{total} left
+          </span>
         </div>
-
-        {/* Warning if low */}
-        {remaining <= 5 && remaining > 0 && (
-          <div className="mb-5 rounded-lg bg-amber-500/5 border border-amber-500/20 p-3">
-            <p className="text-xs text-amber-600 dark:text-amber-500 text-center font-medium">
-              Only {remaining} superlike{remaining === 1 ? '' : 's'} remaining this month
-            </p>
-          </div>
-        )}
 
         {/* Actions */}
         <div className="flex gap-3">
           <button
-            onClick={handleClose}
-            className="flex-1 rounded-lg border border-border/60 bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted/50 transition-colors"
+            onClick={onClose}
+            className="flex-1 h-10 rounded-xl text-[14px] font-semibold border border-border/50 bg-muted/20 text-foreground hover:bg-muted/40 transition-colors"
           >
             Cancel
           </button>
           <button
-            onClick={handleConfirm}
-            className="flex-1 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+            onClick={() => { onConfirm(); onClose(); }}
+            className="flex-1 h-10 rounded-xl text-[14px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
           >
             Confirm
           </button>
         </div>
-
-        {/* Info text */}
-        <p className="mt-4 text-center text-xs text-muted-foreground">
-          Superlikes help sellers prioritize your interest
-        </p>
       </div>
     </div>
   );

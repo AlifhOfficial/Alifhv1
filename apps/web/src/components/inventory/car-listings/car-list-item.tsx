@@ -9,13 +9,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Share2, Heart, Sparkles, CheckCircle2 } from 'lucide-react';
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
-import { cn } from '@/utils';
+import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
 import { SuperlikeLimitDialog } from '@/components/engagement/favorites/superlike-limit-dialog';
+import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
+import { useUser } from '@/hooks/auth/use-auth';
 
 interface CarListItemProps {
   id: string;
@@ -111,12 +113,14 @@ export function CarListItem({
   const displaySellerName = partnerName || sellerName || 'Private Seller';
   const isPartnerListing = Boolean(partnerLogo || partnerName);
   
+  const { isSignedIn } = useUser();
+  
   // Separate hooks for favorites and superlikes
   const favorite = useFavorite(id);
   const superlike = useSuperlike(id);
 
-  const [showSuperlikeConfirm, setShowSuperlikeConfirm] = useState(false);
-  const [showSuperlikeLimit, setShowSuperlikeLimit] = useState(false);
+  const [showSuperlikeConfirmRaw, setShowSuperlikeConfirm] = useState(false);
+  const [showSuperlikeLimitRaw, setShowSuperlikeLimit] = useState(false);
   const [showSparkles, setShowSparkles] = useState(false);
   const [heartScale, setHeartScale] = useState(false);
 
@@ -129,6 +133,11 @@ export function CarListItem({
       timersRef.current.forEach(clearTimeout);
     };
   }, []);
+
+  // Derive dialog visibility - close dialogs when auth is required
+  const authDialogOpen = favorite.authRequired || superlike.authRequired;
+  const showSuperlikeConfirm = showSuperlikeConfirmRaw && !authDialogOpen;
+  const showSuperlikeLimit = showSuperlikeLimitRaw && !authDialogOpen;
 
   const handleShare = useCallback(async () => {
     const url = `${window.location.origin}/listings/${id}`;
@@ -145,38 +154,55 @@ export function CarListItem({
     }
   }, [id, year, make, model, trim]);
 
-  const handleSuperlikeClick = () => {
+  const handleSuperlikeClick = useCallback(() => {
+    // Check if user is authenticated first - show auth modal without API call
+    if (!isSignedIn) {
+      superlike.requireAuth();
+      return;
+    }
+
+    // If already superliked, remove it without confirmation
     if (superlike.isSuperliked) {
       superlike.toggle();
       return;
     }
 
+    // If quota isn't loaded yet, try anyway (API will validate)
     if (!superlike.quota) {
       setShowSuperlikeConfirm(true);
       return;
     }
 
+    // Check if user has superlikes remaining
     if (superlike.quota.remaining <= 0) {
       setShowSuperlikeLimit(true);
       return;
     }
 
+    // Show confirmation dialog
     setShowSuperlikeConfirm(true);
-  };
+  }, [isSignedIn, superlike]);
 
-  const confirmSuperlike = async () => {
+  const confirmSuperlike = useCallback(() => {
     setShowSparkles(true);
     const timer1 = setTimeout(() => superlike.toggle(), 100);
     const timer2 = setTimeout(() => setShowSparkles(false), 2000);
     timersRef.current.push(timer1, timer2);
-  };
+  }, [superlike]);
 
-  const handleFavoriteClick = () => {
+  const handleFavoriteClick = useCallback(() => {
+    // Check if user is authenticated first - show auth modal without API call
+    if (!isSignedIn) {
+      favorite.requireAuth();
+      return;
+    }
+
+    // Trigger heart scale animation
     setHeartScale(true);
     favorite.toggle();
     const timer = setTimeout(() => setHeartScale(false), 400);
     timersRef.current.push(timer);
-  };
+  }, [isSignedIn, favorite]);
 
   const carTitle = `${year} ${make} ${model}${trim ? ` ${trim}` : ''}`;
 
@@ -440,6 +466,19 @@ export function CarListItem({
         isOpen={showSuperlikeLimit}
         onClose={() => setShowSuperlikeLimit(false)}
         resetDate={superlike.quota?.periodEndDate}
+      />
+
+      {/* Auth Required Modals - Separate for each feature */}
+      <AuthRequiredModal
+        open={favorite.authRequired}
+        onClose={favorite.dismissAuth}
+        feature="save favorites"
+      />
+      
+      <AuthRequiredModal
+        open={superlike.authRequired}
+        onClose={superlike.dismissAuth}
+        feature="superlike listings"
       />
     </div>
   );
