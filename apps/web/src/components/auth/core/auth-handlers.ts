@@ -66,7 +66,7 @@ export interface EmailData {
 export const signInWithEmail = async (
   email: string, 
   password: string
-): Promise<AuthResult> => {
+): Promise<AuthResult & { needsVerification?: boolean }> => {
   // Clear stale OAuth cookies before any auth flow
   clearStaleOAuthCookies();
   
@@ -91,9 +91,12 @@ export const signInWithEmail = async (
           error: "Your account has been suspended. Please contact support for more information." 
         };
       }
+      // User exists but email not verified - return special flag
+      // This allows flow controller to show OTP verification instead of error
       return { 
         success: false, 
-        error: "Please verify your email before signing in. Check your inbox." 
+        error: "EMAIL_NOT_VERIFIED",
+        needsVerification: true
       };
     }
 
@@ -226,23 +229,36 @@ export const signUpWithEmail = async (
       return { success: false, error: emailValidation.error };
     }
 
-    const result = await authClient.signUp.email({
-      name: normalizedName,
-      email: normalizeEmail(email),
-      password,
+    // Use custom signup endpoint that handles unverified user re-registration
+    // This solves the issue where user closes tab before OTP verification
+    // and then can't re-register or login
+    const response = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: normalizedName,
+        email: normalizeEmail(email),
+        password,
+      }),
     });
 
-    const authResult = handleAuthResult(result, "Sign up failed");
-    if (authResult.success) {
-      const user = result.data && 'user' in result.data ? result.data.user : { 
+    const result = await response.json();
+
+    if (!response.ok) {
+      return { 
+        success: false, 
+        error: result.error || "Sign up failed" 
+      };
+    }
+
+    return { 
+      success: true, 
+      user: result.user || { 
         id: 'temp-user-id',
         name: normalizedName, 
         email: normalizeEmail(email)
-      };
-      return { success: true, user };
-    }
-
-    return authResult;
+      }
+    };
   }, "Sign up failed");
 };
 
@@ -339,27 +355,26 @@ export const sendMagicLink = async (
 
 /**
  * Verify email using OTP code
- * Used after sign-up to verify email address
+ * Uses custom API endpoint to also create Stripe customer after verification
  */
 export const verifyEmailWithOTP = async (
   email: string,
   otp: string
 ): Promise<AuthResult> => {
   return safeAuthOperation(async () => {
-    const result = await authClient.emailOtp.verifyEmail({
-      email: normalizeEmail(email),
-      otp,
+    const response = await fetch('/api/auth/verify-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: normalizeEmail(email),
+        otp,
+      }),
     });
 
-    if (result.error) {
-      const errorMessage = result.error.message?.toLowerCase() || '';
-      if (errorMessage.includes('invalid') || errorMessage.includes('expired')) {
-        return { success: false, error: "Invalid or expired code. Please try again." };
-      }
-      if (errorMessage.includes('too_many_attempts') || errorMessage.includes('attempts')) {
-        return { success: false, error: "Too many attempts. Please request a new code." };
-      }
-      return { success: false, error: result.error.message || "Verification failed" };
+    const result = await response.json();
+
+    if (!response.ok || result.error) {
+      return { success: false, error: result.error || "Verification failed" };
     }
 
     return { success: true };

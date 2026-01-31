@@ -243,7 +243,7 @@ export function ImageGridModal({
 
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/50">
-        <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 max-w-5xl mx-auto">
+        <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3">
           <div>
             <h2 className="text-sm sm:text-base font-bold text-foreground">{title}</h2>
             <p className="text-[10px] sm:text-xs text-muted-foreground">{totalImages} images</p>

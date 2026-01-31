@@ -361,10 +361,9 @@ export const auth = betterAuth({
     ...(isStripeConfigured ? [stripe({
       stripeClient: getStripeClient(),
       stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
-      createCustomerOnSignUp: true, // Auto-create Stripe customer for new users
-      onCustomerCreate: async ({ stripeCustomer, user }) => {
-        console.log(`[Stripe] Customer ${stripeCustomer.id} created for user ${user.id}`);
-      },
+      // Don't create Stripe customer on signup - create after email verification
+      // This prevents orphaned Stripe customers from unverified users
+      createCustomerOnSignUp: false,
       subscription: {
         enabled: true,
         plans: getStripePlans(),

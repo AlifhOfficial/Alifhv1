@@ -17,6 +17,11 @@ import Stripe from 'stripe';
 // Stripe Client
 // ============================================================================
 
+/** Check if Stripe is configured */
+export function isStripeConfigured(): boolean {
+  return !!(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET);
+}
+
 let _stripeClient: Stripe | null = null;
 
 export function getStripeClient(): Stripe {
@@ -142,6 +147,105 @@ export function getStripePlans() {
       limits: PLANS.black.limits,
     },
   ];
+}
+
+// ============================================================================
+// Stripe Customer Management
+// ============================================================================
+
+/**
+ * Create a Stripe customer for a verified user
+ * Called after email verification (not on signup to prevent orphaned customers)
+ */
+export async function createStripeCustomerForUser(user: {
+  id: string;
+  email: string;
+  name?: string | null;
+}): Promise<string | null> {
+  if (!isStripeConfigured()) {
+    console.log('[Stripe] Not configured, skipping customer creation');
+    return null;
+  }
+
+  try {
+    const stripe = getStripeClient();
+    
+    // Check if customer already exists (prevents duplicates)
+    const existingCustomers = await stripe.customers.list({
+      email: user.email,
+      limit: 1,
+    });
+
+    if (existingCustomers.data.length > 0) {
+      console.log(`[Stripe] Customer already exists for ${user.email}: ${existingCustomers.data[0].id}`);
+      return existingCustomers.data[0].id;
+    }
+
+    // Create new customer
+    const customer = await stripe.customers.create({
+      email: user.email,
+      name: user.name || undefined,
+      metadata: {
+        userId: user.id,
+      },
+    });
+
+    console.log(`[Stripe] Customer ${customer.id} created for verified user ${user.id}`);
+    return customer.id;
+  } catch (error) {
+    console.error('[Stripe] Failed to create customer:', error);
+    return null;
+  }
+}
+
+/**
+ * Delete a Stripe customer (for cleanup of unverified users)
+ */
+export async function deleteStripeCustomer(customerId: string): Promise<boolean> {
+  if (!isStripeConfigured() || !customerId) {
+    return false;
+  }
+
+  try {
+    const stripe = getStripeClient();
+    await stripe.customers.del(customerId);
+    console.log(`[Stripe] Customer ${customerId} deleted`);
+    return true;
+  } catch (error: any) {
+    // Ignore "customer not found" errors
+    if (error?.code === 'resource_missing') {
+      return true;
+    }
+    console.error('[Stripe] Failed to delete customer:', error);
+    return false;
+  }
+}
+
+/**
+ * Delete Stripe customer by email (for unverified user cleanup)
+ */
+export async function deleteStripeCustomerByEmail(email: string): Promise<boolean> {
+  if (!isStripeConfigured()) {
+    return true;
+  }
+
+  try {
+    const stripe = getStripeClient();
+    const customers = await stripe.customers.list({
+      email: email,
+      limit: 10,
+    });
+
+    // Delete all customers with this email (shouldn't be many)
+    for (const customer of customers.data) {
+      await stripe.customers.del(customer.id);
+      console.log(`[Stripe] Deleted customer ${customer.id} for email ${email}`);
+    }
+    return true;
+  } catch (error) {
+    console.error('[Stripe] Failed to delete customers by email:', error);
+    return false;
+  }
 }
 
 // ============================================================================

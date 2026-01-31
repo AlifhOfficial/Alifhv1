@@ -66,7 +66,8 @@ export class AuthFlowController {
       this.actions.setLoading(true);
       this.actions.setError(null);
 
-      const result = await signInWithEmail(email, password);
+      const normalizedEmail = email.trim().toLowerCase();
+      const result = await signInWithEmail(normalizedEmail, password);
       if (!this.isFlowActive) return;
 
       if (result.success) {
@@ -78,6 +79,30 @@ export class AuthFlowController {
 
         this.callbacks.onSuccess?.(result.user);
         this.handleCloseAll();
+      } else if ((result as any).needsVerification) {
+        // User exists but email not verified
+        // Send OTP and show verification modal so they can complete verification
+        console.log('[AuthFlow] User needs verification, sending OTP');
+        
+        // Send OTP for verification
+        const otpResult = await resendVerificationOTP(normalizedEmail, "email-verification");
+        if (!this.isFlowActive) return;
+        
+        if (otpResult.success) {
+          // Show OTP modal - store email and password so we can auto-signin after verification
+          this.actions.setOtpData({ 
+            email: normalizedEmail, 
+            type: "email-verification", 
+            password 
+          });
+          this.actions.setLoading(false);
+          this.actions.setCurrentModal("otp-verification");
+        } else {
+          // Failed to send OTP - show error
+          this.actions.setError("Failed to send verification code. Please try again.");
+          this.actions.setLoading(false);
+          this.actions.setCurrentModal("signin");
+        }
       } else {
         const errorMessage = parseAuthError(result.error);
         const errorInfo = getAuthErrorInfo(errorMessage);

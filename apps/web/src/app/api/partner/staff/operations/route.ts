@@ -10,6 +10,11 @@ import {
   suspendStaffMember,
   activateStaffMember,
   removeStaffMember,
+  db,
+  partnerStaff,
+  eq,
+  and,
+  invalidateUserSessions,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_PARTNER } from '@/lib/rate-limit';
@@ -18,6 +23,42 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const staffOperationsLimiter = createRateLimiter(RATE_LIMITS_PARTNER.STAFF_OPERATIONS);
+
+// Helper: Check if operation would leave partner with no owners
+async function wouldLeaveNoOwners(
+  partnerId: string, 
+  staffId: string, 
+  operation: 'demote' | 'suspend' | 'remove'
+): Promise<boolean> {
+  // Count active owners excluding the target staff member
+  const otherOwners = await db
+    .select({ id: partnerStaff.id })
+    .from(partnerStaff)
+    .where(
+      and(
+        eq(partnerStaff.partnerId, partnerId),
+        eq(partnerStaff.role, 'owner'),
+        eq(partnerStaff.status, 'active')
+      )
+    );
+  
+  // Check if the target is currently an owner
+  const [targetStaff] = await db
+    .select({ role: partnerStaff.role, status: partnerStaff.status })
+    .from(partnerStaff)
+    .where(eq(partnerStaff.id, staffId))
+    .limit(1);
+  
+  if (!targetStaff) return false;
+  
+  // If target is not an owner or not active, this operation won't affect owner count
+  if (targetStaff.role !== 'owner' || targetStaff.status !== 'active') {
+    return false;
+  }
+  
+  // If there's only 1 owner (the target), operation would leave no owners
+  return otherOwners.length <= 1;
+}
 
 const updateStaffSchema = z.object({
   operation: z.literal('update'),
@@ -86,10 +127,30 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const validated = operationSchema.parse(body);
 
+    // Get the staff member's info before operation
+    const [staffMember] = await db
+      .select({ 
+        userId: partnerStaff.userId,
+        role: partnerStaff.role,
+        status: partnerStaff.status,
+      })
+      .from(partnerStaff)
+      .where(eq(partnerStaff.id, validated.staffId))
+      .limit(1);
+
     let result;
 
     switch (validated.operation) {
       case 'update':
+        // Check if demoting an owner would leave no owners
+        if (validated.role && validated.role !== 'owner' && staffMember?.role === 'owner') {
+          if (await wouldLeaveNoOwners(partnerId, validated.staffId, 'demote')) {
+            return NextResponse.json(
+              { error: 'Cannot change role. There must be at least one owner.' },
+              { status: 400 }
+            );
+          }
+        }
         result = await updateStaffMember({
           staffId: validated.staffId,
           partnerId,
@@ -101,6 +162,13 @@ export async function POST(req: NextRequest) {
         break;
 
       case 'suspend':
+        // Cannot suspend the last active owner
+        if (await wouldLeaveNoOwners(partnerId, validated.staffId, 'suspend')) {
+          return NextResponse.json(
+            { error: 'Cannot suspend. There must be at least one active owner.' },
+            { status: 400 }
+          );
+        }
         result = await suspendStaffMember(validated.staffId, partnerId);
         break;
 
@@ -109,6 +177,13 @@ export async function POST(req: NextRequest) {
         break;
 
       case 'remove':
+        // Cannot remove the last active owner
+        if (await wouldLeaveNoOwners(partnerId, validated.staffId, 'remove')) {
+          return NextResponse.json(
+            { error: 'Cannot remove. There must be at least one owner.' },
+            { status: 400 }
+          );
+        }
         result = await removeStaffMember({
           staffId: validated.staffId,
           partnerId,
@@ -123,6 +198,13 @@ export async function POST(req: NextRequest) {
           reason: 'Invite cancelled',
         });
         break;
+    }
+
+    // Invalidate session cache for the affected staff member
+    // This ensures their permissions/role changes take effect immediately
+    if (staffMember?.userId) {
+      invalidateUserSessions(staffMember.userId);
+      console.log(`[Staff Operations] Invalidated session for user ${staffMember.userId.slice(0, 8)} after ${validated.operation}`);
     }
 
     return NextResponse.json({

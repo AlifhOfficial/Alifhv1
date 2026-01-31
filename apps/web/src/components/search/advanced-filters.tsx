@@ -15,7 +15,7 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
-import { CheckCircle2, ChevronDown, X, SlidersHorizontal } from 'lucide-react';
+import { Check, ChevronDown, X, SlidersHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Collapsible,
@@ -112,8 +112,8 @@ export function AdvancedFilters({
     }
   }, [desktopOpen]);
 
-  // Content component to avoid duplication
-  const FilterContent = () => (
+  // Content as JSX variable (not a component) to prevent remounting on state change
+  const filterContent = (
     <div className="space-y-0.5">
             {/* Body Type */}
             <FilterGroup
@@ -126,6 +126,7 @@ export function AdvancedFilters({
               selected={params.bodyType ?? []}
               onChange={(bodyType) => handleFilterChange({ bodyType: bodyType as any })}
               defaultOpen={false}
+              selectedCount={params.bodyType?.length ?? 0}
             />
 
             {/* Fuel Type */}
@@ -139,6 +140,7 @@ export function AdvancedFilters({
               selected={params.fuelType ?? []}
               onChange={(fuelType) => handleFilterChange({ fuelType: fuelType as any })}
               defaultOpen={false}
+              selectedCount={params.fuelType?.length ?? 0}
             />
 
             {/* Transmission */}
@@ -152,6 +154,7 @@ export function AdvancedFilters({
               selected={params.transmission ?? []}
               onChange={(transmission) => handleFilterChange({ transmission: transmission as any })}
               defaultOpen={false}
+              selectedCount={params.transmission?.length ?? 0}
             />
 
             {/* Engine Size */}
@@ -165,6 +168,7 @@ export function AdvancedFilters({
               selected={params.engineSize ?? []}
               onChange={(engineSize) => handleFilterChange({ engineSize: engineSize as any })}
               defaultOpen={false}
+              selectedCount={params.engineSize?.length ?? 0}
             />
 
             {/* Exterior Color */}
@@ -180,6 +184,7 @@ export function AdvancedFilters({
               onChange={(exteriorColor) => handleFilterChange({ exteriorColor: exteriorColor as any })}
               showColors
               defaultOpen={false}
+              selectedCount={params.exteriorColor?.length ?? 0}
             />
 
             {/* Interior Color */}
@@ -195,6 +200,7 @@ export function AdvancedFilters({
               onChange={(interiorColor) => handleFilterChange({ interiorColor: interiorColor as any })}
               showColors
               defaultOpen={false}
+              selectedCount={params.interiorColor?.length ?? 0}
             />
 
       {/* Seller Type */}
@@ -218,6 +224,7 @@ export function AdvancedFilters({
         })}
         singleSelect
         defaultOpen={false}
+        selectedCount={params.sellerType ? 1 : 0}
       />
     </div>
   );
@@ -309,7 +316,7 @@ export function AdvancedFilters({
 
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4">
-              <FilterContent />
+              {filterContent}
             </div>
 
             {/* Sticky Footer with Apply Button */}
@@ -342,7 +349,7 @@ export function AdvancedFilters({
             <SlidersHorizontal className="h-4 w-4" />
             <span>More Filters</span>
             {advancedCount > 0 && (
-              <span className="min-w-[18px] h-[18px] px-1 text-[10px] font-bold bg-foreground text-background rounded-full flex items-center justify-center">
+              <span className="min-w-[18px] h-[18px] px-1 text-[10px] font-bold bg-primary text-primary-foreground rounded-full flex items-center justify-center">
                 {advancedCount}
               </span>
             )}
@@ -377,7 +384,7 @@ export function AdvancedFilters({
 
             {/* Scrollable Content */}
             <div className="max-h-[70vh] overflow-y-auto p-3">
-              <FilterContent />
+              {filterContent}
             </div>
 
             <FilterFooter />
@@ -407,6 +414,7 @@ interface FilterGroupProps {
   singleSelect?: boolean;
   showColors?: boolean;
   defaultOpen?: boolean;
+  selectedCount?: number;
 }
 
 function FilterGroup({
@@ -417,7 +425,11 @@ function FilterGroup({
   singleSelect = false,
   showColors = false,
   defaultOpen = true,
+  selectedCount = 0,
 }: FilterGroupProps) {
+  // Use controlled state to prevent closing on parent re-render
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  
   // Show all options - no more "show more"
   const availableOptions = options.filter(o => o.count > 0 || selected.includes(o.value));
 
@@ -436,19 +448,26 @@ function FilterGroup({
   if (availableOptions.length === 0) return null;
 
   return (
-    <Collapsible asChild defaultOpen={defaultOpen} className="group/collapsible">
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="group/collapsible">
       <div>
         <CollapsibleTrigger asChild>
           <button type="button" className="flex w-full items-center justify-between px-3 py-2.5 hover:bg-muted/30 rounded-lg transition-colors">
             <span className="text-[15px] font-semibold tracking-tight text-sidebar-foreground/80">{title}</span>
-            <ChevronDown className="h-3.5 w-3.5 text-muted-foreground/60 transition-transform duration-200 group-data-[state=closed]/collapsible:-rotate-90" />
+            <div className="flex items-center gap-2">
+              {selectedCount > 0 && (
+                <span className="min-w-[18px] h-[18px] px-1.5 text-[10px] font-bold bg-primary text-primary-foreground rounded-full flex items-center justify-center">
+                  {selectedCount}
+                </span>
+              )}
+              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground/60 transition-transform duration-200 group-data-[state=closed]/collapsible:-rotate-90" />
+            </div>
           </button>
         </CollapsibleTrigger>
         
         <CollapsibleContent>
           <div className="px-3 pb-3">
             {showColors ? (
-              // Color grid with labels on hover
+              // Color grid - simple check mark on selected
               <div className="flex flex-wrap gap-2">
                 {availableOptions.map((option) => {
                   const isSelected = selected.includes(option.value);
@@ -458,20 +477,20 @@ function FilterGroup({
                       key={option.value}
                       onClick={() => toggleOption(option.value)}
                       className={cn(
-                        'w-7 h-7 rounded-full border transition-all duration-150 flex items-center justify-center',
+                        'w-7 h-7 rounded-full border-2 transition-all duration-150 flex items-center justify-center',
                         isSelected
-                          ? 'border-foreground/80 ring-1 ring-foreground/15 scale-105'
-                          : 'border-sidebar-border/80 hover:border-muted-foreground/40 hover:scale-105'
+                          ? 'border-foreground scale-110'
+                          : 'border-transparent hover:scale-105'
                       )}
                       style={{ backgroundColor: option.hex }}
-                      title={`${option.label}`}
+                      title={option.label}
                     >
                       {isSelected && (
-                        <CheckCircle2 className={cn(
-                          'h-3.5 w-3.5',
+                        <Check className={cn(
+                          'h-3.5 w-3.5 stroke-[3]',
                           option.value === 'white' || option.value === 'beige' || option.value === 'yellow' || option.value === 'gold'
-                            ? 'text-foreground/80'
-                            : 'text-white/90'
+                            ? 'text-foreground'
+                            : 'text-white'
                         )} />
                       )}
                     </button>
@@ -479,7 +498,7 @@ function FilterGroup({
                 })}
               </div>
             ) : (
-              // List items with clear hierarchy
+              // List items - clean and simple
               <ul className="space-y-0.5">
                 {availableOptions.map((option) => {
                   const isSelected = selected.includes(option.value);
@@ -488,22 +507,14 @@ function FilterGroup({
                       key={option.value}
                       onClick={() => toggleOption(option.value)}
                       className={cn(
-                        'flex items-center justify-between px-3 py-2 cursor-pointer rounded-md',
-                        'transition-colors duration-100',
+                        'flex items-center px-3 py-2 cursor-pointer rounded-md',
+                        'text-[15px] font-medium tracking-tight transition-colors duration-100',
                         isSelected 
-                          ? 'bg-sidebar-accent' 
-                          : 'hover:bg-sidebar-accent'
+                          ? 'bg-muted text-foreground font-semibold' 
+                          : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                       )}
                     >
-                      <span className={cn(
-                        "text-[15px] font-semibold tracking-tight",
-                        isSelected 
-                          ? "text-sidebar-foreground" 
-                          : "text-sidebar-foreground/80"
-                      )}>
-                        {option.label}
-                      </span>
-                      {isSelected && <CheckCircle2 className="size-4 text-foreground" />}
+                      {option.label}
                     </li>
                   );
                 })}
@@ -517,52 +528,17 @@ function FilterGroup({
 }
 
 // ============================================================================
-// TOGGLE OPTION
-// ============================================================================
-
-interface ToggleOptionProps {
-  label: string;
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-}
-
-function ToggleOption({ label, checked, onChange }: ToggleOptionProps) {
-  return (
-    <button
-      type="button"
-      onClick={() => onChange(!checked)}
-      className={cn(
-        'flex items-center justify-between w-full px-3 py-2.5 rounded-lg transition-colors',
-        checked 
-          ? 'bg-sidebar-accent text-sidebar-foreground' 
-          : 'text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent/50'
-      )}
-    >
-      <span className="text-[15px] font-semibold tracking-tight">{label}</span>
-      <div className={cn(
-        'w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors',
-        checked
-          ? 'bg-sidebar-foreground border-sidebar-foreground'
-          : 'border-sidebar-border bg-transparent'
-      )}>
-        {checked && <CheckCircle2 className="h-3.5 w-3.5 text-sidebar" />}
-      </div>
-    </button>
-  );
-}
-
-// ============================================================================
 // HELPERS
 // ============================================================================
 
 function countAdvancedFilters(params: SearchParams): number {
   let count = 0;
-  if (params.bodyType?.length) count++;
-  if (params.fuelType?.length) count++;
-  if (params.transmission?.length) count++;
-  if (params.engineSize?.length) count++;
-  if (params.exteriorColor?.length) count++;
-  if (params.interiorColor?.length) count++;
+  count += params.bodyType?.length ?? 0;
+  count += params.fuelType?.length ?? 0;
+  count += params.transmission?.length ?? 0;
+  count += params.engineSize?.length ?? 0;
+  count += params.exteriorColor?.length ?? 0;
+  count += params.interiorColor?.length ?? 0;
   if (params.sellerType) count++;
   return count;
 }

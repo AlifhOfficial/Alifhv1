@@ -1018,10 +1018,6 @@ export function AdvancedStatsView() {
             <h1 className="text-base sm:text-lg font-semibold text-foreground">Analytics</h1>
             <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">Detailed performance metrics and insights</p>
           </div>
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-purple-500" />
-            <span className="text-sm"><span className="text-purple-600 dark:text-purple-400 font-bold">Experimental</span> <span className="text-muted-foreground font-medium">· Data may not be fully accurate</span></span>
-          </div>
         </div>
         
         {/* Slowest Listing Alert */}
@@ -1456,7 +1452,7 @@ export function AdvancedStatsView() {
         {/* Footer */}
         <footer className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-6 border-t border-border/20">
           <p className="text-[11px] text-muted-foreground/50">
-            Updated {new Date(stats.generatedAt).toLocaleString()}
+            Updated {new Date(stats.generatedAt).toLocaleString()} · For guidance only — verify with your own records
           </p>
         </footer>
 

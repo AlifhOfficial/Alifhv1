@@ -2,18 +2,22 @@
  * Email Service Layer
  * 
  * Centralized email sending with Resend integration
- * Rate limiting and error handling for production use
- * Clean abstraction for Better Auth integration
+ * Clean, minimal email templates matching Alifh brand
  */
 
 import { Resend } from 'resend';
 import { mockEmailService, sendEmailMock } from './mock-service';
 
 // Check if we're in development mode
+// USE_REAL_EMAIL=true allows using production email in development
 const isDevelopment = process.env.NODE_ENV === 'development';
+const useRealEmail = process.env.USE_REAL_EMAIL === 'true';
+const shouldUseMockEmail = isDevelopment && !useRealEmail;
 
-// Initialize Resend client only in production
-const resend = !isDevelopment ? new Resend(process.env.RESEND_API_KEY) : null;
+// Initialize Resend client when needed (production or when USE_REAL_EMAIL=true)
+const resend = !shouldUseMockEmail && process.env.RESEND_API_KEY 
+  ? new Resend(process.env.RESEND_API_KEY) 
+  : null;
 
 // Email configuration
 const EMAIL_CONFIG = {
@@ -29,18 +33,116 @@ export interface EmailData {
   text?: string;
 }
 
+// Logo URL (hosted on production domain)
+const LOGO_URL = 'https://alifh.ae/assets/Alifh_logo_Black.svg';
+
+/**
+ * Clean email template - White background, minimal design
+ */
+const emailTemplate = (content: string) => `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Alifh</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #FFFFFF; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <table width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #FFFFFF;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width: 480px;">
+          
+          <!-- Logo -->
+          <tr>
+            <td style="padding-bottom: 32px;">
+              <img src="${LOGO_URL}" alt="Alifh" width="80" height="24" style="display: block; border: 0;" />
+            </td>
+          </tr>
+          
+          <!-- Content -->
+          <tr>
+            <td style="padding-bottom: 32px;">
+              ${content}
+            </td>
+          </tr>
+          
+          <!-- Sign off -->
+          <tr>
+            <td style="padding-bottom: 32px;">
+              <p style="margin: 0; font-size: 14px; color: #71717A; line-height: 1.6;">
+                Best regards,<br>
+                <span style="color: #18181B; font-weight: 500;">Team Alifh</span>
+              </p>
+            </td>
+          </tr>
+          
+          <!-- Divider -->
+          <tr>
+            <td style="border-top: 1px solid #E4E4E7; padding-top: 24px;">
+              <p style="margin: 0; font-size: 12px; color: #A1A1AA;">
+                © ${new Date().getFullYear()} AISH CAPITALS FZCO · Dubai, UAE
+              </p>
+            </td>
+          </tr>
+          
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`;
+
+/**
+ * OTP code block
+ */
+const otpBlock = (code: string) => `
+<table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 24px 0;">
+  <tr>
+    <td align="center">
+      <table cellspacing="0" cellpadding="0" border="0" style="background: #F4F4F5; border-radius: 8px;">
+        <tr>
+          <td style="padding: 16px 28px;">
+            <span style="font-size: 28px; font-weight: 700; letter-spacing: 6px; color: #18181B; font-family: monospace;">
+              ${code}
+            </span>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+`;
+
+/**
+ * Primary button (brand blue)
+ */
+const button = (label: string, url: string) => `
+<table cellspacing="0" cellpadding="0" border="0" style="margin: 24px 0;">
+  <tr>
+    <td style="background: #3B82F6; border-radius: 6px;">
+      <a href="${url}" target="_blank" style="display: inline-block; padding: 12px 24px; font-size: 14px; font-weight: 600; color: #FFFFFF; text-decoration: none;">
+        ${label}
+      </a>
+    </td>
+  </tr>
+</table>
+`;
+
 /**
  * Send email using Resend service or mock in development
  */
 export async function sendEmail(emailData: EmailData) {
-  // Use mock service in development
-  if (isDevelopment) {
+  // Use mock service only in development when USE_REAL_EMAIL is not set
+  if (shouldUseMockEmail) {
     return await sendEmailMock(emailData);
   }
 
-  // Use real Resend in production
+  // Use real Resend in production or when USE_REAL_EMAIL=true
   if (!resend) {
-    throw new Error('Resend not initialized');
+    throw new Error('Resend not initialized - check RESEND_API_KEY environment variable');
   }
 
   try {
@@ -52,7 +154,7 @@ export async function sendEmail(emailData: EmailData) {
       text: emailData.text,
     });
 
-    console.log(`📧 Email sent successfully to ${emailData.to}`);
+    console.log(`📧 Email sent to ${emailData.to}`);
     return result;
   } catch (error) {
     console.error('❌ Email send failed:', error);
@@ -63,55 +165,42 @@ export async function sendEmail(emailData: EmailData) {
 /**
  * Better Auth integration helpers
  */
-export const emailService = isDevelopment ? mockEmailService : {
+export const emailService = shouldUseMockEmail ? mockEmailService : {
   /**
    * Send OTP verification email
    */
   sendVerificationOTP: async (data: { email: string; otp: string; type: "sign-in" | "email-verification" | "forget-password" }) => {
     const { email, otp, type } = data;
-    const userName = email.split('@')[0];
     
-    const typeMessages = {
-      "sign-in": "sign in to your Alifh account",
-      "email-verification": "verify your email address",
-      "forget-password": "reset your password",
+    const config = {
+      "sign-in": "Use this code to sign in to your account.",
+      "email-verification": "Use this code to verify your email address.",
+      "forget-password": "Use this code to reset your password.",
     };
     
-    const action = typeMessages[type];
+    const content = `
+      <p style="margin: 0 0 16px 0; font-size: 14px; color: #18181B; line-height: 1.6;">
+        Your verification code is:
+      </p>
+      ${otpBlock(otp)}
+      <p style="margin: 0 0 16px 0; font-size: 14px; color: #71717A; line-height: 1.6;">
+        ${config[type]}
+      </p>
+      <p style="margin: 0; font-size: 13px; color: #A1A1AA; line-height: 1.6;">
+        This code expires in 10 minutes. If you didn't request this, please ignore this email.
+      </p>
+    `;
     
     await sendEmail({
       to: email,
-      subject: `Your Alifh verification code: ${otp}`,
-      html: `
-        <div style="max-width: 600px; margin: 0 auto; font-family: system-ui, sans-serif;">
-          <h2>Your verification code</h2>
-          <p>Hi ${userName},</p>
-          <p>Use the following code to ${action}:</p>
-          <div style="margin: 32px 0; text-align: center;">
-            <div style="
-              background: #f4f4f5;
-              border-radius: 12px;
-              padding: 24px 32px;
-              display: inline-block;
-              font-size: 32px;
-              font-weight: 700;
-              letter-spacing: 8px;
-              color: #000;
-            ">
-              ${otp}
-            </div>
-          </div>
-          <p style="color: #71717a; font-size: 14px;">This code expires in 10 minutes.</p>
-          <p>If you didn't request this code, you can safely ignore this email.</p>
-          <p>Best regards,<br>The Alifh Team</p>
-        </div>
-      `,
-      text: `Your Alifh verification code is: ${otp}. Use this code to ${action}. Expires in 10 minutes.`,
+      subject: `${otp} is your Alifh verification code`,
+      html: emailTemplate(content),
+      text: `Your Alifh verification code is: ${otp}. ${config[type]} This code expires in 10 minutes.`,
     });
   },
 
   /**
-   * Send email verification
+   * Send email verification link
    */
   sendVerificationEmail: async (data: { user: any; url: string; token: string }) => {
     const { user, url } = data;
@@ -122,40 +211,30 @@ export const emailService = isDevelopment ? mockEmailService : {
     const appBaseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
     const appVerifyUrl = new URL("/verify-email", appBaseUrl);
-    if (token) {
-      appVerifyUrl.searchParams.set("token", token);
-    }
-    if (callbackURL) {
-      appVerifyUrl.searchParams.set("callbackURL", callbackURL);
-    }
+    if (token) appVerifyUrl.searchParams.set("token", token);
+    if (callbackURL) appVerifyUrl.searchParams.set("callbackURL", callbackURL);
 
     const finalUrl = appVerifyUrl.toString();
+    const name = user.name || 'there';
+    
+    const content = `
+      <p style="margin: 0 0 16px 0; font-size: 14px; color: #18181B; line-height: 1.6;">
+        Hi ${name},
+      </p>
+      <p style="margin: 0 0 8px 0; font-size: 14px; color: #71717A; line-height: 1.6;">
+        Thanks for signing up. Please verify your email to complete your account setup.
+      </p>
+      ${button('Verify Email', finalUrl)}
+      <p style="margin: 0; font-size: 13px; color: #A1A1AA; line-height: 1.6;">
+        If you didn't create an account, please ignore this email.
+      </p>
+    `;
     
     await sendEmail({
       to: user.email,
-      subject: 'Verify your Alifh account',
-      html: `
-        <div style="max-width: 600px; margin: 0 auto; font-family: system-ui, sans-serif;">
-          <h2>Welcome to Alifh!</h2>
-          <p>Hi ${user.name},</p>
-          <p>Please verify your email address to complete your account setup.</p>
-          <div style="margin: 32px 0;">
-            <a href="${finalUrl}" style="
-              background: #000;
-              color: #fff;
-              padding: 12px 24px;
-              text-decoration: none;
-              border-radius: 8px;
-              display: inline-block;
-            ">
-              Verify Email Address
-            </a>
-          </div>
-          <p>If you didn't create this account, you can safely ignore this email.</p>
-          <p>Best regards,<br>The Alifh Team</p>
-        </div>
-      `,
-      text: `Welcome to Alifh! Please verify your email: ${finalUrl}`,
+      subject: 'Verify your email',
+      html: emailTemplate(content),
+      text: `Hi ${name}, thanks for signing up. Please verify your email: ${finalUrl}`,
     });
   },
 
@@ -164,33 +243,26 @@ export const emailService = isDevelopment ? mockEmailService : {
    */
   sendPasswordReset: async (data: { user: any; url: string; token: string }) => {
     const { user, url } = data;
+    const name = user.name || 'there';
+    
+    const content = `
+      <p style="margin: 0 0 16px 0; font-size: 14px; color: #18181B; line-height: 1.6;">
+        Hi ${name},
+      </p>
+      <p style="margin: 0 0 8px 0; font-size: 14px; color: #71717A; line-height: 1.6;">
+        We received a request to reset your password. Click below to choose a new one.
+      </p>
+      ${button('Reset Password', url)}
+      <p style="margin: 0; font-size: 13px; color: #A1A1AA; line-height: 1.6;">
+        This link expires in 1 hour. If you didn't request this, please ignore this email.
+      </p>
+    `;
     
     await sendEmail({
       to: user.email,
-      subject: 'Reset your Alifh password',
-      html: `
-        <div style="max-width: 600px; margin: 0 auto; font-family: system-ui, sans-serif;">
-          <h2>Reset your password</h2>
-          <p>Hi ${user.name},</p>
-          <p>We received a request to reset your password for your Alifh account.</p>
-          <div style="margin: 32px 0;">
-            <a href="${url}" style="
-              background: #000;
-              color: #fff;
-              padding: 12px 24px;
-              text-decoration: none;
-              border-radius: 8px;
-              display: inline-block;
-            ">
-              Reset Password
-            </a>
-          </div>
-          <p>This link will expire in 1 hour for security reasons.</p>
-          <p>If you didn't request this, you can safely ignore this email.</p>
-          <p>Best regards,<br>The Alifh Team</p>
-        </div>
-      `,
-      text: `Reset your Alifh password: ${url}`,
+      subject: 'Reset your password',
+      html: emailTemplate(content),
+      text: `Hi ${name}, reset your password here: ${url}. This link expires in 1 hour.`,
     });
   },
 
@@ -199,41 +271,35 @@ export const emailService = isDevelopment ? mockEmailService : {
    */
   sendMagicLink: async (data: { user: any; url: string; token: string }) => {
     const { user, url } = data;
+    const name = user.name || 'there';
+    
+    const content = `
+      <p style="margin: 0 0 16px 0; font-size: 14px; color: #18181B; line-height: 1.6;">
+        Hi ${name},
+      </p>
+      <p style="margin: 0 0 8px 0; font-size: 14px; color: #71717A; line-height: 1.6;">
+        Click the button below to sign in. No password needed.
+      </p>
+      ${button('Sign In', url)}
+      <p style="margin: 0; font-size: 13px; color: #A1A1AA; line-height: 1.6;">
+        This link expires in 10 minutes. If you didn't request this, please ignore this email.
+      </p>
+    `;
     
     await sendEmail({
       to: user.email,
       subject: 'Sign in to Alifh',
-      html: `
-        <div style="max-width: 600px; margin: 0 auto; font-family: system-ui, sans-serif;">
-          <h2>Sign in to Alifh</h2>
-          <p>Hi ${user.name},</p>
-          <p>Click the link below to sign in to your Alifh account:</p>
-          <div style="margin: 32px 0;">
-            <a href="${url}" style="
-              background: #000;
-              color: #fff;
-              padding: 12px 24px;
-              text-decoration: none;
-              border-radius: 8px;
-              display: inline-block;
-            ">
-              Sign In to Alifh
-            </a>
-          </div>
-          <p>This link will expire in 10 minutes for security reasons.</p>
-          <p>If you didn't request this, you can safely ignore this email.</p>
-          <p>Best regards,<br>The Alifh Team</p>
-        </div>
-      `,
-      text: `Sign in to Alifh: ${url}`,
+      html: emailTemplate(content),
+      text: `Hi ${name}, sign in here: ${url}. This link expires in 10 minutes.`,
     });
   },
 };
 
 // Environment status function
 export const getEmailServiceStatus = () => ({
-  provider: isDevelopment ? "Mock" : "Resend",
+  provider: shouldUseMockEmail ? "Mock" : "Resend",
   isProduction: !isDevelopment,
+  useRealEmail: useRealEmail,
   hasResendKey: !!process.env.RESEND_API_KEY,
   environment: process.env.NODE_ENV || "development",
 });

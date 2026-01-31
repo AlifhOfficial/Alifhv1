@@ -486,19 +486,11 @@ export function PartnerInsightsView() {
           <header>
             <div className="flex items-start justify-between gap-4">
               <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <h1 className="text-2xl font-semibold tracking-tight text-foreground/90">
-                    {getGreeting(currentHour)}, {firstName}
-                  </h1>
-                  <span className="px-2 py-0.5 rounded text-xs font-medium bg-muted/50 text-muted-foreground">
-                    Experimental
-                  </span>
-                </div>
+                <h1 className="text-2xl font-semibold tracking-tight text-foreground/90">
+                  {getGreeting(currentHour)}, {firstName}
+                </h1>
                 <p className="text-sm text-muted-foreground">
                   {partnerName ? `${partnerName} overview` : 'Business overview'} · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                </p>
-                <p className="text-xs text-muted-foreground/60">
-                  Note: Beta testing — data may not reflect accurately
                 </p>
               </div>
               
@@ -715,7 +707,7 @@ export function PartnerInsightsView() {
           {/* Footer */}
           <div className="flex items-center justify-between pt-2">
             <span className="text-xs text-muted-foreground/50">
-              Last updated {new Date(stats.generatedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+              Last updated {new Date(stats.generatedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} · Use alongside your own records
             </span>
           </div>
 

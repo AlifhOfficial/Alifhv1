@@ -120,5 +120,85 @@ export const checkUserExistsByEmail = async (email: string): Promise<boolean> =>
   return !!result;
 };
 
+/**
+ * Check if an unverified user exists by email
+ * Returns the user if exists and not verified, null otherwise
+ * Used for handling re-registration of unverified accounts
+ */
+export const getUnverifiedUserByEmail = async (email: string) => {
+  const [result] = await db
+    .select()
+    .from(user)
+    .where(eq(user.email, email))
+    .limit(1);
+    
+  // Return user only if exists AND not verified
+  if (result && !result.emailVerified) {
+    return result;
+  }
+  return null;
+};
+
+/**
+ * Delete an unverified user by email
+ * Used when user tries to re-register with same email before verification
+ * Cascades to sessions, accounts, verification tokens
+ */
+export const deleteUnverifiedUserByEmail = async (email: string): Promise<boolean> => {
+  const unverifiedUser = await getUnverifiedUserByEmail(email);
+  if (!unverifiedUser) {
+    return false;
+  }
+  
+  // Invalidate any cache
+  memoryCache.delete(CacheKeys.userById(unverifiedUser.id));
+  
+  // Delete user (cascades to sessions, accounts, etc.)
+  await db
+    .delete(user)
+    .where(eq(user.id, unverifiedUser.id));
+    
+  return true;
+};
+
+/**
+ * Get user for Stripe customer creation (after email verification)
+ * Returns only the fields needed for Stripe customer creation
+ */
+export const getUserForStripeCustomer = async (email: string) => {
+  const [result] = await db
+    .select({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      stripeCustomerId: user.stripeCustomerId,
+    })
+    .from(user)
+    .where(eq(user.email, email))
+    .limit(1);
+    
+  return result || null;
+};
+
+/**
+ * Update user's Stripe customer ID
+ * Called after successful email verification and Stripe customer creation
+ */
+export const updateUserStripeCustomerId = async (userId: string, stripeCustomerId: string) => {
+  // Invalidate cache before update
+  memoryCache.delete(CacheKeys.userById(userId));
+  
+  const [result] = await db
+    .update(user)
+    .set({
+      stripeCustomerId,
+      updatedAt: new Date(),
+    })
+    .where(eq(user.id, userId))
+    .returning();
+    
+  return result;
+};
+
 // Note: Phone verification is now handled by Better Auth's phoneNumber plugin
 // See: apps/web/src/lib/auth/index.ts - phoneNumber plugin with Twilio Verify

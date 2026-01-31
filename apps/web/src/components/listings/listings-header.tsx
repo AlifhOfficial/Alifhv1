@@ -11,7 +11,7 @@ import { SearchBar } from '@/components/search/search-bar';
 import { FilterSidebar } from '@/components/search/filter-sidebar';
 import { AdvancedFilters } from '@/components/search/advanced-filters';
 import { Skeleton } from '@/components/ui/skeleton';
-import { LayoutGrid, List, SlidersHorizontal, X, ChevronDown, PanelLeft, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { LayoutGrid, List, SlidersHorizontal, X, ChevronDown, PanelLeft, ChevronRight } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -306,12 +306,14 @@ export function ListingsHeader({
                   <DropdownMenuItem
                     key={option.value}
                     onClick={() => setSort(option.value)}
-                    className="text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent cursor-pointer rounded-md px-3 py-2 flex items-center justify-between"
-                  >
-                    <span>{option.label}</span>
-                    {(params.sortBy || 'relevance') === option.value && (
-                      <CheckCircle2 className="size-4 text-foreground" />
+                    className={cn(
+                      "text-[15px] font-medium tracking-tight cursor-pointer rounded-md px-3 py-2 transition-colors duration-100",
+                      (params.sortBy || 'relevance') === option.value
+                        ? "bg-muted text-foreground font-semibold"
+                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                     )}
+                  >
+                    {option.label}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -890,6 +892,24 @@ function getActiveFilterChips(
   }
   if (params.fuelType?.length) {
     chips.push({ key: 'fuelType', label: params.fuelType.join(', ') });
+  }
+  if (params.transmission?.length) {
+    chips.push({ key: 'transmission', label: params.transmission.join(', ') });
+  }
+  if (params.engineSize?.length) {
+    chips.push({ key: 'engineSize', label: params.engineSize.join(', ') });
+  }
+  if (params.exteriorColor?.length) {
+    chips.push({ key: 'exteriorColor', label: `Exterior: ${params.exteriorColor.join(', ')}` });
+  }
+  if (params.interiorColor?.length) {
+    chips.push({ key: 'interiorColor', label: `Interior: ${params.interiorColor.join(', ')}` });
+  }
+  if (params.specs?.length) {
+    chips.push({ key: 'specs', label: params.specs.join(', ') });
+  }
+  if (params.isNegotiable) {
+    chips.push({ key: 'isNegotiable', label: 'Negotiable' });
   }
   if (params.sellerType) {
     chips.push({ key: 'sellerType', label: params.sellerType === 'dealer' ? 'Dealers' : 'Private' });
