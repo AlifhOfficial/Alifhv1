@@ -83,7 +83,13 @@ export function ListingTimestamp({
 function ListingTimestampSkeleton({ className }: { className?: string }) {
   return (
     <div className={cn("py-4", className)}>
-      <Skeleton className="h-4 w-24" />
+      <div className="flex items-center gap-2.5">
+        <Skeleton className="w-5 h-5 rounded-full" />
+        <div className="flex items-baseline gap-2">
+          <Skeleton className="h-4 w-16" />
+          <Skeleton className="h-3.5 w-24" />
+        </div>
+      </div>
     </div>
   );
 }

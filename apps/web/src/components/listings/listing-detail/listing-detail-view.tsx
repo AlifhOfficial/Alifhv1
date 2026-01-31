@@ -20,7 +20,7 @@ import { LocationSection } from './location-section';
 import { ListingTimestamp } from './listing-timestamp';
 import { SimilarListings } from './similar-listings';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ChevronLeft, AlertTriangle, Loader2, CheckCircle2 } from 'lucide-react';
+import { ChevronLeft, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
@@ -56,37 +56,9 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
       trackView(listing.id);
     }
   }, [listing?.id, listing?.isPublic, trackView]);
-  
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <main className="pt-20">
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10">
-              {/* Main Column */}
-              <div className="lg:col-span-3 space-y-4">
-                <Skeleton className="aspect-[16/10] w-full rounded-xl" />
-                <Skeleton className="h-7 w-3/4" />
-                <Skeleton className="h-5 w-1/2" />
-              </div>
-              {/* Sidebar */}
-              <div className="lg:col-span-2 space-y-6">
-                <SellerProfileCard.Skeleton />
-                <ContactSection.Skeleton />
-                <ListingTimestamp.Skeleton />
-                <EMICalculator.Skeleton />
-                <LocationSection.Skeleton />
-              </div>
-            </div>
-          </div>
-        </main>
-      </div>
-    );
-  }
 
-  // Error or not found state
-  if (error || !listing) {
+  // Error or not found state (only show after loading completes)
+  if (!isLoading && (error || !listing)) {
     return (
       <div className="min-h-screen bg-background">
         <main className="pt-20">
@@ -108,8 +80,8 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
     );
   }
 
-  // Access control for non-public listings
-  if (!listing.isPublic) {
+  // Access control for non-public listings (only check after loading)
+  if (!isLoading && listing && !listing.isPublic) {
     const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
     const isOwner = user?.id === listing.userId;
 
@@ -136,13 +108,13 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
     }
   }
 
-  const carTitle = `${listing.year} ${listing.make} ${listing.model}${listing.trim ? ` ${listing.trim}` : ''}`;
+  const carTitle = listing ? `${listing.year} ${listing.make} ${listing.model}${listing.trim ? ` ${listing.trim}` : ''}` : '';
 
   // Check if this listing is from a dealer (has partnerId) - only dealer listings can be booked
-  const isDealerListing = !!listing.partnerId;
+  const isDealerListing = !!listing?.partnerId;
   
   // Check if current user is staff of the partner that owns this listing
-  const isOwnPartnerListing = listing.partnerId 
+  const isOwnPartnerListing = listing?.partnerId 
     ? (user?.partnerMemberships ?? []).some(m => m.partnerId === listing.partnerId)
     : false;
 
@@ -189,7 +161,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
 
   const handleLoginRequired = () => {
     // Always use "/" as base URL for auth modals for consistency
-    window.location.href = `/?auth=signin&redirect=${encodeURIComponent(`/listings/${listing.id}`)}`;
+    window.location.href = `/?auth=signin&redirect=${encodeURIComponent(`/listings/${listingId}`)}`;
   };
 
   // Get partner address for booking modal
@@ -216,54 +188,72 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
       <main className="pt-20">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-sm font-bold tracking-tight py-4 mb-4 sm:mb-6 overflow-x-auto scrollbar-hide">
-            <Link 
-              href="/listings" 
-              className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
-            >
-              All Cars
-            </Link>
-            <span className="text-muted-foreground/40">/</span>
-            <Link 
-              href={`/listings?make=${encodeURIComponent(listing.make)}`}
-              className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
-            >
-              {listing.make}
-            </Link>
-            <span className="text-muted-foreground/40">/</span>
-            <Link 
-              href={`/listings?make=${encodeURIComponent(listing.make)}&model=${encodeURIComponent(listing.model)}`}
-              className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
-            >
-              {listing.model}
-            </Link>
-            {listing.trim && (
-              <>
-                <span className="text-muted-foreground/40">/</span>
-                <span className="text-foreground font-bold whitespace-nowrap">
-                  {listing.trim}
-                </span>
-              </>
-            )}
-          </nav>
+          {isLoading ? (
+            <div className="flex items-center gap-2 py-4 mb-4 sm:mb-6">
+              <Skeleton className="h-4 w-16" />
+              <span className="text-muted-foreground/40">/</span>
+              <Skeleton className="h-4 w-20" />
+              <span className="text-muted-foreground/40">/</span>
+              <Skeleton className="h-4 w-24" />
+            </div>
+          ) : listing ? (
+            <nav className="flex items-center gap-2 text-sm font-bold tracking-tight py-4 mb-4 sm:mb-6 overflow-x-auto scrollbar-hide">
+              <Link 
+                href="/listings" 
+                className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
+              >
+                All Cars
+              </Link>
+              <span className="text-muted-foreground/40">/</span>
+              <Link 
+                href={`/listings?make=${encodeURIComponent(listing.make)}`}
+                className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
+              >
+                {listing.make}
+              </Link>
+              <span className="text-muted-foreground/40">/</span>
+              <Link 
+                href={`/listings?make=${encodeURIComponent(listing.make)}&model=${encodeURIComponent(listing.model)}`}
+                className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
+              >
+                {listing.model}
+              </Link>
+              {listing.trim && (
+                <>
+                  <span className="text-muted-foreground/40">/</span>
+                  <span className="text-foreground font-bold whitespace-nowrap">
+                    {listing.trim}
+                  </span>
+                </>
+              )}
+            </nav>
+          ) : null}
 
           {/* Main Content */}
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10 pb-6 lg:pb-8">
             {/* Main Column - Car Details (60%) */}
             <div className="lg:col-span-3 min-w-0">
-              <CarCardDetailed listing={listing} kycVerified={sellerKycVerified} />
+              {isLoading ? (
+                <CarCardDetailed.Skeleton />
+              ) : listing ? (
+                <CarCardDetailed listing={listing} kycVerified={sellerKycVerified} />
+              ) : null}
             </div>
 
             {/* Sidebar - Clean stacked cards (40%) */}
             <div className="lg:col-span-2 min-w-0">
               <div className="lg:sticky lg:top-24 space-y-6">
                 {/* 1. Seller Profile */}
-                {hasSellerData && sellerData && (
+                {isLoading ? (
+                  <SellerProfileCard.Skeleton />
+                ) : hasSellerData && sellerData ? (
                   <SellerProfileCard sellerData={sellerData} />
-                )}
+                ) : null}
 
                 {/* 2. Actions Section - Contact + Booking combined */}
-                {hasSellerData && sellerData && (
+                {isLoading ? (
+                  <ContactSection.Skeleton />
+                ) : hasSellerData && sellerData && listing ? (
                   <ContactSection
                     sellerData={sellerData}
                     listingId={listing.id}
@@ -277,58 +267,72 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
                     onBookTestDrive={() => setIsBookingModalOpen(true)}
                     partnerName={listing.partnerBrandName || 'Dealer'}
                   />
-                )}
+                ) : null}
 
                 {/* 3. Listing Timestamp */}
-                <ListingTimestamp
-                  createdAt={listing.createdAt}
-                  updatedAt={listing.updatedAt}
-                  publishedAt={listing.publishedAt}
-                  originalPublishedAt={listing.originalPublishedAt}
-                  lastEditedAt={listing.lastEditedAt}
-                />
+                {isLoading ? (
+                  <ListingTimestamp.Skeleton />
+                ) : listing ? (
+                  <ListingTimestamp
+                    createdAt={listing.createdAt}
+                    updatedAt={listing.updatedAt}
+                    publishedAt={listing.publishedAt}
+                    originalPublishedAt={listing.originalPublishedAt}
+                    lastEditedAt={listing.lastEditedAt}
+                  />
+                ) : null}
 
                 {/* 4. EMI Calculator */}
-                <EMICalculator
-                  price={listing.price}
-                  currency={listing.currency}
-                />
+                {isLoading ? (
+                  <EMICalculator.Skeleton />
+                ) : listing ? (
+                  <EMICalculator
+                    price={listing.price}
+                    currency={listing.currency}
+                  />
+                ) : null}
 
                 {/* 5. Location */}
-                {hasSellerData && sellerData && (
+                {isLoading ? (
+                  <LocationSection.Skeleton />
+                ) : hasSellerData && sellerData ? (
                   <LocationSection sellerData={sellerData} />
-                )}
+                ) : null}
 
                 {/* Safety Note */}
-                <div className="py-4 border-t border-border flex items-start gap-3">
-                  {isDealerListing ? (
-                    <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                  ) : (
-                    <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
-                  )}
-                  <p className="text-sm text-muted-foreground leading-relaxed font-medium">
-                    {isDealerListing 
-                      ? isBlackTierPartner
-                        ? <><span className="font-black text-foreground">Elite Partner.</span> Verified, vetted, and held to the highest standards.</>
-                        : 'We trust this dealer as a respected partner of Alifh.'
-                      : <><span className="font-bold text-foreground">Safety Tip:</span> Meet in public places and verify the vehicle before payment.</>
-                    }
-                  </p>
-                </div>
+                {!isLoading && listing && (
+                  <div className="py-4 border-t border-border flex items-start gap-3">
+                    {isDealerListing ? (
+                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    ) : (
+                      <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                    )}
+                    <p className="text-sm text-muted-foreground leading-relaxed font-medium">
+                      {isDealerListing 
+                        ? isBlackTierPartner
+                          ? <><span className="font-black text-foreground">Elite Partner.</span> Verified, vetted, and held to the highest standards.</>
+                          : 'We trust this dealer as a respected partner of Alifh.'
+                        : <><span className="font-bold text-foreground">Safety Tip:</span> Meet in public places and verify the vehicle before payment.</>
+                      }
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
 
           {/* Similar Listings - non-blocking, loads after main content */}
-          <SimilarListings 
-            listingId={listing.id} 
-            enabled={listing.isPublic}
-          />
+          {listing && (
+            <SimilarListings 
+              listingId={listing.id} 
+              enabled={listing.isPublic}
+            />
+          )}
         </div>
       </main>
 
       {/* Booking Modal */}
-      {isDealerListing && (
+      {isDealerListing && listing && (
         <BookingModal
           isOpen={isBookingModalOpen}
           onClose={() => setIsBookingModalOpen(false)}

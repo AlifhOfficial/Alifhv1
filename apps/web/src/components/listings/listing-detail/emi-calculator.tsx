@@ -189,10 +189,19 @@ export function EMICalculator({ price, currency = 'AED', className }: EMICalcula
 function EMICalculatorSkeleton({ className }: { className?: string }) {
   return (
     <div className={cn("space-y-4", className)}>
-      <Skeleton className="h-4 w-28" />
-      <div className="flex justify-between items-center">
-        <Skeleton className="h-4 w-24" />
-        <Skeleton className="h-6 w-24 sm:w-20" />
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Skeleton className="w-5 h-5 rounded-full" />
+          <Skeleton className="h-3 w-24" />
+        </div>
+        <Skeleton className="w-5 h-5 rounded-full" />
+      </div>
+
+      {/* Quick EMI Display */}
+      <div className="flex items-baseline justify-between">
+        <Skeleton className="h-3.5 w-28" />
+        <Skeleton className="h-6 w-28" />
       </div>
     </div>
   );

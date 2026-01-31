@@ -112,7 +112,7 @@ function FeatureCard({ title, description }: FeatureCardProps) {
 
 function UnlimitedListingsInfographic() {
   return (
-    <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40">
+    <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-12">
       {/* Typing animation CSS */}
       <style>{`
         @keyframes typing {
@@ -122,6 +122,10 @@ function UnlimitedListingsInfographic() {
         @keyframes blink {
           50% { border-color: transparent }
         }
+        @keyframes glow-one {
+          0%, 100% { text-shadow: 0 0 40px rgba(0, 102, 255, 0.3); }
+          50% { text-shadow: 0 0 60px rgba(0, 102, 255, 0.5); }
+        }
         .typing-text {
           display: inline-block;
           overflow: hidden;
@@ -130,122 +134,124 @@ function UnlimitedListingsInfographic() {
           animation: typing 2.5s steps(28, end) forwards, blink 0.75s step-end infinite;
         }
       `}</style>
-      
-      <div className="flex flex-col-reverse md:flex-row min-h-[auto] md:min-h-[560px] lg:min-h-[720px]">
-        {/* Left - macOS window with 3 car cards (80% on desktop) */}
-        <div className="w-full md:w-[80%] flex flex-col md:border-r border-t md:border-t-0 border-border/20 p-3 sm:p-6 lg:p-12">
-          <span className="text-[10px] sm:text-xs font-medium text-muted-foreground/60 mb-3 sm:mb-6">Your inventory</span>
-          
-          <div className="flex-1 flex flex-col items-center justify-center relative w-full">
-            {/* macOS Window Frame */}
-            <div className="w-full md:h-[85%] flex flex-col">
-              <div className="rounded-lg overflow-hidden shadow-2xl border border-white/10 flex-1 flex flex-col">
-                {/* macOS Title Bar */}
-                <div className="bg-[#28282a] px-3 sm:px-5 py-2 sm:py-3 flex items-center gap-2 sm:gap-3 border-b border-black/20">
-                  {/* Traffic Light Buttons */}
-                  <div className="flex items-center gap-1.5 sm:gap-2">
-                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ff5f57]" />
-                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#febc2e]" />
-                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#28c840]" />
-                  </div>
-                  {/* Navigation Arrows - hidden on mobile */}
-                  <div className="hidden sm:flex items-center gap-1 ml-1">
-                    <div className="w-5 h-5 flex items-center justify-center text-white/30">
-                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                      </svg>
-                    </div>
-                    <div className="w-5 h-5 flex items-center justify-center text-white/30">
-                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                      </svg>
-                    </div>
-                  </div>
-                  {/* URL Bar */}
-                  <div className="flex-1 flex justify-center">
-                    <div className="bg-[#1c1c1e] rounded-md px-2 sm:px-4 py-1 sm:py-1.5 flex items-center gap-1.5 sm:gap-2 max-w-[100px] sm:max-w-[280px]">
-                      <svg className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white/40 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
-                      </svg>
-                      <span className="text-[8px] sm:text-sm text-white/60 font-medium truncate">alifh.ae/dashboard</span>
-                    </div>
-                  </div>
-                  {/* Right spacer */}
-                  <div className="w-6 sm:w-24" />
+
+      {/* macOS Window Frame - Full Width */}
+      <div className="rounded-lg overflow-hidden shadow-2xl border border-border/40">
+        {/* macOS Title Bar */}
+        <div className="bg-[#28282a] px-3 sm:px-5 py-2 sm:py-3 flex items-center gap-2 sm:gap-3 border-b border-black/20">
+          {/* Traffic Light Buttons */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ff5f57]" />
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#febc2e]" />
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#28c840]" />
+          </div>
+          {/* Navigation Arrows - hidden on mobile */}
+          <div className="hidden sm:flex items-center gap-1 ml-1">
+            <div className="w-5 h-5 flex items-center justify-center text-white/30">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+            </div>
+            <div className="w-5 h-5 flex items-center justify-center text-white/30">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
+            </div>
+          </div>
+          {/* URL Bar */}
+          <div className="flex-1 flex justify-center">
+            <div className="bg-[#1c1c1e] rounded-md px-2 sm:px-4 py-1 sm:py-1.5 flex items-center gap-1.5 sm:gap-2 max-w-[140px] sm:max-w-[240px]">
+              <svg className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white/40 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+              </svg>
+              <span className="text-[8px] sm:text-xs text-white/60 font-medium truncate">alifh.ae/dashboard</span>
+            </div>
+          </div>
+          {/* Right spacer */}
+          <div className="w-6 sm:w-16" />
+        </div>
+        
+        {/* Window Content - Split Comparison */}
+        <div className="bg-[#000] flex flex-col md:flex-row aspect-[4/3] sm:aspect-[16/9] md:aspect-[2.4/1]">
+          {/* Left - Your inventory with car cards */}
+          <div className="flex-1 p-4 sm:p-8 lg:p-12 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/5">
+            <span className="text-[10px] sm:text-xs font-medium text-white/30 mb-4 sm:mb-6">Your inventory</span>
+            
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 lg:gap-6 w-full max-w-3xl">
+              {/* Card 1 */}
+              <div className="flex flex-col overflow-hidden rounded-lg sm:rounded-xl bg-[#141414] border border-white/10 shadow-sm">
+                <div className="aspect-[3/2] w-full overflow-hidden bg-muted/20">
+                  <img src="/Marketing/m14.jpeg" alt="" className="w-full h-full object-cover" />
                 </div>
-                
-                {/* Window Content */}
-                <div className="bg-[#000] p-3 sm:p-6 lg:p-14 flex-1 flex items-center justify-center">
-                  <div className="grid grid-cols-3 gap-2 sm:gap-4 lg:gap-8 w-full max-w-4xl">
-                    {/* Card 1 */}
-                    <div className="flex flex-col overflow-hidden rounded-lg sm:rounded-xl bg-[#141414] border border-white/10 shadow-sm hover:shadow-xl hover:border-white/20 transition-all">
-                      <div className="aspect-[3/2] w-full overflow-hidden bg-muted/20">
-                        <img src="/Marketing/m14.jpeg" alt="" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
-                      </div>
-                      <div className="flex items-center justify-between gap-1 sm:gap-2 p-2 sm:p-4">
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[9px] sm:text-sm lg:text-base font-semibold truncate text-white">Landcruiser</p>
-                          <div className="flex items-center gap-0.5 sm:gap-1 mt-0.5">
-                            <p className="text-[7px] sm:text-xs lg:text-sm text-white/50 truncate">IS Motors</p>
-                            <CheckCircle2 className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 flex-shrink-0 text-blue-500" />
-                          </div>
-                        </div>
-                        <img src="/Marketing/avatarmock.png" alt="" className="w-5 h-5 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded-full object-cover flex-shrink-0 border border-white/10" />
-                      </div>
-                    </div>
-                    
-                    {/* Card 2 */}
-                    <div className="flex flex-col overflow-hidden rounded-lg sm:rounded-xl bg-[#141414] border border-white/10 shadow-sm hover:shadow-xl hover:border-white/20 transition-all">
-                      <div className="aspect-[3/2] w-full overflow-hidden bg-muted/20">
-                        <img src="/Marketing/m15.jpeg" alt="" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
-                      </div>
-                      <div className="flex items-center justify-between gap-1 sm:gap-2 p-2 sm:p-4">
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[9px] sm:text-sm lg:text-base font-semibold truncate text-white">Lexus</p>
-                          <div className="flex items-center gap-0.5 sm:gap-1 mt-0.5">
-                            <p className="text-[7px] sm:text-xs lg:text-sm text-white/50 truncate">IS Motors</p>
-                            <CheckCircle2 className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 flex-shrink-0 text-blue-500" />
-                          </div>
-                        </div>
-                        <img src="/Marketing/avatarmock.png" alt="" className="w-5 h-5 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded-full object-cover flex-shrink-0 border border-white/10" />
-                      </div>
-                    </div>
-                    
-                    {/* Card 3 */}
-                    <div className="flex flex-col overflow-hidden rounded-lg sm:rounded-xl bg-[#141414] border border-white/10 shadow-sm hover:shadow-xl hover:border-white/20 transition-all">
-                      <div className="aspect-[3/2] w-full overflow-hidden bg-muted/20">
-                        <img src="/Marketing/m17.jpeg" alt="" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
-                      </div>
-                      <div className="flex items-center justify-between gap-1 sm:gap-2 p-2 sm:p-4">
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[9px] sm:text-sm lg:text-base font-semibold truncate text-white">McLaren</p>
-                          <div className="flex items-center gap-0.5 sm:gap-1 mt-0.5">
-                            <p className="text-[7px] sm:text-xs lg:text-sm text-white/50 truncate">IS Motors</p>
-                            <CheckCircle2 className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 flex-shrink-0 text-blue-500" />
-                          </div>
-                        </div>
-                        <img src="/Marketing/avatarmock.png" alt="" className="w-5 h-5 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded-full object-cover flex-shrink-0 border border-white/10" />
-                      </div>
+                <div className="flex items-center justify-between gap-1 sm:gap-2 p-1.5 sm:p-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[8px] sm:text-xs lg:text-sm font-semibold truncate text-white">Landcruiser</p>
+                    <div className="flex items-center gap-0.5 mt-0.5">
+                      <p className="text-[6px] sm:text-[10px] lg:text-xs text-white/50 truncate">IS Motors</p>
+                      <CheckCircle2 className="w-2 h-2 sm:w-3 sm:h-3 flex-shrink-0 text-blue-500" />
                     </div>
                   </div>
+                  <img src="/Marketing/avatarmock.png" alt="" className="w-4 h-4 sm:w-7 sm:h-7 lg:w-8 lg:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" />
+                </div>
+              </div>
+              
+              {/* Card 2 */}
+              <div className="flex flex-col overflow-hidden rounded-lg sm:rounded-xl bg-[#141414] border border-white/10 shadow-sm">
+                <div className="aspect-[3/2] w-full overflow-hidden bg-muted/20">
+                  <img src="/Marketing/m15.jpeg" alt="" className="w-full h-full object-cover" />
+                </div>
+                <div className="flex items-center justify-between gap-1 sm:gap-2 p-1.5 sm:p-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[8px] sm:text-xs lg:text-sm font-semibold truncate text-white">Lexus</p>
+                    <div className="flex items-center gap-0.5 mt-0.5">
+                      <p className="text-[6px] sm:text-[10px] lg:text-xs text-white/50 truncate">IS Motors</p>
+                      <CheckCircle2 className="w-2 h-2 sm:w-3 sm:h-3 flex-shrink-0 text-blue-500" />
+                    </div>
+                  </div>
+                  <img src="/Marketing/avatarmock.png" alt="" className="w-4 h-4 sm:w-7 sm:h-7 lg:w-8 lg:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" />
+                </div>
+              </div>
+              
+              {/* Card 3 */}
+              <div className="flex flex-col overflow-hidden rounded-lg sm:rounded-xl bg-[#141414] border border-white/10 shadow-sm">
+                <div className="aspect-[3/2] w-full overflow-hidden bg-muted/20">
+                  <img src="/Marketing/m17.jpeg" alt="" className="w-full h-full object-cover" />
+                </div>
+                <div className="flex items-center justify-between gap-1 sm:gap-2 p-1.5 sm:p-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[8px] sm:text-xs lg:text-sm font-semibold truncate text-white">McLaren</p>
+                    <div className="flex items-center gap-0.5 mt-0.5">
+                      <p className="text-[6px] sm:text-[10px] lg:text-xs text-white/50 truncate">IS Motors</p>
+                      <CheckCircle2 className="w-2 h-2 sm:w-3 sm:h-3 flex-shrink-0 text-blue-500" />
+                    </div>
+                  </div>
+                  <img src="/Marketing/avatarmock.png" alt="" className="w-4 h-4 sm:w-7 sm:h-7 lg:w-8 lg:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" />
                 </div>
               </div>
             </div>
             
             {/* Typing animated text below cards */}
-            <p className="typing-text mt-4 sm:mt-10 text-sm sm:text-lg lg:text-xl text-primary font-medium inline-block">
+            <p className="typing-text mt-4 sm:mt-8 text-xs sm:text-base lg:text-lg text-primary font-medium">
               + ∞ more listings included
             </p>
           </div>
-        </div>
-        
-        {/* Right - One subscription (20% on desktop) */}
-        <div className="w-full md:w-[20%] flex flex-col items-center justify-center py-6 md:py-4 px-4 sm:p-6 lg:p-10">
-          <span className="text-[10px] sm:text-xs font-medium text-primary mb-3 sm:mb-8">Your cost</span>
-          <div className="text-center">
-            <div className="text-4xl sm:text-6xl lg:text-7xl font-bold text-primary tracking-tight">1</div>
-            <p className="text-xs sm:text-base text-primary/80 mt-2 sm:mt-4 font-medium">subscription</p>
-            <p className="text-[10px] sm:text-sm text-muted-foreground/50 mt-0.5 sm:mt-1">per month</p>
+          
+          {/* Right - One subscription */}
+          <div className="w-full md:w-[280px] lg:w-[360px] p-8 sm:p-12 lg:p-16 flex flex-col items-center justify-center">
+            <span className="text-[10px] sm:text-xs font-medium text-primary mb-8 sm:mb-10">Your cost</span>
+            
+            <div className="flex flex-col items-center">
+              {/* Giant one */}
+              <div 
+                className="text-7xl sm:text-8xl lg:text-9xl font-bold text-primary leading-none"
+                style={{ animation: 'glow-one 3s ease-in-out infinite' }}
+              >
+                1
+              </div>
+              <span className="text-sm sm:text-base text-primary/80 font-medium mt-2">subscription</span>
+            </div>
+            
+            <p className="text-[10px] sm:text-xs text-white/30 mt-8 sm:mt-10">per month</p>
           </div>
         </div>
       </div>

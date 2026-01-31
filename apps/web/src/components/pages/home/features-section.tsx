@@ -95,54 +95,50 @@ function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
 function BuiltInDubaiInfographic() {
   return (
     <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40">
-      <div className="flex flex-col md:flex-row min-h-[auto] md:min-h-[480px] lg:min-h-[640px]">
-        {/* Left - What you see (screenshot with macOS window) */}
-        <div className="flex-1 flex flex-col md:border-r border-border/20 p-3 sm:p-4 md:p-6 lg:p-12">
-          <span className="text-[10px] sm:text-xs font-medium text-primary mb-3 sm:mb-6">What you see</span>
+      <div className="flex flex-col md:flex-row">
+        {/* Left - What you see (screenshot already has macOS window) */}
+        <div className="flex-1 flex flex-col p-4 sm:p-6 lg:p-10 border-b md:border-b-0 md:border-r border-border/20">
+          <span className="text-[10px] sm:text-xs font-medium text-primary mb-4 sm:mb-6">What you see</span>
           
-          {/* Screenshot image - already has macOS window */}
           <div className="flex-1 flex items-center justify-center">
             <img 
               src="/Marketing/buyerview2.png" 
               alt="Alifh dashboard" 
-              className="w-full h-full object-contain rounded-lg"
+              className="w-full h-auto object-contain rounded-lg"
             />
           </div>
           
-          <p className="text-[9px] sm:text-xs text-primary/70 mt-3 sm:mt-6 text-center">Just cars. That's it.</p>
+          <p className="text-[9px] sm:text-xs text-primary/70 mt-4 sm:mt-6 text-center">Just cars. That's it.</p>
         </div>
         
         {/* Right - What you don't see */}
-        <div className="w-full md:w-56 lg:w-72 xl:w-96 flex flex-col justify-center border-t md:border-t-0 p-4 sm:p-6 lg:p-12">
-          <span className="text-[10px] sm:text-xs font-medium text-muted-foreground/60 mb-4 sm:mb-8">What you don't see</span>
+        <div className="w-full md:w-[280px] lg:w-[360px] flex flex-col justify-center p-6 sm:p-8 lg:p-12">
+          <span className="text-[10px] sm:text-xs font-medium text-muted-foreground/60 mb-6 sm:mb-8">What you don't see</span>
           
-          {/* List of things we don't have */}
-          <div className="space-y-3 sm:space-y-5 lg:space-y-6">
-            <div className="flex items-center gap-3 sm:gap-4 text-muted-foreground/40">
+          <div className="space-y-4 sm:space-y-5">
+            <div className="flex items-center gap-3 text-muted-foreground/40">
               <div className="w-4 h-4 sm:w-5 sm:h-5 rounded border border-current flex items-center justify-center text-[10px] sm:text-xs">✕</div>
               <span className="text-xs sm:text-sm line-through">Banner ads</span>
             </div>
-            <div className="flex items-center gap-3 sm:gap-4 text-muted-foreground/40">
+            <div className="flex items-center gap-3 text-muted-foreground/40">
               <div className="w-4 h-4 sm:w-5 sm:h-5 rounded border border-current flex items-center justify-center text-[10px] sm:text-xs">✕</div>
               <span className="text-xs sm:text-sm line-through">Sponsored listings</span>
             </div>
-            <div className="flex items-center gap-3 sm:gap-4 text-muted-foreground/40">
+            <div className="flex items-center gap-3 text-muted-foreground/40">
               <div className="w-4 h-4 sm:w-5 sm:h-5 rounded border border-current flex items-center justify-center text-[10px] sm:text-xs">✕</div>
               <span className="text-xs sm:text-sm line-through">Pop-up promotions</span>
             </div>
-            <div className="flex items-center gap-3 sm:gap-4 text-muted-foreground/40">
+            <div className="flex items-center gap-3 text-muted-foreground/40">
               <div className="w-4 h-4 sm:w-5 sm:h-5 rounded border border-current flex items-center justify-center text-[10px] sm:text-xs">✕</div>
               <span className="text-xs sm:text-sm line-through">Dealer upsells</span>
             </div>
-            <div className="flex items-center gap-3 sm:gap-4 text-muted-foreground/40">
+            <div className="flex items-center gap-3 text-muted-foreground/40">
               <div className="w-4 h-4 sm:w-5 sm:h-5 rounded border border-current flex items-center justify-center text-[10px] sm:text-xs">✕</div>
               <span className="text-xs sm:text-sm line-through">Pay-to-rank</span>
             </div>
           </div>
           
-          <p className="text-[9px] sm:text-xs text-muted-foreground/50 mt-6 sm:mt-10">
-            Built by people who got tired of the noise.
-          </p>
+          <p className="text-[9px] sm:text-xs text-muted-foreground/50 mt-6 sm:mt-8">No noise. Ever.</p>
         </div>
       </div>
     </div>

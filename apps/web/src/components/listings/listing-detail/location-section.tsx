@@ -125,11 +125,22 @@ export function LocationSection({ sellerData, className }: LocationSectionProps)
 function LocationSectionSkeleton({ className }: { className?: string }) {
   return (
     <div className={cn("space-y-4", className)}>
+      {/* Title */}
       <Skeleton className="h-3 w-16" />
-      <Skeleton className="h-4 w-full sm:w-40" />
-      <div className="flex flex-col sm:flex-row gap-2">
-        <Skeleton className="h-10 w-full sm:flex-1 rounded-full" />
-        <Skeleton className="h-10 w-full sm:flex-1 rounded-full" />
+
+      {/* Address with icon */}
+      <div className="flex items-start gap-2.5">
+        <Skeleton className="w-5 h-5 rounded-full flex-shrink-0 mt-0.5" />
+        <div className="space-y-1">
+          <Skeleton className="h-4 w-40" />
+          <Skeleton className="h-3.5 w-28" />
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex flex-wrap gap-2">
+        <Skeleton className="h-10 flex-1 min-w-[120px] rounded-full" />
+        <Skeleton className="h-10 flex-1 min-w-[120px] rounded-full" />
       </div>
     </div>
   );

@@ -1,9 +1,10 @@
 "use client";
 
-import { Moon, CheckCircle2 } from "lucide-react";
+import { Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -63,7 +64,7 @@ export function ThemeToggle() {
           className="absolute left-0 top-full mt-2 w-32 bg-sidebar border border-sidebar-border rounded-lg shadow-lg z-50 overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="py-1.5">
+          <div className="p-1.5 flex flex-col gap-0.5">
             {themes.map((themeOption) => (
               <button
                 key={themeOption.value}
@@ -71,12 +72,15 @@ export function ThemeToggle() {
                   setTheme(themeOption.value);
                   setShowMenu(false);
                 }}
-                className="w-full text-left px-3 py-2 text-[14px] font-medium tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors flex items-center justify-between"
-              >
-                <span>{themeOption.label}</span>
-                {theme === themeOption.value && (
-                  <CheckCircle2 className="size-3.5" />
+                className={cn(
+                  'w-full text-left px-3 py-2 rounded-md touch-manipulation',
+                  'text-[14px] font-medium tracking-tight transition-colors duration-100',
+                  theme === themeOption.value
+                    ? 'bg-sidebar-accent text-sidebar-foreground font-semibold'
+                    : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
                 )}
+              >
+                {themeOption.label}
               </button>
             ))}
           </div>

@@ -16,7 +16,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Moon, Menu, X, CheckCircle2 } from "lucide-react";
+import { Moon, Menu, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { MegaDropdown } from "./mega-dropdown";
 import { MobileMenu } from "./mobile-menu";
 import { ProfileMenu } from "./user-dropdown";
@@ -373,7 +374,7 @@ export function Navbar() {
                     className="absolute right-0 top-full mt-2 w-32 bg-sidebar border border-sidebar-border rounded-lg shadow-lg z-50 overflow-hidden"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <div className="py-1.5">
+                    <div className="p-1.5 flex flex-col gap-0.5">
                       {[{ value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }, { value: 'charcoal', label: 'Charcoal' }].map((themeOption) => (
                         <button
                           key={themeOption.value}
@@ -381,12 +382,15 @@ export function Navbar() {
                             setTheme(themeOption.value);
                             setShowThemeMenu(false);
                           }}
-                          className="w-full text-left px-3 py-2 text-[14px] font-medium tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors flex items-center justify-between"
-                        >
-                          <span>{themeOption.label}</span>
-                          {theme === themeOption.value && (
-                            <CheckCircle2 className="size-3.5" />
+                          className={cn(
+                            'w-full text-left px-3 py-2 rounded-md touch-manipulation',
+                            'text-[14px] font-medium tracking-tight transition-colors duration-100',
+                            theme === themeOption.value
+                              ? 'bg-sidebar-accent text-sidebar-foreground font-semibold'
+                              : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
                           )}
+                        >
+                          {themeOption.label}
                         </button>
                       ))}
                     </div>

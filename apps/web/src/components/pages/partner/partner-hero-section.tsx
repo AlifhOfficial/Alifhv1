@@ -17,16 +17,15 @@ import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 
 function HeroInfographic() {
   return (
-    <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-14">
-      {/* Listing UI video - full width showcase */}
-      <div className="relative w-full rounded-lg overflow-hidden border border-border/30 shadow-2xl">
+    <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-12">
+      <div className="rounded-lg overflow-hidden shadow-2xl border border-border/40">
         <video 
           src="/Marketing/Hero2.mp4" 
           autoPlay 
           loop 
           muted 
           playsInline
-          className="w-full h-auto"
+          className="w-full h-auto block"
         />
       </div>
     </div>
