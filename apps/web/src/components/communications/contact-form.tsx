@@ -132,20 +132,20 @@ export function ContactForm({
   // Success state
   if (isSubmitted) {
     return (
-      <div className="rounded-xl border border-border/40 bg-sidebar p-8">
+      <div className="rounded-xl border border-border/40 bg-sidebar p-5">
         <div className="flex flex-col items-center text-center gap-4">
           <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center">
             <CheckCircle2 className="w-6 h-6 text-green-500" />
           </div>
           <div>
-            <p className="text-sm font-medium text-foreground tracking-tight">Message Sent</p>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-[15px] font-bold tracking-tight text-foreground">Message Sent</p>
+            <p className="text-sm text-muted-foreground leading-relaxed mt-1">
               We'll get back to you soon
             </p>
           </div>
           <button
             onClick={() => setIsSubmitted(false)}
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors font-medium"
           >
             Send another →
           </button>
@@ -155,11 +155,16 @@ export function ContactForm({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       {/* Type Selector */}
       <section>
-        <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Topic</p>
-        <div className="rounded-xl border border-border/40 bg-sidebar p-4">
+        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">
+          01. Topic
+        </h3>
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+          <p className="text-sm text-foreground leading-relaxed mb-4">
+            Select the type of inquiry:
+          </p>
           <div className="flex flex-wrap gap-2">
             {COMMUNICATION_TYPES.map(({ value, label }) => (
               <button
@@ -185,13 +190,15 @@ export function ContactForm({
 
       {/* Form Fields */}
       <section>
-        <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Details</p>
+        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">
+          02. Your Details
+        </h3>
         
         <form onSubmit={handleSubmit}>
           <div className="rounded-xl border border-border/40 bg-sidebar">
             {/* Name */}
             <div className="py-3 px-5 border-b border-border/20">
-              <p className="text-sm font-medium text-muted-foreground mb-1.5">Name</p>
+              <p className="text-sm font-semibold text-muted-foreground/70 mb-1.5">Name</p>
               <input
                 type="text"
                 value={name}
@@ -205,7 +212,7 @@ export function ContactForm({
 
             {/* Email */}
             <div className="py-3 px-5 border-b border-border/20">
-              <p className="text-sm font-medium text-muted-foreground mb-1.5">Email</p>
+              <p className="text-sm font-semibold text-muted-foreground/70 mb-1.5">Email</p>
               <input
                 type="email"
                 value={email}
@@ -219,8 +226,8 @@ export function ContactForm({
             {/* Phone (Optional) */}
             <div className="py-3 px-5 border-b border-border/20">
               <div className="flex items-center justify-between mb-1.5">
-                <p className="text-sm font-medium text-muted-foreground">Phone</p>
-                <span className="text-xs text-muted-foreground/70">Optional</span>
+                <p className="text-sm font-semibold text-muted-foreground/70">Phone</p>
+                <span className="text-xs text-muted-foreground/50">Optional</span>
               </div>
               <input
                 type="tel"
@@ -233,7 +240,7 @@ export function ContactForm({
 
             {/* Subject */}
             <div className="py-3 px-5 border-b border-border/20">
-              <p className="text-sm font-medium text-muted-foreground mb-1.5">Subject</p>
+              <p className="text-sm font-semibold text-muted-foreground/70 mb-1.5">Subject</p>
               <input
                 type="text"
                 value={subject}
@@ -248,8 +255,8 @@ export function ContactForm({
             {/* Message */}
             <div className="py-3 px-5">
               <div className="flex items-center justify-between mb-1.5">
-                <p className="text-sm font-medium text-muted-foreground">Message</p>
-                <span className="text-xs text-muted-foreground/70 tabular-nums">{message.length}/5000</span>
+                <p className="text-sm font-semibold text-muted-foreground/70">Message</p>
+                <span className="text-xs text-muted-foreground/50 tabular-nums">{message.length}/5000</span>
               </div>
               <textarea
                 value={message}
@@ -268,7 +275,7 @@ export function ContactForm({
             type="submit"
             disabled={isSubmitting}
             className={cn(
-              "w-full mt-4 h-12 rounded-xl text-sm font-medium transition-all",
+              "w-full mt-6 h-12 rounded-xl text-sm font-semibold transition-all",
               "bg-primary text-primary-foreground",
               "hover:bg-primary/90 active:scale-[0.99]",
               "disabled:opacity-50 disabled:cursor-not-allowed"

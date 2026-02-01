@@ -5,7 +5,6 @@
 
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
 import { ContactForm } from '@/components/communications';
 
 export const metadata: Metadata = {
@@ -19,43 +18,72 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-background pt-14 sm:pt-16">
-      <div className="max-w-2xl mx-auto px-6 py-8 sm:py-12 space-y-8">
+    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-2xl mx-auto">
         
-        {/* Back Link */}
-        <Link 
-          href="/faq" 
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Help Center
-        </Link>
-
         {/* Header */}
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">Contact Us</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            We typically respond within 24-48 hours
+        <div className="mb-12">
+          <p className="text-xs uppercase tracking-widest text-muted-foreground/70 mb-3">
+            Support
           </p>
+          <h1 className="text-xl font-semibold text-foreground tracking-tight">
+            Contact Us
+          </h1>
+        </div>
+
+        {/* Response Time Info Card */}
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5 mb-10">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm font-semibold text-muted-foreground/70">Response Time</p>
+              <p className="text-sm font-medium text-foreground mt-0.5">24-48 hours</p>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-muted-foreground/70">Email</p>
+              <a 
+                href="mailto:support@alifh.ae" 
+                className="text-sm font-medium text-primary hover:underline mt-0.5 inline-block"
+              >
+                support@alifh.ae
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Introduction */}
+        <div className="mb-10 py-5 border-y border-border/40">
+          <p className="text-sm text-foreground leading-relaxed">
+            Have a question, need support, or interested in a partnership? We're here to help.
+          </p>
+          <div className="flex flex-wrap items-center gap-2 mt-4">
+            <span className="text-xs text-muted-foreground/70">Quick links:</span>
+            <Link href="/faq" className="text-xs text-primary hover:underline font-medium">Help Center</Link>
+            <span className="text-muted-foreground/40">·</span>
+            <Link href="/privacy-policy" className="text-xs text-primary hover:underline font-medium">Privacy</Link>
+            <span className="text-muted-foreground/40">·</span>
+            <Link href="/terms-of-service" className="text-xs text-primary hover:underline font-medium">Terms</Link>
+          </div>
         </div>
 
         {/* Contact Form */}
         <ContactForm />
 
-        {/* Alternative Contact */}
-        <div className="pt-4 border-t border-border/20">
-          <p className="text-xs text-muted-foreground/60">
-            You can also reach us at{' '}
-            <a 
-              href="mailto:support@alifh.com" 
-              className="text-foreground hover:underline"
+        {/* Footer */}
+        <div className="mt-16 pt-6 border-t border-border/40">
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted-foreground/70">
+              © 2026 AISH CAPITALS FZCO
+            </p>
+            <Link 
+              href="/" 
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors font-medium"
             >
-              support@alifh.ae
-            </a>
-          </p>
+              Back to Home
+            </Link>
+          </div>
         </div>
 
       </div>
-    </div>
+    </section>
   );
 }

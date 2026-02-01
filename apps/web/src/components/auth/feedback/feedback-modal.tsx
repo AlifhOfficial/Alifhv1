@@ -1,14 +1,13 @@
 /**
  * Generic Feedback Modal - Alifh Design System
  * 
- * Reusable feedback modal for success/error/loading states
+ * Clean, minimal feedback modal for success/error/loading states
  */
 
 "use client";
 
-import { useEffect, useState } from "react";
-import { Loader2, CheckCircle2, XCircle, Info } from "lucide-react";
-import { cn } from "@/utils/cn";
+import { useEffect, useState, useRef } from "react";
+import { Loader2 } from "lucide-react";
 
 interface FeedbackModalProps {
   open: boolean;
@@ -31,16 +30,25 @@ export function FeedbackModal({
   title,
   message,
   loadingMessage = "Processing",
-  type = 'info',
 }: FeedbackModalProps) {
   const [showContent, setShowContent] = useState(false);
+  const contentTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (open) {
-      setTimeout(() => setShowContent(true), 100);
-    } else {
-      setShowContent(false);
+    if (contentTimeoutRef.current) {
+      clearTimeout(contentTimeoutRef.current);
+      contentTimeoutRef.current = null;
     }
+    if (!open) {
+      setShowContent(false);
+      return;
+    }
+    contentTimeoutRef.current = window.setTimeout(() => setShowContent(true), 50);
+    return () => {
+      if (contentTimeoutRef.current) {
+        clearTimeout(contentTimeoutRef.current);
+      }
+    };
   }, [open]);
 
   if (!open) return null;
@@ -48,26 +56,6 @@ export function FeedbackModal({
   const isError = !!error;
   const isSuccess = success && !isError;
   const isLoadingState = isLoading && !isError && !isSuccess;
-
-  const getIcon = () => {
-    if (isError) {
-      return <XCircle className="w-6 h-6 text-destructive" />;
-    }
-    if (isSuccess) {
-      return <CheckCircle2 className="w-6 h-6 text-green-500" />;
-    }
-    if (isLoadingState) {
-      return <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />;
-    }
-    return <Info className="w-6 h-6 text-primary" />;
-  };
-
-  const getIconBg = () => {
-    if (isError) return "bg-destructive/10";
-    if (isSuccess) return "bg-green-500/10";
-    if (isLoadingState) return "bg-muted/30";
-    return "bg-primary/10";
-  };
 
   const getTitle = () => {
     if (title) return title;
@@ -87,47 +75,43 @@ export function FeedbackModal({
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-background/40 backdrop-blur-2xl flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] bg-background/60 backdrop-blur-xl flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div 
-        className={cn(
-          "max-w-xs w-full bg-card border border-border/40 rounded-xl shadow-xl p-6",
-          "transform transition-all duration-200",
-          showContent ? "scale-100 opacity-100" : "scale-95 opacity-0"
-        )}
+        className={`max-w-[340px] w-full bg-card border border-border/50 rounded-2xl shadow-2xl p-6 transform transition-all duration-150 ease-out ${showContent ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex flex-col items-center space-y-4">
-          {/* Icon */}
-          <div className={cn("w-12 h-12 rounded-full flex items-center justify-center", getIconBg())}>
-            {getIcon()}
-          </div>
+        <div className="flex flex-col items-center text-center">
+          {/* Loading spinner only for loading state */}
+          {isLoadingState && (
+            <div className="mb-4">
+              <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
+            </div>
+          )}
+
+          {/* Title */}
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+            {getTitle()}
+          </h2>
           
-          {/* Content */}
-          <div className="text-center space-y-1">
-            <h2 className="text-base font-semibold tracking-tight text-foreground">
-              {getTitle()}
-            </h2>
-            
-            {getMessage() && (
-              <p className="text-sm text-muted-foreground">
-                {getMessage()}
-              </p>
-            )}
-          </div>
+          {/* Description */}
+          {getMessage() && (
+            <p className="text-[13px] text-muted-foreground mt-2 mb-6">
+              {getMessage()}
+            </p>
+          )}
 
           {/* Action button for error/success */}
           {(isError || isSuccess) && onClose && (
-            <button
-              onClick={onClose}
-              className={cn(
-                "w-full h-9 px-4 rounded-lg text-sm font-semibold transition-colors",
-                "bg-muted/30 text-foreground hover:bg-muted/50"
-              )}
-            >
-              {isError ? "Try again" : "Done"}
-            </button>
+            <div className="w-full space-y-3 mt-4">
+              <button
+                onClick={onClose}
+                className="w-full h-11 rounded-xl text-[15px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                {isError ? "Try again" : "Done"}
+              </button>
+            </div>
           )}
         </div>
       </div>

@@ -1,14 +1,12 @@
 /**
  * Email Sent Modal - Alifh Design System
  * 
- * Feedback modal after email sent with resend functionality
+ * Clean, minimal feedback modal after email sent
  */
 
 "use client";
 
-import { useEffect, useState } from "react";
-import { Mail, X } from "lucide-react";
-import { cn } from "@/utils/cn";
+import { useEffect, useState, useRef } from "react";
 
 interface EmailSentModalProps {
   open: boolean;
@@ -20,16 +18,16 @@ interface EmailSentModalProps {
 
 const EMAIL_CONTENT = {
   verification: {
-    title: "Check your inbox",
-    action: "verify your email",
+    title: "Check your email",
+    description: "We sent a verification link to",
   },
   reset: {
-    title: "Check your inbox", 
-    action: "reset your password",
+    title: "Check your email", 
+    description: "We sent a reset link to",
   },
   'magic-link': {
-    title: "Magic link sent",
-    action: "sign in",
+    title: "Check your email",
+    description: "We sent a magic link to",
   },
 } as const;
 
@@ -43,20 +41,30 @@ export function EmailSentModal({
   const [showContent, setShowContent] = useState(false);
   const [countdown, setCountdown] = useState(60);
   const [isResending, setIsResending] = useState(false);
+  const contentTimeoutRef = useRef<number | null>(null);
 
   const content = EMAIL_CONTENT[type];
 
   useEffect(() => {
-    if (open) {
-      setTimeout(() => setShowContent(true), 100);
-    } else {
+    if (contentTimeoutRef.current) {
+      clearTimeout(contentTimeoutRef.current);
+      contentTimeoutRef.current = null;
+    }
+    if (!open) {
       setShowContent(false);
       setCountdown(60);
+      return;
     }
+    contentTimeoutRef.current = window.setTimeout(() => setShowContent(true), 50);
+    return () => {
+      if (contentTimeoutRef.current) {
+        clearTimeout(contentTimeoutRef.current);
+      }
+    };
   }, [open]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || countdown <= 0) return;
 
     const timer = setInterval(() => {
       setCountdown((prev) => {
@@ -69,7 +77,7 @@ export function EmailSentModal({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [open]);
+  }, [open, countdown]);
 
   const handleResend = async () => {
     if (countdown > 0 || isResending) return;
@@ -89,77 +97,47 @@ export function EmailSentModal({
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-background/40 backdrop-blur-2xl flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] bg-background/60 backdrop-blur-xl flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div 
-        className={cn(
-          "max-w-sm w-full bg-card border border-border/40 rounded-xl shadow-xl p-6 relative",
-          "transform transition-all duration-200",
-          showContent ? "scale-100 opacity-100" : "scale-95 opacity-0"
-        )}
+        className={`max-w-[340px] w-full bg-card border border-border/50 rounded-2xl shadow-2xl p-6 transform transition-all duration-150 ease-out ${showContent ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
-          aria-label="Close"
-        >
-          <X className="w-4 h-4" />
-        </button>
+        <div className="flex flex-col items-center text-center">
+          {/* Title */}
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+            {content.title}
+          </h2>
+          
+          {/* Description */}
+          <p className="text-[13px] text-muted-foreground mt-2 mb-6">
+            {content.description}{" "}
+            <span className="font-medium text-foreground">{email}</span>
+          </p>
 
-        <div className="flex flex-col items-center space-y-4">
-          {/* Mail Icon */}
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-            <Mail className="w-5 h-5 text-primary" />
+          {/* Actions */}
+          <div className="w-full space-y-3">
+            <button
+              onClick={onClose}
+              className="w-full h-11 rounded-xl text-[15px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              Back to sign in
+            </button>
           </div>
 
-          {/* Content */}
-          <div className="text-center space-y-1">
-            <h2 className="text-base font-semibold tracking-tight text-foreground">
-              {content.title}
-            </h2>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              We sent a link to <span className="font-medium text-foreground">{email}</span> to {content.action}.
-            </p>
-          </div>
-
-          {/* Resend Section */}
-          <div className="w-full rounded-xl border border-border/40 bg-muted/20 p-4">
-            <div className="text-center space-y-2">
-              <p className="text-xs text-muted-foreground">
-                Didn't get it? Check spam or
-              </p>
-              <button
-                onClick={handleResend}
-                disabled={countdown > 0 || isResending}
-                className={cn(
-                  "text-sm font-semibold transition-colors",
-                  countdown > 0 || isResending
-                    ? "text-muted-foreground cursor-not-allowed"
-                    : "text-primary hover:text-primary/80"
-                )}
-              >
-                {isResending 
-                  ? "Sending..." 
-                  : countdown > 0 
-                    ? `Resend in ${countdown}s`
-                    : "Resend email"
-                }
-              </button>
-            </div>
-          </div>
-
-          {/* Back button */}
+          {/* Resend */}
           <button
-            onClick={onClose}
-            className={cn(
-              "w-full h-10 px-4 rounded-lg text-sm font-semibold transition-colors",
-              "bg-muted/30 text-foreground hover:bg-muted/50"
-            )}
+            onClick={handleResend}
+            disabled={countdown > 0 || isResending}
+            className={`mt-5 text-[13px] transition-colors ${countdown > 0 || isResending ? "text-muted-foreground/60 cursor-not-allowed" : "text-muted-foreground/60 hover:text-muted-foreground"}`}
           >
-            Back to sign in
+            {isResending 
+              ? "Sending..." 
+              : countdown > 0 
+                ? `Resend in ${countdown}s`
+                : "Resend email"
+            }
           </button>
         </div>
       </div>

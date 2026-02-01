@@ -46,37 +46,35 @@ export function SignUpModal({
       onClick={() => onOpenChange(false)}
     >
       <div 
-        className="w-full max-w-[900px] bg-card border border-border/50 rounded-2xl shadow-2xl flex overflow-hidden"
+        className="w-full max-w-[440px] md:max-w-[720px] bg-card border border-border/50 rounded-2xl shadow-2xl flex overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Left Image Side */}
-        <div className="hidden md:block w-[50%] relative">
-          <img 
-            src="/Abstract/sign.png" 
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
-          
+        {/* Left Typography Side - 40% */}
+        <div className="hidden md:flex w-[240px] relative bg-black flex-shrink-0 flex-col justify-between p-8">
           {/* Logo */}
-          <div className="absolute top-6 left-6">
+          <div>
             <img 
               src="/assets/Alifh_logo_White.svg" 
               alt="Alifh"
-              className="h-5 w-auto opacity-90"
+              className="h-5 w-auto"
             />
           </div>
           
-          {/* Tagline */}
-          <div className="absolute bottom-6 left-6 right-6">
-            <p className="text-white/80 text-[13px] font-medium">
-              Automotive Excellence
-            </p>
+          {/* Bold Typography - Horizontal */}
+          <div className="flex-1 flex items-center justify-center">
+            <h3 className="text-4xl font-bold text-white tracking-tight">
+              Alifh.
+            </h3>
           </div>
+          
+          {/* Tagline - Horizontal */}
+          <p className="text-white/40 text-[10px] font-medium">
+            Your move.
+          </p>
         </div>
 
         {/* Right Form Side */}
-        <div className="flex-1 flex flex-col min-h-[520px] max-h-[90vh]">
+        <div className="flex-1 flex flex-col min-h-[520px] md:min-h-[560px] max-h-[85vh]">
           {/* Header */}
           <div className="flex items-start justify-between p-6 pb-0">
             <div>
@@ -85,7 +83,7 @@ export function SignUpModal({
             </div>
             <button
               onClick={() => onOpenChange(false)}
-              className="p-2 -m-2 rounded-lg text-muted-foreground hover:text-foreground transition-colors"
+              className="p-2 -m-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
               aria-label="Close"
             >
               <X className="w-4 h-4" />

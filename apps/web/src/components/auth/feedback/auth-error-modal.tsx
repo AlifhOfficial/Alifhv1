@@ -1,14 +1,12 @@
 /**
  * Auth Error Modal - Alifh Design System
  * 
- * Displays auth errors with actionable next steps
+ * Clean, minimal error modal with actionable next steps
  */
 
 "use client";
 
-import { useEffect, useState } from "react";
-import { XCircle, X } from "lucide-react";
-import { cn } from "@/utils/cn";
+import { useEffect, useState, useRef } from "react";
 import { AuthErrorInfo, AuthErrorAction } from "@/lib/auth/errors";
 
 interface AuthErrorModalProps {
@@ -25,13 +23,23 @@ export function AuthErrorModal({
   onAction,
 }: AuthErrorModalProps) {
   const [showContent, setShowContent] = useState(false);
+  const contentTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (open) {
-      setTimeout(() => setShowContent(true), 100);
-    } else {
-      setShowContent(false);
+    if (contentTimeoutRef.current) {
+      clearTimeout(contentTimeoutRef.current);
+      contentTimeoutRef.current = null;
     }
+    if (!open) {
+      setShowContent(false);
+      return;
+    }
+    contentTimeoutRef.current = window.setTimeout(() => setShowContent(true), 50);
+    return () => {
+      if (contentTimeoutRef.current) {
+        clearTimeout(contentTimeoutRef.current);
+      }
+    };
   }, [open]);
 
   if (!open) return null;
@@ -46,51 +54,30 @@ export function AuthErrorModal({
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-background/40 backdrop-blur-2xl flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] bg-background/60 backdrop-blur-xl flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div 
-        className={cn(
-          "max-w-sm w-full bg-card border border-border/40 rounded-xl shadow-xl p-6 relative",
-          "transform transition-all duration-200",
-          showContent ? "scale-100 opacity-100" : "scale-95 opacity-0"
-        )}
+        className={`max-w-[340px] w-full bg-card border border-border/50 rounded-2xl shadow-2xl p-6 transform transition-all duration-150 ease-out ${showContent ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
-          aria-label="Close"
-        >
-          <X className="w-4 h-4" />
-        </button>
-
-        <div className="flex flex-col items-center space-y-4">
-          {/* Error Icon */}
-          <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
-            <XCircle className="w-6 h-6 text-destructive" />
-          </div>
+        <div className="flex flex-col items-center text-center">
+          {/* Title */}
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+            {errorInfo.title}
+          </h2>
           
-          {/* Content */}
-          <div className="text-center space-y-1">
-            <h2 className="text-base font-semibold tracking-tight text-foreground">
-              {errorInfo.title}
-            </h2>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {errorInfo.message}
-            </p>
-          </div>
+          {/* Description */}
+          <p className="text-[13px] text-muted-foreground mt-2 mb-6">
+            {errorInfo.message}
+          </p>
 
-          {/* Action Buttons */}
-          <div className="w-full space-y-2 pt-2">
+          {/* Actions */}
+          <div className="w-full space-y-3">
             {errorInfo.action && (
               <button
                 onClick={handleAction}
-                className={cn(
-                  "w-full h-10 px-4 rounded-lg text-sm font-semibold transition-colors",
-                  "bg-primary text-primary-foreground hover:bg-primary/90"
-                )}
+                className="w-full h-11 rounded-xl text-[15px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
               >
                 {errorInfo.actionLabel || "Try again"}
               </button>
@@ -98,26 +85,20 @@ export function AuthErrorModal({
             
             <button
               onClick={onClose}
-              className={cn(
-                "w-full h-10 px-4 rounded-lg text-sm font-semibold transition-colors",
-                "bg-muted/30 text-foreground hover:bg-muted/50"
-              )}
+              className="w-full h-11 rounded-xl text-[15px] font-semibold border border-border/50 bg-muted/20 text-foreground hover:bg-muted/40 transition-colors"
             >
               {errorInfo.action ? "Cancel" : "Close"}
             </button>
           </div>
 
           {/* Support hint */}
-          <p className="text-xs text-muted-foreground/60 text-center pt-1">
-            Need help?{" "}
-            <a 
-              href="/contact" 
-              className="font-medium text-foreground hover:text-primary transition-colors"
-              onClick={(e) => e.stopPropagation()}
-            >
-              Contact support
-            </a>
-          </p>
+          <a 
+            href="/contact" 
+            className="mt-5 text-[13px] text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+            onClick={(e) => e.stopPropagation()}
+          >
+            Contact support
+          </a>
         </div>
       </div>
     </div>

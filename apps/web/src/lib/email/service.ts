@@ -33,9 +33,6 @@ export interface EmailData {
   text?: string;
 }
 
-// Logo URL (hosted on production domain)
-const LOGO_URL = 'https://alifh.ae/assets/Alifh_logo_Black.svg';
-
 /**
  * Clean email template - White background, minimal design
  */
@@ -57,7 +54,7 @@ const emailTemplate = (content: string) => `
           <!-- Logo -->
           <tr>
             <td style="padding-bottom: 32px;">
-              <img src="${LOGO_URL}" alt="Alifh" width="80" height="24" style="display: block; border: 0;" />
+              <span style="font-size: 24px; font-weight: 700; color: #18181B; letter-spacing: -0.5px;">Alifh</span>
             </td>
           </tr>
           

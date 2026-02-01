@@ -6,8 +6,7 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, ArrowLeft, X, CheckCircle2 } from "lucide-react";
-import { cn } from "@/utils/cn";
+import { ArrowLeft, X } from "lucide-react";
 
 interface MagicLinkModalProps {
   open: boolean;
@@ -43,48 +42,39 @@ export function MagicLinkModal({
   if (success) {
     return (
       <div 
-        className="fixed inset-0 z-[9999] bg-background/40 backdrop-blur-2xl flex items-center justify-center p-4"
+        className="fixed inset-0 z-[9999] bg-background/60 backdrop-blur-xl flex items-center justify-center p-4"
         onClick={() => onOpenChange(false)}
       >
         <div 
-          className="max-w-sm w-full bg-card border border-border/40 rounded-xl shadow-xl p-6"
+          className="max-w-[340px] w-full bg-card border border-border/50 rounded-2xl shadow-2xl p-6"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex flex-col items-center space-y-4">
-            {/* Success Icon */}
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <Mail className="w-6 h-6 text-primary" />
+          <div className="flex flex-col items-center text-center">
+            {/* Title */}
+            <h2 className="text-xl font-semibold tracking-tight text-foreground">
+              Check your email
+            </h2>
+            
+            {/* Description */}
+            <p className="text-[13px] text-muted-foreground mt-2 mb-6">
+              We sent a magic link to{" "}
+              <span className="font-medium text-foreground">{successEmail}</span>
+            </p>
+
+            {/* Actions */}
+            <div className="w-full space-y-3">
+              <button
+                onClick={onBackToSignIn}
+                className="w-full h-11 rounded-xl text-[15px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                Back to sign in
+              </button>
             </div>
 
-            {/* Content */}
-            <div className="text-center space-y-1">
-              <h2 className="text-base font-semibold tracking-tight text-foreground">
-                Check your email
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                We sent a magic link to <span className="font-medium text-foreground">{successEmail}</span>
-              </p>
-            </div>
-
-            {/* Info */}
-            <div className="w-full rounded-xl border border-border/40 bg-muted/20 p-4">
-              <p className="text-xs text-muted-foreground text-center">
-                Click the link in your email to sign in. Expires in 10 minutes.
-              </p>
-            </div>
-
-            {/* Back button */}
-            <button
-              onClick={onBackToSignIn}
-              className={cn(
-                "w-full h-10 px-4 rounded-lg text-sm font-semibold transition-colors",
-                "bg-muted/30 text-foreground hover:bg-muted/50",
-                "flex items-center justify-center gap-2"
-              )}
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to sign in
-            </button>
+            {/* Hint */}
+            <p className="mt-5 text-[13px] text-muted-foreground/60">
+              Expires in 10 minutes · Check spam
+            </p>
           </div>
         </div>
       </div>
@@ -93,81 +83,72 @@ export function MagicLinkModal({
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-background/40 backdrop-blur-2xl flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] bg-background/60 backdrop-blur-xl flex items-center justify-center p-4"
       onClick={() => onOpenChange(false)}
     >
       <div 
-        className="max-w-sm w-full bg-card border border-border/40 rounded-xl shadow-xl"
+        className="max-w-[340px] w-full bg-card border border-border/50 rounded-2xl shadow-2xl p-6"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="p-6 relative">
+        {/* Header with back/close */}
+        <div className="flex items-center justify-between mb-6">
           <button
             onClick={onBackToSignIn}
-            className="absolute top-4 left-4 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
+            className="p-2 -ml-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
             aria-label="Back"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
-          
           <button
             onClick={() => onOpenChange(false)}
-            className="absolute top-4 right-4 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
+            className="p-2 -mr-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
             aria-label="Close"
           >
             <X className="w-4 h-4" />
           </button>
-
-          <div className="pt-6">
-            <h2 className="text-xl font-semibold tracking-tight text-foreground">Magic link</h2>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              Sign in without a password
-            </p>
-          </div>
         </div>
 
-        {/* Content */}
-        <div className="px-6 pb-6 space-y-5">
+        <div className="flex flex-col items-center text-center">
+          {/* Title */}
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+            Magic link
+          </h2>
+          
+          <p className="text-[13px] text-muted-foreground mt-2 mb-6">
+            Sign in without a password
+          </p>
+
           {/* Error */}
           {error && (
-            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
-              <p className="text-sm text-destructive">{error}</p>
+            <div className="w-full rounded-xl border border-destructive/30 bg-destructive/5 p-3 mb-4">
+              <p className="text-[13px] text-destructive">{error}</p>
             </div>
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1.5">
-              <label htmlFor="email" className="text-sm font-semibold text-muted-foreground/70">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full h-10 px-3 bg-muted/20 border border-border/40 rounded-lg text-sm font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors disabled:opacity-50"
-                placeholder="you@example.com"
-                required
-                disabled={isLoading}
-              />
-            </div>
+          <form onSubmit={handleSubmit} className="w-full space-y-4">
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full h-11 px-4 bg-muted/30 border border-border/50 rounded-xl text-sm font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all disabled:opacity-50"
+              placeholder="you@example.com"
+              required
+              disabled={isLoading}
+            />
 
             <button
               type="submit"
               disabled={isLoading || !email}
-              className={cn(
-                "w-full h-10 px-4 rounded-lg text-sm font-semibold transition-colors",
-                "bg-primary text-primary-foreground hover:bg-primary/90",
-                "disabled:opacity-50 disabled:cursor-not-allowed"
-              )}
+              className="w-full h-11 rounded-xl text-[15px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Sending..." : "Send magic link"}
             </button>
           </form>
 
-          {/* Info */}
-          <p className="text-xs text-muted-foreground text-center">
+          {/* Hint */}
+          <p className="mt-5 text-[13px] text-muted-foreground/60">
             Only for existing accounts
           </p>
         </div>

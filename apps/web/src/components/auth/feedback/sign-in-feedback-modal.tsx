@@ -7,8 +7,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Loader2, CheckCircle2, XCircle } from "lucide-react";
-import { cn } from "@/utils/cn";
+import { Loader2, CheckCircle2 } from "lucide-react";
 
 interface SignInFeedbackModalProps {
   open: boolean;
@@ -27,6 +26,7 @@ export function SignInFeedbackModal({
 }: SignInFeedbackModalProps) {
   const [showContent, setShowContent] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [dots, setDots] = useState("");
   const contentTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -37,10 +37,11 @@ export function SignInFeedbackModal({
     if (!open) {
       setShowContent(false);
       setShowSuccess(false);
+      setDots("");
       return;
     }
 
-    contentTimeoutRef.current = window.setTimeout(() => setShowContent(true), 100);
+    contentTimeoutRef.current = window.setTimeout(() => setShowContent(true), 50);
 
     return () => {
       if (contentTimeoutRef.current) {
@@ -58,59 +59,70 @@ export function SignInFeedbackModal({
     }
   }, [success, open]);
 
+  // Dots animation for loading/redirecting states
+  useEffect(() => {
+    if (!open || error) return;
+    
+    const interval = setInterval(() => {
+      setDots(prev => prev.length >= 3 ? "" : prev + ".");
+    }, 400);
+
+    return () => clearInterval(interval);
+  }, [open, error]);
+
   if (!open) return null;
 
   const isError = !!error;
+  const isLoadingState = isLoading && !isError && !showSuccess;
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-background/40 backdrop-blur-2xl flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] bg-background/60 backdrop-blur-xl flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div 
-        className={cn(
-          "max-w-xs w-full bg-card border border-border/40 rounded-xl shadow-xl p-6",
-          "transform transition-all duration-200",
-          showContent ? "scale-100 opacity-100" : "scale-95 opacity-0"
-        )}
+        className={`max-w-[340px] w-full bg-card border border-border/50 rounded-2xl shadow-2xl p-6 transform transition-all duration-150 ease-out ${showContent ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex flex-col items-center space-y-4">
-          {/* Icon */}
-          <div className={cn(
-            "w-12 h-12 rounded-full flex items-center justify-center"
-          )}>
-            {isError ? (
-              <XCircle className="w-6 h-6 text-destructive" />
-            ) : showSuccess ? (
-              <CheckCircle2 className="w-6 h-6 text-green-500" />
-            ) : (
+        <div className="flex flex-col items-center text-center">
+          {/* Loading spinner */}
+          {isLoadingState && (
+            <div className="mb-4">
               <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
-            )}
-          </div>
+            </div>
+          )}
+
+          {/* Success icon */}
+          {showSuccess && (
+            <div className="mb-4">
+              <CheckCircle2 className="w-6 h-6 text-green-500" />
+            </div>
+          )}
+
+          {/* Title */}
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+            {isError ? "Sign in failed" : showSuccess ? "Welcome back" : "Signing in"}
+          </h2>
           
-          {/* Content */}
-          <div className="text-center space-y-1">
-            <h2 className="text-base font-semibold tracking-tight text-foreground">
-              {isError ? "Sign in failed" : showSuccess ? "Welcome back" : "Signing in"}
-            </h2>
-            
-            <p className="text-sm text-muted-foreground">
-              {isError ? error : showSuccess ? "Redirecting you now..." : "Verifying credentials..."}
-            </p>
-          </div>
+          {/* Description with dots animation */}
+          <p className="text-[13px] text-muted-foreground mt-2">
+            {isError ? error : showSuccess ? (
+              <span>Redirecting you now<span className="inline-block w-4 text-left">{dots}</span></span>
+            ) : (
+              <span>Verifying credentials<span className="inline-block w-4 text-left">{dots}</span></span>
+            )}
+          </p>
 
           {/* Error action */}
           {isError && onClose && (
-            <button
-              onClick={onClose}
-              className={cn(
-                "w-full h-9 px-4 rounded-lg text-sm font-semibold transition-colors",
-                "bg-muted/30 text-foreground hover:bg-muted/50"
-              )}
-            >
-              Try again
-            </button>
+            <div className="w-full space-y-3 mt-6">
+              <button
+                onClick={onClose}
+                className="w-full h-11 rounded-xl text-[15px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                Try again
+              </button>
+            </div>
           )}
         </div>
       </div>

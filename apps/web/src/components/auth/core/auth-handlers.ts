@@ -319,7 +319,7 @@ export const requestPasswordReset = async (
 // Magic Link Handler
 export const sendMagicLink = async (
   email: string,
-  callbackURL: string = "/dashboard"
+  callbackURL: string = "/"
 ): Promise<{ success: boolean; error?: string }> => {
   return safeAuthOperation(async () => {
     const emailValidation = validateEmail(email);

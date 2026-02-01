@@ -149,11 +149,11 @@ export function OTPVerificationModal({
       onClick={() => onOpenChange(false)}
     >
       <div 
-        className="max-w-[420px] w-full bg-card border border-border/50 rounded-2xl shadow-2xl p-8 relative"
+        className="max-w-[340px] w-full bg-card border border-border/50 rounded-2xl shadow-2xl p-6"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6">
           <button
             onClick={onBack}
             className="p-2 -ml-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
@@ -170,93 +170,85 @@ export function OTPVerificationModal({
           </button>
         </div>
 
-        <div className="text-center space-y-3 mb-8">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+        <div className="flex flex-col items-center text-center">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">
             Verify your email
           </h2>
-          <p className="text-[13px] text-muted-foreground">
-            We sent a 6-digit code to{" "}
+          <p className="text-[13px] text-muted-foreground mt-2 mb-6">
+            We sent a code to{" "}
             <span className="font-medium text-foreground">{email}</span>
           </p>
-        </div>
 
-        {/* OTP Input */}
-        <div className="flex justify-center gap-3 mb-8">
-          {otp.map((digit, index) => (
-            <input
-              key={index}
-              ref={(el) => { inputRefs.current[index] = el; }}
-              type="text"
-              inputMode="numeric"
-              maxLength={1}
-              value={digit}
-              onChange={(e) => handleChange(index, e.target.value)}
-              onKeyDown={(e) => handleKeyDown(index, e)}
-              onPaste={handlePaste}
-              disabled={isLoading}
-              className={cn(
-                "w-12 h-14 text-center text-xl font-semibold",
-                "bg-muted/30 border border-border/50 rounded-xl",
-                "text-foreground placeholder:text-muted-foreground/50",
-                "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50",
-                "transition-all disabled:opacity-50",
-                error && "border-destructive/50 focus:ring-destructive/30"
-              )}
-              aria-label={`Digit ${index + 1}`}
-            />
-          ))}
-        </div>
-
-        {/* Error Message */}
-        {error && (
-          <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3 mb-6">
-            <p className="text-[13px] text-destructive text-center">{error}</p>
+          {/* OTP Input */}
+          <div className="flex justify-center gap-2 mb-6">
+            {otp.map((digit, index) => (
+              <input
+                key={index}
+                ref={(el) => { inputRefs.current[index] = el; }}
+                type="text"
+                inputMode="numeric"
+                maxLength={1}
+                value={digit}
+                onChange={(e) => handleChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                onPaste={handlePaste}
+                disabled={isLoading}
+                className={cn(
+                  "w-10 h-12 text-center text-lg font-semibold",
+                  "bg-muted/30 border border-border/50 rounded-xl",
+                  "text-foreground placeholder:text-muted-foreground/50",
+                  "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50",
+                  "transition-all disabled:opacity-50",
+                  error && "border-destructive/50 focus:ring-destructive/30"
+                )}
+                aria-label={`Digit ${index + 1}`}
+              />
+            ))}
           </div>
-        )}
 
-        {/* Verify Button */}
-        <button
-          onClick={handleSubmit}
-          disabled={isLoading || otp.join("").length !== 6}
-          className={cn(
-            "w-full h-11 px-4 rounded-xl text-sm font-semibold transition-colors",
-            "bg-primary text-primary-foreground hover:bg-primary/90",
-            "disabled:opacity-50 disabled:cursor-not-allowed",
-            "flex items-center justify-center gap-2"
+          {/* Error Message */}
+          {error && (
+            <div className="w-full rounded-xl border border-destructive/30 bg-destructive/5 p-3 mb-4">
+              <p className="text-[13px] text-destructive text-center">{error}</p>
+            </div>
           )}
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Verifying...
-            </>
-          ) : (
-            "Verify Email"
-          )}
-        </button>
 
-        {/* Resend Section */}
-        <div className="mt-8 text-center">
-          <p className="text-[13px] text-muted-foreground">
-            Didn't receive the code?{" "}
+          {/* Actions */}
+          <div className="w-full space-y-3">
             <button
-              onClick={handleResend}
-              disabled={countdown > 0 || isResending}
-              className={cn(
-                "font-semibold transition-colors",
-                countdown > 0 || isResending
-                  ? "text-muted-foreground cursor-not-allowed"
-                  : "text-primary hover:text-primary/80"
-              )}
+              onClick={handleSubmit}
+              disabled={isLoading || otp.join("").length !== 6}
+              className="w-full h-11 rounded-xl text-[15px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {isResending
-                ? "Sending..."
-                : countdown > 0
-                  ? `Resend in ${countdown}s`
-                  : "Resend code"
-              }
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Verifying...
+                </>
+              ) : (
+                "Verify"
+              )}
             </button>
-          </p>
+          </div>
+
+          {/* Resend */}
+          <button
+            onClick={handleResend}
+            disabled={countdown > 0 || isResending}
+            className={cn(
+              "mt-5 text-[13px] transition-colors",
+              countdown > 0 || isResending
+                ? "text-muted-foreground/60 cursor-not-allowed"
+                : "text-muted-foreground/60 hover:text-muted-foreground"
+            )}
+          >
+            {isResending
+              ? "Sending..."
+              : countdown > 0
+                ? `Resend in ${countdown}s`
+                : "Resend code"
+            }
+          </button>
         </div>
       </div>
     </div>
