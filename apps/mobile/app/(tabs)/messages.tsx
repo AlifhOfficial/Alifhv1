@@ -1,21 +1,21 @@
-import { View, Text, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useColor } from '@/hooks/useColor';
-import { FONT_FAMILY_BOLD, FONT_FAMILY } from '@/theme/globals';
+/**
+ * Messages Tab Screen
+ */
+
+import { StyleSheet, View, Text } from 'react-native';
+
+import { Colors } from '@/constants/theme';
+import { useTheme } from '@/context/theme-context';
 
 export default function MessagesScreen() {
-  const insets = useSafeAreaInsets();
-  const bg = useColor('background');
-  const fg = useColor('foreground');
-  const mutedFg = useColor('mutedForeground');
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
 
   return (
-    <View style={[styles.container, { backgroundColor: bg, paddingTop: insets.top }]}>
-      <Text style={[styles.title, { color: fg, fontFamily: FONT_FAMILY_BOLD }]}>
-        Messages
-      </Text>
-      <Text style={[styles.subtitle, { color: mutedFg, fontFamily: FONT_FAMILY }]}>
-        Your conversations will appear here
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.title, { color: colors.text }]}>Messages</Text>
+      <Text style={[styles.subtitle, { color: colors.muted }]}>
+        Your conversations
       </Text>
     </View>
   );
@@ -26,14 +26,14 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 24,
+    padding: 20,
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
+    fontWeight: 'bold',
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 14,
-    textAlign: 'center',
+    fontSize: 16,
   },
 });
