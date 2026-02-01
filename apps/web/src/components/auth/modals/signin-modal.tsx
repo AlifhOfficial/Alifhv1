@@ -132,7 +132,7 @@ export function SignInModal({
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     autoComplete="username webauthn"
-                    className="w-full h-11 px-3.5 pr-11 bg-muted/30 border border-border/50 rounded-xl text-[15px] text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all disabled:opacity-50"
+                    className="w-full h-11 px-3.5 pr-11 bg-muted/30 border border-border/50 rounded-xl text-base text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all disabled:opacity-50"
                     placeholder="you@example.com"
                     required
                     disabled={isLoading || isPasskeyLoading}
@@ -172,7 +172,7 @@ export function SignInModal({
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full h-11 px-3.5 pr-14 bg-muted/30 border border-border/50 rounded-xl text-[15px] text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all disabled:opacity-50"
+                    className="w-full h-11 px-3.5 pr-14 bg-muted/30 border border-border/50 rounded-xl text-base text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all disabled:opacity-50"
                     placeholder="••••••••"
                     required
                     disabled={isLoading || isPasskeyLoading}

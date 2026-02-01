@@ -194,7 +194,7 @@ export function OTPVerificationModal({
                 onPaste={handlePaste}
                 disabled={isLoading}
                 className={cn(
-                  "w-10 h-12 text-center text-lg font-semibold",
+                  "w-10 h-12 text-center text-base font-semibold",
                   "bg-muted/30 border border-border/50 rounded-xl",
                   "text-foreground placeholder:text-muted-foreground/50",
                   "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50",
