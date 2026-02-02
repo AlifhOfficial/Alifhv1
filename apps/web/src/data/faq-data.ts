@@ -219,7 +219,7 @@ export const faqData: FAQCategory[] = [
       {
         id: "partners-profile",
         question: "What does my Alifh partner profile show to buyers?",
-        answer: "Your partner profile displays: your showroom name and logo, current inventory, total cars sold, average response time, Google Reviews rating (if synced), location with map, operating hours, and contact information.",
+        answer: "Your partner profile displays: your showroom name and logo, current inventory, total cars sold, average response time, Google Rating (if synced), location with map, operating hours, and contact information.",
         keywords: ["profile", "brand", "page", "show", "display", "google"],
       },
       {

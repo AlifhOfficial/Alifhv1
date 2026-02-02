@@ -275,9 +275,10 @@ export function TermsOfService() {
                 <div className="py-3">
                   <p className="text-sm font-semibold text-foreground mb-2">Refunds</p>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Upon cancellation, a full refund for the current billing month is issued. 
-                    Approved refunds are processed within fourteen (14) business days. ALIFH may 
-                    refuse refunds where there is evidence of fraud or abuse.
+                    Upon cancellation, customers may request a full refund for the current billing 
+                    month. Refunds are not automatic and are subject to approval. Approved refunds 
+                    are processed within fourteen (14) business days. ALIFH may refuse refunds 
+                    where there is evidence of fraud or abuse.
                   </p>
                 </div>
               </div>

@@ -15,17 +15,46 @@ import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 // INFOGRAPHIC: Partner Hero - Listing UI video showcase
 // ============================================================================
 
+import { useState, useRef, useEffect } from 'react';
+
 function HeroInfographic() {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Check if already loaded (cached)
+    if (video.readyState >= 3) {
+      setIsLoaded(true);
+      return;
+    }
+
+    const handleCanPlay = () => setIsLoaded(true);
+    video.addEventListener('canplay', handleCanPlay);
+    
+    return () => video.removeEventListener('canplay', handleCanPlay);
+  }, []);
+
   return (
     <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-12">
-      <div className="rounded-lg overflow-hidden shadow-2xl border border-border/40">
+      <div className="rounded-lg overflow-hidden shadow-2xl border border-border/40 relative">
+        {/* Loading skeleton */}
+        {!isLoaded && (
+          <div className="absolute inset-0 bg-muted animate-pulse flex items-center justify-center">
+            <div className="w-12 h-12 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+          </div>
+        )}
         <video 
+          ref={videoRef}
           src="/Marketing/Hero2.mp4" 
           autoPlay 
           loop 
           muted 
           playsInline
-          className="w-full h-auto block"
+          preload="auto"
+          className={`w-full h-auto block transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         />
       </div>
     </div>

@@ -148,6 +148,7 @@ export const CAR_MAKES = [
   'Volkswagen',
   'Volvo',
   'Xpeng',
+  'Other',
 ] as const;
 
 export type CarMake = (typeof CAR_MAKES)[number];
@@ -225,6 +226,7 @@ export const CAR_MODELS: Record<string, readonly string[]> = {
   'Volkswagen': ['Arteon', 'Atlas', 'Beetle', 'Golf', 'ID.3', 'ID.4', 'ID.5', 'ID.Buzz', 'Jetta', 'Passat', 'Polo', 'T-Cross', 'T-Roc', 'Taos', 'Teramont', 'Tiguan', 'Touareg', 'Transporter'],
   'Volvo': ['C40', 'EX30', 'EX90', 'S60', 'S90', 'V60', 'V90', 'XC40', 'XC60', 'XC90'],
   'Xpeng': ['G3', 'G6', 'G9', 'P5', 'P7', 'X9'],
+  'Other': [],
 } as const;
 
 // ============================================================================

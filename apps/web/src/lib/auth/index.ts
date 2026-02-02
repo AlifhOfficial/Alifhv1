@@ -511,6 +511,7 @@ export const auth = betterAuth({
     "http://192.168.1.14:3000",
     "http://192.168.1.14:8081",
     "exp://192.168.1.14:8081",
+    "https://efb83969451f.ngrok-free.app",
   ].filter(Boolean),
 
   advanced: {

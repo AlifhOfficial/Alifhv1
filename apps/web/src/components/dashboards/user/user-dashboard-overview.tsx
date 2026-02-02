@@ -200,19 +200,11 @@ export function UserDashboardOverview() {
         <header>
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div className="space-y-2 sm:space-y-3">
-              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground/90">
-                  {greeting}, {firstName}
-                </h1>
-                <span className="px-2 py-0.5 rounded text-xs font-medium bg-muted/50 text-muted-foreground">
-                  Experimental
-                </span>
-              </div>
+              <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground/90">
+                {greeting}, {firstName}
+              </h1>
               <p className="text-xs sm:text-sm text-muted-foreground">
                 Here's your activity overview · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-              </p>
-              <p className="text-xs text-muted-foreground/60">
-                Note: Beta testing — data may not reflect accurately
               </p>
             </div>
             
@@ -228,7 +220,7 @@ export function UserDashboardOverview() {
           <div className="p-4 sm:p-6 flex flex-col gap-1.5 sm:gap-2">
             <StatLabel 
               label="Active" 
-              tooltip="Number of listings currently live and visible to buyers" 
+              tooltip="Approximate count of your live listings visible to buyers" 
             />
             <span className="text-xl sm:text-2xl font-semibold text-blue-500">
               {isLoading ? '—' : (stats?.activeListings ?? 0)}
@@ -237,7 +229,7 @@ export function UserDashboardOverview() {
           <div className="p-4 sm:p-6 flex flex-col gap-1.5 sm:gap-2">
             <StatLabel 
               label="Views" 
-              tooltip="Total number of times your listings have been viewed" 
+              tooltip="Estimated total views across all your listings" 
             />
             <span className="text-xl sm:text-2xl font-semibold text-purple-500">
               {isLoading ? '—' : formatNumber(stats?.totalViews ?? 0)}
@@ -246,7 +238,7 @@ export function UserDashboardOverview() {
           <div className="p-4 sm:p-6 flex flex-col gap-1.5 sm:gap-2">
             <StatLabel 
               label="Saved" 
-              tooltip="How many times users have saved your listings to favorites" 
+              tooltip="Approximate number of times your listings were saved" 
             />
             <span className="text-xl sm:text-2xl font-semibold text-amber-500">
               {isLoading ? '—' : formatNumber(stats?.totalSaves ?? 0)}
@@ -255,7 +247,7 @@ export function UserDashboardOverview() {
           <div className="p-4 sm:p-6 flex flex-col gap-1.5 sm:gap-2">
             <StatLabel 
               label="Sold" 
-              tooltip="Total number of listings you've marked as sold" 
+              tooltip="Listings you've marked as sold" 
             />
             <span className="text-xl sm:text-2xl font-semibold text-green-500">
               {isLoading ? '—' : formatNumber(stats?.soldCount ?? 0)}
@@ -386,6 +378,11 @@ export function UserDashboardOverview() {
             Browse Listings
           </Link>
         </div>
+
+        {/* Footer Note */}
+        <p className="text-xs text-muted-foreground/60 text-center pt-2">
+          Stats are approximate and may take time to update
+        </p>
 
     </div>
   );

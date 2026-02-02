@@ -31,14 +31,14 @@ export function PartnerBrandSection() {
 
         {/* Description */}
         <p className="text-base text-muted-foreground leading-relaxed max-w-lg mx-auto text-center mb-16">
-          Others show your name and phone. We show inventory, response time, Google reviews, location—everything that builds trust.
+          Others show your name and phone. We show inventory, response time, Google rating, location—everything that builds trust.
         </p>
 
         {/* Feature highlights */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
           <FeatureCard 
             icon={Star}
-            title="Google Reviews sync"
+            title="Google Rating sync"
             description="One tap. We handle the rest."
           />
           <FeatureCard 
