@@ -7,7 +7,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 export default function GlobalError({
   error,
@@ -16,75 +16,51 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
-    setMounted(true);
     console.error('Global Error:', error);
   }, [error]);
 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="bg-white dark:bg-neutral-950">
-        <div className="min-h-screen flex flex-col">
-          {/* Top section with logo */}
-          <div className="flex-1 flex flex-col items-center justify-end pb-8 pt-20">
-            <div className={`transition-all duration-700 ease-out ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-              {/* Inline SVG logo - can't use next/image in global error */}
-              <svg 
-                viewBox="0 0 100 24" 
-                className="h-16 sm:h-20 w-auto fill-neutral-900 dark:fill-white"
-                aria-label="Alifh"
-              >
-                <text x="0" y="20" className="text-[20px] font-bold tracking-tight">ALIFH</text>
-              </svg>
-            </div>
-          </div>
-
-          {/* Center divider with error label */}
-          <div className={`flex items-center justify-center gap-6 py-8 transition-all duration-700 ${mounted ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '100ms' }}>
-            <div className="h-px w-16 sm:w-24 bg-neutral-200 dark:bg-neutral-800" />
-            <span className="text-xs font-semibold tracking-[0.3em] text-neutral-400 dark:text-neutral-600 uppercase">
-              Error
-            </span>
-            <div className="h-px w-16 sm:w-24 bg-neutral-200 dark:bg-neutral-800" />
-          </div>
-
-          {/* Bottom section with content */}
-          <div className={`flex-1 flex flex-col items-center justify-start pt-8 pb-20 px-6 transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`} style={{ transitionDelay: '200ms' }}>
-            {/* Message */}
-            <div className="text-center mb-10">
-              <h1 className="text-2xl sm:text-3xl font-semibold text-neutral-900 dark:text-white tracking-tight mb-3">
-                Something went wrong
+        <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 min-h-screen flex flex-col justify-center">
+          <div className="max-w-[1600px] mx-auto w-full">
+            
+            {/* Header */}
+            <div className="text-center mb-12 space-y-4">
+              <span className="text-sm font-semibold uppercase tracking-wider text-red-600 dark:text-red-500">
+                Critical Error
+              </span>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-neutral-900 dark:text-white">
+                Something went wrong.
+                <br />
+                <span className="text-neutral-500 dark:text-neutral-400">Let's try that again.</span>
               </h1>
-              <p className="text-neutral-500 dark:text-neutral-400 text-[15px]">
-                A critical error occurred. Please try again.
-              </p>
               {error.digest && (
-                <p className="text-xs text-neutral-400 dark:text-neutral-600 font-mono mt-4">
+                <p className="text-xs text-neutral-400 dark:text-neutral-600 font-mono">
                   {error.digest}
                 </p>
               )}
             </div>
 
             {/* Actions */}
-            <div className="flex flex-col sm:flex-row items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <button
                 onClick={reset}
-                className="h-12 px-8 inline-flex items-center justify-center rounded-full text-[15px] font-semibold tracking-tight transition-all duration-200 bg-blue-600 text-white hover:bg-blue-700"
+                className="w-full sm:w-auto h-11 px-8 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-sm font-semibold rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors flex items-center justify-center"
               >
-                Try again
+                Try Again
               </button>
-              
               <a
                 href="/"
-                className="h-12 px-8 inline-flex items-center justify-center rounded-full text-[15px] font-semibold tracking-tight transition-all duration-200 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+                className="w-full sm:w-auto h-11 px-8 bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white text-sm font-semibold rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors flex items-center justify-center"
               >
-                Go home
+                Back to Home
               </a>
             </div>
+
           </div>
-        </div>
+        </section>
       </body>
     </html>
   );

@@ -1,7 +1,5 @@
 /**
- * Auth Error Modal - Alifh Design System
- * 
- * Clean, minimal error modal with actionable next steps
+ * Auth Error Modal
  */
 
 "use client";
@@ -54,51 +52,48 @@ export function AuthErrorModal({
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-background/60 backdrop-blur-xl flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] bg-background/80 backdrop-blur-sm flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div 
-        className={`max-w-[340px] w-full bg-card border border-border/50 rounded-2xl shadow-2xl p-6 transform transition-all duration-150 ease-out ${showContent ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
+        className={`max-w-sm w-full rounded-xl border border-border/40 bg-sidebar p-6 shadow-lg transform transition-all duration-150 ease-out ${showContent ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex flex-col items-center text-center">
-          {/* Title */}
-          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+        {/* Header */}
+        <div className="text-center space-y-3 mb-6">
+          <h2 className="text-lg font-semibold tracking-tight text-foreground">
             {errorInfo.title}
           </h2>
-          
-          {/* Description */}
-          <p className="text-[13px] text-muted-foreground mt-2 mb-6">
+          <p className="text-sm text-muted-foreground">
             {errorInfo.message}
           </p>
+        </div>
 
-          {/* Actions */}
-          <div className="w-full space-y-3">
-            {errorInfo.action && (
+        {/* Actions */}
+        <div className="flex flex-col sm:flex-row gap-2">
+          {errorInfo.action ? (
+            <>
               <button
                 onClick={handleAction}
-                className="w-full h-11 rounded-xl text-[15px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                className="flex-1 h-11 px-6 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors"
               >
                 {errorInfo.actionLabel || "Try again"}
               </button>
-            )}
-            
+              <button
+                onClick={onClose}
+                className="flex-1 h-11 px-6 bg-muted text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors"
+              >
+                Dismiss
+              </button>
+            </>
+          ) : (
             <button
               onClick={onClose}
-              className="w-full h-11 rounded-xl text-[15px] font-semibold border border-border/50 bg-muted/20 text-foreground hover:bg-muted/40 transition-colors"
+              className="w-full h-11 px-6 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors"
             >
-              {errorInfo.action ? "Cancel" : "Close"}
+              Got it
             </button>
-          </div>
-
-          {/* Support hint */}
-          <a 
-            href="/contact" 
-            className="mt-5 text-[13px] text-muted-foreground/60 hover:text-muted-foreground transition-colors"
-            onClick={(e) => e.stopPropagation()}
-          >
-            Contact support
-          </a>
+          )}
         </div>
       </div>
     </div>

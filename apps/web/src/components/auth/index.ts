@@ -3,6 +3,7 @@ export { SignInModal } from './modals/signin-modal';
 export { SignUpModal } from './modals/signup-modal';
 export { ForgotPasswordModal } from './modals/forgot-password-modal';
 export { MagicLinkModal } from './modals/magic-link-modal';
+export { OTPVerificationModal } from './modals/otp-verification-modal';
 
 // Feedback & Status Modals
 export { EmailSentModal } from './feedback/email-sent-modal';

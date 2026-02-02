@@ -1,7 +1,5 @@
 /**
- * Generic Feedback Modal - Alifh Design System
- * 
- * Clean, minimal feedback modal for success/error/loading states
+ * Generic Feedback Modal
  */
 
 "use client";
@@ -60,7 +58,7 @@ export function FeedbackModal({
   const getTitle = () => {
     if (title) return title;
     if (isError) return "Something went wrong";
-    if (isSuccess) return "Success";
+    if (isSuccess) return "Done";
     if (isLoadingState) return loadingMessage;
     return "Information";
   };
@@ -68,52 +66,44 @@ export function FeedbackModal({
   const getMessage = () => {
     if (error) return error;
     if (message) return message;
-    if (isSuccess) return "Operation completed successfully";
+    if (isSuccess) return "Operation completed successfully.";
     if (isLoadingState) return "Please wait...";
     return "";
   };
 
   return (
     <div 
-      className="fixed inset-0 z-[9999] bg-background/60 backdrop-blur-xl flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] bg-background/80 backdrop-blur-sm flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div 
-        className={`max-w-[340px] w-full bg-card border border-border/50 rounded-2xl shadow-2xl p-6 transform transition-all duration-150 ease-out ${showContent ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
+        className={`max-w-sm w-full rounded-xl border border-border/40 bg-sidebar p-6 shadow-lg transform transition-all duration-150 ease-out ${showContent ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex flex-col items-center text-center">
-          {/* Loading spinner only for loading state */}
+        {/* Header */}
+        <div className="text-center space-y-3 mb-6">
           {isLoadingState && (
-            <div className="mb-4">
-              <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
-            </div>
+            <Loader2 className="w-5 h-5 text-muted-foreground animate-spin mx-auto" />
           )}
-
-          {/* Title */}
-          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-lg font-semibold tracking-tight text-foreground">
             {getTitle()}
           </h2>
-          
-          {/* Description */}
           {getMessage() && (
-            <p className="text-[13px] text-muted-foreground mt-2 mb-6">
+            <p className="text-sm text-muted-foreground">
               {getMessage()}
             </p>
           )}
-
-          {/* Action button for error/success */}
-          {(isError || isSuccess) && onClose && (
-            <div className="w-full space-y-3 mt-4">
-              <button
-                onClick={onClose}
-                className="w-full h-11 rounded-xl text-[15px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-              >
-                {isError ? "Try again" : "Done"}
-              </button>
-            </div>
-          )}
         </div>
+
+        {/* Action button */}
+        {(isError || isSuccess) && onClose && (
+          <button
+            onClick={onClose}
+            className="w-full h-11 px-6 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            {isError ? "Try again" : "Got it"}
+          </button>
+        )}
       </div>
     </div>
   );

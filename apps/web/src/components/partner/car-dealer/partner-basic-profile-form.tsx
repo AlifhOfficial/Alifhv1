@@ -151,7 +151,8 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
   const { stats, isLoading: statsLoading } = usePartnerStats(partnerId);
 
   const [editingField, setEditingField] = useState<EditingField>(null);
-  const [imageUploading, setImageUploading] = useState(false);
+  const [logoUploading, setLogoUploading] = useState(false);
+  const [bannerUploading, setBannerUploading] = useState(false);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const isGeocodingRef = React.useRef(false);
   const [customSpecialty, setCustomSpecialty] = useState('');
@@ -303,7 +304,8 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       return;
     }
 
-    setImageUploading(true);
+    const setUploading = field === 'logo' ? setLogoUploading : setBannerUploading;
+    setUploading(true);
     try {
       const fd = new FormData();
       fd.append('file', file);
@@ -325,7 +327,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
     } catch {
       toast({ title: 'Upload failed', variant: 'destructive' });
     } finally {
-      setImageUploading(false);
+      setUploading(false);
     }
   };
 
@@ -470,7 +472,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           className="hidden"
           id="banner-upload"
           onChange={(e) => uploadImage(e, 'heroImage')}
-          disabled={imageUploading}
+          disabled={bannerUploading}
         />
         
         {form.heroImage ? (
@@ -485,7 +487,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                 htmlFor="banner-upload"
                 className="p-2 rounded-full bg-white/20 backdrop-blur-sm cursor-pointer hover:bg-white/30 transition-colors"
               >
-                {imageUploading ? <Loader2 className="w-4 h-4 text-white animate-spin" /> : <Camera className="w-4 h-4 text-white" />}
+                {bannerUploading ? <Loader2 className="w-4 h-4 text-white animate-spin" /> : <Camera className="w-4 h-4 text-white" />}
               </label>
               <button
                 onClick={async () => {
@@ -503,10 +505,14 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
             htmlFor="banner-upload"
             className="flex items-center justify-center h-full cursor-pointer hover:bg-secondary/40 transition-colors"
           >
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Upload className="w-4 h-4" />
-              <span className="text-sm">Add banner</span>
-            </div>
+            {bannerUploading ? (
+              <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
+            ) : (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Upload className="w-4 h-4" />
+                <span className="text-sm">Add banner</span>
+              </div>
+            )}
           </label>
         )}
       </div>
@@ -521,20 +527,20 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
             className="hidden" 
             id="logo-upload" 
             onChange={(e) => uploadImage(e, 'logo')} 
-            disabled={imageUploading}
+            disabled={logoUploading}
           />
           <label htmlFor="logo-upload" className="block cursor-pointer">
             <BrandAvatar 
               logoUrl={profile.logoUrl || form.logo} 
               brandName={profile.brandName} 
               size="xl"
-              className={cn("w-24 h-24 border-4 border-background", imageUploading && "opacity-50")}
+              className={cn("w-24 h-24 border-4 border-background", logoUploading && "opacity-50")}
             />
             <div className={cn(
               "absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl transition-opacity",
-              imageUploading ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+              logoUploading ? "opacity-100" : "opacity-0 group-hover:opacity-100"
             )}>
-              {imageUploading ? (
+              {logoUploading ? (
                 <Loader2 className="w-5 h-5 text-white animate-spin" />
               ) : (
                 <Camera className="w-5 h-5 text-white" />
@@ -542,13 +548,13 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
             </div>
           </label>
           {/* Remove logo button */}
-          {form.logo && !imageUploading && (
+          {form.logo && !logoUploading && (
             <button
               type="button"
               onClick={async (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                setImageUploading(true);
+                setLogoUploading(true);
                 try {
                   await updateProfile({ logo: null });
                   updateField({ logo: null });
@@ -556,7 +562,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                 } catch {
                   toast({ title: 'Failed to remove', variant: 'destructive' });
                 } finally {
-                  setImageUploading(false);
+                  setLogoUploading(false);
                 }
               }}
               className="absolute -top-1 -right-1 z-10 w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/90"
