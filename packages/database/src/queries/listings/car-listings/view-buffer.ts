@@ -46,6 +46,8 @@ class AnalyticsBuffer {
   private flushTimer: NodeJS.Timeout | null = null;
   private flushIntervalMs = 300000; // 5 minutes
   private maxBufferSize = 1000; // Force flush if buffer gets too large
+  private consecutiveFailures = 0;
+  private maxConsecutiveFailures = 3; // Stop auto-flush after 3 consecutive failures
   
   constructor() {
     this.startAutoFlush();
@@ -53,8 +55,19 @@ class AnalyticsBuffer {
 
   private startAutoFlush() {
     this.flushTimer = setInterval(() => {
+      // Skip auto-flush if we've had too many consecutive failures (network down)
+      if (this.consecutiveFailures >= this.maxConsecutiveFailures) {
+        console.warn(`[analytics-buffer] Skipping auto-flush: ${this.consecutiveFailures} consecutive failures (network may be down)`);
+        return;
+      }
+      
       this.flush().catch(err => {
-        console.error('[analytics-buffer] Auto-flush error:', err);
+        // Only log connection errors once, not repeatedly
+        if (err?.cause?.code === 'UND_ERR_CONNECT_TIMEOUT' || err?.message?.includes('fetch failed')) {
+          console.warn('[analytics-buffer] Auto-flush skipped: Database unreachable');
+        } else {
+          console.error('[analytics-buffer] Auto-flush error:', err);
+        }
       });
     }, this.flushIntervalMs);
 
@@ -62,6 +75,13 @@ class AnalyticsBuffer {
     if (this.flushTimer.unref) {
       this.flushTimer.unref();
     }
+  }
+
+  /**
+   * Reset failure counter (call when connection is restored)
+   */
+  resetFailures() {
+    this.consecutiveFailures = 0;
   }
 
   /**
@@ -209,14 +229,30 @@ class AnalyticsBuffer {
         `${elapsed}ms`
       );
 
+      // Reset failure counter on success
+      this.consecutiveFailures = 0;
+
       return { 
         views: viewsToFlush.length, 
         viewListings: viewCountsToFlush.size,
         impressionListings: impressionCountsToFlush.size,
       };
     } catch (error) {
+      // Track consecutive failures
+      this.consecutiveFailures++;
+      
       // On error, try to restore the buffer (best effort)
-      console.error('[analytics-buffer] Flush error, attempting recovery:', error);
+      // Check if it's a connection error - don't spam logs for network issues
+      const isConnectionError = 
+        (error as any)?.cause?.code === 'UND_ERR_CONNECT_TIMEOUT' ||
+        (error as any)?.message?.includes('fetch failed');
+      
+      if (isConnectionError) {
+        console.warn(`[analytics-buffer] Flush failed: Database unreachable (attempt ${this.consecutiveFailures}/${this.maxConsecutiveFailures})`);
+      } else {
+        console.error('[analytics-buffer] Flush error, attempting recovery:', error);
+      }
+      
       this.views.push(...viewsToFlush);
       viewCountsToFlush.forEach((count, listingId) => {
         this.viewCounts.set(listingId, (this.viewCounts.get(listingId) || 0) + count);

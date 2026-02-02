@@ -301,13 +301,6 @@ export function ListingsHeader({
             </SheetContent>
           </Sheet>
 
-          {/* Results count - hidden on mobile, shows on larger screens */}
-          <div className="hidden sm:flex items-center h-9 px-4 bg-sidebar border border-sidebar-border rounded-full shadow-sm">
-            <span className="text-sm font-semibold text-sidebar-foreground/70 tabular-nums whitespace-nowrap">
-              {meta?.total ?? 0} cars
-            </span>
-          </div>
-
           {/* Search Bar - Full width on mobile, flexible on desktop */}
           <div className="w-full sm:flex-1 sm:min-w-[200px] order-last sm:order-none mt-2 sm:mt-0">
             <SearchBar
@@ -716,15 +709,22 @@ export function ListingsHeader({
                 <ChevronDown className="size-3.5" />
               </button>
 
-              {/* Clear All */}
-              {activeFilterCount > 0 && (
-                <button
-                  onClick={clearFilters}
-                  className="shrink-0 px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full transition-colors"
-                >
-                  Clear all
-                </button>
-              )}
+              {/* Results count + Clear All */}
+              <div className="shrink-0 ml-auto flex items-center gap-2">
+                {!isLoading && (
+                  <span className="text-xs font-medium text-muted-foreground tabular-nums">
+                    {meta?.total ?? 0} results
+                  </span>
+                )}
+                {activeFilterCount > 0 && (
+                  <button
+                    onClick={clearFilters}
+                    className="px-2.5 py-1 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full transition-colors"
+                  >
+                    Clear all
+                  </button>
+                )}
+              </div>
             </div>
           )}
 
@@ -733,7 +733,14 @@ export function ListingsHeader({
             <div className="p-4 bg-sidebar border border-sidebar-border rounded-xl space-y-4 animate-in fade-in-0 slide-in-from-top-2 duration-200">
               {/* Header with collapse button */}
               <div className="flex items-center justify-between pb-2 border-b border-sidebar-border/50">
-                <span className="text-sm font-semibold text-foreground">Refine your search</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-semibold text-foreground">Refine your search</span>
+                  {!isLoading && (
+                    <span className="text-xs font-medium text-muted-foreground tabular-nums">
+                      {meta?.total ?? 0} results
+                    </span>
+                  )}
+                </div>
                 <div className="flex items-center gap-2">
                   {activeFilterCount > 0 && (
                     <button

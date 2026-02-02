@@ -29,6 +29,8 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
   const [localSelectedId, setLocalSelectedId] = useState<string | undefined>(undefined);
   const [showMobileOverride, setShowMobileOverride] = useState<boolean | null>(null);
   const [listOpen, setListOpen] = useState(true);
+  // Track which IDs we've already tried to refetch (prevent infinite loop)
+  const [refetchedIds, setRefetchedIds] = useState<Set<string>>(new Set());
   
   // URL takes precedence, but allow local selection to override
   const selectedId = urlConversationId || localSelectedId;
@@ -38,15 +40,16 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
   // useConversations includes real-time WebSocket updates for messages, unread counts, and sorting
   const { conversations, isLoading, totalUnread, refetch } = useConversations({ userId, scope: inbox, limit: 50 });
 
-  // Fetch if conversation not in list (newly created)
+  // Fetch if conversation not in list (newly created) - but only once per ID
   useEffect(() => {
-    if (selectedId && !isLoading) {
+    if (selectedId && !isLoading && !refetchedIds.has(selectedId)) {
       const exists = conversations.some(c => c.id === selectedId);
       if (!exists) {
+        setRefetchedIds(prev => new Set(prev).add(selectedId));
         refetch();
       }
     }
-  }, [selectedId, conversations, isLoading, refetch]);
+  }, [selectedId, conversations, isLoading, refetch, refetchedIds]);
 
   const selected = conversations.find(c => c.id === selectedId);
 
