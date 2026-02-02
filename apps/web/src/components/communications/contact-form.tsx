@@ -9,7 +9,7 @@
 
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CheckCircle2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 // ============================================================================
@@ -132,10 +132,10 @@ export function ContactForm({
   // Success state
   if (isSubmitted) {
     return (
-      <div className="rounded-xl border border-border/40 bg-sidebar p-5">
-        <div className="flex flex-col items-center text-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center">
-            <CheckCircle2 className="w-6 h-6 text-green-500" />
+      <div className="rounded-xl border border-border/40 bg-sidebar p-6">
+        <div className="flex flex-col items-center text-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-sidebar-accent flex items-center justify-center">
+            <span className="text-lg">✓</span>
           </div>
           <div>
             <p className="text-[15px] font-bold tracking-tight text-foreground">Message Sent</p>
@@ -145,9 +145,13 @@ export function ContactForm({
           </div>
           <button
             onClick={() => setIsSubmitted(false)}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors font-medium"
+            className={cn(
+              'mt-2 px-4 py-2 rounded-md touch-manipulation',
+              'text-[14px] font-medium tracking-tight transition-colors duration-100',
+              'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+            )}
           >
-            Send another →
+            Send another
           </button>
         </div>
       </div>
@@ -165,23 +169,21 @@ export function ContactForm({
           <p className="text-sm text-foreground leading-relaxed mb-4">
             Select the type of inquiry:
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1">
             {COMMUNICATION_TYPES.map(({ value, label }) => (
               <button
                 key={value}
                 type="button"
                 onClick={() => setType(value)}
                 className={cn(
-                  "px-3.5 py-2 rounded-lg text-sm font-medium transition-all",
+                  'px-3 py-2 rounded-md touch-manipulation',
+                  'text-[14px] font-medium tracking-tight transition-colors duration-100',
                   type === value
-                    ? "bg-muted/50 text-foreground"
-                    : "text-muted-foreground/70 hover:bg-muted/30 hover:text-foreground"
+                    ? 'bg-sidebar-accent text-sidebar-foreground font-semibold'
+                    : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
                 )}
               >
                 {label}
-                {type === value && (
-                  <CheckCircle2 className="w-3.5 h-3.5 text-green-500 inline ml-1.5" />
-                )}
               </button>
             ))}
           </div>

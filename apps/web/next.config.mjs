@@ -1,5 +1,25 @@
+import withPWAInit from '@ducanh2912/next-pwa'
+
+const withPWA = withPWAInit({
+  dest: 'public',
+  cacheOnFrontEndNav: true,
+  aggressiveFrontEndNavCaching: true,
+  reloadOnOnline: true,
+  swcMinify: true,
+  disable: process.env.NODE_ENV === 'development',
+  workboxOptions: {
+    disableDevLogs: true,
+  },
+  fallbacks: {
+    document: '/offline',
+  },
+})
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Allow Turbopack with webpack plugin (PWA)
+  turbopack: {},
+  
   // Disable build cache to prevent disk bloat
   cacheMaxMemorySize: 0,
   
@@ -83,4 +103,4 @@ const nextConfig = {
   },
 }
 
-export default nextConfig
+export default withPWA(nextConfig)
