@@ -48,7 +48,6 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
   return (
     <View style={[
       styles.container, 
-      isDark ? styles.containerDark : styles.containerLight,
       { paddingBottom: Math.max(insets.bottom, 12) }
     ]}>
       {/* Left Pill Group */}
@@ -111,15 +110,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingTop: 12,
-    // paddingBottom is set dynamically via insets
-  },
-  containerDark: {
-    backgroundColor: '#000000',
-  },
-  containerLight: {
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 0.5,
-    borderTopColor: '#E5E5EA',
   },
 
   // Pill container

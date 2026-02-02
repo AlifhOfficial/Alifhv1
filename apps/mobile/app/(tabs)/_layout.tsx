@@ -7,24 +7,27 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 
-import { CustomTabBar } from '@/components/custom-tab-bar';
-import { ThemeToggle } from '@/components/theme-toggle';
+import { CustomTabBar } from '@/components/layout/tab-bar';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Colors } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 export default function TabLayout() {
   const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
 
   return (
     <Tabs
       tabBar={(props) => <CustomTabBar {...props} />}
+      sceneContainerStyle={{ backgroundColor: 'transparent' }}
       screenOptions={{
         headerShown: true,
         headerRight: () => <ThemeToggle />,
         headerStyle: {
-          backgroundColor: colorScheme === 'dark' ? '#000000' : '#FFFFFF',
+          backgroundColor: colors.background,
         },
-        headerTintColor: colorScheme === 'dark' ? '#FFFFFF' : '#000000',
+        headerTintColor: colors.text,
+        headerShadowVisible: false,
       }}>
       <Tabs.Screen
         name="index"
@@ -49,6 +52,7 @@ export default function TabLayout() {
         name="search"
         options={{
           title: 'Search',
+          headerShown: false,
         }}
       />
     </Tabs>
