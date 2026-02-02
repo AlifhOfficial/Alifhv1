@@ -9,6 +9,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
+import { useAuth } from '@/providers/auth-provider';
 
 // ============================================================================
 // Types
@@ -133,18 +134,17 @@ async function updatePartnerProfileAPI(partnerId: string, updates: PartnerProfil
 
 export function usePartnerProfile(partnerId: string | null | undefined) {
   const queryClient = useQueryClient();
+  const { refetch: refetchSession } = useAuth();
 
-  // No client-side caching - server cache is source of truth
   // staleTime: Infinity prevents auto-refetches (we trust setQueryData for mutations)
-  // gcTime: 0 means fresh fetch from server on each page visit
+  // Keep data cached to avoid refetches during re-renders
   const query = useQuery({
     queryKey: ['partner-profile', partnerId],
     queryFn: () => fetchPartnerProfile(partnerId!),
     enabled: !!partnerId,
     staleTime: Infinity, // Never auto-refetch (mutations update via setQueryData)
-    gcTime: 0, // No caching when unmounted - fresh from server each time
     refetchOnWindowFocus: false, // No auto refetch
-    refetchOnMount: true, // Fetch on mount if no data
+    refetchOnMount: false, // Don't refetch if we have data
     refetchOnReconnect: false, // No auto refetch on reconnect
   });
 
@@ -154,8 +154,12 @@ export function usePartnerProfile(partnerId: string | null | undefined) {
       // Update local cache directly - no refetch needed
       queryClient.setQueryData(['partner-profile', partnerId], updatedProfile);
       
-      // If logo or brandName changed, we need to refresh session for sidebar sync
-      // This is handled by the component calling refetchSession when needed
+      // If logo or brandName changed, refresh session so sidebar updates
+      // Fire-and-forget to avoid blocking and causing re-render cascades
+      const touchesSession = 'logo' in variables || 'brandName' in variables;
+      if (touchesSession && refetchSession) {
+        refetchSession();
+      }
     },
   });
 

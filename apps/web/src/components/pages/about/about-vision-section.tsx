@@ -13,8 +13,8 @@ export function AboutVisionSection() {
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header */}
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start mb-16">
-          <div className="space-y-5">
+        <div className="max-w-3xl mb-8">
+          <div className="space-y-3">
             <span className="text-sm font-semibold uppercase tracking-wider text-primary">
               The Vision
             </span>
@@ -24,16 +24,10 @@ export function AboutVisionSection() {
               <span className="text-muted-foreground">The automotive ecosystem.</span>
             </h2>
           </div>
-          <div className="text-base text-muted-foreground leading-relaxed">
-            <p>
-              Cars are just the start. We're building everything an enthusiast needs—
-              in one place, with the same philosophy: honest, clean, no games.
-            </p>
-          </div>
         </div>
 
         {/* Image */}
-        <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[3/1] overflow-hidden rounded-lg mb-16">
+        <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg mb-8">
           <Image
             src="/Images/rs24.png"
             alt="Alifh Vision"
@@ -42,6 +36,12 @@ export function AboutVisionSection() {
             sizes="(max-width: 1400px) 100vw, 1400px"
           />
         </div>
+
+        {/* Description below image */}
+        <p className="text-base text-muted-foreground max-w-3xl leading-relaxed mb-16">
+          Cars are just the start. We're building everything an enthusiast needs—
+          in one place, with the same philosophy: honest, clean, no games.
+        </p>
 
         {/* Verticals */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">

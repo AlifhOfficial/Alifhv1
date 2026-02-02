@@ -18,6 +18,9 @@ export function AboutPrinciplesSection() {
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
             Non-negotiables.
           </h2>
+          <p className="text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
+            The principles that guide every decision we make.
+          </p>
         </div>
 
         {/* Values Grid */}
