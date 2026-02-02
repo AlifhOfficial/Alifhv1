@@ -97,9 +97,39 @@ export function ListingsHeader({
   const [makesOpen, setMakesOpen] = useState(false);
   const [modelsOpen, setModelsOpen] = useState(false);
   const [trimsOpen, setTrimsOpen] = useState(false);
+  
+  // Dynamic island expanded state
+  const [islandExpanded, setIslandExpanded] = useState(false);
 
   // Number of items to show before "View all" - kept small for fixed-height dynamic island
   const VISIBLE_COUNT = 4;
+
+  // Multi-select toggle handlers for popovers
+  const toggleMake = useCallback((value: string) => {
+    const current = params.make ?? [];
+    const updated = current.includes(value)
+      ? current.filter(v => v !== value)
+      : [...current, value];
+    // Clear downstream when makes change
+    setFilters({ make: updated.length ? updated : undefined, model: undefined, trim: undefined });
+  }, [params.make, setFilters]);
+
+  const toggleModel = useCallback((value: string) => {
+    const current = params.model ?? [];
+    const updated = current.includes(value)
+      ? current.filter(v => v !== value)
+      : [...current, value];
+    // Clear trim when models change
+    setFilters({ model: updated.length ? updated : undefined, trim: undefined });
+  }, [params.model, setFilters]);
+
+  const toggleTrim = useCallback((value: string) => {
+    const current = params.trim ?? [];
+    const updated = current.includes(value)
+      ? current.filter(v => v !== value)
+      : [...current, value];
+    setFilters({ trim: updated.length ? updated : undefined });
+  }, [params.trim, setFilters]);
 
   // Memoize active chips - pass listings directly, memoize on params change
   const activeChips = useMemo(
@@ -517,305 +547,496 @@ export function ListingsHeader({
           )}
         </div>
 
-        {/* Dynamic Island - Fixed height container that morphs content */}
-        <div className="hidden sm:flex items-center gap-3 mt-3 h-10">
-          {/* Left: Breadcrumb (when filters active) */}
-          {breadcrumbItems.length > 1 && (
-            <nav className="flex items-center gap-1.5 shrink-0">
-              {breadcrumbItems.map((item, index) => (
-                <div key={item.href} className="flex items-center gap-1.5">
-                  {index > 0 && <ChevronRight className="size-3.5 text-muted-foreground/40" />}
-                  {index === breadcrumbItems.length - 1 ? (
-                    <span className="text-sm font-bold text-foreground whitespace-nowrap">{item.label}</span>
-                  ) : (
-                    <Link 
-                      href={item.href}
-                      className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
+        {/* Dynamic Island - Collapsible container */}
+        <div className="hidden sm:block mt-3">
+          {/* Natural View - Horizontal quick-select (when collapsed) */}
+          {!islandExpanded && (
+            <div className="flex items-center gap-3 h-10">
+              {/* Quick-Select Options */}
+              <div className="flex-1 flex items-center gap-2 overflow-x-auto scrollbar-hide">
+                {/* Make Quick-Select */}
+                {(isLoading || (facets?.make ?? []).length > 0) && (
+                  <>
+                    <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
+                      Makes
+                    </span>
+                    {isLoading ? (
+                      <>
+                        <Skeleton className="h-7 w-16 rounded-full shrink-0" />
+                        <Skeleton className="h-7 w-20 rounded-full shrink-0" />
+                        <Skeleton className="h-7 w-14 rounded-full shrink-0" />
+                      </>
+                    ) : (
+                      <>
+                        {/* Selected makes as removable pills */}
+                        {(params.make ?? []).map((makeValue) => {
+                          const makeData = (facets?.make ?? []).find(m => m.value === makeValue);
+                          return (
+                            <button
+                              key={makeValue}
+                              onClick={() => toggleMake(makeValue)}
+                              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all whitespace-nowrap shrink-0"
+                            >
+                              <span>{makeData?.label ?? makeValue}</span>
+                              <X className="size-3.5" />
+                            </button>
+                          );
+                        })}
+                        {/* Unselected makes as quick pills */}
+                        {!params.make?.length && (facets?.make ?? []).slice(0, VISIBLE_COUNT).map((make) => (
+                          <button
+                            key={make.value}
+                            onClick={() => setFilters({ make: [make.value], model: undefined, trim: undefined })}
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
+                          >
+                            <span>{make.label}</span>
+                            <span className="text-xs text-muted-foreground tabular-nums">{make.count}</span>
+                          </button>
+                        ))}
+                      </>
+                    )}
+                  </>
+                )}
+
+                {/* Separator */}
+                {params.make?.length && (facets?.model ?? []).length > 0 && (
+                  <div className="w-px h-5 bg-border shrink-0" />
+                )}
+
+                {/* Model Quick-Select - when make selected */}
+                {params.make?.length && (isLoading || (facets?.model ?? []).length > 0) && (
+                  <>
+                    <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
+                      Models
+                    </span>
+                    {isLoading ? (
+                      <>
+                        <Skeleton className="h-7 w-16 rounded-full shrink-0" />
+                        <Skeleton className="h-7 w-20 rounded-full shrink-0" />
+                      </>
+                    ) : (
+                      <>
+                        {/* Selected models as removable pills */}
+                        {(params.model ?? []).map((modelValue) => {
+                          const modelData = (facets?.model ?? []).find(m => m.value === modelValue);
+                          return (
+                            <button
+                              key={modelValue}
+                              onClick={() => toggleModel(modelValue)}
+                              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all whitespace-nowrap shrink-0"
+                            >
+                              <span>{modelData?.label ?? modelValue}</span>
+                              <X className="size-3.5" />
+                            </button>
+                          );
+                        })}
+                        {/* Unselected models as quick pills */}
+                        {!params.model?.length && (facets?.model ?? []).slice(0, VISIBLE_COUNT).map((model) => (
+                          <button
+                            key={model.value}
+                            onClick={() => setFilters({ model: [model.value], trim: undefined })}
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
+                          >
+                            <span>{model.label}</span>
+                            <span className="text-xs text-muted-foreground tabular-nums">{model.count}</span>
+                          </button>
+                        ))}
+                      </>
+                    )}
+                  </>
+                )}
+
+                {/* Separator */}
+                {params.make?.length && params.model?.length && (facets?.trim ?? []).length > 0 && (
+                  <div className="w-px h-5 bg-border shrink-0" />
+                )}
+
+                {/* Trim Quick-Select - when make & model selected */}
+                {params.make?.length && params.model?.length && (isLoading || (facets?.trim ?? []).length > 0) && (
+                  <>
+                    <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
+                      Trims
+                    </span>
+                    {isLoading ? (
+                      <>
+                        <Skeleton className="h-7 w-14 rounded-full shrink-0" />
+                        <Skeleton className="h-7 w-16 rounded-full shrink-0" />
+                      </>
+                    ) : (
+                      <>
+                        {/* Selected trims as removable pills */}
+                        {(params.trim ?? []).map((trimValue) => {
+                          const trimData = (facets?.trim ?? []).find(t => t.value === trimValue);
+                          return (
+                            <button
+                              key={trimValue}
+                              onClick={() => toggleTrim(trimValue)}
+                              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all whitespace-nowrap shrink-0"
+                            >
+                              <span>{trimData?.label ?? trimValue}</span>
+                              <X className="size-3.5" />
+                            </button>
+                          );
+                        })}
+                        {/* Unselected trims as quick pills */}
+                        {!params.trim?.length && (facets?.trim ?? []).slice(0, VISIBLE_COUNT).map((trim) => (
+                          <button
+                            key={trim.value}
+                            onClick={() => setFilters({ trim: [trim.value] })}
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
+                          >
+                            <span>{trim.label}</span>
+                            <span className="text-xs text-muted-foreground tabular-nums">{trim.count}</span>
+                          </button>
+                        ))}
+                      </>
+                    )}
+                  </>
+                )}
+
+                {/* Other active filter chips */}
+                {activeChips.filter(c => !['make', 'model', 'trim'].includes(c.key)).map((chip) => (
+                  <button
+                    key={chip.key}
+                    onClick={() => handleChipRemove(chip.key)}
+                    className="group flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-muted/50 text-foreground/80 hover:bg-muted/70 hover:text-foreground rounded-full transition-colors whitespace-nowrap shrink-0"
+                  >
+                    <span>{chip.label}</span>
+                    <X className="h-3 w-3 text-muted-foreground group-hover:text-foreground transition-colors" />
+                  </button>
+                ))}
+              </div>
+
+              {/* View More button */}
+              <button
+                onClick={() => setIslandExpanded(true)}
+                className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all"
+              >
+                <span>View more</span>
+                <ChevronDown className="size-3.5" />
+              </button>
+
+              {/* Clear All */}
+              {activeFilterCount > 0 && (
+                <button
+                  onClick={clearFilters}
+                  className="shrink-0 px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full transition-colors"
+                >
+                  Clear all
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Expanded State - Full selection UI */}
+          {islandExpanded && (
+            <div className="p-4 bg-sidebar border border-sidebar-border rounded-xl space-y-4 animate-in fade-in-0 slide-in-from-top-2 duration-200">
+              {/* Header with collapse button */}
+              <div className="flex items-center justify-between pb-2 border-b border-sidebar-border/50">
+                <span className="text-sm font-semibold text-foreground">Refine your search</span>
+                <div className="flex items-center gap-2">
+                  {activeFilterCount > 0 && (
+                    <button
+                      onClick={clearFilters}
+                      className="px-2 py-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
                     >
-                      {item.label}
-                    </Link>
+                      Clear all
+                    </button>
                   )}
+                  <button
+                    onClick={() => setIslandExpanded(false)}
+                    className="flex items-center gap-1.5 px-2 py-1 text-xs font-medium text-muted-foreground hover:text-foreground rounded transition-colors"
+                  >
+                    <span>Collapse</span>
+                    <ChevronDown className="size-3.5 rotate-180" />
+                  </button>
                 </div>
-              ))}
-            </nav>
-          )}
-
-          {/* Separator when breadcrumb exists and quick-select will show */}
-          {breadcrumbItems.length > 1 && (
-            (!params.make?.length && (facets?.make ?? []).length > 0) ||
-            (params.make?.length && !params.model?.length && (facets?.model ?? []).length > 0) ||
-            (params.make?.length && params.model?.length && !params.trim?.length && (facets?.trim ?? []).length > 0)
-          ) && (
-            <div className="w-px h-5 bg-border shrink-0" />
-          )}
-
-          {/* Quick-Select Options (contextual) */}
-          <div className="flex-1 flex items-center gap-2 overflow-x-auto scrollbar-hide">
-            {/* Make Quick-Select - when no make selected */}
-            {!params.make?.length && (isLoading || (facets?.make ?? []).length > 0) && (
-              <>
+              </div>
+              {/* Makes Row */}
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
                   Makes
                 </span>
                 {isLoading ? (
                   <>
-                    <Skeleton className="h-7 w-16 rounded-full shrink-0" />
-                    <Skeleton className="h-7 w-20 rounded-full shrink-0" />
-                    <Skeleton className="h-7 w-14 rounded-full shrink-0" />
+                    <Skeleton className="h-8 w-20 rounded-full" />
+                    <Skeleton className="h-8 w-24 rounded-full" />
+                    <Skeleton className="h-8 w-16 rounded-full" />
                   </>
                 ) : (
                   <>
-                    {(facets?.make ?? []).slice(0, VISIBLE_COUNT).map((make) => (
+                    {/* Selected makes */}
+                    {(params.make ?? []).map((makeValue) => {
+                      const makeData = (facets?.make ?? []).find(m => m.value === makeValue);
+                      return (
+                        <button
+                          key={makeValue}
+                          onClick={() => toggleMake(makeValue)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all"
+                        >
+                          <span>{makeData?.label ?? makeValue}</span>
+                          <X className="size-3.5" />
+                        </button>
+                      );
+                    })}
+                    {/* Unselected makes */}
+                    {(facets?.make ?? []).filter(m => !(params.make ?? []).includes(m.value)).slice(0, 8).map((make) => (
                       <button
                         key={make.value}
-                        onClick={() => setFilters({ make: [make.value], model: undefined, trim: undefined })}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
+                        onClick={() => toggleMake(make.value)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-all"
                       >
                         <span>{make.label}</span>
-                        <span className="text-xs text-muted-foreground tabular-nums">{make.count}</span>
+                        <span className="text-xs text-muted-foreground/60 tabular-nums">{make.count}</span>
                       </button>
                     ))}
-                    {(facets?.make ?? []).length > VISIBLE_COUNT && (
-                  <Popover open={makesOpen} onOpenChange={setMakesOpen}>
-                    <PopoverTrigger asChild>
+                    {/* View all button */}
+                    {(facets?.make ?? []).length > 8 && (
+                      <Popover open={makesOpen} onOpenChange={setMakesOpen}>
+                        <PopoverTrigger asChild>
+                          <button className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground rounded-full transition-all">
+                            <span>View all ({(facets?.make ?? []).length})</span>
+                            <ChevronDown className={cn("size-3.5 transition-transform", makesOpen && "rotate-180")} />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent 
+                          className="w-[280px] p-0 bg-sidebar border-sidebar-border rounded-lg shadow-lg overflow-hidden" 
+                          align="start"
+                          sideOffset={8}
+                        >
+                          <Command className="bg-transparent">
+                            <CommandInput placeholder="Search makes..." className="h-10 border-b border-sidebar-border text-[15px]" />
+                            <CommandList className="max-h-[280px]">
+                              <CommandEmpty className="py-4 text-center text-[15px] text-muted-foreground">No makes found.</CommandEmpty>
+                              <CommandGroup className="p-1.5">
+                                {(facets?.make ?? []).map((make) => {
+                                  const isSelected = params.make?.includes(make.value) ?? false;
+                                  return (
+                                    <CommandItem
+                                      key={make.value}
+                                      value={make.label}
+                                      onSelect={() => toggleMake(make.value)}
+                                      className={cn(
+                                        "flex items-center justify-between gap-3 px-3 py-2.5 text-[15px] font-medium tracking-tight rounded-md cursor-pointer transition-colors duration-100",
+                                        isSelected ? "bg-muted text-foreground font-semibold" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                                      )}
+                                    >
+                                      <span className="flex-1 truncate">{make.label}</span>
+                                      <span className="text-xs text-muted-foreground/60 tabular-nums shrink-0">{make.count}</span>
+                                    </CommandItem>
+                                  );
+                                })}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    )}
+                    {/* Clear makes */}
+                    {(params.make?.length ?? 0) > 0 && (
                       <button
-                        className={cn(
-                          "flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-full transition-all whitespace-nowrap shrink-0",
-                          "bg-sidebar border border-sidebar-border shadow-sm",
-                          makesOpen 
-                            ? "text-sidebar-foreground border-primary/50 ring-1 ring-primary/20" 
-                            : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:shadow-md"
-                        )}
+                        onClick={() => setFilters({ make: undefined, model: undefined, trim: undefined })}
+                        className="text-xs font-medium text-muted-foreground hover:text-foreground px-2"
                       >
-                        <span>View all</span>
-                        <ChevronDown className={cn("size-3.5 transition-transform", makesOpen && "rotate-180")} />
+                        Clear
                       </button>
-                    </PopoverTrigger>
-                    <PopoverContent 
-                      className="w-[280px] p-0 bg-sidebar border-sidebar-border rounded-lg shadow-lg overflow-hidden" 
-                      align="start"
-                      sideOffset={8}
-                    >
-                      <Command className="bg-transparent">
-                        <CommandInput 
-                          placeholder="Search makes..." 
-                          className="h-10 border-b border-sidebar-border text-[15px]"
-                        />
-                        <CommandList className="max-h-[280px]">
-                          <CommandEmpty className="py-4 text-center text-[15px] text-muted-foreground">No makes found.</CommandEmpty>
-                          <CommandGroup className="p-1.5">
-                            {(facets?.make ?? []).map((make) => (
-                              <CommandItem
-                                key={make.value}
-                                value={make.label}
-                                onSelect={() => {
-                                  setFilters({ make: [make.value], model: undefined, trim: undefined });
-                                  setMakesOpen(false);
-                                }}
-                                className="px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent rounded-md cursor-pointer"
-                              >
-                                <span className="flex-1">{make.label}</span>
-                                <span className="text-xs text-muted-foreground tabular-nums">{make.count}</span>
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
                     )}
                   </>
                 )}
-              </>
-            )}
+              </div>
 
-            {/* Model Quick-Select - when make selected but no model */}
-            {params.make?.length && !params.model?.length && (
-              <>
-                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
-                  Models
-                </span>
-                {isLoading ? (
-                  /* Skeleton loading state - deterministic widths to avoid hydration mismatch */
-                  <>
-                    {[72, 65, 80, 68].map((width, i) => (
-                      <div
-                        key={i}
-                        className="h-7 rounded-full bg-muted/60 animate-pulse shrink-0"
-                        style={{ width: `${width}px` }}
-                      />
-                    ))}
-                  </>
-                ) : (facets?.model ?? []).length > 0 ? (
-                  <>
-                    {(facets?.model ?? []).slice(0, VISIBLE_COUNT).map((model) => (
-                      <button
-                        key={model.value}
-                        onClick={() => setFilters({ model: [model.value] })}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
-                      >
-                        <span>{model.label}</span>
-                        <span className="text-xs text-muted-foreground tabular-nums">{model.count}</span>
-                      </button>
-                    ))}
-                    {(facets?.model ?? []).length > VISIBLE_COUNT && (
-                      <Popover open={modelsOpen} onOpenChange={setModelsOpen}>
-                        <PopoverTrigger asChild>
+              {/* Models Row - Only show when makes selected */}
+              {params.make?.length && (
+                <div className="flex items-center gap-2 flex-wrap pt-3 border-t border-sidebar-border/50">
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
+                    Models
+                  </span>
+                  {isLoading ? (
+                    <>
+                      <Skeleton className="h-8 w-20 rounded-full" />
+                      <Skeleton className="h-8 w-24 rounded-full" />
+                    </>
+                  ) : (facets?.model ?? []).length > 0 ? (
+                    <>
+                      {/* Selected models */}
+                      {(params.model ?? []).map((modelValue) => {
+                        const modelData = (facets?.model ?? []).find(m => m.value === modelValue);
+                        return (
                           <button
-                            className={cn(
-                              "flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-full transition-all whitespace-nowrap shrink-0",
-                              "bg-sidebar border border-sidebar-border shadow-sm",
-                              modelsOpen 
-                                ? "text-sidebar-foreground border-primary/50 ring-1 ring-primary/20" 
-                                : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:shadow-md"
-                            )}
+                            key={modelValue}
+                            onClick={() => toggleModel(modelValue)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all"
                           >
-                            <span>View all</span>
-                            <ChevronDown className={cn("size-3.5 transition-transform", modelsOpen && "rotate-180")} />
+                            <span>{modelData?.label ?? modelValue}</span>
+                            <X className="size-3.5" />
                           </button>
-                        </PopoverTrigger>
-                        <PopoverContent 
-                          className="w-[280px] p-0 bg-sidebar border-sidebar-border rounded-lg shadow-lg overflow-hidden" 
-                          align="start"
-                          sideOffset={8}
+                        );
+                      })}
+                      {/* Unselected models */}
+                      {(facets?.model ?? []).filter(m => !(params.model ?? []).includes(m.value)).slice(0, 8).map((model) => (
+                        <button
+                          key={model.value}
+                          onClick={() => toggleModel(model.value)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-all"
                         >
-                          <Command className="bg-transparent">
-                            <CommandInput 
-                              placeholder="Search models..." 
-                              className="h-10 border-b border-sidebar-border text-[15px]"
-                            />
-                            <CommandList className="max-h-[280px]">
-                              <CommandEmpty className="py-4 text-center text-[15px] text-muted-foreground">No models found.</CommandEmpty>
-                              <CommandGroup className="p-1.5">
-                                {(facets?.model ?? []).map((model) => (
-                                  <CommandItem
-                                    key={model.value}
-                                    value={model.label}
-                                    onSelect={() => {
-                                      setFilters({ model: [model.value] });
-                                      setModelsOpen(false);
-                                    }}
-                                    className="px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent rounded-md cursor-pointer"
-                                  >
-                                    <span className="flex-1">{model.label}</span>
-                                    <span className="text-xs text-muted-foreground tabular-nums">{model.count}</span>
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                    )}
-                  </>
-                ) : null}
-              </>
-            )}
+                          <span>{model.label}</span>
+                          <span className="text-xs text-muted-foreground/60 tabular-nums">{model.count}</span>
+                        </button>
+                      ))}
+                      {/* View all button */}
+                      {(facets?.model ?? []).length > 8 && (
+                        <Popover open={modelsOpen} onOpenChange={setModelsOpen}>
+                          <PopoverTrigger asChild>
+                            <button className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground rounded-full transition-all">
+                              <span>View all ({(facets?.model ?? []).length})</span>
+                              <ChevronDown className={cn("size-3.5 transition-transform", modelsOpen && "rotate-180")} />
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent 
+                            className="w-[280px] p-0 bg-sidebar border-sidebar-border rounded-lg shadow-lg overflow-hidden" 
+                            align="start"
+                            sideOffset={8}
+                          >
+                            <Command className="bg-transparent">
+                              <CommandInput placeholder="Search models..." className="h-10 border-b border-sidebar-border text-[15px]" />
+                              <CommandList className="max-h-[280px]">
+                                <CommandEmpty className="py-4 text-center text-[15px] text-muted-foreground">No models found.</CommandEmpty>
+                                <CommandGroup className="p-1.5">
+                                  {(facets?.model ?? []).map((model) => {
+                                    const isSelected = params.model?.includes(model.value) ?? false;
+                                    return (
+                                      <CommandItem
+                                        key={model.value}
+                                        value={model.label}
+                                        onSelect={() => toggleModel(model.value)}
+                                        className={cn(
+                                          "flex items-center justify-between gap-3 px-3 py-2.5 text-[15px] font-medium tracking-tight rounded-md cursor-pointer transition-colors duration-100",
+                                          isSelected ? "bg-muted text-foreground font-semibold" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                                        )}
+                                      >
+                                        <span className="flex-1 truncate">{model.label}</span>
+                                        <span className="text-xs text-muted-foreground/60 tabular-nums shrink-0">{model.count}</span>
+                                      </CommandItem>
+                                    );
+                                  })}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      )}
+                      {/* Clear models */}
+                      {(params.model?.length ?? 0) > 0 && (
+                        <button
+                          onClick={() => setFilters({ model: undefined, trim: undefined })}
+                          className="text-xs font-medium text-muted-foreground hover:text-foreground px-2"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    <span className="text-sm text-muted-foreground/50">No models available</span>
+                  )}
+                </div>
+              )}
 
-            {/* Trim Quick-Select - when make & model selected but no trim */}
-            {params.make?.length && params.model?.length && !params.trim?.length && (
-              <>
-                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
-                  Trims
-                </span>
-                {isLoading ? (
-                  /* Skeleton loading state - deterministic widths to avoid hydration mismatch */
-                  <>
-                    {[58, 70, 62, 75].map((width, i) => (
-                      <div
-                        key={i}
-                        className="h-7 rounded-full bg-muted/60 animate-pulse shrink-0"
-                        style={{ width: `${width}px` }}
-                      />
-                    ))}
-                  </>
-                ) : (facets?.trim ?? []).length > 0 ? (
-                  <>
-                    {(facets?.trim ?? []).slice(0, VISIBLE_COUNT).map((trim) => (
-                      <button
-                        key={trim.value}
-                        onClick={() => setFilters({ trim: [trim.value] })}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
-                      >
-                        <span>{trim.label}</span>
-                        <span className="text-xs text-muted-foreground tabular-nums">{trim.count}</span>
-                      </button>
-                    ))}
-                    {(facets?.trim ?? []).length > VISIBLE_COUNT && (
-                      <Popover open={trimsOpen} onOpenChange={setTrimsOpen}>
-                        <PopoverTrigger asChild>
+              {/* Trims Row - Only show when makes and models selected */}
+              {params.make?.length && params.model?.length && (
+                <div className="flex items-center gap-2 flex-wrap pt-3 border-t border-sidebar-border/50">
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
+                    Trims
+                  </span>
+                  {isLoading ? (
+                    <>
+                      <Skeleton className="h-8 w-16 rounded-full" />
+                      <Skeleton className="h-8 w-20 rounded-full" />
+                    </>
+                  ) : (facets?.trim ?? []).length > 0 ? (
+                    <>
+                      {/* Selected trims */}
+                      {(params.trim ?? []).map((trimValue) => {
+                        const trimData = (facets?.trim ?? []).find(t => t.value === trimValue);
+                        return (
                           <button
-                            className={cn(
-                              "flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-full transition-all whitespace-nowrap shrink-0",
-                              "bg-sidebar border border-sidebar-border shadow-sm",
-                              trimsOpen 
-                                ? "text-sidebar-foreground border-primary/50 ring-1 ring-primary/20" 
-                                : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:shadow-md"
-                            )}
+                            key={trimValue}
+                            onClick={() => toggleTrim(trimValue)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all"
                           >
-                            <span>View all</span>
-                            <ChevronDown className={cn("size-3.5 transition-transform", trimsOpen && "rotate-180")} />
+                            <span>{trimData?.label ?? trimValue}</span>
+                            <X className="size-3.5" />
                           </button>
-                        </PopoverTrigger>
-                        <PopoverContent 
-                          className="w-[280px] p-0 bg-sidebar border-sidebar-border rounded-lg shadow-lg overflow-hidden" 
-                          align="start"
-                          sideOffset={8}
+                        );
+                      })}
+                      {/* Unselected trims */}
+                      {(facets?.trim ?? []).filter(t => !(params.trim ?? []).includes(t.value)).slice(0, 8).map((trim) => (
+                        <button
+                          key={trim.value}
+                          onClick={() => toggleTrim(trim.value)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-all"
                         >
-                          <Command className="bg-transparent">
-                            <CommandInput 
-                              placeholder="Search trims..." 
-                              className="h-10 border-b border-sidebar-border text-[15px]"
-                            />
-                            <CommandList className="max-h-[280px]">
-                              <CommandEmpty className="py-4 text-center text-[15px] text-muted-foreground">No trims found.</CommandEmpty>
-                              <CommandGroup className="p-1.5">
-                                {(facets?.trim ?? []).map((trim) => (
-                                  <CommandItem
-                                    key={trim.value}
-                                    value={trim.label}
-                                    onSelect={() => {
-                                      setFilters({ trim: [trim.value] });
-                                      setTrimsOpen(false);
-                                    }}
-                                    className="px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent rounded-md cursor-pointer"
-                                  >
-                                    <span className="flex-1">{trim.label}</span>
-                                    <span className="text-xs text-muted-foreground tabular-nums">{trim.count}</span>
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                    )}
-                  </>
-                ) : null}
-              </>
-            )}
-
-            {/* Other active filter chips */}
-            {activeChips.filter(c => !['make', 'model', 'trim'].includes(c.key)).map((chip) => (
-              <button
-                key={chip.key}
-                onClick={() => handleChipRemove(chip.key)}
-                className="group flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-muted/50 text-foreground/80 hover:bg-muted/70 hover:text-foreground rounded-full transition-colors whitespace-nowrap shrink-0"
-              >
-                <span>{chip.label}</span>
-                <X className="h-3 w-3 text-muted-foreground group-hover:text-foreground transition-colors" />
-              </button>
-            ))}
-          </div>
-
-          {/* Clear All - Always visible on right when filters active */}
-          {activeFilterCount > 0 && (
-            <button
-              onClick={clearFilters}
-              className="shrink-0 px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full transition-colors"
-            >
-              Clear all
-            </button>
+                          <span>{trim.label}</span>
+                          <span className="text-xs text-muted-foreground/60 tabular-nums">{trim.count}</span>
+                        </button>
+                      ))}
+                      {/* View all button */}
+                      {(facets?.trim ?? []).length > 8 && (
+                        <Popover open={trimsOpen} onOpenChange={setTrimsOpen}>
+                          <PopoverTrigger asChild>
+                            <button className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground rounded-full transition-all">
+                              <span>View all ({(facets?.trim ?? []).length})</span>
+                              <ChevronDown className={cn("size-3.5 transition-transform", trimsOpen && "rotate-180")} />
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent 
+                            className="w-[280px] p-0 bg-sidebar border-sidebar-border rounded-lg shadow-lg overflow-hidden" 
+                            align="start"
+                            sideOffset={8}
+                          >
+                            <Command className="bg-transparent">
+                              <CommandInput placeholder="Search trims..." className="h-10 border-b border-sidebar-border text-[15px]" />
+                              <CommandList className="max-h-[280px]">
+                                <CommandEmpty className="py-4 text-center text-[15px] text-muted-foreground">No trims found.</CommandEmpty>
+                                <CommandGroup className="p-1.5">
+                                  {(facets?.trim ?? []).map((trim) => {
+                                    const isSelected = params.trim?.includes(trim.value) ?? false;
+                                    return (
+                                      <CommandItem
+                                        key={trim.value}
+                                        value={trim.label}
+                                        onSelect={() => toggleTrim(trim.value)}
+                                        className={cn(
+                                          "flex items-center justify-between gap-3 px-3 py-2.5 text-[15px] font-medium tracking-tight rounded-md cursor-pointer transition-colors duration-100",
+                                          isSelected ? "bg-muted text-foreground font-semibold" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                                        )}
+                                      >
+                                        <span className="flex-1 truncate">{trim.label}</span>
+                                        <span className="text-xs text-muted-foreground/60 tabular-nums shrink-0">{trim.count}</span>
+                                      </CommandItem>
+                                    );
+                                  })}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      )}
+                      {/* Clear trims */}
+                      {(params.trim?.length ?? 0) > 0 && (
+                        <button
+                          onClick={() => setFilters({ trim: undefined })}
+                          className="text-xs font-medium text-muted-foreground hover:text-foreground px-2"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    <span className="text-sm text-muted-foreground/50">No trims available</span>
+                  )}
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>

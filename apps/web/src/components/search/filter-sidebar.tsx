@@ -59,8 +59,8 @@ export function FilterSidebar({
             type="button"
             onClick={() => onFilterChange({ condition: params.condition === 'new' ? undefined : 'new' })}
             className={cn(
-              'flex items-center w-full px-3 py-2 rounded-md touch-manipulation',
-              'text-[15px] font-medium tracking-tight transition-colors duration-100',
+              'flex items-center w-full pl-3 py-2.5 rounded-md touch-manipulation',
+              'text-base font-medium tracking-tight transition-colors duration-100',
               params.condition === 'new'
                 ? 'bg-muted text-foreground font-semibold'
                 : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
@@ -72,8 +72,8 @@ export function FilterSidebar({
             type="button"
             onClick={() => onFilterChange({ isBlkListing: params.isBlkListing ? undefined : true })}
             className={cn(
-              'flex items-center w-full px-3 py-2 rounded-md touch-manipulation',
-              'text-[15px] font-medium tracking-tight transition-colors duration-100',
+              'flex items-center w-full pl-3 py-2.5 rounded-md touch-manipulation',
+              'text-base font-medium tracking-tight transition-colors duration-100',
               params.isBlkListing
                 ? 'bg-muted text-foreground font-semibold'
                 : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
@@ -85,8 +85,8 @@ export function FilterSidebar({
             type="button"
             onClick={() => onFilterChange({ isBlackTierPartner: params.isBlackTierPartner ? undefined : true })}
             className={cn(
-              'flex items-center w-full px-3 py-2 rounded-md touch-manipulation',
-              'text-[15px] font-medium tracking-tight transition-colors duration-100',
+              'flex items-center w-full pl-3 py-2.5 rounded-md touch-manipulation',
+              'text-base font-medium tracking-tight transition-colors duration-100',
               params.isBlackTierPartner
                 ? 'bg-muted text-foreground font-semibold'
                 : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
@@ -155,8 +155,8 @@ export function FilterSidebar({
           type="button"
           onClick={() => onFilterChange({ isNegotiable: params.isNegotiable ? undefined : true })}
           className={cn(
-            'flex items-center w-full px-3 py-2 rounded-md touch-manipulation',
-            'text-[15px] font-medium tracking-tight transition-colors duration-100',
+            'flex items-center w-full pl-3 py-2.5 rounded-md touch-manipulation',
+            'text-base font-medium tracking-tight transition-colors duration-100',
             params.isNegotiable
               ? 'bg-muted text-foreground font-semibold'
               : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
@@ -194,18 +194,18 @@ interface FilterSectionProps {
 function FilterSection({ title, children, defaultOpen = false, selectedCount = 0 }: FilterSectionProps) {
   return (
     <Collapsible defaultOpen={defaultOpen} className="group/collapsible">
-      <CollapsibleTrigger className="flex items-center justify-between w-full py-3 px-3 hover:bg-muted/30 rounded-lg transition-colors touch-manipulation">
-        <span className="text-[15px] font-semibold tracking-tight text-sidebar-foreground/80">{title}</span>
+      <CollapsibleTrigger className="flex items-center justify-between w-full py-3 hover:bg-muted/30 rounded-lg transition-colors touch-manipulation">
+        <span className="text-base font-semibold tracking-tight text-sidebar-foreground">{title}</span>
         <div className="flex items-center gap-2">
           {selectedCount > 0 && (
-            <span className="min-w-[18px] h-[18px] px-1.5 text-[10px] font-bold bg-primary text-primary-foreground rounded-full flex items-center justify-center">
+            <span className="min-w-[20px] h-[20px] px-1.5 text-xs font-bold bg-primary text-primary-foreground rounded-full flex items-center justify-center">
               {selectedCount}
             </span>
           )}
-          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground/60 transition-transform duration-200 group-data-[state=closed]/collapsible:-rotate-90" />
+          <ChevronDown className="h-4 w-4 text-muted-foreground/60 transition-transform duration-200 group-data-[state=closed]/collapsible:-rotate-90" />
         </div>
       </CollapsibleTrigger>
-      <CollapsibleContent className="px-3 pb-3">
+      <CollapsibleContent className="pl-3 pb-3">
         {children}
       </CollapsibleContent>
     </Collapsible>
@@ -254,7 +254,7 @@ function MultiSelectFilter({
 
   if (options.length === 0) {
     return (
-      <p className="text-[15px] text-muted-foreground/50 py-2 font-medium">No options available</p>
+      <p className="text-base text-muted-foreground/50 pl-3 py-2.5 font-medium">No options available</p>
     );
   }
 
@@ -269,8 +269,8 @@ function MultiSelectFilter({
             key={option.value}
             onClick={() => toggleOption(option.value)}
             className={cn(
-              'flex items-center justify-between w-full px-3 py-2 rounded-md touch-manipulation',
-              'text-[15px] font-medium tracking-tight transition-colors duration-100',
+              'flex items-center justify-between w-full pl-3 pr-3 py-2.5 rounded-md touch-manipulation',
+              'text-base font-medium tracking-tight transition-colors duration-100',
               isSelected
                 ? 'bg-muted text-foreground font-semibold'
                 : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
@@ -291,7 +291,7 @@ function MultiSelectFilter({
         <button
           type="button"
           onClick={() => setShowAll(!showAll)}
-          className="text-sm font-medium text-muted-foreground hover:text-foreground py-2 px-3 text-left transition-colors touch-manipulation"
+          className="text-base font-medium text-muted-foreground hover:text-foreground pl-3 py-2.5 text-left transition-colors touch-manipulation"
         >
           {showAll ? 'Show less' : `Show ${options.length - maxVisible} more`}
         </button>
@@ -379,7 +379,7 @@ function RangeFilter({
                 key={preset.label}
                 onClick={() => handlePresetClick(preset)}
                 className={cn(
-                  'px-3 py-1.5 text-[13px] font-semibold rounded-lg transition-colors duration-100 touch-manipulation',
+                  'px-3 py-2 text-sm font-semibold rounded-lg transition-colors duration-100 touch-manipulation',
                   isActive
                     ? 'bg-sidebar-foreground text-sidebar'
                     : 'bg-sidebar-accent text-sidebar-foreground/80 hover:text-sidebar-foreground'
@@ -404,9 +404,9 @@ function RangeFilter({
               min={rangeMin}
               max={rangeMax}
               step={step}
-              className="flex-1 h-9 rounded-lg text-[15px]"
+              className="flex-1 h-10 rounded-lg text-base"
             />
-            <span className="text-muted-foreground/40 text-sm font-medium">–</span>
+            <span className="text-muted-foreground/40 text-base font-medium">–</span>
           </>
         )}
         <Input
@@ -417,14 +417,14 @@ function RangeFilter({
           min={rangeMin}
           max={rangeMax}
           step={step}
-          className="flex-1 h-9 rounded-lg text-[15px]"
+          className="flex-1 h-10 rounded-lg text-base"
         />
       </div>
 
       {/* Current range label */}
       {(minValue || maxValue) && (
-        <div className="flex items-center justify-between bg-sidebar-accent rounded-lg px-3 py-2">
-          <span className="text-[15px] font-semibold tracking-tight text-sidebar-foreground">
+        <div className="flex items-center justify-between bg-sidebar-accent rounded-lg px-3 py-2.5">
+          <span className="text-base font-semibold tracking-tight text-sidebar-foreground">
             {minValue && maxValue
               ? `${formatLabel(minValue)} - ${formatLabel(maxValue)}`
               : minValue
