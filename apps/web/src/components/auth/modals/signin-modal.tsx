@@ -66,30 +66,30 @@ export function SignInModal({
       onClick={() => onOpenChange(false)}
     >
       <div 
-        className="w-full max-w-[440px] md:max-w-[720px] bg-card border border-border/50 rounded-2xl shadow-2xl flex overflow-hidden"
+        className="w-full max-w-[440px] md:max-w-[800px] bg-card border border-border/50 rounded-2xl shadow-2xl flex overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Left Typography Side - 40% */}
-        <div className="hidden md:flex w-[240px] relative bg-black flex-shrink-0 flex-col justify-between p-8">
-          {/* Logo */}
+        {/* Left Typography Side */}
+        <div className="hidden md:flex w-[320px] relative bg-black flex-shrink-0 flex-col justify-between p-10">
+          {/* Revvup Text - Top */}
           <div>
-            <img 
-              src="/assets/Revvup_logo_White.svg" 
-              alt="Revvup"
-              className="h-5 w-auto"
-            />
-          </div>
-          
-          {/* Bold Typography - Horizontal */}
-          <div className="flex-1 flex items-center justify-center">
-            <h3 className="text-4xl font-bold text-white tracking-tight">
+            <h3 className="text-2xl font-extrabold text-white tracking-[-0.03em] italic">
               Revvup.
             </h3>
           </div>
           
-          {/* Tagline - Horizontal */}
+          {/* Logo - Center */}
+          <div className="flex-1 flex items-center justify-center">
+            <img 
+              src="/assets/Revvup_logo_White.svg" 
+              alt="Revvup"
+              className="h-12 w-auto"
+            />
+          </div>
+          
+          {/* Tagline - Bottom */}
           <p className="text-white/40 text-xs font-medium">
-            Your move.
+            More than a marketplace. Join the Revolution.
           </p>
         </div>
 

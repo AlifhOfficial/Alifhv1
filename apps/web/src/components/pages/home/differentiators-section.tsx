@@ -134,7 +134,7 @@ function HumanFirstInfographic() {
       `}</style>
 
       {/* macOS Window Frame - Full Width */}
-      <div className="rounded-lg overflow-hidden shadow-2xl border border-border/40">
+      <div className="rounded-lg overflow-hidden shadow-2xl border border-white/10 ring-1 ring-white/5">
         {/* macOS Title Bar */}
         <div className="bg-[#28282a] px-3 sm:px-5 py-2 sm:py-3 flex items-center gap-2 sm:gap-3 border-b border-black/20">
           <div className="flex items-center gap-1.5 sm:gap-2">

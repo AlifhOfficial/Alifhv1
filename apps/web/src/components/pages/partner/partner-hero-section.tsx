@@ -16,14 +16,18 @@ import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 
 function HeroVideo() {
   return (
-    <div className="relative w-full max-w-5xl mx-auto">
+    <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg">
       <video 
         src="/Marketing/Hero2.mp4" 
         autoPlay 
         loop 
         muted 
         playsInline
-        className="w-full h-auto rounded-xl"
+        preload="auto"
+        disablePictureInPicture
+        disableRemotePlayback
+        suppressHydrationWarning
+        className="absolute inset-0 w-full h-full object-cover object-top"
       />
     </div>
   );
@@ -68,7 +72,7 @@ export function PartnerHeroSection() {
       <div className="max-w-[1600px] mx-auto">
         
         {/* Brand & Tagline */}
-        <div className="text-center mb-16 space-y-5">
+        <div className="text-center mb-8 space-y-5">
           <span className="text-sm font-semibold uppercase tracking-wider text-primary">
             For Dealers
           </span>
@@ -93,8 +97,8 @@ export function PartnerHeroSection() {
           </Link>
         </div>
 
-        {/* Hero Infographic - MacBook-style Video Frame */}
-        <div className="mb-16">
+        {/* Hero Video */}
+        <div className="mb-8">
           <HeroVideo />
         </div>
 

@@ -52,7 +52,7 @@ export function HeroSection() {
       <div className="max-w-[1600px] mx-auto">
         
         {/* Brand & Tagline */}
-        <div className="text-center mb-16 space-y-5">
+        <div className="text-center mb-8 space-y-5">
           <span className="text-sm font-semibold uppercase tracking-wider text-primary">
             UAE Car Marketplace
           </span>
@@ -61,8 +61,8 @@ export function HeroSection() {
             <br />
             <span className="text-muted-foreground">Free. Forever.</span>
           </h1>
-          <p className="text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
-            New and used cars in Dubai. No fees for private sellers.
+          <p className="text-sm sm:text-base font-medium text-muted-foreground">
+            More than a marketplace. Join the Revolution.
           </p>
         </div>
 
@@ -123,7 +123,7 @@ export function HeroSection() {
         </div>
 
         {/* Trust Indicators */}
-        <div className="flex items-center justify-center gap-12 md:gap-20 pt-8 border-t border-border/40">
+        <div className="flex items-center justify-center gap-12 md:gap-20 pt-8">
           <div className="text-center space-y-1">
             <p className="text-xl font-semibold tracking-tight text-primary">AED 0</p>
             <span className="text-sm text-muted-foreground">Listing fee</span>
@@ -139,6 +139,11 @@ export function HeroSection() {
             <span className="text-sm text-muted-foreground">Book test drives</span>
           </div>
         </div>
+
+        {/* Description */}
+        <p className="text-center text-base text-muted-foreground max-w-lg mx-auto mt-8">
+          List as many cars as you want — completely free, forever. Made for individuals.
+        </p>
 
       </div>
     </section>

@@ -29,7 +29,7 @@ export function AboutVisionSection() {
         {/* Image */}
         <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg mb-8">
           <Image
-            src="/Images/rs24.png"
+            src="/abstract/pic7.png"
             alt="Revvup Vision"
             fill
             className="object-cover"

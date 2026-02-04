@@ -65,7 +65,7 @@ function ProblemInfographic() {
       `}</style>
 
       {/* macOS Window Frame - Full Width */}
-      <div className="rounded-lg overflow-hidden shadow-2xl border border-border/40">
+      <div className="rounded-lg overflow-hidden shadow-2xl border border-white/10 ring-1 ring-white/5">
         {/* macOS Title Bar */}
         <div className="bg-[#28282a] px-3 sm:px-5 py-2 sm:py-3 flex items-center gap-2 sm:gap-3 border-b border-black/20">
           {/* Traffic Light Buttons */}
@@ -106,9 +106,18 @@ function ProblemInfographic() {
           <div className="flex-1 p-8 sm:p-12 lg:p-16 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/5">
             <span className="text-[10px] sm:text-xs font-medium text-white/30 mb-8 sm:mb-10">Others</span>
             
-            <div className="relative">
-              {/* Car image */}
-              <div className="w-52 sm:w-80 lg:w-[420px] aspect-[4/3] rounded-xl overflow-hidden border border-white/10">
+            <div className="relative flex items-center justify-center gap-2 sm:gap-3 lg:gap-4">
+              {/* Left car image */}
+              <div className="w-28 sm:w-44 lg:w-56 aspect-[4/3] rounded-xl overflow-hidden border border-white/10 -rotate-3 opacity-60">
+                <img 
+                  src="/Marketing/m3.jpeg" 
+                  alt="" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              
+              {/* Main car image - center */}
+              <div className="relative w-52 sm:w-80 lg:w-[380px] aspect-[4/3] rounded-xl overflow-hidden border border-white/10 z-10">
                 <img 
                   src="/Marketing/m5.jpeg" 
                   alt="" 
@@ -116,27 +125,35 @@ function ProblemInfographic() {
                 />
               </div>
               
+              {/* Right car image */}
+              <div className="w-28 sm:w-44 lg:w-56 aspect-[4/3] rounded-xl overflow-hidden border border-white/10 rotate-3 opacity-60">
+                <img 
+                  src="/Marketing/m7.jpeg" 
+                  alt="" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              
               {/* Fee badges */}
-              <div className="absolute -top-2 sm:-top-3 -right-2 sm:-right-4 px-2 sm:px-4 py-1 sm:py-2 rounded-md bg-red-500 text-[8px] sm:text-xs font-bold text-white shadow-xl rotate-3">
+              <div className="absolute -top-2 sm:-top-3 -right-2 sm:-right-4 px-2 sm:px-4 py-1 sm:py-2 rounded-md bg-red-500 text-[8px] sm:text-xs font-bold text-white shadow-xl rotate-3 z-20">
                 AED 999
+                {/* Chaotic cursor - near AED 999 */}
+                <div 
+                  className="absolute -bottom-4 -left-4 sm:-bottom-6 sm:-left-6"
+                  style={{ animation: 'cursor-chaos 2.5s ease-in-out infinite' }}
+                >
+                  <MousePointer2 className="w-5 h-5 sm:w-6 sm:h-6 text-white/70 fill-white/20 drop-shadow-lg" />
+                  <div 
+                    className="absolute -inset-2 rounded-full border-2 border-white/30"
+                    style={{ animation: 'click-ripple 2.5s ease-in-out infinite' }}
+                  />
+                </div>
               </div>
               <div className="absolute top-10 sm:top-16 -left-2 sm:-left-4 px-1.5 sm:px-3 py-0.5 sm:py-1.5 rounded-md bg-orange-500 text-[7px] sm:text-[11px] font-semibold text-white shadow-lg -rotate-6">
                 Boost +49
               </div>
               <div className="absolute -bottom-1 sm:-bottom-3 right-8 sm:right-14 px-1.5 sm:px-3 py-0.5 sm:py-1.5 rounded-md bg-amber-600 text-[7px] sm:text-[11px] font-semibold text-white shadow-lg rotate-2">
                 Feature
-              </div>
-              
-              {/* Chaotic cursor */}
-              <div 
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
-                style={{ animation: 'cursor-chaos 2.5s ease-in-out infinite' }}
-              >
-                <MousePointer2 className="w-5 h-5 sm:w-6 sm:h-6 text-white/70 fill-white/20 drop-shadow-lg" />
-                <div 
-                  className="absolute -inset-2 rounded-full border-2 border-white/30"
-                  style={{ animation: 'click-ripple 2.5s ease-in-out infinite' }}
-                />
               </div>
             </div>
             
