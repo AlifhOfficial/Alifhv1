@@ -345,12 +345,12 @@ export function CarCard({
       </Link>
 
       {/* Content Section */}
-      <div className="flex flex-1 flex-col p-3 sm:p-4 gap-1.5">
+      <div className="flex flex-1 flex-col p-2 sm:p-4 gap-0.5 sm:gap-1.5">
         {/* Title with Year */}
         <Link href={`/listings/${id}`} className="group/title">
-          <div className="flex items-baseline justify-between gap-3">
+          <div className="flex items-baseline justify-between gap-2">
             <h3 className={cn(
-              "text-[15px] font-bold tracking-tight line-clamp-1 transition-colors flex-1",
+              "text-sm sm:text-[15px] font-bold tracking-tight line-clamp-1 transition-colors flex-1 min-w-0",
               isBlkListing 
                 ? "text-white group-hover/title:text-zinc-300" 
                 : "text-foreground group-hover/title:text-primary"
@@ -358,7 +358,7 @@ export function CarCard({
               {make} {model}
             </h3>
             <span className={cn(
-              "text-xs font-semibold tabular-nums flex-shrink-0",
+              "text-[11px] sm:text-xs font-semibold tabular-nums flex-shrink-0",
               isBlkListing ? "text-zinc-500" : "text-muted-foreground/70"
             )}>
               {year}
@@ -368,23 +368,23 @@ export function CarCard({
 
         {/* Price */}
         <p className={cn(
-          "text-lg sm:text-lg font-bold tracking-tight",
+          "text-base sm:text-lg font-bold tracking-tight",
           isBlkListing ? "text-white" : "text-blue-600"
         )}>
           {formatPrice(price)}
         </p>
 
         {/* Mobile: Stats + Actions on same row */}
-        <div className="flex items-center justify-between gap-2 sm:hidden">
+        <div className="flex items-center justify-between gap-1.5 sm:hidden">
           <div className={cn(
-            "flex items-center gap-1.5 text-[13px] min-w-0",
+            "flex items-center gap-1 text-[11px] xs:text-xs min-w-0 overflow-hidden",
             isBlkListing ? "text-zinc-400" : "text-muted-foreground"
           )}>
-            <span className="font-semibold truncate">{formatMileage(mileage)} km</span>
+            <span className="font-medium whitespace-nowrap">{formatMileage(mileage)} km</span>
             <span className={isBlkListing ? "text-zinc-600" : "text-muted-foreground/40"}>•</span>
-            <span className="font-semibold truncate">{displaySpecs}</span>
+            <span className="font-medium whitespace-nowrap">{displaySpecs}</span>
             <span className={isBlkListing ? "text-zinc-600" : "text-muted-foreground/40"}>•</span>
-            <span className="font-semibold truncate">{displayEmirate}</span>
+            <span className="font-medium truncate">{displayEmirate}</span>
           </div>
           
           {/* Mobile Actions */}
@@ -713,22 +713,22 @@ function CarCardSkeletonComponent({ className }: CarCardSkeletonProps) {
       </div>
       
       {/* Content Section */}
-      <div className="flex flex-1 flex-col p-3 sm:p-4 gap-1.5">
+      <div className="flex flex-1 flex-col p-2 sm:p-4 gap-0.5 sm:gap-1">
         {/* Title + Year row */}
-        <div className="flex items-baseline justify-between gap-3">
-          <Skeleton className="h-[15px] w-2/3" />
-          <Skeleton className="h-3 w-8 flex-shrink-0" />
+        <div className="flex items-baseline justify-between gap-2">
+          <Skeleton className="h-3.5 sm:h-[15px] w-2/3" />
+          <Skeleton className="h-2.5 sm:h-3 w-8 flex-shrink-0" />
         </div>
 
         {/* Price */}
-        <Skeleton className="h-[18px] w-28" />
+        <Skeleton className="h-4 sm:h-[18px] w-24 sm:w-28" />
 
         {/* Mobile: Stats + Actions on same row */}
-        <div className="flex items-center justify-between gap-2 sm:hidden">
-          <div className="flex items-center gap-1.5">
-            <Skeleton className="h-3.5 w-12" />
-            <Skeleton className="h-3.5 w-8" />
-            <Skeleton className="h-3.5 w-14" />
+        <div className="flex items-center justify-between gap-1.5 sm:hidden">
+          <div className="flex items-center gap-1">
+            <Skeleton className="h-3 w-10" />
+            <Skeleton className="h-3 w-6" />
+            <Skeleton className="h-3 w-12" />
           </div>
           <div className="flex items-center gap-0.5">
             <Skeleton className="h-7 w-7 rounded-full" />

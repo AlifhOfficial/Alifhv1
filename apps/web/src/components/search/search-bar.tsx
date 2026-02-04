@@ -109,6 +109,10 @@ interface SearchBarProps {
   onSearch?: (filters: Partial<SearchParams>) => void;
   /** Redirect to listings page on search */
   redirectOnSearch?: boolean;
+  /** Callback when input is focused */
+  onFocus?: () => void;
+  /** Callback when input loses focus */
+  onBlur?: () => void;
 }
 
 export function SearchBar({
@@ -118,6 +122,8 @@ export function SearchBar({
   autoFocus = false,
   onSearch,
   redirectOnSearch = true,
+  onFocus: onFocusProp,
+  onBlur: onBlurProp,
 }: SearchBarProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -395,7 +401,16 @@ export function SearchBar({
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => setIsFocused(true)}
+          onFocus={() => {
+            setIsFocused(true);
+            onFocusProp?.();
+          }}
+          onBlur={() => {
+            // Delay to allow click on suggestions
+            setTimeout(() => {
+              onBlurProp?.();
+            }, 150);
+          }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           autoFocus={autoFocus}

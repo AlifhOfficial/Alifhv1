@@ -103,6 +103,9 @@ export function ListingsHeader({
   
   // Mobile search sheet state
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  
+  // Mobile search bar expanded state
+  const [mobileSearchExpanded, setMobileSearchExpanded] = useState(false);
 
   // Number of items to show before "View all" - kept small for fixed-height dynamic island
   const VISIBLE_COUNT = 4;
@@ -549,19 +552,27 @@ export function ListingsHeader({
             </Sheet>
 
             {/* Search Bar */}
-            <div className="flex-1 min-w-0">
+            <div className={cn(
+              "flex-1 min-w-0 transition-all duration-200",
+              mobileSearchExpanded && "flex-[2]"
+            )}>
               <SearchBar
                 size="sm"
                 placeholder="Search..."
                 redirectOnSearch={false}
                 onSearch={setFilters}
+                onFocus={() => setMobileSearchExpanded(true)}
+                onBlur={() => setMobileSearchExpanded(false)}
               />
             </div>
 
-            {/* Sort Dropdown */}
+            {/* Sort Dropdown - hidden when search expanded */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-1 h-10 px-3 text-sm font-semibold bg-sidebar border border-sidebar-border rounded-full text-sidebar-foreground/70 active:text-sidebar-foreground shadow-sm transition-colors touch-manipulation shrink-0">
+                <button className={cn(
+                  "flex items-center gap-1 h-10 px-3 text-sm font-semibold bg-sidebar border border-sidebar-border rounded-full text-sidebar-foreground/70 active:text-sidebar-foreground shadow-sm transition-all touch-manipulation shrink-0",
+                  mobileSearchExpanded && "hidden"
+                )}>
                   <span>Sort</span>
                   <ChevronDown className="size-3.5" />
                 </button>
@@ -1478,36 +1489,59 @@ interface ListingsHeaderSkeletonProps {
 
 function ListingsHeaderSkeletonComponent({ embedded = false }: ListingsHeaderSkeletonProps) {
   return (
-    <header className={cn(
-      "sticky z-30 bg-background border-b border-transparent",
-      "[&:not(:first-child)]:border-sidebar-border/50",
-      embedded ? "top-0" : "top-14 sm:top-16"
-    )}>
-      <div className="py-3 sm:py-4">
-        {/* Search Row */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Results count skeleton */}
-          <Skeleton className="hidden sm:block h-9 w-20 rounded-full" />
-
-          {/* Search bar skeleton */}
-          <Skeleton className="w-full sm:flex-1 sm:min-w-[200px] h-9 rounded-full order-last sm:order-none" />
-
-          {/* Right controls */}
+    <>
+      {/* ===== MOBILE SKELETON ===== */}
+      <div className={cn(
+        "sm:hidden sticky z-30 bg-background",
+        embedded ? "top-0" : "top-14"
+      )}>
+        <div className="py-2 px-2 space-y-2">
+          {/* Row 1: Search bar + controls */}
           <div className="flex items-center gap-2">
-            <Skeleton className="h-9 w-20 rounded-full" />
-            <Skeleton className="h-9 w-24 rounded-full" />
+            <Skeleton className="h-10 w-10 rounded-full shrink-0" />
+            <Skeleton className="flex-1 h-10 rounded-full" />
+            <Skeleton className="h-10 w-16 rounded-full shrink-0" />
+            <Skeleton className="h-10 w-20 rounded-full shrink-0" />
+          </div>
+          {/* Row 2: Results */}
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-4 w-16" />
           </div>
         </div>
-
-        {/* Dynamic Island skeleton */}
-        <div className="hidden sm:flex items-center gap-3 mt-3 h-10">
-          <Skeleton className="h-7 w-16 rounded-full" />
-          <Skeleton className="h-7 w-20 rounded-full" />
-          <Skeleton className="h-7 w-24 rounded-full" />
-          <Skeleton className="h-7 w-18 rounded-full" />
-        </div>
       </div>
-    </header>
+
+      {/* ===== DESKTOP SKELETON ===== */}
+      <header className={cn(
+        "hidden sm:block sticky z-30 bg-background border-b border-transparent",
+        "[&:not(:first-child)]:border-sidebar-border/50",
+        embedded ? "top-0" : "top-16"
+      )}>
+        <div className="py-3 sm:py-4">
+          {/* Search Row */}
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Results count skeleton */}
+            <Skeleton className="h-9 w-20 rounded-full" />
+
+            {/* Search bar skeleton */}
+            <Skeleton className="flex-1 min-w-[200px] h-9 rounded-full" />
+
+            {/* Right controls */}
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-9 w-20 rounded-full" />
+              <Skeleton className="h-9 w-24 rounded-full" />
+            </div>
+          </div>
+
+          {/* Dynamic Island skeleton */}
+          <div className="flex items-center gap-3 mt-3 h-10">
+            <Skeleton className="h-7 w-16 rounded-full" />
+            <Skeleton className="h-7 w-20 rounded-full" />
+            <Skeleton className="h-7 w-24 rounded-full" />
+            <Skeleton className="h-7 w-18 rounded-full" />
+          </div>
+        </div>
+      </header>
+    </>
   );
 }
 
