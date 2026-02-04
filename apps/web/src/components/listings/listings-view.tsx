@@ -34,9 +34,8 @@ export function ListingsView({ embedded = false, defaultFiltersOpen = true }: Li
   // Child components (CarCard) will subscribe to this data without triggering refetch
   useFavoritesStatus({ enabled: isSignedIn });
 
-  // Note: On mobile (< lg), 'list' mode uses CarCardMobile (horizontal compact cards)
+  // Note: CarCard is responsive - shows mobile layout on <sm and desktop layout on sm+
   // On desktop (lg+), 'list' mode uses CarListItem (full width rows)
-  // No view mode forcing needed - each breakpoint handles its own component
 
   const {
     listings,

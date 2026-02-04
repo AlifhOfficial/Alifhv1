@@ -66,7 +66,7 @@ export function CarCardMinimal({
       )}
     >      {/* Image - Compact */}
       <div className={cn(
-        "relative aspect-[4/3] xs:aspect-[16/10] w-full overflow-hidden",
+        "relative aspect-[16/9] sm:aspect-[16/10] w-full overflow-hidden",
         isBlkListing ? "bg-zinc-900" : "bg-muted/20"
       )}>
         <Image
@@ -176,7 +176,7 @@ function CarCardMinimalSkeletonComponent({ className }: CarCardMinimalSkeletonPr
       className
     )}>
       {/* Image */}
-      <Skeleton className="aspect-[4/3] xs:aspect-[16/10] w-full" />
+      <Skeleton className="aspect-[16/9] sm:aspect-[16/10] w-full" />
 
       {/* Content - Clean & Minimal */}
       <div className="flex items-center justify-between gap-3 p-3">

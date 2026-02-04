@@ -1,6 +1,7 @@
 /**
  * Car Card Component - Revvup Design System
  * Following "Less is More" principle with minimalist aesthetic
+ * Responsive: Mobile-first with desktop enhancements
  */
 
 'use client';
@@ -131,6 +132,10 @@ export function CarCard({
   const isPartnerListing = Boolean(partnerLogo || partnerName);
   const carTitle = `${year} ${make} ${model}${trim ? ` ${trim}` : ''}`;
   
+  // Hydration-safe: track if client has mounted
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  
   const { isSignedIn } = useUser();
   
   // Separate hooks for favorites and superlikes - completely independent
@@ -154,17 +159,31 @@ export function CarCard({
   }, []);
 
   const handleShare = useCallback(async () => {
-    const url = `${window.location.origin}/listings/${id}`;
-    const title = carTitle;
+    if (typeof window === 'undefined') return;
     
-    if (navigator.share) {
-      try {
-        await navigator.share({ title, url });
-      } catch {
-        // User cancelled or share failed silently
+    const url = `${window.location.origin}/listings/${id}`;
+    const shareData = {
+      title: carTitle,
+      text: `Check out this ${carTitle}`,
+      url,
+    };
+    
+    try {
+      if (navigator.share && navigator.canShare?.(shareData)) {
+        await navigator.share(shareData);
+      } else if (navigator.share) {
+        await navigator.share(shareData);
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(url);
       }
-    } else {
-      await navigator.clipboard.writeText(url);
+    } catch (error) {
+      if (error instanceof Error && error.name !== 'AbortError') {
+        try {
+          await navigator.clipboard.writeText(url);
+        } catch {
+          // Silent fail
+        }
+      }
     }
   }, [id, carTitle]);
 
@@ -261,7 +280,7 @@ export function CarCard({
 
       {/* Image Section */}
       <Link href={`/listings/${id}`} className={cn(
-        "relative aspect-[4/3] xs:aspect-[16/10] sm:aspect-[3/2] lg:aspect-[16/10] w-full overflow-hidden block",
+        "relative aspect-[16/9] sm:aspect-[16/10] w-full overflow-hidden block",
         isBlkListing ? "bg-zinc-900" : "bg-muted/20"
       )}>
         <Image
@@ -272,6 +291,57 @@ export function CarCard({
           className="object-cover transition-transform duration-300 group-hover:scale-105"
           sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
         />
+        
+        {/* Mobile: Avatar + Name overlay on image */}
+        <div className="absolute top-2 right-2 flex items-center gap-1.5 pl-1 pr-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm sm:hidden">
+          {isBlackTierPartner ? (
+            <div className="rounded-full ring-2 ring-white/40 p-0.5">
+              {isPartnerListing ? (
+                <BrandAvatar
+                  logoUrl={partnerLogo}
+                  brandName={displaySellerName}
+                  size="xs"
+                  className="w-6 h-6 bg-zinc-800 border-zinc-700"
+                />
+              ) : (
+                <UserAvatar
+                  src={sellerAvatarUrl}
+                  name={displaySellerName}
+                  size="sm"
+                  className="w-6 h-6 bg-zinc-800 border-zinc-700 text-zinc-400"
+                />
+              )}
+            </div>
+          ) : isPartnerListing ? (
+            <BrandAvatar
+              logoUrl={partnerLogo}
+              brandName={displaySellerName}
+              size="xs"
+              className="w-6 h-6 bg-white/20 border-white/20"
+            />
+          ) : (
+            <UserAvatar
+              src={sellerAvatarUrl}
+              name={displaySellerName}
+              size="sm"
+              className="w-6 h-6 bg-white/20 border-white/20 text-white/80"
+            />
+          )}
+          <span className="text-xs font-medium text-white truncate max-w-[100px]">
+            {displaySellerName}
+          </span>
+          {!isBlackTierPartner && (partnerVerified || kycVerified) && (
+            <CheckCircle2 
+              className="w-3.5 h-3.5 flex-shrink-0 text-blue-400" 
+              aria-label="Verified" 
+            />
+          )}
+          {isBlackTierPartner && (
+            <span className="flex-shrink-0 px-1.5 h-4 inline-flex items-center text-[8px] font-black tracking-widest uppercase bg-black text-white">
+              BLK
+            </span>
+          )}
+        </div>
       </Link>
 
       {/* Content Section */}
@@ -298,14 +368,110 @@ export function CarCard({
 
         {/* Price */}
         <p className={cn(
-          "text-lg font-bold tracking-tight",
+          "text-lg sm:text-lg font-bold tracking-tight",
           isBlkListing ? "text-white" : "text-blue-600"
         )}>
           {formatPrice(price)}
         </p>
 
-        {/* Stats Row */}
-        <div className="flex items-center gap-1.5 text-sm">
+        {/* Mobile: Stats + Actions on same row */}
+        <div className="flex items-center justify-between gap-2 sm:hidden">
+          <div className={cn(
+            "flex items-center gap-1.5 text-[13px] min-w-0",
+            isBlkListing ? "text-zinc-400" : "text-muted-foreground"
+          )}>
+            <span className="font-semibold truncate">{formatMileage(mileage)} km</span>
+            <span className={isBlkListing ? "text-zinc-600" : "text-muted-foreground/40"}>•</span>
+            <span className="font-semibold truncate">{displaySpecs}</span>
+            <span className={isBlkListing ? "text-zinc-600" : "text-muted-foreground/40"}>•</span>
+            <span className="font-semibold truncate">{displayEmirate}</span>
+          </div>
+          
+          {/* Mobile Actions */}
+          <div className="flex items-center gap-0.5 flex-shrink-0">
+            <button 
+              className={cn(
+                "rounded-full p-1.5 transition-colors touch-manipulation",
+                isBlkListing 
+                  ? "text-zinc-400 active:bg-zinc-800 active:text-zinc-200" 
+                  : "text-muted-foreground active:bg-muted active:text-foreground"
+              )}
+              aria-label="Share"
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                handleShare();
+              }}
+            >
+              <Share2 className="h-[18px] w-[18px]" />
+            </button>
+            
+            <button 
+              className={cn(
+                "relative rounded-full p-1.5 transition-all active:scale-95 touch-manipulation",
+                favorite.isUpdating && "opacity-50",
+                mounted && favorite.isFavorite
+                  ? "text-rose-500 active:bg-rose-500/10"
+                  : isBlkListing 
+                    ? "text-zinc-400 active:bg-zinc-800 active:text-zinc-200" 
+                    : "text-muted-foreground active:bg-muted active:text-foreground"
+              )}
+              aria-label={(mounted && favorite.isFavorite) ? "Remove favorite" : "Add to favorites"}
+              disabled={favorite.isUpdating}
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                handleFavoriteClick();
+              }}
+            >
+              {showHearts && (
+                <span className="absolute inset-0 rounded-full bg-rose-500/20 animate-ripple" />
+              )}
+              <Heart
+                className={cn(
+                  "h-[18px] w-[18px] transition-transform duration-200",
+                  heartScale && "scale-125"
+                )}
+                strokeWidth={(mounted && favorite.isFavorite) ? 2.5 : 1.5}
+                fill={(mounted && favorite.isFavorite) ? "currentColor" : "none"}
+              />
+            </button>
+            
+            <button
+              className={cn(
+                "relative rounded-full p-1.5 transition-all active:scale-95 touch-manipulation",
+                superlike.isUpdating && "opacity-50",
+                mounted && superlike.isSuperliked
+                  ? "text-yellow-500 active:bg-yellow-500/10"
+                  : isBlkListing 
+                    ? "text-zinc-400 active:bg-zinc-800 active:text-zinc-200" 
+                    : "text-muted-foreground active:bg-muted active:text-foreground"
+              )}
+              aria-label={(mounted && superlike.isSuperliked) ? "Remove superlike" : "Superlike"}
+              disabled={superlike.isUpdating}
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                handleSuperlikeClick();
+              }}
+            >
+              {showSparkles && (
+                <span className="absolute inset-0 rounded-full bg-yellow-500/20 animate-ripple" />
+              )}
+              <Sparkles
+                className={cn(
+                  "h-[18px] w-[18px] transition-transform duration-200",
+                  showSparkles && "scale-125"
+                )}
+                strokeWidth={(mounted && superlike.isSuperliked) ? 2.5 : 1.5}
+                fill={(mounted && superlike.isSuperliked) ? "currentColor" : "none"}
+              />
+            </button>
+          </div>
+        </div>
+
+        {/* Desktop: Stats Row */}
+        <div className="hidden sm:flex items-center gap-1.5 text-sm">
           <span className={cn(
             "font-semibold",
             isBlkListing ? "text-zinc-500" : "text-muted-foreground/70"
@@ -328,8 +494,8 @@ export function CarCard({
           </span>
         </div>
 
-        {/* Bottom Section */}
-        <div className="flex items-center justify-between pt-3 mt-auto">
+        {/* Desktop: Bottom Section with dealer + actions */}
+        <div className="hidden sm:flex items-center justify-between pt-3 mt-auto">
           {/* Left - Dealer */}
           <div className="flex items-center gap-2.5 min-w-0">
             {/* Avatar - with ring for Black tier */}
@@ -398,10 +564,10 @@ export function CarCard({
           </div>
 
           {/* Right - Actions */}
-          <div className="flex items-center -mr-2 sm:-mr-1.5 flex-shrink-0">
+          <div className="flex items-center gap-1 -mr-1.5 flex-shrink-0 ml-auto">
             <button 
               className={cn(
-                "rounded-full p-2 sm:p-1.5 transition-colors touch-manipulation",
+                "rounded-full p-1.5 transition-colors touch-manipulation",
                 isBlkListing 
                   ? "text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/50 active:bg-zinc-700/50" 
                   : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50 active:bg-muted/70"
@@ -419,9 +585,9 @@ export function CarCard({
             {/* Favorite Button */}
             <button 
               className={cn(
-                "relative rounded-full p-2 sm:p-1.5 transition-all active:scale-95 touch-manipulation",
+                "relative rounded-full p-1.5 transition-all active:scale-95 touch-manipulation",
                 favorite.isUpdating && "opacity-50 cursor-not-allowed",
-                favorite.isFavorite
+                mounted && favorite.isFavorite
                   ? isBlkListing 
                     ? "text-rose-400 hover:bg-zinc-800/50" 
                     : "text-rose-500 hover:bg-muted/50"
@@ -429,8 +595,8 @@ export function CarCard({
                     ? "text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/50 active:bg-zinc-700/50" 
                     : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50 active:bg-muted/70"
               )}
-              aria-label={favorite.isFavorite ? "Remove favorite" : "Add to favorites"}
-              aria-pressed={favorite.isFavorite}
+              aria-label={(mounted && favorite.isFavorite) ? "Remove favorite" : "Add to favorites"}
+              aria-pressed={mounted && favorite.isFavorite}
               disabled={favorite.isUpdating}
               onClick={(event) => {
                 event.preventDefault();
@@ -438,7 +604,6 @@ export function CarCard({
                 handleFavoriteClick();
               }}
             >
-              {/* Ripple effect */}
               {showHearts && (
                 <span className="absolute inset-0 rounded-full bg-rose-500/20 animate-ripple" />
               )}
@@ -447,17 +612,17 @@ export function CarCard({
                   "h-4 w-4 transition-transform duration-200",
                   heartScale && "scale-[1.3]"
                 )}
-                strokeWidth={favorite.isFavorite ? 2.5 : 1.5}
-                fill={favorite.isFavorite ? "currentColor" : "none"}
+                strokeWidth={(mounted && favorite.isFavorite) ? 2.5 : 1.5}
+                fill={(mounted && favorite.isFavorite) ? "currentColor" : "none"}
               />
             </button>
             
             {/* Superlike Button */}
             <button
               className={cn(
-                "relative rounded-full p-2 sm:p-1.5 transition-all active:scale-95 touch-manipulation",
+                "relative rounded-full p-1.5 transition-all active:scale-95 touch-manipulation",
                 superlike.isUpdating && "opacity-50 cursor-not-allowed",
-                superlike.isSuperliked
+                mounted && superlike.isSuperliked
                   ? isBlkListing 
                     ? "text-yellow-400 hover:bg-zinc-800/50" 
                     : "text-yellow-500 hover:bg-muted/50"
@@ -465,8 +630,8 @@ export function CarCard({
                     ? "text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/50 active:bg-zinc-700/50" 
                     : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50 active:bg-muted/70"
               )}
-              aria-label={superlike.isSuperliked ? "Remove superlike" : "Superlike"}
-              aria-pressed={superlike.isSuperliked}
+              aria-label={(mounted && superlike.isSuperliked) ? "Remove superlike" : "Superlike"}
+              aria-pressed={mounted && superlike.isSuperliked}
               disabled={superlike.isUpdating}
               onClick={(event) => {
                 event.preventDefault();
@@ -474,7 +639,6 @@ export function CarCard({
                 handleSuperlikeClick();
               }}
             >
-              {/* Ripple effect */}
               {showSparkles && (
                 <span className="absolute inset-0 rounded-full bg-yellow-500/20 animate-ripple" />
               )}
@@ -483,8 +647,8 @@ export function CarCard({
                   "h-4 w-4 transition-transform duration-200",
                   showSparkles && "scale-[1.3]"
                 )}
-                strokeWidth={superlike.isSuperliked ? 2.5 : 1.5}
-                fill={superlike.isSuperliked ? "currentColor" : "none"}
+                strokeWidth={(mounted && superlike.isSuperliked) ? 2.5 : 1.5}
+                fill={(mounted && superlike.isSuperliked) ? "currentColor" : "none"}
               />
             </button>
           </div>
@@ -540,7 +704,13 @@ function CarCardSkeletonComponent({ className }: CarCardSkeletonProps) {
       className
     )}>
       {/* Image Section - matches CarCard aspect ratios */}
-      <Skeleton className="aspect-[4/3] xs:aspect-[16/10] sm:aspect-[3/2] lg:aspect-[16/10] w-full" />
+      <div className="relative aspect-[16/9] sm:aspect-[16/10] w-full">
+        <Skeleton className="absolute inset-0" />
+        {/* Mobile: Avatar + Name pill overlay */}
+        <div className="absolute top-2 right-2 sm:hidden">
+          <Skeleton className="h-7 w-32 rounded-full" />
+        </div>
+      </div>
       
       {/* Content Section */}
       <div className="flex flex-1 flex-col p-3 sm:p-4 gap-1.5">
@@ -553,23 +723,34 @@ function CarCardSkeletonComponent({ className }: CarCardSkeletonProps) {
         {/* Price */}
         <Skeleton className="h-[18px] w-28" />
 
-        {/* Stats Row - mileage · specs · emirate */}
-        <div className="flex items-center gap-1.5">
+        {/* Mobile: Stats + Actions on same row */}
+        <div className="flex items-center justify-between gap-2 sm:hidden">
+          <div className="flex items-center gap-1.5">
+            <Skeleton className="h-3.5 w-12" />
+            <Skeleton className="h-3.5 w-8" />
+            <Skeleton className="h-3.5 w-14" />
+          </div>
+          <div className="flex items-center gap-0.5">
+            <Skeleton className="h-7 w-7 rounded-full" />
+            <Skeleton className="h-7 w-7 rounded-full" />
+            <Skeleton className="h-7 w-7 rounded-full" />
+          </div>
+        </div>
+
+        {/* Desktop: Stats Row */}
+        <div className="hidden sm:flex items-center gap-1.5">
           <Skeleton className="h-3.5 w-14" />
           <Skeleton className="h-3.5 w-8" />
           <Skeleton className="h-3.5 w-12" />
         </div>
 
-        {/* Bottom Section - Seller and Actions */}
-        <div className="flex items-center justify-between pt-3 mt-auto">
-          {/* Left - Seller avatar + name */}
+        {/* Desktop: Bottom Section */}
+        <div className="hidden sm:flex items-center justify-between pt-3 mt-auto">
           <div className="flex items-center gap-2.5 min-w-0">
             <Skeleton className="w-7 h-7 rounded-full flex-shrink-0" />
             <Skeleton className="h-[13px] w-24" />
           </div>
-
-          {/* Right - Actions (share, favorite, superlike) */}
-          <div className="flex items-center gap-1 flex-shrink-0">
+          <div className="flex items-center gap-1 ml-auto">
             <Skeleton className="h-8 w-8 rounded-full" />
             <Skeleton className="h-8 w-8 rounded-full" />
             <Skeleton className="h-8 w-8 rounded-full" />

@@ -6,7 +6,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { CarCard, CarCardMinimal, CarCardMobile, CarListItem } from '@/components/inventory';
+import { CarCard, CarCardMinimal, CarListItem } from '@/components/inventory';
 import { Search, X, Car } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTrackImpressions } from '@/hooks/listings';
@@ -156,10 +156,10 @@ export function ListingsContent({
               ))}
             </div>
           ) : (
-            /* Mobile grid/list view - always use CarCardMobile */
-            <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
+            /* Mobile grid/list view - use responsive CarCard */
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {Array.from({ length: 6 }).map((_, i) => (
-                <CarCardMobile.Skeleton key={i} />
+                <CarCard.Skeleton key={i} />
               ))}
             </div>
           )
@@ -185,10 +185,10 @@ export function ListingsContent({
             ))}
           </div>
         ) : (
-          /* Mobile grid/list view - always use CarCardMobile */
-          <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
+          /* Mobile grid/list view - use responsive CarCard */
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {listings.map((listing, index) => (
-              <CarCardMobile
+              <CarCard
                 key={listing.id}
                 id={listing.id}
                 make={listing.make}
