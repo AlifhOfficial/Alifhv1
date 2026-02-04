@@ -37,12 +37,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       setIsLoading(true);
-      // Add timestamp to prevent browser caching when force refreshing
-      const url = force 
-        ? `/api/auth/get-session?_t=${Date.now()}` 
-        : '/api/auth/get-session';
+      // Use Better Auth's session endpoint (note: it's "get-session", not "session")
+      const url = '/api/auth/get-session';
       
       const res = await fetch(url, {
+        method: 'GET',
         credentials: 'include',
         cache: 'no-store',
         headers: {

@@ -11,6 +11,8 @@ import {
   FeaturesSection,
 } from '@/components/pages/home';
 import { ClosingSection } from '@/components/pages/home/closing-section';
+import { JsonLd } from '@/components/seo/json-ld';
+import { generateOrganizationSchema } from '@/lib/seo-schema';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -27,6 +29,9 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
+      {/* SEO: Organization Schema */}
+      <JsonLd data={generateOrganizationSchema()} />
+      
       <HeroSection />
       <ProblemSection />
       <DifferentiatorsSection />

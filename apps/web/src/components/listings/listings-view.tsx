@@ -21,9 +21,21 @@ interface ListingsViewProps {
   embedded?: boolean;
   /** When false, starts with filters sidebar closed (default: true) */
   defaultFiltersOpen?: boolean;
+  /** Default location filter (for location hub pages) */
+  defaultLocation?: string;
+  /** Default brand filter (for brand hub pages) */
+  defaultBrand?: string;
+  /** Default model filter (for model hub pages) */
+  defaultModel?: string;
 }
 
-export function ListingsView({ embedded = false, defaultFiltersOpen = true }: ListingsViewProps) {
+export function ListingsView({ 
+  embedded = false, 
+  defaultFiltersOpen = true,
+  defaultLocation,
+  defaultBrand,
+  defaultModel,
+}: ListingsViewProps) {
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'minimal'>('list'); // Default to list
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(defaultFiltersOpen);
@@ -53,7 +65,14 @@ export function ListingsView({ embedded = false, defaultFiltersOpen = true }: Li
     setSort,
     loadMore,
     goToPage,
-  } = useSearch({ defaultLimit: 30 });
+  } = useSearch({ 
+    defaultLimit: 30,
+    initialParams: {
+      ...(defaultLocation && { location: [defaultLocation] }),
+      ...(defaultBrand && { make: [defaultBrand] }),
+      ...(defaultModel && { model: [defaultModel] }),
+    },
+  });
 
   // Scroll to top when page changes
   const prevPageRef = useRef(currentPage);

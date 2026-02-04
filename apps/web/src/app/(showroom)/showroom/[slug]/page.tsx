@@ -13,6 +13,7 @@
 
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
+import { notFound } from 'next/navigation';
 import { ShowroomPageClient } from './client';
 
 // ============================================================================
@@ -21,6 +22,45 @@ import { ShowroomPageClient } from './client';
 
 interface ShowroomPageProps {
   params: Promise<{ slug: string }>;
+}
+
+// ============================================================================
+// Static Generation
+// ============================================================================
+
+/**
+ * Generate static paths for all active partner showroom pages
+ * This pre-generates pages for all verified dealerships
+ */
+export async function generateStaticParams() {
+  try {
+    // Import here to avoid build-time DB connection issues
+    const { db, partner, eq, and } = await import('@alifh/database');
+    
+    // Get all active, verified partners
+    const partners = await db
+      .select({
+        id: partner.id,
+        brandName: partner.brandName,
+        slug: partner.id, // Use ID as slug for now
+      })
+      .from(partner)
+      .where(
+        and(
+          eq(partner.status, 'active'),
+          eq(partner.isVerified, true)
+        )
+      )
+      .limit(500); // Reasonable limit for static generation
+    
+    // Generate slug from brand name (lowercase, hyphenated)
+    return partners.map(p => ({
+      slug: p.brandName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+    }));
+  } catch (error) {
+    console.error('[generateStaticParams] Failed to fetch partners:', error);
+    return []; // Return empty array on error - pages will be generated on-demand
+  }
 }
 
 // ============================================================================
@@ -40,16 +80,13 @@ async function fetchShowroomMetadata(slug: string) {
     });
     
     if (!response.ok) {
-      // Return a minimal object so we don't show "Not Found" for valid showrooms
-      // The actual data will load client-side
-      return { partner: { brandName: slug }, isPlaceholder: true };
+      return null; // Return null for 404s
     }
     
     const data = await response.json();
     return data.showroom;
   } catch {
-    // Return minimal placeholder on error - actual data loads client-side
-    return { partner: { brandName: slug }, isPlaceholder: true };
+    return null; // Return null on error
   }
 }
 
@@ -65,26 +102,49 @@ export async function generateMetadata({ params }: ShowroomPageProps): Promise<M
     return { title: 'Showroom' };
   }
 
+  const brandName = showroom.partner?.brandName || slug;
   const title = showroom.isPlaceholder 
-    ? `${showroom.partner?.brandName} | Showroom`
-    : (showroom.seoTitle || `${showroom.partner?.brandName} | Showroom`);
-  const description = showroom.seoDescription || showroom.brandPhilosophy || `Explore ${showroom.partner?.brandName}'s premium showroom`;
+    ? `${brandName} | Premium Car Showroom in UAE | Revvup`
+    : (showroom.seoTitle || `${brandName} | Premium Car Showroom in UAE | Revvup`);
+  
+  const description = showroom.seoDescription || 
+    showroom.brandPhilosophy || 
+    `Explore ${brandName}'s premium car showroom in UAE. Browse verified inventory, read reviews, and connect with trusted dealers. VIN verified listings.`;
+  
   const image = showroom.seoImageUrl || showroom.heroImageUrl;
+  const location = showroom.partner?.emirate || 'UAE';
+  const isBlackTier = showroom.partner?.tier === 'black';
+  
+  // Generate SEO keywords
+  const keywords = [
+    `${brandName.toLowerCase()} uae`,
+    `${brandName.toLowerCase()} showroom`,
+    `${brandName.toLowerCase()} ${location.toLowerCase()}`,
+    `${brandName.toLowerCase()} car dealer`,
+    `${brandName.toLowerCase()} cars for sale`,
+    isBlackTier && 'premium car showroom',
+    isBlackTier && 'luxury car dealer uae',
+  ].filter(Boolean).join(', ');
 
   return {
     title,
     description,
+    keywords,
     openGraph: {
       title,
       description,
       images: image ? [image] : [],
       type: 'website',
+      url: `https://revvup.ae/showroom/${slug}`,
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
       images: image ? [image] : [],
+    },
+    alternates: {
+      canonical: `https://revvup.ae/showroom/${slug}`,
     },
   };
 }
@@ -96,8 +156,14 @@ export async function generateMetadata({ params }: ShowroomPageProps): Promise<M
 export default async function ShowroomPage({ params }: ShowroomPageProps) {
   const { slug } = await params;
   
-  // Fetch showroom data for preload hints
+  // Fetch showroom data to verify it exists
   const showroom = await fetchShowroomMetadata(slug);
+  
+  // Return 404 if partner doesn't exist
+  if (!showroom) {
+    notFound();
+  }
+  
   const heroVideoUrl = showroom?.heroVideoFileUrl || null;
   const heroImageUrl = showroom?.heroImageUrl || null;
 

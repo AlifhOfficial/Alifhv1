@@ -6,27 +6,14 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { CarCard, CarCardMinimal, CarListItem } from '@/components/inventory';
-import { Search, X, Car } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTrackImpressions } from '@/hooks/listings';
+import { useAuthRequired } from '@/hooks/use-auth-required';
+import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 import type { SearchResponse } from '@/lib/search-utils';
-
-// Empty state config - consistent with booking views
-const EMPTY_STATE_CONFIG = {
-  noResults: { 
-    icon: Search, 
-    color: 'text-foreground', 
-    message: 'No matches found', 
-    subMessage: 'Try adjusting your search or filters' 
-  },
-  noListings: { 
-    icon: Car, 
-    color: 'text-foreground', 
-    message: 'No cars available', 
-    subMessage: 'Check back soon for new listings' 
-  },
-};
 
 interface ListingItem {
   id: string;
@@ -83,7 +70,20 @@ export function ListingsContent({
   clearFilters,
   loadMore,
 }: ListingsContentProps) {
+  const router = useRouter();
   const { trackImpressions } = useTrackImpressions();
+  const { isAuthenticated, showModal, openModal, closeModal } = useAuthRequired({
+    feature: "create listings",
+    redirectTo: "/user-dashboard/listings/new",
+  });
+
+  const handleSellClick = () => {
+    if (isAuthenticated) {
+      router.push('/user-dashboard/listings/new');
+    } else {
+      openModal();
+    }
+  };
 
   // Track impressions when new listings appear (including infinite scroll)
   // Note: Deduplication is handled at the module level in useTrackImpressions
@@ -114,29 +114,56 @@ export function ListingsContent({
     );
   }
 
-  // Empty state - consistent with booking views
+  // Empty state - full width and height card design
   if (!isLoading && !isFetching && listings.length === 0) {
-    const config = activeFilterCount > 0 
-      ? EMPTY_STATE_CONFIG.noResults 
-      : EMPTY_STATE_CONFIG.noListings;
-    const Icon = config.icon;
-    
     return (
-      <div className="flex flex-col items-center justify-center py-32 text-center">
-        <Icon className={`w-5 h-5 ${config.color} mb-3`} strokeWidth={2} />
-        <h3 className="text-sm font-semibold tracking-tight">{config.message}</h3>
-        <p className="text-xs text-muted-foreground mt-1">{config.subMessage}</p>
-        {activeFilterCount > 0 && (
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={clearFilters}
-            className="mt-4"
-          >
-            Clear filters
-          </Button>
-        )}
-      </div>
+      <>
+        <div className="w-full">
+          <div className="rounded-xl border border-border/40 bg-sidebar p-12 sm:p-16 min-h-[60vh] flex items-center justify-center">
+            <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
+              <div className="rounded-full bg-muted/50 p-4 mb-6">
+                <Search className="w-8 h-8 text-muted-foreground" strokeWidth={2} />
+              </div>
+              
+              <h3 className="text-xl font-semibold tracking-tight text-foreground mb-3">
+                {activeFilterCount > 0 ? 'No matches found' : 'Be the first one to list'}
+              </h3>
+              
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-lg mb-8">
+                {activeFilterCount > 0 
+                  ? 'Try adjusting your search criteria or removing some filters to see more results.' 
+                  : 'No listings available yet. Start your journey by adding the first vehicle to our marketplace.'}
+              </p>
+
+              {activeFilterCount > 0 ? (
+                <div className="pt-6 border-t border-border/40 w-full max-w-md">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={clearFilters}
+                    className="min-w-[160px]"
+                  >
+                    Clear all filters
+                  </Button>
+                </div>
+              ) : (
+                <Button 
+                  onClick={handleSellClick}
+                  className="h-11 px-8 bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors shadow-sm"
+                >
+                  Sell Your Car
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+        <AuthRequiredModal
+          open={showModal}
+          onClose={closeModal}
+          feature="create listings"
+          redirectTo="/user-dashboard/listings/new"
+        />
+      </>
     );
   }
 

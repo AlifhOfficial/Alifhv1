@@ -332,7 +332,7 @@ export function ListingsHeader({
                         {(facets?.make ?? []).filter(m => !(params.make ?? []).includes(m.value)).slice(0, 8).map((make) => (
                           <button
                             key={make.value}
-                            onClick={() => setFilters({ make: [make.value], model: undefined, trim: undefined })}
+                            onClick={() => toggleMake(make.value)}
                             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/70 bg-muted/40 active:bg-muted/60 rounded-full transition-all touch-manipulation"
                           >
                             <span>{make.label}</span>
@@ -413,7 +413,7 @@ export function ListingsHeader({
                           {(facets?.model ?? []).filter(m => !(params.model ?? []).includes(m.value)).slice(0, 8).map((model) => (
                             <button
                               key={model.value}
-                              onClick={() => setFilters({ model: [model.value], trim: undefined })}
+                              onClick={() => toggleModel(model.value)}
                               className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/70 bg-muted/40 active:bg-muted/60 rounded-full transition-all touch-manipulation"
                             >
                               <span>{model.label}</span>
@@ -495,7 +495,7 @@ export function ListingsHeader({
                           {(facets?.trim ?? []).filter(t => !(params.trim ?? []).includes(t.value)).slice(0, 8).map((trim) => (
                             <button
                               key={trim.value}
-                              onClick={() => setFilters({ trim: [trim.value] })}
+                              onClick={() => toggleTrim(trim.value)}
                               className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/70 bg-muted/40 active:bg-muted/60 rounded-full transition-all touch-manipulation"
                             >
                               <span>{trim.label}</span>

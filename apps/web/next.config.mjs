@@ -1,24 +1,7 @@
-import withPWAInit from '@ducanh2912/next-pwa'
-
-const withPWA = withPWAInit({
-  dest: 'public',
-  cacheOnFrontEndNav: true,
-  aggressiveFrontEndNavCaching: true,
-  reloadOnOnline: true,
-  swcMinify: true,
-  disable: process.env.NODE_ENV === 'development',
-  workboxOptions: {
-    disableDevLogs: true,
-  },
-  fallbacks: {
-    document: '/offline',
-  },
-})
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // NOTE: Turbopack disabled for builds - required for next-pwa (webpack plugin)
-  // turbopack: {},
+  // Turbopack is now the default bundler in Next.js 16+
+  // No configuration needed - it's automatically used for both dev and builds
   
   // Disable build cache to prevent disk bloat
   cacheMaxMemorySize: 0,
@@ -36,7 +19,7 @@ const nextConfig = {
   transpilePackages: ['@alifh/shared', '@alifh/database'],
   serverExternalPackages: ['better-auth', '@node-rs/argon2', '@node-rs/bcrypt'],
   
-  // Content Security Policy
+  // Content Security Policy and PWA Service Worker headers
   async headers() {
     return [
       {
@@ -47,6 +30,35 @@ const nextConfig = {
             value: process.env.NODE_ENV === 'development'
               ? "script-src 'self' 'unsafe-eval' 'unsafe-inline';" // Development: allow HMR
               : "script-src 'self' 'unsafe-inline';", // Production: no eval
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+        ],
+      },
+      {
+        source: '/sw.js',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/javascript; charset=utf-8',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; script-src 'self'",
           },
         ],
       },
@@ -103,4 +115,4 @@ const nextConfig = {
   },
 }
 
-export default withPWA(nextConfig)
+export default nextConfig

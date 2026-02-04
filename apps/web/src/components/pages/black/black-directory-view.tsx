@@ -9,7 +9,7 @@
 
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Search, X } from 'lucide-react';
+import { Search, X, Package } from 'lucide-react';
 import { queryKeys } from '@/lib/query-keys';
 import { BlackShowroomCard, BlackShowroomCardSkeleton } from './black-showroom-card';
 import type { ShowroomCardData } from './black-showroom-card';
@@ -133,23 +133,59 @@ export function BlackDirectoryView() {
           
           {/* Error State */}
           {error && (
-            <p className="py-16 text-center text-sm text-muted-foreground">
-              Unable to load showrooms
-            </p>
+            <div className="w-full">
+              <div className="rounded-xl border border-border/40 bg-sidebar p-12 sm:p-16 min-h-[50vh] flex items-center justify-center">
+                <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
+                  <div className="rounded-full bg-muted/50 p-4 mb-6">
+                    <X className="w-8 h-8 text-muted-foreground" strokeWidth={2} />
+                  </div>
+                  <h3 className="text-xl font-semibold tracking-tight text-foreground mb-3">
+                    Something went wrong
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
+                    Unable to load showrooms. Please try again later.
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
           
           {/* No Results */}
           {showNoResults && (
-            <p className="py-16 text-center text-sm text-muted-foreground">
-              No results for "{searchQuery}"
-            </p>
+            <div className="w-full">
+              <div className="rounded-xl border border-border/40 bg-sidebar p-12 sm:p-16 min-h-[50vh] flex items-center justify-center">
+                <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
+                  <div className="rounded-full bg-muted/50 p-4 mb-6">
+                    <Search className="w-8 h-8 text-muted-foreground" strokeWidth={2} />
+                  </div>
+                  <h3 className="text-xl font-semibold tracking-tight text-foreground mb-3">
+                    No matches found
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
+                    No results for "{searchQuery}". Try a different search term.
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
           
           {/* Empty State */}
           {!isLoading && !error && !searchQuery && data?.showrooms.length === 0 && (
-            <p className="py-16 text-center text-sm text-muted-foreground">
-              No showrooms yet
-            </p>
+            <div className="w-full">
+              <div className="rounded-xl border border-border/40 bg-sidebar p-12 sm:p-16 min-h-[50vh] flex items-center justify-center">
+                <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
+                  <div className="rounded-full bg-muted/50 p-4 mb-6">
+                    <Package className="w-8 h-8 text-muted-foreground" strokeWidth={2} />
+                  </div>
+                  <h3 className="text-xl font-semibold tracking-tight text-foreground mb-3">
+                    No showrooms yet
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
+                    Check back soon. Black members will appear here once they join.
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
           
           {/* Showroom Cards */}

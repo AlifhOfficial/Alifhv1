@@ -22,6 +22,7 @@ export const staffStatusEnum = pgEnum('staff_status', ['active', 'invited', 'sus
 
 export const partner = pgTable('partner', {
   id: text('id').primaryKey(),
+  slug: text('slug').notNull().unique(), // SEO-friendly URL slug (e.g., 'pox-cars')
   companyNameLegal: text('company_name_legal').notNull(),
   brandName: text('brand_name').notNull(),
   tradeLicense: text('trade_license').notNull().unique(),
@@ -156,6 +157,7 @@ export const partner = pgTable('partner', {
   suspendedAt: timestamp('suspended_at'),
   cancelledAt: timestamp('cancelled_at'),
 }, (table) => [
+  index('partner_slug_idx').on(table.slug),
   index('partner_email_idx').on(table.email),
   index('partner_phone_idx').on(table.phone),
   index('partner_trade_license_idx').on(table.tradeLicense),
