@@ -33,18 +33,27 @@ export async function generateStaticParams() {
 }
 
 function getBrandFromSlug(slug: string): CarMake | null {
-  const normalized = slug.replace(/-/g, ' ').replace(/and/g, '&');
-  const brand = CAR_MAKES.find(
-    make => make.toLowerCase() === normalized.toLowerCase()
+  // Try exact match first (handles Mercedes-Benz, Rolls-Royce correctly)
+  const exactMatch = CAR_MAKES.find(
+    make => make.toLowerCase().replace(/\s+/g, '-') === slug.toLowerCase()
   );
-  return brand || null;
+  if (exactMatch) return exactMatch;
+  
+  // Try with 'and' -> '&' conversion (handles Lynk & Co)
+  const withAmpersand = slug.replace(/and/g, '&');
+  const ampersandMatch = CAR_MAKES.find(
+    make => make.toLowerCase().replace(/\s+/g, '-') === withAmpersand.toLowerCase()
+  );
+  if (ampersandMatch) return ampersandMatch;
+  
+  return null;
 }
 
 function getModelFromSlug(brand: CarMake, slug: string): string | null {
   const models = CAR_MODELS[brand] || [];
-  const normalized = slug.replace(/-/g, ' ');
+  const normalized = slug.replace(/-/g, ' ').toLowerCase();
   const model = models.find(
-    m => m.toLowerCase() === normalized.toLowerCase()
+    m => m.toLowerCase().replace(/-/g, ' ') === normalized
   );
   return model || null;
 }

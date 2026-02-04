@@ -16,13 +16,17 @@ import {
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Car Dealers Dubai | Zero Commission Platform | Revvup',
-  description: 'Sell more cars. Keep more profit. Zero commission, flat monthly fee, unlimited listings. We never compete with you. The car dealer platform built for UAE dealerships.',
-  keywords: 'car dealer dubai, sell cars uae, dealer platform dubai, zero commission car sales, car dealership uae, automotive marketplace dubai',
+  title: 'Dealer Partner Program — 0% Commission, Unlimited Listings | Revvup',
+  description: 'Flat fee. Unlimited listings. No pay-to-rank. Full brand page, staff accounts, analytics, and trust tools. The car dealer platform built for UAE dealerships. Better than pay-per-listing.',
+  keywords: 'zero commission car marketplace, no commission car sales dubai, dealer car marketplace subscription uae, car dealer dubai, car dealership platform uae, automotive marketplace dubai, dealer partner program uae, dubizzle for dealers, dubicars dealer, yallmotors dealers, shoofi dealers, ayeshi alternative, alternative dealer platform, flat fee car listing',
   openGraph: {
-    title: 'Car Dealers Dubai | Zero Commission Platform | Revvup',
-    description: 'Sell more cars. Keep more profit. Zero commission, flat monthly fee, unlimited listings. We never compete with you.',
+    title: 'Dealer Partner Program — 0% Commission, Unlimited Listings | Revvup',
+    description: 'Flat fee. Unlimited listings. No pay-to-rank. Full brand page, staff accounts, analytics, and trust tools.',
     type: 'website',
+    url: 'https://revvup.ae/partner',
+  },
+  alternates: {
+    canonical: 'https://revvup.ae/partner',
   },
 };
 

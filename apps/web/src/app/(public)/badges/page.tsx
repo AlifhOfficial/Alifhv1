@@ -11,12 +11,17 @@ import {
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Badges - Revvup',
-  description: 'Honours and recognition at Revvup. Badges are hand-picked and curated by Team Revvup. Earned, not bought.',
+  title: 'Badges — Trust & Recognition | Revvup',
+  description: 'Honours and recognition at Revvup. Badges are hand-picked and curated by Team Revvup. Earned, not bought. Verified sellers and dealers in UAE.',
+  keywords: 'revvup badges, verified sellers uae, trusted dealers dubai, car seller verification, dealer recognition uae',
   openGraph: {
-    title: 'Badges - Revvup',
+    title: 'Badges — Trust & Recognition | Revvup',
     description: 'Honours and recognition at Revvup. Badges are hand-picked and curated by Team Revvup. Earned, not bought.',
     type: 'website',
+    url: 'https://revvup.ae/badges',
+  },
+  alternates: {
+    canonical: 'https://revvup.ae/badges',
   },
 };
 

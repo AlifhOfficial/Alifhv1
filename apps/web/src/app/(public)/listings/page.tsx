@@ -56,7 +56,7 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   const baseMetadata: Metadata = {
     title: 'Used Cars for Sale in Dubai | VIN Shown | Revvup',
     description: 'Browse used cars in Dubai with VIN shown on every listing. No sponsored ads. Free for private sellers. Book test drives online. New and used cars for sale in UAE.',
-    keywords: 'used cars for sale dubai, buy used car dubai, second hand cars dubai, cars for sale uae, used cars dubai, car marketplace dubai, buy car dubai, dubai used cars, 2nd hand cars dubai',
+    keywords: 'used cars for sale dubai, buy used car dubai, second hand cars dubai, cars for sale uae, used cars dubai, car marketplace dubai, buy car dubai, dubai used cars, 2nd hand cars dubai, dubizzle cars dubai, dubicars uae, yallmotors, cars24 dubai, shoofi cars, ayeshi uae, automotive classifieds uae, car shopping dubai',
     openGraph: {
       title: 'Used Cars for Sale in Dubai | VIN Shown | Revvup',
       description: 'Browse used cars in Dubai with VIN shown on every listing. No sponsored ads. Book test drives anytime.',

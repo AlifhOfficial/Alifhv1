@@ -12,12 +12,17 @@ import {
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Pricing - Revvup',
-  description: 'Simple, transparent pricing. Two options. Same platform. Same features. Different levels of attention. Zero commission. Unlimited listings.',
+  title: 'Pricing — Zero Commission, Unlimited Listings | Revvup',
+  description: 'Simple, transparent pricing. Two options. Same platform. Same features. Different levels of attention. Zero commission. Unlimited listings for dealers and showrooms.',
+  keywords: 'zero commission car marketplace, no commission car sales dubai, dealer pricing uae, car dealer subscription uae, unlimited car listings dubai, dealer partner pricing',
   openGraph: {
-    title: 'Pricing - Revvup',
-    description: 'Simple, transparent pricing. Two options. Same platform. Same features. Different levels of attention. Zero commission. Unlimited listings.',
+    title: 'Pricing — Zero Commission, Unlimited Listings | Revvup',
+    description: 'Simple, transparent pricing. Two options. Same platform. Zero commission. Unlimited listings.',
     type: 'website',
+    url: 'https://revvup.ae/pricing',
+  },
+  alternates: {
+    canonical: 'https://revvup.ae/pricing',
   },
 };
 

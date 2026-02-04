@@ -11,12 +11,17 @@ import {
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Our Vision - Revvup',
-  description: 'Revvup is built to contribute to the UAE\'s We the UAE 2031 vision. Forward society. Forward economy. Forward ecosystem.',
+  title: 'Our Vision — Building UAE\'s Car Marketplace | Revvup',
+  description: 'Revvup is built to contribute to the UAE\'s We the UAE 2031 vision. Forward society. Forward economy. Forward ecosystem. The future of car buying and selling in Dubai.',
+  keywords: 'revvup vision, uae car marketplace, dubai automotive future, we the uae 2031, car marketplace innovation uae',
   openGraph: {
-    title: 'Our Vision - Revvup',
-    description: 'Revvup is built to contribute to the UAE\'s We the UAE 2031 vision. Forward society. Forward economy. Forward ecosystem.',
+    title: 'Our Vision — Building UAE\'s Car Marketplace | Revvup',
+    description: 'Contributing to the UAE\'s We the UAE 2031 vision. Forward society. Forward economy. Forward ecosystem.',
     type: 'website',
+    url: 'https://revvup.ae/vision',
+  },
+  alternates: {
+    canonical: 'https://revvup.ae/vision',
   },
 };
 
