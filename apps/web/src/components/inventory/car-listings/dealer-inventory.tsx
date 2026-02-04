@@ -598,7 +598,7 @@ export function DealerInventory({
           </div>
 
           {/* List */}
-          <div className="space-y-1">
+          <div className="space-y-2">
             {listings.map((listing) => {
               const statusBadge = getStatusBadge(listing);
               const teamMember = listing.postedByUserId ? teamMemberMap.get(listing.postedByUserId) : null;
@@ -607,12 +607,10 @@ export function DealerInventory({
                 <div
                   key={listing.id}
                   className={cn(
-                    "group flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-5 p-3 sm:p-4 -mx-3 sm:-mx-4 rounded-xl hover:bg-secondary/30 transition-colors",
+                    "group flex items-center gap-3 sm:gap-4 p-3 rounded-xl hover:bg-secondary/40 transition-colors border border-transparent hover:border-border/40",
                     listing.isBlkListing && "bg-zinc-500/5"
                   )}
                 >
-                  {/* Top row on mobile: Thumbnail + Info + Status */}
-                  <div className="flex items-center gap-3 w-full sm:w-auto">
                   {/* Thumbnail */}
                   <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-lg overflow-hidden bg-secondary flex-shrink-0 relative">
                     {listing.thumbnail ? (
@@ -638,33 +636,30 @@ export function DealerInventory({
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <Link href={`/listings/${listing.id}`} className="hover:underline">
-                      <p className="text-xs sm:text-sm font-medium tracking-tight truncate">
+                      <p className="text-sm font-semibold tracking-tight truncate">
                         {listing.year} {listing.make} {listing.model}
                         {listing.trim && ` ${listing.trim}`}
                       </p>
                     </Link>
-                    <p className="text-[11px] sm:text-xs text-muted-foreground truncate mt-0.5">
-                      {listing.price.toLocaleString()} AED
+                    <div className="flex items-center gap-2 mt-1">
+                      <p className="text-xs text-muted-foreground">
+                        {listing.price.toLocaleString()} AED
+                      </p>
                       {listing.postedByDisplayName && (
-                        <span className={cn("hidden sm:inline", teamMember?.status === 'left' && 'opacity-50')}>
-                          {' · '}{listing.postedByDisplayName}
-                        </span>
+                        <>
+                          <span className="text-xs text-muted-foreground/40">·</span>
+                          <p className={cn("text-xs text-muted-foreground/70", teamMember?.status === 'left' && 'opacity-50')}>
+                            {listing.postedByDisplayName}
+                          </p>
+                        </>
                       )}
-                    </p>
+                    </div>
                   </div>
 
-                  {/* Status on mobile (visible) */}
-                  <div className="flex-shrink-0 sm:hidden">
-                    <span className={`px-1.5 py-0.5 rounded-md text-[11px] font-medium ${statusBadge.bg} ${statusBadge.color}`}>
-                      {statusBadge.label}
-                    </span>
-                  </div>
-                  </div>
-
-                  {/* Actions - Hidden on mobile, visible on hover on desktop */}
-                  <div className="flex items-center gap-2 w-full sm:w-auto sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                    <Link href={`/listings/${listing.id}`} className="flex-1 sm:flex-initial">
-                      <button className="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-xs transition-colors">
+                  {/* Actions - Show on hover for desktop, always visible on mobile */}
+                  <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                    <Link href={`/listings/${listing.id}`}>
+                      <button className="px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-xs font-medium transition-colors">
                         View
                       </button>
                     </Link>
@@ -676,16 +671,16 @@ export function DealerInventory({
                           listingTitle: `${listing.year} ${listing.make} ${listing.model}`,
                           currentManagerId: listing.postedByUserId || null,
                         })}
-                        className="flex-1 sm:flex-initial px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-xs transition-colors"
+                        className="px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-xs font-medium transition-colors"
                       >
                         Reassign
                       </button>
                     )}
                   </div>
 
-                  {/* Status on desktop (hidden on mobile) */}
-                  <div className="hidden sm:block flex-shrink-0">
-                    <span className={`px-2.5 py-1 rounded-md text-xs font-medium ${statusBadge.bg} ${statusBadge.color}`}>
+                  {/* Status */}
+                  <div className="flex-shrink-0">
+                    <span className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${statusBadge.bg} ${statusBadge.color}`}>
                       {statusBadge.label}
                     </span>
                   </div>

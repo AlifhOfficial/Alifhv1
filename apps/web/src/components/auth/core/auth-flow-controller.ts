@@ -79,9 +79,9 @@ export class AuthFlowController {
 
         this.callbacks.onSuccess?.(result.user);
         this.handleCloseAll();
-      } else if ((result as any).needsVerification) {
+      } else if ((result as any).needsVerification && result.error === "EMAIL_NOT_VERIFIED") {
         // User exists but email not verified
-        // Send OTP and show verification modal so they can complete verification
+        // Only proceed if this is truly a verification issue, not a network/origin error
         console.log('[AuthFlow] User needs verification, sending OTP');
         
         // Send OTP for verification

@@ -54,7 +54,7 @@ export function Footer() {
             
             {/* Brand - Takes more space */}
             <div className="lg:col-span-4 space-y-3">
-              <p className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
+              <p className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground" style={{ letterSpacing: '0.01em' }}>
                 Revvup
               </p>
               <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">

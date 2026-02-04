@@ -503,7 +503,7 @@ export function PartnerBookingsClient({
           </div>
 
           {/* List */}
-          <div className="space-y-1">
+          <div className="space-y-2">
             {bookings.map((booking) => {
               const normalizedStatus = normalizeStatus(booking.status);
               const statusLabel = STATUS_CONFIG[normalizedStatus]?.label || booking.status;
@@ -513,30 +513,10 @@ export function PartnerBookingsClient({
               return (
                 <div
                   key={booking.id}
-                  className="group flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-5 p-3 sm:p-4 -mx-3 sm:-mx-4 rounded-xl hover:bg-secondary/30 transition-colors cursor-pointer"
+                  className="group flex items-center gap-3 sm:gap-4 p-3 rounded-xl hover:bg-secondary/40 transition-colors cursor-pointer border border-transparent hover:border-border/40"
                 >
-                  {/* Mobile top row: Time + Status */}
-                  <div className="flex items-center justify-between w-full sm:hidden">
-                    <div className="flex-shrink-0">
-                      <p className="text-xs sm:text-sm font-medium tracking-tight">{dateInfo.label}</p>
-                      <p className="text-[11px] sm:text-xs text-muted-foreground">{dateInfo.time}</p>
-                    </div>
-                    <span className={`px-1.5 py-0.5 rounded-md text-[11px] font-medium ${STATUS_CONFIG[normalizedStatus]?.bg || 'bg-secondary/50'} ${STATUS_CONFIG[normalizedStatus]?.color || 'text-muted-foreground'}`}>
-                      {statusLabel}
-                    </span>
-                  </div>
-
-                  {/* Time - Desktop only */}
-                  <div className="hidden sm:block w-20 flex-shrink-0">
-                    <p className="text-sm font-medium tracking-tight">{dateInfo.label}</p>
-                    <p className="text-xs text-muted-foreground">{dateInfo.time}</p>
-                  </div>
-
-                  {/* Mobile middle row: Image + Info */}
-                  <div className="flex items-center gap-3 w-full sm:w-auto">
-
                   {/* Image */}
-                  <div className="w-12 h-9 sm:w-14 sm:h-10 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
+                  <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
                     {booking.listingThumbnail ? (
                       <img
                         src={booking.listingThumbnail}
@@ -545,28 +525,32 @@ export function PartnerBookingsClient({
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <Box className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground/30" />
+                        <Box className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground/30" />
                       </div>
                     )}
                   </div>
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs sm:text-sm font-medium tracking-tight truncate">{booking.listingTitle}</p>
-                    <p className="text-[11px] sm:text-xs text-muted-foreground truncate mt-0.5">
-                      {booking.userName}
-                      {booking.staffName && (
-                        <span className={cn("hidden sm:inline", teamMember?.status === 'left' && 'opacity-50')}>
-                          {' · '}{booking.staffName}
-                        </span>
-                      )}
-                    </p>
-                  </div>
+                    <p className="text-sm font-semibold tracking-tight truncate">{booking.listingTitle}</p>
+                    <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                      <span className="truncate">{booking.userName}</span>
+                      <span className="text-muted-foreground/40">·</span>
+                      <span className="flex items-center gap-1 flex-shrink-0">
+                        <Calendar className="w-3 h-3" />
+                        {dateInfo.label} {dateInfo.time}
+                      </span>
+                    </div>
+                    {booking.staffName && (
+                      <p className={cn("text-xs text-muted-foreground/70 mt-0.5", teamMember?.status === 'left' && 'opacity-50')}>
+                        Staff: {booking.staffName}
+                      </p>
+                    )}
                   </div>
 
-                  {/* Status - Desktop only */}
-                  <div className="hidden sm:block flex-shrink-0">
-                    <span className={`px-2.5 py-1 rounded-md text-xs font-medium ${STATUS_CONFIG[normalizedStatus]?.bg || 'bg-secondary/50'} ${STATUS_CONFIG[normalizedStatus]?.color || 'text-muted-foreground'}`}>
+                  {/* Status */}
+                  <div className="flex-shrink-0">
+                    <span className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${STATUS_CONFIG[normalizedStatus]?.bg || 'bg-secondary/50'} ${STATUS_CONFIG[normalizedStatus]?.color || 'text-muted-foreground'}`}>
                       {statusLabel}
                     </span>
                   </div>

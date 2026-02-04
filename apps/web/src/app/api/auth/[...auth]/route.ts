@@ -13,11 +13,12 @@ const ALLOWED_ORIGINS = [
   "http://localhost:3000",
   process.env.NEXT_PUBLIC_NETWORK_URL || "",
   "http://192.168.1.14:3000",
+  "http://localhost:3001",
   "http://192.168.1.14:8081",
   "http://192.168.1.103:3000",
   "http://192.168.1.109:3000",
   "http://192.168.1.109:8081",
-  "https://66769abbda30.ngrok-free.app",
+  "https://claims-son-sixth-classification.trycloudflare.com",
 ].filter(Boolean);
 
 /**
