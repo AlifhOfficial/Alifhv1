@@ -44,6 +44,7 @@ export interface SearchParams {
   yearMax?: number;
   priceMin?: number;
   priceMax?: number;
+  mileageMin?: number;
   mileageMax?: number;
   emirate?: string[];
   specs?: string[];

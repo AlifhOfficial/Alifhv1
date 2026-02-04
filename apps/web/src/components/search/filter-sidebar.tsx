@@ -46,7 +46,7 @@ export function FilterSidebar({
 
   const priceCount = (params.priceMin || params.priceMax) ? 1 : 0;
   const yearCount = (params.yearMin || params.yearMax) ? 1 : 0;
-  const mileageCount = params.mileageMax ? 1 : 0;
+  const mileageCount = (params.mileageMin || params.mileageMax) ? 1 : 0;
   const locationCount = params.emirate?.length ?? 0;
   const negotiableCount = params.isNegotiable ? 1 : 0;
   const specsCount = params.specs?.length ?? 0;
@@ -126,14 +126,13 @@ export function FilterSidebar({
       {/* Mileage */}
       <FilterSection title="Mileage" selectedCount={mileageCount}>
         <RangeFilter
-          minValue={0}
+          minValue={params.mileageMin}
           maxValue={params.mileageMax}
           rangeMin={0}
           rangeMax={facets?.mileageRange.max ?? 300000}
-          onChange={(_, mileageMax) => onFilterChange({ mileageMax })}
+          onChange={(mileageMin, mileageMax) => onFilterChange({ mileageMin, mileageMax })}
           formatLabel={formatMileage}
           step={10000}
-          singleValue
           presets={MILEAGE_PRESETS}
         />
       </FilterSection>
