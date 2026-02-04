@@ -84,9 +84,8 @@ export function AboutClosingSection() {
         </div>
 
         {/* Description below infographic */}
-        <p className="text-base text-muted-foreground max-w-lg mx-auto text-center leading-relaxed mb-12">
-          We're not building a company. We're building a culture of clarity, honesty, and respect.
-          If that resonates—we'd love to hear from you.
+        <p className="text-sm sm:text-base font-medium text-muted-foreground max-w-2xl mx-auto text-center leading-relaxed mb-12">
+          This is more than a company. It's a commitment to clarity, honesty, and respect. If that resonates, we'd love to hear from you.
         </p>
         
         {/* CTA Buttons */}

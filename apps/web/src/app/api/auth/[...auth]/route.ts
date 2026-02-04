@@ -17,7 +17,7 @@ const ALLOWED_ORIGINS = [
   "http://192.168.1.103:3000",
   "http://192.168.1.109:3000",
   "http://192.168.1.109:8081",
-  "https://efb83969451f.ngrok-free.app",
+  "https://66769abbda30.ngrok-free.app",
 ].filter(Boolean);
 
 /**

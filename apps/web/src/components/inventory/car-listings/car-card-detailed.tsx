@@ -478,86 +478,124 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8">
           {/* Left Column */}
           <div className="space-y-0">
-            <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm font-medium text-muted-foreground/70">Body Type</span>
-              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.bodyType)}</span>
-            </div>
-            <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm font-medium text-muted-foreground/70">Engine</span>
-              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.engineSize)}</span>
-            </div>
-            <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm font-medium text-muted-foreground/70">Trim</span>
-              <span className="text-sm font-semibold text-foreground">{listing.trim || '—'}</span>
-            </div>
-            <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm font-medium text-muted-foreground/70">Exterior Color</span>
-              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.exteriorColor)}</span>
-            </div>
-            <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm font-medium text-muted-foreground/70">Cylinders</span>
-              <span className="text-sm font-semibold text-foreground">{listing.cylinders || '—'}</span>
-            </div>
-            <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm font-medium text-muted-foreground/70">Doors</span>
-              <span className="text-sm font-semibold text-foreground">{listing.doors || '—'}</span>
-            </div>
-            <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm font-medium text-muted-foreground/70">Seating Capacity</span>
-              <span className="text-sm font-semibold text-foreground">{listing.seatingCapacity ? `${listing.seatingCapacity} Seater` : '—'}</span>
-            </div>
-            <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm font-medium text-muted-foreground/70">Steering Side</span>
-              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.steeringSide)}</span>
-            </div>
-            <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm font-medium text-muted-foreground/70">Regional Specs</span>
-              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.specs)}</span>
-            </div>
+            {listing.bodyType && (
+              <div className="flex justify-between py-3">
+                <span className="text-sm font-medium text-muted-foreground/70">Body Type</span>
+                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.bodyType)}</span>
+              </div>
+            )}
+            {listing.engineSize && (
+              <div className="flex justify-between py-3">
+                <span className="text-sm font-medium text-muted-foreground/70">Engine</span>
+                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.engineSize)}</span>
+              </div>
+            )}
+            {listing.trim && (
+              <div className="flex justify-between py-3">
+                <span className="text-sm font-medium text-muted-foreground/70">Trim</span>
+                <span className="text-sm font-semibold text-foreground">{listing.trim}</span>
+              </div>
+            )}
+            {listing.exteriorColor && (
+              <div className="flex justify-between py-3">
+                <span className="text-sm font-medium text-muted-foreground/70">Exterior Color</span>
+                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.exteriorColor)}</span>
+              </div>
+            )}
+            {listing.cylinders && (
+              <div className="flex justify-between py-3">
+                <span className="text-sm font-medium text-muted-foreground/70">Cylinders</span>
+                <span className="text-sm font-semibold text-foreground">{listing.cylinders}</span>
+              </div>
+            )}
+            {listing.doors && (
+              <div className="flex justify-between py-3">
+                <span className="text-sm font-medium text-muted-foreground/70">Doors</span>
+                <span className="text-sm font-semibold text-foreground">{listing.doors}</span>
+              </div>
+            )}
+            {listing.seatingCapacity && (
+              <div className="flex justify-between py-3">
+                <span className="text-sm font-medium text-muted-foreground/70">Seating Capacity</span>
+                <span className="text-sm font-semibold text-foreground">{listing.seatingCapacity} Seater</span>
+              </div>
+            )}
+            {listing.steeringSide && (
+              <div className="flex justify-between py-3">
+                <span className="text-sm font-medium text-muted-foreground/70">Steering Side</span>
+                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.steeringSide)}</span>
+              </div>
+            )}
+            {listing.specs && (
+              <div className="flex justify-between py-3">
+                <span className="text-sm font-medium text-muted-foreground/70">Regional Specs</span>
+                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.specs)}</span>
+              </div>
+            )}
           </div>
           
           {/* Right Column */}
           <div className="space-y-0">
-            <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm font-medium text-muted-foreground/70">Transmission</span>
-              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.transmission)}</span>
-            </div>
-            <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm font-medium text-muted-foreground/70">Power</span>
-              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.powerRange)}</span>
-            </div>
-            <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm font-medium text-muted-foreground/70">Fuel Type</span>
-              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.fuelType)}</span>
-            </div>
-            <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm font-medium text-muted-foreground/70">Interior Color</span>
-              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.interiorColor)}</span>
-            </div>
-            <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm font-medium text-muted-foreground/70">Warranty</span>
-              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.warrantyType)}</span>
-            </div>
-            <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm font-medium text-muted-foreground/70">Seller Type</span>
-              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.sellerType)}</span>
-            </div>
-            <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm font-medium text-muted-foreground/70">Export Status</span>
-              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.exportStatus)}</span>
-            </div>
-            <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm font-medium text-muted-foreground/70">Engine Type</span>
-              <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.engineType)}</span>
-            </div>
-            <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm font-medium text-muted-foreground/70">Torque</span>
-              <span className="text-sm font-semibold text-foreground">{listing.torque || '—'}</span>
-            </div>
-            <div className="flex justify-between py-3 border-b border-border/30">
-              <span className="text-sm font-medium text-muted-foreground/70">Fuel Economy</span>
-              <span className="text-sm font-semibold text-foreground">{listing.fuelEconomy || '—'}</span>
-            </div>
+            {listing.transmission && (
+              <div className="flex justify-between py-3">
+                <span className="text-sm font-medium text-muted-foreground/70">Transmission</span>
+                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.transmission)}</span>
+              </div>
+            )}
+            {listing.powerRange && (
+              <div className="flex justify-between py-3">
+                <span className="text-sm font-medium text-muted-foreground/70">Power</span>
+                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.powerRange)}</span>
+              </div>
+            )}
+            {listing.fuelType && (
+              <div className="flex justify-between py-3">
+                <span className="text-sm font-medium text-muted-foreground/70">Fuel Type</span>
+                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.fuelType)}</span>
+              </div>
+            )}
+            {listing.interiorColor && (
+              <div className="flex justify-between py-3">
+                <span className="text-sm font-medium text-muted-foreground/70">Interior Color</span>
+                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.interiorColor)}</span>
+              </div>
+            )}
+            {listing.warrantyType && (
+              <div className="flex justify-between py-3">
+                <span className="text-sm font-medium text-muted-foreground/70">Warranty</span>
+                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.warrantyType)}</span>
+              </div>
+            )}
+            {listing.sellerType && (
+              <div className="flex justify-between py-3">
+                <span className="text-sm font-medium text-muted-foreground/70">Seller Type</span>
+                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.sellerType)}</span>
+              </div>
+            )}
+            {listing.exportStatus && (
+              <div className="flex justify-between py-3">
+                <span className="text-sm font-medium text-muted-foreground/70">Export Status</span>
+                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.exportStatus)}</span>
+              </div>
+            )}
+            {listing.engineType && (
+              <div className="flex justify-between py-3">
+                <span className="text-sm font-medium text-muted-foreground/70">Engine Type</span>
+                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.engineType)}</span>
+              </div>
+            )}
+            {listing.torque && (
+              <div className="flex justify-between py-3">
+                <span className="text-sm font-medium text-muted-foreground/70">Torque</span>
+                <span className="text-sm font-semibold text-foreground">{listing.torque}</span>
+              </div>
+            )}
+            {listing.fuelEconomy && (
+              <div className="flex justify-between py-3">
+                <span className="text-sm font-medium text-muted-foreground/70">Fuel Economy</span>
+                <span className="text-sm font-semibold text-foreground">{listing.fuelEconomy}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -724,7 +762,7 @@ function CarCardDetailedSkeletonComponent() {
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8">
           {Array.from({ length: 12 }).map((_, i) => (
-            <div key={i} className="flex justify-between py-3 border-b border-border">
+            <div key={i} className="flex justify-between py-3">
               <Skeleton className="h-3.5 w-24" />
               <Skeleton className="h-3.5 w-20" />
             </div>

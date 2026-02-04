@@ -417,7 +417,7 @@ export function StaffBookingsView() {
               onClick={() => setActiveTab(activeTab === 'settings' ? 'bookings' : 'settings')}
               className={`p-1.5 sm:p-2 rounded-full transition-colors ${
                 activeTab === 'settings' 
-                  ? 'bg-primary/10 text-primary' 
+                  ? 'bg-secondary text-foreground' 
                   : 'hover:bg-secondary/50 text-muted-foreground'
               }`}
               title="Settings"

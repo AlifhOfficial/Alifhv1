@@ -296,18 +296,18 @@ export function StaffProfileForm() {
 
   return (
     <div className="min-h-screen bg-background pb-16">
-      <div className="max-w-2xl mx-auto px-6 py-8 space-y-8">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
 
         {/* Header */}
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Work Profile</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
+          <h1 className="text-lg sm:text-xl font-semibold tracking-tight">Work Profile</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
             {profile.partner.brandName}
           </p>
         </div>
 
         {/* Info Banner */}
-        <div className="rounded-xl border border-border/40 bg-blue-500/5 p-4">
+        <div className="rounded-xl border border-border/40 bg-blue-500/5 p-3 sm:p-4">
           <div className="flex gap-3">
             <Info className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
             <p className="text-sm text-muted-foreground">
@@ -318,44 +318,46 @@ export function StaffProfileForm() {
 
         {/* Display Name */}
         <section>
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Display Name</h3>
+          <h3 className="text-sm sm:text-[15px] font-bold tracking-tight text-foreground mb-2 sm:mb-3">Display Name</h3>
           
-          <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+          <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
             <div 
               className={cn(
-                "py-3",
-                editingField !== 'displayName' && "cursor-pointer hover:bg-muted/30 -mx-5 px-5 transition-colors rounded"
+                "py-2 sm:py-3",
+                editingField !== 'displayName' && "cursor-pointer hover:bg-muted/30 -mx-4 sm:-mx-5 px-4 sm:px-5 transition-colors rounded"
               )}
               onClick={() => editingField !== 'displayName' && setEditingField('displayName')}
             >
               <p className="text-xs font-medium text-muted-foreground/70 mb-1">Name shown to clients</p>
               {editingField === 'displayName' ? (
-                <div className="flex items-center gap-2">
+                <div className="space-y-2">
                   <input
                     autoFocus
                     type="text"
                     value={form.displayName}
                     onChange={(e) => updateField({ displayName: e.target.value })}
                     placeholder="e.g. Ahmed, Alex, Sarah"
-                    className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                    className="w-full h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') saveField('displayName');
                       if (e.key === 'Escape') cancelEdit();
                     }}
                   />
-                  <button
-                    onClick={(e) => { e.stopPropagation(); saveField('displayName'); }}
-                    disabled={saving}
-                    className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
-                  >
-                    {saving ? '...' : 'Save'}
-                  </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
-                    className="text-xs text-muted-foreground hover:text-foreground font-semibold"
-                  >
-                    Cancel
-                  </button>
+                  <div className="flex items-center justify-end gap-2 sm:gap-3">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
+                      className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); saveField('displayName'); }}
+                      disabled={saving}
+                      className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                    >
+                      {saving ? '...' : 'Save'}
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <p className="text-sm font-medium text-foreground">
@@ -368,9 +370,9 @@ export function StaffProfileForm() {
 
         {/* Work Phone */}
         <section>
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Work Phone</h3>
+          <h3 className="text-sm sm:text-[15px] font-bold tracking-tight text-foreground mb-2 sm:mb-3">Work Phone</h3>
           
-          <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
+          <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5 space-y-3 sm:space-y-4">
             
             {/* Use personal phone toggle */}
             {personalPhone && (() => {
@@ -380,7 +382,7 @@ export function StaffProfileForm() {
               return (
                 <div 
                   className={cn(
-                    "flex items-center justify-between py-3 -mx-5 px-5 transition-colors rounded",
+                    "flex items-center justify-between py-2 sm:py-3 -mx-4 sm:-mx-5 px-4 sm:px-5 transition-colors rounded",
                     canToggle ? "cursor-pointer hover:bg-muted/30" : "cursor-not-allowed opacity-60"
                   )}
                   onClick={toggleUsePersonalPhone}
@@ -415,7 +417,7 @@ export function StaffProfileForm() {
             )}
 
             {/* Work phone input - always show so they can add/verify a work phone */}
-            <div className="py-3">
+            <div className="py-2 sm:py-3">
               <div className="flex items-center justify-between mb-1">
                 <p className="text-xs font-medium text-muted-foreground/70">
                   {form.usePersonalPhone ? 'Or add a separate work number' : 'Separate work number'}
@@ -483,40 +485,44 @@ export function StaffProfileForm() {
                   </div>
                 ) : editingField === 'workPhone' ? (
                   // Edit phone number
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-muted-foreground">+971</span>
-                    <input
-                      autoFocus
-                      type="tel"
-                      inputMode="numeric"
-                      value={form.workPhone}
-                      onChange={(e) => updateField({ workPhone: e.target.value.replace(/[^\d]/g, '').slice(0, 9) })}
-                      placeholder="50 000 0000"
-                      className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
-                      maxLength={9}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') saveField('workPhone');
-                        if (e.key === 'Escape') cancelEdit();
-                      }}
-                    />
-                    <button
-                      onClick={() => saveField('workPhone')}
-                      disabled={saving}
-                      className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
-                    >
-                      {saving ? '...' : 'Save'}
-                    </button>
-                    <button
-                      onClick={cancelEdit}
-                      className="text-xs text-muted-foreground hover:text-foreground font-semibold"
-                    >
-                      Cancel
-                    </button>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-muted-foreground shrink-0">+971</span>
+                      <input
+                        autoFocus
+                        type="tel"
+                        inputMode="numeric"
+                        value={form.workPhone}
+                        onChange={(e) => updateField({ workPhone: e.target.value.replace(/[^\d]/g, '').slice(0, 9) })}
+                        placeholder="50 000 0000"
+                        className="flex-1 h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                        maxLength={9}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') saveField('workPhone');
+                          if (e.key === 'Escape') cancelEdit();
+                        }}
+                      />
+                    </div>
+                    <div className="flex items-center justify-end gap-2 sm:gap-3">
+                      <button
+                        onClick={cancelEdit}
+                        className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => saveField('workPhone')}
+                        disabled={saving}
+                        className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                      >
+                        {saving ? '...' : 'Save'}
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   // Display phone number
                   <div 
-                    className="cursor-pointer hover:bg-muted/30 -mx-5 px-5 py-1 transition-colors rounded"
+                    className="cursor-pointer hover:bg-muted/30 -mx-4 sm:-mx-5 px-4 sm:px-5 py-1 transition-colors rounded"
                     onClick={() => setEditingField('workPhone')}
                   >
                     <p className="text-sm font-medium text-foreground">

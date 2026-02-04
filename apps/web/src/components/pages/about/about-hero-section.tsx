@@ -20,7 +20,7 @@ export function AboutHeroSection() {
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
             We are not for sale.
           </h1>
-          <p className="text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base font-medium text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             No investors. No board meetings. No exit strategy. 
             Just a founder who got tired of complaining and decided to build.
           </p>
@@ -29,13 +29,20 @@ export function AboutHeroSection() {
         {/* Hero Image */}
         <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg mb-8">
           <Image
-            src="/Abstract/pic4.png"
+            src="/Abstract/pic.png"
             alt="Revvup"
             fill
             priority
             className="object-cover"
             sizes="(max-width: 1400px) 100vw, 1400px"
           />
+        </div>
+
+        {/* Story - Small paragraphs */}
+        <div className="max-w-3xl mx-auto text-center mb-12 space-y-6">
+          <p className="text-sm sm:text-base font-medium text-muted-foreground leading-relaxed">
+            Dubai, 2026. One founder fed up with listing fees, pay-to-rank schemes, and platforms that compete with their own users. Instead of complaining, he built something different. Self-funded, no investors, no exit strategy. Just a marketplace that works for the people using it, not against them.
+          </p>
         </div>
 
         {/* Company Facts */}

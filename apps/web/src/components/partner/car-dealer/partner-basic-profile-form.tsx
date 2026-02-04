@@ -90,7 +90,7 @@ const EditableField = React.memo(function EditableField({
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-muted-foreground/70 mb-1">{label}</p>
           {isEditing ? (
-            <div className="flex items-center gap-2">
+            <div className="space-y-2">
               {multiline ? (
                 <textarea
                   autoFocus
@@ -98,7 +98,7 @@ const EditableField = React.memo(function EditableField({
                   onChange={(e) => onChange(e.target.value)}
                   placeholder={placeholder}
                   rows={3}
-                  className="flex-1 bg-muted/20 rounded-lg p-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 resize-none placeholder:text-muted-foreground/50"
+                  className="w-full bg-muted/20 rounded-lg p-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 resize-none placeholder:text-muted-foreground/50"
                   onKeyDown={(e) => {
                     if (e.key === 'Escape') onCancel();
                   }}
@@ -113,26 +113,28 @@ const EditableField = React.memo(function EditableField({
                     onChange(val);
                   }}
                   placeholder={placeholder}
-                  className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                  className="w-full h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') onSave();
                     if (e.key === 'Escape') onCancel();
                   }}
                 />
               )}
-              <button
-                onClick={(e) => { e.stopPropagation(); onSave(); }}
-                disabled={isUpdating}
-                className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
-              >
-                {isUpdating ? '...' : 'Save'}
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); onCancel(); }}
-                className="text-xs text-muted-foreground hover:text-foreground font-semibold"
-              >
-                Cancel
-              </button>
+              <div className="flex items-center justify-end gap-3">
+                <button
+                  onClick={(e) => { e.stopPropagation(); onCancel(); }}
+                  className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onSave(); }}
+                  disabled={isUpdating}
+                  className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                >
+                  {isUpdating ? '...' : 'Save'}
+                </button>
+              </div>
             </div>
           ) : (
             <p className="text-sm font-medium text-foreground">
@@ -454,7 +456,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-8">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
       {/* Back */}
       <Link 
         href="/partner-dashboard"
@@ -465,7 +467,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       </Link>
 
       {/* Banner */}
-      <div className="relative rounded-xl overflow-hidden bg-muted/30 border border-border/40 h-32 mb-6 group">
+      <div className="relative rounded-xl overflow-hidden bg-muted/30 border border-border/40 h-24 sm:h-32 mb-6 group">
         <input
           type="file"
           accept="image/*"
@@ -518,9 +520,9 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       </div>
 
       {/* Profile Header */}
-      <div className="flex items-start gap-4 mb-8">
+      <div className="flex items-start gap-3 sm:gap-4 mb-6 sm:mb-8">
         {/* Avatar */}
-        <div className="relative group -mt-12 z-10">
+        <div className="relative group -mt-10 sm:-mt-12 z-10 shrink-0">
           <input 
             type="file" 
             accept="image/*" 
@@ -534,7 +536,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
               logoUrl={profile.logoUrl || form.logo} 
               brandName={profile.brandName} 
               size="xl"
-              className={cn("w-24 h-24 border-4 border-background", logoUploading && "opacity-50")}
+              className={cn("w-20 h-20 sm:w-24 sm:h-24 border-4 border-background", logoUploading && "opacity-50")}
             />
             <div className={cn(
               "absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl transition-opacity",
@@ -573,9 +575,9 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           )}
         </div>
 
-        <div className="flex-1 pt-2">
+        <div className="flex-1 min-w-0 pt-1 sm:pt-2">
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold tracking-tight">{profile.brandName}</h1>
+            <h1 className="text-lg sm:text-xl font-semibold tracking-tight truncate">{profile.brandName}</h1>
             {profile.tier === 'black' ? (
               <span className="inline-flex items-center px-1.5 h-5 text-[10px] font-black tracking-wider bg-black text-white">
                 BLK
@@ -591,7 +593,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
               <RefreshCw className={cn("w-3.5 h-3.5 text-muted-foreground", isLoading && "animate-spin")} />
             </button>
           </div>
-          <p className="text-sm text-muted-foreground mt-0.5">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 truncate">
             {profile.companyNameLegal}
           </p>
           {!profile.isVerified && (
@@ -606,21 +608,21 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border/40 divide-x divide-border/40 bg-sidebar rounded-xl mb-8">
-        <div className="p-5 flex flex-col gap-1">
-          <span className="text-sm font-semibold text-muted-foreground/70">Inventory</span>
-          <span className="text-xl font-bold text-foreground">{statsLoading ? '—' : stats?.inventoryCount ?? 0}</span>
+      <div className="grid grid-cols-2 md:grid-cols-4 border border-border/40 bg-sidebar rounded-xl mb-6 sm:mb-8 overflow-hidden">
+        <div className="p-4 sm:p-5 flex flex-col gap-1 border-r border-b md:border-b-0 border-border/40">
+          <span className="text-xs sm:text-sm font-semibold text-muted-foreground/70">Inventory</span>
+          <span className="text-lg sm:text-xl font-bold text-foreground">{statsLoading ? '—' : stats?.inventoryCount ?? 0}</span>
         </div>
-        <div className="p-5 flex flex-col gap-1">
-          <span className="text-sm font-semibold text-muted-foreground/70">Sales</span>
-          <span className="text-xl font-bold text-foreground">{statsLoading ? '—' : stats?.totalSales ?? 0}</span>
+        <div className="p-4 sm:p-5 flex flex-col gap-1 border-b md:border-b-0 md:border-r border-border/40">
+          <span className="text-xs sm:text-sm font-semibold text-muted-foreground/70">Sales</span>
+          <span className="text-lg sm:text-xl font-bold text-foreground">{statsLoading ? '—' : stats?.totalSales ?? 0}</span>
         </div>
-        <div className="p-5 flex flex-col gap-1">
-          <span className="text-sm font-semibold text-muted-foreground/70">Response</span>
-          <span className="text-xl font-bold text-foreground">{statsLoading ? '—' : stats?.responseRate ? `${stats.responseRate}%` : '—'}</span>
+        <div className="p-4 sm:p-5 flex flex-col gap-1 border-r border-border/40">
+          <span className="text-xs sm:text-sm font-semibold text-muted-foreground/70">Response</span>
+          <span className="text-lg sm:text-xl font-bold text-foreground">{statsLoading ? '—' : stats?.responseRate ? `${stats.responseRate}%` : '—'}</span>
         </div>
-        <div className="p-5 flex flex-col gap-1">
-          <span className="text-sm font-semibold text-muted-foreground/70">Rating</span>
+        <div className="p-4 sm:p-5 flex flex-col gap-1">
+          <span className="text-xs sm:text-sm font-semibold text-muted-foreground/70">Rating</span>
           <span className="text-xl font-bold text-foreground">
             {profile.googleRating ? (
               <span className="flex items-center gap-1.5">
@@ -633,9 +635,9 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       </div>
 
       {/* About */}
-      <section className="mb-8">
+      <section className="mb-6 sm:mb-8">
         <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">About</h3>
-        <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
           <EditableField 
             {...getEditableFieldProps('brandName')}
             label="Business name" 
@@ -660,9 +662,9 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       </section>
 
       {/* Details */}
-      <section className="mb-8">
+      <section className="mb-6 sm:mb-8">
         <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Details</h3>
-        <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
           <EditableField 
             {...getEditableFieldProps('experienceYears')}
             label="Years of experience" 
@@ -681,18 +683,18 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       </section>
 
       {/* Specialties */}
-      <section className="mb-8">
+      <section className="mb-6 sm:mb-8">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-[15px] font-bold tracking-tight text-foreground">Specialties</h3>
           <span className="text-sm font-semibold text-muted-foreground/70">{form.specialties.length}/4</span>
         </div>
         
-        <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
           <div className="flex flex-wrap gap-2 mb-3">
             {form.specialties.length > 0 ? form.specialties.map((specialty) => (
               <span 
                 key={specialty} 
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-muted/30 text-sm font-semibold border border-border/40"
+                className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-muted/30 text-xs sm:text-sm font-semibold border border-border/40"
               >
                 {specialty}
                 <button
@@ -730,7 +732,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       </section>
 
       {/* Google Reviews */}
-      <section className="mb-8">
+      <section className="mb-6 sm:mb-8">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-[15px] font-bold tracking-tight text-foreground">Google Reviews</h3>
           {form.googleReviewUrl?.trim() && (
@@ -740,7 +742,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           )}
         </div>
         
-        <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
           <EditableField 
             {...getEditableFieldProps('googleReviewUrl')}
             label="Google Maps URL" 
@@ -750,7 +752,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           />
           
           {profile.googleRating && (
-            <div className="flex items-center gap-8 pt-4 mt-2 border-t border-border/20">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 pt-4 mt-2 border-t border-border/20">
               <div>
                 <p className="text-lg font-semibold flex items-center gap-1.5">
                   <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
@@ -772,7 +774,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       </section>
 
       {/* Location */}
-      <section className="mb-8">
+      <section className="mb-6 sm:mb-8">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-[15px] font-bold tracking-tight text-foreground">Location</h3>
           <button
@@ -785,8 +787,8 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           </button>
         </div>
 
-        <div className="rounded-xl border border-border/40 bg-sidebar p-5">
-          <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <EditableField 
               {...getEditableFieldProps('city')}
               label="City" 
@@ -801,7 +803,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
             />
           </div>
 
-          <div className="rounded-xl overflow-hidden bg-muted/30 h-48 border border-border/40">
+          <div className="rounded-xl overflow-hidden bg-muted/30 h-40 sm:h-48 border border-border/40">
             <Suspense fallback={
               <div className="h-full flex items-center justify-center">
                 <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
@@ -819,16 +821,16 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       </section>
 
       {/* Badges */}
-      <section className="mb-8">
+      <section className="mb-6 sm:mb-8">
         <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Badges</h3>
         
-        <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
           {profile.badges && profile.badges.length > 0 ? (
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2 sm:gap-3">
               {profile.badges.map((badge, i) => (
                 <span 
                   key={i} 
-                  className="px-4 py-2 rounded-lg bg-muted/30 text-foreground text-sm font-semibold border border-border/40"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-muted/30 text-foreground text-xs sm:text-sm font-semibold border border-border/40"
                 >
                   {badge}
                 </span>

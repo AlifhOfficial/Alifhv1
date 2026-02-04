@@ -107,18 +107,18 @@ export function StaffWorksFor() {
 
   return (
     <div className="min-h-full bg-background">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-6 sm:space-y-8">
         
         {/* Header */}
         <div className="space-y-1.5">
-          <h1 className="text-2xl font-bold tracking-tight">Dealership</h1>
-          <p className="text-[15px] font-medium text-muted-foreground/70">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Dealership</h1>
+          <p className="text-sm sm:text-[15px] font-medium text-muted-foreground/70">
             You work at {worksForData.partner.brandName}
           </p>
         </div>
 
         {/* Partner Profile */}
-        <div className="rounded-xl border border-border/40 bg-sidebar p-4">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-3 sm:p-4">
           <SellerProfileCard sellerData={worksForData} />
         </div>
 

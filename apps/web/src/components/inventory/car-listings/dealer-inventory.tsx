@@ -454,49 +454,51 @@ export function DealerInventory({
 
         {/* Stats */}
         {stats && (
-          <div className="flex items-center gap-10">
+          <div className="flex flex-wrap items-center gap-6 sm:gap-10">
             <div>
               <span className="text-xs text-muted-foreground">Active</span>
-              <p className="text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.active}</p>
+              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.active}</p>
             </div>
             <div>
               <span className="text-xs text-muted-foreground">Public</span>
-              <p className="text-xl font-semibold tracking-tight mt-1 text-green-500">{stats.public}</p>
+              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-green-500">{stats.public}</p>
             </div>
             <div>
               <span className="text-xs text-muted-foreground">Draft</span>
-              <p className="text-xl font-semibold tracking-tight mt-1 text-yellow-500">{stats.draft}</p>
+              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-yellow-500">{stats.draft}</p>
             </div>
             {stats.inReview > 0 && (
               <div>
                 <span className="text-xs text-muted-foreground">In Review</span>
-                <p className="text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.inReview}</p>
+                <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.inReview}</p>
               </div>
             )}
             {stats.sold > 0 && (
               <div>
                 <span className="text-xs text-muted-foreground">Sold</span>
-                <p className="text-xl font-semibold tracking-tight mt-1 text-purple-500">{stats.sold}</p>
+                <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-purple-500">{stats.sold}</p>
               </div>
             )}
             <div>
               <span className="text-xs text-muted-foreground">Total</span>
-              <p className="text-xl font-semibold tracking-tight mt-1">{stats.all}</p>
+              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1">{stats.all}</p>
             </div>
           </div>
         )}
 
       {/* Toolbar */}
-      <div className="flex items-center gap-4 mb-8">
+      <div className="flex flex-col gap-3 sm:gap-4 mb-6 sm:mb-8">
+        {/* Row 1: Search + Staff Filter */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
         {/* Search */}
-        <div className="relative flex-1 max-w-xs">
+        <div className="relative flex-1 sm:max-w-xs">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full h-10 pl-10 pr-8 rounded-xl bg-secondary/50 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+            className="w-full h-9 sm:h-10 pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-xs sm:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
           />
           {searchQuery && (
             <button
@@ -508,8 +510,24 @@ export function DealerInventory({
           )}
         </div>
 
-        {/* Status Pills */}
-        <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl">
+        {/* Staff Combobox */}
+        {activeStaff.length > 0 && (
+          <div className="w-full sm:w-48">
+            <Combobox
+              options={staffOptions}
+              value={selectedStaffFilter}
+              onValueChange={handleStaffFilterChange}
+              placeholder="All Staff"
+              searchPlaceholder="Search staff..."
+              className="h-9 sm:h-10 rounded-lg sm:rounded-xl bg-secondary/50 border-0"
+            />
+          </div>
+        )}
+        </div>
+
+        {/* Row 2: Status Pills - Horizontal scroll on mobile */}
+        <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-hide">
+        <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl w-fit">
           {(['active', 'sold', 'archived', 'expired', 'all'] as StatusTab[]).map((status) => {
             const isActive = selectedStatusTab === status;
             const count = status === 'all' ? stats?.all : stats?.[status] || 0;
@@ -519,7 +537,7 @@ export function DealerInventory({
               <button
                 key={status}
                 onClick={() => handleStatusTabChange(status)}
-                className={`px-3 py-1.5 rounded-lg text-xs transition-all capitalize ${
+                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs transition-all capitalize whitespace-nowrap ${
                   isActive
                     ? 'bg-background text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
@@ -527,31 +545,18 @@ export function DealerInventory({
               >
                 {status === 'all' ? 'All' : status}
                 {count !== undefined && count > 0 && (
-                  <span className="ml-1.5 text-muted-foreground">{count}</span>
+                  <span className="ml-1 sm:ml-1.5 text-muted-foreground">{count}</span>
                 )}
               </button>
             );
           })}
         </div>
-
-        {/* Staff Combobox */}
-        {activeStaff.length > 0 && (
-          <div className="w-48">
-            <Combobox
-              options={staffOptions}
-              value={selectedStaffFilter}
-              onValueChange={handleStaffFilterChange}
-              placeholder="All Staff"
-              searchPlaceholder="Search staff..."
-              className="h-10 rounded-xl bg-secondary/50 border-0"
-            />
-          </div>
-        )}
+        </div>
 
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors self-end sm:self-auto"
           >
             Reset
           </button>
@@ -602,12 +607,14 @@ export function DealerInventory({
                 <div
                   key={listing.id}
                   className={cn(
-                    "group flex items-center gap-5 p-4 -mx-4 rounded-xl hover:bg-secondary/30 transition-colors",
+                    "group flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-5 p-3 sm:p-4 -mx-3 sm:-mx-4 rounded-xl hover:bg-secondary/30 transition-colors",
                     listing.isBlkListing && "bg-zinc-500/5"
                   )}
                 >
+                  {/* Top row on mobile: Thumbnail + Info + Status */}
+                  <div className="flex items-center gap-3 w-full sm:w-auto">
                   {/* Thumbnail */}
-                  <div className="w-20 h-14 rounded-lg overflow-hidden bg-secondary flex-shrink-0 relative">
+                  <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-lg overflow-hidden bg-secondary flex-shrink-0 relative">
                     {listing.thumbnail ? (
                       <Image
                         src={listing.thumbnail}
@@ -631,25 +638,33 @@ export function DealerInventory({
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <Link href={`/listings/${listing.id}`} className="hover:underline">
-                      <p className="text-sm font-medium tracking-tight truncate">
+                      <p className="text-xs sm:text-sm font-medium tracking-tight truncate">
                         {listing.year} {listing.make} {listing.model}
                         {listing.trim && ` ${listing.trim}`}
                       </p>
                     </Link>
-                    <p className="text-xs text-muted-foreground truncate mt-0.5">
+                    <p className="text-[11px] sm:text-xs text-muted-foreground truncate mt-0.5">
                       {listing.price.toLocaleString()} AED
                       {listing.postedByDisplayName && (
-                        <span className={teamMember?.status === 'left' ? 'opacity-50' : ''}>
+                        <span className={cn("hidden sm:inline", teamMember?.status === 'left' && 'opacity-50')}>
                           {' · '}{listing.postedByDisplayName}
                         </span>
                       )}
                     </p>
                   </div>
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Link href={`/listings/${listing.id}`}>
-                      <button className="px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-xs transition-colors">
+                  {/* Status on mobile (visible) */}
+                  <div className="flex-shrink-0 sm:hidden">
+                    <span className={`px-1.5 py-0.5 rounded-md text-[11px] font-medium ${statusBadge.bg} ${statusBadge.color}`}>
+                      {statusBadge.label}
+                    </span>
+                  </div>
+                  </div>
+
+                  {/* Actions - Hidden on mobile, visible on hover on desktop */}
+                  <div className="flex items-center gap-2 w-full sm:w-auto sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                    <Link href={`/listings/${listing.id}`} className="flex-1 sm:flex-initial">
+                      <button className="w-full sm:w-auto px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-xs transition-colors">
                         View
                       </button>
                     </Link>
@@ -661,15 +676,15 @@ export function DealerInventory({
                           listingTitle: `${listing.year} ${listing.make} ${listing.model}`,
                           currentManagerId: listing.postedByUserId || null,
                         })}
-                        className="px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-xs transition-colors"
+                        className="flex-1 sm:flex-initial px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-xs transition-colors"
                       >
                         Reassign
                       </button>
                     )}
                   </div>
 
-                  {/* Status */}
-                  <div className="flex-shrink-0">
+                  {/* Status on desktop (hidden on mobile) */}
+                  <div className="hidden sm:block flex-shrink-0">
                     <span className={`px-2.5 py-1 rounded-md text-xs font-medium ${statusBadge.bg} ${statusBadge.color}`}>
                       {statusBadge.label}
                     </span>
@@ -762,22 +777,22 @@ export function DealerInventory({
             setReassignError(null);
           }} />
           
-          <div className="relative z-50 bg-background border border-border rounded-xl p-6 max-w-md w-full mx-4 space-y-6">
+          <div className="relative z-50 bg-background border border-border rounded-xl p-5 sm:p-6 max-w-md w-full mx-4 space-y-4 sm:space-y-6">
             <div>
-              <h3 className="text-lg font-medium tracking-tight">Reassign Listing</h3>
-              <p className="text-sm text-muted-foreground mt-1">
+              <h3 className="text-base sm:text-lg font-medium tracking-tight">Reassign Listing</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                 Reassign <span className="font-medium text-foreground">{reassignModal.listingTitle}</span>
               </p>
             </div>
             
             {/* Staff Selection */}
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               <label className="flex items-center gap-2 text-xs text-muted-foreground">
                 <User className="w-3.5 h-3.5" />
                 Select Staff Member
               </label>
               <Select value={reassignTargetUserId} onValueChange={(v) => setReassignTargetUserId(v)}>
-                <SelectTrigger className="h-10 rounded-xl bg-secondary/50 border-0">
+                <SelectTrigger className="h-9 sm:h-10 rounded-lg sm:rounded-xl bg-secondary/50 border-0">
                   <SelectValue placeholder="Select staff member..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -800,7 +815,7 @@ export function DealerInventory({
             )}
 
             {/* Actions */}
-            <div className="flex justify-end gap-3 pt-2">
+            <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 pt-2">
               <button
                 onClick={() => {
                   setReassignModal({ open: false, listingId: null, listingTitle: '', currentManagerId: null });
@@ -808,14 +823,14 @@ export function DealerInventory({
                   setReassignError(null);
                 }}
                 disabled={isReassigning}
-                className="px-4 py-2 rounded-full text-sm hover:bg-secondary/50 transition-colors disabled:opacity-50"
+                className="px-4 py-2 rounded-lg sm:rounded-full text-sm hover:bg-secondary/50 transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 onClick={handleReassign}
                 disabled={!reassignTargetUserId || isReassigning}
-                className="px-4 py-2 rounded-full bg-foreground text-background text-sm font-medium transition-colors hover:bg-foreground/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 rounded-lg sm:rounded-full bg-foreground text-background text-sm font-medium transition-colors hover:bg-foreground/90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isReassigning ? 'Reassigning...' : 'Reassign'}
               </button>

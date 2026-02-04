@@ -13,23 +13,21 @@ export function AboutVisionSection() {
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header */}
-        <div className="max-w-3xl mb-8">
-          <div className="space-y-3">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
-              The Vision
-            </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
-              More than a marketplace.
-              <br />
-              <span className="text-muted-foreground">The automotive ecosystem.</span>
-            </h2>
-          </div>
+        <div className="text-center mb-16 space-y-5">
+          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+            The Vision
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            More than a marketplace.
+            <br />
+            <span className="text-muted-foreground">The automotive ecosystem.</span>
+          </h2>
         </div>
 
         {/* Image */}
         <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg mb-8">
           <Image
-            src="/abstract/pic7.png"
+            src="/Abstract/pic4.png"
             alt="Revvup Vision"
             fill
             className="object-cover"
@@ -37,11 +35,12 @@ export function AboutVisionSection() {
           />
         </div>
 
-        {/* Description below image */}
-        <p className="text-base text-muted-foreground max-w-3xl leading-relaxed mb-16">
-          Cars are just the start. We're building everything an enthusiast needs—
-          in one place, with the same philosophy: honest, clean, no games.
-        </p>
+        {/* Description below image - Small paragraphs */}
+        <div className="max-w-3xl mx-auto text-center mb-16 space-y-6">
+          <p className="text-sm sm:text-base font-medium text-muted-foreground leading-relaxed">
+            Cars are just the start. We're building an automotive ecosystem—plates, performance parts, maintenance, knowledge, events. Everything enthusiasts need in one place, with the same philosophy: honest, clean, no games.
+          </p>
+        </div>
 
         {/* Verticals */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">

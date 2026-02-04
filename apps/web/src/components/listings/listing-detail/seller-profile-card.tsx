@@ -322,15 +322,18 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
             <Package className="w-4 h-4 text-muted-foreground" />
             <span className="text-sm font-semibold text-muted-foreground/70">Inventory</span>
           </div>
-          <p className="text-lg font-bold tabular-nums text-foreground">
-            {statsLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-            ) : stats && 'inventoryCount' in stats ? (
-              <>{stats.inventoryCount}<span className="text-xs font-semibold text-primary group-hover:underline ml-1.5">View all</span></>
-            ) : (
-              <span className="text-muted-foreground">N/A</span>
-            )}
-          </p>
+          {statsLoading ? (
+            <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+          ) : stats && 'inventoryCount' in stats ? (
+            <>
+              <p className="text-lg font-bold tabular-nums text-foreground">
+                {stats.inventoryCount}
+              </p>
+              <span className="text-xs font-semibold text-primary group-hover:underline">View all →</span>
+            </>
+          ) : (
+            <p className="text-lg font-bold text-muted-foreground">N/A</p>
+          )}
         </Link>
 
         {/* Response Time */}
@@ -450,7 +453,7 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
       </div>
 
       {/* Badges */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-3 items-center">
         {badges.map((badge, idx) => (
           <span
             key={idx}
@@ -467,20 +470,14 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
             {badge}
           </span>
         ))}
-        {kycVerified && (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold bg-green-500/10 text-green-600 dark:text-green-400 rounded-lg">
-            <Shield className="w-4 h-4" />
-            ID Verified
-          </span>
-        )}
         {emailVerified && (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold bg-muted text-muted-foreground rounded-lg">
+          <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground">
             <CheckCircle2 className="w-4 h-4 text-green-500" />
             Email
           </span>
         )}
         {phoneVerified && (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold bg-muted text-muted-foreground rounded-lg">
+          <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground">
             <CheckCircle2 className="w-4 h-4 text-green-500" />
             Phone
           </span>
@@ -505,15 +502,16 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
             <Package className="w-4 h-4 text-muted-foreground" />
             <span className="text-sm font-semibold text-muted-foreground/70">Inventory</span>
           </div>
-          <p className="text-lg font-bold tabular-nums text-foreground">
-            {statsLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-            ) : stats && 'listingsCount' in stats ? (
-              <>{stats.listingsCount}<span className="text-xs font-semibold text-primary group-hover:underline ml-1.5">View all</span></>
-            ) : (
-              <>0<span className="text-xs font-semibold text-primary group-hover:underline ml-1.5">View all</span></>
-            )}
-          </p>
+          {statsLoading ? (
+            <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+          ) : (
+            <>
+              <p className="text-lg font-bold tabular-nums text-foreground">
+                {stats && 'listingsCount' in stats ? stats.listingsCount : 0}
+              </p>
+              <span className="text-xs font-semibold text-primary group-hover:underline">View all →</span>
+            </>
+          )}
         </Link>
 
         {/* Response Time */}

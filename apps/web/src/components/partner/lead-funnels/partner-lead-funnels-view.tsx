@@ -264,33 +264,33 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
 
         {/* Stats */}
         {!isLoading && stats && (
-          <div className="flex items-center gap-10">
+          <div className="flex flex-wrap items-center gap-6 sm:gap-10">
             <div>
               <span className="text-xs text-muted-foreground">Total Funnels</span>
-              <p className="text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.total}</p>
+              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.total}</p>
             </div>
             <div>
               <span className="text-xs text-muted-foreground">Active</span>
-              <p className="text-xl font-semibold tracking-tight mt-1 text-green-500">{stats.active}</p>
+              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-green-500">{stats.active}</p>
             </div>
             <div>
               <span className="text-xs text-muted-foreground">Staff Members</span>
-              <p className="text-xl font-semibold tracking-tight mt-1">{stats.staffCount}</p>
+              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1">{stats.staffCount}</p>
             </div>
           </div>
         )}
 
       {/* Toolbar */}
-      <div className="flex items-center gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
         {/* Search */}
-        <div className="relative flex-1 max-w-xs">
+        <div className="relative flex-1 sm:max-w-xs">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search funnels..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full h-10 pl-10 pr-8 rounded-xl bg-secondary/50 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+            className="w-full h-9 sm:h-10 pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-xs sm:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
           />
           {searchQuery && (
             <button
@@ -304,14 +304,14 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
 
         {/* Staff Combobox */}
         {staffList.length > 0 && (
-          <div className="w-48">
+          <div className="w-full sm:w-48">
             <Combobox
               options={staffOptions}
               value={selectedStaffFilter}
               onValueChange={handleStaffFilterChange}
               placeholder="All Staff"
               searchPlaceholder="Search staff..."
-              className="h-10 rounded-xl bg-secondary/50 border-0"
+              className="h-9 sm:h-10 rounded-lg sm:rounded-xl bg-secondary/50 border-0"
             />
           </div>
         )}
@@ -498,45 +498,45 @@ function FunnelRow({ funnel, isExpanded, onToggle }: FunnelRowProps) {
   return (
     <div className="rounded-xl border border-border/40 bg-card hover:border-border/60 hover:shadow-sm transition-all overflow-hidden">
       {/* Funnel Header */}
-      <div className="w-full p-4 sm:p-5 border-b border-border/30">
-        <div className="flex items-start justify-between gap-4">
+      <div className="w-full p-3 sm:p-4 md:p-5 border-b border-border/30">
+        <div className="flex items-start justify-between gap-2 sm:gap-4">
           {/* Left: Toggle + Title, Description, Tags - Clickable for collapse */}
           <button
             type="button"
             onClick={onToggle}
             className="min-w-0 flex-1 text-left"
           >
-            <div className="flex items-center gap-3 mb-1">
+            <div className="flex items-center gap-2 sm:gap-3 mb-1">
               <ChevronDown className={cn(
-                "w-4 h-4 text-muted-foreground/50 transition-transform flex-shrink-0",
+                "w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/50 transition-transform flex-shrink-0",
                 !isExpanded && "-rotate-90"
               )} />
-              <h3 className="text-base sm:text-lg font-bold tracking-tight truncate">{funnel.name}</h3>
+              <h3 className="text-sm sm:text-base md:text-lg font-bold tracking-tight truncate">{funnel.name}</h3>
             </div>
             
             {funnel.description && (
-              <p className="text-sm text-muted-foreground/60 line-clamp-1 mb-2 ml-7">
+              <p className="text-xs sm:text-sm text-muted-foreground/60 line-clamp-1 mb-1.5 sm:mb-2 ml-5 sm:ml-7">
                 {funnel.description}
               </p>
             )}
 
-            <p className="text-xs text-muted-foreground ml-7 mb-2">
+            <p className="text-[11px] sm:text-xs text-muted-foreground ml-5 sm:ml-7 mb-1.5 sm:mb-2">
               {funnel.staffName || 'Unknown'} · {new Date(funnel.createdAt).toLocaleDateString()}
             </p>
 
             {/* Filter Tags */}
-            <div className="flex flex-wrap gap-1.5 ml-7">
+            <div className="flex flex-wrap gap-1 sm:gap-1.5 ml-5 sm:ml-7">
               {filterTags.length > 0 ? (
                 filterTags.slice(0, 5).map((tag, i) => (
-                  <span key={i} className="px-2 py-0.5 text-xs font-medium bg-secondary text-muted-foreground rounded-md">
+                  <span key={i} className="px-1.5 sm:px-2 py-0.5 text-[11px] sm:text-xs font-medium bg-secondary text-muted-foreground rounded-md">
                     {tag}
                   </span>
                 ))
               ) : (
-                <span className="text-xs text-muted-foreground/40 italic">All vehicles</span>
+                <span className="text-[11px] sm:text-xs text-muted-foreground/40 italic">All vehicles</span>
               )}
               {filterTags.length > 5 && (
-                <span className="px-2 py-0.5 text-xs font-medium bg-secondary text-muted-foreground rounded-md">
+                <span className="px-1.5 sm:px-2 py-0.5 text-[11px] sm:text-xs font-medium bg-secondary text-muted-foreground rounded-md">
                   +{filterTags.length - 5} more
                 </span>
               )}
@@ -546,7 +546,7 @@ function FunnelRow({ funnel, isExpanded, onToggle }: FunnelRowProps) {
           {/* Right: Active Badge */}
           <div className="flex items-center gap-2 flex-shrink-0">
             <span className={cn(
-              'shrink-0 px-2 py-0.5 text-xs font-semibold rounded-full',
+              'shrink-0 px-1.5 sm:px-2 py-0.5 text-[11px] sm:text-xs font-semibold rounded-full',
               funnel.isActive 
                 ? 'bg-green-500/10 text-green-600' 
                 : 'bg-muted/50 text-muted-foreground'
@@ -559,7 +559,7 @@ function FunnelRow({ funnel, isExpanded, onToggle }: FunnelRowProps) {
 
       {/* Expanded Preview */}
       {isExpanded && (
-        <div className="p-4 sm:p-5">
+        <div className="p-3 sm:p-4 md:p-5">
 
           {/* Preview Loading */}
           {previewLoading && (
@@ -581,13 +581,13 @@ function FunnelRow({ funnel, isExpanded, onToggle }: FunnelRowProps) {
 
           {/* Preview Grid */}
           {!previewLoading && previewData.length > 0 && (
-            <div className="flex gap-3 overflow-x-auto pb-2 sm:pb-0 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 sm:overflow-visible scrollbar-hide">
+            <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 sm:pb-0 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 sm:overflow-visible scrollbar-hide">
               {previewData.map((listing) => (
                 <Link
                   key={listing.id}
                   href={`/listings/${listing.id}`}
                   target="_blank"
-                  className="flex-shrink-0 w-[180px] sm:w-auto group"
+                  className="flex-shrink-0 w-[160px] sm:w-auto group"
                 >
                   <div className="rounded-lg border border-border/40 bg-card overflow-hidden hover:border-border/60 hover:shadow-md transition-all">
                     {/* Image */}
@@ -607,11 +607,11 @@ function FunnelRow({ funnel, isExpanded, onToggle }: FunnelRowProps) {
                       )}
                     </div>
                     {/* Info */}
-                    <div className="p-2.5">
-                      <p className="text-sm font-semibold truncate">
+                    <div className="p-2">
+                      <p className="text-xs sm:text-sm font-semibold truncate">
                         {listing.year} {listing.make}
                       </p>
-                      <p className="text-sm font-bold text-blue-600">
+                      <p className="text-xs sm:text-sm font-bold text-blue-600">
                         AED {listing.price.toLocaleString()}
                       </p>
                     </div>

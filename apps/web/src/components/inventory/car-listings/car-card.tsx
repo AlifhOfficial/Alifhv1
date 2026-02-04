@@ -280,7 +280,7 @@ export function CarCard({
 
       {/* Image Section */}
       <Link href={`/listings/${id}`} className={cn(
-        "relative aspect-[16/9] sm:aspect-[16/10] w-full overflow-hidden block",
+        "relative aspect-[16/9] w-full overflow-hidden block",
         isBlkListing ? "bg-zinc-900" : "bg-muted/20"
       )}>
         <Image
@@ -704,7 +704,7 @@ function CarCardSkeletonComponent({ className }: CarCardSkeletonProps) {
       className
     )}>
       {/* Image Section - matches CarCard aspect ratios */}
-      <div className="relative aspect-[16/9] sm:aspect-[16/10] w-full">
+      <div className="relative aspect-[16/9] w-full">
         <Skeleton className="absolute inset-0" />
         {/* Mobile: Avatar + Name pill overlay */}
         <div className="absolute top-2 right-2 sm:hidden">

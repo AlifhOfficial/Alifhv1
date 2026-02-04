@@ -5,6 +5,8 @@
 
 'use client';
 
+import Image from 'next/image';
+
 export function AboutPrinciplesSection() {
   return (
     <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
@@ -18,9 +20,20 @@ export function AboutPrinciplesSection() {
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
             Non-negotiables.
           </h2>
-          <p className="text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
-            The principles that guide every decision we make.
+          <p className="text-sm sm:text-base font-medium text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            These aren't marketing slogans. They're the rules we won't break, even when it's hard.
           </p>
+        </div>
+
+        {/* Image for What We Believe */}
+        <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg mb-12">
+          <Image
+            src="/Abstract/pic5.png"
+            alt="Our principles"
+            fill
+            className="object-cover"
+            sizes="(max-width: 1400px) 100vw, 1400px"
+          />
         </div>
 
         {/* Values Grid */}
@@ -31,15 +44,15 @@ export function AboutPrinciplesSection() {
           </div>
           <div className="p-6 rounded-xl border border-border/40 bg-sidebar">
             <h3 className="text-base font-semibold text-foreground mb-2">No ads. Ever.</h3>
-            <p className="text-sm text-muted-foreground">Not now. Not later. Not even if we're struggling.</p>
+            <p className="text-sm text-muted-foreground">Not now, not later. Not even if it means staying small.</p>
           </div>
           <div className="p-6 rounded-xl border border-border/40 bg-sidebar">
             <h3 className="text-base font-semibold text-foreground mb-2">Quality over quantity</h3>
-            <p className="text-sm text-muted-foreground">We're not trying to list every car. Just the honest ones.</p>
+            <p className="text-sm text-muted-foreground">We don't need every listing. Just the real ones.</p>
           </div>
           <div className="p-6 rounded-xl border border-border/40 bg-sidebar">
             <h3 className="text-base font-semibold text-foreground mb-2">Long-term thinking</h3>
-            <p className="text-sm text-muted-foreground">Trust takes years. We're okay with that.</p>
+            <p className="text-sm text-muted-foreground">Trust isn't built overnight. We're in no rush.</p>
           </div>
         </div>
 

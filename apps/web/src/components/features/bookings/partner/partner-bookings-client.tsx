@@ -10,6 +10,7 @@ import { Combobox } from "@/components/ui/forms/combobox";
 import { Box, RefreshCw, Search, ChevronLeft, ChevronRight, Calendar, X } from "lucide-react";
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import { useDebouncedCallback } from "use-debounce";
+import { cn } from "@/utils";
 
 interface PartnerBookingsClientProps {
   partnerId: string;
@@ -370,37 +371,39 @@ export function PartnerBookingsClient({
 
         {/* Stats */}
         {stats && (
-          <div className="flex items-center gap-10">
+          <div className="flex flex-wrap items-center gap-6 sm:gap-10">
             <div>
               <span className="text-xs text-muted-foreground">Today</span>
-              <p className="text-xl font-semibold tracking-tight mt-1 text-yellow-500">{stats.todayBookings}</p>
+              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-yellow-500">{stats.todayBookings}</p>
             </div>
             <div>
               <span className="text-xs text-muted-foreground">Upcoming</span>
-              <p className="text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.upcomingBookings}</p>
+              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.upcomingBookings}</p>
             </div>
             <div>
               <span className="text-xs text-muted-foreground">Completed</span>
-              <p className="text-xl font-semibold tracking-tight mt-1 text-green-500">{stats.completedBookings}</p>
+              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-green-500">{stats.completedBookings}</p>
             </div>
             <div>
               <span className="text-xs text-muted-foreground">Total</span>
-              <p className="text-xl font-semibold tracking-tight mt-1">{stats.totalBookings}</p>
+              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1">{stats.totalBookings}</p>
             </div>
           </div>
         )}
 
       {/* Toolbar */}
-      <div className="flex items-center gap-4 mb-8">
+      <div className="flex flex-col gap-3 sm:gap-4 mb-6 sm:mb-8">
+        {/* Row 1: Search + Staff */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
         {/* Search */}
-        <div className="relative flex-1 max-w-xs">
+        <div className="relative flex-1 sm:max-w-xs">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full h-10 pl-10 pr-8 rounded-xl bg-secondary/50 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+            className="w-full h-9 sm:h-10 pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-xs sm:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
           />
           {searchQuery && (
             <button
@@ -412,8 +415,24 @@ export function PartnerBookingsClient({
           )}
         </div>
 
-        {/* Status Pills */}
-        <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl">
+        {/* Staff Combobox */}
+        {allStaffForDisplay.length > 0 && (
+          <div className="w-full sm:w-48">
+            <Combobox
+              options={staffOptions}
+              value={selectedStaffFilter}
+              onValueChange={handleStaffFilterChange}
+              placeholder="All Staff"
+              searchPlaceholder="Search staff..."
+              className="h-9 sm:h-10 rounded-lg sm:rounded-xl bg-secondary/50 border-0"
+            />
+          </div>
+        )}
+        </div>
+
+        {/* Row 2: Status Pills - Horizontal scroll on mobile */}
+        <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-hide">
+        <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl w-fit">
           {(['all', 'pending', 'confirmed', 'completed', 'cancelled'] as StatusFilter[]).map((status) => {
             const config = STATUS_CONFIG[status];
             const isActive = statusFilter === status;
@@ -422,7 +441,7 @@ export function PartnerBookingsClient({
               <button
                 key={status}
                 onClick={() => handleStatusFilterChange(status)}
-                className={`px-3 py-1.5 rounded-lg text-xs transition-all ${
+                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs transition-all whitespace-nowrap ${
                   isActive
                     ? 'bg-background text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
@@ -430,31 +449,18 @@ export function PartnerBookingsClient({
               >
                 {config.label}
                 {status !== 'all' && count > 0 && (
-                  <span className="ml-1.5 text-muted-foreground">{count}</span>
+                  <span className="ml-1 sm:ml-1.5 text-muted-foreground">{count}</span>
                 )}
               </button>
             );
           })}
         </div>
-
-        {/* Staff Combobox */}
-        {allStaffForDisplay.length > 0 && (
-          <div className="w-48">
-            <Combobox
-              options={staffOptions}
-              value={selectedStaffFilter}
-              onValueChange={handleStaffFilterChange}
-              placeholder="All Staff"
-              searchPlaceholder="Search staff..."
-              className="h-10 rounded-xl bg-secondary/50 border-0"
-            />
-          </div>
-        )}
+        </div>
 
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors self-end sm:self-auto"
           >
             Reset
           </button>
@@ -507,16 +513,30 @@ export function PartnerBookingsClient({
               return (
                 <div
                   key={booking.id}
-                  className="group flex items-center gap-5 p-4 -mx-4 rounded-xl hover:bg-secondary/30 transition-colors cursor-pointer"
+                  className="group flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-5 p-3 sm:p-4 -mx-3 sm:-mx-4 rounded-xl hover:bg-secondary/30 transition-colors cursor-pointer"
                 >
-                  {/* Time */}
-                  <div className="w-20 flex-shrink-0">
+                  {/* Mobile top row: Time + Status */}
+                  <div className="flex items-center justify-between w-full sm:hidden">
+                    <div className="flex-shrink-0">
+                      <p className="text-xs sm:text-sm font-medium tracking-tight">{dateInfo.label}</p>
+                      <p className="text-[11px] sm:text-xs text-muted-foreground">{dateInfo.time}</p>
+                    </div>
+                    <span className={`px-1.5 py-0.5 rounded-md text-[11px] font-medium ${STATUS_CONFIG[normalizedStatus]?.bg || 'bg-secondary/50'} ${STATUS_CONFIG[normalizedStatus]?.color || 'text-muted-foreground'}`}>
+                      {statusLabel}
+                    </span>
+                  </div>
+
+                  {/* Time - Desktop only */}
+                  <div className="hidden sm:block w-20 flex-shrink-0">
                     <p className="text-sm font-medium tracking-tight">{dateInfo.label}</p>
                     <p className="text-xs text-muted-foreground">{dateInfo.time}</p>
                   </div>
 
+                  {/* Mobile middle row: Image + Info */}
+                  <div className="flex items-center gap-3 w-full sm:w-auto">
+
                   {/* Image */}
-                  <div className="w-14 h-10 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
+                  <div className="w-12 h-9 sm:w-14 sm:h-10 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
                     {booking.listingThumbnail ? (
                       <img
                         src={booking.listingThumbnail}
@@ -525,26 +545,27 @@ export function PartnerBookingsClient({
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <Box className="w-4 h-4 text-muted-foreground/30" />
+                        <Box className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground/30" />
                       </div>
                     )}
                   </div>
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium tracking-tight truncate">{booking.listingTitle}</p>
-                    <p className="text-xs text-muted-foreground truncate mt-0.5">
+                    <p className="text-xs sm:text-sm font-medium tracking-tight truncate">{booking.listingTitle}</p>
+                    <p className="text-[11px] sm:text-xs text-muted-foreground truncate mt-0.5">
                       {booking.userName}
                       {booking.staffName && (
-                        <span className={teamMember?.status === 'left' ? 'opacity-50' : ''}>
+                        <span className={cn("hidden sm:inline", teamMember?.status === 'left' && 'opacity-50')}>
                           {' · '}{booking.staffName}
                         </span>
                       )}
                     </p>
                   </div>
+                  </div>
 
-                  {/* Status */}
-                  <div className="flex-shrink-0">
+                  {/* Status - Desktop only */}
+                  <div className="hidden sm:block flex-shrink-0">
                     <span className={`px-2.5 py-1 rounded-md text-xs font-medium ${STATUS_CONFIG[normalizedStatus]?.bg || 'bg-secondary/50'} ${STATUS_CONFIG[normalizedStatus]?.color || 'text-muted-foreground'}`}>
                       {statusLabel}
                     </span>

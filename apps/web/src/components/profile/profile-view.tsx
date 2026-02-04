@@ -368,32 +368,34 @@ export function ProfileView() {
               {suffix}
             </div>
             {isEditing ? (
-              <div className="flex items-center gap-2">
+              <div className="space-y-2">
                 <input
                   autoFocus
                   type="text"
                   value={String(value || '')}
                   onChange={(e) => updateField({ [field as string]: e.target.value })}
                   placeholder={placeholder}
-                  className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                  className="w-full h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') saveField(field);
                     if (e.key === 'Escape') cancelEdit();
                   }}
                 />
-                <button
-                  onClick={(e) => { e.stopPropagation(); saveField(field); }}
-                  disabled={saving}
-                  className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
-                >
-                  {saving ? '...' : 'Save'}
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
-                  className="text-xs text-muted-foreground hover:text-foreground font-semibold"
-                >
-                  Cancel
-                </button>
+                <div className="flex items-center justify-end gap-3">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
+                    className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); saveField(field); }}
+                    disabled={saving}
+                    className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                  >
+                    {saving ? '...' : 'Save'}
+                  </button>
+                </div>
               </div>
             ) : (
               <p className={cn("text-sm font-medium text-foreground", disabled && "text-foreground/70")}>
@@ -438,12 +440,12 @@ export function ProfileView() {
 
   return (
     <div className="min-h-screen bg-background pb-16">
-      <div className="max-w-2xl mx-auto px-6 py-8 space-y-8">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
 
         {/* Header */}
-        <div className="flex items-start gap-5">
+        <div className="flex items-start gap-3 sm:gap-5">
           {/* Avatar */}
-          <div className="relative group">
+          <div className="relative group shrink-0">
             <input 
               type="file" 
               accept="image/*" 
@@ -462,7 +464,7 @@ export function ProfileView() {
                 name={displayName}
                 size="xl" 
                 className={cn(
-                  "w-24 h-24 border-4 border-background shadow-sm transition-opacity",
+                  "w-20 h-20 sm:w-24 sm:h-24 border-4 border-background shadow-sm transition-opacity",
                   avatarUploading && "opacity-50"
                 )}
                 useGeneratedAvatar={profile?.preferences?.useGeneratedAvatar ?? true}
@@ -495,9 +497,9 @@ export function ProfileView() {
             )}
           </div>
           
-          <div className="flex-1 pt-2">
+          <div className="flex-1 min-w-0 pt-1 sm:pt-2">
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-semibold tracking-tight">{displayName}</h1>
+              <h1 className="text-lg sm:text-xl font-semibold tracking-tight truncate">{displayName}</h1>
               {profile?.kycVerified && !isKycExpired && (
                 <CheckCircle2 className={cn(
                   "w-5 h-5 text-blue-500 transition-opacity",
@@ -505,18 +507,18 @@ export function ProfileView() {
                 )} />
               )}
             </div>
-            <p className="text-sm text-muted-foreground mt-0.5">
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 truncate">
               {user?.email}
             </p>
-            <p className="text-sm text-muted-foreground/70 mt-0.5">
+            <p className="text-xs sm:text-sm text-muted-foreground/70 mt-0.5">
               Member since {memberSinceYear ?? '—'}
             </p>
           </div>
         </div>
 
         {/* Identity Verification Status */}
-        <div className="rounded-xl border border-border/40 bg-sidebar p-5">
-          <div className="flex items-center justify-between">
+        <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
             <div>
               <p className={cn(
                 "text-sm font-semibold",
@@ -553,7 +555,7 @@ export function ProfileView() {
             {(!profile?.kycVerified || isKycExpired || profile?.kycStatus === 'rejected' || showResubmit) && profile?.kycStatus !== 'pending' && (
               <button 
                 onClick={() => setKycModalOpen(true)}
-                className="text-xs text-blue-500 hover:text-blue-600 font-semibold px-4 py-2 rounded-lg bg-muted/30 hover:bg-muted/40 transition-colors"
+                className="text-xs text-blue-500 hover:text-blue-600 font-semibold px-4 py-2 rounded-lg bg-muted/30 hover:bg-muted/40 transition-colors w-full sm:w-auto text-center"
               >
                 {isKycExpired || profile?.kycStatus === 'rejected' ? 'Try Again' : 
                  showResubmit ? 'Renew' : 'Verify'}
@@ -563,24 +565,24 @@ export function ProfileView() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border/40 divide-x divide-border/40 bg-sidebar rounded-xl">
-          <div className="p-5 flex flex-col gap-1">
-            <span className="text-sm font-semibold text-muted-foreground/70">Listings</span>
-            <span className="text-xl font-bold text-foreground">{stats?.listingsCount ?? '—'}</span>
+        <div className="grid grid-cols-2 md:grid-cols-4 border border-border/40 bg-sidebar rounded-xl overflow-hidden">
+          <div className="p-4 sm:p-5 flex flex-col gap-1 border-r border-b md:border-b-0 border-border/40">
+            <span className="text-xs sm:text-sm font-semibold text-muted-foreground/70">Listings</span>
+            <span className="text-lg sm:text-xl font-bold text-foreground">{stats?.listingsCount ?? '—'}</span>
           </div>
-          <div className="p-5 flex flex-col gap-1">
-            <span className="text-sm font-semibold text-muted-foreground/70">Sold</span>
-            <span className="text-xl font-bold text-foreground">{stats?.soldCount ?? '—'}</span>
+          <div className="p-4 sm:p-5 flex flex-col gap-1 border-b md:border-b-0 md:border-r border-border/40">
+            <span className="text-xs sm:text-sm font-semibold text-muted-foreground/70">Sold</span>
+            <span className="text-lg sm:text-xl font-bold text-foreground">{stats?.soldCount ?? '—'}</span>
           </div>
-          <div className="p-5 flex flex-col gap-1">
-            <span className="text-sm font-semibold text-muted-foreground/70">Response</span>
-            <span className="text-xl font-bold text-foreground">
+          <div className="p-4 sm:p-5 flex flex-col gap-1 border-r border-border/40">
+            <span className="text-xs sm:text-sm font-semibold text-muted-foreground/70">Response</span>
+            <span className="text-lg sm:text-xl font-bold text-foreground">
               {stats?.responseRate !== null && stats?.responseRate !== undefined ? `${stats.responseRate}%` : '—'}
             </span>
           </div>
-          <div className="p-5 flex flex-col gap-1">
-            <span className="text-sm font-semibold text-muted-foreground/70">Rating</span>
-            <span className="text-xl font-bold text-foreground">
+          <div className="p-4 sm:p-5 flex flex-col gap-1">
+            <span className="text-xs sm:text-sm font-semibold text-muted-foreground/70">Rating</span>
+            <span className="text-lg sm:text-xl font-bold text-foreground">
               {profile?.platformRating ? (
                 <span className="flex items-center gap-1.5">
                   <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
@@ -730,35 +732,39 @@ export function ProfileView() {
                 </div>
               ) : editingField === 'phone' ? (
                 // Edit phone number
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-muted-foreground">+971</span>
-                  <input
-                    autoFocus
-                    type="tel"
-                    inputMode="numeric"
-                    value={form.phone}
-                    onChange={(e) => updateField({ phone: e.target.value.replace(/[^\d]/g, '').slice(0, 9) })}
-                    placeholder="50 000 0000"
-                    className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
-                    maxLength={9}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') saveField('phone');
-                      if (e.key === 'Escape') cancelEdit();
-                    }}
-                  />
-                  <button
-                    onClick={() => saveField('phone')}
-                    disabled={saving}
-                    className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
-                  >
-                    {saving ? '...' : 'Save'}
-                  </button>
-                  <button
-                    onClick={cancelEdit}
-                    className="text-xs text-muted-foreground hover:text-foreground font-semibold"
-                  >
-                    Cancel
-                  </button>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-muted-foreground shrink-0">+971</span>
+                    <input
+                      autoFocus
+                      type="tel"
+                      inputMode="numeric"
+                      value={form.phone}
+                      onChange={(e) => updateField({ phone: e.target.value.replace(/[^\d]/g, '').slice(0, 9) })}
+                      placeholder="50 000 0000"
+                      className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                      maxLength={9}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') saveField('phone');
+                        if (e.key === 'Escape') cancelEdit();
+                      }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-end gap-3">
+                    <button
+                      onClick={cancelEdit}
+                      className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => saveField('phone')}
+                      disabled={saving}
+                      className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                    >
+                      {saving ? '...' : 'Save'}
+                    </button>
+                  </div>
                 </div>
               ) : (
                 // Display phone number
@@ -818,21 +824,21 @@ export function ProfileView() {
                       if (e.key === 'Escape') cancelEdit();
                     }}
                   />
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:justify-between">
                     <p className={cn("text-xs", form.bio.length >= 700 ? "text-destructive" : "text-muted-foreground/70")}>{form.bio.length}/700 characters</p>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-end gap-3">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
+                        className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                      >
+                        Cancel
+                      </button>
                       <button
                         onClick={(e) => { e.stopPropagation(); saveField('bio'); }}
                         disabled={saving}
                         className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
                       >
                         {saving ? '...' : 'Save'}
-                      </button>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
-                        className="text-xs text-muted-foreground hover:text-foreground font-semibold"
-                      >
-                        Cancel
                       </button>
                     </div>
                   </div>
@@ -858,8 +864,8 @@ export function ProfileView() {
             <span className="text-sm font-semibold text-muted-foreground/70">{form.tags.length}/3 selected</span>
           </div>
           
-          <div className="rounded-xl border border-border/40 bg-sidebar p-5">
-            <div className="flex flex-wrap gap-3">
+          <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
+            <div className="flex flex-wrap gap-2 sm:gap-3">
               {TAGS.map(tag => {
                 const isSelected = form.tags.includes(tag);
                 return (
@@ -867,7 +873,7 @@ export function ProfileView() {
                     key={tag}
                     onClick={() => toggleTag(tag)}
                     className={cn(
-                      "px-4 py-2 rounded-lg text-sm font-semibold transition-all border inline-flex items-center gap-2 cursor-pointer",
+                      "px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all border inline-flex items-center gap-1.5 sm:gap-2 cursor-pointer",
                       isSelected 
                         ? "bg-muted/40 text-foreground border-border/60" 
                         : "bg-muted/30 text-foreground/90 border-border/40 hover:border-primary/40 hover:bg-muted/40"

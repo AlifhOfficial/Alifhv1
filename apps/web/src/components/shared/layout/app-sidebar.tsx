@@ -406,7 +406,10 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
                       <CollapsibleContent>
                         <SidebarMenuSub>
                           {section.items.map((item) => {
-                            const isActive = pathname === item.href;
+                            // Normalize paths by removing trailing slashes
+                            const normalizedPathname = pathname.replace(/\/$/, '');
+                            const normalizedHref = item.href.replace(/\/$/, '');
+                            const isActive = normalizedPathname === normalizedHref;
                             
                             return (
                               <SidebarMenuSubItem key={item.label}>
@@ -438,7 +441,10 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
               <SidebarGroupContent>
                 <SidebarMenu>
                   {section.items.map((item) => {
-                    const isActive = pathname === item.href;
+                    // Normalize paths by removing trailing slashes
+                    const normalizedPathname = pathname.replace(/\/$/, '');
+                    const normalizedHref = item.href.replace(/\/$/, '');
+                    const isActive = normalizedPathname === normalizedHref;
                     const Icon = item.icon ? iconMap[item.icon] : undefined;
                     
                     return (

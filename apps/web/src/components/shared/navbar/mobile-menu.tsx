@@ -109,39 +109,6 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp,
             </div>
           ))}
         </div>
-
-        {/* Mobile Auth Actions */}
-        <div className="pt-6 border-t border-border/40 space-y-1">
-          {user ? (
-            <>
-              <button
-                onClick={() => {
-                  onProfile?.();
-                  onNavigate();
-                }}
-                className="block w-full px-3 py-3 text-[15px] font-semibold tracking-tight text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/30 text-left"
-              >
-                Profile
-              </button>
-              <Link
-                href="/user-dashboard"
-                onClick={onNavigate}
-                className="block w-full px-3 py-3 text-[15px] font-semibold tracking-tight text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/30 text-left"
-              >
-                Dashboard
-              </Link>
-              <button
-                onClick={() => {
-                  onSignOut?.();
-                  onNavigate();
-                }}
-                className="block w-full px-3 py-3 text-[15px] font-semibold tracking-tight text-destructive hover:bg-destructive/10 transition-colors rounded-lg text-left"
-              >
-                Sign Out
-              </button>
-            </>
-          ) : null}
-        </div>
       </div>
     </div>
   );

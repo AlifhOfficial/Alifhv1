@@ -147,7 +147,7 @@ export function DashboardContent({ children, header, fullHeight = false, noPaddi
         )}
         
         {/* Right side actions */}
-        <div className="ml-auto flex items-center gap-1">
+        <div className="ml-auto hidden md:flex items-center gap-1">
           <Button variant="ghost" asChild className="h-8 px-3 text-[15px] font-semibold tracking-tight">
             <Link href="/">
               Home

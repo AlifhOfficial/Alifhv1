@@ -143,7 +143,7 @@ export function ContactSection({
         {phoneNumber && !isBlocked && (
           <a
             href={`tel:${phoneNumber}`}
-            className="flex-1 min-w-[100px] py-3 px-4 border border-border rounded-full text-sm font-bold text-foreground hover:bg-muted/50 transition-colors flex items-center justify-center gap-2.5 whitespace-nowrap"
+            className="flex-1 min-w-[100px] py-3 px-4 bg-muted rounded-full text-sm font-bold text-foreground hover:bg-muted/80 transition-colors flex items-center justify-center gap-2.5 whitespace-nowrap"
           >
             <Phone className="w-5 h-5" />
             Call

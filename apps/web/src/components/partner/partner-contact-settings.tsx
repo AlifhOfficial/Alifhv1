@@ -261,18 +261,18 @@ export function PartnerContactSettings() {
 
   return (
     <div className="min-h-screen bg-background pb-16">
-      <div className="max-w-2xl mx-auto px-6 py-8 space-y-8">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
 
         {/* Header */}
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Contact Settings</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
+          <h1 className="text-lg sm:text-xl font-semibold tracking-tight">Contact Settings</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
             {profile.brandName}
           </p>
         </div>
 
         {/* Info Banner */}
-        <div className="rounded-xl border border-border/40 bg-blue-500/5 p-4">
+        <div className="rounded-xl border border-border/40 bg-blue-500/5 p-3 sm:p-4">
           <div className="flex gap-3">
             <Info className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
             <p className="text-sm text-muted-foreground">
@@ -283,46 +283,48 @@ export function PartnerContactSettings() {
 
         {/* Admin Contact Person */}
         <section>
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Admin Contact</h3>
+          <h3 className="text-sm sm:text-[15px] font-bold tracking-tight text-foreground mb-2 sm:mb-3">Admin Contact</h3>
           
-          <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
+          <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5 space-y-3 sm:space-y-4">
             
             {/* Admin Name */}
             <div 
               className={cn(
-                "py-3",
-                editingField !== 'adminName' && "cursor-pointer hover:bg-muted/30 -mx-5 px-5 transition-colors rounded"
+                "py-2 sm:py-3",
+                editingField !== 'adminName' && "cursor-pointer hover:bg-muted/30 -mx-4 sm:-mx-5 px-4 sm:px-5 transition-colors rounded"
               )}
               onClick={() => editingField !== 'adminName' && setEditingField('adminName')}
             >
               <p className="text-xs font-medium text-muted-foreground/70 mb-1">Admin Name</p>
               {editingField === 'adminName' ? (
-                <div className="flex items-center gap-2">
+                <div className="space-y-2">
                   <input
                     autoFocus
                     type="text"
                     value={form.adminName}
                     onChange={(e) => updateField({ adminName: e.target.value })}
                     placeholder="e.g. Ahmed Al Mansouri"
-                    className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                    className="w-full h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') saveField('adminName');
                       if (e.key === 'Escape') cancelEdit();
                     }}
                   />
-                  <button
-                    onClick={(e) => { e.stopPropagation(); saveField('adminName'); }}
-                    disabled={saving}
-                    className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
-                  >
-                    {saving ? '...' : 'Save'}
-                  </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
-                    className="text-xs text-muted-foreground hover:text-foreground font-semibold"
-                  >
-                    Cancel
-                  </button>
+                  <div className="flex items-center justify-end gap-2 sm:gap-3">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
+                      className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); saveField('adminName'); }}
+                      disabled={saving}
+                      className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                    >
+                      {saving ? '...' : 'Save'}
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <p className="text-sm font-medium text-foreground">
@@ -334,8 +336,8 @@ export function PartnerContactSettings() {
             <div className="border-t border-border/20" />
 
             {/* Admin Phone with verification */}
-            <div className="py-3">
-              <div className="flex items-center justify-between mb-1">
+            <div className="py-2 sm:py-3">
+              <div className="flex items-center justify-between gap-2 mb-1">
                 <p className="text-xs font-medium text-muted-foreground/70">Admin Phone (requires verification)</p>
                 {(profile?.adminPhoneVerified || phoneJustVerified) ? (
                   <CheckCircle2 className="w-4 h-4 text-green-500" />
@@ -400,40 +402,44 @@ export function PartnerContactSettings() {
                 </div>
               ) : editingField === 'adminPhone' ? (
                 // Edit phone number
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-muted-foreground">+971</span>
-                  <input
-                    autoFocus
-                    type="tel"
-                    inputMode="numeric"
-                    value={form.adminPhone}
-                    onChange={(e) => updateField({ adminPhone: e.target.value.replace(/[^\d]/g, '').slice(0, 9) })}
-                    placeholder="50 000 0000"
-                    className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
-                    maxLength={9}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') saveField('adminPhone');
-                      if (e.key === 'Escape') cancelEdit();
-                    }}
-                  />
-                  <button
-                    onClick={() => saveField('adminPhone')}
-                    disabled={saving}
-                    className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
-                  >
-                    {saving ? '...' : 'Save'}
-                  </button>
-                  <button
-                    onClick={cancelEdit}
-                    className="text-xs text-muted-foreground hover:text-foreground font-semibold"
-                  >
-                    Cancel
-                  </button>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-muted-foreground shrink-0">+971</span>
+                    <input
+                      autoFocus
+                      type="tel"
+                      inputMode="numeric"
+                      value={form.adminPhone}
+                      onChange={(e) => updateField({ adminPhone: e.target.value.replace(/[^\d]/g, '').slice(0, 9) })}
+                      placeholder="50 000 0000"
+                      className="flex-1 h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                      maxLength={9}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') saveField('adminPhone');
+                        if (e.key === 'Escape') cancelEdit();
+                      }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-end gap-2 sm:gap-3">
+                    <button
+                      onClick={cancelEdit}
+                      className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => saveField('adminPhone')}
+                      disabled={saving}
+                      className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                    >
+                      {saving ? '...' : 'Save'}
+                    </button>
+                  </div>
                 </div>
               ) : (
                 // Display phone number
                 <div 
-                  className="cursor-pointer hover:bg-muted/30 -mx-5 px-5 py-1 transition-colors rounded"
+                  className="cursor-pointer hover:bg-muted/30 -mx-4 sm:-mx-5 px-4 sm:px-5 py-1 transition-colors rounded"
                   onClick={() => setEditingField('adminPhone')}
                 >
                   <p className="text-sm font-medium text-foreground">
@@ -452,47 +458,51 @@ export function PartnerContactSettings() {
 
         {/* Toll-Free Number */}
         <section>
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Toll-Free Number</h3>
+          <h3 className="text-sm sm:text-[15px] font-bold tracking-tight text-foreground mb-2 sm:mb-3">Toll-Free Number</h3>
           
-          <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+          <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
             <div 
               className={cn(
-                "py-3",
-                editingField !== 'tollNumber' && "cursor-pointer hover:bg-muted/30 -mx-5 px-5 transition-colors rounded"
+                "py-2 sm:py-3",
+                editingField !== 'tollNumber' && "cursor-pointer hover:bg-muted/30 -mx-4 sm:-mx-5 px-4 sm:px-5 transition-colors rounded"
               )}
               onClick={() => editingField !== 'tollNumber' && setEditingField('tollNumber')}
             >
               <p className="text-xs font-medium text-muted-foreground/70 mb-1">800 Number (no verification needed)</p>
               {editingField === 'tollNumber' ? (
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-muted-foreground">800</span>
-                  <input
-                    autoFocus
-                    type="tel"
-                    inputMode="numeric"
-                    value={form.tollNumber}
-                    onChange={(e) => updateField({ tollNumber: e.target.value.replace(/[^\d]/g, '').slice(0, 10) })}
-                    placeholder="DEALER"
-                    className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
-                    maxLength={10}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') saveField('tollNumber');
-                      if (e.key === 'Escape') cancelEdit();
-                    }}
-                  />
-                  <button
-                    onClick={(e) => { e.stopPropagation(); saveField('tollNumber'); }}
-                    disabled={saving}
-                    className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
-                  >
-                    {saving ? '...' : 'Save'}
-                  </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
-                    className="text-xs text-muted-foreground hover:text-foreground font-semibold"
-                  >
-                    Cancel
-                  </button>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-muted-foreground shrink-0">800</span>
+                    <input
+                      autoFocus
+                      type="tel"
+                      inputMode="numeric"
+                      value={form.tollNumber}
+                      onChange={(e) => updateField({ tollNumber: e.target.value.replace(/[^\d]/g, '').slice(0, 10) })}
+                      placeholder="DEALER"
+                      className="flex-1 h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                      maxLength={10}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') saveField('tollNumber');
+                        if (e.key === 'Escape') cancelEdit();
+                      }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-end gap-2 sm:gap-3">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
+                      className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); saveField('tollNumber'); }}
+                      disabled={saving}
+                      className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                    >
+                      {saving ? '...' : 'Save'}
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <p className="text-sm font-medium text-foreground">
@@ -510,10 +520,10 @@ export function PartnerContactSettings() {
 
         {/* Current Main Phone (read-only reference) */}
         <section>
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Registered Business Phone</h3>
+          <h3 className="text-sm sm:text-[15px] font-bold tracking-tight text-foreground mb-2 sm:mb-3">Registered Business Phone</h3>
           
-          <div className="rounded-xl border border-border/40 bg-sidebar p-5">
-            <div className="py-3">
+          <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
+            <div className="py-2 sm:py-3">
               <p className="text-xs font-medium text-muted-foreground/70 mb-1">Main business line (from registration)</p>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-muted-foreground" />

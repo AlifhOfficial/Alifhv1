@@ -134,7 +134,7 @@ export function StaffProfile() {
   const roleBadge = getRoleBadge(profile.role);
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-16">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-16">
       {/* Back */}
       <Link 
         href="/partner-dashboard/staff"
@@ -145,15 +145,15 @@ export function StaffProfile() {
       </Link>
 
       {/* Header */}
-      <header className="mb-16">
-        <div className="flex items-start justify-between mb-8">
+      <header className="mb-8 sm:mb-16">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-0 mb-6 sm:mb-8">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Work Profile</h1>
-            <p className="text-sm text-muted-foreground mt-2">
+            <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">Work Profile</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-2">
               Your work identity for client interactions
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 self-end sm:self-auto">
             <button
               onClick={() => refetch()}
               disabled={isRefetching}
@@ -167,14 +167,14 @@ export function StaffProfile() {
                 <button
                   onClick={handleCancel}
                   disabled={updateMutation.isPending}
-                  className="px-4 py-2 rounded-full text-sm hover:bg-secondary/50 transition-colors disabled:opacity-50"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm hover:bg-secondary/50 transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={updateMutation.isPending}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-blue-500 text-white text-xs sm:text-sm font-medium hover:bg-blue-600 transition-colors disabled:opacity-50"
                 >
                   {updateMutation.isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   Save
@@ -183,7 +183,7 @@ export function StaffProfile() {
             ) : (
               <button
                 onClick={() => setEditing(true)}
-                className="px-4 py-2 rounded-full bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-colors"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-blue-500 text-white text-xs sm:text-sm font-medium hover:bg-blue-600 transition-colors"
               >
                 Edit
               </button>
@@ -192,7 +192,7 @@ export function StaffProfile() {
         </div>
 
         {/* Role Badge */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <span className={cn(
             "px-2.5 py-1 rounded-md text-xs font-medium capitalize",
             roleBadge.bg,
@@ -210,16 +210,16 @@ export function StaffProfile() {
       </header>
 
       {/* Info Note */}
-      <div className="mb-12 p-4 rounded-xl bg-secondary/30">
+      <div className="mb-8 sm:mb-12 p-3 sm:p-4 rounded-xl bg-secondary/30">
         <p className="text-xs text-muted-foreground">
           Your display name is shown to clients instead of your personal name. Work email and phone are used for business communications.
         </p>
       </div>
 
       {/* Form */}
-      <div className="space-y-8">
+      <div className="space-y-4 sm:space-y-8">
         {/* Display Name */}
-        <div className="group p-4 -mx-4 rounded-xl hover:bg-secondary/30 transition-colors">
+        <div className="group p-3 sm:p-4 -mx-3 sm:-mx-4 rounded-xl hover:bg-secondary/30 transition-colors">
           <div className="flex items-start gap-4">
             <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
               <User className="w-4 h-4 text-muted-foreground" />
@@ -243,7 +243,7 @@ export function StaffProfile() {
         </div>
 
         {/* Work Phone */}
-        <div className="group p-4 -mx-4 rounded-xl hover:bg-secondary/30 transition-colors">
+        <div className="group p-3 sm:p-4 -mx-3 sm:-mx-4 rounded-xl hover:bg-secondary/30 transition-colors">
           <div className="flex items-start gap-4">
             <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
               <Phone className="w-4 h-4 text-muted-foreground" />
