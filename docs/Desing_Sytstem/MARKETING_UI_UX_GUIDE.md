@@ -1,6 +1,6 @@
-# Alifh Marketing & SEO UI/UX Guide
+# Revvup Marketing & SEO UI/UX Guide
 
-> A comprehensive guide for building marketing and SEO materials that align with the Alifh design system.
+> A comprehensive guide for building marketing and SEO materials that align with the Revvup design system.
 
 ## Design Philosophy
 
@@ -263,7 +263,7 @@ disabled:opacity-50 disabled:cursor-not-allowed
 <div className="bg-card/50 backdrop-blur-sm rounded-2xl border border-border/40 p-10 text-center space-y-6">
   <h2 className="text-2xl font-semibold">Ready to get started?</h2>
   <p className="text-sm text-muted-foreground/70 max-w-md mx-auto">
-    Join thousands of users already using Alifh.
+    Join thousands of users already using Revvup.
   </p>
   <button className="px-8 py-3 bg-primary text-primary-foreground rounded-full font-medium hover:bg-primary/90 transition-all">
     Get Started

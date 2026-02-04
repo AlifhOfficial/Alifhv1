@@ -1,5 +1,5 @@
 /**
- * Partner Roles Section - Alifh Partners Page
+ * Partner Roles Section - Revvup Partners Page
  * Visual - simple dual-role system
  */
 

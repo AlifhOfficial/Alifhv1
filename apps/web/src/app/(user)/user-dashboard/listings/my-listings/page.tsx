@@ -1,5 +1,5 @@
 /**
- * My Listings Page - Alifh Design System
+ * My Listings Page - Revvup Design System
  * User's personal car listings management
  */
 

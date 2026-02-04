@@ -1,5 +1,5 @@
 /**
- * Root Layout - Alifh Mobile App
+ * Root Layout - Revvup Mobile App
  */
 
 import { Theme as NavTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';

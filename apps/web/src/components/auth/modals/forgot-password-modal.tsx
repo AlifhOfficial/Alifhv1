@@ -1,5 +1,5 @@
 /**
- * Forgot Password Modal - Alifh Design System
+ * Forgot Password Modal - Revvup Design System
  * Clean, minimal password reset flow
  */
 

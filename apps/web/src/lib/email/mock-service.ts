@@ -20,7 +20,7 @@ const emailTemplate = (content: string) => `
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Alifh</title>
+  <title>Revvup</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #FFFFFF; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
   <table width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #FFFFFF;">
@@ -31,7 +31,7 @@ const emailTemplate = (content: string) => `
           <!-- Logo -->
           <tr>
             <td style="padding-bottom: 32px;">
-              <span style="font-size: 20px; font-weight: 600; color: #18181B;">Alifh</span>
+              <span style="font-size: 20px; font-weight: 600; color: #18181B;">Revvup</span>
               <span style="display: inline-block; margin-left: 8px; padding: 2px 6px; background: #FEF3C7; color: #92400E; font-size: 10px; font-weight: 600; border-radius: 4px;">DEV</span>
             </td>
           </tr>
@@ -48,7 +48,7 @@ const emailTemplate = (content: string) => `
             <td style="padding-bottom: 32px;">
               <p style="margin: 0; font-size: 14px; color: #71717A; line-height: 1.6;">
                 Best regards,<br>
-                <span style="color: #18181B; font-weight: 500;">Team Alifh</span>
+                <span style="color: #18181B; font-weight: 500;">Team Revvup</span>
               </p>
             </td>
           </tr>
@@ -177,9 +177,9 @@ export const mockEmailService = {
     
     await sendEmailMock({
       to: email,
-      subject: `[DEV] ${otp} is your Alifh verification code`,
+      subject: `[DEV] ${otp} is your Revvup verification code`,
       html: emailTemplate(content),
-      text: `Your Alifh verification code is: ${otp}. ${config[type]} This code expires in 10 minutes.`,
+      text: `Your Revvup verification code is: ${otp}. ${config[type]} This code expires in 10 minutes.`,
     });
   },
 
@@ -272,7 +272,7 @@ export const mockEmailService = {
     
     await sendEmailMock({
       to: user.email,
-      subject: '[DEV] Sign in to Alifh',
+      subject: '[DEV] Sign in to Revvup',
       html: emailTemplate(content),
       text: `Hi ${name}, sign in here: ${url}. This link expires in 10 minutes.`,
     });

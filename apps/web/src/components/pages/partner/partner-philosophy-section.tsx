@@ -1,5 +1,5 @@
 /**
- * Partner Philosophy Section - Alifh Partners Page
+ * Partner Philosophy Section - Revvup Partners Page
  * Core message - infrastructure, not competition
  */
 
@@ -39,7 +39,7 @@ export function PartnerPhilosophySection() {
         <div className="grid sm:grid-cols-3 gap-4 max-w-5xl mx-auto">
           {[
             { title: 'Infrastructure only', desc: 'We build roads, you drive' },
-            { title: 'Never competing', desc: 'Zero cars owned by Alifh' },
+            { title: 'Never competing', desc: 'Zero cars owned by Revvup' },
             { title: 'You\'re the expert', desc: 'We enable, not teach' },
           ].map((principle, i) => (
             <div key={i} className="p-6 rounded-xl border border-border/40 bg-sidebar">
@@ -89,7 +89,7 @@ function PhilosophyInfographic() {
           </div>
         </div>
         
-        {/* Right - Alifh has zero */}
+        {/* Right - Revvup has zero */}
         <div className="flex-1 flex flex-col">
           <div className="px-6 sm:px-8 lg:px-10 pt-6 sm:pt-8 lg:pt-10">
             <span className="text-xs font-medium text-primary">Our inventory</span>

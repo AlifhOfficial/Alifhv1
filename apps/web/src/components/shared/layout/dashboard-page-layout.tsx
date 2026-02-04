@@ -1,5 +1,5 @@
 /**
- * Dashboard Page Layout - Alifh Design System
+ * Dashboard Page Layout - Revvup Design System
  * Reusable layout component for consistent spacing and structure across all dashboard pages
  */
 

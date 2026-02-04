@@ -1,7 +1,7 @@
 /**
  * MobileMenu Component - Presentation Layer Only
  * Mobile navigation drawer
- * Follows Alifh Design Philosophy: minimal, clean
+ * Follows Revvup Design Philosophy: minimal, clean
  */
 
 "use client";

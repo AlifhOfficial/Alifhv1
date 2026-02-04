@@ -1,6 +1,6 @@
 /**
  * Contact / Support Page
- * Clean, minimal design following Alifh design system
+ * Clean, minimal design following Revvup design system
  */
 
 import { Metadata } from 'next';
@@ -8,10 +8,10 @@ import Link from 'next/link';
 import { ContactForm } from '@/components/communications';
 
 export const metadata: Metadata = {
-  title: 'Contact Us | Alifh',
+  title: 'Contact Us | Revvup',
   description: 'Get in touch with our team. We\'re here to help with any questions, support requests, or partnership inquiries.',
   openGraph: {
-    title: 'Contact Us | Alifh',
+    title: 'Contact Us | Revvup',
     description: 'Get in touch with our team for support, inquiries, or partnerships.',
   },
 };
@@ -41,10 +41,10 @@ export default function ContactPage() {
             <div>
               <p className="text-sm font-semibold text-muted-foreground/70">Email</p>
               <a 
-                href="mailto:support@alifh.ae" 
+                href="mailto:support@revvup.ae" 
                 className="text-sm font-medium text-primary hover:underline mt-0.5 inline-block"
               >
-                support@alifh.ae
+                support@revvup.ae
               </a>
             </div>
           </div>

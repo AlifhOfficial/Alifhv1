@@ -1,5 +1,5 @@
 /**
- * Sign-In Feedback Modal - Alifh Design System
+ * Sign-In Feedback Modal - Revvup Design System
  * 
  * Clean, minimal feedback for sign-in flow
  */

@@ -1,5 +1,5 @@
 /**
- * Partner Insights Components - Alifh Design System
+ * Partner Insights Components - Revvup Design System
  * 
  * Clean, minimal KPI cards and stat displays for partner dashboard.
  * Following "Less is More" principle.

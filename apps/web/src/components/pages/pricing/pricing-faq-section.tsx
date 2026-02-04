@@ -83,7 +83,7 @@ export function PricingFaqSection() {
     {
       id: 'payments',
       q: 'How are payments handled?',
-      a: 'All payments are processed securely via Stripe. Alifh does not store card details. Billing, invoicing, and compliance are handled by Stripe’s industry-standard infrastructure.',
+      a: 'All payments are processed securely via Stripe. Revvup does not store card details. Billing, invoicing, and compliance are handled by Stripe’s industry-standard infrastructure.',
     }
  ];
 

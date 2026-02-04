@@ -103,7 +103,7 @@ function BuiltInDubaiInfographic() {
           <div className="flex-1 flex items-center justify-center">
             <img 
               src="/Marketing/buyerview2.png" 
-              alt="Alifh dashboard" 
+              alt="Revvup dashboard" 
               className="w-full h-auto object-contain rounded-lg"
             />
           </div>

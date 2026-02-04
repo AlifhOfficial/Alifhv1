@@ -1,7 +1,7 @@
 /**
  * Slider Component
  * 
- * Follows Alifh Design Philosophy:
+ * Follows Revvup Design Philosophy:
  * - Clean range input
  * - Primary color track
  * - Smooth dragging

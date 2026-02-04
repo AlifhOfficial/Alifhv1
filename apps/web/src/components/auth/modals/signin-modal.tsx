@@ -74,8 +74,8 @@ export function SignInModal({
           {/* Logo */}
           <div>
             <img 
-              src="/assets/Alifh_logo_White.svg" 
-              alt="Alifh"
+              src="/assets/Revvup_logo_White.svg" 
+              alt="Revvup"
               className="h-5 w-auto"
             />
           </div>
@@ -83,7 +83,7 @@ export function SignInModal({
           {/* Bold Typography - Horizontal */}
           <div className="flex-1 flex items-center justify-center">
             <h3 className="text-4xl font-bold text-white tracking-tight">
-              Alifh.
+              Revvup.
             </h3>
           </div>
           

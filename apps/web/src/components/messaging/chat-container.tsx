@@ -1,5 +1,5 @@
 /**
- * Chat Container - Alifh Design System
+ * Chat Container - Revvup Design System
  * Conversation list + chat window layout
  */
 

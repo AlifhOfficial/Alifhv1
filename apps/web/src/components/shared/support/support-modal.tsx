@@ -1,5 +1,5 @@
 /**
- * Support Modal - Alifh Design System
+ * Support Modal - Revvup Design System
  * 
  * Clean, minimal support contact modal
  */
@@ -75,7 +75,7 @@ export function SupportModal({ isOpen, onClose }: SupportModalProps) {
           <div className="w-full space-y-3 pt-2">
             {/* Email */}
             <a
-              href="mailto:support@alifh.ae"
+              href="mailto:support@revvup.ae"
               className={cn(
                 "w-full flex items-center gap-3 p-3 rounded-lg",
                 "bg-muted/30 hover:bg-muted/50 transition-colors"
@@ -86,7 +86,7 @@ export function SupportModal({ isOpen, onClose }: SupportModalProps) {
               </div>
               <div className="text-left">
                 <p className="text-sm font-semibold text-foreground">Email us</p>
-                <p className="text-xs text-muted-foreground">support@alifh.ae</p>
+                <p className="text-xs text-muted-foreground">support@revvup.ae</p>
               </div>
             </a>
 

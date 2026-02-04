@@ -1,7 +1,7 @@
 /**
  * Advanced Stats View - Partner Analytics Dashboard
  * 
- * Modern dashboard layout following Alifh Design System.
+ * Modern dashboard layout following Revvup Design System.
  * Minimal, clean, consistent typography with visual charts.
  */
 

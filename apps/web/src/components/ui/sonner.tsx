@@ -6,7 +6,7 @@ import { Toaster as Sonner } from 'sonner';
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
 /**
- * Custom Sonner Toaster - Alifh Design System
+ * Custom Sonner Toaster - Revvup Design System
  * 
  * Pre-configured toast notification container with:
  * - Theme-aware styling (light/dark mode support)

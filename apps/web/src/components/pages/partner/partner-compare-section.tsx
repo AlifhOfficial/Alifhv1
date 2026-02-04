@@ -1,5 +1,5 @@
 /**
- * Partner Compare Section - Alifh Partners Page
+ * Partner Compare Section - Revvup Partners Page
  * Clean side-by-side with visual infographic
  */
 
@@ -49,9 +49,9 @@ export function PartnerCompareSection() {
             </div>
           </div>
 
-          {/* Alifh */}
+          {/* Revvup */}
           <div className="p-8 bg-primary text-primary-foreground">
-            <p className="text-sm font-semibold uppercase tracking-wider text-white/60 mb-8">Alifh</p>
+            <p className="text-sm font-semibold uppercase tracking-wider text-white/60 mb-8">Revvup</p>
             <div className="space-y-6">
               {[
                 { label: 'Commission', value: 'Zero. Forever.' },
@@ -122,10 +122,10 @@ function CompareInfographic() {
           </div>
         </div>
         
-        {/* Right - Alifh */}
+        {/* Right - Revvup */}
         <div className="flex-1 flex flex-col">
           <div className="px-6 sm:px-8 lg:px-10 pt-6 sm:pt-8 lg:pt-10">
-            <span className="text-xs font-medium text-primary">Alifh</span>
+            <span className="text-xs font-medium text-primary">Revvup</span>
           </div>
           
           <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-6">

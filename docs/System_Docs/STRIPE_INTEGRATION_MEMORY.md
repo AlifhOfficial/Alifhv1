@@ -11,14 +11,14 @@ Integrate Stripe payment gateway with Better Auth for subscription management.
 
 | Plan Name | Price | Currency | Billing |
 |-----------|-------|----------|---------|
-| **Alifh Core** | 7,000 AED | AED | Monthly |
-| **Alifh Black** | 21,000 AED | AED | Monthly |
+| **Revvup Core** | 7,000 AED | AED | Monthly |
+| **Revvup Black** | 21,000 AED | AED | Monthly |
 
 ### Business Rules
 - ❌ No annual subscriptions
 - ❌ No free trials (credits system instead)
 - ✅ 21k AED credits on partner signup (separate from Stripe)
-- ✅ **Partners only** - subscriptions are between Partner Owner ↔ Alifh
+- ✅ **Partners only** - subscriptions are between Partner Owner ↔ Revvup
 - ✅ Only partner owners can manage subscriptions (not staff)
 
 ---
@@ -81,7 +81,7 @@ user (auth) → user_profile (extended) → partner_request → partner → part
 ### Phase 2: Configure Stripe Plugin ✅ COMPLETE
 - [x] Add stripe plugin to `/apps/web/src/lib/auth/index.ts`
 - [x] Add stripeClient to `/apps/web/src/lib/auth/client.ts`
-- [x] Define Alifh Core & Alifh Black plans in `/apps/web/src/lib/stripe/config.ts`
+- [x] Define Revvup Core & Revvup Black plans in `/apps/web/src/lib/stripe/config.ts`
 - [x] Configure authorizeReference for partner owner check
 - [x] Configure subscription lifecycle hooks
 

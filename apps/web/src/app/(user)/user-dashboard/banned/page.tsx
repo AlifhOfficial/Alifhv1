@@ -44,7 +44,7 @@ export default function UserBannedPage() {
         {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
-            href="mailto:support@alifh.com?subject=Ban%20Appeal"
+            href="mailto:support@revvup.ae?subject=Ban%20Appeal"
             className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium"
           >
             <Mail className="w-4 h-4" />

@@ -6,7 +6,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { CarCard, CarCardMinimal, CarListItem } from '@/components/inventory';
+import { CarCard, CarCardMinimal, CarCardMobile, CarListItem } from '@/components/inventory';
 import { Search, X, Car } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTrackImpressions } from '@/hooks/listings';
@@ -146,16 +146,23 @@ export function ListingsContent({
   // Results - immediate skeleton swap, no fade animations
   return (
     <div>
-      {/* Mobile/Tablet: grid or minimal */}
+      {/* Mobile/Tablet: mobile card, grid, or minimal */}
       <div className="lg:hidden">
         {showSkeletons ? (
-          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              viewMode === 'minimal' 
-                ? <CarCardMinimal.Skeleton key={i} />
-                : <CarCard.Skeleton key={i} />
-            ))}
-          </div>
+          viewMode === 'minimal' ? (
+            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <CarCardMinimal.Skeleton key={i} />
+              ))}
+            </div>
+          ) : (
+            /* Mobile grid/list view - always use CarCardMobile */
+            <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <CarCardMobile.Skeleton key={i} />
+              ))}
+            </div>
+          )
         ) : viewMode === 'minimal' ? (
           <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
             {listings.map((listing, index) => (
@@ -178,9 +185,10 @@ export function ListingsContent({
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+          /* Mobile grid/list view - always use CarCardMobile */
+          <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
             {listings.map((listing, index) => (
-              <CarCard
+              <CarCardMobile
                 key={listing.id}
                 id={listing.id}
                 make={listing.make}

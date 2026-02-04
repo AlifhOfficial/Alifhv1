@@ -30,7 +30,7 @@ export function AboutVisionSection() {
         <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg mb-8">
           <Image
             src="/Images/rs24.png"
-            alt="Alifh Vision"
+            alt="Revvup Vision"
             fill
             className="object-cover"
             sizes="(max-width: 1400px) 100vw, 1400px"

@@ -556,7 +556,7 @@ Expected: 200 OK with partner's listings
 
 Run this command to verify everything compiles:
 ```bash
-cd /Users/Alifh/Desktop/Alifhv1
+cd /Users/Revvup/Desktop/Revvupv1
 bun run build
 ```
 

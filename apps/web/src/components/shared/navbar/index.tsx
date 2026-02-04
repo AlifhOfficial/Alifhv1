@@ -1,12 +1,12 @@
 /**
- * Navbar Component - Alifh Presentation Layer
- * Clean, minimal navigation for Alifh vehicle marketplace
+ * Navbar Component - Revvup Presentation Layer
+ * Clean, minimal navigation for Revvup vehicle marketplace
  * 
  * Features:
  * - Responsive design
  * - Theme toggle
  * - Authentication modals
- * - Clean Alifh branding
+ * - Clean Revvup branding
  */
 
 "use client";
@@ -81,7 +81,7 @@ const navItems: NavItem[] = [
       {
         title: "For Dealers",
         items: [
-          { label: "Partner with Alifh", href: "/partner" },
+          { label: "Partner with Revvup", href: "/partner" },
           { label: "Pricing", href: "/pricing" },
         ],
       },
@@ -94,7 +94,7 @@ const navItems: NavItem[] = [
       {
         title: "Company",
         items: [
-          { label: "About Alifh", href: "/about" },
+          { label: "About Revvup", href: "/about" },
           { label: "How Ranking Works", href: "/how-ranking-works" },
           { label: "Badges", href: "/badges" },
         ],
@@ -310,14 +310,12 @@ export function Navbar() {
             {/* Logo */}
             <Link href="/" className="flex items-center z-50 mr-8">
               <Image
-                src={isDark ? "/assets/Alifh_logo_White.svg" : "/assets/Alifh_logo_Black.svg"}
-                alt="ALIFH"
-                width={100}
-                height={30}
-                className="h-7 w-auto"
+                src={isDark ? "/assets/Revvup_logo_White.svg" : "/assets/Revvup_logo_Black.svg"}
+                alt="Revvup"
+                width={36}
+                height={36}
+                className="h-5 w-5"
                 priority
-                unoptimized
-                suppressHydrationWarning
               />
             </Link>
 

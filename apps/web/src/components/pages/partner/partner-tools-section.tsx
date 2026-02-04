@@ -1,5 +1,5 @@
 /**
- * Partner Tools Section - Alifh Partners Page
+ * Partner Tools Section - Revvup Partners Page
  * Clean grid - tools that matter
  */
 

@@ -1,5 +1,5 @@
 /**
- * Car Card Mobile (CarCardM) - Alifh Design System
+ * Car Card Mobile (CarCardM) - Revvup Design System
  * Mobile-optimized car listing card following web car-card patterns
  * All data points preserved, theme-driven styling
  */

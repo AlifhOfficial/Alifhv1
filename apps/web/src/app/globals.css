@@ -228,7 +228,7 @@
     font-synthesis: none;
   }
   
-  /* Typography System - Alifh Design (Cross-platform optimized) */
+  /* Typography System - Revvup Design (Cross-platform optimized) */
   h1 {
     @apply text-4xl sm:text-5xl md:text-6xl tracking-tight;
     font-weight: 600; /* semibold - explicit for Windows */
@@ -403,7 +403,7 @@
   }
 }
 
-/* Leaflet Map Overrides - Following Alifh Design System */
+/* Leaflet Map Overrides - Following Revvup Design System */
 .leaflet-container {
   font-family: inherit;
 }

@@ -1,5 +1,5 @@
 /**
- * Partner Brand Section - Alifh Partners Page
+ * Partner Brand Section - Revvup Partners Page
  * Visual showcase - full listing detail page mockup
  */
 

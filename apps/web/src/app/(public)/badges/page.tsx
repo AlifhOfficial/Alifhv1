@@ -1,5 +1,5 @@
 /**
- * Badges Page - Alifh
+ * Badges Page - Revvup
  * Honours & Recognition
  */
 
@@ -11,11 +11,11 @@ import {
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Badges - Alifh',
-  description: 'Honours and recognition at Alifh. Badges are hand-picked and curated by Team Alifh. Earned, not bought.',
+  title: 'Badges - Revvup',
+  description: 'Honours and recognition at Revvup. Badges are hand-picked and curated by Team Revvup. Earned, not bought.',
   openGraph: {
-    title: 'Badges - Alifh',
-    description: 'Honours and recognition at Alifh. Badges are hand-picked and curated by Team Alifh. Earned, not bought.',
+    title: 'Badges - Revvup',
+    description: 'Honours and recognition at Revvup. Badges are hand-picked and curated by Team Revvup. Earned, not bought.',
     type: 'website',
   },
 };

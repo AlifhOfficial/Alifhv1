@@ -1,5 +1,5 @@
 /**
- * Partner Conversation Group - Alifh Design System
+ * Partner Conversation Group - Revvup Design System
  * Groups multiple conversations with the same partner under a collapsible header
  */
 

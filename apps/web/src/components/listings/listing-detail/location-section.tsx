@@ -1,5 +1,5 @@
 /**
- * Location Section Component - Alifh Design System
+ * Location Section Component - Revvup Design System
  * 
  * Clean, minimal location display following "Less is More" principle.
  */

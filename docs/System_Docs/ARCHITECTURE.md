@@ -23,7 +23,7 @@
 This is a **Bun-native monorepo** using Turbo to orchestrate builds across multiple apps and shared packages.
 
 ```
-Alifhv1/
+Revvupv1/
 ├── apps/                       # Production applications
 │   ├── web/                   # Next.js 16 web app (vehicle marketplace)
 │   │   ├── src/
@@ -53,7 +53,7 @@ Alifhv1/
 │   │   ├── android/           # Android native code
 │   │   │   └── app/src/main/
 │   │   ├── ios/               # iOS native code
-│   │   │   └── Alifh/
+│   │   │   └── Revvup/
 │   │   ├── app.json           # Expo config
 │   │   └── package.json
 │   │
@@ -172,13 +172,13 @@ Alifhv1/
 ```
 apps/web/src/app/
 ├── layout.tsx              # Root layout (HTML, body, metadata)
-├── page.tsx                # Homepage - "Alifh - Vehicle Marketplace"
+├── page.tsx                # Homepage - "Revvup - Vehicle Marketplace"
 ├── globals.css             # Global styles + Tailwind directives
 │
 ├── public/                 # Public routes (no auth)
 │   ├── listings/          # Browse vehicles
 │   ├── search/            # Search & filters
-│   └── about/             # About Alifh
+│   └── about/             # About Revvup
 │
 ├── user/                   # User dashboard (auth required)
 │   ├── dashboard/         # User overview
@@ -369,12 +369,12 @@ apps/mobile/
 │   └── settings.gradle
 │
 ├── ios/                    # iOS native project
-│   ├── Alifh/
+│   ├── Revvup/
 │   │   ├── AppDelegate.swift
 │   │   ├── Info.plist
 │   │   ├── Images.xcassets/
 │   │   └── SplashScreen.storyboard
-│   ├── Alifh.xcodeproj/
+│   ├── Revvup.xcodeproj/
 │   └── Podfile
 │
 ├── app.json                # Expo configuration
@@ -938,7 +938,7 @@ bun run dev --filter=@alifh/mobile
   "name": "alifh",
   "version": "0.1.0",
   "private": true,
-  "description": "Alifh - Vehicle Marketplace & Valuation Platform",
+  "description": "Revvup - Vehicle Marketplace & Valuation Platform",
   "packageManager": "bun@1.0.0",
   "scripts": {
     "dev": "turbo run dev --parallel",

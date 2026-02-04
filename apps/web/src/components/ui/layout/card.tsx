@@ -1,7 +1,7 @@
 /**
  * Card Component
  * 
- * Follows Alifh Design Philosophy:
+ * Follows Revvup Design Philosophy:
  * - Clean backgrounds
  * - Subtle borders
  * - Rounded corners (rounded-lg)

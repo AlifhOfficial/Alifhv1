@@ -1,7 +1,7 @@
 /**
  * Switch Component
  * 
- * Follows Alifh Design Philosophy:
+ * Follows Revvup Design Philosophy:
  * - Clean toggle
  * - Primary color when on
  * - Smooth transition

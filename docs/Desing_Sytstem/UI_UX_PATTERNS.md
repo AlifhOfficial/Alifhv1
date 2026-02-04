@@ -1,4 +1,4 @@
-# Alifh UI/UX Design Patterns
+# Revvup UI/UX Design Patterns
 
 ## Core Philosophy
 **"Keep it neat, don't overdo it"**

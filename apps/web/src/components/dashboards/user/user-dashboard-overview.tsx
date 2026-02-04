@@ -1,7 +1,7 @@
 /**
  * User Dashboard Overview
  * 
- * Modern dashboard layout following Alifh Design System.
+ * Modern dashboard layout following Revvup Design System.
  * Minimal, clean, consistent typography.
  */
 

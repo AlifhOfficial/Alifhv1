@@ -327,7 +327,7 @@ export function UserRequestsHub() {
       return (
         <div className="space-y-3 sm:space-y-4">
           <div className="text-center py-3 sm:py-4">
-            <p className="text-base sm:text-lg font-semibold text-foreground mb-1">Welcome to Alifh Partners</p>
+            <p className="text-base sm:text-lg font-semibold text-foreground mb-1">Welcome to Revvup Partners</p>
             <p className="text-xs sm:text-sm text-muted-foreground">Your application was approved. You're all set.</p>
           </div>
           

@@ -1,5 +1,5 @@
 /**
- * Badges Closing Section - Alifh Badges Page
+ * Badges Closing Section - Revvup Badges Page
  * Simple principles
  */
 
@@ -16,7 +16,7 @@ export function BadgesClosingSection() {
             How it works
           </span>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
-            Assigned by Team Alifh.
+            Assigned by Team Revvup.
             <br />
             <span className="text-muted-foreground">Not algorithms.</span>
           </h2>

@@ -1,7 +1,7 @@
 /**
  * Tabs Component
  * 
- * Follows Alifh Design Philosophy:
+ * Follows Revvup Design Philosophy:
  * - Clean tab switching
  * - Subtle active state
  * - Smooth transitions

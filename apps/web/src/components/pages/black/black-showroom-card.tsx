@@ -2,7 +2,7 @@
  * Black Showroom Card
  * 
  * Premium showroom card for Black tier directory.
- * Alifh Design System - minimal, clean, consistent.
+ * Revvup Design System - minimal, clean, consistent.
  * 
  * Layout:
  * - Mobile: Stacked (media on top, content below)

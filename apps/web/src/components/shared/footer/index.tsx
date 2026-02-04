@@ -1,5 +1,5 @@
 /**
- * Footer Component - Alifh
+ * Footer Component - Revvup
  * Clean, minimal, modern
  */
 
@@ -74,7 +74,7 @@ export function Footer() {
   );
 
   const isDark = mounted && (resolvedTheme === 'dark' || resolvedTheme === 'charcoal');
-  const logoSrc = isDark ? "/assets/Alifh_logo_White.svg" : "/assets/Alifh_logo_Black.svg";
+  const logoSrc = isDark ? "/assets/Revvup_logo_White.svg" : "/assets/Revvup_logo_Black.svg";
   const link = "text-sm text-muted-foreground hover:text-foreground transition-colors";
 
   return (
@@ -88,10 +88,10 @@ export function Footer() {
             {/* Brand */}
             <div className="lg:max-w-md space-y-6">
               <Link href="/">
-                <Image src={logoSrc} alt="Alifh" width={100} height={30} className="h-7 w-auto" priority />
+                <Image src={logoSrc} alt="Revvup" width={100} height={30} className="h-7 w-auto" priority />
               </Link>
               <p className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground">
-                Alifh
+                Revvup
               </p>
               <p className="text-sm text-muted-foreground">
                 Free car listings in UAE.

@@ -1,6 +1,6 @@
 /**
  * Intellectual Property & Copyright Notice Page
- * Legal documentation component following Alifh design patterns
+ * Legal documentation component following Revvup design patterns
  */
 
 'use client';
@@ -39,7 +39,7 @@ export function IntellectualProperty() {
         {/* Introduction Summary */}
         <div className="mb-10 py-5 border-y border-border/40">
           <p className="text-sm text-foreground leading-relaxed">
-            This Notice governs ownership, licensing, and permitted use of the ALIFH platform. 
+            This Notice governs ownership, licensing, and permitted use of the REVVUP platform. 
             It forms part of our{' '}
             <Link href="/terms-of-service" className="text-primary hover:underline font-medium">Terms of Service</Link>.
           </p>
@@ -61,7 +61,7 @@ export function IntellectualProperty() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
               <p className="text-sm text-foreground leading-relaxed">
-                ALIFH is a proprietary platform owned and operated by AISH CAPITALS FZCO, 
+                REVVUP is a proprietary platform owned and operated by AISH CAPITALS FZCO, 
                 incorporated in the United Arab Emirates.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
@@ -79,7 +79,7 @@ export function IntellectualProperty() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
               <p className="text-sm text-foreground leading-relaxed">
-                Subject to compliance with the Terms of Service, ALIFH grants users a limited, 
+                Subject to compliance with the Terms of Service, REVVUP grants users a limited, 
                 non-exclusive, non-transferable, non-sublicensable, and revocable license to 
                 access and use the Platform.
               </p>

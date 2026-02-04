@@ -1,5 +1,5 @@
 /**
- * Partner Closing Section - Alifh Partners Page
+ * Partner Closing Section - Revvup Partners Page
  * Strong close - video + CTA with pricing link
  */
 
@@ -62,7 +62,7 @@ export function PartnerClosingSection() {
 
         {/* Infographic */}
         <div className="mb-12">
-          <JoinAlifhInfographic />
+          <JoinRevvupInfographic />
         </div>
 
         {/* Description */}
@@ -105,10 +105,10 @@ export function PartnerClosingSection() {
 }
 
 // ============================================================================
-// INFOGRAPHIC: Join Alifh - Encouraging macOS window
+// INFOGRAPHIC: Join Revvup - Encouraging macOS window
 // ============================================================================
 
-function JoinAlifhInfographic() {
+function JoinRevvupInfographic() {
   return (
     <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-12">
       {/* macOS Window Frame */}
@@ -140,7 +140,7 @@ function JoinAlifhInfographic() {
               <svg className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white/40 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
               </svg>
-              <span className="text-[8px] sm:text-sm text-white/60 font-medium truncate">alifh.ae/partners</span>
+              <span className="text-[8px] sm:text-sm text-white/60 font-medium truncate">revvup.ae/partners</span>
             </div>
           </div>
           {/* Right spacer */}

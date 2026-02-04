@@ -1,5 +1,5 @@
 /**
- * Email Verification Page - Alifh Design System
+ * Email Verification Page - Revvup Design System
  */
 
 "use client";

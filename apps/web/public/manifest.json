@@ -1,6 +1,6 @@
 {
-  "name": "Alifh - Vehicle Marketplace",
-  "short_name": "Alifh",
+  "name": "Revvup - Vehicle Marketplace",
+  "short_name": "Revvup",
   "description": "Buy and sell vehicles with AI-powered valuations",
   "start_url": "/",
   "display": "standalone",
@@ -10,9 +10,9 @@
   "scope": "/",
   "icons": [
     {
-      "src": "/assets/favicon-32x32.svg",
+      "src": "/favicon.png",
       "sizes": "32x32",
-      "type": "image/svg+xml"
+      "type": "image/png"
     },
     {
       "src": "/icons/icon-72x72.png",
@@ -61,20 +61,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "/screenshots/desktop.png",
-      "sizes": "1920x1080",
-      "type": "image/png",
-      "form_factor": "wide"
-    },
-    {
-      "src": "/screenshots/mobile.png",
-      "sizes": "750x1334",
-      "type": "image/png",
-      "form_factor": "narrow"
     }
   ],
   "categories": ["shopping", "automotive", "business"],

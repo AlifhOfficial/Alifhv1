@@ -1,7 +1,7 @@
 /**
  * Staff Delete Confirmation Modal
  * Modal for confirming staff member removal
- * Following Alifh design system
+ * Following Revvup design system
  */
 'use client';
 

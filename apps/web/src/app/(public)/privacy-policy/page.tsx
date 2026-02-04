@@ -1,5 +1,5 @@
 /**
- * Privacy Policy Page - Alifh
+ * Privacy Policy Page - Revvup
  * Legal documentation
  */
 
@@ -7,11 +7,11 @@ import { Metadata } from 'next';
 import { PrivacyPolicy } from '@/components/pages/legal';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy - Alifh',
-  description: 'Privacy Policy for ALIFH platform operated by AISH CAPITALS FZCO. Learn how we collect, use, and protect your personal data.',
+  title: 'Privacy Policy - Revvup',
+  description: 'Privacy Policy for REVVUP platform operated by AISH CAPITALS FZCO. Learn how we collect, use, and protect your personal data.',
   openGraph: {
-    title: 'Privacy Policy - Alifh',
-    description: 'Privacy Policy for ALIFH platform operated by AISH CAPITALS FZCO.',
+    title: 'Privacy Policy - Revvup',
+    description: 'Privacy Policy for REVVUP platform operated by AISH CAPITALS FZCO.',
     type: 'website',
   },
 };

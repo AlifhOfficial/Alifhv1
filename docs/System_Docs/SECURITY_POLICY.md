@@ -1,6 +1,6 @@
 # Security Policy & Data Protection Framework
 
-**Alifh Platform - Comprehensive Security Documentation**  
+**Revvup Platform - Comprehensive Security Documentation**  
 *Policy Builder Notes for Compliance & Audit Requirements*
 
 ---
@@ -347,6 +347,6 @@ const SECURITY_THRESHOLDS = {
 ---
 
 **Document Classification**: Confidential - Internal Use Only  
-**Prepared By**: Alifh Development Team  
+**Prepared By**: Revvup Development Team  
 **Review Authority**: Security & Compliance Team  
 **Next Review Date**: March 11, 2026

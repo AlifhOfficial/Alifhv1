@@ -1,5 +1,5 @@
 /**
- * Badges List Section - Alifh Badges Page
+ * Badges List Section - Revvup Badges Page
  * Clean card layout - matching legal page patterns
  */
 
@@ -27,8 +27,8 @@ export function BadgesListSection() {
           </h3>
           <div className="rounded-xl border border-border/40 bg-sidebar p-5">
             <div className="space-y-3">
-              <BadgeItem name="Alifh First" desc="Early believers who trusted us from day one" />
-              <BadgeItem name="Ambassador" desc="Official representatives of Alifh" />
+              <BadgeItem name="Revvup First" desc="Early believers who trusted us from day one" />
+              <BadgeItem name="Ambassador" desc="Official representatives of Revvup" />
               <BadgeItem name="Community" desc="Exclusive community members" />
               <BadgeItem name="Founding Member" desc="Part of our origin story" />
               <BadgeItem name="Hero" desc="Going above and beyond for others" last />
@@ -43,7 +43,7 @@ export function BadgesListSection() {
           </h3>
           <div className="rounded-xl border border-border/40 bg-sidebar p-5">
             <div className="space-y-3">
-              <BadgeItem name="Alifh Choice" desc="Hand-picked by Team Alifh" />
+              <BadgeItem name="Revvup Choice" desc="Hand-picked by Team Revvup" />
               <BadgeItem name="Luxury" desc="Premium vehicle specialists" />
               <BadgeItem name="Trusted" desc="Verified and reliable dealers" />
               <BadgeItem name="Top Performer" desc="Best in class, quarterly" />

@@ -4,7 +4,7 @@
 
 All Better Auth errors now display in your **branded modal UI/UX**, not Better Auth's default error page. This provides a consistent, professional user experience where every error is:
 
-- ✅ Shown in your Alifh-designed modal
+- ✅ Shown in your Revvup-designed modal
 - ✅ Has clear, user-friendly messages
 - ✅ Includes actionable next steps
 - ✅ Maintains your brand identity throughout
@@ -75,7 +75,7 @@ A beautiful, branded modal that:
 - Shows error icon with pulse animation
 - Displays user-friendly title and message
 - Provides action buttons based on error type
-- Maintains Alifh design system consistency
+- Maintains Revvup design system consistency
 
 **Action Types:**
 - `SIGN_IN` → Navigates to sign-in modal
@@ -298,7 +298,7 @@ Proper ARIA labels, keyboard navigation, focus management
 Every authentication error now shows in your beautifully designed modal with:
 - Clear error messages
 - Actionable next steps
-- Consistent Alifh branding
+- Consistent Revvup branding
 - Professional user experience
 
 Your users will never see Better Auth's UI — only yours.

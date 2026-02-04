@@ -1,5 +1,5 @@
 /**
- * Car Card Black Component - Alifh Design System
+ * Car Card Black Component - Revvup Design System
  * Minimal showcase card for BLK listings
  * 
  * Design: "Less is More" - Only shows:

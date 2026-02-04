@@ -1,12 +1,12 @@
 /**
  * Stripe Configuration
  * 
- * SINGLE SOURCE OF TRUTH for Alifh subscription plans.
+ * SINGLE SOURCE OF TRUTH for Revvup subscription plans.
  * All components should import from here.
  * 
  * Plans:
- * - Alifh Flow: 7,000 AED/month (3 months free trial)
- * - Alifh Black: 21,000 AED/month (1 month free trial)
+ * - Revvup Flow: 7,000 AED/month (3 months free trial)
+ * - Revvup Black: 21,000 AED/month (1 month free trial)
  * 
  * @module lib/stripe/config
  */
@@ -67,11 +67,11 @@ export interface PlanConfig {
   };
 }
 
-/** All Alifh subscription plans */
+/** All Revvup subscription plans */
 export const PLANS: Record<PlanName, PlanConfig> = {
   flow: {
     name: 'flow',
-    displayName: 'Alifh Flow',
+    displayName: 'Revvup Flow',
     priceAED: 7000,
     description: 'Essential tools for car dealerships',
     freeMonths: 3, // 21k credits / 7k = 3 months
@@ -92,7 +92,7 @@ export const PLANS: Record<PlanName, PlanConfig> = {
   },
   black: {
     name: 'black',
-    displayName: 'Alifh Black',
+    displayName: 'Revvup Black',
     priceAED: 21000,
     description: 'Premium features for high-volume dealers',
     freeMonths: 1, // 21k credits / 21k = 1 month

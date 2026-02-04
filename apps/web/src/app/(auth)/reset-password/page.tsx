@@ -1,5 +1,5 @@
 /**
- * Reset Password Page - Alifh Design System
+ * Reset Password Page - Revvup Design System
  */
 
 "use client";

@@ -1,7 +1,7 @@
 /**
  * Input Component
  * 
- * Follows Alifh Design Philosophy:
+ * Follows Revvup Design Philosophy:
  * - Clean borders with opacity
  * - Semantic color tokens
  * - Smooth transitions

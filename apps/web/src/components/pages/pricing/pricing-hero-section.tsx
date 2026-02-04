@@ -31,7 +31,7 @@ export function PricingHeroSection() {
         <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] overflow-hidden rounded-lg mb-12">
           <Image
             src="/Abstract/rsxx5.png"
-            alt="Alifh Pricing"
+            alt="Revvup Pricing"
             fill
             priority
             className="object-cover"

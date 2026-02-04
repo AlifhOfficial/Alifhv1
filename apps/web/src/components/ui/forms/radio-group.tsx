@@ -1,7 +1,7 @@
 /**
  * Radio Group Component
  * 
- * Follows Alifh Design Philosophy:
+ * Follows Revvup Design Philosophy:
  * - Clean radio buttons
  * - Primary color when selected
  * - Smooth transitions

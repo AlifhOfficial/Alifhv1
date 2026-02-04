@@ -1,6 +1,6 @@
 /**
  * Refund & Cancellation Policy Page
- * Legal documentation component following Alifh design patterns
+ * Legal documentation component following Revvup design patterns
  */
 
 'use client';
@@ -39,7 +39,7 @@ export function RefundPolicy() {
         {/* Introduction Summary */}
         <div className="mb-10 py-5 border-y border-border/40">
           <p className="text-sm text-foreground leading-relaxed">
-            This policy governs subscription cancellations and refunds for the ALIFH platform. 
+            This policy governs subscription cancellations and refunds for the REVVUP platform. 
             It forms part of and should be read with our{' '}
             <Link href="/terms-of-service" className="text-primary hover:underline font-medium">Terms of Service</Link>.
           </p>
@@ -61,7 +61,7 @@ export function RefundPolicy() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
               <p className="text-sm text-foreground leading-relaxed">
-                ALIFH operates on a monthly subscription basis.
+                REVVUP operates on a monthly subscription basis.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Subscriptions renew automatically at the start of each billing cycle unless cancelled 
@@ -158,7 +158,7 @@ export function RefundPolicy() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               <p className="text-sm text-foreground leading-relaxed mb-4">
-                ALIFH reserves the right to deny or reverse refunds where there is evidence of:
+                REVVUP reserves the right to deny or reverse refunds where there is evidence of:
               </p>
               <div className="grid grid-cols-2 gap-2">
                 <p className="text-sm text-muted-foreground leading-relaxed flex items-start gap-2">
@@ -188,7 +188,7 @@ export function RefundPolicy() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               <p className="text-sm text-foreground leading-relaxed mb-4">
-                Subscription fees relate solely to Platform access. ALIFH does not guarantee:
+                Subscription fees relate solely to Platform access. REVVUP does not guarantee:
               </p>
               <div className="grid grid-cols-2 gap-2">
                 <p className="text-sm text-muted-foreground leading-relaxed flex items-start gap-2">
@@ -218,7 +218,7 @@ export function RefundPolicy() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
               <p className="text-sm text-foreground leading-relaxed">
-                ALIFH may update this Policy from time to time.
+                REVVUP may update this Policy from time to time.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Changes take effect upon publication. Continued use of the Platform constitutes 

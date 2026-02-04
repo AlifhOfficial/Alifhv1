@@ -1,7 +1,7 @@
 /**
  * Select Component
  * 
- * Follows Alifh Design Philosophy:
+ * Follows Revvup Design Philosophy:
  * - Clean dropdown
  * - Minimal styling
  * - Smooth transitions

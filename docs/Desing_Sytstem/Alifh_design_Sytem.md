@@ -1,4 +1,4 @@
-# Alifh Design System
+# Revvup Design System
 
 **Last Updated:** December 22, 2025
 

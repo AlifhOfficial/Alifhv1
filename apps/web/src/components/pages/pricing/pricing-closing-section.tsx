@@ -107,7 +107,7 @@ export function PricingClosingSection() {
             href="/partner"
             className="text-sm text-muted-foreground hover:text-primary transition-colors"
           >
-            Learn more about partnering with Alifh →
+            Learn more about partnering with Revvup →
           </Link>
         </div>
 

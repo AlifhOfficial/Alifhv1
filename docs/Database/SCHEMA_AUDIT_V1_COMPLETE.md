@@ -12,7 +12,7 @@ Your simplified approach is **SOLID**:
 - **Users**: Everyone starts here
 - **Partners**: Users who apply & get approved (dealers for now)
 - **Partner Staff**: Team members added by partner owner
-- **Admin**: Platform god-mode (Team Alifh)
+- **Admin**: Platform god-mode (Team Revvup)
 
 ---
 
@@ -173,7 +173,7 @@ initiatedBy: text('initiated_by').notNull().references(() => user.id, { onDelete
 
 ### Platform Roles (auth.ts)
 - `user`: Can browse, favorite, book, message
-- `admin`: Team Alifh - full access
+- `admin`: Team Revvup - full access
 - `super_admin`: Emergency override (rarely used)
 
 ### Partner Roles (staffRoleEnum)

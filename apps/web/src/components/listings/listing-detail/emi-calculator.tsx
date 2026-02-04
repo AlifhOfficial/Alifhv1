@@ -1,5 +1,5 @@
 /**
- * EMI Calculator Component - Alifh Design System
+ * EMI Calculator Component - Revvup Design System
  * 
  * Clean, minimal EMI calculator following "Less is More" principle.
  */

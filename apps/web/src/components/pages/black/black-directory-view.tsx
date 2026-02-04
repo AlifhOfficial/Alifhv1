@@ -2,7 +2,7 @@
  * Black Directory View
  * 
  * Premium showroom directory for Black tier members.
- * Following Alifh design system patterns.
+ * Following Revvup design system patterns.
  */
 
 'use client';

@@ -1,7 +1,7 @@
 /**
- * Partner Insights Overview - Alifh Design System
+ * Partner Insights Overview - Revvup Design System
  * 
- * Modern dashboard layout following Alifh Design System.
+ * Modern dashboard layout following Revvup Design System.
  * Minimal, clean, consistent typography with visual charts.
  */
 

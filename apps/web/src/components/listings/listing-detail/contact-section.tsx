@@ -1,5 +1,5 @@
 /**
- * Contact Section Component - Alifh Design System
+ * Contact Section Component - Revvup Design System
  * 
  * Unified action section combining contact and booking options.
  * Clean, minimal design following "Less is More" principle.

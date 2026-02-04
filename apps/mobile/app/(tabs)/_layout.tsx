@@ -1,5 +1,5 @@
 /**
- * Tab Layout - Alifh Mobile App
+ * Tab Layout - Revvup Mobile App
  * Tabs: Home, Messages, Saved, Search
  * Custom Shop-style tab bar UI
  */

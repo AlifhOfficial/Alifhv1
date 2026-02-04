@@ -2,7 +2,7 @@
  * Admin Communications View
  * 
  * View and manage incoming communications/contact messages
- * Following Alifh design system - clean, minimal
+ * Following Revvup design system - clean, minimal
  */
 
 'use client';

@@ -1,6 +1,6 @@
 /**
  * Acceptable Use Policy Page
- * Legal documentation component following Alifh design patterns
+ * Legal documentation component following Revvup design patterns
  */
 
 'use client';
@@ -61,7 +61,7 @@ export function AcceptableUsePolicy() {
         {/* Introduction Summary */}
         <div className="mb-10 py-5 border-y border-border/40">
           <p className="text-sm text-foreground leading-relaxed mb-4">
-            This Policy sets out permitted and prohibited conduct when accessing the ALIFH platform. 
+            This Policy sets out permitted and prohibited conduct when accessing the REVVUP platform. 
             It forms part of the Terms of Service and applies to all users.
           </p>
           <div className="flex flex-wrap gap-2">
@@ -110,11 +110,11 @@ export function AcceptableUsePolicy() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
               <p className="text-sm text-foreground leading-relaxed">
-                ALIFH is a curated digital platform.
+                REVVUP is a curated digital platform.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 This Policy protects platform integrity, trust, and quality, ensuring use remains 
-                lawful, accurate, and aligned with ALIFH standards.
+                lawful, accurate, and aligned with REVVUP standards.
               </p>
             </div>
           </section>
@@ -135,7 +135,7 @@ export function AcceptableUsePolicy() {
                 </p>
                 <p className="text-sm text-muted-foreground flex items-start gap-2">
                   <span className="text-muted-foreground/50 mt-1">•</span>
-                  The ALIFH Terms of Service
+                  The REVVUP Terms of Service
                 </p>
                 <p className="text-sm text-muted-foreground flex items-start gap-2">
                   <span className="text-muted-foreground/50 mt-1">•</span>
@@ -269,7 +269,7 @@ export function AcceptableUsePolicy() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               <p className="text-sm text-foreground leading-relaxed mb-4">
-                ALIFH may, at its discretion and where permitted by law:
+                REVVUP may, at its discretion and where permitted by law:
               </p>
               <div className="space-y-2 mb-4">
                 <p className="text-sm text-muted-foreground flex items-start gap-2">
@@ -298,12 +298,12 @@ export function AcceptableUsePolicy() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
               <p className="text-sm text-foreground leading-relaxed">
-                ALIFH is not obligated to actively monitor user activity or content but reserves 
+                REVVUP is not obligated to actively monitor user activity or content but reserves 
                 the right to do so.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Failure to enforce this Policy in any instance does not constitute a waiver of 
-                ALIFH's rights.
+                REVVUP's rights.
               </p>
             </div>
           </section>
@@ -315,10 +315,10 @@ export function AcceptableUsePolicy() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
               <p className="text-sm text-foreground leading-relaxed">
-                Suspected violations may be reported through official ALIFH support channels.
+                Suspected violations may be reported through official REVVUP support channels.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                ALIFH may review reported conduct and take appropriate action based on assessment.
+                REVVUP may review reported conduct and take appropriate action based on assessment.
               </p>
             </div>
           </section>

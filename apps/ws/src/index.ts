@@ -1,5 +1,5 @@
 /**
- * Alifh WebSocket Server - Lean Implementation
+ * Revvup WebSocket Server - Lean Implementation
  * Real-time messaging with presence, typing, and broadcasts
  */
 

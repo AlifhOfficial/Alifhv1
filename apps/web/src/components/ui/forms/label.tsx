@@ -1,7 +1,7 @@
 /**
  * Label Component
  * 
- * Follows Alifh Design Philosophy:
+ * Follows Revvup Design Philosophy:
  * - Small text (text-sm)
  * - Semantic colors
  */

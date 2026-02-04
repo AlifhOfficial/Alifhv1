@@ -1,6 +1,6 @@
 # Build Setup Guide
 
-Complete guide for setting up and building the Alifh monorepo project.
+Complete guide for setting up and building the Revvup monorepo project.
 
 ## Prerequisites
 
@@ -25,7 +25,7 @@ bun --version
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd Alifhv1
+cd Revvupv1
 
 # Install all dependencies (uses Bun)
 bun install

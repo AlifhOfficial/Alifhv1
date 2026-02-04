@@ -1,5 +1,5 @@
 /**
- * Pricing Page - Alifh
+ * Pricing Page - Revvup
  * Simple. Transparent. No games.
  */
 
@@ -12,10 +12,10 @@ import {
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Pricing - Alifh',
+  title: 'Pricing - Revvup',
   description: 'Simple, transparent pricing. Two options. Same platform. Same features. Different levels of attention. Zero commission. Unlimited listings.',
   openGraph: {
-    title: 'Pricing - Alifh',
+    title: 'Pricing - Revvup',
     description: 'Simple, transparent pricing. Two options. Same platform. Same features. Different levels of attention. Zero commission. Unlimited listings.',
     type: 'website',
   },

@@ -1,5 +1,5 @@
 /**
- * Image Upload Component - Alifh Design System
+ * Image Upload Component - Revvup Design System
  * Multi-image upload with preview and drag-and-drop
  */
 

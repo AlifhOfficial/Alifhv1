@@ -17,8 +17,8 @@ const withPWA = withPWAInit({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Allow Turbopack with webpack plugin (PWA)
-  turbopack: {},
+  // NOTE: Turbopack disabled for builds - required for next-pwa (webpack plugin)
+  // turbopack: {},
   
   // Disable build cache to prevent disk bloat
   cacheMaxMemorySize: 0,

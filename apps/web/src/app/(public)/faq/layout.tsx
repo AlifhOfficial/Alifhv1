@@ -8,10 +8,10 @@ import type { ReactNode } from 'react';
 import { faqData } from '@/data/faq-data';
 
 export const metadata: Metadata = {
-  title: 'FAQ | Alifh - Help Center',
-  description: 'Find answers to frequently asked questions about Alifh. Learn about free car listings, partner pricing, VIN verification, test drive booking, and more.',
+  title: 'FAQ | Revvup - Help Center',
+  description: 'Find answers to frequently asked questions about Revvup. Learn about free car listings, partner pricing, VIN verification, test drive booking, and more.',
   keywords: [
-    'Alifh FAQ',
+    'Revvup FAQ',
     'car marketplace help',
     'free car listing UAE',
     'sell car Dubai',
@@ -23,16 +23,16 @@ export const metadata: Metadata = {
     canonical: '/faq',
   },
   openGraph: {
-    title: 'FAQ | Alifh Help Center',
-    description: 'Find answers to frequently asked questions about buying and selling cars on Alifh.',
+    title: 'FAQ | Revvup Help Center',
+    description: 'Find answers to frequently asked questions about buying and selling cars on Revvup.',
     type: 'website',
     url: '/faq',
-    siteName: 'Alifh',
+    siteName: 'Revvup',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'FAQ | Alifh Help Center',
-    description: 'Find answers to frequently asked questions about buying and selling cars on Alifh.',
+    title: 'FAQ | Revvup Help Center',
+    description: 'Find answers to frequently asked questions about buying and selling cars on Revvup.',
   },
 };
 
@@ -46,7 +46,7 @@ function generateFAQSchema() {
         '@type': 'Answer',
         text: item.answer,
       },
-      url: `https://alifh.ae/faq#${item.id}`,
+      url: `https://revvup.ae/faq#${item.id}`,
     }))
   );
 

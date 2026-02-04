@@ -1,5 +1,5 @@
 /**
- * Car List Item Component - Alifh Design System
+ * Car List Item Component - Revvup Design System
  * List view variant following "Less is More" principle
  */
 

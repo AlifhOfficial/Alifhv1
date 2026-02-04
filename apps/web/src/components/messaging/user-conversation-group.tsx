@@ -1,5 +1,5 @@
 /**
- * User Conversation Group - Alifh Design System
+ * User Conversation Group - Revvup Design System
  * Groups multiple conversations with the same customer/user under a collapsible header
  * Used in staff inbox to show all inquiries from the same customer
  */

@@ -1,6 +1,6 @@
 /**
  * Comparison Section - Side by Side
- * Direct comparison between typical platforms and Alifh
+ * Direct comparison between typical platforms and Revvup
  */
 
 'use client';
@@ -54,9 +54,9 @@ export function ComparisonSection() {
             </div>
           </div>
 
-          {/* Alifh */}
+          {/* Revvup */}
           <div className="p-8 bg-primary text-primary-foreground">
-            <p className="text-sm font-semibold uppercase tracking-wider text-white/60 mb-8">Alifh</p>
+            <p className="text-sm font-semibold uppercase tracking-wider text-white/60 mb-8">Revvup</p>
             <div className="space-y-6">
               {COMPARISON_DATA.map((item, i) => (
                 <div key={i} className="flex justify-between items-center">
@@ -81,7 +81,7 @@ export function ComparisonSection() {
 
 function ComparisonInfographic() {
   return (
-    <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-12">
+    <>
       {/* CSS Animations */}
       <style jsx>{`
         @keyframes scroll-feed {
@@ -91,7 +91,7 @@ function ComparisonInfographic() {
       `}</style>
 
       {/* macOS Window Frame - Full Width */}
-      <div className="rounded-lg overflow-hidden shadow-2xl border border-white/10">
+      <div className="rounded-lg overflow-hidden shadow-2xl border border-border/40">
         {/* macOS Title Bar */}
         <div className="bg-[#28282a] px-3 sm:px-5 py-2 sm:py-3 flex items-center gap-2 sm:gap-3 border-b border-black/20">
           {/* Traffic Light Buttons */}
@@ -171,9 +171,9 @@ function ComparisonInfographic() {
             <p className="text-[8px] sm:text-xs text-white/30 mt-3 sm:mt-5 text-center">Buried in the noise</p>
           </div>
           
-          {/* Right - Alifh: Clean "No Noise" */}
+          {/* Right - Revvup: Clean "No Noise" */}
           <div className="w-full md:w-[60%] flex flex-col p-6 sm:p-8 lg:p-12">
-            <span className="text-[10px] sm:text-xs font-medium text-primary mb-4 sm:mb-6">Alifh</span>
+            <span className="text-[10px] sm:text-xs font-medium text-primary mb-4 sm:mb-6">Revvup</span>
             
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center">
@@ -188,6 +188,6 @@ function ComparisonInfographic() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

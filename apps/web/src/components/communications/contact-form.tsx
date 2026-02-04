@@ -1,7 +1,7 @@
 /**
  * Contact Form Component
  * 
- * Clean, minimal design following Alifh design system
+ * Clean, minimal design following Revvup design system
  * Tap-to-interact pattern, subtle backgrounds
  */
 

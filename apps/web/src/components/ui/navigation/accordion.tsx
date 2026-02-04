@@ -1,7 +1,7 @@
 /**
  * Accordion Component
  * 
- * Follows Alifh Design Philosophy:
+ * Follows Revvup Design Philosophy:
  * - Clean collapsible sections
  * - Smooth expand/collapse
  * - Minimal chevron icon

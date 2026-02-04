@@ -8,7 +8,7 @@
 
 ## 🎯 Overview
 
-Based on the comprehensive schema audit, we simplified the Alifh V1 database schema to reduce over-engineering while maintaining all core functionality. The focus is on **low latency, easy maintenance, and production readiness at launch scale**.
+Based on the comprehensive schema audit, we simplified the Revvup V1 database schema to reduce over-engineering while maintaining all core functionality. The focus is on **low latency, easy maintenance, and production readiness at launch scale**.
 
 ---
 

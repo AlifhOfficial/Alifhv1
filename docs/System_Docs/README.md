@@ -1,6 +1,6 @@
-# Alifh - Property Valuation Platform
+# Revvup - Property Valuation Platform
 
-A monorepo for the Alifh property valuation platform built with modern web technologies.
+A monorepo for the Revvup property valuation platform built with modern web technologies.
 
 ## Tech Stack
 

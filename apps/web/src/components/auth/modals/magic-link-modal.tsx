@@ -1,5 +1,5 @@
 /**
- * Magic Link Modal - Alifh Design System
+ * Magic Link Modal - Revvup Design System
  * Clean, minimal magic link sign-in flow
  */
 

@@ -43,7 +43,7 @@ The current implementation is driven by Better Auth + Drizzle with a single exte
 [AuthErrorModal]
     |-- Maps error code to user-friendly content
     |-- Shows actionable next steps
-    |-- Maintains Alifh design system
+    |-- Maintains Revvup design system
 ```
 
 ## Key Pieces

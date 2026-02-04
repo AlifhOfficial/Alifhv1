@@ -1,7 +1,7 @@
 /**
  * Partner Request Admin List
  * Admin view for managing partner applications
- * Following Alifh design system
+ * Following Revvup design system
  */
 
 'use client';

@@ -1,5 +1,5 @@
 /**
- * Acceptable Use Policy Page - Alifh
+ * Acceptable Use Policy Page - Revvup
  * Legal documentation
  */
 
@@ -7,11 +7,11 @@ import { Metadata } from 'next';
 import { AcceptableUsePolicy } from '@/components/pages/legal';
 
 export const metadata: Metadata = {
-  title: 'Acceptable Use Policy - Alifh',
-  description: 'Acceptable Use Policy for ALIFH platform. Guidelines for permitted and prohibited conduct when using our services.',
+  title: 'Acceptable Use Policy - Revvup',
+  description: 'Acceptable Use Policy for REVVUP platform. Guidelines for permitted and prohibited conduct when using our services.',
   openGraph: {
-    title: 'Acceptable Use Policy - Alifh',
-    description: 'Acceptable Use Policy for ALIFH platform operated by AISH CAPITALS FZCO.',
+    title: 'Acceptable Use Policy - Revvup',
+    description: 'Acceptable Use Policy for REVVUP platform operated by AISH CAPITALS FZCO.',
     type: 'website',
   },
 };

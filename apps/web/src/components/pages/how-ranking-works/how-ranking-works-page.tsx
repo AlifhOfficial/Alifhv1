@@ -2,7 +2,7 @@
  * How Ranking Works Page
  * 
  * Principles-based explainer — values, not math.
- * Clean, confident, non-corporate Alifh tone.
+ * Clean, confident, non-corporate Revvup tone.
  */
 
 'use client';
@@ -53,7 +53,7 @@ export function HowRankingWorksPage() {
           <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[2.4/1] overflow-hidden rounded-lg">
             <Image
               src="/Abstract/rsxx2.png"
-              alt="Alifh Ranking"
+              alt="Revvup Ranking"
               fill
               priority
               className="object-cover"
@@ -63,7 +63,7 @@ export function HowRankingWorksPage() {
 
           {/* Description below image */}
           <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mt-8 leading-relaxed">
-            Alifh doesn't sell boosts or promoted listings. Visibility is earned through quality, transparency, and genuine buyer interest.
+            Revvup doesn't sell boosts or promoted listings. Visibility is earned through quality, transparency, and genuine buyer interest.
           </p>
         </div>
       </section>
@@ -153,7 +153,7 @@ export function HowRankingWorksPage() {
 
           {/* Description */}
           <p className="text-base text-muted-foreground max-w-lg mx-auto text-center leading-relaxed">
-            Other platforms let you pay for visibility. We don't think that's fair. On Alifh, the best listings rise — not the biggest ad budgets.
+            Other platforms let you pay for visibility. We don't think that's fair. On Revvup, the best listings rise — not the biggest ad budgets.
           </p>
 
           {/* Stats */}
@@ -311,9 +311,9 @@ function WhyQualityInfographic() {
           <p className="text-[9px] sm:text-xs text-muted-foreground/50 mt-4 sm:mt-8 text-center">Pay to rank</p>
         </div>
         
-        {/* Right - Alifh: Quality-based (20%) */}
+        {/* Right - Revvup: Quality-based (20%) */}
         <div className="w-full md:w-[20%] flex flex-col items-center justify-center py-6 md:py-4 px-4 sm:p-6">
-          <span className="text-[10px] sm:text-xs font-medium text-primary mb-3 sm:mb-4">Alifh</span>
+          <span className="text-[10px] sm:text-xs font-medium text-primary mb-3 sm:mb-4">Revvup</span>
           
           <div className="flex flex-col items-center text-center">
             <div 

@@ -647,7 +647,7 @@ export function ProfileView() {
               onDisabledClick={profile?.emailVerified ? () => {
                 toast({ 
                   title: 'Cannot change verified email', 
-                  description: 'Please email support@alifh.com to change your verified email address. This protects you from fraudulent activities.',
+                  description: 'Please email support@revvup.ae to change your verified email address. This protects you from fraudulent activities.',
                 });
               } : undefined}
               suffix={profile?.emailVerified ? (
@@ -773,7 +773,7 @@ export function ProfileView() {
                     if (profile?.phoneNumberVerified || phoneJustVerified) {
                       toast({ 
                         title: 'Cannot change verified phone', 
-                        description: 'Please email support@alifh.com to change your verified phone number. This protects you from fraudulent activities.',
+                        description: 'Please email support@revvup.ae to change your verified phone number. This protects you from fraudulent activities.',
                       });
                     } else {
                       setEditingField('phone');

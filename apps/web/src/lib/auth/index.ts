@@ -217,7 +217,7 @@ export const auth = betterAuth({
       }>(cacheKey);
 
       if (cached) {
-        console.log('[customSession] Cache HIT for user', user.id.slice(0, 8), 'partnerLogo:', cached.partnerMemberships?.[0]?.partnerLogo?.slice(-20));
+        // Cache hit - return cached data without logging (reduces console noise)
         return {
           user: {
             ...user,

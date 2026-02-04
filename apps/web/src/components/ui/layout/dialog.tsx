@@ -1,7 +1,7 @@
 /**
  * Dialog Component
  * 
- * Follows Alifh Design Philosophy:
+ * Follows Revvup Design Philosophy:
  * - Max width: max-w-md (448px)
  * - Corners: rounded-2xl (16px)
  * - Padding: p-6

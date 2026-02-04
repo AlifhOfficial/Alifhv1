@@ -311,7 +311,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
                       {isDealerListing 
                         ? isBlackTierPartner
                           ? <><span className="font-black text-foreground">Elite Partner.</span> Verified, vetted, and held to the highest standards.</>
-                          : 'We trust this dealer as a respected partner of Alifh.'
+                          : 'We trust this dealer as a respected partner of Revvup.'
                         : <><span className="font-bold text-foreground">Safety Tip:</span> Meet in public places and verify the vehicle before payment.</>
                       }
                     </p>

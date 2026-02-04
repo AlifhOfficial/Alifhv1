@@ -1,4 +1,4 @@
-# Alifh Database Schemas Documentation (V1)
+# Revvup Database Schemas Documentation (V1)
 
 **Last Updated:** December 15, 2025  
 **Database:** PostgreSQL with Drizzle ORM  
@@ -22,7 +22,7 @@
 
 ## Overview
 
-Alifh is a UAE-based automotive marketplace platform connecting dealers, partners, and users for buying/selling cars. The database architecture supports:
+Revvup is a UAE-based automotive marketplace platform connecting dealers, partners, and users for buying/selling cars. The database architecture supports:
 
 - **Phase 1 (v1):** Partner-to-Consumer (B2C) - Dealers listing inventory
 - **Phase 2 (Future):** Peer-to-Peer (P2P) - Users listing their own cars
@@ -498,7 +498,7 @@ All relationships defined in `/packages/database/src/schema/relations.ts`
 
 ### 1. Generate Migrations
 ```bash
-cd /Users/Alifh/Desktop/Alifhv1
+cd /Users/Revvup/Desktop/Revvupv1
 bun run db:generate
 ```
 

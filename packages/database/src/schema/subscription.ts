@@ -1,10 +1,10 @@
 /**
  * Subscription Schema
- * Stripe subscription management for Alifh partners
+ * Stripe subscription management for Revvup partners
  * 
  * Plans:
- * - Alifh Core: 7,000 AED/month
- * - Alifh Black: 21,000 AED/month
+ * - Revvup Core: 7,000 AED/month
+ * - Revvup Black: 21,000 AED/month
  * 
  * @module schema/subscription
  */
@@ -55,7 +55,7 @@ export const subscription = pgTable('subscription', {
   canceledAt: timestamp('canceled_at'),
   endedAt: timestamp('ended_at'),
   
-  // Team/seats (not used for Alifh, but keeping for compatibility)
+  // Team/seats (not used for Revvup, but keeping for compatibility)
   seats: integer('seats'),
   
   // Trial tracking (not used, but required by Better Auth Stripe)

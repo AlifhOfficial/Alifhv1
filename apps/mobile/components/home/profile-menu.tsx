@@ -1,6 +1,6 @@
 /**
  * Profile Menu - Simple dropdown for auth actions
- * Alifh Design System + Inter font
+ * Revvup Design System + Inter font
  */
 
 import { useState } from 'react';

@@ -15,30 +15,28 @@ export function AboutHeroSection() {
         {/* Header */}
         <div className="text-center mb-16 space-y-5">
           <span className="text-sm font-semibold uppercase tracking-wider text-primary">
-            About Alifh
+            About Revvup
           </span>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
             We are not for sale.
           </h1>
+          <p className="text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
+            No investors. No board meetings. No exit strategy. 
+            Just a founder who got tired of complaining and decided to build.
+          </p>
         </div>
 
         {/* Hero Image */}
         <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg mb-8">
           <Image
             src="/Abstract/rsxx7.png"
-            alt="Alifh"
+            alt="Revvup"
             fill
             priority
             className="object-cover"
             sizes="(max-width: 1400px) 100vw, 1400px"
           />
         </div>
-
-        {/* Description below image */}
-        <p className="text-base text-muted-foreground max-w-lg mx-auto text-center leading-relaxed mb-8">
-          No investors. No board meetings. No exit strategy. 
-          Just a founder who got tired of complaining and decided to build.
-        </p>
 
         {/* Company Facts */}
         <div className="flex items-center justify-center gap-12 md:gap-20 pt-8 border-t border-border/40">

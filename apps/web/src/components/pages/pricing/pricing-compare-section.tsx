@@ -1,6 +1,6 @@
 /**
  * Pricing Compare Section
- * Alifh vs typical marketplaces - subtle, not loud
+ * Revvup vs typical marketplaces - subtle, not loud
  */
 
 'use client';

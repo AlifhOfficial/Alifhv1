@@ -1,8 +1,8 @@
 {
-  "name": "alifh",
+  "name": "revvup",
   "version": "0.1.0",
   "private": true,
-  "description": "Alifh - Vehicle Marketplace & Valuation Platform",
+  "description": "Revvup - Vehicle Marketplace & Valuation Platform",
   "packageManager": "bun@1.3.4",
   "scripts": {
     "dev": "turbo run dev --parallel",

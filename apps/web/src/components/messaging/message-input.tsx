@@ -1,5 +1,5 @@
 /**
- * Message Input Component - Alifh Design System
+ * Message Input Component - Revvup Design System
  * Text input with send button and media upload
  */
 

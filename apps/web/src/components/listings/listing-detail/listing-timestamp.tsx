@@ -1,5 +1,5 @@
 /**
- * Listing Timestamp Component - Alifh Design System
+ * Listing Timestamp Component - Revvup Design System
  * 
  * Clean, minimal timestamp display following "Less is More" principle.
  */

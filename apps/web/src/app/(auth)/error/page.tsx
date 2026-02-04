@@ -1,5 +1,5 @@
 /**
- * Auth Error Page - Alifh Design System
+ * Auth Error Page - Revvup Design System
  * Better Auth error redirect target
  */
 

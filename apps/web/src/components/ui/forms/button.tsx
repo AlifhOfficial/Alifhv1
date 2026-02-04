@@ -3,7 +3,7 @@ import { cn } from "@/utils";
 /**
  * Button Component
  * 
- * Follows Alifh Design Philosophy:
+ * Follows Revvup Design Philosophy:
  * - Height: h-10 (40px)
  * - Text: text-sm font-medium
  * - Corners: rounded-lg

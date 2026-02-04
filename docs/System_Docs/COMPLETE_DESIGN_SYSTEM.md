@@ -1,7 +1,7 @@
-# Alifh Design System - Complete Component Library
+# Revvup Design System - Complete Component Library
 
 ## Overview
-Complete design system built following Alifh Design Philosophy - **Less is More**. Apple-inspired minimalism with semantic tokens, consistent spacing, and clean interactions.
+Complete design system built following Revvup Design Philosophy - **Less is More**. Apple-inspired minimalism with semantic tokens, consistent spacing, and clean interactions.
 
 ## 🎨 Design Principles
 - **Semantic Colors Only**: Never hardcode colors - use design tokens
@@ -385,4 +385,4 @@ Visit `/showcase` to see all components in action with vehicle marketplace examp
 
 ## 🚀 Ready for Production
 
-All 22 components are production-ready and follow Alifh Design Philosophy consistently across the entire system.
+All 22 components are production-ready and follow Revvup Design Philosophy consistently across the entire system.

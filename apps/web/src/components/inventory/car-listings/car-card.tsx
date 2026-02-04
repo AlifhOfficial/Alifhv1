@@ -1,5 +1,5 @@
 /**
- * Car Card Component - Alifh Design System
+ * Car Card Component - Revvup Design System
  * Following "Less is More" principle with minimalist aesthetic
  */
 

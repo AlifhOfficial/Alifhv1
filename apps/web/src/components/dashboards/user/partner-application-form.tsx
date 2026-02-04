@@ -295,7 +295,7 @@ export function PartnerApplicationForm({ onSuccess }: { onSuccess?: () => void }
         <div>
           <h1 className="text-xl font-semibold tracking-tight">Partner Application</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Join Alifh as a verified partner
+            Join Revvup as a verified partner
           </p>
         </div>
 

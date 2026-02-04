@@ -1,6 +1,6 @@
 /**
  * Privacy Policy Page
- * Legal documentation component following Alifh design patterns
+ * Legal documentation component following Revvup design patterns
  */
 
 'use client';
@@ -39,7 +39,7 @@ export function PrivacyPolicy() {
         {/* Introduction Summary */}
         <div className="mb-10 py-5 border-y border-border/40">
           <p className="text-sm text-foreground leading-relaxed">
-            This Privacy Policy explains how ALIFH collects, uses, stores, and protects personal data 
+            This Privacy Policy explains how REVVUP collects, uses, stores, and protects personal data 
             when you access or use the Platform. Read with our{' '}
             <Link href="/terms-of-service" className="text-primary hover:underline font-medium">Terms of Service</Link>.
           </p>
@@ -78,7 +78,7 @@ export function PrivacyPolicy() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               <p className="text-sm text-foreground leading-relaxed mb-4">
-                ALIFH may collect the following categories of information:
+                REVVUP may collect the following categories of information:
               </p>
 
               <div className="py-3 border-b border-border/20">
@@ -128,7 +128,7 @@ export function PrivacyPolicy() {
               <div className="py-3">
                 <p className="text-sm font-semibold text-foreground mb-2">Payment Information</p>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Subscription status and transaction identifiers. ALIFH does not store full payment 
+                  Subscription status and transaction identifiers. REVVUP does not store full payment 
                   card details—payments are processed securely by third-party providers.
                 </p>
               </div>
@@ -142,7 +142,7 @@ export function PrivacyPolicy() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               <p className="text-sm text-foreground leading-relaxed mb-4">
-                ALIFH uses personal data to:
+                REVVUP uses personal data to:
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <p className="text-sm text-muted-foreground flex items-start gap-2">
@@ -175,7 +175,7 @@ export function PrivacyPolicy() {
                 </p>
               </div>
               <p className="text-sm text-foreground leading-relaxed mt-4 pt-4 border-t border-border/20">
-                ALIFH does not sell personal data.
+                REVVUP does not sell personal data.
               </p>
             </div>
           </section>
@@ -203,7 +203,7 @@ export function PrivacyPolicy() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               <p className="text-sm text-foreground leading-relaxed mb-4">
-                ALIFH may share personal data with:
+                REVVUP may share personal data with:
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <p className="text-sm text-muted-foreground flex items-start gap-2">
@@ -224,7 +224,7 @@ export function PrivacyPolicy() {
                 </p>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed mt-4 pt-4 border-t border-border/20">
-                Third-party providers must comply with data protection standards. ALIFH does not share 
+                Third-party providers must comply with data protection standards. REVVUP does not share 
                 data for advertising resale or unauthorized profiling.
               </p>
             </div>
@@ -241,7 +241,7 @@ export function PrivacyPolicy() {
                 and organizational safeguards.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                While ALIFH implements reasonable security measures, no system is completely secure. 
+                While REVVUP implements reasonable security measures, no system is completely secure. 
                 Users acknowledge this inherent risk.
               </p>
             </div>
@@ -316,7 +316,7 @@ export function PrivacyPolicy() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               <p className="text-sm text-foreground leading-relaxed">
-                The Platform may contain links to third-party websites. ALIFH is not responsible for 
+                The Platform may contain links to third-party websites. REVVUP is not responsible for 
                 their privacy practices or content.
               </p>
             </div>
@@ -329,7 +329,7 @@ export function PrivacyPolicy() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
               <p className="text-sm text-foreground leading-relaxed">
-                ALIFH may update this Privacy Policy from time to time.
+                REVVUP may update this Privacy Policy from time to time.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Changes will be reflected by updating the "Last Updated" date. Continued use 
@@ -356,10 +356,10 @@ export function PrivacyPolicy() {
                 <div className="col-span-2">
                   <p className="text-sm font-semibold text-muted-foreground/70">Contact</p>
                   <a 
-                    href="mailto:support@alifh.ae" 
+                    href="mailto:support@revvup.ae" 
                     className="text-sm font-medium text-primary hover:underline mt-0.5 inline-block"
                   >
-                    support@alifh.ae
+                    support@revvup.ae
                   </a>
                 </div>
               </div>
@@ -373,7 +373,7 @@ export function PrivacyPolicy() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               <p className="text-sm text-foreground leading-relaxed">
-                This Privacy Policy forms part of the agreement between you and ALIFH and governs the 
+                This Privacy Policy forms part of the agreement between you and REVVUP and governs the 
                 processing of personal data in connection with use of the Platform.
               </p>
             </div>

@@ -333,7 +333,7 @@ export function SearchBar({
 
   // Size classes - use text-base (16px) on mobile to prevent iOS auto-zoom
   const sizeClasses = {
-    sm: 'h-11 sm:h-10 text-base sm:text-sm px-1',
+    sm: 'h-10 text-base sm:text-sm px-1',
     md: 'h-12 sm:h-11 text-base sm:text-sm px-1',
     lg: 'h-14 sm:h-12 text-base px-2',
   };
@@ -443,7 +443,9 @@ export function SearchBar({
       {showDropdown && (
         <div 
           className={cn(
-            'absolute top-full left-0 right-0 z-50 mt-2',
+            'absolute top-full z-50 mt-2',
+            'left-0 right-0 w-full',
+            'min-w-[280px]',
             'bg-sidebar-background border border-sidebar-border rounded-2xl shadow-xl',
             'overflow-hidden animate-in fade-in-0 slide-in-from-top-2 duration-150'
           )}

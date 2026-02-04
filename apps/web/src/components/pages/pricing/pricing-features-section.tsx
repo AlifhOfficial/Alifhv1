@@ -113,7 +113,7 @@ const featureCategories: FeatureCategory[] = [
   {
     name: 'Platform & Trust',
     features: [
-      { name: 'Business profile page', flow: true, black: true, description: 'Your dealership on Alifh' },
+      { name: 'Business profile page', flow: true, black: true, description: 'Your dealership on Revvup' },
       { name: 'Verified dealer badge', flow: true, black: true, description: 'Build trust with buyers' },
       { name: 'Platform support', flow: true, black: true, description: 'Help when you need it' },
       { name: 'Secure & protected', flow: true, black: true, description: 'Industry-standard security' },

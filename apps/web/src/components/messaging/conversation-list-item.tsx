@@ -1,5 +1,5 @@
 /**
- * Conversation List Item - Alifh Design System
+ * Conversation List Item - Revvup Design System
  * Single conversation in the sidebar
  */
 

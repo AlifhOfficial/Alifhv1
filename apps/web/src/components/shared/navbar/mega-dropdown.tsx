@@ -1,7 +1,7 @@
 /**
  * MegaDropdown Component - Presentation Layer Only
  * Displays navigation submenus in a dropdown format
- * Follows Alifh Design Philosophy: minimal, clean
+ * Follows Revvup Design Philosophy: minimal, clean
  */
 
 "use client";

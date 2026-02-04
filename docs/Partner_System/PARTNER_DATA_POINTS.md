@@ -124,7 +124,7 @@ This document lists ALL data points across the Partner system tables and tracks 
   - `smsBooking` - SMS for bookings
 
 ### Account Management (2 fields)
-- ✅ `accountManagerId` - Alifh account manager user ID
+- ✅ `accountManagerId` - Revvup account manager user ID
 - ✅ `primaryContactId` - Primary contact staff ID
 
 ### Quality & Compliance (3 fields)

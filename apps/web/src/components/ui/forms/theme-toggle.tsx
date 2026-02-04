@@ -2,7 +2,7 @@
  * Theme Toggle Component
  * 
  * Allows switching between light/dark/system themes
- * Follows Alifh Design Philosophy
+ * Follows Revvup Design Philosophy
  */
 
 "use client";

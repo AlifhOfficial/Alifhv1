@@ -1,5 +1,5 @@
 /**
- * Profile Page - Alifh Design System
+ * Profile Page - Revvup Design System
  * Ultra-minimal, Apple/Tesla-inspired premium experience
  */
 

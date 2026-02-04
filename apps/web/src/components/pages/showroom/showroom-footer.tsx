@@ -141,7 +141,7 @@ export function ShowroomFooter({ showroom }: ShowroomFooterProps) {
             © {new Date().getFullYear()} {partner.brandName}
           </p>
           <Link href="/" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-            Powered by Alifh
+            Powered by Revvup
           </Link>
         </div>
       </div>

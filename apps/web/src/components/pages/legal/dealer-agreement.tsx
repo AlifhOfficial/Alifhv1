@@ -1,6 +1,6 @@
 /**
  * Dealer Agreement Page
- * Legal documentation component following Alifh design patterns
+ * Legal documentation component following Revvup design patterns
  */
 
 'use client';
@@ -71,7 +71,7 @@ export function DealerAgreement() {
         {/* Introduction Summary */}
         <div className="mb-10 py-5 border-y border-border/40">
           <p className="text-sm text-foreground leading-relaxed mb-4">
-            This Agreement governs the relationship between ALIFH (operated by AISH CAPITALS FZCO) 
+            This Agreement governs the relationship between REVVUP (operated by AISH CAPITALS FZCO) 
             and authorized dealers granted access to the platform.
           </p>
           <p className="text-sm text-muted-foreground leading-relaxed mb-4">
@@ -125,8 +125,8 @@ export function DealerAgreement() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               <p className="text-sm text-foreground leading-relaxed mb-4">
-                ALIFH is a digital platform designed to enable authorized dealers to present listings 
-                and connect with potential buyers. ALIFH:
+                REVVUP is a digital platform designed to enable authorized dealers to present listings 
+                and connect with potential buyers. REVVUP:
               </p>
               <div className="space-y-2 mb-4">
                 <p className="text-sm text-muted-foreground flex items-start gap-2">
@@ -159,7 +159,7 @@ export function DealerAgreement() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               <p className="text-sm text-foreground leading-relaxed mb-4">
-                Access to the ALIFH platform is granted at ALIFH's discretion. ALIFH may approve, 
+                Access to the REVVUP platform is granted at REVVUP's discretion. REVVUP may approve, 
                 reject, limit, suspend, or terminate Dealer access at any time.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed mb-3">Dealer access is:</p>
@@ -209,7 +209,7 @@ export function DealerAgreement() {
                 </p>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed pt-4 border-t border-border/20">
-                ALIFH relies entirely on Dealer-provided information and assumes no duty to verify.
+                REVVUP relies entirely on Dealer-provided information and assumes no duty to verify.
               </p>
             </div>
           </section>
@@ -244,7 +244,7 @@ export function DealerAgreement() {
                 </p>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed mt-4 pt-4 border-t border-border/20">
-                ALIFH may take immediate action, including suspension or termination, for any violation.
+                REVVUP may take immediate action, including suspension or termination, for any violation.
               </p>
             </div>
           </section>
@@ -294,7 +294,7 @@ export function DealerAgreement() {
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
               <p className="text-sm text-foreground leading-relaxed">
                 Subscriptions are granted per approved entity, location, showroom, or operational 
-                unit, as determined by ALIFH.
+                unit, as determined by REVVUP.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 A subscription for one location does not extend to additional branches or affiliates 
@@ -310,12 +310,12 @@ export function DealerAgreement() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
               <p className="text-sm text-foreground leading-relaxed">
-                Certain features, placements, or visibility options may be available at ALIFH's 
+                Certain features, placements, or visibility options may be available at REVVUP's 
                 discretion.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Such features are provided on a non-guaranteed basis and may be modified, limited, 
-                or withdrawn at any time. ALIFH makes no guarantees regarding availability or impact.
+                or withdrawn at any time. REVVUP makes no guarantees regarding availability or impact.
               </p>
             </div>
           </section>
@@ -327,7 +327,7 @@ export function DealerAgreement() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               <p className="text-sm text-foreground leading-relaxed mb-4">
-                The Dealer is granted a limited, revocable license to reference ALIFH for 
+                The Dealer is granted a limited, revocable license to reference REVVUP for 
                 identification. The Dealer may not:
               </p>
               <div className="space-y-2">
@@ -390,7 +390,7 @@ export function DealerAgreement() {
               10. Suspension & Termination
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
-              <p className="text-sm text-foreground leading-relaxed mb-3">ALIFH may suspend or terminate access:</p>
+              <p className="text-sm text-foreground leading-relaxed mb-3">REVVUP may suspend or terminate access:</p>
               <div className="space-y-2 mb-4">
                 <p className="text-sm text-muted-foreground flex items-start gap-2">
                   <span className="text-muted-foreground/50 mt-1">•</span>
@@ -418,7 +418,7 @@ export function DealerAgreement() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               <p className="text-sm text-foreground leading-relaxed mb-4">
-                The platform is provided "as is" and "as available." ALIFH makes no warranties regarding:
+                The platform is provided "as is" and "as available." REVVUP makes no warranties regarding:
               </p>
               <div className="grid grid-cols-3 gap-2">
                 <p className="text-sm text-muted-foreground flex items-start gap-2">
@@ -447,12 +447,12 @@ export function DealerAgreement() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
               <p className="text-sm text-foreground leading-relaxed">
-                To the maximum extent permitted by law, ALIFH shall not be liable for disputes, 
+                To the maximum extent permitted by law, REVVUP shall not be liable for disputes, 
                 losses, or damages arising from Dealer listings or transactions, nor for indirect 
                 or consequential damages.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Where liability cannot be excluded, ALIFH's total liability is limited to subscription 
+                Where liability cannot be excluded, REVVUP's total liability is limited to subscription 
                 fees paid during the preceding billing period.
               </p>
             </div>
@@ -465,7 +465,7 @@ export function DealerAgreement() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               <p className="text-sm text-foreground leading-relaxed mb-4">
-                The Dealer agrees to indemnify and hold harmless ALIFH, AISH CAPITALS FZCO, and 
+                The Dealer agrees to indemnify and hold harmless REVVUP, AISH CAPITALS FZCO, and 
                 their directors, officers, employees, and affiliates from claims arising out of:
               </p>
               <div className="grid grid-cols-3 gap-2">
@@ -533,7 +533,7 @@ export function DealerAgreement() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
               <p className="text-sm text-foreground leading-relaxed">
-                This Agreement constitutes the entire understanding between ALIFH and the Dealer 
+                This Agreement constitutes the entire understanding between REVVUP and the Dealer 
                 regarding platform access.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">

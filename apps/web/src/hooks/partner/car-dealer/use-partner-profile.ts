@@ -62,7 +62,7 @@ export interface PartnerProfile {
   
   // Trust & Verification
   isVerified: boolean;
-  badges: string[]; // e.g., ["Alifh Certified", "BLK Member", "ISO 9001"]
+  badges: string[]; // e.g., ["Revvup Certified", "BLK Member", "ISO 9001"]
   tags: string[];
   
   // ❌ Removed - Now in usePartnerStats() with 5min cache:

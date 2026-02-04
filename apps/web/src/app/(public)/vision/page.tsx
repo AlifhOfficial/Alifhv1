@@ -1,5 +1,5 @@
 /**
- * Vision Page - Alifh
+ * Vision Page - Revvup
  * Aligned with We the UAE 2031
  */
 
@@ -11,11 +11,11 @@ import {
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Our Vision - Alifh',
-  description: 'Alifh is built to contribute to the UAE\'s We the UAE 2031 vision. Forward society. Forward economy. Forward ecosystem.',
+  title: 'Our Vision - Revvup',
+  description: 'Revvup is built to contribute to the UAE\'s We the UAE 2031 vision. Forward society. Forward economy. Forward ecosystem.',
   openGraph: {
-    title: 'Our Vision - Alifh',
-    description: 'Alifh is built to contribute to the UAE\'s We the UAE 2031 vision. Forward society. Forward economy. Forward ecosystem.',
+    title: 'Our Vision - Revvup',
+    description: 'Revvup is built to contribute to the UAE\'s We the UAE 2031 vision. Forward society. Forward economy. Forward ecosystem.',
     type: 'website',
   },
 };

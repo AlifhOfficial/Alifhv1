@@ -1,5 +1,5 @@
 /**
- * Booking Section Component - Alifh Design System
+ * Booking Section Component - Revvup Design System
  * 
  * Clean, minimal test drive booking following "Less is More" principle.
  */

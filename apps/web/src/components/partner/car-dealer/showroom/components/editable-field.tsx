@@ -1,6 +1,6 @@
 /**
  * Editable Field Component
- * Tap-to-edit inline field following Alifh Design System
+ * Tap-to-edit inline field following Revvup Design System
  */
 
 'use client';

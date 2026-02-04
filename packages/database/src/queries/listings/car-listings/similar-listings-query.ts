@@ -4,7 +4,7 @@
  * Strict matching logic to surface only genuinely comparable vehicles.
  * Returns empty array if insufficient quality matches.
  * 
- * Philosophy: Show nothing > show garbage. Alifh means trust.
+ * Philosophy: Show nothing > show garbage. Revvup means trust.
  * 
  * Matching criteria (all hard filters, no ML fluff):
  * - Same make

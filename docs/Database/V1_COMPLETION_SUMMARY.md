@@ -9,7 +9,7 @@
 
 ## 🎉 What We Accomplished
 
-Successfully simplified the Alifh database schema from an over-engineered enterprise design to a production-ready V1 architecture optimized for launch scale.
+Successfully simplified the Revvup database schema from an over-engineered enterprise design to a production-ready V1 architecture optimized for launch scale.
 
 ### Statistics
 
@@ -117,7 +117,7 @@ At launch scale (<10k listings, <50k views/month):
 
 1. **Generate Migrations**
    ```bash
-   cd /Users/Alifh/Desktop/Alifhv1
+   cd /Users/Revvup/Desktop/Revvupv1
    bun run db:generate
    ```
 

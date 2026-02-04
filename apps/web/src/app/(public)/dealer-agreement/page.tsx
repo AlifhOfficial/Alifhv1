@@ -1,5 +1,5 @@
 /**
- * Dealer Agreement Page - Alifh
+ * Dealer Agreement Page - Revvup
  * Legal documentation
  */
 
@@ -7,11 +7,11 @@ import { Metadata } from 'next';
 import { DealerAgreement } from '@/components/pages/legal';
 
 export const metadata: Metadata = {
-  title: 'Dealer Agreement - Alifh',
-  description: 'Dealer Agreement for ALIFH platform operated by AISH CAPITALS FZCO. Comprehensive terms governing dealer access and platform usage.',
+  title: 'Dealer Agreement - Revvup',
+  description: 'Dealer Agreement for REVVUP platform operated by AISH CAPITALS FZCO. Comprehensive terms governing dealer access and platform usage.',
   openGraph: {
-    title: 'Dealer Agreement - Alifh',
-    description: 'Dealer Agreement for ALIFH platform operated by AISH CAPITALS FZCO.',
+    title: 'Dealer Agreement - Revvup',
+    description: 'Dealer Agreement for REVVUP platform operated by AISH CAPITALS FZCO.',
     type: 'website',
   },
 };

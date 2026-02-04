@@ -1,6 +1,6 @@
 /**
  * Pricing Tiers Section
- * Alifh Flow (recommended) vs Alifh Black (white-glove)
+ * Revvup Flow (recommended) vs Revvup Black (white-glove)
  */
 
 'use client';

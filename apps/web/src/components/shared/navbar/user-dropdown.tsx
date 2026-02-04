@@ -22,7 +22,7 @@ interface UserData {
   useGeneratedAvatar?: boolean | null;
   role?: UserRole | null;
   hasPartnerAccess?: boolean;
-  isAlifhAdmin?: boolean;
+  isRevvupAdmin?: boolean;
   partnerMemberships?: Array<{
     staffId: string;
     partnerId: string;

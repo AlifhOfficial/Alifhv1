@@ -18,14 +18,21 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://alifh.ae'),
-  title: 'Alifh - Vehicle Marketplace',
+  metadataBase: new URL('https://revvup.ae'),
+  title: 'Revvup - Vehicle Marketplace',
   description: 'Buy and sell vehicles with AI-powered valuations',
   manifest: '/manifest.json',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.png', type: 'image/png' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Alifh',
+    title: 'Revvup',
   },
   formatDetection: {
     telephone: false,

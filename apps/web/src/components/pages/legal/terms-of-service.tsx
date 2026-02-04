@@ -1,6 +1,6 @@
 /**
  * Terms of Service Page
- * Legal documentation component following Alifh design patterns
+ * Legal documentation component following Revvup design patterns
  */
 
 'use client';
@@ -53,8 +53,8 @@ export function TermsOfService() {
   }, []);
 
   const logoSrc = mounted && (resolvedTheme === 'dark' || resolvedTheme === 'charcoal')
-    ? "/assets/Alifh_logo_White.svg" 
-    : "/assets/Alifh_logo_Black.svg";
+    ? "/assets/Revvup_logo_White.svg" 
+    : "/assets/Revvup_logo_Black.svg";
 
   return (
     <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
@@ -87,7 +87,7 @@ export function TermsOfService() {
         {/* Introduction Summary */}
         <div className="mb-10 py-5 border-y border-border/40">
           <p className="text-sm text-foreground leading-relaxed">
-            These Terms of Service create a legally binding contract between you and ALIFH, 
+            These Terms of Service create a legally binding contract between you and REVVUP, 
             operated by AISH CAPITALS FZCO. By using the Platform, you agree to these terms.
           </p>
           <div className="flex flex-wrap items-center gap-2 mt-4">
@@ -137,7 +137,7 @@ export function TermsOfService() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
               <p className="text-sm text-foreground leading-relaxed">
-                This Agreement governs access to and use of the ALIFH platform, website, and related 
+                This Agreement governs access to and use of the REVVUP platform, website, and related 
                 services (collectively, the "Platform").
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
@@ -145,7 +145,7 @@ export function TermsOfService() {
                 do not agree, you must not access or use the Platform.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Your use of the Platform is also subject to ALIFH's Privacy Policy, which is 
+                Your use of the Platform is also subject to REVVUP's Privacy Policy, which is 
                 incorporated into this Agreement by reference.
               </p>
             </div>
@@ -183,11 +183,11 @@ export function TermsOfService() {
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Each Dealer may maintain one account per legal entity or per showroom location, as 
-                determined by ALIFH. ALIFH may require separate subscriptions for separate showroom 
+                determined by REVVUP. REVVUP may require separate subscriptions for separate showroom 
                 locations, branches, or operational entities.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                ALIFH reserves the right to refuse registration, restrict access, or require 
+                REVVUP reserves the right to refuse registration, restrict access, or require 
                 additional verification at its discretion.
               </p>
             </div>
@@ -200,16 +200,16 @@ export function TermsOfService() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
               <p className="text-sm text-foreground leading-relaxed">
-                ALIFH is a technology platform designed to facilitate structured visibility and 
+                REVVUP is a technology platform designed to facilitate structured visibility and 
                 engagement between users.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                ALIFH does not buy, sell, own, or take custody of any items listed on the Platform 
+                REVVUP does not buy, sell, own, or take custody of any items listed on the Platform 
                 and does not inspect, verify, or certify the condition, legality, pricing, history, 
                 or accuracy of any listing.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                ALIFH is not a party to, and bears no responsibility for, any transaction, payment, 
+                REVVUP is not a party to, and bears no responsibility for, any transaction, payment, 
                 agreement, or arrangement made between users. All dealings occur solely between the 
                 involved parties.
               </p>
@@ -232,7 +232,7 @@ export function TermsOfService() {
                 protection obligations, advertising standards, and any required licenses or permits.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                ALIFH may, at its discretion, remove, restrict, or suspend any listing or account at 
+                REVVUP may, at its discretion, remove, restrict, or suspend any listing or account at 
                 any time.
               </p>
             </div>
@@ -267,7 +267,7 @@ export function TermsOfService() {
                 <div className="py-3 border-b border-border/20">
                   <p className="text-sm font-semibold text-foreground mb-2">No Guarantees</p>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    ALIFH does not guarantee any specific level of exposure, visibility, leads, 
+                    REVVUP does not guarantee any specific level of exposure, visibility, leads, 
                     engagement, sales, or results.
                   </p>
                 </div>
@@ -277,7 +277,7 @@ export function TermsOfService() {
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     Upon cancellation, customers may request a full refund for the current billing 
                     month. Refunds are not automatic and are subject to approval. Approved refunds 
-                    are processed within fourteen (14) business days. ALIFH may refuse refunds 
+                    are processed within fourteen (14) business days. REVVUP may refuse refunds 
                     where there is evidence of fraud or abuse.
                   </p>
                 </div>
@@ -321,7 +321,7 @@ export function TermsOfService() {
                 </li>
               </ul>
               <p className="text-sm text-muted-foreground leading-relaxed mt-4 pt-4 border-t border-border/20">
-                ALIFH may investigate violations and take action including restricting content, 
+                REVVUP may investigate violations and take action including restricting content, 
                 suspending accounts, or terminating this Agreement.
               </p>
             </div>
@@ -334,7 +334,7 @@ export function TermsOfService() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
               <p className="text-sm text-foreground leading-relaxed">
-                ALIFH may suspend or terminate access at any time, with or without notice, where a 
+                REVVUP may suspend or terminate access at any time, with or without notice, where a 
                 user has violated this Agreement or engaged in conduct harmful to the Platform.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
@@ -374,7 +374,7 @@ export function TermsOfService() {
                 The Platform is provided on an "as is" and "as available" basis.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                ALIFH makes no warranties regarding availability, uptime, accuracy, reliability, 
+                REVVUP makes no warranties regarding availability, uptime, accuracy, reliability, 
                 or outcomes and does not guarantee uninterrupted or error-free operation.
               </p>
             </div>
@@ -387,11 +387,11 @@ export function TermsOfService() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
               <p className="text-sm text-foreground leading-relaxed">
-                To the maximum extent permitted by law, ALIFH shall not be liable for any indirect, 
+                To the maximum extent permitted by law, REVVUP shall not be liable for any indirect, 
                 incidental, consequential, special, or punitive damages.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Where liability cannot be excluded, ALIFH's total aggregate liability shall be 
+                Where liability cannot be excluded, REVVUP's total aggregate liability shall be 
                 limited to the Subscription fees paid during the preceding billing period.
               </p>
             </div>
@@ -404,7 +404,7 @@ export function TermsOfService() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               <p className="text-sm text-foreground leading-relaxed">
-                Dealers agree to indemnify and hold harmless ALIFH, its owners, affiliates, and 
+                Dealers agree to indemnify and hold harmless REVVUP, its owners, affiliates, and 
                 representatives from any claims, losses, damages, liabilities, and expenses arising 
                 from listings, transactions, misrepresentations, disputes, or violations of law.
               </p>
@@ -461,10 +461,10 @@ export function TermsOfService() {
                 <div className="col-span-2">
                   <p className="text-sm font-semibold text-muted-foreground/70">Contact</p>
                   <a 
-                    href="mailto:support@alifh.ae" 
+                    href="mailto:support@revvup.ae" 
                     className="text-sm font-medium text-primary hover:underline mt-0.5 inline-block"
                   >
-                    support@alifh.ae
+                    support@revvup.ae
                   </a>
                 </div>
               </div>
@@ -478,7 +478,7 @@ export function TermsOfService() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               <p className="text-sm text-foreground leading-relaxed">
-                This Agreement constitutes the entire agreement between you and ALIFH regarding use 
+                This Agreement constitutes the entire agreement between you and REVVUP regarding use 
                 of the Platform and supersedes all prior understandings or agreements.
               </p>
             </div>

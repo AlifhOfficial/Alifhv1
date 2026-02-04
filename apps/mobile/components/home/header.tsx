@@ -1,6 +1,6 @@
 /**
  * Home Header - Custom header with profile menu
- * Alifh Design System + Inter font
+ * Revvup Design System + Inter font
  */
 
 import React from 'react';

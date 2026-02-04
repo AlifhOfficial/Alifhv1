@@ -1,7 +1,7 @@
 /**
  * Progress Component
  * 
- * Follows Alifh Design Philosophy:
+ * Follows Revvup Design Philosophy:
  * - Clean progress bar
  * - Primary color indicator
  * - Smooth animation

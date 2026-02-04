@@ -1,5 +1,5 @@
 /**
- * Email Sent Modal - Alifh Design System
+ * Email Sent Modal - Revvup Design System
  * 
  * Clean, minimal feedback modal after email sent
  */

@@ -381,7 +381,7 @@ function generateListing(
   
   // SEO
   const slug = generateSlug(make, model, year, trim);
-  const metaTitle = `${year} ${make} ${model} ${trim} for Sale in ${emirate} | Alifh`;
+  const metaTitle = `${year} ${make} ${model} ${trim} for Sale in ${emirate} | Revvup`;
   const metaDescription = `Buy this ${year} ${make} ${model} ${trim}. ${mileage.toLocaleString()} km, ${transmission}. Price: AED ${price.toLocaleString()}. Contact dealer today!`;
   
   // Description

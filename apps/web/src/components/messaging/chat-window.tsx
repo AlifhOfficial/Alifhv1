@@ -1,5 +1,5 @@
 /**
- * Chat Window - Alifh Design System
+ * Chat Window - Revvup Design System
  * Clean, lean chat interface
  */
 

@@ -1,5 +1,5 @@
 /**
- * Location Map - Alifh Design System
+ * Location Map - Revvup Design System
  * Interactive map for selecting location coordinates
  * Following minimal design principles
  */

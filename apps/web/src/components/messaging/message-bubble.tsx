@@ -1,5 +1,5 @@
 /**
- * Message Bubble Component - Alifh Design System
+ * Message Bubble Component - Revvup Design System
  * Individual message display with sender/receiver styling
  */
 

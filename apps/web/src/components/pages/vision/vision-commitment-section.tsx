@@ -47,7 +47,7 @@ export function VisionCommitmentSection() {
         {/* Official References */}
         <div className="text-center space-y-4">
           <p className="text-xs text-muted-foreground/60 max-w-md mx-auto">
-            Alifh is an independent private company and is not affiliated with or endorsed by the UAE Government.
+            Revvup is an independent private company and is not affiliated with or endorsed by the UAE Government.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link

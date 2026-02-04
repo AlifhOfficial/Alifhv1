@@ -1,5 +1,5 @@
 /**
- * Listing Detail Page - Alifh Design System
+ * Listing Detail Page - Revvup Design System
  * Public page showing comprehensive car listing details
  * 
  * Architecture: Pure client component - fetches data via hooks

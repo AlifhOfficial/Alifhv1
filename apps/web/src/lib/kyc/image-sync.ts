@@ -55,7 +55,7 @@ async function downloadAndUploadImage(
 ): Promise<string | null> {
   try {
     const response = await fetch(sourceUrl, {
-      headers: { 'User-Agent': 'Alifh-KYC-Sync/1.0' },
+      headers: { 'User-Agent': 'Revvup-KYC-Sync/1.0' },
     });
 
     if (!response.ok) return null;

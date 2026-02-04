@@ -1,5 +1,5 @@
 /**
- * Car Card Detailed Component - Alifh Design System
+ * Car Card Detailed Component - Revvup Design System
  * 
  * Comprehensive car listing view matching the listing form fields.
  * AI metrics section kept as placeholder for future data.

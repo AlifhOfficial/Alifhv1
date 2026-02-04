@@ -1,5 +1,5 @@
 /**
- * Auth Required Modal - Alifh Design System
+ * Auth Required Modal - Revvup Design System
  * 
  * Clean, minimal modal prompting users to sign in
  * to access protected features. Reusable globally.

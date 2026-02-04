@@ -46,6 +46,8 @@ interface AdvancedFiltersProps {
   onFilterChange: (filters: Partial<SearchParams>) => void;
   activeCount?: number;
   children?: React.ReactNode;
+  /** Render inline content only (no sheet/popover wrapper) */
+  inline?: boolean;
 }
 
 export function AdvancedFilters({
@@ -54,6 +56,7 @@ export function AdvancedFilters({
   onFilterChange,
   activeCount = 0,
   children,
+  inline = false,
 }: AdvancedFiltersProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [desktopOpen, setDesktopOpen] = useState(false);
@@ -228,6 +231,11 @@ export function AdvancedFilters({
       />
     </div>
   );
+
+  // If inline mode, just return the filter content directly
+  if (inline) {
+    return filterContent;
+  }
 
   // Footer component
   const FilterFooter = () => advancedCount > 0 ? (
@@ -451,21 +459,21 @@ function FilterGroup({
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="group/collapsible">
       <div>
         <CollapsibleTrigger asChild>
-          <button type="button" className="flex w-full items-center justify-between px-3 py-2.5 hover:bg-muted/30 rounded-lg transition-colors">
-            <span className="text-[15px] font-semibold tracking-tight text-sidebar-foreground/80">{title}</span>
+          <button type="button" className="flex w-full items-center justify-between py-3 hover:bg-muted/30 rounded-lg transition-colors touch-manipulation">
+            <span className="text-base font-semibold tracking-tight text-sidebar-foreground">{title}</span>
             <div className="flex items-center gap-2">
               {selectedCount > 0 && (
-                <span className="min-w-[18px] h-[18px] px-1.5 text-[10px] font-bold bg-primary text-primary-foreground rounded-full flex items-center justify-center">
+                <span className="min-w-[20px] h-[20px] px-1.5 text-xs font-bold bg-primary text-primary-foreground rounded-full flex items-center justify-center">
                   {selectedCount}
                 </span>
               )}
-              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground/60 transition-transform duration-200 group-data-[state=closed]/collapsible:-rotate-90" />
+              <ChevronDown className="h-4 w-4 text-muted-foreground/60 transition-transform duration-200 group-data-[state=closed]/collapsible:-rotate-90" />
             </div>
           </button>
         </CollapsibleTrigger>
         
-        <CollapsibleContent>
-          <div className="px-3 pb-3">
+        <CollapsibleContent className="pl-3 pb-3">
+          <div>
             {showColors ? (
               // Color grid - simple check mark on selected
               <div className="flex flex-wrap gap-2">
@@ -499,26 +507,27 @@ function FilterGroup({
               </div>
             ) : (
               // List items - clean and simple
-              <ul className="space-y-0.5">
+              <div className="flex flex-col gap-0.5">
                 {availableOptions.map((option) => {
                   const isSelected = selected.includes(option.value);
                   return (
-                    <li
+                    <button
+                      type="button"
                       key={option.value}
                       onClick={() => toggleOption(option.value)}
                       className={cn(
-                        'flex items-center px-3 py-2 cursor-pointer rounded-md',
-                        'text-[15px] font-medium tracking-tight transition-colors duration-100',
+                        'flex items-center w-full pl-3 py-2.5 rounded-md touch-manipulation',
+                        'text-base font-medium tracking-tight transition-colors duration-100',
                         isSelected 
                           ? 'bg-muted text-foreground font-semibold' 
                           : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                       )}
                     >
                       {option.label}
-                    </li>
+                    </button>
                   );
                 })}
-              </ul>
+              </div>
             )}
           </div>
         </CollapsibleContent>

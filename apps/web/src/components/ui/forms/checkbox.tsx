@@ -1,7 +1,7 @@
 /**
  * Checkbox Component
  * 
- * Follows Alifh Design Philosophy:
+ * Follows Revvup Design Philosophy:
  * - Small and clean
  * - Primary color when checked
  * - Smooth transitions

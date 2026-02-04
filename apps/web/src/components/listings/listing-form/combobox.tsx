@@ -3,7 +3,7 @@
 /**
  * Combobox Component - Clean Minimal Style
  * 
- * Following Alifh Design Philosophy:
+ * Following Revvup Design Philosophy:
  * - Border-bottom style inputs
  * - Clean transitions
  * - No heavy card borders

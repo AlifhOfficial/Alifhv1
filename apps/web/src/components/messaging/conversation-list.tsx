@@ -1,5 +1,5 @@
 /**
- * Conversation List - Alifh Design System
+ * Conversation List - Revvup Design System
  * Sidebar showing all user conversations
  * 
  * For personal inbox:

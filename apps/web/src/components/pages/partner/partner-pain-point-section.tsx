@@ -1,5 +1,5 @@
 /**
- * Partner Pain Point Section - Alifh Partners Page
+ * Partner Pain Point Section - Revvup Partners Page
  * Visual comparison - their games vs our simplicity
  */
 
@@ -56,9 +56,9 @@ export function PartnerPainPointSection() {
             </div>
           </div>
 
-          {/* Alifh */}
+          {/* Revvup */}
           <div className="p-8 bg-primary text-primary-foreground">
-            <p className="text-sm font-semibold uppercase tracking-wider text-white/60 mb-8">Alifh</p>
+            <p className="text-sm font-semibold uppercase tracking-wider text-white/60 mb-8">Revvup</p>
             <div className="space-y-5">
               {[
                 { label: 'Commission', value: 'Zero. Forever.' },
@@ -199,9 +199,9 @@ function MarketplaceGameInfographic() {
             <p className="text-[10px] sm:text-xs text-white/30 mt-6 sm:mt-8">Click this. Pay that.</p>
           </div>
           
-          {/* Right - Alifh: Clean proposition */}
+          {/* Right - Revvup: Clean proposition */}
           <div className="w-full md:w-[280px] lg:w-[360px] p-8 sm:p-12 lg:p-16 flex flex-col items-center justify-center">
-            <span className="text-[10px] sm:text-xs font-medium text-primary mb-8 sm:mb-10">Alifh</span>
+            <span className="text-[10px] sm:text-xs font-medium text-primary mb-8 sm:mb-10">Revvup</span>
             
             <div className="flex flex-col items-center">
               {/* Giant zero */}

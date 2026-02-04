@@ -1,5 +1,5 @@
 /**
- * OTP Verification Modal - Alifh Design System
+ * OTP Verification Modal - Revvup Design System
  * 
  * 6-digit OTP input for email verification after sign-up
  * Keeps user in the same browser tab to solve cross-browser session issue

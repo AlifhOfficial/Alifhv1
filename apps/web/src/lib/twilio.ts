@@ -38,7 +38,7 @@ export async function sendOTPViaTwilio(
 
     // Send SMS via Twilio
     const message = await client.messages.create({
-      body: `Your Alifh verification code is: ${otp}. This code expires in 10 minutes.`,
+      body: `Your Revvup verification code is: ${otp}. This code expires in 10 minutes.`,
       to: phoneNumber,
       from: '+18509197444', // Your Twilio phone number - update this with your actual number
     });

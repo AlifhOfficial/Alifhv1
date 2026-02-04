@@ -71,7 +71,7 @@ export const partner = pgTable('partner', {
   isVerified: boolean('is_verified').default(false).notNull(),
   verifiedAt: timestamp('verified_at'),
   verifiedBy: text('verified_by').references(() => user.id, { onDelete: 'set null' }),
-  badges: jsonb('badges').$type<string[]>().default([]), // e.g., ["Alifh Certified", "BLK Member", "ISO 9001"]
+  badges: jsonb('badges').$type<string[]>().default([]), // e.g., ["Revvup Certified", "BLK Member", "ISO 9001"]
   tags: jsonb('tags').$type<string[]>().default([]),
   features: jsonb('features').$type<{
     homeDelivery: boolean;

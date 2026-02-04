@@ -1,5 +1,5 @@
 /**
- * Alifh Design System - Mobile Theme
+ * Revvup Design System - Mobile Theme
  * Aligned with web globals.css palette
  * Primary: #0066FF | OLED Dark Mode | Clean Neutrals
  */
@@ -24,7 +24,7 @@ export const Colors = {
     surfaceHover: '#F5F5F7',
     
     // ═══════════════════════════════════════════
-    // TEXT HIERARCHY - Alifh neutrals
+    // TEXT HIERARCHY - Revvup neutrals
     // ═══════════════════════════════════════════
     text: '#0D0D0D',
     textSecondary: '#737373',
@@ -33,7 +33,7 @@ export const Colors = {
     textInverse: '#FAFAFA',
     
     // ═══════════════════════════════════════════
-    // BRAND & ACCENT - Alifh Blue #0066FF
+    // BRAND & ACCENT - Revvup Blue #0066FF
     // ═══════════════════════════════════════════
     primary: '#0066FF',
     primaryForeground: '#FAFAFA',
@@ -154,7 +154,7 @@ export const Colors = {
     textInverse: '#0D0D0D',
     
     // ═══════════════════════════════════════════
-    // BRAND & ACCENT - Alifh Blue #0066FF
+    // BRAND & ACCENT - Revvup Blue #0066FF
     // ═══════════════════════════════════════════
     primary: '#0066FF',
     primaryForeground: '#FAFAFA',

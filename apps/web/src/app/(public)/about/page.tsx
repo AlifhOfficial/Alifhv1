@@ -1,5 +1,5 @@
 /**
- * About Us Page - Alifh
+ * About Us Page - Revvup
  * Philosophical. Clean. Mystique.
  */
 
@@ -14,10 +14,10 @@ import {
 } from '@/components/pages/about';
 
 export const metadata: Metadata = {
-  title: 'About Us - Alifh',
+  title: 'About Us - Revvup',
   description: 'We got tired of complaining. So we built something. The clean, honest automotive ecosystem the UAE should have had years ago.',
   openGraph: {
-    title: 'About Us - Alifh',
+    title: 'About Us - Revvup',
     description: 'We got tired of complaining. So we built something. The clean, honest automotive ecosystem the UAE should have had years ago.',
     type: 'website',
   },

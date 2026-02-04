@@ -1,6 +1,6 @@
 /**
  * Vision Pillars Section - Our Contribution to We the UAE 2031
- * All 4 pillars with compelling narrative showing how Alifh supports national goals
+ * All 4 pillars with compelling narrative showing how Revvup supports national goals
  */
 
 'use client';

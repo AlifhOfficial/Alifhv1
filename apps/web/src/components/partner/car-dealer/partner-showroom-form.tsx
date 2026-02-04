@@ -2,7 +2,7 @@
  * Partner Showroom Form
  * Premium brand manifesto editor for Black tier partners
  * 
- * Following Alifh Design System - tap-to-edit pattern
+ * Following Revvup Design System - tap-to-edit pattern
  * 
  * This is the main orchestrating component that uses modular sections
  */

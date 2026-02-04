@@ -1,5 +1,5 @@
 /**
- * Badges Hero Section - Alifh Badges Page
+ * Badges Hero Section - Revvup Badges Page
  * Clean hero - simple and direct
  */
 
@@ -18,7 +18,7 @@ export function BadgesHeroSection() {
             Recognition
           </span>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
-            Badges at Alifh.
+            Badges at Revvup.
             <br />
             <span className="text-muted-foreground">Earned. Not bought.</span>
           </h1>
@@ -28,7 +28,7 @@ export function BadgesHeroSection() {
         <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[2.4/1] overflow-hidden rounded-lg">
           <Image
             src="/Abstract/signin.png"
-            alt="Alifh Badges"
+            alt="Revvup Badges"
             fill
             priority
             className="object-cover"
@@ -38,7 +38,7 @@ export function BadgesHeroSection() {
 
         {/* Description */}
         <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mt-8 leading-relaxed">
-          Hand-picked by Team Alifh. Recognition for those who embody our values.
+          Hand-picked by Team Revvup. Recognition for those who embody our values.
         </p>
 
       </div>

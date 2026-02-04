@@ -1,5 +1,5 @@
 /**
- * Problem Section - Why Alifh Exists
+ * Problem Section - Why Revvup Exists
  * Explains the issues with current UAE car platforms
  */
 
@@ -45,7 +45,7 @@ export function ProblemSection() {
 
 function ProblemInfographic() {
   return (
-    <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-12">
+    <>
       {/* CSS Animations */}
       <style jsx>{`
         @keyframes cursor-chaos {
@@ -143,9 +143,9 @@ function ProblemInfographic() {
             <p className="text-[10px] sm:text-xs text-white/30 mt-8 sm:mt-10">Pay for everything</p>
           </div>
           
-          {/* Right - Alifh: Clean proposition */}
+          {/* Right - Revvup: Clean proposition */}
           <div className="w-full md:w-[280px] lg:w-[360px] p-8 sm:p-12 lg:p-16 flex flex-col items-center justify-center">
-            <span className="text-[10px] sm:text-xs font-medium text-primary mb-8 sm:mb-10">Alifh</span>
+            <span className="text-[10px] sm:text-xs font-medium text-primary mb-8 sm:mb-10">Revvup</span>
             
             <div className="flex flex-col items-center">
               {/* Giant zero */}
@@ -162,6 +162,6 @@ function ProblemInfographic() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

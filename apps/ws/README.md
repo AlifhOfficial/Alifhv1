@@ -1,6 +1,6 @@
 # WebSocket Server
 
-Real-time WebSocket server for Alifh messaging system.
+Real-time WebSocket server for Revvup messaging system.
 
 ## Quick Start
 

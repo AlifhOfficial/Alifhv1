@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines production-ready standards for building clean, maintainable React hooks in the Alifh codebase. These guidelines ensure consistency, performance, and code quality across all custom hooks.
+This document outlines production-ready standards for building clean, maintainable React hooks in the Revvup codebase. These guidelines ensure consistency, performance, and code quality across all custom hooks.
 
 ## Documentation Standards
 

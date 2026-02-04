@@ -1,7 +1,7 @@
 /**
  * Badge Component
  * 
- * Follows Alifh Design Philosophy:
+ * Follows Revvup Design Philosophy:
  * - Small size
  * - Semantic colors
  * - Clean rounded corners

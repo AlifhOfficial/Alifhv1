@@ -33,7 +33,7 @@ export function PageLoader({ message, compact = false }: PageLoaderProps) {
   }, []);
 
   const isDark = mounted && (resolvedTheme === 'dark' || resolvedTheme === 'charcoal');
-  const logoSrc = isDark ? '/assets/Alifh_logo_White.svg' : '/assets/Alifh_logo_Black.svg';
+  const logoSrc = isDark ? '/assets/Revvup_logo_White.svg' : '/assets/Revvup_logo_Black.svg';
 
   if (compact) {
     return (
@@ -53,7 +53,7 @@ export function PageLoader({ message, compact = false }: PageLoaderProps) {
         <div className="relative">
           <Image
             src={logoSrc}
-            alt="Alifh"
+            alt="Revvup"
             width={160}
             height={50}
             priority

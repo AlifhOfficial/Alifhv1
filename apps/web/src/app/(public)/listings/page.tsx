@@ -1,5 +1,5 @@
 /**
- * Inventory/Listings Page - Alifh Design System
+ * Inventory/Listings Page - Revvup Design System
  * Clean compact layout
  * Note: Navbar is rendered by the public layout wrapper
  */

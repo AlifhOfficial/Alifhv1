@@ -1,5 +1,5 @@
 /**
- * About Page Components - Alifh
+ * About Page Components - Revvup
  */
 
 export { AboutHeroSection } from './about-hero-section';

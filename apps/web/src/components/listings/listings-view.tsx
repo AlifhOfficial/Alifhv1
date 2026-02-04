@@ -34,25 +34,9 @@ export function ListingsView({ embedded = false, defaultFiltersOpen = true }: Li
   // Child components (CarCard) will subscribe to this data without triggering refetch
   useFavoritesStatus({ enabled: isSignedIn });
 
-  // Force grid view on screens smaller than lg (1024px)
-  // List view is only available on desktop/large tablets
-  // Minimal view is allowed on all screen sizes
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(min-width: 1024px)');
-    
-    const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
-      if (!e.matches && viewMode === 'list') {
-        setViewMode('grid');
-      }
-    };
-    
-    // Check on mount
-    handleChange(mediaQuery);
-    
-    // Listen for changes
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
-  }, [viewMode]);
+  // Note: On mobile (< lg), 'list' mode uses CarCardMobile (horizontal compact cards)
+  // On desktop (lg+), 'list' mode uses CarListItem (full width rows)
+  // No view mode forcing needed - each breakpoint handles its own component
 
   const {
     listings,

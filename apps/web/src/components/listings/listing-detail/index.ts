@@ -1,5 +1,5 @@
 /**
- * Listing Detail Components - Alifh Design System
+ * Listing Detail Components - Revvup Design System
  */
 
 export { ListingDetailView } from './listing-detail-view';

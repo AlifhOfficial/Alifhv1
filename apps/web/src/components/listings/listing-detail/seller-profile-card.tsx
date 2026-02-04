@@ -1,5 +1,5 @@
 /**
- * Seller Profile Card Component - Alifh Design System
+ * Seller Profile Card Component - Revvup Design System
  * 
  * Displays partner or user seller information on the listing detail page sidebar.
  * Uses data from existing getDealerBaseProfile, calculatePartnerStats, and getUserProfileByUserId queries.

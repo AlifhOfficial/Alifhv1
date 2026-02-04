@@ -1,6 +1,6 @@
 /**
  * Disclaimer Page
- * Legal documentation component following Alifh design patterns
+ * Legal documentation component following Revvup design patterns
  */
 
 'use client';
@@ -46,7 +46,7 @@ export function Disclaimer() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
               <p className="text-sm text-foreground leading-relaxed">
-                ALIFH is a technology platform operated by AISH CAPITALS FZCO. We do not buy, sell, 
+                REVVUP is a technology platform operated by AISH CAPITALS FZCO. We do not buy, sell, 
                 own, or take custody of any items listed on the Platform.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
@@ -63,7 +63,7 @@ export function Disclaimer() {
             </h3>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
               <p className="text-sm text-foreground leading-relaxed">
-                ALIFH is not a party to, and bears no responsibility for, any transaction, payment, 
+                REVVUP is not a party to, and bears no responsibility for, any transaction, payment, 
                 agreement, or arrangement made between users.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
@@ -84,7 +84,7 @@ export function Disclaimer() {
                 Use of the Platform is at your own discretion and risk.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                ALIFH does not guarantee any outcomes, results, availability, leads, or transactions 
+                REVVUP does not guarantee any outcomes, results, availability, leads, or transactions 
                 arising from use of the Platform.
               </p>
             </div>

@@ -8,7 +8,7 @@
 import { BlackDirectoryView } from '@/components/pages/black';
 
 export const metadata = {
-  title: 'Black | Signature Showrooms | Alifh',
+  title: 'Black | Signature Showrooms | Revvup',
   description: 'Curated collection of premium dealerships and signature showrooms from verified Black tier partners.',
 };
 

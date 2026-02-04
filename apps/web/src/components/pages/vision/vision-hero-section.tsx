@@ -28,7 +28,7 @@ export function VisionHeroSection() {
         <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 mb-12">
           <Image
             src="/Marketing/vision_page/vision-hero-uae2031.jpg"
-            alt="Alifh - Inspired by We the UAE 2031 Vision"
+            alt="Revvup - Inspired by We the UAE 2031 Vision"
             fill
             priority
             className="object-cover"

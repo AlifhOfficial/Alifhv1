@@ -1,4 +1,4 @@
-# Alifh Authentication Environment Setup
+# Revvup Authentication Environment Setup
 
 ## Production Email Service Configuration
 
@@ -18,7 +18,7 @@ Add these to your `.env.local` file:
 # Production Email Service
 RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxxx
 FROM_EMAIL=no-reply@yourdomain.com
-EMAIL_FROM_NAME=Alifh
+EMAIL_FROM_NAME=Revvup
 
 # Force Resend in development (optional)
 FORCE_RESEND=true

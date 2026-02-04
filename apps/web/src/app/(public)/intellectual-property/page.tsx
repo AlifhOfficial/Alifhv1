@@ -1,5 +1,5 @@
 /**
- * Intellectual Property & Copyright Notice Page - Alifh
+ * Intellectual Property & Copyright Notice Page - Revvup
  * Legal documentation
  */
 
@@ -7,11 +7,11 @@ import { Metadata } from 'next';
 import { IntellectualProperty } from '@/components/pages/legal';
 
 export const metadata: Metadata = {
-  title: 'Intellectual Property & Copyright Notice - Alifh',
-  description: 'Intellectual Property and Copyright Notice for ALIFH platform operated by AISH CAPITALS FZCO. Learn about ownership, licensing, and usage restrictions.',
+  title: 'Intellectual Property & Copyright Notice - Revvup',
+  description: 'Intellectual Property and Copyright Notice for REVVUP platform operated by AISH CAPITALS FZCO. Learn about ownership, licensing, and usage restrictions.',
   openGraph: {
-    title: 'Intellectual Property & Copyright Notice - Alifh',
-    description: 'Intellectual Property and Copyright Notice for ALIFH platform operated by AISH CAPITALS FZCO.',
+    title: 'Intellectual Property & Copyright Notice - Revvup',
+    description: 'Intellectual Property and Copyright Notice for REVVUP platform operated by AISH CAPITALS FZCO.',
     type: 'website',
   },
 };

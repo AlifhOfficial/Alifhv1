@@ -54,8 +54,8 @@ export function SignUpModal({
           {/* Logo */}
           <div>
             <img 
-              src="/assets/Alifh_logo_White.svg" 
-              alt="Alifh"
+              src="/assets/Revvup_logo_White.svg" 
+              alt="Revvup"
               className="h-5 w-auto"
             />
           </div>
@@ -63,7 +63,7 @@ export function SignUpModal({
           {/* Bold Typography - Horizontal */}
           <div className="flex-1 flex items-center justify-center">
             <h3 className="text-4xl font-bold text-white tracking-tight">
-              Alifh.
+              Revvup.
             </h3>
           </div>
           
@@ -79,7 +79,7 @@ export function SignUpModal({
           <div className="flex items-start justify-between p-6 pb-0">
             <div>
               <h2 className="text-xl font-semibold tracking-tight text-foreground">Create account</h2>
-              <p className="text-[13px] text-muted-foreground mt-1">Join the Alifh community</p>
+              <p className="text-[13px] text-muted-foreground mt-1">Join the Revvup community</p>
             </div>
             <button
               onClick={() => onOpenChange(false)}

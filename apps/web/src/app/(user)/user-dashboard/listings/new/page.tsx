@@ -1,5 +1,5 @@
 /**
- * New Listing Page - Alifh Design System
+ * New Listing Page - Revvup Design System
  * Authenticated users can create new car listings
  */
 

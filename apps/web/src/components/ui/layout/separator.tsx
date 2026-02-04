@@ -1,7 +1,7 @@
 /**
  * Separator Component
  * 
- * Follows Alifh Design Philosophy:
+ * Follows Revvup Design Philosophy:
  * - Subtle divider
  * - Clean and minimal
  */

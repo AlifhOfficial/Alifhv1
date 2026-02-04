@@ -1,5 +1,5 @@
 /**
- * Tamagui Config - Alifh Design System
+ * Tamagui Config - Revvup Design System
  * Inter font with mobile-first typography
  */
 
@@ -107,7 +107,7 @@ const animations = createAnimations({
   },
 });
 
-// Alifh themes
+// Revvup themes
 const lightTheme = {
   background: '#FFFFFF',
   backgroundHover: '#F5F5F7',
