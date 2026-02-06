@@ -10,10 +10,10 @@ import { useRouter } from 'next/navigation';
 import { useAuthRequired } from '@/hooks/use-auth-required';
 import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 
-function FlowApplyButton() {
+function FlowTrialButton() {
   const router = useRouter();
   const { isAuthenticated, showModal, openModal, closeModal } = useAuthRequired({
-    feature: "apply for Flow",
+    feature: "start your free trial",
     redirectTo: "/user-dashboard/requests",
   });
 
@@ -23,30 +23,21 @@ function FlowApplyButton() {
         onClick={() => isAuthenticated ? router.push('/user-dashboard/requests') : openModal()}
         className="w-full h-11 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center"
       >
-        Start with Flow
+        Start 30-Day Free Trial
       </button>
-      <AuthRequiredModal open={showModal} onClose={closeModal} feature="apply for Flow" redirectTo="/user-dashboard/requests" />
+      <AuthRequiredModal open={showModal} onClose={closeModal} feature="start your free trial" redirectTo="/user-dashboard/requests" />
     </>
   );
 }
 
-function BlackApplyButton() {
-  const router = useRouter();
-  const { isAuthenticated, showModal, openModal, closeModal } = useAuthRequired({
-    feature: "apply for Black",
-    redirectTo: "/user-dashboard/requests",
-  });
-
+function BlackContactButton() {
   return (
-    <>
-      <button
-        onClick={() => isAuthenticated ? router.push('/user-dashboard/requests') : openModal()}
-        className="w-full h-11 bg-muted border border-border text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
-      >
-        Apply for Black
-      </button>
-      <AuthRequiredModal open={showModal} onClose={closeModal} feature="apply for Black" redirectTo="/user-dashboard/requests" />
-    </>
+    <Link
+      href="/contact?type=dealer&plan=black"
+      className="w-full h-11 bg-muted border border-border text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
+    >
+      Contact Us
+    </Link>
   );
 }
 
@@ -68,11 +59,14 @@ export function PricingTiersSection() {
             </div>
             <p className="text-sm text-muted-foreground mb-6">per showroom</p>
             
-            <p className="text-base text-muted-foreground leading-relaxed mb-8 flex-1">
+            <p className="text-base text-muted-foreground leading-relaxed mb-2 flex-1">
               Unlimited listings, bookings, leads, messaging, and analytics.
             </p>
+            <p className="text-xs text-primary mb-6">
+              Most dealers start here.
+            </p>
 
-            <FlowApplyButton />
+            <FlowTrialButton />
           </div>
 
           {/* Black Card */}
@@ -91,19 +85,32 @@ export function PricingTiersSection() {
             </div>
             <p className="text-sm text-muted-foreground mb-6">per showroom</p>
             
-            <p className="text-base text-muted-foreground leading-relaxed mb-8 flex-1">
-              Everything in Flow, plus custom branding, a dedicated showroom page, and white-glove support.
+            <p className="text-base text-muted-foreground leading-relaxed mb-2 flex-1">
+              Everything in Flow, plus premium branding and dedicated support.
+            </p>
+            <p className="text-xs text-muted-foreground mb-6">
+              For established showrooms.
             </p>
 
-            <BlackApplyButton />
+            <BlackContactButton />
           </div>
 
         </div>
 
         {/* Note */}
         <p className="text-center text-sm text-muted-foreground mt-10 max-w-md mx-auto">
-          Same features. Same platform. Same rankings. Black is branding—not advantage.
+          No credit card required. List alongside any other platform.
         </p>
+        
+        {/* Link to Partner Page */}
+        <div className="text-center mt-6">
+          <Link
+            href="/partner"
+            className="text-sm text-primary hover:text-primary/80 transition-colors"
+          >
+            See all platform features →
+          </Link>
+        </div>
 
       </div>
     </section>

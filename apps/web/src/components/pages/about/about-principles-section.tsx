@@ -1,11 +1,12 @@
 /**
  * About Principles Section
- * Company values. Non-negotiables.
+ * What we stand for - matching vision page card style
  */
 
 'use client';
 
 import Image from 'next/image';
+import { Heart, BanIcon, CheckCircle2, Clock } from 'lucide-react';
 
 export function AboutPrinciplesSection() {
   return (
@@ -13,62 +14,56 @@ export function AboutPrinciplesSection() {
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header */}
-        <div className="text-center mb-16 space-y-5">
+        <div className="text-center mb-12 space-y-4">
           <span className="text-sm font-semibold uppercase tracking-wider text-primary">
-            What We Believe
+            Our Principles
           </span>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
-            Non-negotiables.
+            What We Won't Compromise.
+            <br />
+            <span className="text-muted-foreground">Ever.</span>
           </h2>
-          <p className="text-sm sm:text-base font-medium text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            These aren't marketing slogans. They're the rules we won't break, even when it's hard.
-          </p>
         </div>
 
-        {/* Image for What We Believe */}
-        <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg mb-12">
+        {/* Image */}
+        <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 mb-12">
           <Image
             src="/Abstract/pic5.png"
             alt="Our principles"
             fill
             className="object-cover"
-            sizes="(max-width: 1400px) 100vw, 1400px"
+            sizes="(max-width: 1600px) 100vw, 1600px"
           />
         </div>
 
-        {/* Values Grid */}
+        {/* Description */}
+        <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
+          These aren't marketing slogans. They're the rules we live by, 
+          even when it would be easier not to.
+        </p>
+
+        {/* Feature Cards */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
           <div className="p-6 rounded-xl bg-primary text-primary-foreground">
-            <h3 className="text-base font-semibold mb-2">User first</h3>
-            <p className="text-sm text-white/70">Every decision starts with: does this help them?</p>
+            <Heart className="w-5 h-5 text-primary-foreground/70 mb-3" />
+            <h3 className="text-base font-semibold mb-1.5">Users first</h3>
+            <p className="text-sm text-primary-foreground/70 leading-relaxed">Every decision starts with you.</p>
           </div>
           <div className="p-6 rounded-xl border border-border/40 bg-sidebar">
-            <h3 className="text-base font-semibold text-foreground mb-2">No ads. Ever.</h3>
-            <p className="text-sm text-muted-foreground">Not now, not later. Not even if it means staying small.</p>
+            <BanIcon className="w-5 h-5 text-primary/80 mb-3" />
+            <h3 className="text-base font-semibold mb-1.5">No ads, ever</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">Your attention isn't for sale.</p>
           </div>
           <div className="p-6 rounded-xl border border-border/40 bg-sidebar">
-            <h3 className="text-base font-semibold text-foreground mb-2">Quality over quantity</h3>
-            <p className="text-sm text-muted-foreground">We don't need every listing. Just the real ones.</p>
+            <CheckCircle2 className="w-5 h-5 text-primary/80 mb-3" />
+            <h3 className="text-base font-semibold mb-1.5">Quality over quantity</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">Real listings only. No spam.</p>
           </div>
           <div className="p-6 rounded-xl border border-border/40 bg-sidebar">
-            <h3 className="text-base font-semibold text-foreground mb-2">Long-term thinking</h3>
-            <p className="text-sm text-muted-foreground">Trust isn't built overnight. We're in no rush.</p>
+            <Clock className="w-5 h-5 text-primary/80 mb-3" />
+            <h3 className="text-base font-semibold mb-1.5">Long-term thinking</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">Trust takes time to build.</p>
           </div>
-        </div>
-
-        {/* Philosophy Tags */}
-        <div className="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto mt-12">
-          {[
-            'Less is more',
-            'Honest first',
-            'Trust is everything',
-            'Clarity over noise',
-            'Actions, not promises',
-          ].map((item, i) => (
-            <div key={i} className="px-4 py-2 rounded-full border border-border/40 bg-sidebar">
-              <span className="text-sm text-muted-foreground">{item}</span>
-            </div>
-          ))}
         </div>
 
       </div>

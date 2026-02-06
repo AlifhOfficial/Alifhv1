@@ -1,88 +1,41 @@
 import { MetadataRoute } from 'next';
 import { CAR_MAKES, UAE_EMIRATES } from '@/lib/filter-constants';
+import { staticPages, toolPages } from '@/lib/navigation';
 
 const BASE_URL = 'https://revvup.ae';
+
+// Force dynamic generation - don't cache sitemap at build time
+export const dynamic = 'force-dynamic';
+export const revalidate = 3600; // Revalidate every hour
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const urls: MetadataRoute.Sitemap = [];
 
-  // 1. Static high-priority pages
-  urls.push({
-    url: BASE_URL,
-    lastModified: new Date(),
-    changeFrequency: 'daily',
-    priority: 1.0,
+  // 1. Static pages (from centralized navigation config)
+  staticPages.forEach((page) => {
+    urls.push({
+      url: `${BASE_URL}${page.url}`,
+      lastModified: new Date(),
+      changeFrequency: page.changeFrequency,
+      priority: page.priority,
+    });
   });
 
+  // 2. Tools pages (SEO traffic magnets - from centralized config)
   urls.push({
-    url: `${BASE_URL}/sell`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly',
-    priority: 0.9,
-  });
-
-  urls.push({
-    url: `${BASE_URL}/listings`,
-    lastModified: new Date(),
-    changeFrequency: 'hourly',
-    priority: 0.9,
-  });
-
-  urls.push({
-    url: `${BASE_URL}/black`,
+    url: `${BASE_URL}/tools`,
     lastModified: new Date(),
     changeFrequency: 'weekly',
     priority: 0.8,
   });
 
-  // Marketing pages
-  urls.push({
-    url: `${BASE_URL}/partner`,
-    lastModified: new Date(),
-    changeFrequency: 'monthly',
-    priority: 0.8,
-  });
-
-  urls.push({
-    url: `${BASE_URL}/pricing`,
-    lastModified: new Date(),
-    changeFrequency: 'monthly',
-    priority: 0.7,
-  });
-
-  urls.push({
-    url: `${BASE_URL}/about`,
-    lastModified: new Date(),
-    changeFrequency: 'monthly',
-    priority: 0.7,
-  });
-
-  urls.push({
-    url: `${BASE_URL}/vision`,
-    lastModified: new Date(),
-    changeFrequency: 'monthly',
-    priority: 0.7,
-  });
-
-  urls.push({
-    url: `${BASE_URL}/badges`,
-    lastModified: new Date(),
-    changeFrequency: 'monthly',
-    priority: 0.7,
-  });
-
-  urls.push({
-    url: `${BASE_URL}/how-ranking-works`,
-    lastModified: new Date(),
-    changeFrequency: 'monthly',
-    priority: 0.7,
-  });
-
-  urls.push({
-    url: `${BASE_URL}/alternatives`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly',
-    priority: 0.8,
+  toolPages.forEach((tool) => {
+    urls.push({
+      url: `${BASE_URL}/tools/${tool}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    });
   });
 
   // 2. Location hub pages (7 emirates)
@@ -329,7 +282,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 7. Partner/Showroom pages (active verified partners only)
   try {
     // Dynamic import to avoid build-time DB connection issues
-    const { db, partner, eq, and, isNotNull } = await import('@alifh/database');
+    const { db, partner, carListing, eq, and, isNotNull, isNull, desc } = await import('@alifh/database');
+
+    // Fetch active listings (most important for SEO - individual car pages)
+    const activeListings = await db
+      .select({ 
+        id: carListing.id, 
+        updatedAt: carListing.updatedAt,
+        createdAt: carListing.createdAt 
+      })
+      .from(carListing)
+      .where(
+        and(
+          eq(carListing.lifecycleStatus, 'active'),
+          isNull(carListing.deletedAt)
+        )
+      )
+      .orderBy(desc(carListing.createdAt))
+      .limit(10000); // Google allows up to 50k URLs per sitemap
+
+    if (activeListings && activeListings.length > 0) {
+      activeListings.forEach((l) => {
+        urls.push({
+          url: `${BASE_URL}/listings/${l.id}`,
+          lastModified: l.updatedAt || l.createdAt || new Date(),
+          changeFrequency: 'daily',
+          priority: 0.8,
+        });
+      });
+    }
 
     const activePartners = await db
       .select({ slug: partner.slug, updatedAt: partner.updatedAt })

@@ -1,6 +1,6 @@
 /**
  * About Hero Section
- * Company origin. Clean and direct.
+ * Clean intro matching vision page style
  */
 
 'use client';
@@ -13,53 +13,50 @@ export function AboutHeroSection() {
       <div className="max-w-[1600px] mx-auto">
         
         {/* Header */}
-        <div className="text-center mb-16 space-y-5">
+        <div className="text-center mb-12 space-y-4">
           <span className="text-sm font-semibold uppercase tracking-wider text-primary">
             About Revvup
           </span>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
-            We are not for sale.
+            A Better Way to Buy & Sell Cars.
+            <br />
+            <span className="text-muted-foreground">In the UAE.</span>
           </h1>
-          <p className="text-sm sm:text-base font-medium text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            No investors. No board meetings. No exit strategy. 
-            Just a founder who got tired of complaining and decided to build.
-          </p>
         </div>
 
         {/* Hero Image */}
-        <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg mb-8">
+        <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 mb-12">
           <Image
             src="/Abstract/pic.png"
-            alt="Revvup"
+            alt="Revvup - UAE Car Marketplace"
             fill
             priority
             className="object-cover"
-            sizes="(max-width: 1400px) 100vw, 1400px"
+            sizes="(max-width: 1600px) 100vw, 1600px"
           />
         </div>
 
-        {/* Story - Small paragraphs */}
-        <div className="max-w-3xl mx-auto text-center mb-12 space-y-6">
-          <p className="text-sm sm:text-base font-medium text-muted-foreground leading-relaxed">
-            Dubai, 2026. One founder fed up with listing fees, pay-to-rank schemes, and platforms that compete with their own users. Instead of complaining, he built something different. Self-funded, no investors, no exit strategy. Just a marketplace that works for the people using it, not against them.
-          </p>
-        </div>
+        {/* Description */}
+        <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
+          No listing fees. No pay-to-rank schemes. No hidden agendas. 
+          Just a clean platform for people who want to buy or sell cars without the games.
+        </p>
 
-        {/* Company Facts */}
+        {/* Stats */}
         <div className="flex items-center justify-center gap-12 md:gap-20 pt-8 border-t border-border/40">
           <div className="text-center space-y-1">
-            <p className="text-xl font-semibold tracking-tight text-primary">Dubai</p>
-            <span className="text-sm text-muted-foreground">Built here</span>
+            <div className="text-2xl font-bold tracking-tight text-primary">Dubai</div>
+            <div className="text-sm text-muted-foreground">Built here</div>
           </div>
           <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <p className="text-xl font-semibold tracking-tight text-primary">Self-funded</p>
-            <span className="text-sm text-muted-foreground">Zero VCs</span>
+            <div className="text-2xl font-bold tracking-tight text-primary">100%</div>
+            <div className="text-sm text-muted-foreground">Independent</div>
           </div>
           <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <p className="text-xl font-semibold tracking-tight text-primary">Long-term</p>
-            <span className="text-sm text-muted-foreground">Here to stay</span>
+            <div className="text-2xl font-bold tracking-tight text-primary">0</div>
+            <div className="text-sm text-muted-foreground">Listing fees</div>
           </div>
         </div>
 

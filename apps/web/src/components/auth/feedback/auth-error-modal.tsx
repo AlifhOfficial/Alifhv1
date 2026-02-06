@@ -5,6 +5,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { XCircle } from "lucide-react";
 import { AuthErrorInfo, AuthErrorAction } from "@/lib/auth/errors";
 
 interface AuthErrorModalProps {
@@ -61,6 +62,7 @@ export function AuthErrorModal({
       >
         {/* Header */}
         <div className="text-center space-y-3 mb-6">
+          <XCircle className="w-6 h-6 text-red-500 mx-auto" />
           <h2 className="text-lg font-semibold tracking-tight text-foreground">
             {errorInfo.title}
           </h2>

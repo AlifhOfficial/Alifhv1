@@ -278,9 +278,9 @@ function PartnerProfileCard({ sellerData }: { sellerData: PartnerSellerData }) {
           {badges.slice(0, 3).map((badge, idx) => (
             <span
               key={idx}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold bg-muted text-muted-foreground rounded-lg"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground"
             >
-              <Award className="w-4 h-4" />
+              <Award className="w-4 h-4 text-amber-500" />
               {badge}
             </span>
           ))}
@@ -457,16 +457,9 @@ function UserProfileCard({ sellerData }: { sellerData: UserSellerData }) {
         {badges.map((badge, idx) => (
           <span
             key={idx}
-            className={cn(
-              "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-lg",
-              badge.toLowerCase() === 'ace' 
-                ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
-                : badge.toLowerCase() === 'first'
-                ? "bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                : "bg-muted text-muted-foreground"
-            )}
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground"
           >
-            <Award className="w-4 h-4" />
+            <Award className="w-4 h-4 text-amber-500" />
             {badge}
           </span>
         ))}

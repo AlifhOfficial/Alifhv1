@@ -4,127 +4,157 @@
  */
 
 import { useState } from 'react';
-import { Popover, YStack, XStack, Text, Button, Separator } from 'tamagui';
+import { View, Text, StyleSheet, Pressable, Modal } from 'react-native';
 import { User } from 'lucide-react-native';
 import { useTheme } from '@/context/theme-context';
+import { Colors } from '@/constants/theme';
 
-interface ProfileMenuProps {
-  onSignIn: () => void;
-  onCreateAccount: () => void;
-}
-
-export function ProfileMenu({ onSignIn, onCreateAccount }: ProfileMenuProps) {
+export function ProfileMenu() {
   const [open, setOpen] = useState(false);
-  const { isDark } = useTheme();
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
 
   const handleSignIn = () => {
     setOpen(false);
-    onSignIn();
+    // TODO: Implement auth
   };
 
   const handleCreateAccount = () => {
     setOpen(false);
-    onCreateAccount();
+    // TODO: Implement auth
   };
 
   return (
-    <Popover
-      open={open}
-      onOpenChange={setOpen}
-      placement="bottom-start"
-      offset={{ mainAxis: 8, crossAxis: 0 }}
-    >
-      <Popover.Trigger asChild>
-        <Button
-          unstyled
-          padding={4}
-          borderRadius={20}
-          pressStyle={{ opacity: 0.7 }}
-        >
-          {/* Avatar placeholder */}
-          <XStack
-            width={36}
-            height={36}
-            borderRadius={18}
-            backgroundColor="$surfaceSecondary"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <User 
-              size={18} 
-              color={isDark ? '#A3A3A3' : '#737373'} 
-              strokeWidth={2} 
-            />
-          </XStack>
-        </Button>
-      </Popover.Trigger>
-
-      <Popover.Content
-        enterStyle={{ opacity: 0, y: -8 }}
-        exitStyle={{ opacity: 0, y: -8 }}
-        animation="fast"
-        elevate
-        backgroundColor="$surface"
-        borderRadius={12}
-        borderWidth={1}
-        borderColor="$borderColor"
-        padding={4}
-        minWidth={160}
-        shadowColor="black"
-        shadowOffset={{ width: 0, height: 4 }}
-        shadowOpacity={0.15}
-        shadowRadius={12}
+    <>
+      <Pressable
+        style={[
+          styles.trigger,
+          { 
+            borderColor: colors.border,
+            backgroundColor: colors.surface,
+          }
+        ]}
+        onPress={() => setOpen(true)}
       >
-        <Popover.Arrow 
-          borderWidth={1} 
-          borderColor="$borderColor" 
-          backgroundColor="$surface"
-        />
+        {({ pressed }) => (
+          <User 
+            size={20} 
+            color="#8E8E93"
+            strokeWidth={2}
+            style={{ opacity: pressed ? 0.7 : 1 }}
+          />
+        )}
+      </Pressable>
 
-        <YStack>
-          {/* Sign In */}
-          <Button
-            unstyled
-            paddingVertical={10}
-            paddingHorizontal={12}
-            borderRadius={8}
-            pressStyle={{ backgroundColor: '$fillTertiary' }}
-            onPress={handleSignIn}
-          >
-            <Text
-              fontSize={15}
-              fontFamily="Inter_400Regular"
-              fontWeight="400"
-              color="$textPrimary"
-              letterSpacing={-0.24}
-            >
-              Sign in
-            </Text>
-          </Button>
+      <Modal
+        visible={open}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setOpen(false)}
+      >
+        <Pressable 
+          style={styles.overlay} 
+          onPress={() => setOpen(false)}
+        >
+          <View style={styles.contentWrapper}>
+            <View style={[
+              styles.content,
+              { 
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+              }
+            ]}>
+              {/* Sign In */}
+              <Pressable
+                style={styles.menuItem}
+                onPress={handleSignIn}
+              >
+                {({ pressed }) => (
+                  <View style={[
+                    styles.menuItemInner,
+                    pressed && { backgroundColor: colors.fillTertiary }
+                  ]}>
+                    <Text style={[styles.menuText, { color: colors.text }]}>
+                      Sign in
+                    </Text>
+                  </View>
+                )}
+              </Pressable>
 
-          <Separator backgroundColor="$borderColor" marginVertical={4} />
+              <View style={[styles.separator, { backgroundColor: colors.border }]} />
 
-          {/* Create Account */}
-          <Button
-            unstyled
-            paddingVertical={10}
-            paddingHorizontal={12}
-            borderRadius={8}
-            pressStyle={{ backgroundColor: '$fillTertiary' }}
-            onPress={handleCreateAccount}
-          >
-            <Text
-              fontSize={15}
-              fontFamily="Inter_400Regular"
-              fontWeight="400"
-              color="$textPrimary"
-              letterSpacing={-0.24}
-            >
-              Create account
-            </Text>
-          </Button>
-        </YStack>
-      </Popover.Content>
-    </Popover>
+              {/* Create Account */}
+              <Pressable
+                style={styles.menuItem}
+                onPress={handleCreateAccount}
+              >
+                {({ pressed }) => (
+                  <View style={[
+                    styles.menuItemInner,
+                    pressed && { backgroundColor: colors.fillTertiary }
+                  ]}>
+                    <Text style={[styles.menuText, { color: colors.text }]}>
+                      Create account
+                    </Text>
+                  </View>
+                )}
+              </Pressable>
+            </View>
+          </View>
+        </Pressable>
+      </Modal>
+    </>
   );
 }
+
+const styles = StyleSheet.create({
+  trigger: {
+    padding: 4,
+    borderRadius: 24,
+    borderWidth: 1,
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+  },
+  contentWrapper: {
+    marginTop: 80,
+    marginRight: 16,
+  },
+  content: {
+    borderRadius: 12,
+    borderWidth: 1,
+    padding: 4,
+    minWidth: 160,
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  menuItem: {
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  menuItemInner: {
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+  menuText: {
+    fontSize: 15,
+    fontFamily: 'Inter_400Regular',
+    fontWeight: '400' as any,
+    letterSpacing: -0.24,
+  },
+  separator: {
+    height: 1,
+    marginVertical: 4,
+  },
+});

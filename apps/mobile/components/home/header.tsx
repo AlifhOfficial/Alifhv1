@@ -4,65 +4,85 @@
  */
 
 import React from 'react';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { XStack, YStack, Text } from 'tamagui';
 import { Bell } from 'lucide-react-native';
 
 import { ProfileMenu } from './profile-menu';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useTheme } from '@/context/theme-context';
+import { Typography, Colors } from '@/constants/theme';
 
 interface HomeHeaderProps {
-  onSignIn: () => void;
-  onCreateAccount: () => void;
   onNotificationPress?: () => void;
 }
 
-export function HomeHeader({ onSignIn, onCreateAccount, onNotificationPress }: HomeHeaderProps) {
-  const { isDark } = useTheme();
+export function HomeHeader({ onNotificationPress }: HomeHeaderProps) {
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
 
   return (
-    <XStack
-      paddingTop={insets.top + 8}
-      paddingBottom={12}
-      paddingHorizontal={16}
-      alignItems="center"
-      justifyContent="space-between"
-    >
-      {/* Left: Profile Menu + Title */}
-      <XStack alignItems="center" gap={10}>
-        <ProfileMenu 
-          onSignIn={onSignIn}
-          onCreateAccount={onCreateAccount}
-        />
-        <Text
-          fontSize={28}
-          fontFamily="Inter_700Bold"
-          fontWeight="700"
-          color="$textPrimary"
-          letterSpacing={0.36}
-        >
-          Home
-        </Text>
-      </XStack>
+    <View style={[styles.container, { paddingTop: insets.top + 8 }]}>
+      {/* Left: Title */}
+      <Text style={[styles.title, { color: colors.text }]}>
+        Home
+      </Text>
 
-      {/* Right: Notifications + Theme Toggle */}
-      <XStack alignItems="center" gap={4}>
-        <XStack
-          padding={8}
-          pressStyle={{ opacity: 0.7 }}
+      {/* Right: Notifications + Profile Menu */}
+      <View style={styles.actions}>
+        <Pressable
+          style={[
+            styles.iconButton,
+            { 
+              borderColor: colors.border,
+              backgroundColor: colors.surface,
+            }
+          ]}
           onPress={onNotificationPress}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Bell 
-            size={22} 
-            color={isDark ? '#FAFAFA' : '#0D0D0D'} 
-            strokeWidth={2}
-          />
-        </XStack>
-        <ThemeToggle />
-      </XStack>
-    </XStack>
+          {({ pressed }) => (
+            <Bell 
+              size={20} 
+              color="#8E8E93" 
+              strokeWidth={2}
+              style={{ opacity: pressed ? 0.7 : 1 }}
+            />
+          )}
+        </Pressable>
+        <ProfileMenu />
+      </View>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    paddingBottom: 12,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  title: {
+    fontSize: Typography.navTitle.fontSize,
+    lineHeight: Typography.navTitle.lineHeight,
+    fontFamily: 'Inter_700Bold',
+    fontWeight: Typography.navTitle.fontWeight as any,
+    letterSpacing: Typography.navTitle.letterSpacing,
+  },
+  actions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  iconButton: {
+    padding: 4,
+    borderRadius: 24,
+    borderWidth: 1,
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

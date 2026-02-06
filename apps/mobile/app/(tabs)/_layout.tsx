@@ -6,8 +6,11 @@
 
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { View, StyleSheet } from 'react-native';
 
 import { CustomTabBar } from '@/components/layout/tab-bar';
+import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
+import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Colors } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -17,18 +20,24 @@ export default function TabLayout() {
   const colors = Colors[colorScheme];
 
   return (
-    <Tabs
-      tabBar={(props) => <CustomTabBar {...props} />}
-      sceneContainerStyle={{ backgroundColor: 'transparent' }}
-      screenOptions={{
-        headerShown: true,
-        headerRight: () => <ThemeToggle />,
-        headerStyle: {
-          backgroundColor: colors.background,
-        },
-        headerTintColor: colors.text,
-        headerShadowVisible: false,
-      }}>
+    <View style={styles.container}>
+      {/* Top Safe Area Gradient - Global */}
+      <TopSafeAreaGradient />
+      
+      {/* Bottom Safe Area Gradient - Global */}
+      <BottomSafeAreaGradient />
+
+      <Tabs
+        tabBar={(props) => <CustomTabBar {...props} />}
+        screenOptions={{
+          headerShown: true,
+          headerRight: () => <ThemeToggle />,
+          headerStyle: {
+            backgroundColor: colors.background,
+          },
+          headerTintColor: colors.text,
+          headerShadowVisible: false,
+        }}>
       <Tabs.Screen
         name="index"
         options={{
@@ -56,5 +65,12 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

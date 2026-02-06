@@ -17,14 +17,18 @@ export function ThemeToggle() {
       onPress={toggleTheme}
       style={({ pressed }) => [
         styles.button,
-        { opacity: pressed ? 0.7 : 1 }
+        { 
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+          opacity: pressed ? 0.7 : 1 
+        }
       ]}
       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
     >
       <IconSymbol 
         name={colorScheme === 'dark' ? 'moon.fill' : 'sun.max.fill'} 
         size={22} 
-        color={colors.text} 
+        color="#8E8E93" 
       />
     </Pressable>
   );
@@ -32,7 +36,12 @@ export function ThemeToggle() {
 
 const styles = StyleSheet.create({
   button: {
-    padding: 8,
-    marginRight: 8,
+    padding: 6,
+    borderRadius: 32,
+    borderWidth: 1,
+    width: 52,
+    height: 52,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

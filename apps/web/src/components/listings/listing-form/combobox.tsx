@@ -59,9 +59,9 @@ export function Combobox({
           aria-expanded={open}
           disabled={disabled}
           className={cn(
-            "w-full h-12 flex items-center justify-between px-0 bg-transparent border-b-2 border-border/40",
-            "transition-colors focus:outline-none focus:border-blue-500",
-            value ? "text-foreground text-sm font-medium" : "text-muted-foreground/40 text-sm",
+            "w-full h-12 flex items-center justify-between px-0 bg-transparent",
+            "transition-colors focus:outline-none",
+            value ? "text-sidebar-foreground text-sm font-medium" : "text-sidebar-foreground/40 text-sm",
             disabled && "opacity-50 cursor-not-allowed",
             className
           )}
@@ -71,23 +71,23 @@ export function Combobox({
             {selected?.label || placeholder}
           </span>
           <ChevronDown className={cn(
-            "w-4 h-4 text-muted-foreground/40 transition-transform duration-200",
+            "w-4 h-4 text-sidebar-foreground/40 transition-transform duration-200",
             open && "rotate-180"
           )} />
         </button>
       </PopoverTrigger>
       <PopoverContent 
-        className="w-[--radix-popover-trigger-width] p-0 rounded-xl border-border/30 shadow-xl bg-background/95 backdrop-blur-xl" 
+        className="w-[--radix-popover-trigger-width] p-0 rounded-xl border-sidebar-border shadow-xl bg-sidebar backdrop-blur-xl z-[10000]" 
         align="start"
         sideOffset={8}
       >
-        <Command className="rounded-xl">
+        <Command className="rounded-xl bg-transparent">
           <CommandInput 
             placeholder={searchPlaceholder} 
-            className="h-11 border-b border-border/20 text-sm" 
+            className="h-11 border-b border-sidebar-border text-sm" 
           />
           <CommandList id={listId} className="max-h-[240px]">
-            <CommandEmpty className="py-8 text-center text-sm text-muted-foreground/50">
+            <CommandEmpty className="py-8 text-center text-sm text-sidebar-foreground/50">
               No results found
             </CommandEmpty>
             <CommandGroup className="p-1.5">
@@ -100,8 +100,8 @@ export function Combobox({
                     setOpen(false);
                   }}
                   className={cn(
-                    "cursor-pointer rounded-lg px-3 py-2.5 text-sm transition-colors",
-                    value === option.value && "bg-blue-500/10 text-blue-600"
+                    "cursor-pointer rounded-lg px-3 py-2.5 text-sm transition-colors text-sidebar-foreground",
+                    value === option.value && "bg-primary/10 text-primary"
                   )}
                 >
                   <span className="flex items-center gap-2.5 flex-1">
@@ -109,7 +109,7 @@ export function Combobox({
                     {option.label}
                   </span>
                   {value === option.value && (
-                    <Check className="w-4 h-4 text-blue-500" />
+                    <Check className="w-4 h-4 text-primary" />
                   )}
                 </CommandItem>
               ))}

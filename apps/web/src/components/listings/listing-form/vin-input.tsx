@@ -88,7 +88,7 @@ export function VINInput({ value, onChange, onDecode, disabled, excludeListingId
   return (
     <div className="space-y-3">
       {/* Label */}
-      <label className="text-sm font-semibold text-muted-foreground/70">
+      <label className="text-sm font-semibold text-sidebar-foreground/70">
         Vehicle Identification Number
       </label>
       
@@ -101,14 +101,13 @@ export function VINInput({ value, onChange, onDecode, disabled, excludeListingId
           disabled={disabled}
           placeholder="Enter 17-character VIN"
           className={cn(
-            "w-full h-14 bg-transparent border-b-2 text-lg font-mono tracking-[0.15em] uppercase px-0 pr-12",
+            "w-full h-14 bg-transparent text-lg font-mono tracking-[0.15em] uppercase px-0 pr-12 text-sidebar-foreground",
             "transition-all duration-200 outline-none",
-            status === 'available' && "border-green-500 text-foreground",
-            (status === 'taken' || status === 'invalid') && "border-red-500 text-foreground",
-            status === 'error' && "border-yellow-500 text-foreground",
-            (status === 'idle' || status === 'checking') && "border-border/40 focus:border-blue-500 text-foreground",
+            status === 'available' && "text-green-500",
+            (status === 'taken' || status === 'invalid') && "text-red-500",
+            status === 'error' && "text-yellow-500",
             disabled && "opacity-50 cursor-not-allowed",
-            "placeholder:text-muted-foreground/30 placeholder:tracking-normal placeholder:font-sans placeholder:text-base"
+            "placeholder:text-sidebar-foreground/30 placeholder:tracking-normal placeholder:font-sans placeholder:text-base"
           )}
         />
         
@@ -130,7 +129,7 @@ export function VINInput({ value, onChange, onDecode, disabled, excludeListingId
       
       {/* Footer - Character count & status message */}
       <div className="flex items-center justify-between">
-        <p className="text-[11px] font-semibold text-muted-foreground/70 tabular-nums">
+        <p className="text-[11px] font-semibold text-sidebar-foreground/70 tabular-nums">
           {value.length}/17
         </p>
         {message && (

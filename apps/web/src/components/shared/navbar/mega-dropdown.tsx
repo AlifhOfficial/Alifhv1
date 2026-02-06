@@ -7,15 +7,7 @@
 "use client";
 
 import Link from "next/link";
-
-interface NavItem {
-  label: string;
-  href: string;
-  submenu?: {
-    title: string;
-    items: { label: string; href: string; description?: string }[];
-  }[];
-}
+import type { NavItem } from "@/lib/navigation";
 
 interface MegaDropdownProps {
   activeDropdown: string | null;

@@ -163,16 +163,33 @@ export interface UpdateCarListingInput {
 /**
  * Fields that trigger re-moderation when edited on user-posted listings.
  * Staff-posted listings can edit these without re-moderation.
+ * 
+ * MAJOR edits: Core vehicle identity, media, and text content that could be abused.
+ * These trigger re-moderation because they could hide fraud or scams.
  */
-export const CONTENT_EDIT_KEYS: Array<keyof UpdateCarListingInput> = [
+export const MAJOR_CONTENT_EDIT_KEYS: Array<keyof UpdateCarListingInput> = [
+  // Core identity - could be used for bait-and-switch
   'make',
   'model',
   'year',
-  'trim',
-  'description',
   'vin',
+  // Content that could hide scams
+  'description',
+  'images',
+  'videoUrl',
+  'thumbnail',
+  // Price changes could indicate fraud
   'price',
   'currency',
+];
+
+/**
+ * Minor edit fields that do NOT trigger re-moderation.
+ * These are typically specifications, features, and metadata that don't
+ * fundamentally change what the listing represents.
+ */
+export const MINOR_CONTENT_EDIT_KEYS: Array<keyof UpdateCarListingInput> = [
+  'trim',
   'isNegotiable',
   'bodyType',
   'fuelType',
@@ -195,14 +212,20 @@ export const CONTENT_EDIT_KEYS: Array<keyof UpdateCarListingInput> = [
   'sellerType',
   'emirate',
   'city',
-  'thumbnail',
-  'images',
-  'videoUrl',
   'technicalFeatures',
   'extras',
   'specialNotes',
   'badges',
   'tags',
+];
+
+/**
+ * All content edit keys (union of major and minor)
+ * @deprecated Use MAJOR_CONTENT_EDIT_KEYS for re-moderation checks
+ */
+export const CONTENT_EDIT_KEYS: Array<keyof UpdateCarListingInput> = [
+  ...MAJOR_CONTENT_EDIT_KEYS,
+  ...MINOR_CONTENT_EDIT_KEYS,
 ];
 
 /**

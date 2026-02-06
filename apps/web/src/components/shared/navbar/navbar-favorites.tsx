@@ -143,12 +143,13 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
           <div className="max-h-[360px] overflow-y-auto">
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+                <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
               </div>
             ) : count === 0 ? (
-              <div className="flex flex-col items-center justify-center py-10 px-6 text-center">
-                <Heart className="w-8 h-8 text-muted-foreground/30 mb-3" />
-                <p className="text-sm text-muted-foreground">
+              <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                <Heart className="w-12 h-12 text-muted-foreground/40 mb-3" />
+                <p className="text-[15px] font-semibold text-foreground/80">No favorites yet</p>
+                <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
                   Your dream garage awaits
                 </p>
               </div>
@@ -163,10 +164,11 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-10 px-6 text-center">
-                <Heart className="w-8 h-8 text-muted-foreground/30 mb-3" />
-                <p className="text-sm text-muted-foreground">
-                  Unable to load favorites
+              <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                <Heart className="w-12 h-12 text-muted-foreground/40 mb-3" />
+                <p className="text-[15px] font-semibold text-foreground/80">No favorites yet</p>
+                <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+                  Your dream garage awaits
                 </p>
               </div>
             )}
@@ -178,7 +180,7 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
               <Link
                 href="/user-dashboard/favorites"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-primary hover:bg-sidebar-accent transition-colors"
+                className="flex items-center justify-center gap-2 px-4 py-3.5 text-sm font-semibold text-primary hover:bg-sidebar-accent transition-colors"
               >
                 View all favorites
                 <ChevronRight className="w-4 h-4" />

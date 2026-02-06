@@ -3,189 +3,251 @@
  * Converts visitors before redirecting to auth flow
  */
 
-import { Metadata } from 'next';
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Check, Shield, Zap, TrendingUp } from 'lucide-react';
-
-export const metadata: Metadata = {
-  title: 'Sell Your Car in Dubai — Free Forever | Revvup',
-  description: 'List your car free in UAE. No listing fees, no boosts, no ads. VIN required. Book test drives online. Private sellers pay nothing. Ever. The free alternative.',
-  keywords: 'sell my car dubai, sell car uae, list car free dubai, post car ad free dubai, sell car dubai free, best place to sell car dubai, how to sell car dubai, free car listing uae, sell car online dubai, where to sell my car dubai, dubizzle cars, dubicars sell, yallmotors alternative, cars24 alternative, shoofi cars, ayeshi alternative, free car classifieds uae',
-  openGraph: {
-    title: 'Sell Your Car in Dubai — Free Forever | Revvup',
-    description: 'List your car free in UAE. No fees, no boosts, no ads. VIN required.',
-    type: 'website',
-    url: 'https://revvup.ae/sell',
-  },
-  alternates: {
-    canonical: 'https://revvup.ae/sell',
-  },
-};
+import { CheckCircle2, Shield, Zap, Clock, Camera, MessageSquare } from 'lucide-react';
 
 export default function SellPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative overflow-hidden border-b bg-gradient-to-b from-background to-muted/20 pt-20 pb-16 sm:pt-24 sm:pb-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center">
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Sell Your Car.
-              <span className="block text-primary mt-2">Free. Forever.</span>
+      <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto">
+          
+          {/* Header */}
+          <div className="text-center mb-12 space-y-5">
+            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+              For Private Sellers
+            </span>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+              List free.
+              <br />
+              <span className="text-muted-foreground">Sell fast.</span>
             </h1>
-            <p className="mt-6 text-lg text-muted-foreground sm:text-xl">
-              No listing fees. No paid boosts. No sponsored ads. Just list your car and reach serious buyers in UAE.
-            </p>
-            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/user-dashboard/listings/new">
-                <Button size="lg" className="w-full sm:w-auto text-base px-8 rounded-full">
-                  List Your Car Free
-                </Button>
-              </Link>
-              <Link href="/listings">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto text-base px-8 rounded-full">
-                  Browse Listings
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Why Sell on Revvup */}
-      <section className="py-16 sm:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Why Private Sellers Choose Revvup
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              We built the marketplace sellers deserve. No gimmicks, no hidden fees.
-            </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            <FeatureCard
-              icon={<Check className="h-6 w-6" />}
-              title="Free Forever"
-              description="List unlimited cars. Zero listing fees. No payment required. Ever."
-            />
-            <FeatureCard
-              icon={<Shield className="h-6 w-6" />}
-              title="VIN Required"
-              description="Every listing shows VIN number. Builds trust with serious buyers."
-            />
-            <FeatureCard
-              icon={<Zap className="h-6 w-6" />}
-              title="No Paid Boosts"
-              description="Your listing ranks by quality, not by who pays more. Fair ranking for everyone."
-            />
-            <FeatureCard
-              icon={<TrendingUp className="h-6 w-6" />}
-              title="Test Drive Bookings"
-              description="Buyers book test drives online. You stay in control of your schedule."
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="py-16 sm:py-20 bg-muted/20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              How It Works
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              List your car in minutes. It's that simple.
-            </p>
+          {/* Hero Infographic */}
+          <div className="mb-12">
+            <SellHeroInfographic />
           </div>
 
-          <div className="mx-auto max-w-3xl">
-            <div className="space-y-8">
-              <Step
-                number={1}
-                title="Create Your Free Listing"
-                description="Add photos, details, and your car's VIN. No credit card needed."
-              />
-              <Step
-                number={2}
-                title="Reach Serious Buyers"
-                description="Your listing appears to buyers across UAE. No sponsored competitors above you."
-              />
-              <Step
-                number={3}
-                title="Manage Test Drives"
-                description="Accept or decline test drive requests. Chat with buyers directly."
-              />
-              <Step
-                number={4}
-                title="Sell Your Car"
-                description="Close the deal. We never take a commission or transaction fee."
-              />
-            </div>
-          </div>
+          {/* Description */}
+          <p className="text-base text-muted-foreground max-w-md mx-auto text-center mb-12 leading-relaxed">
+            No fees. No boosts. No ads. Just your car, seen by real buyers.
+          </p>
 
-          <div className="mt-12 text-center">
+          {/* CTA */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link href="/user-dashboard/listings/new">
-              <Button size="lg" className="text-base px-8 rounded-full">
-                Get Started — It's Free
+              <Button size="lg" className="w-full sm:w-auto h-11 px-8 text-sm font-semibold rounded-lg">
+                List Your Car
+              </Button>
+            </Link>
+            <Link href="/listings">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto h-11 px-8 text-sm font-semibold rounded-lg">
+                Browse Cars
               </Button>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Trust Section */}
-      <section className="py-16 sm:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Built for Sellers, Not Algorithms
+      {/* How It Works Section */}
+      <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto">
+          
+          {/* Header */}
+          <div className="text-center mb-12 space-y-4">
+            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+              How It Works
+            </span>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+              List in minutes.
             </h2>
-            <p className="mt-6 text-lg text-muted-foreground">
-              Other platforms charge listing fees, boost fees, and commissions. We don't. 
-              Your car deserves to be seen without paying for visibility. That's why Revvup is free for private sellers. Always.
-            </p>
-            <div className="mt-10">
-              <Link href="/user-dashboard/listings/new">
-                <Button size="lg" className="text-base px-8 rounded-full">
-                  List Your Car Now
-                </Button>
-              </Link>
-            </div>
+          </div>
+
+          {/* Steps Infographic */}
+          <div className="mb-12">
+            <StepsInfographic />
+          </div>
+
+          {/* Description */}
+          <p className="text-base text-muted-foreground max-w-md mx-auto text-center leading-relaxed">
+            Photos. VIN. Price. Done.
+          </p>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto">
+          
+          {/* Header */}
+          <div className="text-center mb-12 space-y-4">
+            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+              Why Revvup
+            </span>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+              Built for you.
+            </h2>
+          </div>
+
+          {/* Feature Cards */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto mb-12">
+            <FeatureCard 
+              icon={CheckCircle2}
+              title="Free forever"
+              description="No listing fees. No payment required."
+            />
+            <FeatureCard 
+              icon={Shield}
+              title="VIN verified"
+              description="Builds trust with serious buyers."
+            />
+            <FeatureCard 
+              icon={Zap}
+              title="No paid boosts"
+              description="Quality ranks. Not money."
+            />
+            <FeatureCard 
+              icon={Clock}
+              title="Test drives"
+              description="Buyers book. You approve."
+            />
+            <FeatureCard 
+              icon={Camera}
+              title="Unlimited photos"
+              description="Show every angle."
+            />
+            <FeatureCard 
+              icon={MessageSquare}
+              title="Direct chat"
+              description="No middlemen."
+            />
           </div>
         </div>
       </section>
-    </div>
+
+      {/* Closing CTA Section */}
+      <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto">
+          
+          {/* Header */}
+          <div className="text-center mb-12 space-y-5">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+              Ready to sell?
+            </h2>
+          </div>
+
+          {/* CTA */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link href="/user-dashboard/listings/new">
+              <Button size="lg" className="w-full sm:w-auto h-11 px-8 text-sm font-semibold rounded-lg">
+                List Your Car
+              </Button>
+            </Link>
+          </div>
+
+          {/* Trust badges */}
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 mt-12 pt-8 border-t border-border/40">
+            <span className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
+              <CheckCircle2 className="w-4 h-4 text-primary" />Free for private sellers
+            </span>
+            <span className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
+              <CheckCircle2 className="w-4 h-4 text-primary" />No commission
+            </span>
+            <span className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
+              <CheckCircle2 className="w-4 h-4 text-primary" />Based in Dubai
+            </span>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }
 
-function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
-  return (
-    <div className="relative rounded-2xl border bg-card p-6 hover:shadow-lg transition-shadow">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
-        {icon}
-      </div>
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <p className="text-sm text-muted-foreground">{description}</p>
-    </div>
-  );
-}
+// ============================================================================
+// HERO INFOGRAPHIC - Comparison
+// ============================================================================
 
-function Step({ number, title, description }: { number: number; title: string; description: string }) {
+function SellHeroInfographic() {
   return (
-    <div className="flex gap-4">
-      <div className="flex-shrink-0">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">
-          {number}
+    <div className="rounded-2xl overflow-hidden border border-border/40 bg-sidebar">
+      {/* Window Content */}
+      <div className="flex flex-col md:flex-row min-h-[450px] sm:min-h-[500px] lg:min-h-[550px]">
+        {/* Left - Others */}
+        <div className="flex-1 p-10 sm:p-14 lg:p-20 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-border/40">
+          <span className="text-xs font-medium text-muted-foreground/50 mb-10">Others</span>
+          
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="px-3 py-1.5 rounded-md bg-red-500/10 border border-red-500/20">
+                <span className="text-sm font-semibold text-red-500">AED 500–1,000</span>
+              </div>
+              <span className="text-xs text-muted-foreground/50">to list</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="px-3 py-1.5 rounded-md bg-orange-500/10 border border-orange-500/20">
+                <span className="text-sm font-semibold text-orange-500">+AED 49–199</span>
+              </div>
+              <span className="text-xs text-muted-foreground/50">to boost</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="px-3 py-1.5 rounded-md bg-amber-500/10 border border-amber-500/20">
+                <span className="text-sm font-semibold text-amber-500">+AED 99</span>
+              </div>
+              <span className="text-xs text-muted-foreground/50">to feature</span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Right - Revvup */}
+        <div className="w-full md:w-[300px] lg:w-[400px] p-10 sm:p-14 lg:p-20 flex flex-col items-center justify-center">
+          <span className="text-xs font-medium text-primary mb-10">Revvup</span>
+          
+          <div className="flex flex-col items-center">
+            <div className="text-7xl sm:text-8xl lg:text-9xl font-bold text-primary leading-none">
+              0
+            </div>
+            <span className="text-base text-primary/70 font-medium mt-2">fees</span>
+          </div>
         </div>
       </div>
-      <div className="flex-1 pt-1">
-        <h3 className="text-xl font-semibold mb-1">{title}</h3>
-        <p className="text-muted-foreground">{description}</p>
-      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// STEPS INFOGRAPHIC
+// ============================================================================
+
+function StepsInfographic() {
+  return (
+    <div className="rounded-2xl overflow-hidden border border-border/40 bg-sidebar min-h-[500px] sm:min-h-[550px] lg:min-h-[600px] flex items-center justify-center">
+      {/* Placeholder - content coming later */}
+      <p className="text-sm text-muted-foreground/30">Coming soon</p>
+    </div>
+  );
+}
+
+// ============================================================================
+// FEATURE CARD
+// ============================================================================
+
+interface FeatureCardProps {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  description: string;
+}
+
+function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
+  return (
+    <div className="p-6 rounded-xl border border-border/40 bg-sidebar">
+      <Icon className="w-5 h-5 text-primary/80 mb-3" />
+      <h3 className="text-base font-semibold mb-1">{title}</h3>
+      <p className="text-sm text-muted-foreground">{description}</p>
     </div>
   );
 }

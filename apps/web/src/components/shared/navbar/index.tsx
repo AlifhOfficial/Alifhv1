@@ -18,6 +18,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Moon, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { navItems, type NavItem } from "@/lib/navigation";
 import { MegaDropdown } from "./mega-dropdown";
 import { MobileMenu } from "./mobile-menu";
 import { ProfileMenu } from "./user-dropdown";
@@ -28,84 +29,7 @@ import { useFloatingChatSafe } from "@/components/messaging/floating-chat-manage
 import { useUser } from "@/hooks/auth/use-auth";
 import { handleSignOut } from "@/lib/auth/sign-out";
 
-interface NavItem {
-  label: string;
-  href: string;
-  submenu?: {
-    title: string;
-    items: { label: string; href: string; description?: string }[];
-  }[];
-}
-
-const navItems: NavItem[] = [
-  {
-    label: "Listings",
-    href: "/listings",
-    submenu: [
-      {
-        title: "Explore Listings",
-        items: [
-          { label: "All Vehicles", href: "/listings" },
-          { label: "Black Collection", href: "/listings?black=true" },
-          { label: "Black Members", href: "/listings?blackTier=true" },
-          { label: "New Arrivals", href: "/listings?sort=newest" },
-        ],
-      },
-      {
-        title: "Shop by Type",
-        items: [
-          { label: "Sedans", href: "/listings?bodyType=sedan" },
-          { label: "SUVs", href: "/listings?bodyType=suv" },
-          { label: "Coupes", href: "/listings?bodyType=coupe" },
-        ],
-      },
-      {
-        title: "More from Listings",
-        items: [
-          { label: "Under AED 50k", href: "/listings?priceMax=50000" },
-          { label: "Under AED 100k", href: "/listings?priceMax=100000" },
-          { label: "Low Mileage", href: "/listings?mileageMax=50000" },
-          { label: "Negotiable", href: "/listings?negotiable=true" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Black",
-    href: "/black",
-  },
-  {
-    label: "Partners",
-    href: "/partner",
-    submenu: [
-      {
-        title: "For Dealers",
-        items: [
-          { label: "Partner with Revvup", href: "/partner" },
-          { label: "Pricing", href: "/pricing" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "About",
-    href: "/about",
-    submenu: [
-      {
-        title: "Company",
-        items: [
-          { label: "About Revvup", href: "/about" },
-          { label: "How Ranking Works", href: "/how-ranking-works" },
-          { label: "Badges", href: "/badges" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Help",
-    href: "/faq",
-  },
-];
+export type { NavItem };
 
 // External store for mounted state (avoids setState in effect)
 const mountedStore = {
@@ -324,8 +248,8 @@ export function Navbar() {
               {navItems.map((item) => (
                 <div 
                   key={item.label}
-                  onMouseEnter={() => item.submenu && handleDropdownOpen(item.label)}
-                  onMouseLeave={() => item.submenu && handleDropdownClose()}
+                  onMouseEnter={() => item.submenu && !item.hideSubmenu && handleDropdownOpen(item.label)}
+                  onMouseLeave={() => item.submenu && !item.hideSubmenu && handleDropdownClose()}
                 >
                   <Link
                     href={item.href}

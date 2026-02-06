@@ -143,27 +143,30 @@ export function ListingsView({
             )}
           </div>
 
-          {/* Desktop Layout - Simple Flex */}
-          <div className="hidden lg:flex gap-6">
-            {/* LEFT: Sidebar */}
+          {/* Desktop Layout - Fixed height with scrollable content */}
+          <div className="hidden lg:flex gap-6 h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)]">
+            {/* LEFT: Sidebar - fixed, doesn't scroll */}
             {sidebarOpen && (
-              <ListingsSidebar
-                params={params}
-                facets={facets}
-                activeFilterCount={activeFilterCount}
-                isLoading={isLoading}
-                embedded={embedded}
-                sidebarOpen={sidebarOpen}
-                onSidebarToggle={setSidebarOpen}
-                setFilters={setFilters}
-                onClearAll={clearFilters}
-              />
+              <div className="shrink-0 h-full overflow-y-auto scrollbar-hide">
+                <ListingsSidebar
+                  params={params}
+                  facets={facets}
+                  activeFilterCount={activeFilterCount}
+                  isLoading={isLoading}
+                  embedded={embedded}
+                  sidebarOpen={sidebarOpen}
+                  onSidebarToggle={setSidebarOpen}
+                  setFilters={setFilters}
+                  onClearAll={clearFilters}
+                />
+              </div>
             )}
 
-            {/* RIGHT: Search Header + Content */}
-            <div className="flex-1 min-w-0">
+            {/* RIGHT: Search Header + Content - scrollable */}
+            <div className="flex-1 min-w-0 h-full overflow-y-auto scrollbar-hide">
               {/* TOP: Sticky Search Header */}
-              <ListingsHeader
+              <div className="sticky top-0 z-10 bg-background">
+                <ListingsHeader
                 params={params}
                 facets={facets}
                 meta={meta}
@@ -181,8 +184,9 @@ export function ListingsView({
                 clearFilters={clearFilters}
                 setSort={setSort}
               />
+              </div>
 
-              {/* BOTTOM: Scrollable Content */}
+              {/* BOTTOM: Content */}
               <main className="py-4 sm:py-6">
                 <ListingsContent
                   listings={listings}
@@ -196,20 +200,18 @@ export function ListingsView({
                   loadMore={loadMore}
                 />
               </main>
-            </div>
-          </div>
 
-          {/* Pagination - below sidebar and content, full width */}
-          <div className="hidden lg:block">
-            {!isLoading && !isFetching && listings.length > 0 && (
-              <ListingsPagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                totalResults={meta?.total ?? 0}
-                isFetching={isFetching}
-                goToPage={goToPage}
-              />
-            )}
+              {/* Pagination - inside scrollable area */}
+              {!isLoading && !isFetching && listings.length > 0 && (
+                <ListingsPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalResults={meta?.total ?? 0}
+                  isFetching={isFetching}
+                  goToPage={goToPage}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>

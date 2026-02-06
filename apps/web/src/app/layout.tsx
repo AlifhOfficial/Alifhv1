@@ -18,7 +18,7 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://revvup.ae'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://revvup.ae'),
   title: 'Revvup - Vehicle Marketplace',
   description: 'Buy and sell vehicles with AI-powered valuations',
   manifest: '/manifest.json',

@@ -89,11 +89,11 @@ export default function InventoryPage({ searchParams }: PageProps) {
 
 function PageSkeleton() {
   return (
-    <div className="min-h-screen bg-background pt-16 sm:pt-20">
+    <div className="min-h-screen bg-background pt-16 sm:pt-20 overflow-y-auto scrollbar-hide">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex gap-0">
           <div className="w-64 flex-shrink-0 hidden lg:block" />
-          <main className="flex-1 min-w-0 lg:pl-8">
+          <main className="flex-1 min-w-0 lg:pl-8 overflow-y-auto scrollbar-hide">
             <div className="h-20 bg-muted/20 rounded-lg animate-pulse" />
             <div className="mt-4 sm:mt-6 md:mt-8 space-y-3">
               {Array.from({ length: 6 }).map((_, i) => (

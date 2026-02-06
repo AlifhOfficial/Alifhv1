@@ -334,9 +334,14 @@ async function seedPartners() {
 
     for (const partnerData of partnersData) {
       const partnerId = `partner_${createId()}`;
+      const slug = partnerData.brandName
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
       
       await db.insert(partner).values({
         id: partnerId,
+        slug,
         ...partnerData,
         verifiedAt: partnerData.isVerified ? new Date() : null,
         verifiedBy: partnerData.isVerified && adminUser ? adminUser.id : null,

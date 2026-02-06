@@ -193,6 +193,15 @@ export function ImageUpload({
     }
   };
 
+  // Move image to first position (set as thumbnail)
+  const setAsThumbnail = (index: number) => {
+    if (index === 0) return; // Already thumbnail
+    const newImages = [...value];
+    const [movedImage] = newImages.splice(index, 1);
+    newImages.unshift(movedImage);
+    onChange(newImages);
+  };
+
   const handleClick = () => {
     inputRef.current?.click();
   };
@@ -210,21 +219,33 @@ export function ImageUpload({
       {value.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {value.map((url, index) => (
-            <div key={index} className="relative group aspect-square rounded-lg overflow-hidden border border-border/40 bg-muted">
+            <div key={index} className="relative group aspect-square rounded-xl overflow-hidden bg-muted/50">
               <img 
                 src={url} 
                 alt={`Upload ${index + 1}`}
                 className="w-full h-full object-cover"
               />
+              {/* Delete button - top right */}
               <button
                 type="button"
                 onClick={() => removeImage(index)}
-                className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                className="absolute top-2 right-2 p-1.5 bg-black/60 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
               >
                 <X className="w-4 h-4" />
               </button>
+              {/* Set as thumbnail button - bottom left (only show if not already thumbnail) */}
+              {index !== 0 && (
+                <button
+                  type="button"
+                  onClick={() => setAsThumbnail(index)}
+                  className="absolute bottom-2 left-2 px-2.5 py-1.5 bg-black/60 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
+                >
+                  Mark thumbnail
+                </button>
+              )}
+              {/* Thumbnail badge */}
               {index === 0 && (
-                <div className="absolute bottom-2 left-2 px-2 py-1 bg-primary/90 text-primary-foreground text-xs rounded">
+                <div className="absolute bottom-2 left-2 px-2.5 py-1.5 bg-primary text-primary-foreground text-xs font-medium rounded-lg">
                   Thumbnail
                 </div>
               )}

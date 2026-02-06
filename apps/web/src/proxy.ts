@@ -65,6 +65,7 @@ function isExtendedUser(user: unknown): user is ExtendedUser {
 // Next.js 16+ proxy function
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  
   const isApiRoute = pathname.startsWith('/api/');
   
   // Skip public API routes entirely - no session caching overhead

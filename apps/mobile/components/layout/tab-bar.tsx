@@ -4,30 +4,26 @@
  */
 
 import React from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet, Platform } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { Platform } from 'react-native';
-import { Home, MessageCircle, Heart, Search } from 'lucide-react-native';
+import { Home, MessageCircle, LayoutGrid } from 'lucide-react-native';
 
 import { useTheme } from '@/context/theme-context';
+import { Colors } from '@/constants/theme';
 
 const TAB_ICONS = {
   index: Home,
   messages: MessageCircle,
-  saved: Heart,
-  search: Search,
+  search: LayoutGrid,
 };
 
 export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const { colorScheme } = useTheme();
   const insets = useSafeAreaInsets();
   const isDark = colorScheme === 'dark';
-
-  // Split tabs: first 3 in pill, search separate
-  const pillTabs = state.routes.slice(0, 3);
-  const searchTab = state.routes[3];
+  const colors = Colors[colorScheme];
 
   const handlePress = (route: typeof state.routes[0], index: number) => {
     if (Platform.OS === 'ios') {
@@ -46,129 +42,87 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
   };
 
   return (
-    <View style={[
-      styles.container, 
-      { paddingBottom: Math.max(insets.bottom, 12) }
-    ]}>
-      {/* Left Pill Group */}
-      <View style={[styles.pillContainer, isDark ? styles.pillDark : styles.pillLight]}>
-        {pillTabs.map((route, index) => {
-          const isFocused = state.index === index;
-          const Icon = TAB_ICONS[route.name as keyof typeof TAB_ICONS] || Home;
+    <View style={styles.container}>
+      {/* Tab bar content */}
+      <View style={[styles.tabBarContent, { paddingBottom: insets.bottom + 6 }]}>
+        {/* Centered Pill Group with 3 tabs: Home, Messages, Browse */}
+        <View style={[styles.pillWrapper, { backgroundColor: colors.background }]}>
+          <View style={styles.pillContent}>
+            {[state.routes[0], state.routes[1], state.routes[3]].map((route, idx) => {
+              const actualIndex = idx === 2 ? 3 : idx;
+              const isFocused = state.index === actualIndex;
+              const Icon = TAB_ICONS[route.name as keyof typeof TAB_ICONS] || Home;
 
-          return (
-            <Pressable
-              key={route.key}
-              onPress={() => handlePress(route, index)}
-              style={[
-                styles.pillTab,
-                isFocused && (isDark ? styles.pillTabActiveDark : styles.pillTabActiveLight),
-              ]}
-            >
-              <Icon
-                size={22}
-                color={isFocused 
-                  ? (isDark ? '#FFFFFF' : '#000000')
-                  : (isDark ? '#8E8E93' : '#8E8E93')
-                }
-                fill={isFocused ? (isDark ? '#FFFFFF' : '#000000') : 'transparent'}
-                strokeWidth={isFocused ? 2.5 : 2}
-              />
-            </Pressable>
-          );
-        })}
+              // Active: contrasting color (white on dark, black on light) with fill
+              // Inactive: grey tone with surface fill
+              const iconColor = isFocused 
+                ? (isDark ? '#FFFFFF' : '#000000')
+                : (isDark ? '#666666' : '#999999');
+
+              return (
+                <Pressable
+                  key={route.key}
+                  onPress={() => handlePress(route, actualIndex)}
+                  style={styles.pillTab}
+                >
+                  <Icon
+                    size={22}
+                    color={iconColor}
+                    fill={isFocused ? iconColor : colors.surface}
+                    strokeWidth={2}
+                  />
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
       </View>
-
-      {/* Right Search Button */}
-      {searchTab && (
-        <Pressable
-          onPress={() => handlePress(searchTab, 3)}
-          style={[
-            styles.searchButton,
-            isDark ? styles.searchButtonDark : styles.searchButtonLight,
-            state.index === 3 && (isDark ? styles.searchButtonActiveDark : styles.searchButtonActiveLight),
-          ]}
-        >
-          <Search
-            size={22}
-            color={state.index === 3 
-              ? (isDark ? '#FFFFFF' : '#000000')
-              : (isDark ? '#8E8E93' : '#8E8E93')
-            }
-            strokeWidth={state.index === 3 ? 2.5 : 2}
-          />
-        </Pressable>
-      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 12,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 20,
   },
 
-  // Pill container
-  pillContainer: {
+  // Tab bar content wrapper
+  tabBarContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 25,
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 6,
+  },
+
+  // Pill Group
+  pillWrapper: {
+    borderRadius: 18,
+    overflow: 'visible',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  pillContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 4,
-  },
-  pillDark: {
-    backgroundColor: '#1C1C1E',
-  },
-  pillLight: {
-    backgroundColor: '#F2F2F7',
+    gap: 4,
   },
 
   // Individual pill tab
   pillTab: {
-    width: 48,
-    height: 40,
+    width: 52,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 20,
-  },
-  pillTabActiveDark: {
-    backgroundColor: '#2C2C2E',
-  },
-  pillTabActiveLight: {
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-
-  // Search button
-  searchButton: {
-    width: 48,
-    height: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 24,
-  },
-  searchButtonDark: {
-    backgroundColor: '#1C1C1E',
-  },
-  searchButtonLight: {
-    backgroundColor: '#F2F2F7',
-  },
-  searchButtonActiveDark: {
-    backgroundColor: '#2C2C2E',
-  },
-  searchButtonActiveLight: {
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    borderRadius: 18,
   },
 });

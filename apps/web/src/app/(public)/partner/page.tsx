@@ -30,9 +30,50 @@ export const metadata: Metadata = {
   },
 };
 
+// Service Schema for SEO
+const serviceSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: 'Revvup Dealer Partner Program',
+  description: 'Zero commission car dealer platform with unlimited listings, staff accounts, analytics, test drive booking, lead management, and full brand presence. Flat monthly fee, no pay-per-listing.',
+  provider: {
+    '@type': 'Organization',
+    name: 'Revvup',
+    url: 'https://revvup.ae',
+    logo: 'https://revvup.ae/icons/icon-512x512.png',
+    address: {
+      '@type': 'PostalAddress',
+      addressCountry: 'AE',
+      addressRegion: 'Dubai',
+    },
+  },
+  areaServed: {
+    '@type': 'Country',
+    name: 'United Arab Emirates',
+  },
+  serviceType: 'Car Dealer Marketplace Platform',
+  offers: {
+    '@type': 'Offer',
+    price: '7000',
+    priceCurrency: 'AED',
+    priceSpecification: {
+      '@type': 'UnitPriceSpecification',
+      price: '7000',
+      priceCurrency: 'AED',
+      unitText: 'month',
+      description: 'Per showroom, unlimited listings',
+    },
+  },
+};
+
 export default function PartnerPage() {
   return (
     <div className="min-h-screen bg-background">
+      {/* JSON-LD Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+      />
       <PartnerHeroSection />
       <PartnerPainPointSection />
       <PartnerFlatFeeSection />

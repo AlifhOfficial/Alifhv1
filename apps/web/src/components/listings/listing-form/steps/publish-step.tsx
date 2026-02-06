@@ -22,7 +22,7 @@ import { ImageUpload } from '@/components/ui/forms/image-upload';
 
 function SectionHeader({ title }: { title: string }) {
   return (
-    <h3 className="text-[15px] font-bold tracking-tight text-foreground">{title}</h3>
+    <h3 className="text-[15px] font-bold tracking-tight text-sidebar-foreground">{title}</h3>
   );
 }
 
@@ -42,12 +42,12 @@ function FieldWrapper({
   return (
     <div className="space-y-2">
       <div className="flex items-baseline justify-between">
-        <label className="text-sm font-semibold text-muted-foreground/70">
+        <label className="text-sm font-semibold text-sidebar-foreground/70">
           {label}
           {required && <span className="text-red-500 ml-0.5">*</span>}
         </label>
         {hint && !error && (
-          <span className="text-xs text-muted-foreground/70">{hint}</span>
+          <span className="text-xs text-sidebar-foreground/70">{hint}</span>
         )}
       </div>
       {children}
@@ -182,7 +182,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
       <section>
         <SectionHeader title="Pricing" />
         
-        <div className="rounded-xl border border-border/40 bg-sidebar p-5 mt-3">
+        <div className="rounded-xl bg-sidebar-accent/30 p-5 mt-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <FieldWrapper label="Price" required error={errors.price}>
             <div className="relative">
@@ -194,12 +194,12 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
                 placeholder="85,000"
                 min={0}
                 className={cn(
-                  "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-primary",
-                  "outline-none transition-colors px-0 pr-14 text-sm font-medium",
-                  "placeholder:text-muted-foreground/40"
+                  "w-full h-12 bg-transparent px-0 pr-14 text-sm font-medium text-sidebar-foreground",
+                  "outline-none transition-colors",
+                  "placeholder:text-sidebar-foreground/40"
                 )}
               />
-              <span className="absolute right-0 top-1/2 -translate-y-1/2 text-xs text-muted-foreground/70">
+              <span className="absolute right-0 top-1/2 -translate-y-1/2 text-xs text-sidebar-foreground/70">
                 AED
               </span>
             </div>
@@ -214,11 +214,11 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
                 'text-sm font-medium'
               )}
             >
-              <span className="text-foreground">Allow offers</span>
+              <span className="text-sidebar-foreground">Allow offers</span>
               {negotiable ? (
                 <CheckCircle2 className="w-5 h-5 text-green-500" />
               ) : (
-                <div className="w-5 h-5 rounded-full border-2 border-muted-foreground/40" />
+                <div className="w-5 h-5 rounded-full border-2 border-sidebar-foreground/40" />
               )}
             </button>
           </FieldWrapper>
@@ -230,7 +230,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
       <section>
         <SectionHeader title="Location" />
         
-        <div className="rounded-xl border border-border/40 bg-sidebar p-5 mt-3">
+        <div className="rounded-xl bg-sidebar-accent/30 p-5 mt-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <FieldWrapper label="Emirate" required error={errors.emirate}>
             <Combobox
@@ -248,9 +248,9 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               onChange={(e) => updateField('city', e.target.value)}
               placeholder="Jumeirah"
               className={cn(
-                "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-primary",
-                "outline-none transition-colors px-0 text-sm font-medium",
-                "placeholder:text-muted-foreground/40"
+                "w-full h-12 bg-transparent px-0 text-sm font-medium text-sidebar-foreground",
+                "outline-none transition-colors",
+                "placeholder:text-sidebar-foreground/40"
               )}
             />
           </FieldWrapper>
@@ -262,10 +262,9 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
       <section>
         <div className="flex items-baseline justify-between mb-3">
           <SectionHeader title="Photos" />
-          <span className="text-xs text-muted-foreground/70">First = thumbnail</span>
         </div>
         
-        <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+        <div className="rounded-xl bg-sidebar-accent/30 p-5">
         
         <ImageUpload
           value={imageKeys}
@@ -285,7 +284,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
       <section>
         <SectionHeader title="Description" />
 
-        <div className="rounded-xl border border-border/40 bg-sidebar p-5 mt-3 space-y-6">
+        <div className="rounded-xl bg-sidebar-accent/30 p-5 mt-3 space-y-6">
 
         <FieldWrapper label="Description" hint={`${(data.description || '').length}/700`} error={errors.description}>
           <div className="space-y-3">
@@ -354,9 +353,9 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               rows={5}
               maxLength={700}
               className={cn(
-                "w-full bg-transparent border-2 border-border/30 rounded-xl focus:border-primary",
-                "outline-none transition-colors px-4 py-3 text-sm font-medium resize-none",
-                "placeholder:text-muted-foreground/40"
+                "w-full bg-transparent border-2 border-sidebar-border rounded-xl focus:border-primary",
+                "outline-none transition-colors px-4 py-3 text-sm font-medium text-sidebar-foreground resize-none",
+                "placeholder:text-sidebar-foreground/40"
               )}
             />
           </div>
@@ -365,10 +364,10 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
         {/* Owner Notes */}
         <div className="space-y-4">
           <div className="flex items-baseline justify-between">
-            <label className="text-sm font-semibold text-muted-foreground/70">
+            <label className="text-sm font-semibold text-sidebar-foreground/70">
               Owner Notes
             </label>
-            <span className="text-xs text-muted-foreground/70">max 10</span>
+            <span className="text-xs text-sidebar-foreground/70">max 10</span>
           </div>
           
           {/* Notes list */}
@@ -377,11 +376,11 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               {ownerRemarks.map((note, idx) => (
                 <div
                   key={`${idx}-${note.slice(0, 10)}`}
-                  className="flex items-center justify-between gap-3 p-3 bg-muted rounded-lg group"
+                  className="flex items-center justify-between gap-3 p-3 bg-sidebar-accent rounded-lg group"
                 >
                   <div className="flex items-center gap-3">
                     <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
-                    <p className="text-sm font-medium text-foreground">{note}</p>
+                    <p className="text-sm font-medium text-sidebar-foreground">{note}</p>
                   </div>
                   <button
                     type="button"
@@ -410,9 +409,9 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               }}
               placeholder="Add a short note (e.g. Full service history)"
               className={cn(
-                "flex-1 h-12 bg-transparent border-b-2 border-border/40 focus:border-primary",
-                "outline-none transition-colors px-0 text-sm font-medium",
-                "placeholder:text-muted-foreground/40"
+                "flex-1 h-12 bg-transparent px-0 text-sm font-medium text-sidebar-foreground",
+                "outline-none transition-colors",
+                "placeholder:text-sidebar-foreground/40"
               )}
             />
             <button

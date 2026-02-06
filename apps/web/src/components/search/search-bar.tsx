@@ -400,6 +400,7 @@ export function SearchBar({
           ref={inputRef}
           type="text"
           value={query}
+          suppressHydrationWarning
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => {
             setIsFocused(true);

@@ -9,15 +9,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
-
-interface NavItem {
-  label: string;
-  href: string;
-  submenu?: {
-    title: string;
-    items: { label: string; href: string; description?: string }[];
-  }[];
-}
+import type { NavItem } from "@/lib/navigation";
 
 interface MobileMenuProps {
   navItems: NavItem[];
@@ -51,7 +43,7 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp,
         <div className="space-y-1">
           {navItems.map((item) => (
             <div key={item.label}>
-              {item.submenu ? (
+              {item.submenu && !item.hideSubmenu ? (
                 <>
                   <button
                     onClick={() => toggleExpanded(item.label)}

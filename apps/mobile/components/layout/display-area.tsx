@@ -19,6 +19,10 @@ interface DisplayAreaProps {
   refreshing?: boolean;
   /** Pull-to-refresh callback */
   onRefresh?: () => void;
+  /** Called when scroll reaches end */
+  onEndReached?: () => void;
+  /** How far from end to trigger onEndReached (0-1) */
+  onEndReachedThreshold?: number;
   /** Horizontal padding (uses theme spacing) */
   horizontalPadding?: keyof typeof Spacing | number;
   /** Vertical padding (uses theme spacing) */
@@ -36,7 +40,9 @@ export function DisplayArea({
   scrollable = true,
   refreshing = false,
   onRefresh,
-  horizontalPadding = 'lg',
+  onEndReached,
+  onEndReachedThreshold = 0.2,
+  horizontalPadding = 'sm',
   verticalPadding = 'md',
   tabBarClearance = true,
   style,
@@ -89,6 +95,15 @@ export function DisplayArea({
       contentContainerStyle={contentStyle}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
+      onScroll={({ nativeEvent }) => {
+        if (!onEndReached) return;
+        const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
+        const paddingToBottom = contentSize.height * onEndReachedThreshold;
+        if (layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom) {
+          onEndReached();
+        }
+      }}
+      scrollEventThrottle={400}
       refreshControl={
         onRefresh ? (
           <RefreshControl

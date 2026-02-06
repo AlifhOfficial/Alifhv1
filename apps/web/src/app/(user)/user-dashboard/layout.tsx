@@ -36,7 +36,11 @@ const navSections = [
   },
 ];
 
-export default function UserDashboardLayout({ children }: { children: React.ReactNode }) {
+interface UserDashboardLayoutProps {
+  children: React.ReactNode;
+}
+
+export default function UserDashboardLayout({ children }: UserDashboardLayoutProps) {
   const { session: user, isLoading } = useAuth();
   const pathname = usePathname();
   const router = useRouter();

@@ -23,7 +23,7 @@ export type {
 // Note: ListingPostedByRole, ListingModerationStatus, ListingLifecycleStatus
 // are now exported from schema/listing-constants to avoid duplication
 
-export { CONTENT_EDIT_KEYS } from './types';
+export { CONTENT_EDIT_KEYS, MAJOR_CONTENT_EDIT_KEYS, MINOR_CONTENT_EDIT_KEYS } from './types';
 
 // Helpers (export selectively for internal use)
 export {

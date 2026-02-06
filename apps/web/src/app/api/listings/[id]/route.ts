@@ -424,7 +424,7 @@ export async function PUT(
     }
 
     // Invalidate listing caches so edits reflect immediately
-    invalidateListingCaches(id, listing.partnerId || undefined);
+    invalidateListingCaches(id, listing.partnerId || undefined, listing.userId);
 
     const updated = await getListingModerationContext(id);
     const now = new Date();

@@ -73,7 +73,7 @@ export function PricingFaqSection() {
     {
       id: 'trial',
       q: 'Is there a free trial?',
-      a: 'We don\'t offer free trials. Instead, we focus on transparent pricing, full feature access, and hands-on support from day one.',
+      a: 'Yes. We offer a 30-day free trial for new partners. No credit card required. Full platform access, unlimited listings, and direct support from day one.',
     },
     {
       id: 'price-change',
@@ -128,7 +128,7 @@ export function PricingFaqSection() {
         {/* Contact CTA */}
         <div className="mt-12 text-center">
           <p className="text-base text-muted-foreground">
-            Not sure which plan fits?{' '}
+            Questions?{' '}
             <Link href="/contact" className="text-primary hover:underline">
               Reach out
             </Link>

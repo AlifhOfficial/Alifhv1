@@ -36,12 +36,12 @@ function FieldWrapper({
   return (
     <div className="space-y-2">
       <div className="flex items-baseline justify-between">
-        <label className="text-sm font-semibold text-muted-foreground/70">
+        <label className="text-sm font-semibold text-sidebar-foreground/70">
           {label}
           {required && <span className="text-red-500 ml-0.5">*</span>}
         </label>
         {hint && !error && (
-          <span className="text-xs text-muted-foreground/70">{hint}</span>
+          <span className="text-xs text-sidebar-foreground/70">{hint}</span>
         )}
       </div>
       {children}
@@ -127,11 +127,11 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
       {/* VIN Entry Section */}
       <section>
         <div className="flex items-baseline justify-between mb-3">
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground">Vehicle Identification</h3>
-          <span className="text-xs text-muted-foreground/70">Protects buyers & verifies specs</span>
+          <h3 className="text-[15px] font-bold tracking-tight text-sidebar-foreground">Vehicle Identification</h3>
+          <span className="text-xs text-sidebar-foreground/70">Protects buyers & verifies specs</span>
         </div>
         
-        <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
+        <div className="rounded-xl bg-sidebar-accent/30 p-5 space-y-4">
           <VINInput
             value={data.vin || ''}
             onChange={(v) => {
@@ -147,7 +147,7 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
               <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-purple-500 shrink-0" />
               <span className="font-semibold text-purple-500">Experimental</span>
             </div>
-            <span className="text-muted-foreground/70">— Some VINs may not decode, especially Japanese-made vehicles.</span>
+            <span className="text-sidebar-foreground/70">— Some VINs may not decode, especially Japanese-made vehicles.</span>
           </div>
         </div>
       </section>
@@ -155,19 +155,19 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
       {/* Decoded Vehicle Preview */}
       {vinDecoded && data.make && (
         <section>
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Decoded Information</h3>
+          <h3 className="text-[15px] font-bold tracking-tight text-sidebar-foreground mb-3">Decoded Information</h3>
           
-          <div className="rounded-xl border border-green-500/30 bg-sidebar p-5 space-y-5">
+          <div className="rounded-xl bg-green-500/5 p-5 space-y-5">
             {/* Success indicator */}
             <div className="flex items-center gap-3">
               <div className="p-2 bg-green-500/10 rounded-full">
                 <CheckCircle2 className="w-5 h-5 text-green-500" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-foreground">
+                <p className="text-sm font-semibold text-sidebar-foreground">
                   {data.model ? 'Vehicle identified' : 'Partial match'}
                 </p>
-                <p className="text-xs text-muted-foreground/70">
+                <p className="text-xs text-sidebar-foreground/70">
                   {data.model
                     ? `${data.year} ${data.make} ${data.model}`
                     : `${data.year} ${data.make} — select model below`}
@@ -180,10 +180,10 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
               <div className="grid grid-cols-3 sm:grid-cols-6 gap-4 pt-3 border-t border-border/20">
                 {decodedFields.map(({ label, value }) => (
                   <div key={label} className="space-y-1">
-                    <p className="text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-wider">
+                    <p className="text-[11px] font-semibold text-sidebar-foreground/70 uppercase tracking-wider">
                       {label}
                     </p>
-                    <p className="text-sm font-medium text-foreground capitalize">
+                    <p className="text-sm font-medium text-sidebar-foreground capitalize">
                       {value}
                     </p>
                   </div>
@@ -196,11 +196,11 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
       
       {/* Manual Entry Fields */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">
+        <h3 className="text-[15px] font-bold tracking-tight text-sidebar-foreground mb-3">
           {vinDecoded ? 'Verify Details' : 'Enter Manually'}
         </h3>
 
-        <div className="rounded-xl border border-border/40 bg-sidebar p-5">
+        <div className="rounded-xl bg-sidebar-accent/30 p-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {/* Make */}
           <FieldWrapper label="Make" required error={errors.make}>
@@ -244,9 +244,9 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
               min={1990}
               max={new Date().getFullYear() + 1}
               className={cn(
-                "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-primary",
-                "outline-none transition-colors px-0 text-sm font-medium",
-                "placeholder:text-muted-foreground/40"
+                "w-full h-12 bg-transparent px-0 text-sm font-medium text-sidebar-foreground",
+                "outline-none transition-colors",
+                "placeholder:text-sidebar-foreground/40"
               )}
             />
           </FieldWrapper>
@@ -259,9 +259,9 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
               onChange={(e) => updateField('trim', e.target.value)}
               placeholder="Sport, Limited, GT"
               className={cn(
-                "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-primary",
-                "outline-none transition-colors px-0 text-sm font-medium",
-                "placeholder:text-muted-foreground/40"
+                "w-full h-12 bg-transparent px-0 text-sm font-medium text-sidebar-foreground",
+                "outline-none transition-colors",
+                "placeholder:text-sidebar-foreground/40"
               )}
             />
           </FieldWrapper>

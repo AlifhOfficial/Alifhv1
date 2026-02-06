@@ -43,13 +43,13 @@ export default function FAQPage() {
     : faqData;
 
   return (
-    <div className="bg-background pt-14 sm:pt-16">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex">
+    <div className="bg-background pt-14 sm:pt-16 lg:h-[calc(100vh-3.5rem)] sm:lg:h-[calc(100vh-4rem)] lg:overflow-hidden">
+      <div className="max-w-6xl mx-auto h-full">
+        <div className="flex h-full">
           
-          {/* Left Sidebar - Desktop (sticky, not fixed) */}
-          <aside className="hidden lg:block w-64 shrink-0">
-            <div className="sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto pt-14 pb-10 px-6">
+          {/* Left Sidebar - Desktop (fixed height, no scroll) */}
+          <aside className="hidden lg:block w-64 shrink-0 h-full">
+            <div className="h-full overflow-y-auto pt-14 pb-10 px-6">
               <div className="mb-10">
                 <div className="flex items-center gap-3 mb-2">
                   <LifeBuoy className="w-6 h-6 text-muted-foreground" />
@@ -114,7 +114,7 @@ export default function FAQPage() {
           </aside>
 
           {/* Main Content */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 lg:h-full lg:overflow-y-auto">
             {/* Mobile Header */}
             <div className="lg:hidden px-4 sm:px-6 pt-8 pb-6">
               <div className="flex items-center gap-3 mb-4">
@@ -160,7 +160,7 @@ export default function FAQPage() {
             </div>
 
             {/* Search Bar */}
-            <div className="sticky top-14 sm:top-16 z-10 bg-background px-4 sm:px-6 lg:px-8 py-4 lg:pt-14">
+            <div className="sticky top-0 z-10 bg-background px-4 sm:px-6 lg:px-8 py-4 lg:pt-14">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
                 <input

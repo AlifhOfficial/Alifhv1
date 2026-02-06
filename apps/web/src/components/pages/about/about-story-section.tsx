@@ -1,76 +1,69 @@
 /**
  * About Story Section
- * The problem we saw. Why we built this.
+ * The problem and our approach - with feature cards like vision page
  */
 
 'use client';
 
 import Image from 'next/image';
+import { Ban, Eye, Users, Shield } from 'lucide-react';
 
 export function AboutStorySection() {
   return (
     <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-[1600px] mx-auto">
         
-        {/* The Problem - Header */}
-        <div className="text-center mb-16 space-y-5">
+        {/* Header */}
+        <div className="text-center mb-12 space-y-4">
           <span className="text-sm font-semibold uppercase tracking-wider text-primary">
-            The Problem
+            Why We Exist
           </span>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
-            The UAE car market
+            The UAE Car Market.
             <br />
-            <span className="text-muted-foreground">needed a reset.</span>
+            <span className="text-muted-foreground">Deserves better.</span>
           </h2>
         </div>
 
         {/* Image */}
-        <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg mb-8">
+        <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 mb-12">
           <Image
             src="/Abstract/pic3.png"
-            alt="The problem we saw"
+            alt="Why Revvup exists"
             fill
             className="object-cover"
-            sizes="(max-width: 1400px) 100vw, 1400px"
+            sizes="(max-width: 1600px) 100vw, 1600px"
           />
         </div>
 
-        {/* Description below image - Small paragraphs */}
-        <div className="max-w-3xl mx-auto text-center mb-20 space-y-6">
-          <p className="text-sm sm:text-base font-medium text-muted-foreground leading-relaxed">
-            In the UAE, listing a car costs AED 500-1,000. Want visibility? Pay more. Need placement? Pay again. Platforms compete with their own dealers, hide VINs, and run pay-to-rank schemes designed to extract money, not serve people. The market didn't need another player. It needed a reset.
-          </p>
-        </div>
+        {/* Description */}
+        <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
+          Platforms that charge AED 500+ to list. Pay-to-rank schemes. Hidden fees. 
+          Dealers competing with their own users. We thought there had to be a better way.
+        </p>
 
-        {/* What We Did */}
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="space-y-5">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
-              What We Did
-            </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
-              Built it from scratch.
-              <br />
-              <span className="text-muted-foreground">Every feature. Every line.</span>
-            </h2>
+        {/* Feature Cards */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+          <div className="p-6 rounded-xl border border-border/40 bg-sidebar">
+            <Ban className="w-5 h-5 text-primary/80 mb-3" />
+            <h3 className="text-base font-semibold mb-1.5">No listing fees</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">List your car for free. Always.</p>
           </div>
-        </div>
-
-        {/* Image for What We Did */}
-        <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg my-8">
-          <Image
-            src="/Abstract/pic2.png"
-            alt="Built from scratch"
-            fill
-            className="object-cover"
-            sizes="(max-width: 1400px) 100vw, 1400px"
-          />
-        </div>
-
-        <div className="max-w-3xl mx-auto text-center space-y-6">
-          <p className="text-sm sm:text-base font-medium text-muted-foreground leading-relaxed">
-            We're a small team in Dubai. Car people who know the market. Developers who care about craft. We built it from scratch because shortcuts become problems later. Every feature exists for a reason. Every line of code serves a purpose. No templates, no borrowed frameworks, no fluff. Just honest work.
-          </p>
+          <div className="p-6 rounded-xl border border-border/40 bg-sidebar">
+            <Eye className="w-5 h-5 text-primary/80 mb-3" />
+            <h3 className="text-base font-semibold mb-1.5">No pay-to-rank</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">Fair visibility for everyone.</p>
+          </div>
+          <div className="p-6 rounded-xl border border-border/40 bg-sidebar">
+            <Users className="w-5 h-5 text-primary/80 mb-3" />
+            <h3 className="text-base font-semibold mb-1.5">We don't compete</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">We connect. We don't sell cars.</p>
+          </div>
+          <div className="p-6 rounded-xl bg-primary text-primary-foreground">
+            <Shield className="w-5 h-5 text-primary-foreground/70 mb-3" />
+            <h3 className="text-base font-semibold mb-1.5">On your side</h3>
+            <p className="text-sm text-primary-foreground/70 leading-relaxed">Your success is our success.</p>
+          </div>
         </div>
 
       </div>

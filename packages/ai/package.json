@@ -22,6 +22,10 @@
     "./description": {
       "import": "./src/description/index.ts",
       "types": "./src/description/index.ts"
+    },
+    "./fuel": {
+      "import": "./src/fuel/index.ts",
+      "types": "./src/fuel/index.ts"
     }
   },
   "scripts": {

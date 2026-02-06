@@ -68,12 +68,12 @@ export default function FavoritesPage() {
       {!isLoading && !error && (
         <>
           {validFavoriteIds.length === 0 ? (
-            <div className="flex items-center justify-center min-h-[50vh]">
+            <div className="flex items-center justify-center min-h-[40vh]">
               <div className="text-center max-w-xs">
                 <Heart className="w-8 h-8 mx-auto text-muted-foreground/20 mb-4" strokeWidth={1.5} />
                 <h3 className="text-sm font-semibold text-foreground mb-1">No favorites yet</h3>
                 <p className="text-xs text-muted-foreground/60 leading-relaxed">
-                  Tap the heart icon on any listing to save it here for later
+                  Tap the heart icon on any listing to save it here
                 </p>
               </div>
             </div>

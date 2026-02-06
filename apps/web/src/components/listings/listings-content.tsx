@@ -8,7 +8,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { CarCard, CarCardMinimal, CarListItem } from '@/components/inventory';
-import { Search, X } from 'lucide-react';
+import { Search, X, XCircle, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTrackImpressions } from '@/hooks/listings';
 import { useAuthRequired } from '@/hooks/use-auth-required';
@@ -114,56 +114,46 @@ export function ListingsContent({
     );
   }
 
-  // Empty state - full width and height card design
+  // Empty state - simplified to match listing view (CheckCircle2 icon, minimal text)
   if (!isLoading && !isFetching && listings.length === 0) {
+    const showFilters = activeFilterCount > 0;
     return (
-      <>
-        <div className="w-full">
-          <div className="rounded-xl border border-border/40 bg-sidebar p-12 sm:p-16 min-h-[60vh] flex items-center justify-center">
-            <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
-              <div className="rounded-full bg-muted/50 p-4 mb-6">
-                <Search className="w-8 h-8 text-muted-foreground" strokeWidth={2} />
-              </div>
-              
-              <h3 className="text-xl font-semibold tracking-tight text-foreground mb-3">
-                {activeFilterCount > 0 ? 'No matches found' : 'Be the first one to list'}
-              </h3>
-              
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-lg mb-8">
-                {activeFilterCount > 0 
-                  ? 'Try adjusting your search criteria or removing some filters to see more results.' 
-                  : 'No listings available yet. Start your journey by adding the first vehicle to our marketplace.'}
-              </p>
-
-              {activeFilterCount > 0 ? (
-                <div className="pt-6 border-t border-border/40 w-full max-w-md">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={clearFilters}
-                    className="min-w-[160px]"
-                  >
-                    Clear all filters
-                  </Button>
-                </div>
-              ) : (
-                <Button 
-                  onClick={handleSellClick}
-                  className="h-11 px-8 bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors shadow-sm"
-                >
-                  Sell Your Car
-                </Button>
-              )}
-            </div>
-          </div>
+      <div className="flex items-center justify-center min-h-[40vh]">
+        <div className="text-center max-w-xs">
+          {showFilters ? (
+            <XCircle className="w-8 h-8 mx-auto mb-4 text-red-500" strokeWidth={1.5} />
+          ) : (
+            <Package className="w-8 h-8 mx-auto mb-4 text-muted-foreground/60" strokeWidth={1.5} />
+          )}
+          <h3 className="text-sm font-semibold text-foreground mb-1">{showFilters ? 'No matches found' : 'No listings yet'}</h3>
+          <p className="text-xs text-muted-foreground/60 leading-relaxed mb-4">
+            {showFilters ? 'Try adjusting your search or filters.' : 'Create your first listing to get started.'}
+          </p>
+          {showFilters ? (
+            <Button 
+              variant="secondary" 
+              size="default" 
+              onClick={clearFilters}
+              className="min-w-[140px]"
+            >
+              Clear all filters
+            </Button>
+          ) : (
+            <Button 
+              onClick={handleSellClick}
+              className="min-w-[140px] bg-blue-600 text-white hover:bg-blue-700"
+            >
+              Create Listing
+            </Button>
+          )}
+          <AuthRequiredModal
+            open={showModal}
+            onClose={closeModal}
+            feature="create listings"
+            redirectTo="/user-dashboard/listings/new"
+          />
         </div>
-        <AuthRequiredModal
-          open={showModal}
-          onClose={closeModal}
-          feature="create listings"
-          redirectTo="/user-dashboard/listings/new"
-        />
-      </>
+      </div>
     );
   }
 

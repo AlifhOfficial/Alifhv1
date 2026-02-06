@@ -9,132 +9,145 @@ export const Colors = {
     // ═══════════════════════════════════════════
     // BACKGROUNDS - Clean whites
     // ═══════════════════════════════════════════
-    background: '#FFFFFF',
-    backgroundSecondary: '#F5F5F7',
-    backgroundTertiary: '#EBEBED',
-    backgroundElevated: '#FFFFFF',
-    backgroundGrouped: '#F5F5F7',
+    background: '#FAFAFA',
+    backgroundSecondary: '#F2F2F7',
+    backgroundTertiary: '#E5E5EA',
+    backgroundElevated: '#FEFEFE',
+    backgroundGrouped: '#F2F2F7',
     
     // ═══════════════════════════════════════════
     // SURFACES (Cards, Sheets, Modals)
     // ═══════════════════════════════════════════
-    surface: '#FFFFFF',
-    surfaceSecondary: '#FAFAFA',
-    surfacePressed: '#F0F0F2',
-    surfaceHover: '#F5F5F7',
+    surface: '#F9F9FB',
+    surfaceSecondary: '#F2F2F7',
+    surfacePressed: '#E8E8ED',
+    surfaceHover: '#F2F2F7',
     
     // ═══════════════════════════════════════════
-    // TEXT HIERARCHY - Revvup neutrals
+    // TEXT HIERARCHY - Strong contrast
     // ═══════════════════════════════════════════
     text: '#0D0D0D',
-    textSecondary: '#737373',
-    textTertiary: '#A3A3A3',
-    textQuaternary: '#D4D4D4',
+    textSecondary: '#3C3C43',
+    textTertiary: '#8E8E93',
+    textQuaternary: '#C7C7CC',
     textInverse: '#FAFAFA',
     
     // ═══════════════════════════════════════════
     // BRAND & ACCENT - Revvup Blue #0066FF
     // ═══════════════════════════════════════════
     primary: '#0066FF',
-    primaryForeground: '#FAFAFA',
+    primaryForeground: '#FFFFFF',
     accent: '#0066FF',
-    accentForeground: '#FAFAFA',
+    accentForeground: '#FFFFFF',
     accentMuted: '#E6F0FF',
     
     // ═══════════════════════════════════════════
     // SEMANTIC COLORS
     // ═══════════════════════════════════════════
-    success: '#22C55E',
-    successMuted: '#DCFCE7',
-    successForeground: '#FAFAFA',
+    success: '#34C759',
+    successMuted: '#D1F2D9',
+    successForeground: '#FFFFFF',
     
-    warning: '#F59E0B',
-    warningMuted: '#FEF3C7',
-    warningForeground: '#FAFAFA',
+    warning: '#FF9500',
+    warningMuted: '#FFEBD1',
+    warningForeground: '#FFFFFF',
     
-    error: '#EF4444',
-    errorMuted: '#FEE2E2',
-    errorForeground: '#FAFAFA',
+    error: '#FF3B30',
+    errorMuted: '#FFD1CF',
+    errorForeground: '#FFFFFF',
     
-    info: '#8B5CF6',
-    infoMuted: '#EDE9FE',
-    infoForeground: '#FAFAFA',
+    info: '#AF52DE',
+    infoMuted: '#EDD8F5',
+    infoForeground: '#FFFFFF',
     
     // ═══════════════════════════════════════════
     // UI ELEMENTS
     // ═══════════════════════════════════════════
     tint: '#0066FF',
-    card: '#FFFFFF',
-    cardElevated: '#FFFFFF',
-    border: '#E5E5E5',
-    borderSecondary: '#D4D4D4',
-    separator: '#E5E5E5',
-    separatorOpaque: '#D4D4D4',
+    card: '#FEFEFE',
+    cardElevated: '#FEFEFE',
+    border: '#D1D1D6',
+    borderSecondary: '#C7C7CC',
+    separator: '#C6C6C8',
+    separatorOpaque: '#B5B5BA',
     
     // ═══════════════════════════════════════════
     // ICONS
     // ═══════════════════════════════════════════
-    icon: '#737373',
-    iconSecondary: '#A3A3A3',
-    iconTertiary: '#D4D4D4',
+    icon: '#3C3C43',
+    iconSecondary: '#8E8E93',
+    iconTertiary: '#C7C7CC',
     iconActive: '#0066FF',
     
     // ═══════════════════════════════════════════
     // TAB BAR
     // ═══════════════════════════════════════════
-    tabBar: '#FFFFFF',
-    tabBarBorder: '#E5E5E5',
-    tabIconDefault: '#A3A3A3',
+    tabBar: '#FAFAFA',
+    tabBarBorder: '#D1D1D6',
+    tabIconDefault: '#8E8E93',
     tabIconSelected: '#0066FF',
     
     // ═══════════════════════════════════════════
-    // INTERACTIVE FILLS
+    // INTERACTIVE FILLS - Stronger opacities
     // ═══════════════════════════════════════════
-    fill: '#737373',
-    fillSecondary: 'rgba(115, 115, 115, 0.16)',
-    fillTertiary: 'rgba(115, 115, 115, 0.12)',
-    fillQuaternary: 'rgba(115, 115, 115, 0.08)',
+    fill: '#787880',
+    fillSecondary: 'rgba(120, 120, 128, 0.24)',
+    fillTertiary: 'rgba(120, 120, 128, 0.18)',
+    fillQuaternary: 'rgba(120, 120, 128, 0.12)',
     
     // ═══════════════════════════════════════════
     // BUTTONS
     // ═══════════════════════════════════════════
     buttonPrimary: '#0066FF',
-    buttonPrimaryForeground: '#FAFAFA',
-    buttonSecondary: '#F5F5F7',
-    buttonSecondaryForeground: '#0D0D0D',
-    buttonDestructive: '#EF4444',
-    buttonDestructiveForeground: '#FAFAFA',
-    buttonDisabled: '#E5E5E5',
-    buttonDisabledForeground: '#A3A3A3',
+    buttonPrimaryForeground: '#FFFFFF',
+    buttonSecondary: '#E5E5EA',
+    buttonSecondaryForeground: '#000000',
+    buttonDestructive: '#FF3B30',
+    buttonDestructiveForeground: '#FFFFFF',
+    buttonDisabled: '#D1D1D6',
+    buttonDisabledForeground: '#8E8E93',
     
     // ═══════════════════════════════════════════
     // INPUTS
     // ═══════════════════════════════════════════
-    input: '#F5F5F7',
-    inputBorder: '#E5E5E5',
+    input: '#F2F2F7',
+    inputBorder: '#D1D1D6',
     inputFocusBorder: '#0066FF',
-    inputPlaceholder: '#A3A3A3',
+    inputPlaceholder: '#8E8E93',
     
     // ═══════════════════════════════════════════
     // MISC
     // ═══════════════════════════════════════════
-    muted: '#737373',
-    placeholder: '#A3A3A3',
+    muted: '#8E8E93',
+    placeholder: '#8E8E93',
     link: '#0066FF',
     overlay: 'rgba(0, 0, 0, 0.4)',
-    skeleton: '#E5E5E5',
-    shimmer: '#F5F5F7',
+    skeleton: '#E5E5EA',
+    shimmer: '#F2F2F7',
+    
+    // ═══════════════════════════════════════════
+    // BLK LISTING - Premium tier styling
+    // ═══════════════════════════════════════════
+    blkBackground: '#0D0D0D',
+    blkBorder: '#262626',
+    blkText: '#FAFAFA',
+    blkTextSecondary: '#E5E5E5',
+    blkTextMuted: '#525252',
+    blkSeparator: '#333333',
+    blkImageBackground: '#0A0A0A',
+    blkAvatarBackground: '#1A1A1A',
+    blkAvatarBorder: '#262626',
   },
   
   dark: {
     // ═══════════════════════════════════════════
     // BACKGROUNDS - OLED Black base
     // ═══════════════════════════════════════════
-    background: '#000000',
+    background: '#0D0D0D',
     backgroundSecondary: '#141414',
     backgroundTertiary: '#1A1A1A',
     backgroundElevated: '#1A1A1A',
-    backgroundGrouped: '#000000',
+    backgroundGrouped: '#0D0D0D',
     
     // ═══════════════════════════════════════════
     // SURFACES (Cards, Sheets, Modals) - ~10-15%
@@ -203,7 +216,7 @@ export const Colors = {
     // ═══════════════════════════════════════════
     // TAB BAR
     // ═══════════════════════════════════════════
-    tabBar: '#000000',
+    tabBar: '#0D0D0D',
     tabBarBorder: '#262626',
     tabIconDefault: '#737373',
     tabIconSelected: '#0066FF',
@@ -245,6 +258,19 @@ export const Colors = {
     overlay: 'rgba(0, 0, 0, 0.7)',
     skeleton: '#262626',
     shimmer: '#333333',
+    
+    // ═══════════════════════════════════════════
+    // BLK LISTING - Premium tier styling
+    // ═══════════════════════════════════════════
+    blkBackground: '#0D0D0D',
+    blkBorder: '#262626',
+    blkText: '#FAFAFA',
+    blkTextSecondary: '#E5E5E5',
+    blkTextMuted: '#525252',
+    blkSeparator: '#333333',
+    blkImageBackground: '#0A0A0A',
+    blkAvatarBackground: '#1A1A1A',
+    blkAvatarBorder: '#262626',
   },
 };
 
@@ -482,6 +508,54 @@ export const Typography = {
     lineHeight: 12, 
     fontWeight: '500' as const,
     letterSpacing: 0.16,
+  },
+  
+  // ─────────────────────────────────────────────────
+  // NAVIGATION & HEADERS
+  // ─────────────────────────────────────────────────
+  navTitle: {  // Screen titles in headers
+    fontSize: 20, 
+    lineHeight: 24, 
+    fontWeight: '700' as const,
+    letterSpacing: -0.5,
+  },
+  
+  // ─────────────────────────────────────────────────
+  // CARD STYLES
+  // ─────────────────────────────────────────────────
+  cardTitle: {  // Card main title (e.g., car make/model)
+    fontSize: 15, 
+    lineHeight: 20, 
+    fontWeight: '700' as const,
+    letterSpacing: -0.3,
+  },
+  cardPrice: {  // Price display on cards
+    fontSize: 17, 
+    lineHeight: 22, 
+    fontWeight: '700' as const,
+    letterSpacing: -0.4,
+  },
+  cardMeta: {  // Card metadata (year, mileage, specs)
+    fontSize: 11, 
+    lineHeight: 14, 
+    fontWeight: '600' as const,
+    letterSpacing: 0,
+  },
+  cardSeller: {  // Seller name on cards
+    fontSize: 13, 
+    lineHeight: 18, 
+    fontWeight: '600' as const,
+    letterSpacing: -0.08,
+  },
+  
+  // ─────────────────────────────────────────────────
+  // BADGES
+  // ─────────────────────────────────────────────────
+  badge: {  // Standard badge text
+    fontSize: 9, 
+    lineHeight: 12, 
+    fontWeight: '700' as const,
+    letterSpacing: 1.2,
   },
 } as const;
 

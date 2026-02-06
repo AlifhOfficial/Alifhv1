@@ -115,8 +115,25 @@ export function AdvancedFilters({
     }
   }, [desktopOpen]);
 
+  // Check if any filters have available options
+  const hasAnyOptions = 
+    BODY_TYPES.some(b => (facets?.bodyType.find(f => f.value === b.value)?.count ?? 0) > 0) ||
+    FUEL_TYPES.some(f => (facets?.fuelType.find(x => x.value === f.value)?.count ?? 0) > 0) ||
+    TRANSMISSION_TYPES.some(t => (facets?.transmission.find(x => x.value === t.value)?.count ?? 0) > 0) ||
+    ENGINE_SIZES.some(e => (facets?.engineSize.find(x => x.value === e.value)?.count ?? 0) > 0) ||
+    EXTERIOR_COLORS.some(c => (facets?.exteriorColor.find(x => x.value === c.value)?.count ?? 0) > 0) ||
+    INTERIOR_COLORS.some(c => (facets?.interiorColor.find(x => x.value === c.value)?.count ?? 0) > 0) ||
+    (facets?.sellerType.find(x => x.value === 'dealer')?.count ?? 0) > 0 ||
+    (facets?.sellerType.find(x => x.value === 'private')?.count ?? 0) > 0;
+
   // Content as JSX variable (not a component) to prevent remounting on state change
-  const filterContent = (
+  const filterContent = !hasAnyOptions ? (
+    <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+      <SlidersHorizontal className="h-10 w-10 text-muted-foreground/30 mb-3" />
+      <p className="text-sm font-medium text-muted-foreground">No filters available</p>
+      <p className="text-xs text-muted-foreground/60 mt-1">Try adjusting your search criteria</p>
+    </div>
+  ) : (
     <div className="space-y-0.5">
             {/* Body Type */}
             <FilterGroup

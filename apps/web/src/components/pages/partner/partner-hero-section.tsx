@@ -1,6 +1,7 @@
 /**
  * Partner Hero Section - Revvup Partners Page
- * Strong visual hook - direct, confident, no fluff
+ * Clean, minimal hero following Revvup Design System
+ * Matches home page hero style with masked video effect
  */
 
 'use client';
@@ -10,33 +11,10 @@ import { useRouter } from 'next/navigation';
 import { useAuthRequired } from '@/hooks/use-auth-required';
 import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 
-// ============================================================================
-// VIDEO SHOWCASE
-// ============================================================================
-
-function HeroVideo() {
-  return (
-    <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg">
-      <video 
-        src="/Marketing/Hero2.mp4" 
-        autoPlay 
-        loop 
-        muted 
-        playsInline
-        preload="auto"
-        disablePictureInPicture
-        disableRemotePlayback
-        suppressHydrationWarning
-        className="absolute inset-0 w-full h-full object-cover object-top"
-      />
-    </div>
-  );
-}
-
-function ApplyButton() {
+function TrialButton() {
   const router = useRouter();
   const { isAuthenticated, showModal, openModal, closeModal } = useAuthRequired({
-    feature: "apply to become a partner",
+    feature: "start your free trial",
     redirectTo: "/user-dashboard/requests",
   });
 
@@ -54,12 +32,12 @@ function ApplyButton() {
         onClick={handleClick}
         className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
       >
-        Apply to Partner
+        Start 30-Day Free Trial
       </button>
       <AuthRequiredModal
         open={showModal}
         onClose={closeModal}
-        feature="apply to become a partner"
+        feature="start your free trial"
         redirectTo="/user-dashboard/requests"
       />
     </>
@@ -81,14 +59,14 @@ export function PartnerHeroSection() {
             <br />
             <span className="text-muted-foreground">Zero commission.</span>
           </h1>
-          <p className="text-base text-muted-foreground">
-            Flat fee. Unlimited listings.
+          <p className="text-sm sm:text-base font-medium text-muted-foreground">
+            Flat fee. Unlimited listings. Join the Revolution.
           </p>
         </div>
 
         {/* Main CTAs */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-16">
-          <ApplyButton />
+          <TrialButton />
           <Link
             href="/pricing"
             className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
@@ -98,27 +76,43 @@ export function PartnerHeroSection() {
         </div>
 
         {/* Hero Video */}
-        <div className="mb-8">
-          <HeroVideo />
+        <div className="relative w-full overflow-hidden rounded-lg mb-8">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            disablePictureInPicture
+            disableRemotePlayback
+            className="w-full h-auto"
+          >
+            <source src="/Marketing_Media/phero.mp4" type="video/mp4" />
+          </video>
         </div>
 
         {/* Trust Indicators */}
-        <div className="flex items-center justify-center gap-12 md:gap-20 pt-8 border-t border-border/40">
+        <div className="flex items-center justify-center gap-12 md:gap-20 pt-8">
           <div className="text-center space-y-1">
-            <div className="text-2xl font-bold tracking-tight text-primary">0%</div>
-            <div className="text-sm text-muted-foreground">Commission</div>
+            <p className="text-xl font-semibold tracking-tight text-primary">0%</p>
+            <span className="text-sm text-muted-foreground">Commission</span>
           </div>
           <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <div className="text-2xl font-bold tracking-tight text-primary">∞</div>
-            <div className="text-sm text-muted-foreground">Listings</div>
+            <p className="text-xl font-semibold tracking-tight text-primary">∞</p>
+            <span className="text-sm text-muted-foreground">Listings</span>
           </div>
           <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <div className="text-2xl font-bold tracking-tight text-primary">1</div>
-            <div className="text-sm text-muted-foreground">Flat fee</div>
+            <p className="text-xl font-semibold tracking-tight text-primary">1</p>
+            <span className="text-sm text-muted-foreground">Flat fee</span>
           </div>
         </div>
+
+        {/* Description */}
+        <p className="text-center text-sm text-muted-foreground max-w-md mx-auto mt-8">
+          No credit card required. List alongside any other platform.
+        </p>
 
       </div>
     </section>

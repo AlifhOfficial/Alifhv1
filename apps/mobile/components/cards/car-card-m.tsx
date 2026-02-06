@@ -151,28 +151,28 @@ export const CarCardM = memo(function CarCardM({
 
   // BLK listing specific colors
   const cardBg = isBlkListing 
-    ? '#000000' 
+    ? colors.blkBackground 
     : colors.surface;
   const cardBorder = isBlkListing 
-    ? '#262626' 
+    ? colors.blkBorder 
     : colors.border;
   const titleColor = isBlkListing 
-    ? '#FFFFFF' 
+    ? colors.blkText 
     : colors.text;
   const priceColor = isBlkListing 
-    ? '#FFFFFF' 
+    ? colors.blkText 
     : colors.primary;
   const metaColor = isBlkListing 
-    ? '#525252' 
+    ? colors.blkTextMuted 
     : colors.textSecondary;
   const separatorColor = isBlkListing 
-    ? '#333333' 
+    ? colors.blkSeparator 
     : colors.textTertiary;
   const sellerTextColor = isBlkListing 
-    ? '#E5E5E5' 
+    ? colors.blkTextSecondary 
     : colors.text;
   const actionIconColor = isBlkListing 
-    ? '#525252' 
+    ? colors.blkTextMuted 
     : colors.icon;
 
   // Handlers
@@ -207,13 +207,11 @@ export const CarCardM = memo(function CarCardM({
   return (
     <Pressable
       onPress={handlePress}
-      style={({ pressed }) => [
+      style={[
         styles.container,
         {
           backgroundColor: cardBg,
           borderColor: cardBorder,
-          opacity: pressed ? 0.95 : 1,
-          transform: [{ scale: pressed ? 0.98 : 1 }],
         },
       ]}
     >
@@ -223,7 +221,7 @@ export const CarCardM = memo(function CarCardM({
       )}
 
       {/* Image Section */}
-      <View style={[styles.imageContainer, { backgroundColor: isBlkListing ? '#0A0A0A' : colors.backgroundSecondary }]}>
+      <View style={[styles.imageContainer, { backgroundColor: isBlkListing ? colors.blkImageBackground : colors.backgroundSecondary }]}>
         {displayImage ? (
           <Image
             source={{ uri: displayImage }}
@@ -284,8 +282,8 @@ export const CarCardM = memo(function CarCardM({
             <View style={[
               styles.avatar,
               { 
-                backgroundColor: isBlkListing ? '#1A1A1A' : colors.backgroundSecondary,
-                borderColor: isBlkListing ? '#262626' : colors.border,
+                backgroundColor: isBlkListing ? colors.blkAvatarBackground : colors.backgroundSecondary,
+                borderColor: isBlkListing ? colors.blkAvatarBorder : colors.border,
               },
               isBlackTierPartner && styles.avatarBlackTier,
             ]}>
@@ -465,7 +463,7 @@ const styles = StyleSheet.create({
   // Image
   imageContainer: {
     width: '100%',
-    aspectRatio: 16 / 10,
+    aspectRatio: 16 / 9,
   },
   image: {
     width: '100%',
@@ -495,21 +493,18 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    ...Typography.headline,
+    ...Typography.cardTitle,
     fontFamily: 'Inter_700Bold',
-    fontWeight: '700',
   },
   year: {
-    ...Typography.footnote,
+    ...Typography.cardMeta,
     fontFamily: 'Inter_600SemiBold',
-    fontWeight: '600',
   },
 
   // Price
   price: {
-    ...Typography.h4,
+    ...Typography.cardPrice,
     fontFamily: 'Inter_700Bold',
-    fontWeight: '700',
   },
 
   // Stats
@@ -519,12 +514,11 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   stat: {
-    ...Typography.footnote,
+    ...Typography.cardMeta,
     fontFamily: 'Inter_600SemiBold',
-    fontWeight: '600',
   },
   separator: {
-    ...Typography.footnote,
+    ...Typography.cardMeta,
   },
 
   // Bottom Row
@@ -562,9 +556,8 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   avatarInitial: {
-    ...Typography.subhead,
+    ...Typography.cardSeller,
     fontFamily: 'Inter_600SemiBold',
-    fontWeight: '600',
   },
   sellerNameContainer: {
     flexDirection: 'row',
@@ -574,9 +567,8 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   sellerName: {
-    ...Typography.subhead,
+    ...Typography.cardSeller,
     fontFamily: 'Inter_600SemiBold',
-    fontWeight: '600',
     flexShrink: 1,
   },
   blkBadge: {
@@ -586,11 +578,9 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   blkBadgeText: {
-    fontSize: 9,
+    ...Typography.badge,
     fontFamily: 'Inter_700Bold',
-    fontWeight: '700',
     color: '#FFFFFF',
-    letterSpacing: 1.2,
   },
 
   // Actions

@@ -64,7 +64,7 @@ const transmissions = ['automatic', 'manual', 'cvt', 'dct', 'semi_automatic'] as
 const specsList = ['gcc', 'american', 'european', 'japanese', 'canadian', 'other'] as const;
 const steeringSides = ['left', 'right'] as const;
 const exportStatuses = ['local_only', 'gcc', 'international', 'restricted'] as const;
-const engineSizes = ['1.0L', '1.2L', '1.4L', '1.5L', '1.6L', '1.8L', '2.0L', '2.2L', '2.4L', '2.5L', '2.7L', '3.0L', '3.2L', '3.5L', '3.6L', '3.8L', '4.0L', '4.4L', '4.5L', '4.6L', '5.0L', '5.2L', '5.5L', '5.7L', '6.0L', '6.2L', '6.4L', '7.0L', '8.0L', 'other'] as const;
+const engineSizes = ['under_1.5L', '1.5L_2.0L', '2.0L_2.5L', '2.5L_3.0L', '3.0L_4.0L', '4.0L_5.0L', '5.0L_6.0L', 'over_6.0L', 'electric'] as const;
 const engineTypes = ['inline-3', 'inline-4', 'inline-6', 'v6', 'v8', 'v10', 'v12', 'w12', 'electric', 'hybrid', 'other'] as const;
 const powerRanges = ['under_100', '100_200', '200_300', '300_400', '400_500', '500_600', '600_700', '700_plus', 'unknown'] as const;
 const doors = ['2', '3', '4', '5', '6'] as const;
@@ -73,7 +73,7 @@ const exteriorColors = ['white', 'black', 'silver', 'grey', 'blue', 'red', 'gree
 const interiorColors = ['black', 'beige', 'brown', 'tan', 'grey', 'white', 'red', 'burgundy', 'other'] as const;
 const warrantyTypes = ['none', 'manufacturer', 'extended', 'dealer', 'other'] as const;
 const listingStatuses = ['draft', 'pending', 'published', 'reserved', 'sold', 'archived', 'rejected'] as const;
-const sellerTypes = ['dealer', 'private', 'consignment'] as const;
+const sellerTypes = ['dealer', 'private'] as const;
 
 const emirates = ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'Ras Al Khaimah', 'Fujairah', 'Umm Al Quwain'];
 const cities: Record<string, string[]> = {
@@ -252,8 +252,8 @@ function generateListing(
   }
   
   // Seller type
-  const sellerType = userId ? getRandomItem(['private', 'consignment'] as const) : 'dealer' as const;
-  const isConsignment = sellerType === 'consignment';
+  const sellerType = userId ? 'private' as const : 'dealer' as const;
+  const isConsignment = getRandomBoolean(0.15); // 15% of dealer listings are consignments
   
   // Specs
   const bodyType = getRandomItem(bodyTypes);
@@ -267,7 +267,7 @@ function generateListing(
   const isElectric = fuelType === 'electric';
   const engineType = isElectric ? 'electric' as const : getRandomItem(engineTypes);
   const cylinders = isElectric ? undefined : randomInt(3, 12);
-  const engineSize = isElectric ? undefined : getRandomItem(engineSizes);
+  const engineSize = isElectric ? 'electric' as const : getRandomItem(engineSizes.filter(e => e !== 'electric'));
   const powerRange = isElectric ? 'unknown' as const : getRandomItem(powerRanges);
   
   // Physical
@@ -558,7 +558,7 @@ async function seedListings() {
     
     // Generate listings
     const listings = [];
-    const totalListings = 100;
+    const totalListings = 5000;
     
     console.log(`📝 Generating ${totalListings} listings...\n`);
     

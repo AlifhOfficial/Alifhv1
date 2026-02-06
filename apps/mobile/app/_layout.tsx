@@ -6,15 +6,14 @@ import { Theme as NavTheme, ThemeProvider as NavigationThemeProvider } from '@re
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { TamaguiProvider, Theme } from 'tamagui';
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
-import config from '../tamagui.config';
 import { Colors } from '@/constants/theme';
 import { ThemeProvider, useTheme } from '@/context/theme-context';
+import { Loader } from '@/components/ui/loader';
 
 // Prevent splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
@@ -60,16 +59,12 @@ function RootLayoutNav() {
   const { colorScheme } = useTheme();
 
   return (
-    <TamaguiProvider config={config} defaultTheme={colorScheme}>
-      <Theme name={colorScheme}>
-        <NavigationThemeProvider value={colorScheme === 'dark' ? CustomDarkTheme : LightTheme}>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          </Stack>
-          <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-        </NavigationThemeProvider>
-      </Theme>
-    </TamaguiProvider>
+    <NavigationThemeProvider value={colorScheme === 'dark' ? CustomDarkTheme : LightTheme}>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>
+      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+    </NavigationThemeProvider>
   );
 }
 
@@ -88,7 +83,13 @@ export default function RootLayout() {
   }, [fontsLoaded]);
 
   if (!fontsLoaded) {
-    return null;
+    return (
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <ThemeProvider>
+          <Loader message="Revvup" showDots={true} />
+        </ThemeProvider>
+      </GestureHandlerRootView>
+    );
   }
 
   return (
