@@ -1,5 +1,5 @@
 /**
- * Settings Tab - Account Settings
+ * Settings Screen - Account Settings (Stack Screen with swipe back)
  * Native-feeling, modular settings screen connected to API
  */
 
@@ -8,10 +8,10 @@ import {
   StyleSheet,
   View,
   ScrollView,
-  ActivityIndicator,
   Text,
   Alert,
 } from 'react-native';
+import { LogoPulse } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Layout } from '@/constants/theme';
@@ -98,7 +98,7 @@ export default function SettingsScreen() {
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <SettingsHeader colors={colors} topInset={insets.top} />
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
+          <LogoPulse size={56} />
           <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
             Loading settings...
           </Text>

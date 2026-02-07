@@ -1,12 +1,11 @@
 /**
- * Custom Tab Bar - Shop-style UI
- * Left pill with grouped tabs, right circular search button
- * Shows back bubble when on nested screens (profile, settings)
+ * Global Tab Bar - Renders on all screens
+ * Uses expo-router navigation
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, Pressable, StyleSheet, Platform } from 'react-native';
-import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { useRouter, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Home, MessageCircle, LayoutGrid, ChevronLeft } from 'lucide-react-native';
@@ -24,35 +23,40 @@ import { Colors } from '@/constants/theme';
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const AnimatedView = Animated.View;
 
-const TAB_ICONS = {
-  index: Home,
-  messages: MessageCircle,
-  saved: LayoutGrid,
-  search: LayoutGrid,
+type TabRoute = {
+  name: string;
+  path: string;
+  icon: typeof Home;
 };
 
-// Main tabs - back button shows when NOT on these screens
-const MAIN_TABS = ['index', 'messages', 'saved', 'search'];
+const TABS: TabRoute[] = [
+  { name: 'index', path: '/', icon: Home },
+  { name: 'messages', path: '/messages', icon: MessageCircle },
+  { name: 'search', path: '/search', icon: LayoutGrid },
+];
+
+// Main tab paths
+const MAIN_TAB_PATHS = ['/', '/messages', '/search', '/(tabs)', '/(tabs)/index', '/(tabs)/messages', '/(tabs)/search'];
 
 // Back bubble size (matches pill height: 44 + padding 4*2 = 52)
 const BACK_BUBBLE_SIZE = 52;
 const GAP = 8;
-const BACK_BUBBLE_OFFSET = BACK_BUBBLE_SIZE + GAP;
 
-export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+export function GlobalTabBar() {
   const { colorScheme } = useTheme();
   const insets = useSafeAreaInsets();
   const isDark = colorScheme === 'dark';
   const colors = Colors[colorScheme];
+  const router = useRouter();
+  const pathname = usePathname();
 
   // Check if current screen is NOT a main tab (show back button)
-  const currentRoute = state.routes[state.index];
-  const showBackButton = !MAIN_TABS.includes(currentRoute.name);
+  const showBackButton = !MAIN_TAB_PATHS.includes(pathname);
 
   // Animation values
-  const progress = useSharedValue(0);
+  const progress = useSharedValue(showBackButton ? 1 : 0);
 
-  useEffect(() => {
+  React.useEffect(() => {
     progress.value = withTiming(showBackButton ? 1 : 0, {
       duration: 250,
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
@@ -71,45 +75,37 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
     };
   });
 
-  // Pill stays centered, the whole group shifts together
   const pillStyle = useAnimatedStyle(() => {
-    return {
-      // No transform needed - flexbox handles it naturally
-    };
+    return {};
   });
 
-  const handlePress = (route: typeof state.routes[0], index: number) => {
+  const handleTabPress = (tab: TabRoute) => {
     if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-
-    const event = navigation.emit({
-      type: 'tabPress',
-      target: route.key,
-      canPreventDefault: true,
-    });
-
-    if (!event.defaultPrevented) {
-      navigation.navigate(route.name);
-    }
+    router.push(tab.path as any);
   };
 
   const handleBack = () => {
     if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    
-    // Always navigate back to home
-    navigation.navigate('index');
+    router.push('/');
+  };
+
+  // Determine which tab is active
+  const getIsActive = (tab: TabRoute) => {
+    if (tab.name === 'index') {
+      return pathname === '/' || pathname === '/(tabs)' || pathname === '/(tabs)/index';
+    }
+    return pathname === tab.path || pathname === `/(tabs)/${tab.name}`;
   };
 
   return (
     <View style={styles.container}>
-      {/* Tab bar content */}
       <View style={[styles.tabBarContent, { paddingBottom: insets.bottom + 6 }]}>
-        {/* Animated container for back bubble + pill */}
         <View style={styles.navGroup}>
-          {/* Back bubble - width animates from 0 */}
+          {/* Back bubble */}
           <AnimatedPressable
             onPress={handleBack}
             style={[
@@ -129,7 +125,7 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
             />
           </AnimatedPressable>
 
-          {/* Pill Group with 3 tabs: Home, Messages, Browse */}
+          {/* Pill Group */}
           <AnimatedView style={[
             styles.pillWrapper, 
             { 
@@ -139,27 +135,24 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
             pillStyle
           ]}>
             <View style={styles.pillContent}>
-              {[state.routes[0], state.routes[1], state.routes[3]].map((route, idx) => {
-                const actualIndex = idx === 2 ? 3 : idx;
-                const isFocused = state.index === actualIndex;
-                const Icon = TAB_ICONS[route.name as keyof typeof TAB_ICONS] || Home;
+              {TABS.map((tab) => {
+                const isActive = getIsActive(tab);
+                const Icon = tab.icon;
 
-                // Active: contrasting color (white on dark, black on light) with fill
-                // Inactive: grey tone with surface fill
-                const iconColor = isFocused 
+                const iconColor = isActive 
                   ? (isDark ? '#FFFFFF' : '#000000')
                   : (isDark ? '#666666' : '#999999');
 
                 return (
                   <Pressable
-                    key={route.key}
-                    onPress={() => handlePress(route, actualIndex)}
+                    key={tab.name}
+                    onPress={() => handleTabPress(tab)}
                     style={styles.pillTab}
                   >
                     <Icon
                       size={22}
                       color={iconColor}
-                      fill={isFocused ? iconColor : colors.surface}
+                      fill={isActive ? iconColor : colors.surface}
                       strokeWidth={2}
                     />
                   </Pressable>
@@ -181,8 +174,6 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 20,
   },
-
-  // Tab bar content wrapper
   tabBarContent: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -191,14 +182,10 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 12,
   },
-
-  // Navigation group - contains back bubble + pill
   navGroup: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-
-  // Back bubble - circular button (matches pill height)
   backBubble: {
     width: 52,
     height: 52,
@@ -213,8 +200,6 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 4,
   },
-
-  // Pill Group
   pillWrapper: {
     borderRadius: 20,
     borderWidth: 1,
@@ -231,8 +216,6 @@ const styles = StyleSheet.create({
     padding: 4,
     gap: 4,
   },
-
-  // Individual pill tab
   pillTab: {
     width: 52,
     height: 44,

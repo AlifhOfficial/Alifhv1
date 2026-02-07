@@ -1,5 +1,5 @@
 /**
- * Profile Tab - User Profile
+ * Profile Screen - User Profile (Stack Screen with swipe back)
  * Native-feeling, modular profile screen connected to API
  */
 
@@ -12,9 +12,9 @@ import {
   Platform,
   Alert,
   RefreshControl,
-  ActivityIndicator,
   Text,
 } from 'react-native';
+import { LogoPulse } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Layout } from '@/constants/theme';
@@ -136,7 +136,7 @@ export default function ProfileScreen() {
       <View style={[styles.container, styles.centered]}>
         <ProfileHeader colors={colors} topInset={insets.top} />
         <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
-          <ActivityIndicator size="large" color={colors.primary} />
+          <LogoPulse size={56} />
           <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
             Loading profile...
           </Text>

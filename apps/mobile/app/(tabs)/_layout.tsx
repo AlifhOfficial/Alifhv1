@@ -1,16 +1,13 @@
 /**
  * Tab Layout - Revvup Mobile App
- * Tabs: Home, Messages, Saved, Search
- * Custom Shop-style tab bar UI
+ * Main tabs: Home, Messages, Search
+ * Profile, Saved, Settings are at root level (accessed via GlobalTabBar)
  */
 
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
-import { CustomTabBar } from '@/components/layout/tab-bar';
-import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
-import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Colors } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -20,15 +17,9 @@ export default function TabLayout() {
   const colors = Colors[colorScheme];
 
   return (
-    <View style={styles.container}>
-      {/* Top Safe Area Gradient - Global */}
-      <TopSafeAreaGradient />
-      
-      {/* Bottom Safe Area Gradient - Global */}
-      <BottomSafeAreaGradient />
-
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Tabs
-        tabBar={(props) => <CustomTabBar {...props} />}
+        tabBar={() => null}
         screenOptions={{
           headerShown: true,
           headerRight: () => <ThemeToggle />,
@@ -38,52 +29,27 @@ export default function TabLayout() {
           headerTintColor: colors.text,
           headerShadowVisible: false,
         }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          headerShown: false,
-        }}
-      />
-      <Tabs.Screen
-        name="messages"
-        options={{
-          title: 'Messages',
-        }}
-      />
-      <Tabs.Screen
-        name="saved"
-        options={{
-          title: 'Saved',
-          headerShown: false,
-        }}
-      />
-      <Tabs.Screen
-        name="search"
-        options={{
-          title: 'Search',
-          headerShown: false,
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Profile',
-          headerShown: false,
-          href: null, // Hide from tab bar
-          sceneStyle: { backgroundColor: 'transparent' },
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: 'Settings',
-          headerShown: false,
-          href: null, // Hide from tab bar - accessed via profile
-          sceneStyle: { backgroundColor: 'transparent' },
-        }}
-      />
-    </Tabs>
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: 'Home',
+            headerShown: false,
+          }}
+        />
+        <Tabs.Screen
+          name="messages"
+          options={{
+            title: 'Messages',
+          }}
+        />
+        <Tabs.Screen
+          name="search"
+          options={{
+            title: 'Search',
+            headerShown: false,
+          }}
+        />
+      </Tabs>
     </View>
   );
 }

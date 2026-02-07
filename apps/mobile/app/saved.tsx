@@ -1,5 +1,5 @@
 /**
- * Saved Tab Screen - Favorites & Superlikes
+ * Saved Screen - Favorites & Superlikes (Stack Screen with swipe back)
  * Native-feeling, modular saved screen connected to API
  */
 
@@ -8,8 +8,8 @@ import {
   StyleSheet,
   View,
   Text,
-  ActivityIndicator,
 } from 'react-native';
+import { LogoPulse } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Colors } from '@/constants/theme';
@@ -20,7 +20,7 @@ import {
   SavedList,
   SavedNotAuthenticatedView,
 } from '@/components/saved';
-import { useSaved } from '../../hooks/use-saved';
+import { useSaved } from '@/hooks/use-saved';
 
 // ============================================================================
 // MAIN COMPONENT
@@ -71,7 +71,7 @@ export default function SavedScreen() {
           superlikesCount={superlikes.length}
         />
         <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
-          <ActivityIndicator size="large" color={colors.primary} />
+          <LogoPulse size={56} />
           <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
             Loading saved listings...
           </Text>

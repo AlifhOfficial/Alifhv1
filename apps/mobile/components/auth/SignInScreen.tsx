@@ -13,8 +13,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  ActivityIndicator,
 } from 'react-native';
+import { ButtonLoader } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
@@ -174,7 +174,7 @@ export function SignInScreen({
               ]}
             >
               {isLoading ? (
-                <ActivityIndicator color="#FFFFFF" size="small" />
+                <ButtonLoader size="sm" variant="white" />
               ) : (
                 <Text style={styles.submitButtonText}>Continue</Text>
               )}

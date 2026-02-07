@@ -12,8 +12,8 @@ import {
   Pressable,
   Platform,
   Alert,
-  ActivityIndicator,
 } from 'react-native';
+import { DotsLoader } from '@/components/ui';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { CheckCircle2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
@@ -255,7 +255,7 @@ export function PhoneVerificationField({
   if (step === 'sending' || step === 'verifying') {
     return (
       <View style={[styles.fieldContainer, styles.loadingContainer, { borderBottomWidth: 0 }]}>
-        <ActivityIndicator size="small" color={colors.primary} />
+        <DotsLoader size="sm" variant="primary" />
         <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
           {step === 'sending' ? 'Sending code...' : 'Verifying...'}
         </Text>

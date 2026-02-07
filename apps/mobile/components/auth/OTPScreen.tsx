@@ -12,8 +12,8 @@ import {
   Pressable, 
   KeyboardAvoidingView,
   Platform,
-  ActivityIndicator,
 } from 'react-native';
+import { DotsLoader } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
@@ -174,7 +174,7 @@ export function OTPScreen({
           {/* Loading */}
           {isLoading && (
             <Animated.View entering={FadeIn.duration(150)} style={styles.loadingSection}>
-              <ActivityIndicator color={colors.primary} size="small" />
+              <DotsLoader size="sm" variant="primary" />
             </Animated.View>
           )}
 

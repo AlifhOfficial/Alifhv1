@@ -18,6 +18,9 @@ import { Colors } from '@/constants/theme';
 import { ThemeProvider, useTheme } from '@/context/theme-context';
 import { AuthProvider, useAuth } from '@/context/auth-context';
 import { Loader } from '@/components/ui/loader';
+import { GlobalTabBar } from '@/components/layout/global-tab-bar';
+import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
+import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { AuthFlow } from '@/components/auth';
 
 // Prevent splash screen from auto-hiding
@@ -67,6 +70,7 @@ function RootLayoutNav() {
   const { colorScheme } = useTheme();
   const { showAuthFlow, closeAuthFlow, signIn } = useAuth();
   const router = useRouter();
+  const colors = Colors[colorScheme];
 
   const handleAuthComplete = (user?: { id: string; name: string; email: string }) => {
     if (user) {
@@ -79,9 +83,54 @@ function RootLayoutNav() {
 
   return (
     <NavigationThemeProvider value={colorScheme === 'dark' ? CustomDarkTheme : LightTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack
+        screenOptions={{
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
+          animation: 'slide_from_right',
+          contentStyle: { backgroundColor: colors.background },
+        }}
+      >
+        <Stack.Screen 
+          name="(tabs)" 
+          options={{ 
+            headerShown: false,
+            contentStyle: { backgroundColor: colors.background },
+          }} 
+        />
+        <Stack.Screen 
+          name="profile" 
+          options={{ 
+            headerShown: false,
+            presentation: 'card',
+            contentStyle: { backgroundColor: colors.background },
+          }} 
+        />
+        <Stack.Screen 
+          name="settings" 
+          options={{ 
+            headerShown: false,
+            presentation: 'card',
+            contentStyle: { backgroundColor: colors.background },
+          }} 
+        />
+        <Stack.Screen 
+          name="saved" 
+          options={{ 
+            headerShown: false,
+            presentation: 'card',
+            contentStyle: { backgroundColor: colors.background },
+          }} 
+        />
       </Stack>
+      
+      {/* Global Safe Area Gradients */}
+      <TopSafeAreaGradient />
+      <BottomSafeAreaGradient />
+      
+      {/* Global Tab Bar - visible on all screens */}
+      <GlobalTabBar />
+      
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       
       {/* Auth Flow Modal - can be triggered from anywhere via useAuth */}
@@ -158,7 +207,7 @@ export default function RootLayout() {
   // Show branded loader until fonts are loaded AND minimum time has passed AND onboarding check complete
   if (!fontsLoaded || !minTimeElapsed || hasCompletedOnboarding === null) {
     return (
-      <GestureHandlerRootView style={{ flex: 1 }}>
+      <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#000000' }}>
         <ThemeProvider>
           <Loader />
         </ThemeProvider>
@@ -169,7 +218,7 @@ export default function RootLayout() {
   // Show auth flow if user hasn't completed onboarding
   if (!hasCompletedOnboarding) {
     return (
-      <GestureHandlerRootView style={{ flex: 1 }}>
+      <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#000000' }}>
         <ThemeProvider>
           <AuthFlow 
             onComplete={handleAuthComplete}
@@ -182,7 +231,7 @@ export default function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#000000' }}>
       <BottomSheetModalProvider>
         <ThemeProvider>
           <AuthProvider>

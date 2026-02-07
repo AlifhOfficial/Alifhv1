@@ -1,10 +1,10 @@
 /**
  * Revvup Loader Component
- * Minimal, clean startup screen
+ * Clean, minimal loaders using SVG-based logo
  */
 
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Text, Image } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -15,27 +15,45 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useTheme } from '@/context/theme-context';
+import { LogoPulse, SpinLoader, RevvupLogo } from './loaders';
 
 const Colors = {
   light: { primary: '#0066FF' },
   dark: { primary: '#0066FF' },
 };
 
-export function Loader() {
+// Main Loader component - now uses the branded loader
+export function Loader({ message, fullScreen = false }: { message?: string; fullScreen?: boolean }) {
   const { colorScheme } = useTheme();
   const isDark = colorScheme === 'dark';
 
+  if (fullScreen) {
+    return (
+      <View style={[styles.container, { backgroundColor: isDark ? '#000000' : '#FFFFFF' }]}>
+        <LogoPulse size={72} />
+        {message && (
+          <Text style={[styles.message, { color: isDark ? '#A1A1AA' : '#71717A' }]}>
+            {message}
+          </Text>
+        )}
+      </View>
+    );
+  }
+
   return (
-    <View style={[styles.container, { backgroundColor: isDark ? '#000000' : '#FFFFFF' }]}>
-      <Text style={[styles.brandText, { color: isDark ? '#FFFFFF' : '#000000' }]}>
-        Revvup
-      </Text>
+    <View style={styles.inlineContainer}>
+      <LogoPulse size={56} />
+      {message && (
+        <Text style={[styles.inlineMessage, { color: isDark ? '#A1A1AA' : '#71717A' }]}>
+          {message}
+        </Text>
+      )}
     </View>
   );
 }
 
 /**
- * Simple spinner loader for inline use
+ * Simple spinner loader for inline use - now uses SpinLoader
  */
 export function SpinnerLoader({ size = 40, color }: { size?: number; color?: string }) {
   const { colorScheme } = useTheme();
@@ -46,7 +64,7 @@ export function SpinnerLoader({ size = 40, color }: { size?: number; color?: str
 
   useEffect(() => {
     rotation.value = withRepeat(
-      withTiming(360, { duration: 1000, easing: Easing.linear }),
+      withTiming(360, { duration: 800, easing: Easing.linear }),
       -1,
       false
     );
@@ -56,29 +74,32 @@ export function SpinnerLoader({ size = 40, color }: { size?: number; color?: str
     transform: [{ rotate: `${rotation.value}deg` }],
   }));
 
+  const borderWidth = Math.max(2, size / 10);
+
   return (
-    <Animated.View style={[styles.spinner, { width: size, height: size }, animatedStyle]}>
-      <View style={[styles.spinnerArc, { 
-        borderColor: spinnerColor,
-        borderTopColor: 'transparent',
-        borderLeftColor: 'transparent',
-        width: size,
-        height: size,
-        borderRadius: size / 2,
-        borderWidth: size / 10,
-      }]} />
-    </Animated.View>
+    <Animated.View
+      style={[
+        {
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+          borderWidth: borderWidth,
+          borderColor: `${spinnerColor}30`,
+          borderTopColor: spinnerColor,
+          borderRightColor: spinnerColor,
+        },
+        animatedStyle,
+      ]}
+    />
   );
 }
 
 /**
- * Logo-only loader (smaller, for inline use)
+ * Logo-only loader (smaller, for inline use) - SVG based
  */
 export function LogoLoader({ size = 60 }: { size?: number }) {
-  const { colorScheme } = useTheme();
-  const isDark = colorScheme === 'dark';
-
   const pulseScale = useSharedValue(1);
+  const opacity = useSharedValue(1);
 
   useEffect(() => {
     pulseScale.value = withRepeat(
@@ -89,33 +110,32 @@ export function LogoLoader({ size = 60 }: { size?: number }) {
       -1,
       false
     );
+    opacity.value = withRepeat(
+      withSequence(
+        withTiming(0.6, { duration: 800, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1, { duration: 800, easing: Easing.inOut(Easing.ease) })
+      ),
+      -1,
+      false
+    );
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: pulseScale.value }],
+    opacity: opacity.value,
   }));
 
   return (
-    <Animated.View style={animatedStyle}>
-      <Image
-        source={isDark 
-          ? require('@/assets/logo/favicon-light.png')
-          : require('@/assets/logo/favicon-dark.png')
-        }
-        style={{ width: size, height: size }}
-        resizeMode="contain"
-      />
+    <Animated.View style={[{ alignItems: 'center', justifyContent: 'center' }, animatedStyle]}>
+      <RevvupLogo size={size} />
     </Animated.View>
   );
 }
 
 /**
- * Refresh indicator with rotating logo (for pull-to-refresh)
+ * Refresh indicator with rotating logo (for pull-to-refresh) - SVG based
  */
 export function RefreshLoader({ size = 36, isRefreshing = false }: { size?: number; isRefreshing?: boolean }) {
-  const { colorScheme } = useTheme();
-  const isDark = colorScheme === 'dark';
-
   const rotation = useSharedValue(0);
   const scale = useSharedValue(0.8);
 
@@ -142,15 +162,8 @@ export function RefreshLoader({ size = 36, isRefreshing = false }: { size?: numb
 
   return (
     <View style={styles.refreshContainer}>
-      <Animated.View style={animatedStyle}>
-        <Image
-          source={isDark 
-            ? require('@/assets/logo/favicon-light.png')
-            : require('@/assets/logo/favicon-dark.png')
-          }
-          style={{ width: size, height: size }}
-          resizeMode="contain"
-        />
+      <Animated.View style={[{ alignItems: 'center', justifyContent: 'center' }, animatedStyle]}>
+        <RevvupLogo size={size} />
       </Animated.View>
     </View>
   );
@@ -162,17 +175,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  brandText: {
-    fontSize: 52,
-    fontWeight: '800',
-    letterSpacing: -1.5,
-  },
-  spinner: {
+  inlineContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 24,
   },
-  spinnerArc: {
-    borderStyle: 'solid',
+  message: {
+    marginTop: 20,
+    fontSize: 15,
+    fontWeight: '500',
+  },
+  inlineMessage: {
+    marginTop: 16,
+    fontSize: 14,
+    fontWeight: '500',
   },
   refreshContainer: {
     alignItems: 'center',

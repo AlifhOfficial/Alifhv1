@@ -19,7 +19,7 @@ export function ProfileMenu() {
 
   const handlePress = () => {
     if (isAuthenticated) {
-      router.push('/(tabs)/profile');
+      router.push('/profile');
     } else {
       openAuthFlow();
     }
