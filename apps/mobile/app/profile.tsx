@@ -24,7 +24,6 @@ import {
   useProfile,
   ProfileHeader,
   ProfileIdentity,
-  KYCStatusCard,
   StatsGrid,
   BadgesSection,
   PersonalInfoSection,
@@ -203,16 +202,6 @@ export default function ProfileScreen() {
             colors={colors}
             onPhotoSelected={uploadPhoto}
             onRemovePhoto={removePhoto}
-          />
-
-          {/* KYC Status */}
-          <KYCStatusCard
-            status={profileStatus}
-            colors={colors}
-            onAction={() => {
-              // TODO: Navigate to KYC flow
-              Alert.alert('Coming Soon', 'KYC verification will be available soon.');
-            }}
           />
 
           {/* Personal Information */}

@@ -1,6 +1,6 @@
 /**
  * Revvup Loader Component
- * Clean, minimal loaders using SVG-based logo
+ * Clean, minimal loaders using branded typography
  */
 
 import React, { useEffect } from 'react';
@@ -15,24 +15,47 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useTheme } from '@/context/theme-context';
-import { LogoPulse, SpinLoader, RevvupLogo } from './loaders';
+import { Colors, Typography } from '@/constants/theme';
 
-const Colors = {
-  light: { primary: '#0066FF' },
-  dark: { primary: '#0066FF' },
-};
-
-// Main Loader component - now uses the branded loader
+// Main Loader component - uses branded typography
 export function Loader({ message, fullScreen = false }: { message?: string; fullScreen?: boolean }) {
   const { colorScheme } = useTheme();
   const isDark = colorScheme === 'dark';
+  const colors = Colors[colorScheme];
+
+  const opacity = useSharedValue(1);
+
+  useEffect(() => {
+    opacity.value = withRepeat(
+      withSequence(
+        withTiming(0.4, { duration: 800, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1, { duration: 800, easing: Easing.inOut(Easing.ease) })
+      ),
+      -1,
+      false
+    );
+  }, []);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
 
   if (fullScreen) {
     return (
-      <View style={[styles.container, { backgroundColor: isDark ? '#000000' : '#FFFFFF' }]}>
-        <LogoPulse size={72} />
+      <View style={[styles.container, { backgroundColor: isDark ? '#0A0A0A' : '#E8E8E8' }]}>
+        <View style={styles.brandContainer}>
+          <Animated.Text 
+            style={[
+              styles.brandName, 
+              { color: isDark ? '#6B6B6B' : '#6B6B6B' },
+              animatedStyle
+            ]}
+          >
+            Revvup
+          </Animated.Text>
+        </View>
         {message && (
-          <Text style={[styles.message, { color: isDark ? '#A1A1AA' : '#71717A' }]}>
+          <Text style={[styles.message, { color: colors.textSecondary }]}>
             {message}
           </Text>
         )}
@@ -42,9 +65,17 @@ export function Loader({ message, fullScreen = false }: { message?: string; full
 
   return (
     <View style={styles.inlineContainer}>
-      <LogoPulse size={56} />
+      <Animated.Text 
+        style={[
+          styles.brandNameSmall, 
+          { color: colors.textSecondary },
+          animatedStyle
+        ]}
+      >
+        Revvup
+      </Animated.Text>
       {message && (
-        <Text style={[styles.inlineMessage, { color: isDark ? '#A1A1AA' : '#71717A' }]}>
+        <Text style={[styles.inlineMessage, { color: colors.textSecondary }]}>
           {message}
         </Text>
       )}
@@ -53,11 +84,11 @@ export function Loader({ message, fullScreen = false }: { message?: string; full
 }
 
 /**
- * Simple spinner loader for inline use - now uses SpinLoader
+ * Simple spinner loader for inline use
  */
 export function SpinnerLoader({ size = 40, color }: { size?: number; color?: string }) {
   const { colorScheme } = useTheme();
-  const colors = colorScheme === 'dark' ? Colors.dark : Colors.light;
+  const colors = Colors[colorScheme];
   const spinnerColor = color || colors.primary;
 
   const rotation = useSharedValue(0);
@@ -95,24 +126,18 @@ export function SpinnerLoader({ size = 40, color }: { size?: number; color?: str
 }
 
 /**
- * Logo-only loader (smaller, for inline use) - SVG based
+ * Logo-only loader (smaller, for inline use) - Typography based
  */
-export function LogoLoader({ size = 60 }: { size?: number }) {
-  const pulseScale = useSharedValue(1);
+export function LogoLoader({ size = 32 }: { size?: number }) {
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
+  
   const opacity = useSharedValue(1);
 
   useEffect(() => {
-    pulseScale.value = withRepeat(
-      withSequence(
-        withTiming(1.1, { duration: 800, easing: Easing.inOut(Easing.ease) }),
-        withTiming(1, { duration: 800, easing: Easing.inOut(Easing.ease) })
-      ),
-      -1,
-      false
-    );
     opacity.value = withRepeat(
       withSequence(
-        withTiming(0.6, { duration: 800, easing: Easing.inOut(Easing.ease) }),
+        withTiming(0.4, { duration: 800, easing: Easing.inOut(Easing.ease) }),
         withTiming(1, { duration: 800, easing: Easing.inOut(Easing.ease) })
       ),
       -1,
@@ -121,50 +146,69 @@ export function LogoLoader({ size = 60 }: { size?: number }) {
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: pulseScale.value }],
     opacity: opacity.value,
   }));
 
   return (
-    <Animated.View style={[{ alignItems: 'center', justifyContent: 'center' }, animatedStyle]}>
-      <RevvupLogo size={size} />
-    </Animated.View>
+    <Animated.Text 
+      style={[
+        { 
+          fontSize: size, 
+          fontFamily: 'Inter_800ExtraBold', 
+          letterSpacing: -1,
+          color: colors.textSecondary,
+        }, 
+        animatedStyle
+      ]}
+    >
+      Revvup
+    </Animated.Text>
   );
 }
 
 /**
- * Refresh indicator with rotating logo (for pull-to-refresh) - SVG based
+ * Refresh indicator (for pull-to-refresh) - Typography based
  */
-export function RefreshLoader({ size = 36, isRefreshing = false }: { size?: number; isRefreshing?: boolean }) {
-  const rotation = useSharedValue(0);
-  const scale = useSharedValue(0.8);
+export function RefreshLoader({ size = 24, isRefreshing = false }: { size?: number; isRefreshing?: boolean }) {
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
+  
+  const opacity = useSharedValue(0.4);
 
   useEffect(() => {
     if (isRefreshing) {
-      rotation.value = withRepeat(
-        withTiming(360, { duration: 1000, easing: Easing.linear }),
+      opacity.value = withRepeat(
+        withSequence(
+          withTiming(1, { duration: 600, easing: Easing.inOut(Easing.ease) }),
+          withTiming(0.4, { duration: 600, easing: Easing.inOut(Easing.ease) })
+        ),
         -1,
         false
       );
-      scale.value = withTiming(1, { duration: 200 });
     } else {
-      rotation.value = 0;
-      scale.value = withTiming(0.8, { duration: 200 });
+      opacity.value = withTiming(0.4, { duration: 200 });
     }
   }, [isRefreshing]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { rotate: `${rotation.value}deg` },
-      { scale: scale.value },
-    ],
+    opacity: opacity.value,
   }));
 
   return (
     <View style={styles.refreshContainer}>
-      <Animated.View style={[{ alignItems: 'center', justifyContent: 'center' }, animatedStyle]}>
-        <RevvupLogo size={size} />
-      </Animated.View>
+      <Animated.Text 
+        style={[
+          { 
+            fontSize: size, 
+            fontFamily: 'Inter_800ExtraBold', 
+            letterSpacing: -0.5,
+            color: colors.textSecondary,
+          }, 
+          animatedStyle
+        ]}
+      >
+        Revvup
+      </Animated.Text>
     </View>
   );
 }
@@ -176,19 +220,38 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   inlineContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+  },
+  brandContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  brandName: {
+    fontSize: 64,
+    fontFamily: 'Inter_800ExtraBold',
+    letterSpacing: -3,
+  },
+  brandNameSmall: {
+    fontSize: 48,
+    fontFamily: 'Inter_800ExtraBold',
+    letterSpacing: -2,
   },
   message: {
-    marginTop: 20,
-    fontSize: 15,
-    fontWeight: '500',
+    marginTop: 16,
+    fontSize: Typography.small.fontSize,
+    lineHeight: Typography.small.lineHeight,
+    fontFamily: 'Inter_500Medium',
+    letterSpacing: Typography.small.letterSpacing,
+    textTransform: 'uppercase',
   },
   inlineMessage: {
-    marginTop: 16,
-    fontSize: 14,
-    fontWeight: '500',
+    marginTop: 12,
+    fontSize: Typography.footnote.fontSize,
+    lineHeight: Typography.footnote.lineHeight,
+    fontFamily: 'Inter_400Regular',
+    letterSpacing: Typography.footnote.letterSpacing,
   },
   refreshContainer: {
     alignItems: 'center',

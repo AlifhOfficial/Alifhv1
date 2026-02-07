@@ -25,10 +25,12 @@ export interface AuthUser {
   image?: string | null;
   emailVerified?: boolean;
   // Profile fields from customSession enrichment
-  role?: string;
+  role?: 'user' | 'admin' | 'super_admin';
   banned?: boolean;
   hasPartnerAccess?: boolean;
   isAlifhAdmin?: boolean;
+  isAdmin?: boolean;
+  isSuperAdmin?: boolean;
   avatar?: string | null;
   avatarUrl?: string | null;
   firstName?: string | null;
@@ -477,11 +479,16 @@ export async function requestPasswordReset(
 }
 
 /**
- * Sign out - clear local session
+ * Sign out - clear local session and all cookies
+ * Mirrors the web app's handleSignOut which clears cookies, localStorage, and query cache.
+ *
+ * Cookie strategy: The global fetch interceptor in config.ts adds credentials:'omit'
+ * to all API requests, so the native cookie jar is never populated. We still call the sign-out API to invalidate the session
+ * server-side, then wipe AsyncStorage.
  */
 export async function signOut(): Promise<{ success: boolean }> {
   try {
-    // Call API to invalidate session
+    // Call API to invalidate session on server
     // Must send empty JSON object to avoid parse errors
     await authFetch(AUTH_ENDPOINTS.SIGN_OUT, {
       method: 'POST',
@@ -492,9 +499,9 @@ export async function signOut(): Promise<{ success: boolean }> {
     // Continue with local cleanup even if API fails
   }
 
-  // Clear local storage
+  // Clear local AsyncStorage (session + user)
   await storeSession(null, null);
-  
+
   return { success: true };
 }
 
@@ -528,11 +535,21 @@ export async function refreshSession(): Promise<AuthResult> {
     
     console.log('[Auth] Get session response:', JSON.stringify(data, null, 2));
 
-    if (!response.ok || !data.user) {
-      // Session invalid, clear local storage
-      await storeSession(null, null);
+    if (!response.ok || !data?.user) {
+      // Server couldn't enrich the session (e.g. token not recognized).
+      // DON'T wipe AsyncStorage here — the stored token may still be valid
+      // for other API calls (profile, listings, etc.). Only signOut should clear.
+      console.warn('[Auth] get-session returned no user, keeping local session');
       return { success: false };
     }
+
+    // Enrich user with admin convenience flags
+    const enrichedUser: AuthUser = {
+      ...data.user,
+      isAdmin: data.user.role === 'admin' || data.user.role === 'super_admin',
+      isSuperAdmin: data.user.role === 'super_admin',
+      isAlifhAdmin: ['admin', 'super_admin'].includes(data.user.role || 'user'),
+    };
 
     // Update local storage with fresh enriched data
     const session = data.session ? {
@@ -541,12 +558,12 @@ export async function refreshSession(): Promise<AuthResult> {
     } : await getStoredSession();
 
     if (session) {
-      await storeSession(session, data.user);
+      await storeSession(session, enrichedUser);
     }
 
     return {
       success: true,
-      user: data.user,
+      user: enrichedUser,
       session: session || undefined,
     };
   } catch (error) {

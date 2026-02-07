@@ -21,6 +21,7 @@ import { CheckCircle2 } from 'lucide-react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { useTheme } from '@/context/theme-context';
+import { Colors, Typography } from '@/constants/theme';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CONFETTI_COUNT = 50;
@@ -47,12 +48,13 @@ export function AuthSuccessScreen({
   const iconScale = useSharedValue(0);
   const buttonScale = useSharedValue(0.95);
 
+  const themeColors = Colors[colorScheme];
   const colors = {
-    bg: isDark ? '#000000' : '#FFFFFF',
-    text: isDark ? '#FFFFFF' : '#000000',
-    textSecondary: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
-    primary: '#0066FF',
-    success: '#34C759',
+    bg: themeColors.background,
+    text: themeColors.text,
+    textSecondary: themeColors.textSecondary,
+    primary: themeColors.primary,
+    success: themeColors.success,
   };
 
   useEffect(() => {
@@ -239,13 +241,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 28,
+    fontSize: Typography.h2.fontSize,
+    lineHeight: Typography.h2.lineHeight,
     fontFamily: 'Inter_700Bold',
-    letterSpacing: -0.5,
+    letterSpacing: Typography.h2.letterSpacing,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: Typography.body.fontSize,
+    lineHeight: Typography.body.lineHeight,
     fontFamily: 'Inter_400Regular',
     marginTop: 8,
     textAlign: 'center',
@@ -265,8 +269,8 @@ const styles = StyleSheet.create({
   },
   continueButtonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: Typography.body.fontSize,
     fontFamily: 'Inter_600SemiBold',
-    letterSpacing: -0.2,
+    letterSpacing: Typography.body.letterSpacing,
   },
 });

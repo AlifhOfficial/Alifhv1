@@ -7,7 +7,7 @@ import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
+import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, Inter_800ExtraBold } from '@expo-google-fonts/inter';
 import * as SplashScreen from 'expo-splash-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
@@ -17,6 +17,8 @@ import 'react-native-reanimated';
 import { Colors } from '@/constants/theme';
 import { ThemeProvider, useTheme } from '@/context/theme-context';
 import { AuthProvider, useAuth } from '@/context/auth-context';
+import { TabBarProvider, useTabBar } from '@/context/tab-bar-context';
+import { WebSocketProvider } from '@/context/websocket-context';
 import { Loader } from '@/components/ui/loader';
 import { GlobalTabBar } from '@/components/layout/global-tab-bar';
 import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
@@ -69,6 +71,7 @@ const CustomDarkTheme: NavTheme = {
 function RootLayoutNav() {
   const { colorScheme } = useTheme();
   const { showAuthFlow, closeAuthFlow, signIn } = useAuth();
+  const { isTabBarVisible, isHeaderVisible } = useTabBar();
   const router = useRouter();
   const colors = Colors[colorScheme];
 
@@ -85,51 +88,26 @@ function RootLayoutNav() {
     <NavigationThemeProvider value={colorScheme === 'dark' ? CustomDarkTheme : LightTheme}>
       <Stack
         screenOptions={{
+          headerShown: false,
           gestureEnabled: true,
           gestureDirection: 'horizontal',
           animation: 'slide_from_right',
           contentStyle: { backgroundColor: colors.background },
         }}
       >
-        <Stack.Screen 
-          name="(tabs)" 
-          options={{ 
-            headerShown: false,
-            contentStyle: { backgroundColor: colors.background },
-          }} 
-        />
-        <Stack.Screen 
-          name="profile" 
-          options={{ 
-            headerShown: false,
-            presentation: 'card',
-            contentStyle: { backgroundColor: colors.background },
-          }} 
-        />
-        <Stack.Screen 
-          name="settings" 
-          options={{ 
-            headerShown: false,
-            presentation: 'card',
-            contentStyle: { backgroundColor: colors.background },
-          }} 
-        />
-        <Stack.Screen 
-          name="saved" 
-          options={{ 
-            headerShown: false,
-            presentation: 'card',
-            contentStyle: { backgroundColor: colors.background },
-          }} 
-        />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="profile" options={{ presentation: 'card' }} />
+        <Stack.Screen name="settings" options={{ presentation: 'card' }} />
+        <Stack.Screen name="saved" options={{ presentation: 'card' }} />
+        <Stack.Screen name="chat" options={{ presentation: 'card' }} />
       </Stack>
       
-      {/* Global Safe Area Gradients */}
-      <TopSafeAreaGradient />
-      <BottomSafeAreaGradient />
+      {/* Global Safe Area Gradients - hidden when chrome is hidden */}
+      {isHeaderVisible && <TopSafeAreaGradient />}
+      {isTabBarVisible && <BottomSafeAreaGradient />}
       
-      {/* Global Tab Bar - visible on all screens */}
-      <GlobalTabBar />
+      {/* Global Tab Bar - visible on all screens unless explicitly hidden */}
+      {isTabBarVisible && <GlobalTabBar />}
       
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       
@@ -157,6 +135,7 @@ export default function RootLayout() {
     Inter_500Medium,
     Inter_600SemiBold,
     Inter_700Bold,
+    Inter_800ExtraBold,
   });
 
   // Minimum splash time to show branded loader (2 seconds)
@@ -234,11 +213,25 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#000000' }}>
       <BottomSheetModalProvider>
         <ThemeProvider>
-          <AuthProvider>
-            <RootLayoutNav />
-          </AuthProvider>
+          <TabBarProvider>
+            <AuthProvider>
+              <WebSocketWrapper>
+                <RootLayoutNav />
+              </WebSocketWrapper>
+            </AuthProvider>
+          </TabBarProvider>
         </ThemeProvider>
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
+  );
+}
+
+// WebSocket wrapper that uses auth context
+function WebSocketWrapper({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+  return (
+    <WebSocketProvider userId={user?.id}>
+      {children}
+    </WebSocketProvider>
   );
 }

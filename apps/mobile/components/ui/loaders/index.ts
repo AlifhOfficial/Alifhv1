@@ -1,16 +1,15 @@
 /**
  * Revvup Loaders - Centralized loading components
- * Beautiful, branded motion graphics for the mobile app
+ * Beautiful, branded motion graphics using SVG logo animations
  */
 
 export { RevvupLogo, RevvupLogoAnimated } from './revvup-logo';
 export { 
   PulseLoader, 
   SpinLoader, 
-  DotsLoader,
-  WaveLoader,
-  RingLoader,
+  BreatheLoader,
   GlowLoader,
+  LogoLoader,
   ButtonLoader,
   InlineLoader,
   FullScreenLoader,

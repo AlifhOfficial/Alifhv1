@@ -22,6 +22,7 @@ import { magicLink } from "better-auth/plugins/magic-link";
 import { admin } from "better-auth/plugins/admin";
 import { phoneNumber } from "better-auth/plugins/phone-number";
 import { emailOTP } from "better-auth/plugins/email-otp";
+import { bearer } from "better-auth/plugins/bearer";
 import { customSession } from "better-auth/plugins";
 import { passkey } from "@better-auth/passkey";
 import { stripe } from "@better-auth/stripe";
@@ -101,6 +102,8 @@ export const auth = betterAuth({
   // emailVerification: { ... }
 
   plugins: [
+    // Bearer token auth for mobile app (React Native can't use cookies)
+    bearer(),
     // Email OTP for verification (solves cross-browser issue)
     emailOTP({
       otpLength: 6,

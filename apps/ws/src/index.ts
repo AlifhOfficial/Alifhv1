@@ -177,19 +177,22 @@ const server = Bun.serve<WSData>({
 
           case "watch_user":
             if (data.targetUserId) {
-              ws.subscribe(`presence:${data.targetUserId}`);
-              ws.data.watchedUsers.add(data.targetUserId);
-              ws.send(JSON.stringify({
-                type: "presence",
-                userId: data.targetUserId,
-                ...getPresence(data.targetUserId),
-                timestamp: new Date().toISOString(),
-              }));
+              // Only subscribe if not already watching
+              if (!ws.data.watchedUsers.has(data.targetUserId)) {
+                ws.subscribe(`presence:${data.targetUserId}`);
+                ws.data.watchedUsers.add(data.targetUserId);
+                ws.send(JSON.stringify({
+                  type: "presence",
+                  userId: data.targetUserId,
+                  ...getPresence(data.targetUserId),
+                  timestamp: new Date().toISOString(),
+                }));
+              }
             }
             break;
 
           case "unwatch_user":
-            if (data.targetUserId) {
+            if (data.targetUserId && ws.data.watchedUsers.has(data.targetUserId)) {
               ws.unsubscribe(`presence:${data.targetUserId}`);
               ws.data.watchedUsers.delete(data.targetUserId);
             }

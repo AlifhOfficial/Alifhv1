@@ -31,6 +31,8 @@ import {
   type Passkey,
 } from '@/components/settings';
 
+import { KYCStatusCard, type ProfileStatus } from '@/components/profile';
+
 // ============================================================================
 // MAIN COMPONENT
 // ============================================================================
@@ -38,12 +40,13 @@ import {
 export default function SettingsScreen() {
   const colors = useSettingsColors();
   const { colorScheme, setColorScheme } = useTheme();
-  const { signOut, isAuthenticated } = useAuth();
+  const { signOut, isAuthenticated, user } = useAuth();
   const insets = useSafeAreaInsets();
 
   // Settings data from hook
   const {
     isLoading,
+    profile,
     savingField,
     isDeleting,
     showPhone,
@@ -57,6 +60,16 @@ export default function SettingsScreen() {
     setEmailNotifications,
     setIsDeleting,
   } = useSettings({ isAuthenticated });
+
+  const profileStatus: ProfileStatus = {
+    kycVerified: profile?.kycVerified ?? false,
+    kycStatus: profile?.kycStatus ?? 'none',
+    kycExpiryDate: profile?.kycExpiresAt ? new Date(profile.kycExpiresAt) : null,
+    emailVerified: user?.emailVerified ?? false,
+    phoneNumberVerified: profile?.phoneNumberVerified ?? false,
+    badges: profile?.badges ?? [],
+    platformRating: null,
+  };
 
   // Local UI state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -157,6 +170,16 @@ export default function SettingsScreen() {
           savingField={savingField}
           colors={colors}
           onToggleConsignment={() => saveToggle('consignmentMode', consignmentMode)}
+        />
+
+        {/* Identity Verification */}
+        <KYCStatusCard
+          status={profileStatus}
+          colors={colors}
+          onAction={() => {
+            // TODO: Navigate to KYC flow
+            Alert.alert('Coming Soon', 'Identity verification will be available soon.');
+          }}
         />
 
         {/* Security */}

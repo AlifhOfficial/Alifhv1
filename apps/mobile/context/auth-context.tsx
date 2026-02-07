@@ -15,10 +15,12 @@ export interface AuthUser {
   emailVerified?: boolean;
   createdAt?: string | Date | null;
   // Profile fields from customSession enrichment
-  role?: string;
+  role?: 'user' | 'admin' | 'super_admin';
   banned?: boolean;
   hasPartnerAccess?: boolean;
   isAlifhAdmin?: boolean;
+  isAdmin?: boolean;
+  isSuperAdmin?: boolean;
   avatar?: string | null;
   avatarUrl?: string | null;
   firstName?: string | null;
@@ -41,6 +43,8 @@ interface AuthContextType {
   isLoading: boolean;
   user: AuthUser | null;
   showAuthFlow: boolean;
+  isAdmin: boolean;
+  isSuperAdmin: boolean;
   
   // Flow control
   openAuthFlow: () => void;
@@ -144,6 +148,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
+  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+  const isSuperAdmin = user?.role === 'super_admin';
+
   return (
     <AuthContext.Provider
       value={{
@@ -151,6 +158,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         isLoading,
         user,
         showAuthFlow,
+        isAdmin,
+        isSuperAdmin,
         openAuthFlow,
         closeAuthFlow,
         signIn,

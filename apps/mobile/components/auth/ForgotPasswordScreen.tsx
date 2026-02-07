@@ -20,6 +20,7 @@ import Svg, { Path } from 'react-native-svg';
 import { CheckCircle2 } from 'lucide-react-native';
 
 import { useTheme } from '@/context/theme-context';
+import { Colors, Typography } from '@/constants/theme';
 
 interface ForgotPasswordScreenProps {
   onBack: () => void;
@@ -42,18 +43,19 @@ export function ForgotPasswordScreen({
 
   const [email, setEmail] = useState('');
 
+  const themeColors = Colors[colorScheme];
   const colors = {
-    bg: isDark ? '#000000' : '#FFFFFF',
-    text: isDark ? '#FFFFFF' : '#000000',
-    textSecondary: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
-    textTertiary: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)',
-    primary: '#0066FF',
+    bg: themeColors.background,
+    text: themeColors.text,
+    textSecondary: themeColors.textSecondary,
+    textTertiary: themeColors.textTertiary,
+    primary: themeColors.primary,
     primarySoft: isDark ? 'rgba(0,102,255,0.12)' : 'rgba(0,102,255,0.04)',
-    inputBg: isDark ? '#1A1A1A' : '#F5F5F5',
-    inputBorder: isDark ? '#333333' : '#E8E8E8',
+    inputBg: themeColors.input,
+    inputBorder: themeColors.border,
     inputFocusBorder: isDark ? 'rgba(0,102,255,0.5)' : 'rgba(0,102,255,0.2)',
-    error: '#FF3B30',
-    success: '#34C759',
+    error: themeColors.error,
+    success: themeColors.success,
     successSoft: isDark ? 'rgba(52,199,89,0.15)' : 'rgba(52,199,89,0.06)',
   };
 
@@ -248,17 +250,20 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   title: {
-    fontSize: 34,
+    fontSize: Typography.largeTitle.fontSize,
+    lineHeight: Typography.largeTitle.lineHeight,
     fontFamily: 'Inter_700Bold',
-    letterSpacing: -0.8,
+    letterSpacing: Typography.largeTitle.letterSpacing,
   },
   subtitle: {
-    fontSize: 15,
+    fontSize: Typography.subhead.fontSize,
+    lineHeight: Typography.subhead.lineHeight,
     fontFamily: 'Inter_400Regular',
     marginTop: 8,
   },
   emailText: {
-    fontSize: 15,
+    fontSize: Typography.subhead.fontSize,
+    lineHeight: Typography.subhead.lineHeight,
     fontFamily: 'Inter_600SemiBold',
     marginTop: 4,
   },
@@ -268,7 +273,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   errorText: {
-    fontSize: 14,
+    fontSize: Typography.small.fontSize,
+    lineHeight: Typography.small.lineHeight,
     fontFamily: 'Inter_500Medium',
     textAlign: 'center',
   },
@@ -279,7 +285,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   label: {
-    fontSize: 13,
+    fontSize: Typography.caption1.fontSize,
+    lineHeight: Typography.caption1.lineHeight,
     fontFamily: 'Inter_500Medium',
     marginLeft: 4,
   },
@@ -288,7 +295,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     borderWidth: 1,
     paddingHorizontal: 16,
-    fontSize: 16,
+    fontSize: Typography.body.fontSize,
     fontFamily: 'Inter_400Regular',
   },
   inputWrapper: {
@@ -303,7 +310,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
     paddingHorizontal: 16,
-    fontSize: 16,
+    fontSize: Typography.body.fontSize,
     fontFamily: 'Inter_400Regular',
     backgroundColor: 'transparent',
   },
@@ -316,9 +323,9 @@ const styles = StyleSheet.create({
   },
   submitButtonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: Typography.body.fontSize,
     fontFamily: 'Inter_600SemiBold',
-    letterSpacing: -0.2,
+    letterSpacing: Typography.body.letterSpacing,
   },
   buttonSection: {
     paddingBottom: 40,
@@ -330,11 +337,13 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
   footerText: {
-    fontSize: 14,
+    fontSize: Typography.small.fontSize,
+    lineHeight: Typography.small.lineHeight,
     fontFamily: 'Inter_400Regular',
   },
   footerLink: {
-    fontSize: 14,
+    fontSize: Typography.small.fontSize,
+    lineHeight: Typography.small.lineHeight,
     fontFamily: 'Inter_600SemiBold',
   },
 });

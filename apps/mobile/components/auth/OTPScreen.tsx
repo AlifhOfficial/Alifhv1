@@ -13,12 +13,13 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { DotsLoader } from '@/components/ui';
+import { InlineLoader } from '@/components/ui/loaders';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 
 import { useTheme } from '@/context/theme-context';
+import { Colors, Typography } from '@/constants/theme';
 
 interface OTPScreenProps {
   email: string;
@@ -48,16 +49,17 @@ export function OTPScreen({
   const [canResend, setCanResend] = useState(false);
   const inputRef = useRef<TextInput>(null);
 
+  const themeColors = Colors[colorScheme];
   const colors = {
-    bg: isDark ? '#000000' : '#FFFFFF',
-    text: isDark ? '#FFFFFF' : '#000000',
-    textSecondary: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
-    textTertiary: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)',
-    primary: '#0066FF',
+    bg: themeColors.background,
+    text: themeColors.text,
+    textSecondary: themeColors.textSecondary,
+    textTertiary: themeColors.textTertiary,
+    primary: themeColors.primary,
     inputBg: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.04)',
     inputBorder: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.06)',
     inputBorderActive: isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.15)',
-    error: '#FF3B30',
+    error: themeColors.error,
   };
 
   // Resend timer
@@ -174,7 +176,7 @@ export function OTPScreen({
           {/* Loading */}
           {isLoading && (
             <Animated.View entering={FadeIn.duration(150)} style={styles.loadingSection}>
-              <DotsLoader size="sm" variant="primary" />
+              <InlineLoader size="sm" />
             </Animated.View>
           )}
 
@@ -246,12 +248,14 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   title: {
-    fontSize: 34,
+    fontSize: Typography.largeTitle.fontSize,
+    lineHeight: Typography.largeTitle.lineHeight,
     fontFamily: 'Inter_700Bold',
-    letterSpacing: -0.8,
+    letterSpacing: Typography.largeTitle.letterSpacing,
   },
   subtitle: {
-    fontSize: 15,
+    fontSize: Typography.subhead.fontSize,
+    lineHeight: Typography.subhead.lineHeight,
     fontFamily: 'Inter_400Regular',
     marginTop: 8,
   },
@@ -261,7 +265,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   errorText: {
-    fontSize: 14,
+    fontSize: Typography.small.fontSize,
+    lineHeight: Typography.small.lineHeight,
     fontFamily: 'Inter_500Medium',
     textAlign: 'center',
   },
@@ -283,7 +288,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   codeDigit: {
-    fontSize: 26,
+    fontSize: Typography.h2.fontSize,
     fontFamily: 'Inter_600SemiBold',
   },
   cursor: {
@@ -308,11 +313,11 @@ const styles = StyleSheet.create({
     marginTop: 32,
   },
   resendText: {
-    fontSize: 14,
+    fontSize: Typography.small.fontSize,
     fontFamily: 'Inter_600SemiBold',
   },
   resendTimer: {
-    fontSize: 14,
+    fontSize: Typography.small.fontSize,
     fontFamily: 'Inter_400Regular',
   },
   helpSection: {
@@ -320,7 +325,7 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
   helpText: {
-    fontSize: 12,
+    fontSize: Typography.caption2.fontSize,
     fontFamily: 'Inter_400Regular',
     textAlign: 'center',
   },

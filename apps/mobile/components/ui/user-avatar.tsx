@@ -29,7 +29,7 @@ interface UserAvatarProps {
   name?: string | null;
   
   /** Avatar size */
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
   
   /**
    * Fallback preference: true = DiceBear robot, false = initials
@@ -44,6 +44,7 @@ const sizes = {
   md: 40,
   lg: 48,
   xl: 64,
+  xxl: 112,
 };
 
 const fontSizes = {
@@ -52,6 +53,7 @@ const fontSizes = {
   md: 14,
   lg: 16,
   xl: 22,
+  xxl: 38,
 };
 
 /** Generate DiceBear avatar URL */

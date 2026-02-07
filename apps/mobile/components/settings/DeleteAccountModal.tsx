@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, Pressable, Modal, Platform } from 'react-native';
-import { BlurView } from 'expo-blur';
+import { BlurView, BlurTint } from 'expo-blur';
 import { Loader2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
@@ -46,7 +46,7 @@ export function DeleteAccountModal({
 
   const Overlay = Platform.OS === 'ios' ? BlurView : View;
   const overlayProps = Platform.OS === 'ios' 
-    ? { intensity: 60, tint: isDark ? 'dark' : 'light' }
+    ? { intensity: 60, tint: (isDark ? 'dark' : 'light') as BlurTint }
     : {};
 
   return (

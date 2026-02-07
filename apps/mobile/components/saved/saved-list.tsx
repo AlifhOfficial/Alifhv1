@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { StyleSheet, View, Text, FlatList, RefreshControl } from 'react-native';
-import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Heart, Sparkles } from 'lucide-react-native';
 
@@ -25,6 +25,45 @@ interface SavedListProps {
   } | null;
 }
 
+// ============================================================================
+// EMPTY STATE COMPONENT
+// ============================================================================
+
+function EmptyState({ 
+  colors, 
+  isFavorites 
+}: { 
+  colors: ThemeColors; 
+  isFavorites: boolean;
+}) {
+  return (
+    <View style={styles.emptyContainer}>
+      <Animated.View entering={FadeIn.duration(300)} style={styles.emptyContent}>
+        
+        {/* Icon */}
+        {isFavorites ? (
+          <Heart size={48} color="#EF4444" strokeWidth={1.5} />
+        ) : (
+          <Sparkles size={48} color="#F59E0B" strokeWidth={1.5} />
+        )}
+
+        {/* Title */}
+        <Text style={[styles.emptyTitle, { color: colors.text }]}>
+          {isFavorites ? 'No favorites yet' : 'No superlikes yet'}
+        </Text>
+
+        {/* Subtitle */}
+        <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+          {isFavorites 
+            ? 'Tap the heart on any listing to save it here'
+            : 'Long press the heart to superlike a listing'}
+        </Text>
+
+      </Animated.View>
+    </View>
+  );
+}
+
 export function SavedList({ 
   colors,
   listings, 
@@ -39,39 +78,7 @@ export function SavedList({
   // Empty state
   if (listings.length === 0) {
     const isFavorites = activeTab === 'favorites';
-    
-    return (
-      <View style={styles.emptyContainer}>
-        <Animated.View entering={FadeIn.duration(300)} style={styles.emptyContent}>
-          {/* Icon */}
-          <Animated.View
-            entering={FadeInUp.delay(100).duration(400)}
-            style={[styles.iconPlaceholder, { backgroundColor: colors.surface }]}
-          >
-            {isFavorites ? (
-              <Heart size={48} color={colors.textTertiary} strokeWidth={1.25} />
-            ) : (
-              <Sparkles size={48} color={colors.textTertiary} strokeWidth={1.25} />
-            )}
-          </Animated.View>
-
-          {/* Text */}
-          <Animated.View
-            entering={FadeInUp.delay(200).duration(400)}
-            style={styles.textContainer}
-          >
-            <Text style={[styles.emptyTitle, { color: colors.text }]}>
-              {isFavorites ? 'No Favorites Yet' : 'No Superlikes Yet'}
-            </Text>
-            <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
-              {isFavorites 
-                ? 'Tap the heart on listings to save them here'
-                : 'Use superlikes to show extra interest'}
-            </Text>
-          </Animated.View>
-        </Animated.View>
-      </View>
-    );
+    return <EmptyState colors={colors} isFavorites={isFavorites} />;
   }
 
   return (
@@ -125,40 +132,30 @@ export function SavedList({
 }
 
 const styles = StyleSheet.create({
+  // Empty State
   emptyContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 32,
+    paddingHorizontal: 40,
   },
   emptyContent: {
     alignItems: 'center',
-    gap: 24,
-  },
-  iconPlaceholder: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  textContainer: {
-    alignItems: 'center',
-    gap: 8,
+    gap: 16,
   },
   emptyTitle: {
-    fontSize: Typography.h2.fontSize,
-    fontFamily: 'Inter_700Bold',
-    fontWeight: '700',
+    ...Typography.h3,
+    fontFamily: 'Inter_600SemiBold',
     textAlign: 'center',
+    marginTop: 8,
   },
   emptySubtitle: {
-    fontSize: Typography.body.fontSize,
+    ...Typography.muted,
     fontFamily: 'Inter_400Regular',
     textAlign: 'center',
-    lineHeight: 22,
-    paddingHorizontal: 16,
   },
+  
+  // List
   listContent: {
     paddingHorizontal: 16,
     paddingTop: 4,

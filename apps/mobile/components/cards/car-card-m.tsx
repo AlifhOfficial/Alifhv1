@@ -475,11 +475,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   placeholderText: {
-    fontSize: Typography.footnote.fontSize,
-    lineHeight: Typography.footnote.lineHeight,
-    fontFamily: 'Inter_400Regular',
-    fontWeight: Typography.footnote.fontWeight as any,
-    letterSpacing: Typography.footnote.letterSpacing,
+    ...Typography.footnote,
   },
 
   // Content
@@ -497,27 +493,18 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    fontSize: Typography.cardTitle.fontSize,
-    lineHeight: Typography.cardTitle.lineHeight,
+    ...Typography.cardTitle,
     fontFamily: 'Inter_700Bold',
-    fontWeight: Typography.cardTitle.fontWeight as any,
-    letterSpacing: Typography.cardTitle.letterSpacing,
   },
   year: {
-    fontSize: Typography.cardMeta.fontSize,
-    lineHeight: Typography.cardMeta.lineHeight,
+    ...Typography.cardMeta,
     fontFamily: 'Inter_600SemiBold',
-    fontWeight: Typography.cardMeta.fontWeight as any,
-    letterSpacing: Typography.cardMeta.letterSpacing,
   },
 
   // Price
   price: {
-    fontSize: Typography.cardPrice.fontSize,
-    lineHeight: Typography.cardPrice.lineHeight,
+    ...Typography.cardPrice,
     fontFamily: 'Inter_700Bold',
-    fontWeight: Typography.cardPrice.fontWeight as any,
-    letterSpacing: Typography.cardPrice.letterSpacing,
   },
 
   // Stats
@@ -527,17 +514,11 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   stat: {
-    fontSize: Typography.cardMeta.fontSize,
-    lineHeight: Typography.cardMeta.lineHeight,
+    ...Typography.cardMeta,
     fontFamily: 'Inter_600SemiBold',
-    fontWeight: Typography.cardMeta.fontWeight as any,
-    letterSpacing: Typography.cardMeta.letterSpacing,
   },
   separator: {
-    fontSize: Typography.cardMeta.fontSize,
-    lineHeight: Typography.cardMeta.lineHeight,
-    fontWeight: Typography.cardMeta.fontWeight as any,
-    letterSpacing: Typography.cardMeta.letterSpacing,
+    ...Typography.cardMeta,
   },
 
   // Bottom Row
@@ -575,11 +556,8 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   avatarInitial: {
-    fontSize: Typography.cardSeller.fontSize,
-    lineHeight: Typography.cardSeller.lineHeight,
+    ...Typography.cardSeller,
     fontFamily: 'Inter_600SemiBold',
-    fontWeight: '600' as any,
-    letterSpacing: Typography.cardSeller.letterSpacing,
   },
   sellerNameContainer: {
     flexDirection: 'row',
@@ -589,11 +567,8 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   sellerName: {
-    fontSize: Typography.cardSeller.fontSize,
-    lineHeight: Typography.cardSeller.lineHeight,
+    ...Typography.cardSeller,
     fontFamily: 'Inter_600SemiBold',
-    fontWeight: '600' as any,
-    letterSpacing: Typography.cardSeller.letterSpacing,
     flexShrink: 1,
   },
   blkBadge: {
@@ -603,11 +578,8 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   blkBadgeText: {
-    fontSize: Typography.badge.fontSize,
-    lineHeight: Typography.badge.lineHeight,
+    ...Typography.badge,
     fontFamily: 'Inter_700Bold',
-    fontWeight: Typography.badge.fontWeight as any,
-    letterSpacing: Typography.badge.letterSpacing,
     color: '#FFFFFF',
   },
 

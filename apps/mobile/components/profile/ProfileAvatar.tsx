@@ -4,7 +4,7 @@
  * Uses expo-image-picker for photo selection
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { 
   StyleSheet, 
   View, 
@@ -19,12 +19,15 @@ import Animated, {
   useAnimatedStyle, 
   useSharedValue,
   withSpring,
+  withRepeat,
+  withSequence,
+  withTiming,
+  Easing,
 } from 'react-native-reanimated';
-import { Camera, Loader2 } from 'lucide-react-native';
+import { Camera } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 
-import { Typography } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import type { ThemeColors } from './types';
 
@@ -187,6 +190,28 @@ export function ProfileAvatar({
     }
   };
 
+  // Loading animation
+  const loadingOpacity = useSharedValue(1);
+
+  useEffect(() => {
+    if (isUploading) {
+      loadingOpacity.value = withRepeat(
+        withSequence(
+          withTiming(0.4, { duration: 600, easing: Easing.inOut(Easing.ease) }),
+          withTiming(1, { duration: 600, easing: Easing.inOut(Easing.ease) })
+        ),
+        -1,
+        false
+      );
+    } else {
+      loadingOpacity.value = 1;
+    }
+  }, [isUploading]);
+
+  const loadingTextStyle = useAnimatedStyle(() => ({
+    opacity: loadingOpacity.value,
+  }));
+
   return (
     <AnimatedPressable
       onPress={showOptions}
@@ -205,8 +230,9 @@ export function ProfileAvatar({
       {/* Loading overlay */}
       {isUploading && (
         <Animated.View entering={FadeIn.duration(200)} style={styles.overlay}>
-          <Loader2 size={24} color="#FFFFFF" strokeWidth={2} />
-          <Text style={styles.uploadText}>Uploading...</Text>
+          <Animated.Text style={[styles.loadingText, loadingTextStyle]}>
+            Uploading
+          </Animated.Text>
         </Animated.View>
       )}
       
@@ -226,20 +252,16 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    borderRadius: 40,
+    borderRadius: 32,
     backgroundColor: 'rgba(0,0,0,0.6)',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 4,
   },
-  uploadText: {
+  loadingText: {
     color: '#FFFFFF',
-    fontSize: Typography.caption2.fontSize,
-    lineHeight: Typography.caption2.lineHeight,
+    fontSize: 13,
     fontFamily: 'Inter_500Medium',
-    fontWeight: '500' as any,
-    letterSpacing: Typography.caption2.letterSpacing,
-    marginTop: 2,
+    letterSpacing: 0,
   },
   cameraBadge: {
     position: 'absolute',
@@ -250,7 +272,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    backdropFilter: 'blur(8px)',
     ...Platform.select({
       ios: {
         shadowColor: '#000',

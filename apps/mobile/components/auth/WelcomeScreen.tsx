@@ -53,23 +53,23 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
 
   return (
     <View style={[styles.container, { backgroundColor: colors.bg, paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-      {/* Top Section - Logo */}
+      {/* Top Section - Logo & Tagline */}
       <View style={styles.brandSection}>
         {/* SVG Logo */}
         <View style={styles.logoContainer}>
           <RevvupLogo isDark={isDark} size={220} />
         </View>
+        
+        {/* Subtitle */}
+        <Animated.View 
+          entering={FadeInDown.delay(200).duration(400).easing(Easing.out(Easing.ease))}
+          style={styles.titleSection}
+        >
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            Revved up
+          </Text>
+        </Animated.View>
       </View>
-
-      {/* Subtitle Section */}
-      <Animated.View 
-        entering={FadeInDown.delay(200).duration(400).easing(Easing.out(Easing.ease))}
-        style={styles.titleSection}
-      >
-        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-          Revved up
-        </Text>
-      </Animated.View>
 
       {/* Actions Section */}
       <Animated.View 
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   brandSection: {
-    flex: 1.5,
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
   },
   titleSection: {
     alignItems: 'center',
-    paddingVertical: 12,
+    marginTop: 8,
   },
   subtitle: {
     fontSize: 13,
@@ -157,45 +157,49 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   actionsSection: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    paddingHorizontal: 24,
-    paddingBottom: 24,
-    gap: 12,
+    paddingHorizontal: 28,
+    paddingBottom: 40,
+    gap: 16,
   },
   primaryButton: {
-    height: 56,
-    borderRadius: 14,
+    height: 58,
+    borderRadius: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: 10,
+    shadowColor: '#0066FF',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   primaryButtonText: {
     color: '#FFFFFF',
-    fontSize: 17,
+    fontSize: 18,
     fontFamily: 'Inter_600SemiBold',
-    letterSpacing: -0.2,
+    letterSpacing: -0.3,
   },
   secondaryButton: {
-    height: 56,
-    borderRadius: 14,
+    height: 58,
+    borderRadius: 16,
     borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
   },
   secondaryButtonText: {
-    fontSize: 16,
-    fontFamily: 'Inter_500Medium',
-    letterSpacing: -0.2,
+    fontSize: 17,
+    fontFamily: 'Inter_600SemiBold',
+    letterSpacing: -0.3,
   },
   skipButton: {
-    height: 44,
+    height: 48,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 4,
   },
   skipButtonText: {
     fontSize: 15,
-    fontFamily: 'Inter_400Regular',
+    fontFamily: 'Inter_500Medium',
   },
 });
