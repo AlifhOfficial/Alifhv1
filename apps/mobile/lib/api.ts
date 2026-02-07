@@ -4,9 +4,7 @@
  * Transforms web API response shape to mobile-friendly format.
  */
 
-// TODO: Use env variable for production
-const API_BASE = 'http://192.168.1.14:3000';
-const CDN_BASE = 'https://cdn.alifh.ae';
+import { API_BASE, CDN_BASE } from './config';
 
 // ============================================================================
 // TYPES

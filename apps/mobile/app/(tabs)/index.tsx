@@ -3,24 +3,36 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, ScrollView } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { HomeHeader } from '@/components/home/header';
-import { Colors } from '@/constants/theme';
+import { HomeHeader, SavedTube } from '@/components/home';
+import { Colors, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 export default function HomeScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <HomeHeader />
-      <View style={styles.content}>
-        <Text style={[styles.text, { color: colors.textSecondary }]}>
-          Browse the latest listings
-        </Text>
-      </View>
+      <ScrollView 
+        style={styles.content} 
+        contentContainerStyle={{ paddingBottom: insets.bottom + Layout.tabBarHeight }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Saved Tube */}
+        <SavedTube />
+        
+        {/* Placeholder for more content */}
+        <View style={styles.placeholder}>
+          <Text style={[styles.text, { color: colors.textSecondary }]}>
+            Browse the latest listings
+          </Text>
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -31,9 +43,13 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  placeholder: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+    marginTop: 40,
   },
   text: {
     fontSize: 16,

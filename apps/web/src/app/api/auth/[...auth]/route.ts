@@ -3,6 +3,7 @@
  * 
  * Handles all auth operations: sign-in, sign-up, OAuth, magic links, etc.
  * Supports dynamic baseURL to allow both localhost and network IP access.
+ * Also supports mobile apps that don't send Origin headers.
  */
 
 import { auth } from "@/lib/auth";
@@ -20,6 +21,14 @@ const ALLOWED_ORIGINS = [
   "http://192.168.1.109:8081",
   "https://claims-son-sixth-classification.trycloudflare.com",
 ].filter(Boolean);
+
+// Check if a request should be allowed (either from allowed origin or mobile app without origin)
+function isRequestAllowed(origin: string | null): boolean {
+  // Allow requests without origin (mobile apps, server-to-server)
+  if (!origin) return true;
+  // Allow known origins
+  return ALLOWED_ORIGINS.includes(origin);
+}
 
 /**
  * Get the base URL from the request to support both localhost and network IPs
@@ -40,12 +49,13 @@ function getBaseURLFromRequest(request: Request): string {
 }
 
 function addCorsHeaders(response: Response, origin: string | null): Response {
-  // Check if origin is allowed
-  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+  // For mobile apps (no origin) or allowed origins, add CORS headers
+  if (isRequestAllowed(origin)) {
     const headers = new Headers(response.headers);
-    headers.set("Access-Control-Allow-Origin", origin);
+    // Use the origin if provided, otherwise use wildcard for mobile apps
+    headers.set("Access-Control-Allow-Origin", origin || "*");
     headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, Cookie");
+    headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, Cookie, Origin");
     headers.set("Access-Control-Allow-Credentials", "true");
     
     return new Response(response.body, {
@@ -60,13 +70,13 @@ function addCorsHeaders(response: Response, origin: string | null): Response {
 export async function OPTIONS(request: Request) {
   const origin = request.headers.get("origin");
   
-  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+  if (isRequestAllowed(origin)) {
     return new NextResponse(null, {
       status: 204,
       headers: {
-        "Access-Control-Allow-Origin": origin,
+        "Access-Control-Allow-Origin": origin || "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, Cookie",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, Cookie, Origin",
         "Access-Control-Allow-Credentials": "true",
         "Access-Control-Max-Age": "86400",
       },
@@ -95,12 +105,17 @@ export async function POST(request: Request) {
   const origin = request.headers.get("origin");
   // Override baseURL header so Better Auth uses the correct origin for OAuth callbacks
   const baseURL = getBaseURLFromRequest(request);
+  
+  // Check if request has a body - handle empty bodies for endpoints like sign-out
+  const contentLength = request.headers.get("content-length");
+  const hasBody = contentLength && parseInt(contentLength) > 0;
+  
   const modifiedRequest = new Request(request.url, {
     method: request.method,
     headers: new Headers([...request.headers.entries(), ["x-forwarded-host", new URL(baseURL).host]]),
-    body: request.body,
+    body: hasBody ? request.body : null,
     // @ts-ignore - duplex is needed for streaming bodies
-    duplex: "half",
+    ...(hasBody ? { duplex: "half" } : {}),
   });
   const response = await auth.handler(modifiedRequest);
   return addCorsHeaders(response, origin);

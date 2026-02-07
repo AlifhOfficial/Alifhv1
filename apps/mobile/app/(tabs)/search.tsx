@@ -4,11 +4,12 @@
  */
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { DisplayArea } from '@/components/layout';
 import { CarCardM, CarCardMSkeleton } from '@/components/cards';
+import { LogoLoader } from '@/components/ui';
 import { api, type ListingCard, type SearchParams, type SearchFacets, type SearchSortOption } from '@/lib/api';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -237,7 +238,7 @@ export default function SearchScreen() {
 
             {hasMore && isLoading && (
               <View style={styles.loadingMore}>
-                <ActivityIndicator size="small" color={colors.primary} />
+                <LogoLoader size={40} />
               </View>
             )}
           </>

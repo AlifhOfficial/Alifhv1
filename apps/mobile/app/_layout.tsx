@@ -3,20 +3,28 @@
  */
 
 import { Theme as NavTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
+import { Modal, View } from 'react-native';
 import 'react-native-reanimated';
 
 import { Colors } from '@/constants/theme';
 import { ThemeProvider, useTheme } from '@/context/theme-context';
+import { AuthProvider, useAuth } from '@/context/auth-context';
 import { Loader } from '@/components/ui/loader';
+import { AuthFlow } from '@/components/auth';
 
 // Prevent splash screen from auto-hiding
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch(() => {});
+
+// Hide native splash immediately - we show our own loader
+SplashScreen.hideAsync().catch(() => {});
 
 // Custom themes using our Colors
 const LightTheme: NavTheme = {
@@ -57,6 +65,17 @@ const CustomDarkTheme: NavTheme = {
 
 function RootLayoutNav() {
   const { colorScheme } = useTheme();
+  const { showAuthFlow, closeAuthFlow, signIn } = useAuth();
+  const router = useRouter();
+
+  const handleAuthComplete = (user?: { id: string; name: string; email: string }) => {
+    if (user) {
+      signIn(user);
+    }
+    closeAuthFlow();
+    // Navigate to search tab after successful auth
+    router.replace('/(tabs)/search');
+  };
 
   return (
     <NavigationThemeProvider value={colorScheme === 'dark' ? CustomDarkTheme : LightTheme}>
@@ -64,6 +83,21 @@ function RootLayoutNav() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+      
+      {/* Auth Flow Modal - can be triggered from anywhere via useAuth */}
+      <Modal
+        visible={showAuthFlow}
+        animationType="slide"
+        presentationStyle="fullScreen"
+        statusBarTranslucent
+      >
+        <View style={{ flex: 1, backgroundColor: colorScheme === 'dark' ? '#000000' : '#FFFFFF' }}>
+          <AuthFlow 
+            onComplete={handleAuthComplete}
+            onSkip={closeAuthFlow}
+          />
+        </View>
+      </Modal>
     </NavigationThemeProvider>
   );
 }
@@ -76,17 +110,72 @@ export default function RootLayout() {
     Inter_700Bold,
   });
 
-  useEffect(() => {
-    if (fontsLoaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
+  // Minimum splash time to show branded loader (2 seconds)
+  const [minTimeElapsed, setMinTimeElapsed] = useState(false);
+  // Track if user has completed onboarding
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean | null>(null);
 
-  if (!fontsLoaded) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMinTimeElapsed(true);
+    }, 2000); // Show loader for at least 2 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Check if user has completed onboarding
+  useEffect(() => {
+    const checkOnboarding = async () => {
+      try {
+        const value = await AsyncStorage.getItem('hasCompletedOnboarding');
+        setHasCompletedOnboarding(value === 'true');
+      } catch {
+        setHasCompletedOnboarding(false);
+      }
+    };
+    checkOnboarding();
+  }, []);
+
+  const handleAuthComplete = async () => {
+    try {
+      await AsyncStorage.setItem('hasCompletedOnboarding', 'true');
+      setHasCompletedOnboarding(true);
+    } catch (e) {
+      // Still proceed even if storage fails
+      setHasCompletedOnboarding(true);
+    }
+  };
+
+  const handleSkip = async () => {
+    try {
+      await AsyncStorage.setItem('hasCompletedOnboarding', 'true');
+      setHasCompletedOnboarding(true);
+    } catch (e) {
+      setHasCompletedOnboarding(true);
+    }
+  };
+
+  // Show branded loader until fonts are loaded AND minimum time has passed AND onboarding check complete
+  if (!fontsLoaded || !minTimeElapsed || hasCompletedOnboarding === null) {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
         <ThemeProvider>
-          <Loader message="Revvup" showDots={true} />
+          <Loader />
+        </ThemeProvider>
+      </GestureHandlerRootView>
+    );
+  }
+
+  // Show auth flow if user hasn't completed onboarding
+  if (!hasCompletedOnboarding) {
+    return (
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <ThemeProvider>
+          <AuthFlow 
+            onComplete={handleAuthComplete}
+            onSkip={handleSkip}
+          />
+          <StatusBar style="auto" />
         </ThemeProvider>
       </GestureHandlerRootView>
     );
@@ -94,9 +183,13 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider>
-        <RootLayoutNav />
-      </ThemeProvider>
+      <BottomSheetModalProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <RootLayoutNav />
+          </AuthProvider>
+        </ThemeProvider>
+      </BottomSheetModalProvider>
     </GestureHandlerRootView>
   );
 }

@@ -3,16 +3,18 @@
  */
 
 import { StyleSheet, View, Text } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Colors } from '@/constants/theme';
+import { Colors, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 export default function MessagesScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.background, paddingBottom: insets.bottom + Layout.tabBarHeight }]}>
       <Text style={[styles.title, { color: colors.text }]}>Messages</Text>
       <Text style={[styles.subtitle, { color: colors.muted }]}>
         Your conversations

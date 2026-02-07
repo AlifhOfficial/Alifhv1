@@ -20,8 +20,8 @@ export function BottomSafeAreaGradient() {
     <View style={styles.container} pointerEvents="none">
       <LinearGradient
         colors={[
-          isDark ? 'rgba(13,13,13,0)' : 'rgba(250,250,250,0)',
-          isDark ? '#0D0D0D' : '#FAFAFA',
+          isDark ? 'rgba(0,0,0,0)' : 'rgba(250,250,250,0)',
+          isDark ? '#000000' : '#FAFAFA',
         ]}
         style={[styles.gradient, { height: insets.bottom + 70 }]}
       />

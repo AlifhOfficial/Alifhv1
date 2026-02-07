@@ -8,7 +8,7 @@ import React, { ReactNode } from 'react';
 import { StyleSheet, View, ScrollView, RefreshControl } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 interface DisplayAreaProps {
@@ -60,8 +60,8 @@ export function DisplayArea({
     ? verticalPadding 
     : Spacing[verticalPadding];
 
-  // Tab bar height + bottom safe area (estimate ~85px total)
-  const bottomClearance = tabBarClearance ? 85 + insets.bottom : insets.bottom;
+  // Tab bar height + bottom safe area
+  const bottomClearance = tabBarClearance ? Layout.tabBarHeight + insets.bottom : insets.bottom;
 
   const containerStyle = [
     styles.container,
@@ -111,6 +111,7 @@ export function DisplayArea({
             onRefresh={onRefresh}
             tintColor={colors.primary}
             colors={[colors.primary]}
+            progressBackgroundColor={colors.background}
           />
         ) : undefined
       }

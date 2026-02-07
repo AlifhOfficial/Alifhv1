@@ -7,29 +7,29 @@
 export const Colors = {
   light: {
     // ═══════════════════════════════════════════
-    // BACKGROUNDS - Clean whites
+    // BACKGROUNDS - Pure white base (mirrors dark #000000)
     // ═══════════════════════════════════════════
-    background: '#FAFAFA',
-    backgroundSecondary: '#F2F2F7',
-    backgroundTertiary: '#E5E5EA',
-    backgroundElevated: '#FEFEFE',
-    backgroundGrouped: '#F2F2F7',
+    background: '#FFFFFF',
+    backgroundSecondary: '#F5F5F5',
+    backgroundTertiary: '#EBEBEB',
+    backgroundElevated: '#EBEBEB',
+    backgroundGrouped: '#FFFFFF',
     
     // ═══════════════════════════════════════════
-    // SURFACES (Cards, Sheets, Modals)
+    // SURFACES (Cards, Sheets, Modals) - ~10-15% darker
     // ═══════════════════════════════════════════
-    surface: '#F9F9FB',
-    surfaceSecondary: '#F2F2F7',
-    surfacePressed: '#E8E8ED',
-    surfaceHover: '#F2F2F7',
+    surface: '#F5F5F5',
+    surfaceSecondary: '#EBEBEB',
+    surfacePressed: '#E0E0E0',
+    surfaceHover: '#EBEBEB',
     
     // ═══════════════════════════════════════════
-    // TEXT HIERARCHY - Strong contrast
+    // TEXT HIERARCHY (mirrors dark text)
     // ═══════════════════════════════════════════
-    text: '#0D0D0D',
-    textSecondary: '#3C3C43',
-    textTertiary: '#8E8E93',
-    textQuaternary: '#C7C7CC',
+    text: '#0A0A0A',
+    textSecondary: '#525252',
+    textTertiary: '#737373',
+    textQuaternary: '#A3A3A3',
     textInverse: '#FAFAFA',
     
     // ═══════════════════════════════════════════
@@ -42,91 +42,91 @@ export const Colors = {
     accentMuted: '#E6F0FF',
     
     // ═══════════════════════════════════════════
-    // SEMANTIC COLORS
+    // SEMANTIC COLORS (same as dark, muted inverted)
     // ═══════════════════════════════════════════
-    success: '#34C759',
-    successMuted: '#D1F2D9',
+    success: '#22C55E',
+    successMuted: '#DCFCE7',
     successForeground: '#FFFFFF',
     
-    warning: '#FF9500',
-    warningMuted: '#FFEBD1',
+    warning: '#F59E0B',
+    warningMuted: '#FEF3C7',
     warningForeground: '#FFFFFF',
     
-    error: '#FF3B30',
-    errorMuted: '#FFD1CF',
+    error: '#EF4444',
+    errorMuted: '#FEE2E2',
     errorForeground: '#FFFFFF',
     
-    info: '#AF52DE',
-    infoMuted: '#EDD8F5',
+    info: '#8B5CF6',
+    infoMuted: '#EDE9FE',
     infoForeground: '#FFFFFF',
     
     // ═══════════════════════════════════════════
-    // UI ELEMENTS
+    // UI ELEMENTS (mirrors dark)
     // ═══════════════════════════════════════════
     tint: '#0066FF',
-    card: '#FEFEFE',
-    cardElevated: '#FEFEFE',
-    border: '#D1D1D6',
-    borderSecondary: '#C7C7CC',
-    separator: '#C6C6C8',
-    separatorOpaque: '#B5B5BA',
+    card: '#F5F5F5',
+    cardElevated: '#EBEBEB',
+    border: '#E5E5E5',
+    borderSecondary: '#D4D4D4',
+    separator: '#E5E5E5',
+    separatorOpaque: '#D4D4D4',
     
     // ═══════════════════════════════════════════
-    // ICONS
+    // ICONS (mirrors dark)
     // ═══════════════════════════════════════════
-    icon: '#3C3C43',
-    iconSecondary: '#8E8E93',
-    iconTertiary: '#C7C7CC',
+    icon: '#525252',
+    iconSecondary: '#737373',
+    iconTertiary: '#A3A3A3',
     iconActive: '#0066FF',
     
     // ═══════════════════════════════════════════
-    // TAB BAR
+    // TAB BAR (mirrors dark)
     // ═══════════════════════════════════════════
-    tabBar: '#FAFAFA',
-    tabBarBorder: '#D1D1D6',
-    tabIconDefault: '#8E8E93',
+    tabBar: '#FFFFFF',
+    tabBarBorder: '#E5E5E5',
+    tabIconDefault: '#737373',
     tabIconSelected: '#0066FF',
     
     // ═══════════════════════════════════════════
-    // INTERACTIVE FILLS - Stronger opacities
+    // INTERACTIVE FILLS (mirrors dark)
     // ═══════════════════════════════════════════
-    fill: '#787880',
-    fillSecondary: 'rgba(120, 120, 128, 0.24)',
-    fillTertiary: 'rgba(120, 120, 128, 0.18)',
-    fillQuaternary: 'rgba(120, 120, 128, 0.12)',
+    fill: '#737373',
+    fillSecondary: 'rgba(115, 115, 115, 0.16)',
+    fillTertiary: 'rgba(115, 115, 115, 0.12)',
+    fillQuaternary: 'rgba(115, 115, 115, 0.08)',
     
     // ═══════════════════════════════════════════
-    // BUTTONS
+    // BUTTONS (mirrors dark)
     // ═══════════════════════════════════════════
     buttonPrimary: '#0066FF',
     buttonPrimaryForeground: '#FFFFFF',
-    buttonSecondary: '#E5E5EA',
-    buttonSecondaryForeground: '#000000',
-    buttonDestructive: '#FF3B30',
+    buttonSecondary: '#EBEBEB',
+    buttonSecondaryForeground: '#0A0A0A',
+    buttonDestructive: '#EF4444',
     buttonDestructiveForeground: '#FFFFFF',
-    buttonDisabled: '#D1D1D6',
-    buttonDisabledForeground: '#8E8E93',
+    buttonDisabled: '#E5E5E5',
+    buttonDisabledForeground: '#A3A3A3',
     
     // ═══════════════════════════════════════════
-    // INPUTS
+    // INPUTS (mirrors dark)
     // ═══════════════════════════════════════════
-    input: '#F2F2F7',
-    inputBorder: '#D1D1D6',
+    input: '#F5F5F5',
+    inputBorder: '#E5E5E5',
     inputFocusBorder: '#0066FF',
-    inputPlaceholder: '#8E8E93',
+    inputPlaceholder: '#A3A3A3',
     
     // ═══════════════════════════════════════════
-    // MISC
+    // MISC (mirrors dark)
     // ═══════════════════════════════════════════
-    muted: '#8E8E93',
-    placeholder: '#8E8E93',
+    muted: '#525252',
+    placeholder: '#A3A3A3',
     link: '#0066FF',
     overlay: 'rgba(0, 0, 0, 0.4)',
-    skeleton: '#E5E5EA',
-    shimmer: '#F2F2F7',
+    skeleton: '#EBEBEB',
+    shimmer: '#D4D4D4',
     
     // ═══════════════════════════════════════════
-    // BLK LISTING - Premium tier styling
+    // BLK LISTING - Premium tier styling (same as dark)
     // ═══════════════════════════════════════════
     blkBackground: '#0D0D0D',
     blkBorder: '#262626',
@@ -143,11 +143,11 @@ export const Colors = {
     // ═══════════════════════════════════════════
     // BACKGROUNDS - OLED Black base
     // ═══════════════════════════════════════════
-    background: '#0D0D0D',
+    background: '#000000',
     backgroundSecondary: '#141414',
     backgroundTertiary: '#1A1A1A',
     backgroundElevated: '#1A1A1A',
-    backgroundGrouped: '#0D0D0D',
+    backgroundGrouped: '#000000',
     
     // ═══════════════════════════════════════════
     // SURFACES (Cards, Sheets, Modals) - ~10-15%
@@ -164,7 +164,7 @@ export const Colors = {
     textSecondary: '#A3A3A3',
     textTertiary: '#737373',
     textQuaternary: '#525252',
-    textInverse: '#0D0D0D',
+    textInverse: '#000000',
     
     // ═══════════════════════════════════════════
     // BRAND & ACCENT - Revvup Blue #0066FF
@@ -216,7 +216,7 @@ export const Colors = {
     // ═══════════════════════════════════════════
     // TAB BAR
     // ═══════════════════════════════════════════
-    tabBar: '#0D0D0D',
+    tabBar: '#000000',
     tabBarBorder: '#262626',
     tabIconDefault: '#737373',
     tabIconSelected: '#0066FF',
@@ -287,6 +287,18 @@ export const Spacing = {
   '3xl': 32,
   '4xl': 40,
   '5xl': 48,
+} as const;
+
+// ═══════════════════════════════════════════════════
+// LAYOUT CONSTANTS
+// ═══════════════════════════════════════════════════
+export const Layout = {
+  /** Tab bar height for bottom padding calculations */
+  tabBarHeight: 85,
+  /** Content horizontal padding */
+  screenPadding: 16,
+  /** Header vertical padding */
+  headerPadding: 8,
 } as const;
 
 // ═══════════════════════════════════════════════════

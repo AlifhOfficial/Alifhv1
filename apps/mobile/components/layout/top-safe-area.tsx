@@ -22,8 +22,8 @@ export function TopSafeAreaGradient() {
     <View style={styles.container} pointerEvents="none">
       <LinearGradient
         colors={[
-          isDark ? '#0D0D0D' : '#FAFAFA',
-          isDark ? 'rgba(13,13,13,0)' : 'rgba(250,250,250,0)',
+          isDark ? '#000000' : '#FAFAFA',
+          isDark ? 'rgba(0,0,0,0)' : 'rgba(250,250,250,0)',
         ]}
         style={[styles.gradient, { height: insets.top + 16 }]}
       />

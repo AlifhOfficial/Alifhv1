@@ -78,10 +78,10 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 4,
-    borderRadius: 24,
+    borderRadius: 20,
     borderWidth: 1,
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
   },

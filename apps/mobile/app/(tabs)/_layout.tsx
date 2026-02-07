@@ -55,6 +55,7 @@ export default function TabLayout() {
         name="saved"
         options={{
           title: 'Saved',
+          headerShown: false,
         }}
       />
       <Tabs.Screen
@@ -62,6 +63,24 @@ export default function TabLayout() {
         options={{
           title: 'Search',
           headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          headerShown: false,
+          href: null, // Hide from tab bar
+          sceneStyle: { backgroundColor: 'transparent' },
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+          headerShown: false,
+          href: null, // Hide from tab bar - accessed via profile
+          sceneStyle: { backgroundColor: 'transparent' },
         }}
       />
     </Tabs>
