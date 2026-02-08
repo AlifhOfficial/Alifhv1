@@ -14,10 +14,11 @@ import {
   Dimensions,
 } from 'react-native';
 import { Image } from 'expo-image';
-import { Heart, Share2, Sparkles, CheckCircle2 } from 'lucide-react-native';
+import { Heart, Share2, CheckCircle2 } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Typography, Shadows } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { Skeleton, SkeletonCircle } from '@/components/ui';
 
 // ============================================================================
 // FORMAT UTILITIES
@@ -162,6 +163,9 @@ export const CarCardM = memo(function CarCardM({
   const priceColor = isBlkListing 
     ? colors.blkText 
     : colors.primary;
+  const statsColor = isBlkListing 
+    ? colors.blkTextSecondary 
+    : colors.textSecondary;
   const metaColor = isBlkListing 
     ? colors.blkTextMuted 
     : colors.textSecondary;
@@ -217,7 +221,7 @@ export const CarCardM = memo(function CarCardM({
     >
       {/* BLK Listing Top Accent */}
       {isBlkListing && (
-        <View style={styles.blkAccent} />
+        <View style={[styles.blkAccent, { backgroundColor: colors.blkSeparator }]} />
       )}
 
       {/* Image Section */}
@@ -261,15 +265,15 @@ export const CarCardM = memo(function CarCardM({
 
         {/* Stats Row */}
         <View style={styles.statsRow}>
-          <Text style={[styles.stat, { color: metaColor }]}>
+          <Text style={[styles.stat, { color: statsColor }]}>
             {formatMileage(mileage)} km
           </Text>
           <Text style={[styles.separator, { color: separatorColor }]}>·</Text>
-          <Text style={[styles.stat, { color: metaColor }]}>
+          <Text style={[styles.stat, { color: statsColor }]}>
             {displaySpecs}
           </Text>
           <Text style={[styles.separator, { color: separatorColor }]}>·</Text>
-          <Text style={[styles.stat, { color: metaColor }]} numberOfLines={1}>
+          <Text style={[styles.stat, { color: statsColor }]} numberOfLines={1}>
             {displayEmirate}
           </Text>
         </View>
@@ -283,7 +287,7 @@ export const CarCardM = memo(function CarCardM({
               styles.avatar,
               { 
                 backgroundColor: isBlkListing ? colors.blkAvatarBackground : colors.backgroundSecondary,
-                borderColor: isBlkListing ? colors.blkAvatarBorder : colors.border,
+                borderColor: isBlackTierPartner ? colors.blkBackground : (isBlkListing ? colors.blkAvatarBorder : colors.border),
               },
               isBlackTierPartner && styles.avatarBlackTier,
             ]}>
@@ -320,8 +324,8 @@ export const CarCardM = memo(function CarCardM({
 
               {/* BLK Badge */}
               {isBlackTierPartner && (
-                <View style={styles.blkBadge}>
-                  <Text style={styles.blkBadgeText}>BLK</Text>
+                <View style={[styles.blkBadge, { backgroundColor: colors.blkBackground }]}>
+                  <Text style={[styles.blkBadgeText, { color: colors.blkText }]}>BLK</Text>
                 </View>
               )}
             </View>
@@ -329,6 +333,23 @@ export const CarCardM = memo(function CarCardM({
 
           {/* Action Buttons */}
           <View style={styles.actions}>
+            {/* Favorite */}
+            <Pressable
+              onPress={handleFavoritePress}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={({ pressed }) => [
+                styles.actionButton,
+                { opacity: pressed ? 0.6 : 1 },
+              ]}
+            >
+              <Heart
+                size={22}
+                color={isFavorite ? colors.favorite : actionIconColor}
+                fill={isFavorite ? colors.favorite : 'none'}
+                strokeWidth={isFavorite ? 2.25 : 1.75}
+              />
+            </Pressable>
+
             {/* Share */}
             <Pressable
               onPress={handleSharePress}
@@ -342,40 +363,6 @@ export const CarCardM = memo(function CarCardM({
                 size={22} 
                 color={actionIconColor}
                 strokeWidth={1.75}
-              />
-            </Pressable>
-
-            {/* Favorite */}
-            <Pressable
-              onPress={handleFavoritePress}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={({ pressed }) => [
-                styles.actionButton,
-                { opacity: pressed ? 0.6 : 1 },
-              ]}
-            >
-              <Heart
-                size={22}
-                color={isFavorite ? '#F43F5E' : actionIconColor}
-                fill={isFavorite ? '#F43F5E' : 'none'}
-                strokeWidth={isFavorite ? 2.25 : 1.75}
-              />
-            </Pressable>
-
-            {/* Superlike */}
-            <Pressable
-              onPress={handleSuperlikePress}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={({ pressed }) => [
-                styles.actionButton,
-                { opacity: pressed ? 0.6 : 1 },
-              ]}
-            >
-              <Sparkles
-                size={22}
-                color={isSuperliked ? '#EAB308' : actionIconColor}
-                fill={isSuperliked ? '#EAB308' : 'none'}
-                strokeWidth={isSuperliked ? 2.25 : 1.75}
               />
             </Pressable>
           </View>
@@ -399,36 +386,38 @@ export function CarCardMSkeleton() {
       { backgroundColor: colors.surface, borderColor: colors.border },
     ]}>
       {/* Image Skeleton */}
-      <View style={[styles.imageContainer, { backgroundColor: colors.skeleton }]} />
+      <View style={styles.imageContainer}>
+        <Skeleton width="100%" height={200} borderRadius={0} />
+      </View>
 
       {/* Content Skeleton */}
       <View style={styles.content}>
         {/* Title Row */}
         <View style={styles.titleRow}>
-          <View style={[styles.skeletonTitle, { backgroundColor: colors.skeleton }]} />
-          <View style={[styles.skeletonYear, { backgroundColor: colors.skeleton }]} />
+          <Skeleton width="60%" height={17} />
+          <Skeleton width={32} height={13} />
         </View>
 
         {/* Price */}
-        <View style={[styles.skeletonPrice, { backgroundColor: colors.skeleton }]} />
+        <Skeleton width={100} height={20} style={{ marginVertical: Spacing.xs }} />
 
         {/* Stats */}
         <View style={styles.statsRow}>
-          <View style={[styles.skeletonStat, { backgroundColor: colors.skeleton }]} />
-          <View style={[styles.skeletonStat, { backgroundColor: colors.skeleton, width: 30 }]} />
-          <View style={[styles.skeletonStat, { backgroundColor: colors.skeleton, width: 45 }]} />
+          <Skeleton width={50} height={14} />
+          <Skeleton width={30} height={14} />
+          <Skeleton width={45} height={14} />
         </View>
 
         {/* Bottom */}
         <View style={styles.bottomRow}>
           <View style={styles.sellerInfo}>
-            <View style={[styles.skeletonAvatar, { backgroundColor: colors.skeleton }]} />
-            <View style={[styles.skeletonSellerName, { backgroundColor: colors.skeleton }]} />
+            <SkeletonCircle size={32} />
+            <Skeleton width={90} height={15} />
           </View>
           <View style={styles.actions}>
-            <View style={[styles.skeletonAction, { backgroundColor: colors.skeleton }]} />
-            <View style={[styles.skeletonAction, { backgroundColor: colors.skeleton }]} />
-            <View style={[styles.skeletonAction, { backgroundColor: colors.skeleton }]} />
+            <SkeletonCircle size={36} />
+            <SkeletonCircle size={36} />
+            <SkeletonCircle size={36} />
           </View>
         </View>
       </View>
@@ -457,7 +446,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 1,
-    backgroundColor: '#333333',
   },
   
   // Image
@@ -481,7 +469,7 @@ const styles = StyleSheet.create({
   // Content
   content: {
     padding: CARD_PADDING,
-    gap: Spacing.xs,
+    gap: 2,
   },
 
   // Title Row
@@ -512,13 +500,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
+    marginTop: Spacing.xs,
   },
   stat: {
-    ...Typography.cardMeta,
+    fontSize: 13,
+    lineHeight: 18,
     fontFamily: 'Inter_600SemiBold',
   },
   separator: {
-    ...Typography.cardMeta,
+    fontSize: 13,
+    fontFamily: 'Inter_400Regular',
+    opacity: 0.4,
   },
 
   // Bottom Row
@@ -526,7 +518,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: Spacing.md,
+    paddingTop: Spacing.sm,
     marginTop: Spacing.xs,
   },
 
@@ -539,8 +531,8 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   avatar: {
-    width: 36,
-    height: 36,
+    width: 32,
+    height: 32,
     borderRadius: Radius.full,
     borderWidth: 1,
     alignItems: 'center',
@@ -549,38 +541,36 @@ const styles = StyleSheet.create({
   },
   avatarBlackTier: {
     borderWidth: 2,
-    borderColor: '#000000',
   },
   avatarImage: {
     width: '100%',
     height: '100%',
   },
   avatarInitial: {
-    ...Typography.cardSeller,
+    fontSize: 12,
     fontFamily: 'Inter_600SemiBold',
   },
   sellerNameContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 4,
     flex: 1,
     minWidth: 0,
   },
   sellerName: {
-    ...Typography.cardSeller,
+    fontSize: 13,
+    lineHeight: 18,
     fontFamily: 'Inter_600SemiBold',
     flexShrink: 1,
   },
   blkBadge: {
-    backgroundColor: '#000000',
     paddingHorizontal: 6,
     paddingVertical: 3,
-    borderRadius: 3,
+    borderRadius: Radius.sm,
   },
   blkBadgeText: {
     ...Typography.badge,
     fontFamily: 'Inter_700Bold',
-    color: '#FFFFFF',
   },
 
   // Actions
@@ -592,43 +582,5 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     padding: Spacing.sm,
-  },
-
-  // Skeleton styles
-  skeletonTitle: {
-    height: 17,
-    width: '60%',
-    borderRadius: Radius.sm,
-  },
-  skeletonYear: {
-    height: 13,
-    width: 32,
-    borderRadius: Radius.sm,
-  },
-  skeletonPrice: {
-    height: 20,
-    width: 100,
-    borderRadius: Radius.sm,
-    marginVertical: Spacing.xs,
-  },
-  skeletonStat: {
-    height: 13,
-    width: 50,
-    borderRadius: Radius.sm,
-  },
-  skeletonAvatar: {
-    width: 36,
-    height: 36,
-    borderRadius: Radius.full,
-  },
-  skeletonSellerName: {
-    height: 15,
-    width: 90,
-    borderRadius: Radius.sm,
-  },
-  skeletonAction: {
-    width: 36,
-    height: 36,
-    borderRadius: Radius.full,
   },
 });

@@ -59,26 +59,26 @@ export function ConversationGroup({
       {/* Header Row: [Avatar] [Name] [Badge?] [Chevron] */}
       <Pressable
         onPress={toggleExpanded}
-        style={({ pressed }) => [
-          styles.header,
-          { backgroundColor: pressed ? colors.surface : 'transparent' },
-        ]}
+        style={styles.header}
+        android_ripple={{ color: colors.surfacePressed }}
       >
-        <View style={styles.headerRow}>
-          <UserAvatar src={avatarUrl} name={name} size="md" />
-          <Text style={[styles.name, { color: colors.text }]} numberOfLines={1}>
-            {name}
-          </Text>
-          {isOnline && (
-            <View style={[styles.onlineDot, { backgroundColor: colors.success }]} />
-          )}
-          {totalUnread > 0 && (
-            <View style={[styles.unreadBadge, { backgroundColor: colors.primary }]}>
-              <Text style={styles.unreadText}>{totalUnread}</Text>
-            </View>
-          )}
-          <ChevronIcon size={18} color={colors.textTertiary} strokeWidth={2} />
-        </View>
+        {({ pressed }) => (
+          <View style={[styles.headerRow, pressed && { opacity: 0.7 }]}>
+            <UserAvatar src={avatarUrl} name={name} size="md" />
+            <Text style={[styles.name, { color: colors.text }]} numberOfLines={1}>
+              {name}
+            </Text>
+            {isOnline && (
+              <View style={[styles.onlineDot, { backgroundColor: colors.success }]} />
+            )}
+            {totalUnread > 0 && (
+              <View style={[styles.unreadBadge, { backgroundColor: colors.primary }]}>
+                <Text style={styles.unreadText}>{totalUnread}</Text>
+              </View>
+            )}
+            <ChevronIcon size={18} color={colors.textTertiary} strokeWidth={2} />
+          </View>
+        )}
       </Pressable>
 
       {/* Dropdown: Nested conversations */}
@@ -151,7 +151,6 @@ const styles = StyleSheet.create({
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.md,
   },
   name: {
     flex: 1,
@@ -159,11 +158,13 @@ const styles = StyleSheet.create({
     lineHeight: Typography.callout.lineHeight,
     fontWeight: '600',
     letterSpacing: Typography.callout.letterSpacing,
+    marginLeft: Spacing.md,
   },
   onlineDot: {
     width: 8,
     height: 8,
     borderRadius: Radius.full,
+    marginLeft: Spacing.sm,
   },
   unreadBadge: {
     minWidth: 20,
@@ -172,6 +173,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: Spacing.xs,
+    marginLeft: Spacing.sm,
   },
   unreadText: {
     fontSize: Typography.caption2.fontSize,
@@ -187,10 +189,9 @@ const styles = StyleSheet.create({
     borderLeftWidth: 2,
     paddingLeft: Spacing.md,
     paddingTop: Spacing.sm,
-    gap: Spacing.lg,
   },
   chatItem: {
-    paddingVertical: Spacing.lg,
+    paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.sm,
   },
   chatItemBorder: {

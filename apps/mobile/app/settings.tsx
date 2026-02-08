@@ -120,19 +120,12 @@ export default function SettingsScreen() {
     );
   }
 
-  // Theme toggle handler
-  const handleToggleTheme = useCallback(() => {
-    setColorScheme(colorScheme === 'dark' ? 'light' : 'dark');
-  }, [colorScheme, setColorScheme]);
-
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Header with Theme Toggle */}
+      {/* Header */}
       <SettingsHeader 
         colors={colors} 
         topInset={insets.top}
-        currentTheme={colorScheme}
-        onToggleTheme={handleToggleTheme}
       />
 
       {/* Scrollable Content */}

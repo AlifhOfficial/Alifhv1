@@ -46,6 +46,39 @@ const fetchOptions: RequestInit = {
   // Note: AbortSignal.timeout not supported in Edge runtime, using default Neon timeout
 };
 
+// ⚡ RETRY WRAPPER for flaky network conditions
+// Neon HTTP driver doesn't have built-in retry, so we wrap fetch globally
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 500;
+
+neonConfig.fetchFunction = async (url: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+  let lastError: Error | undefined;
+  
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const response = await fetch(url, {
+        ...init,
+        ...fetchOptions,
+      });
+      return response;
+    } catch (error) {
+      lastError = error as Error;
+      const isTimeout = (error as any)?.code === 'UND_ERR_CONNECT_TIMEOUT' || 
+                        (error as any)?.cause?.code === 'UND_ERR_CONNECT_TIMEOUT';
+      const isNetworkError = (error as Error)?.message?.includes('fetch failed');
+      
+      if ((isTimeout || isNetworkError) && attempt < MAX_RETRIES) {
+        console.warn(`[DB] Connection attempt ${attempt}/${MAX_RETRIES} failed, retrying in ${RETRY_DELAY_MS}ms...`);
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS * attempt)); // Exponential backoff
+        continue;
+      }
+      throw error;
+    }
+  }
+  
+  throw lastError;
+};
+
 // Create Neon client with optimized fetch configuration
 const sql = neon(connectionString, {
   fetchOptions,

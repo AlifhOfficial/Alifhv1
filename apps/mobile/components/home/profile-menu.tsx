@@ -60,7 +60,7 @@ export function ProfileMenu() {
       {({ pressed }) => (
         <User 
           size={20} 
-          color="#8E8E93"
+          color={colors.icon}
           strokeWidth={2}
           style={{ opacity: pressed ? 0.7 : 1 }}
         />

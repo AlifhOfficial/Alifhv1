@@ -4,7 +4,7 @@
  * Handles safe area insets and scrolling
  */
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, forwardRef } from 'react';
 import { StyleSheet, View, ScrollView, RefreshControl } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -29,13 +29,15 @@ interface DisplayAreaProps {
   verticalPadding?: keyof typeof Spacing | number;
   /** Content padding at bottom for tab bar clearance */
   tabBarClearance?: boolean;
+  /** Extra bottom padding (e.g. for chips bar) */
+  extraBottomPadding?: number;
   /** Custom style override */
   style?: object;
   /** Content container style (for ScrollView) */
   contentContainerStyle?: object;
 }
 
-export function DisplayArea({
+export const DisplayArea = forwardRef<ScrollView, DisplayAreaProps>(function DisplayArea({
   children,
   scrollable = true,
   refreshing = false,
@@ -45,9 +47,10 @@ export function DisplayArea({
   horizontalPadding = 'sm',
   verticalPadding = 'md',
   tabBarClearance = true,
+  extraBottomPadding = 0,
   style,
   contentContainerStyle,
-}: DisplayAreaProps) {
+}, ref) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
@@ -61,7 +64,7 @@ export function DisplayArea({
     : Spacing[verticalPadding];
 
   // Tab bar height + bottom safe area
-  const bottomClearance = tabBarClearance ? Layout.tabBarHeight + insets.bottom : insets.bottom;
+  const bottomClearance = tabBarClearance ? Layout.tabBarHeight + insets.bottom + extraBottomPadding : insets.bottom + extraBottomPadding;
 
   const containerStyle = [
     styles.container,
@@ -91,6 +94,7 @@ export function DisplayArea({
 
   return (
     <ScrollView
+      ref={ref}
       style={containerStyle}
       contentContainerStyle={contentStyle}
       showsVerticalScrollIndicator={false}
@@ -119,7 +123,7 @@ export function DisplayArea({
       {children}
     </ScrollView>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

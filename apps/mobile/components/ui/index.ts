@@ -2,6 +2,7 @@
 export { IconSymbol, type IconSymbolName } from './icon-symbol';
 export { ThemeToggle } from './theme-toggle';
 export { UserAvatar } from './user-avatar';
+export { Skeleton, SkeletonText, SkeletonCircle, SkeletonImage } from './skeleton';
 
 // Legacy loader exports (for backwards compatibility)
 export { Loader, SpinnerLoader, LogoLoader, RefreshLoader } from './loader';

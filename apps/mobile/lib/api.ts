@@ -111,6 +111,165 @@ export interface Suggestion {
 }
 
 // ============================================================================
+// DETAILED LISTING TYPES
+// ============================================================================
+
+interface TechnicalFeatures {
+  abs?: boolean;
+  airbags?: number;
+  parkingSensors?: boolean;
+  rearCamera?: boolean;
+  blindSpotMonitor?: boolean;
+  laneAssist?: boolean;
+  adaptiveCruise?: boolean;
+  collisionWarning?: boolean;
+  leatherSeats?: boolean;
+  heatedSeats?: boolean;
+  ventilatedSeats?: boolean;
+  sunroof?: boolean;
+  panoramicRoof?: boolean;
+  climateControl?: boolean;
+  powerSeats?: boolean;
+  memorySeats?: boolean;
+  touchscreen?: boolean;
+  screenSize?: string;
+  appleCarPlay?: boolean;
+  androidAuto?: boolean;
+  bluetooth?: boolean;
+  navigation?: boolean;
+  soundSystem?: string;
+  wirelessCharging?: boolean;
+  sportMode?: boolean;
+  paddleShifters?: boolean;
+  allWheelDrive?: boolean;
+  adjustableSuspension?: boolean;
+  launchControl?: boolean;
+}
+
+export interface SpecialNotes {
+  ownerRemarks?: string[];
+  serviceHistory?: boolean;
+  singleOwner?: boolean;
+  accidentFree?: boolean;
+  underWarranty?: boolean;
+  registeredUntil?: string;
+  customizations?: string[];
+  recentServices?: string[];
+  knownIssues?: string[];
+}
+
+export interface ListingDetailedData {
+  id: string;
+  vin: string | null;
+  slug: string | null;
+  make: string;
+  model: string;
+  year: number;
+  trim: string | null;
+  condition: 'new' | 'used';
+  description: string | null;
+  price: number;
+  currency: string;
+  isNegotiable: boolean;
+  viewCount: number;
+  favouriteCount: number;
+  superlikeCount: number;
+  bodyType: string | null;
+  fuelType: string | null;
+  transmission: string | null;
+  specs: string;
+  steeringSide: string;
+  engineSize: string | null;
+  engineType: string | null;
+  cylinders: number | null;
+  powerRange: string | null;
+  torque: string | null;
+  fuelEconomy: string | null;
+  doors: string | null;
+  seatingCapacity: string | null;
+  exteriorColor: string | null;
+  interiorColor: string | null;
+  mileage: number;
+  emirate: string;
+  city: string | null;
+  thumbnail: string | null;
+  images: string[];
+  videoUrl: string | null;
+  technicalFeatures: TechnicalFeatures;
+  extras: string[];
+  specialNotes: SpecialNotes;
+  badges: string[];
+  tags: string[];
+  partnerId: string | null;
+  partnerBrandName: string | null;
+  partnerVerified: boolean;
+  isBlkListing: boolean;
+  // Timestamps
+  createdAt: string;
+  updatedAt?: string;
+  lastEditedAt?: string | null;
+  approvedAt?: string | null;
+}
+
+export interface SellerData {
+  type: 'partner' | 'user';
+  partnerId?: string;
+  partner?: {
+    id?: string;
+    brandName: string | null;
+    logo: string | null;
+    heroImage?: string | null;
+    isVerified: boolean;
+    tier: string | null;
+    description?: string | null;
+    website?: string | null;
+    phone?: string | null;
+    email?: string | null;
+    address?: string | null;
+    city?: string | null;
+    emirate?: string | null;
+    locationLat?: number | null;
+    locationLng?: number | null;
+    badges?: string[];
+    specialties?: string[];
+    googleRating?: number | null;
+    googleReviewCount?: number | null;
+    platformRating?: number | null;
+    platformReviewCount?: number | null;
+  } | null;
+  staffContact?: {
+    phone?: string | null;
+    displayName?: string | null;
+  } | null;
+  userId?: string;
+  userProfile?: {
+    displayName: string | null;
+    firstName?: string | null;
+    lastName?: string | null;
+    avatarUrl: string | null;
+    isKycVerified: boolean;
+    description?: string | null;
+    phone?: string | null;
+    memberSince?: string | null;
+    locationCity?: string | null;
+    locationEmirate?: string | null;
+    locationLat?: number | null;
+    locationLng?: number | null;
+    badges?: string[];
+    tags?: string[];
+    platformRating?: number | null;
+    platformReviewCount?: number | null;
+    emailVerified?: boolean;
+    phoneVerified?: boolean;
+  } | null;
+}
+
+export interface ListingDetailed {
+  listing: ListingDetailedData;
+  sellerData: SellerData;
+}
+
+// ============================================================================
 // WEB API RESPONSE TYPES (what the API actually returns)
 // ============================================================================
 
@@ -281,6 +440,41 @@ export const api = {
       throw new Error(`Popular makes failed: ${response.status}`);
     }
     return response.json();
+  },
+
+  /**
+   * Get detailed listing data
+   * Calls: GET /api/listings/[id]/detailed
+   */
+  async getListingDetailed(id: string): Promise<ListingDetailed> {
+    const url = `${API_BASE}/api/listings/${id}/detailed`;
+    console.log('[API] Fetching detailed listing:', url);
+    
+    const response = await fetch(url);
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('Listing not found');
+      }
+      throw new Error(`Failed to fetch listing: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Transform image URLs to absolute
+    if (data.listing?.images) {
+      data.listing.images = data.listing.images.map((img: string) => toAbsoluteUrl(img)).filter(Boolean);
+    }
+    if (data.listing?.thumbnail) {
+      data.listing.thumbnail = toAbsoluteUrl(data.listing.thumbnail);
+    }
+    if (data.sellerData?.partner?.logo) {
+      data.sellerData.partner.logo = toAbsoluteUrl(data.sellerData.partner.logo);
+    }
+    if (data.sellerData?.userProfile?.avatarUrl) {
+      data.sellerData.userProfile.avatarUrl = toAbsoluteUrl(data.sellerData.userProfile.avatarUrl);
+    }
+    
+    return data;
   },
 };
 

@@ -4,22 +4,32 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Bell } from 'lucide-react-native';
+import { Bell, Sun, Moon } from 'lucide-react-native';
+import * as Haptics from 'expo-haptics';
 
 import { ProfileMenu } from './profile-menu';
 import { useTheme } from '@/context/theme-context';
-import { Typography, Colors } from '@/constants/theme';
+import { Typography, Colors, Spacing } from '@/constants/theme';
 
 interface HomeHeaderProps {
   onNotificationPress?: () => void;
 }
 
 export function HomeHeader({ onNotificationPress }: HomeHeaderProps) {
-  const { colorScheme } = useTheme();
+  const { colorScheme, toggleTheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
+
+  const handleToggleTheme = () => {
+    if (Platform.OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    toggleTheme();
+  };
+
+  const ThemeIcon = colorScheme === 'dark' ? Moon : Sun;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + 8 }]}>
@@ -28,8 +38,28 @@ export function HomeHeader({ onNotificationPress }: HomeHeaderProps) {
         Home
       </Text>
 
-      {/* Right: Notifications + Profile Menu */}
+      {/* Right: Theme Toggle + Notifications + Profile Menu */}
       <View style={styles.actions}>
+        <Pressable
+          style={[
+            styles.iconButton,
+            { 
+              borderColor: colors.border,
+              backgroundColor: colors.surface,
+            }
+          ]}
+          onPress={handleToggleTheme}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          {({ pressed }) => (
+            <ThemeIcon 
+              size={20} 
+              color={colors.icon}
+              strokeWidth={2}
+              style={{ opacity: pressed ? 0.7 : 1 }}
+            />
+          )}
+        </Pressable>
         <Pressable
           style={[
             styles.iconButton,
@@ -44,7 +74,7 @@ export function HomeHeader({ onNotificationPress }: HomeHeaderProps) {
           {({ pressed }) => (
             <Bell 
               size={20} 
-              color="#8E8E93" 
+              color={colors.icon}
               strokeWidth={2}
               style={{ opacity: pressed ? 0.7 : 1 }}
             />
@@ -58,8 +88,8 @@ export function HomeHeader({ onNotificationPress }: HomeHeaderProps) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 12,
-    paddingHorizontal: 16,
+    paddingBottom: Spacing.md,
+    paddingHorizontal: Spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

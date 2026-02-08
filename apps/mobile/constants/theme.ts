@@ -125,8 +125,12 @@ export const Colors = {
     skeleton: '#EBEBEB',
     shimmer: '#D4D4D4',
     
-    // ═══════════════════════════════════════════
-    // BLK LISTING - Premium tier styling (same as dark)
+    // ═══════════════════════════════════════════    // INTERACTIVE STATES
+    // ═══════════════════════════════════════════════
+    favorite: '#F43F5E',
+    superlike: '#EAB308',
+    
+    // ═══════════════════════════════════════════════    // BLK LISTING - Premium tier styling (same as dark)
     // ═══════════════════════════════════════════
     blkBackground: '#0D0D0D',
     blkBorder: '#262626',
@@ -259,8 +263,12 @@ export const Colors = {
     skeleton: '#262626',
     shimmer: '#333333',
     
-    // ═══════════════════════════════════════════
-    // BLK LISTING - Premium tier styling
+    // ═══════════════════════════════════════════    // INTERACTIVE STATES
+    // ═══════════════════════════════════════════════════
+    favorite: '#F43F5E',
+    superlike: '#EAB308',
+    
+    // ═══════════════════════════════════════════════════    // BLK LISTING - Premium tier styling
     // ═══════════════════════════════════════════
     blkBackground: '#0D0D0D',
     blkBorder: '#262626',
@@ -548,10 +556,10 @@ export const Typography = {
     letterSpacing: -0.4,
   },
   cardMeta: {  // Card metadata (year, mileage, specs)
-    fontSize: 11, 
-    lineHeight: 14, 
-    fontWeight: '600' as const,
-    letterSpacing: 0,
+    fontSize: 13, 
+    lineHeight: 18, 
+    fontWeight: '500' as const,
+    letterSpacing: -0.08,
   },
   cardSeller: {  // Seller name on cards
     fontSize: 13, 

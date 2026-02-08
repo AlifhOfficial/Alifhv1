@@ -18,6 +18,7 @@ import { Colors } from '@/constants/theme';
 import { ThemeProvider, useTheme } from '@/context/theme-context';
 import { AuthProvider, useAuth } from '@/context/auth-context';
 import { TabBarProvider, useTabBar } from '@/context/tab-bar-context';
+import { SearchProvider } from '@/context/search-context';
 import { WebSocketProvider } from '@/context/websocket-context';
 import { Loader } from '@/components/ui/loader';
 import { GlobalTabBar } from '@/components/layout/global-tab-bar';
@@ -80,8 +81,8 @@ function RootLayoutNav() {
       signIn(user);
     }
     closeAuthFlow();
-    // Navigate to search tab after successful auth
-    router.replace('/(tabs)/search');
+    // Navigate to browse tab after successful auth
+    router.replace('/(tabs)/browse');
   };
 
   return (
@@ -96,10 +97,12 @@ function RootLayoutNav() {
         }}
       >
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="listing/[id]" options={{ presentation: 'card' }} />
+        <Stack.Screen name="seller-contact/[listingId]" options={{ presentation: 'card' }} />
         <Stack.Screen name="profile" options={{ presentation: 'card' }} />
         <Stack.Screen name="settings" options={{ presentation: 'card' }} />
         <Stack.Screen name="saved" options={{ presentation: 'card' }} />
-        <Stack.Screen name="chat" options={{ presentation: 'card' }} />
+        <Stack.Screen name="chat/[conversationId]" options={{ presentation: 'card' }} />
       </Stack>
       
       {/* Global Safe Area Gradients - hidden when chrome is hidden */}
@@ -214,11 +217,13 @@ export default function RootLayout() {
       <BottomSheetModalProvider>
         <ThemeProvider>
           <TabBarProvider>
-            <AuthProvider>
-              <WebSocketWrapper>
-                <RootLayoutNav />
-              </WebSocketWrapper>
-            </AuthProvider>
+            <SearchProvider>
+              <AuthProvider>
+                <WebSocketWrapper>
+                  <RootLayoutNav />
+                </WebSocketWrapper>
+              </AuthProvider>
+            </SearchProvider>
           </TabBarProvider>
         </ThemeProvider>
       </BottomSheetModalProvider>

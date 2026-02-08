@@ -1,18 +1,21 @@
 /**
- * Search Screen
- * Sticky header search (like web) + Results
+ * Browse Screen
+ * Header + Listings Results
  */
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { StyleSheet, View, Text, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 
-import { DisplayArea } from '@/components/layout';
+import { DisplayArea, ACTIVE_CHIPS_HEIGHT } from '@/components/layout';
+import { BrowseHeader } from '@/components/home';
 import { CarCardM, CarCardMSkeleton } from '@/components/cards';
 import { LogoLoader } from '@/components/ui';
 import { api, type ListingCard, type SearchParams, type SearchFacets, type SearchSortOption } from '@/lib/api';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { useSearch } from '@/context/search-context';
 
 // ============================================================================
 // TYPES
@@ -60,13 +63,21 @@ const filtersToParams = (f: Filters, q?: string): SearchParams => ({
 });
 
 // ============================================================================
-// SEARCH SCREEN
+// BROWSE SCREEN
 // ============================================================================
 
-export default function SearchScreen() {
+export default function BrowseScreen() {
   const { colorScheme } = useTheme();
+  const { subscribeToSearch, subscribeToSort, sortBy: contextSortBy, searchParams: contextSearchParams } = useSearch();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+
+  // Scroll ref for auto-scroll to top
+  const scrollRef = useRef<ScrollView>(null);
+
+  // Check if we have active search chips
+  const hasActiveChips = contextSearchParams !== null && Object.keys(contextSearchParams).length > 0;
 
   // Search
   const [query, setQuery] = useState('');
@@ -74,7 +85,7 @@ export default function SearchScreen() {
   // Filters & Sort
   const [filters, setFilters] = useState<Filters>({});
   const [facets, setFacets] = useState<SearchFacets | undefined>(undefined);
-  const [sortBy, setSortBy] = useState<SearchSortOption>('relevance');
+  const [sortBy, setSortBy] = useState<SearchSortOption>(contextSortBy);
 
   // Results
   const [listings, setListings] = useState<ListingCard[]>([]);
@@ -125,6 +136,44 @@ export default function SearchScreen() {
     fetchListings({}, undefined, sortBy, true);
   }, []);
 
+  // Subscribe to search from global search sheet
+  useEffect(() => {
+    const unsubscribe = subscribeToSearch((searchParams) => {
+      // Apply search params
+      const newFilters: Filters = {};
+      
+      // Handle array-based search params from SearchSheet
+      if (searchParams.make?.length) {
+        newFilters.make = searchParams.make;
+      }
+      if (searchParams.model?.length) {
+        newFilters.model = searchParams.model;
+      }
+      
+      setFilters(newFilters);
+      setQuery(searchParams.q || '');
+      fetchListings(newFilters, searchParams.q, sortBy, true);
+
+      // Auto-scroll to top when search is applied
+      setTimeout(() => {
+        scrollRef.current?.scrollTo({ y: 0, animated: true });
+      }, 100);
+    });
+
+    return unsubscribe;
+  }, [subscribeToSearch, sortBy, fetchListings]);
+
+  // Subscribe to sort from global sort sheet
+  useEffect(() => {
+    const unsubscribe = subscribeToSort((newSort) => {
+      setSortBy(newSort);
+      // Immediately fetch with new sort
+      fetchListings(filters, query, newSort, true);
+    });
+
+    return unsubscribe;
+  }, [subscribeToSort, filters, query, fetchListings]);
+
   // Re-fetch when filters change (debounced)
   useEffect(() => {
     const hasFilters = Object.keys(filters).length > 0;
@@ -134,7 +183,7 @@ export default function SearchScreen() {
       fetchListings(filters, query, sortBy, true);
     }, 300);
     return () => clearTimeout(timer);
-  }, [filters, sortBy]);
+  }, [filters]);
 
   // ──────────────────────────────────────────────────────────────────────────
   // HANDLERS
@@ -182,20 +231,34 @@ export default function SearchScreen() {
     }
   }, [hasMore, isLoading, filters, query, sortBy, fetchListings]);
 
+  const handleCardPress = useCallback((id: string) => {
+    router.push(`/listing/${id}`);
+  }, [router]);
+
+  const handleFavoritePress = useCallback((id: string) => {
+    // TODO: Wire up to favorites hook
+    console.log('Favorite:', id);
+  }, []);
+
   // ──────────────────────────────────────────────────────────────────────────
   // RENDER
   // ──────────────────────────────────────────────────────────────────────────
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Header */}
+      <BrowseHeader />
+
       {/* Listings */}
       <DisplayArea
+        ref={scrollRef}
         refreshing={isRefreshing}
         onRefresh={handleRefresh}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.3}
         horizontalPadding="sm"
         verticalPadding="sm"
+        extraBottomPadding={hasActiveChips ? ACTIVE_CHIPS_HEIGHT + 8 : 0}
       >
         {isLoading && (!listings || listings.length === 0) ? (
           <>
@@ -230,9 +293,8 @@ export default function SearchScreen() {
                 sellerName={listing.sellerName}
                 sellerAvatarUrl={listing.sellerAvatarUrl}
                 kycVerified={listing.sellerKycVerified}
-                onPress={(id) => console.log('View:', id)}
-                onFavoritePress={(id) => console.log('Fav:', id)}
-                onSuperlikePress={(id) => console.log('Super:', id)}
+                onPress={handleCardPress}
+                onFavoritePress={handleFavoritePress}
               />
             ))}
 
