@@ -148,7 +148,7 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
               hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
             >
               {({ pressed }) => (
-                <Text style={[styles.clearText, { opacity: pressed ? 0.7 : 1 }]}>
+                <Text style={[styles.clearText, { color: colors.primaryForeground, opacity: pressed ? 0.7 : 1 }]}>
                   Clear all
                 </Text>
               )}
@@ -218,6 +218,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter_500Medium',
     fontWeight: '500',
-    color: colors.primaryForeground,
+    // Color applied inline
   },
 });

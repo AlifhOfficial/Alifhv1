@@ -258,10 +258,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   loadingText: {
-    color: colors.primaryForeground,
     fontSize: 13,
     fontFamily: 'Inter_500Medium',
     letterSpacing: 0,
+    // White text on overlay - hardcoded
+    color: '#FFFFFF',
   },
   cameraBadge: {
     position: 'absolute',
