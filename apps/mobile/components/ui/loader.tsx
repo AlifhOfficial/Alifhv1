@@ -42,12 +42,12 @@ export function Loader({ message, fullScreen = false }: { message?: string; full
 
   if (fullScreen) {
     return (
-      <View style={[styles.container, { backgroundColor: isDark ? '#0A0A0A' : '#E8E8E8' }]}>
+      <View style={[styles.container, { backgroundColor: colors.skeleton }]}>
         <View style={styles.brandContainer}>
           <Animated.Text 
             style={[
               styles.brandName, 
-              { color: isDark ? '#6B6B6B' : '#6B6B6B' },
+              { color: colors.textMuted },
               animatedStyle
             ]}
           >

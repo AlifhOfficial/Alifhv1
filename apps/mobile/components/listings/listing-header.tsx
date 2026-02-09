@@ -118,8 +118,8 @@ export const ListingHeader = memo(function ListingHeader({
         >
           <Sparkles
             size={20}
-            color={isSuperliked ? '#F59E0B' : colors.icon}
-            fill={isSuperliked ? '#F59E0B' : 'none'}
+            color={isSuperliked ? colors.warning : colors.icon}
+            fill={isSuperliked ? colors.warning : 'none'}
             strokeWidth={1.75}
           />
         </Pressable>

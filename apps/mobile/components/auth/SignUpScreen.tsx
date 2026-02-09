@@ -209,7 +209,7 @@ export function SignUpScreen({
               {isLoading ? (
                 <ButtonLoader size="sm" variant="white" />
               ) : (
-                <Text style={styles.submitButtonText}>Continue</Text>
+                <Text style={[styles.submitButtonText, { color: '#FFFFFF' }]}>Continue</Text>
               )}
             </Pressable>
           </Animated.View>
@@ -486,10 +486,10 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   submitButtonText: {
-    color: '#FFFFFF',
     fontSize: Typography.bodySmall.fontSize,
     lineHeight: Typography.bodySmall.lineHeight,
     fontFamily: 'Inter_600SemiBold',
+    // Color applied inline
   },
   dividerContainer: {
     flexDirection: 'row',

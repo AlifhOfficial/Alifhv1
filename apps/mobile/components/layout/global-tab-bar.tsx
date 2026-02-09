@@ -216,7 +216,7 @@ export function GlobalTabBar() {
           >
             <ChevronLeft
               size={22}
-              color={isDark ? '#FFFFFF' : '#000000'}
+              color={colors.text}
               strokeWidth={2}
             />
           </AnimatedPressable>
@@ -236,8 +236,8 @@ export function GlobalTabBar() {
                 const Icon = tab.icon;
 
                 const iconColor = isActive 
-                  ? (isDark ? '#FFFFFF' : '#000000')
-                  : (isDark ? '#666666' : '#999999');
+                  ? colors.text
+                  : colors.iconMuted;
 
                 return (
                   <Pressable
@@ -272,7 +272,7 @@ export function GlobalTabBar() {
           >
             <Search
               size={22}
-              color={isDark ? '#FFFFFF' : '#000000'}
+              color={colors.text}
               strokeWidth={2}
             />
           </AnimatedPressable>
@@ -292,7 +292,7 @@ export function GlobalTabBar() {
           >
             <ArrowUpDown
               size={20}
-              color={isDark ? '#FFFFFF' : '#000000'}
+              color={colors.text}
               strokeWidth={2}
             />
           </AnimatedPressable>

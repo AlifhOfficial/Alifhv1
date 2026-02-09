@@ -10,10 +10,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { useTheme } from '@/context/theme-context';
+import { Colors } from '@/constants/theme';
 
 export function TopSafeAreaGradient() {
   const { colorScheme } = useTheme();
   const insets = useSafeAreaInsets();
+  const colors = Colors[colorScheme];
   const isDark = colorScheme === 'dark';
 
   if (insets.top <= 0) return null;
@@ -22,8 +24,8 @@ export function TopSafeAreaGradient() {
     <View style={styles.container} pointerEvents="none">
       <LinearGradient
         colors={[
-          isDark ? '#000000' : '#FAFAFA',
-          isDark ? 'rgba(0,0,0,0)' : 'rgba(250,250,250,0)',
+          colors.background,
+          isDark ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
         ]}
         style={[styles.gradient, { height: insets.top + 16 }]}
       />

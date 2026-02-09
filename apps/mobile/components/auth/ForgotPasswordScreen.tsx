@@ -106,7 +106,7 @@ export function ForgotPasswordScreen({
                 { backgroundColor: colors.primary, opacity: pressed ? 0.9 : 1 }
               ]}
             >
-              <Text style={styles.submitButtonText}>Back to sign in</Text>
+              <Text style={[styles.submitButtonText, { color: '#FFFFFF' }]}>Back to sign in</Text>
             </Pressable>
           </Animated.View>
         </View>
@@ -182,7 +182,7 @@ export function ForgotPasswordScreen({
               {isLoading ? (
                 <ButtonLoader size="sm" variant="white" />
               ) : (
-                <Text style={styles.submitButtonText}>Send reset link</Text>
+                <Text style={[styles.submitButtonText, { color: '#FFFFFF' }]}>Send reset link</Text>
               )}
             </Pressable>
           </Animated.View>
@@ -322,9 +322,9 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   submitButtonText: {
-    color: '#FFFFFF',
     fontSize: Typography.body.fontSize,
     fontFamily: 'Inter_600SemiBold',
+    // Color applied inline
   },
   buttonSection: {
     paddingBottom: 40,

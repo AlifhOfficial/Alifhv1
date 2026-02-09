@@ -394,8 +394,8 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
                 style={[styles.pill, { backgroundColor: colors.primary }]}
                 onPress={() => onRemove(item)}
               >
-                <Text style={styles.pillText}>{data?.label || item}</Text>
-                <Ionicons name="close" size={14} color="#FFFFFF" />
+                <Text style={[styles.pillText, { color: colors.primaryForeground }]}>{data?.label || item}</Text>
+                <Ionicons name="close" size={14} color={colors.primaryForeground} />
               </Pressable>
             );
           })}
@@ -794,11 +794,11 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
             <Ionicons 
               name="search" 
               size={18} 
-              color={canSearch ? '#FFFFFF' : colors.textTertiary} 
+              color={canSearch ? colors.primaryForeground : colors.textTertiary} 
             />
             <Text style={[
               styles.searchButtonText, 
-              { color: canSearch ? '#FFFFFF' : colors.textTertiary }
+              { color: canSearch ? colors.primaryForeground : colors.textTertiary }
             ]}>
               {hasSelections
                 ? `Search ${[
@@ -990,7 +990,7 @@ const styles = StyleSheet.create({
   pillText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#FFFFFF',
+    // Color applied inline
   },
   emptyState: {
     alignItems: 'center',

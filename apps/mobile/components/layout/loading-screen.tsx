@@ -12,16 +12,15 @@ import { Colors } from '@/constants/theme';
 
 export function LoadingScreen() {
   const { colorScheme } = useTheme();
-  const isDark = colorScheme === 'dark';
-  const colors = isDark ? Colors.dark : Colors.light;
+  const colors = Colors[colorScheme];
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.content}>
-        <Text style={[styles.brandName, { color: isDark ? '#FAFAFA' : '#18181B' }]}>
+        <Text style={[styles.brandName, { color: colors.text }]}>
           Revvup
         </Text>
-        <Text style={[styles.tagline, { color: isDark ? '#71717A' : '#A1A1AA' }]}>
+        <Text style={[styles.tagline, { color: colors.textTertiary }]}>
           Revved up
         </Text>
       </View>

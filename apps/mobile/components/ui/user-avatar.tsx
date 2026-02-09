@@ -78,7 +78,6 @@ export function UserAvatar({
   useGeneratedAvatar = true,
 }: UserAvatarProps) {
   const { colorScheme } = useTheme();
-  const isDark = colorScheme === 'dark';
   const colors = Colors[colorScheme];
   
   const [imageError, setImageError] = useState(false);
@@ -105,14 +104,14 @@ export function UserAvatar({
     height: pixelSize,
     borderRadius: pixelSize / 2,
     backgroundColor: showInitials 
-      ? (isDark ? '#1C1C1E' : '#F2F2F7') // muted background
+      ? colors.surfaceSecondary
       : colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
     overflow: 'hidden' as const,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
-  }), [pixelSize, showInitials, isDark, colors]);
+  }), [pixelSize, showInitials, colors]);
 
   return (
     <View style={containerStyle}>
@@ -137,7 +136,7 @@ export function UserAvatar({
           styles.initials, 
           { 
             fontSize,
-            color: isDark ? '#FFFFFF' : '#000000', // text-foreground
+            color: colors.text,
           }
         ]}>
           {getInitials(name)}

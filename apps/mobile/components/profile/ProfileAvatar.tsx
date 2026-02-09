@@ -239,7 +239,7 @@ export function ProfileAvatar({
       {/* Camera badge */}
       {!isUploading && (
         <View style={styles.cameraBadge}>
-          <Camera size={12} color="#FFFFFF" strokeWidth={2.5} />
+          <Camera size={12} color={colors.primaryForeground} strokeWidth={2.5} />
         </View>
       )}
     </AnimatedPressable>
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   loadingText: {
-    color: '#FFFFFF',
+    color: colors.primaryForeground,
     fontSize: 13,
     fontFamily: 'Inter_500Medium',
     letterSpacing: 0,

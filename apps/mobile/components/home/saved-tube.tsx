@@ -39,7 +39,7 @@ export function SavedTube() {
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
         {({ pressed }) => (
-          <Text style={[styles.text, { opacity: pressed ? 0.7 : 1 }]}>
+          <Text style={[styles.text, { color: colors.textSecondary, opacity: pressed ? 0.7 : 1 }]}>
             Saved
           </Text>
         )}
@@ -64,8 +64,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 13,
-    fontFamily: 'Inter_500Medium',
-    fontWeight: '500',
-    color: '#8E8E93',
+    fontFamily: 'Inter_600SemiBold',
+    // Color applied inline
   },
 });

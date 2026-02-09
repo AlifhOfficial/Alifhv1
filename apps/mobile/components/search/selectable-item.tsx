@@ -44,7 +44,7 @@ export function SelectableItem({
             }
           ]}>
             {isSelected && (
-              <Ionicons name="checkmark" size={14} color="#FFFFFF" />
+              <Ionicons name="checkmark" size={14} color={colors.primaryForeground} />
             )}
           </View>
         )}

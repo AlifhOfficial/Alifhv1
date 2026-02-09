@@ -218,6 +218,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter_500Medium',
     fontWeight: '500',
-    color: '#FFFFFF',
+    color: colors.primaryForeground,
   },
 });

@@ -8,7 +8,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Heart, Sparkles } from 'lucide-react-native';
 
-import { Typography, Layout } from '@/constants/theme';
+import { Colors, Typography, Layout } from '@/constants/theme';
 import { CarCardM } from '@/components/cards/car-card-m';
 import { SavedListingCard } from '@/lib/saved-api';
 import type { ThemeColors, SavedTab } from './types';
@@ -42,9 +42,9 @@ function EmptyState({
         
         {/* Icon */}
         {isFavorites ? (
-          <Heart size={48} color="#EF4444" strokeWidth={1.5} />
+          <Heart size={48} color={colors.favorite} strokeWidth={1.5} />
         ) : (
-          <Sparkles size={48} color="#F59E0B" strokeWidth={1.5} />
+          <Sparkles size={48} color={colors.warning} strokeWidth={1.5} />
         )}
 
         {/* Title */}

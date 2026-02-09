@@ -10,10 +10,10 @@ export const Colors = {
     backgroundSecondary: '#F5F5F5',
     backgroundTertiary: '#EBEBEB',
     
-    // SURFACES (Cards, Sheets, Modals)
-    surface: '#F5F5F5',
-    surfaceSecondary: '#EBEBEB',
-    surfacePressed: '#E0E0E0',
+    // SURFACES (Cards, Sheets, Modals) - White to contrast against gray backgrounds
+    surface: '#FFFFFF',
+    surfaceSecondary: '#F5F5F5',
+    surfacePressed: '#EBEBEB',
     
     // TEXT
     text: '#0A0A0A',
@@ -46,7 +46,7 @@ export const Colors = {
     fill: 'rgba(115, 115, 115, 0.12)',
     fillSecondary: 'rgba(115, 115, 115, 0.08)',
     overlay: 'rgba(0, 0, 0, 0.4)',
-    skeleton: '#EBEBEB',
+    skeleton: '#E5E5E5',
     
     // ACTIONS
     favorite: '#F43F5E',

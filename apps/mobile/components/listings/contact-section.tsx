@@ -180,8 +180,8 @@ export const ContactSection = memo(function ContactSection({
               },
             ]}
           >
-            <Calendar size={20} color="#FFFFFF" />
-            <Text style={[styles.buttonText, { color: '#FFFFFF' }]}>
+            <Calendar size={20} color={colors.primaryForeground} />
+            <Text style={[styles.buttonText, { color: colors.primaryForeground }]}>
               Book
             </Text>
           </Pressable>
@@ -348,9 +348,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   whatsappText: {
-    color: '#FFFFFF',
     fontSize: 12,
     fontFamily: 'Inter_700Bold',
+    // White text on green WhatsApp button
+    color: '#FFFFFF',
   },
   noPhoneText: {
     fontSize: 14,

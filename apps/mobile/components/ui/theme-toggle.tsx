@@ -28,7 +28,7 @@ export function ThemeToggle() {
       <IconSymbol 
         name={colorScheme === 'dark' ? 'moon.fill' : 'sun.max.fill'} 
         size={22} 
-        color="#8E8E93" 
+        color={colors.iconMuted} 
       />
     </Pressable>
   );

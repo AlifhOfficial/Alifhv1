@@ -206,7 +206,7 @@ export function MessageInput({
       >
         <Send
           size={20}
-          color={canSend ? '#FFFFFF' : colors.textTertiary}
+          color={canSend ? colors.primaryForeground : colors.textTertiary}
           strokeWidth={2}
         />
       </Pressable>

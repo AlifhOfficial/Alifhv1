@@ -73,7 +73,7 @@ export function ConversationGroup({
             )}
             {totalUnread > 0 && (
               <View style={[styles.unreadBadge, { backgroundColor: colors.primary }]}>
-                <Text style={styles.unreadText}>{totalUnread}</Text>
+                <Text style={[styles.unreadText, { color: colors.primaryForeground }]}>{totalUnread}</Text>
               </View>
             )}
             <ChevronIcon size={18} color={colors.textTertiary} strokeWidth={2} />
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     fontSize: Typography.helper.fontSize,
     lineHeight: Typography.helper.lineHeight,
     fontWeight: '600',
-    color: '#FFFFFF',
+    // Color applied inline
   },
   chatList: {
     marginLeft: 52,

@@ -23,7 +23,7 @@ export function MessagesHeader({ unreadCount = 0 }: MessagesHeaderProps) {
       <Text style={[styles.title, { color: colors.text }]}>Messages</Text>
       {unreadCount > 0 && (
         <View style={[styles.badge, { backgroundColor: colors.primary }]}>
-          <Text style={styles.badgeText}>
+          <Text style={[styles.badgeText, { color: colors.primaryForeground }]}>
             {unreadCount > 99 ? '99+' : unreadCount}
           </Text>
         </View>
@@ -52,6 +52,6 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     ...Typography.labelBadge,
-    color: '#FFFFFF',
+    // Color applied inline via component
   },
 });

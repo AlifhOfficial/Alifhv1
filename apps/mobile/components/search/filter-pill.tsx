@@ -37,7 +37,7 @@ export function FilterPill({
     >
       <Text style={[
         styles.label, 
-        { color: isPrimary ? '#FFFFFF' : colors.text }
+        { color: isPrimary ? colors.primaryForeground : colors.text }
       ]}>
         {label}
       </Text>
@@ -45,7 +45,7 @@ export function FilterPill({
         <Ionicons 
           name="close" 
           size={14} 
-          color={isPrimary ? '#FFFFFF' : colors.textSecondary} 
+          color={isPrimary ? colors.primaryForeground : colors.textSecondary} 
         />
       )}
     </Pressable>

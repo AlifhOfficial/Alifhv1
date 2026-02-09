@@ -39,7 +39,7 @@ export function ProfileHeader({ colors, topInset }: ProfileHeaderProps) {
         {({ pressed }) => (
           <Settings
             size={20}
-            color="#8E8E93"
+            color={colors.iconMuted}
             strokeWidth={2}
             style={{ opacity: pressed ? 0.7 : 1 }}
           />

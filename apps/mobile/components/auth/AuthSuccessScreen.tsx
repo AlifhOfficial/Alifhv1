@@ -125,7 +125,7 @@ export function AuthSuccessScreen({
                 { backgroundColor: colors.primary, opacity: isExiting ? 0.7 : pressed ? 0.9 : 1 }
               ]}
             >
-              <Text style={styles.continueButtonText}>Time to Revv</Text>
+              <Text style={[styles.continueButtonText, { color: '#FFFFFF' }]}>Time to Revv</Text>
               <ArrowRightIcon />
             </Pressable>
           </Animated.View>
@@ -267,8 +267,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   continueButtonText: {
-    color: '#FFFFFF',
     fontSize: Typography.body.fontSize,
     fontFamily: 'Inter_600SemiBold',
+    // Color applied inline
   },
 });

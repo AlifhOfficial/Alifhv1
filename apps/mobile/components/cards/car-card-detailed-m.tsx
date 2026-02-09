@@ -150,8 +150,8 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
           ]}
           onPress={handleTalkToSeller}
         >
-          <MessageCircle size={20} color="#FFFFFF" strokeWidth={2} />
-          <Text style={styles.ctaText}>Talk to Seller</Text>
+          <MessageCircle size={20} color={colors.primaryForeground} strokeWidth={2} />
+          <Text style={[styles.ctaText, { color: colors.primaryForeground }]}>Talk to Seller</Text>
         </Pressable>
       </View>
     </View>
@@ -212,7 +212,6 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
   },
   ctaText: {
-    color: '#FFFFFF',
     fontSize: 16,
     fontFamily: 'Inter_600SemiBold',
   },
