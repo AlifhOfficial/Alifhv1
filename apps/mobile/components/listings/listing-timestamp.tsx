@@ -6,12 +6,12 @@
  */
 
 import React, { memo, useMemo } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Clock } from 'lucide-react-native';
 
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton, Data } from '@/components/ui';
 
 // ============================================================================
 // TYPES
@@ -103,15 +103,15 @@ export const ListingTimestamp = memo(function ListingTimestamp({
 
   return (
     <View style={styles.container}>
-      <Clock size={18} color={secondaryTextColor} />
+      <Clock size={ICON_SIZE} color={secondaryTextColor} />
       <View style={styles.textContainer}>
-        <Text style={[styles.postedText, { color: textColor }]}>
+        <Data size="medium" style={{ color: textColor }}>
           {postedTimeAgo}
-        </Text>
+        </Data>
         {wasUpdated && updatedTimeAgo && (
-          <Text style={[styles.updatedText, { color: secondaryTextColor }]}>
+          <Data size="mini" tone="secondary">
             • Updated {updatedTimeAgo}
-          </Text>
+          </Data>
         )}
       </View>
     </View>
@@ -138,6 +138,16 @@ export function ListingTimestampSkeleton() {
 // STYLES
 // ============================================================================
 
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const ICON_SIZE = 18;
+
+// ============================================================================
+// STYLES
+// ============================================================================
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
@@ -148,13 +158,7 @@ const styles = StyleSheet.create({
   textContainer: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    gap: 6,
+    gap: Spacing.sm - 2, // 6
     flexWrap: 'wrap',
-  },
-  postedText: {
-    ...Typography.dataMedium,
-  },
-  updatedText: {
-    ...Typography.dataMini,
   },
 });

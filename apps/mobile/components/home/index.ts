@@ -2,3 +2,4 @@
 export { HomeHeader } from './header';
 export { BrowseHeader } from './browse-header';
 export { SavedTube } from './saved-tube';
+export { FilterPills, type FilterPillType } from './filter-pills';

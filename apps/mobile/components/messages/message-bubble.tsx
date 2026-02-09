@@ -4,10 +4,11 @@
  */
 
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { Body, Supporting, ButtonText } from '@/components/ui';
 import type { Message } from '@/lib/messaging-api';
 
 interface MessageBubbleProps {
@@ -47,9 +48,7 @@ export function MessageBubble({
             { backgroundColor: colors.fillSecondary },
           ]}
         >
-          <Text style={[styles.systemText, { color: colors.textTertiary }]}>
-            {text}
-          </Text>
+          <Supporting size="small" tone="muted">{text}</Supporting>
         </View>
       </View>
     );
@@ -98,12 +97,7 @@ export function MessageBubble({
               />
             )}
             <View style={styles.listingInfo}>
-              <Text
-                style={[styles.listingTitle, { color: colors.text }]}
-                numberOfLines={2}
-              >
-                {listing.title}
-              </Text>
+              <ButtonText size="small" numberOfLines={2}>{listing.title}</ButtonText>
             </View>
           </View>
         )}
@@ -135,26 +129,25 @@ export function MessageBubble({
 
           {/* Text */}
           {text && (
-            <Text
-              style={[
-                styles.messageText,
-                { color: isOwn ? colors.primaryForeground : colors.text },
-              ]}
+            <Body
+              size="medium"
+              style={{ color: isOwn ? colors.primaryForeground : colors.text }}
             >
               {text}
-            </Text>
+            </Body>
           )}
 
           {/* Edited indicator */}
           {isEdited && (
-            <Text
-              style={[
-                styles.editedText,
-                { color: isOwn ? 'rgba(255,255,255,0.7)' : colors.textTertiary },
-              ]}
+            <Supporting
+              size="small"
+              style={{ 
+                color: isOwn ? 'rgba(255,255,255,0.7)' : colors.textTertiary,
+                marginTop: 2,
+              }}
             >
               (edited)
-            </Text>
+            </Supporting>
           )}
         </View>
           
@@ -167,9 +160,7 @@ export function MessageBubble({
         {/* Seen indicator */}
         {showSeen && isOwn && (
           <View style={styles.seenContainer}>
-            <Text style={[styles.seenText, { color: colors.textTertiary }]}>
-              Seen
-            </Text>
+            <Supporting size="small" tone="muted">Seen</Supporting>
             <UserAvatar
               src={otherUserAvatar}
               name={otherUserName || 'User'}
@@ -208,12 +199,6 @@ const styles = StyleSheet.create({
   contentOther: {
     alignItems: 'flex-start',
   },
-  senderName: {
-    fontSize: Typography.supportingSmall.fontSize,
-    lineHeight: Typography.supportingSmall.lineHeight,
-    marginBottom: 2,
-    marginLeft: 12,
-  },
   listingPreview: {
     borderRadius: Radius.xl,
     overflow: 'hidden',
@@ -226,9 +211,6 @@ const styles = StyleSheet.create({
   },
   listingInfo: {
     padding: Spacing.sm,
-  },
-  listingTitle: {
-    ...Typography.buttonSmall,
   },
   bubbleRow: {
     flexDirection: 'row',
@@ -258,24 +240,11 @@ const styles = StyleSheet.create({
     borderRadius: Radius.md,
     marginBottom: Spacing.xs,
   },
-  messageText: {
-    fontSize: Typography.bodyMedium.fontSize,
-    lineHeight: Typography.bodyMedium.lineHeight,
-  },
-  editedText: {
-    fontSize: Typography.supportingSmall.fontSize,
-    lineHeight: Typography.supportingSmall.lineHeight,
-    marginTop: 2,
-  },
   seenContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
     marginTop: 2,
-  },
-  seenText: {
-    fontSize: Typography.supportingSmall.fontSize,
-    lineHeight: Typography.supportingSmall.lineHeight,
   },
   systemContainer: {
     alignItems: 'center',
@@ -285,8 +254,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.xs,
     borderRadius: Radius.lg,
-  },
-  systemText: {
-    ...Typography.supportingSmall,
   },
 });

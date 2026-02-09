@@ -6,7 +6,7 @@
  */
 
 import React, { memo, useState, useCallback } from 'react';
-import { StyleSheet, View, Text, Pressable, Linking, Platform, Clipboard } from 'react-native';
+import { StyleSheet, View, Pressable, Linking, Platform, Clipboard } from 'react-native';
 import { 
   MessageCircle, 
   Phone, 
@@ -19,7 +19,7 @@ import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton, ButtonText, Data, Supporting, Label, Text } from '@/components/ui';
 
 // ============================================================================
 // TYPES
@@ -139,12 +139,9 @@ export const ContactSection = memo(function ContactSection({
           ) : (
             <>
               <MessageCircle size={20} color={isBlocked ? colors.textTertiary : colors.primaryForeground} />
-              <Text style={[
-                styles.buttonText, 
-                { color: isBlocked ? colors.textTertiary : colors.primaryForeground }
-              ]}>
+              <ButtonText size="medium" style={{ color: isBlocked ? colors.textTertiary : colors.primaryForeground }}>
                 {isBlocked ? blockedMessage : 'Chat'}
-              </Text>
+              </ButtonText>
             </>
           )}
         </Pressable>
@@ -162,9 +159,7 @@ export const ContactSection = memo(function ContactSection({
             ]}
           >
             <Phone size={20} color={colors.text} />
-            <Text style={[styles.buttonText, { color: colors.text }]}>
-              Call
-            </Text>
+            <ButtonText size="medium">Call</ButtonText>
           </Pressable>
         )}
 
@@ -181,9 +176,7 @@ export const ContactSection = memo(function ContactSection({
             ]}
           >
             <Calendar size={20} color={colors.primaryForeground} />
-            <Text style={[styles.buttonText, { color: colors.primaryForeground }]}>
-              Book
-            </Text>
+            <ButtonText size="medium" style={{ color: colors.primaryForeground }}>Book</ButtonText>
           </Pressable>
         )}
       </View>
@@ -191,9 +184,9 @@ export const ContactSection = memo(function ContactSection({
       {/* Phone Toggle */}
       {phoneNumber && !isBlocked && (
         <Pressable onPress={toggleShowPhone} hitSlop={8}>
-          <Text style={[styles.toggleText, { color: secondaryTextColor }]}>
+          <Supporting size="small" style={{ textAlign: 'center' }}>
             {showPhone ? 'Hide phone number' : 'Show phone number'}
-          </Text>
+          </Supporting>
         </Pressable>
       )}
 
@@ -201,15 +194,15 @@ export const ContactSection = memo(function ContactSection({
       {phoneNumber && showPhone && (
         <View style={[styles.phoneCard, { backgroundColor: surfaceColor, borderColor }]}>
           {contactName && (
-            <Text style={[styles.contactName, { color: colors.textTertiary }]}>
+            <Label size="small" tone="muted" style={styles.contactName}>
               {contactName}
-            </Text>
+            </Label>
           )}
           <View style={styles.phoneRow}>
             <Pressable onPress={handleCallPress}>
-              <Text style={[styles.phoneNumber, { color: textColor }]}>
+              <Data size="large" style={{ color: textColor }}>
                 {formatPhoneForDisplay(phoneNumber)}
-              </Text>
+              </Data>
             </Pressable>
             <View style={styles.phoneActions}>
               <Pressable 
@@ -239,9 +232,9 @@ export const ContactSection = memo(function ContactSection({
 
       {/* No phone message for private sellers */}
       {!phoneNumber && !showBooking && !isBlocked && (
-        <Text style={[styles.noPhoneText, { color: secondaryTextColor }]}>
+        <Supporting size="small" style={{ textAlign: 'center' }}>
           Seller prefers chat
-        </Text>
+        </Supporting>
       )}
     </View>
   );
@@ -301,15 +294,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: Radius.full,
   },
-  buttonText: {
-    fontSize: 15,
-    fontFamily: 'Inter_700Bold',
-  },
-  toggleText: {
-    fontSize: 14,
-    fontFamily: 'Inter_600SemiBold',
-    textAlign: 'center',
-  },
   phoneCard: {
     padding: Spacing.md,
     borderRadius: Radius.lg,
@@ -317,19 +301,12 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   contactName: {
-    fontSize: 11,
-    fontFamily: 'Inter_700Bold',
-    letterSpacing: 1,
     textTransform: 'uppercase',
   },
   phoneRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  phoneNumber: {
-    fontSize: 18,
-    fontFamily: 'Inter_700Bold',
   },
   phoneActions: {
     flexDirection: 'row',
@@ -350,12 +327,6 @@ const styles = StyleSheet.create({
   whatsappText: {
     fontSize: 12,
     fontFamily: 'Inter_700Bold',
-    // White text on green WhatsApp button
     color: '#FFFFFF',
-  },
-  noPhoneText: {
-    fontSize: 14,
-    fontFamily: 'Inter_600SemiBold',
-    textAlign: 'center',
   },
 });

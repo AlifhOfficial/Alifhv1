@@ -4,10 +4,10 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Text, Pressable, Platform } from 'react-native';
+import { StyleSheet, View, Pressable, Platform } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Typography } from '@/constants/theme';
+import { Label, Body, Supporting, ButtonText } from '@/components/ui';
 import { Section } from './Section';
 import type { ThemeColors } from './types';
 
@@ -34,18 +34,18 @@ export function BadgesSection({ badges, colors, onLearnMore }: BadgesSectionProp
               key={index}
               style={[styles.badge, { backgroundColor: colors.surfaceSecondary }]}
             >
-              <Text style={[styles.badgeText, { color: colors.text }]}>{badge}</Text>
+              <Label size="small" style={styles.badgeText}>{badge}</Label>
             </View>
           ))}
         </View>
       ) : (
         <View style={styles.emptyState}>
-          <Text style={[styles.emptyTitle, { color: colors.textSecondary }]}>
+          <Body size="medium" tone="secondary" style={styles.emptyTitle}>
             No badges yet
-          </Text>
-          <Text style={[styles.emptySubtitle, { color: colors.textTertiary }]}>
+          </Body>
+          <Supporting size="small" tone="muted" style={styles.emptySubtitle}>
             Complete activities to earn badges
-          </Text>
+          </Supporting>
           <Pressable
             onPress={handleLearnMore}
             style={({ pressed }) => [
@@ -53,9 +53,9 @@ export function BadgesSection({ badges, colors, onLearnMore }: BadgesSectionProp
               pressed && { opacity: 0.7 },
             ]}
           >
-            <Text style={[styles.learnMoreText, { color: colors.primary }]}>
+            <ButtonText size="small" tone="primary">
               Learn more
-            </Text>
+            </ButtonText>
           </Pressable>
         </View>
       )}
@@ -76,7 +76,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   badgeText: {
-    ...Typography.labelSmall,
     fontFamily: 'Inter_500Medium',
   },
   emptyState: {
@@ -86,22 +85,14 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   emptyTitle: {
-    fontSize: Typography.bodyMedium.fontSize,
-    lineHeight: Typography.bodyMedium.lineHeight,
     fontFamily: 'Inter_600SemiBold',
   },
   emptySubtitle: {
-    fontSize: Typography.labelSmall.fontSize,
-    lineHeight: Typography.supportingSmall.lineHeight,
-    fontFamily: 'Inter_400Regular',
     textAlign: 'center',
   },
   learnMoreBtn: {
     marginTop: 12,
     paddingVertical: 6,
     paddingHorizontal: 12,
-  },
-  learnMoreText: {
-    ...Typography.buttonSmall,
   },
 });

@@ -4,9 +4,9 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { Typography } from '@/constants/theme';
+import { Supporting, Body } from '@/components/ui';
 import type { ThemeColors } from './types';
 
 interface SettingRowProps {
@@ -32,11 +32,9 @@ export function SettingRow({
       ]}
     >
       <View style={styles.content}>
-        <Text style={[styles.label, { color: colors.textTertiary }]}>{title}</Text>
+        <Supporting size="small" tone="muted">{title}</Supporting>
         {description && (
-          <Text style={[styles.value, { color: colors.text }]}>
-            {description}
-          </Text>
+          <Body size="medium">{description}</Body>
         )}
       </View>
       {children}
@@ -56,11 +54,5 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 12,
     gap: 2,
-  },
-  label: {
-    ...Typography.supportingSmall,
-  },
-  value: {
-    ...Typography.bodyMedium,
   },
 });

@@ -4,10 +4,10 @@
  */
 
 import React from 'react';
-import { Alert, Text, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import { CheckCircle2 } from 'lucide-react-native';
 
-import { Typography } from '@/constants/theme';
+import { ButtonText } from '@/components/ui';
 import { Section } from './Section';
 import { EditableField } from './EditableField';
 import { PhoneVerificationField } from './PhoneVerificationField';
@@ -91,9 +91,9 @@ export function PersonalInfoSection({
             <CheckCircle2 size={16} color={colors.success} strokeWidth={2} />
           ) : (
             <Pressable onPress={() => {}}>
-              <Text style={[styles.verifyLink, { color: colors.primary }]}>
+              <ButtonText size="small" tone="primary">
                 Verify
-              </Text>
+              </ButtonText>
             </Pressable>
           )
         }
@@ -123,9 +123,6 @@ export function PersonalInfoSection({
 }
 
 const styles = StyleSheet.create({
-  verifyLink: {
-    ...Typography.buttonSmall,
-  },
   divider: {
     height: StyleSheet.hairlineWidth,
     marginHorizontal: 16,

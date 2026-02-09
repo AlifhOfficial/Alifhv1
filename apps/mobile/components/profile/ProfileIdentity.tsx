@@ -4,11 +4,11 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Text, Platform } from 'react-native';
+import { StyleSheet, View, Platform } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { CheckCircle2 } from 'lucide-react-native';
 
-import { Typography } from '@/constants/theme';
+import { Heading, Data, Supporting } from '@/components/ui';
 import { ProfileAvatar } from './ProfileAvatar';
 import type { ThemeColors } from './types';
 
@@ -56,13 +56,13 @@ export function ProfileIdentity({
 
       <View style={styles.info}>
         <View style={styles.nameRow}>
-          <Text
-            style={[styles.name, { color: colors.text }]}
+          <Heading
+            size="large"
+            style={styles.name}
             numberOfLines={1}
-            ellipsizeMode="tail"
           >
             {displayName}
-          </Text>
+          </Heading>
           {isVerified && (
             <CheckCircle2
               size={16}
@@ -74,17 +74,19 @@ export function ProfileIdentity({
         </View>
 
         {email && (
-          <Text
-            style={[styles.email, { color: colors.textSecondary }]}
+          <Data
+            size="medium"
+            tone="secondary"
             numberOfLines={1}
+            style={styles.email}
           >
             {email}
-          </Text>
+          </Data>
         )}
 
-        <Text style={[styles.memberSince, { color: colors.textTertiary }]}>
+        <Supporting size="small" tone="muted" style={styles.memberSince}>
           Member since {memberSince}
-        </Text>
+        </Supporting>
       </View>
     </Animated.View>
   );
@@ -108,19 +110,15 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   name: {
-    ...Typography.headingLarge,
     flexShrink: 1,
   },
   expiringBadge: {
     opacity: 0.5,
   },
   email: {
-    ...Typography.dataMedium,
-    fontFamily: 'Inter_400Regular',
     marginTop: 2,
   },
   memberSince: {
-    ...Typography.supportingSmall,
     marginTop: 2,
   },
 });

@@ -56,6 +56,11 @@ interface SearchContextValue {
   resetSort: () => void;
   /** Subscribe to sort changes (for browse screen) */
   subscribeToSort: (callback: (sort: SearchSortOption) => void) => () => void;
+  
+  /** Trigger scroll to top (from tab bar double-tap) */
+  triggerScrollToTop: () => void;
+  /** Subscribe to scroll to top events (for browse screen) */
+  subscribeToScrollToTop: (callback: () => void) => () => void;
 }
 
 const SearchContext = createContext<SearchContextValue | undefined>(undefined);
@@ -65,6 +70,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   const [sortBy, setSortBy] = useState<SearchSortOption>('relevance');
   const listenersRef = useRef<Set<(params: SearchParams) => void>>(new Set());
   const sortListenersRef = useRef<Set<(sort: SearchSortOption) => void>>(new Set());
+  const scrollToTopListenersRef = useRef<Set<() => void>>(new Set());
 
   const applySearch = useCallback((params: SearchParams) => {
     setSearchParams(params);
@@ -173,6 +179,17 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  const triggerScrollToTop = useCallback(() => {
+    scrollToTopListenersRef.current.forEach(listener => listener());
+  }, []);
+
+  const subscribeToScrollToTop = useCallback((callback: () => void) => {
+    scrollToTopListenersRef.current.add(callback);
+    return () => {
+      scrollToTopListenersRef.current.delete(callback);
+    };
+  }, []);
+
   return (
     <SearchContext.Provider
       value={{
@@ -186,6 +203,8 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
         applySort,
         resetSort,
         subscribeToSort,
+        triggerScrollToTop,
+        subscribeToScrollToTop,
       }}
     >
       {children}

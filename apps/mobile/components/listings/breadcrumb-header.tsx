@@ -4,11 +4,12 @@
  */
 
 import React, { memo } from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Pressable } from 'react-native';
 import { Share2 } from 'lucide-react-native';
 
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { Heading } from '@/components/ui';
 
 interface BreadcrumbHeaderProps {
   make: string;
@@ -33,9 +34,9 @@ export const BreadcrumbHeader = memo(function BreadcrumbHeader({
   return (
     <View style={[styles.container, { paddingTop: topInset + 8, backgroundColor: colors.background }]}>
       {/* Left: Title */}
-      <Text style={[styles.title, { color: colors.text }]} numberOfLines={1}>
+      <Heading size="medium" style={{ flex: 1 }} numberOfLines={1}>
         {title}
-      </Text>
+      </Heading>
 
       {/* Right: Share Button */}
       <Pressable
@@ -70,11 +71,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: Spacing.md,
-  },
-  title: {
-    flex: 1,
-    fontSize: 17,
-    fontFamily: 'Inter_600SemiBold',
   },
   iconButton: {
     padding: 4,

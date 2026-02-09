@@ -60,18 +60,18 @@ const fontScale = (size: number): number => size;
 
 export const Colors = {
   light: {
-    // BACKGROUNDS
+    // BACKGROUNDS - Pure white base
     background: '#FFFFFF',
-    backgroundSecondary: '#F2F2F4',
+    backgroundSecondary: '#F5F5F7',
     backgroundTertiary: '#EAEAEC',
     
-    // SURFACES (Cards, Sheets, Modals) - Noticeable contrast on white
-    surface: '#F2F2F4',
+    // SURFACES (Cards, Sheets, Modals) - Elevated gray on white
+    surface: '#F5F5F7',
     surfaceSecondary: '#EAEAEC',
-    surfacePressed: '#DDDDE0',
+    surfacePressed: '#E0E0E2',
     
     // INPUT FIELDS - Distinct from both background and surface
-    input: '#EDEDF0',
+    input: '#F0F0F2',
     inputFocused: '#FFFFFF',
     
     // TEXT
@@ -118,8 +118,8 @@ export const Colors = {
   },
   
   dark: {
-    // BACKGROUNDS - OLED Black
-    background: '#000000',
+    // BACKGROUNDS - Near-black
+    background: '#0D0D0D',
     backgroundSecondary: '#141414',
     backgroundTertiary: '#1A1A1A',
     

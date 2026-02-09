@@ -4,11 +4,11 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Text, Pressable, Platform } from 'react-native';
+import { StyleSheet, View, Pressable, Platform } from 'react-native';
 import { Heart, Sparkles } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Typography } from '@/constants/theme';
+import { Heading } from '@/components/ui';
 import type { ThemeColors, SavedTab } from './types';
 
 interface SavedHeaderProps {
@@ -42,7 +42,7 @@ export function SavedHeader({
   return (
     <View style={[styles.container, { paddingTop: topInset + 8 }]}>
       {/* Left: Title */}
-      <Text style={[styles.title, { color: colors.text }]}>Saved</Text>
+      <Heading size="large">Saved</Heading>
 
       {/* Right: Toggle Button */}
       <Pressable
@@ -76,9 +76,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  title: {
-    ...Typography.headingLarge,
   },
   iconButton: {
     padding: 4,

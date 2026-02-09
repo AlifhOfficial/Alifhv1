@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Pressable } from 'react-native';
 import { HelpCircle, MessageCircle, ChevronRight } from 'lucide-react-native';
 import Animated, {
   useAnimatedStyle,
@@ -12,7 +12,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { Typography } from '@/constants/theme';
+import { Supporting, Body } from '@/components/ui';
 import { Section } from './Section';
 import type { ThemeColors } from './types';
 
@@ -66,8 +66,8 @@ function SupportItem({
         <View style={styles.itemLeft}>
           <Icon size={18} color={colors.textSecondary} strokeWidth={1.5} />
           <View style={styles.itemContent}>
-            <Text style={[styles.label, { color: colors.textTertiary }]}>Navigate</Text>
-            <Text style={[styles.value, { color: colors.text }]}>{label}</Text>
+            <Supporting size="small" tone="muted">Navigate</Supporting>
+            <Body size="medium">{label}</Body>
           </View>
         </View>
         <ChevronRight size={18} color={colors.textTertiary} strokeWidth={2} />
@@ -116,11 +116,5 @@ const styles = StyleSheet.create({
   },
   itemContent: {
     gap: 2,
-  },
-  label: {
-    ...Typography.supportingSmall,
-  },
-  value: {
-    ...Typography.bodyMedium,
   },
 });

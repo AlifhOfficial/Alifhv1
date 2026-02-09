@@ -3,12 +3,13 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Text, FlatList, RefreshControl } from 'react-native';
+import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Heart, Sparkles } from 'lucide-react-native';
 
-import { Colors, Typography, Layout } from '@/constants/theme';
+import { Layout } from '@/constants/theme';
+import { Heading, Supporting } from '@/components/ui';
 import { CarCardM } from '@/components/cards/car-card-m';
 import { SavedListingCard } from '@/lib/saved-api';
 import type { ThemeColors, SavedTab } from './types';
@@ -48,16 +49,16 @@ function EmptyState({
         )}
 
         {/* Title */}
-        <Text style={[styles.emptyTitle, { color: colors.text }]}>
+        <Heading size="large" style={styles.emptyTitle}>
           {isFavorites ? 'No favorites yet' : 'No superlikes yet'}
-        </Text>
+        </Heading>
 
         {/* Subtitle */}
-        <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+        <Supporting size="small" style={styles.emptySubtitle}>
           {isFavorites 
             ? 'Tap the heart on any listing to save it here'
             : 'Long press the heart to superlike a listing'}
-        </Text>
+        </Supporting>
 
       </Animated.View>
     </View>
@@ -121,9 +122,9 @@ export function SavedList({
         activeTab === 'superlikes' && quota ? (
           <View style={[styles.quotaBadge, { backgroundColor: colors.surface }]}>
             <Sparkles size={14} color={colors.primary} strokeWidth={2} />
-            <Text style={[styles.quotaText, { color: colors.textSecondary }]}>
+            <Supporting size="mini" tone="secondary">
               {quota.remaining}/{quota.maxSuperlikesPerMonth} remaining this month
-            </Text>
+            </Supporting>
           </View>
         ) : null
       }
@@ -144,14 +145,10 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   emptyTitle: {
-    ...Typography.headingLarge,
-    fontFamily: 'Inter_600SemiBold',
     textAlign: 'center',
     marginTop: 8,
   },
   emptySubtitle: {
-    ...Typography.supportingSmall,
-    fontFamily: 'Inter_400Regular',
     textAlign: 'center',
   },
   
@@ -169,9 +166,5 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     gap: 6,
     marginBottom: 12,
-  },
-  quotaText: {
-    ...Typography.supportingSmall,
-    fontSize: 12,
   },
 });

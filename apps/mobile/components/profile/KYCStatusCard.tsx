@@ -4,11 +4,11 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Text, Pressable, Platform } from 'react-native';
+import { StyleSheet, View, Pressable, Platform } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
-import { Typography } from '@/constants/theme';
+import { Label, Data, Supporting, ButtonText } from '@/components/ui';
 import type { ThemeColors, ProfileStatus } from './types';
 
 interface KYCStatusCardProps {
@@ -107,18 +107,18 @@ export function KYCStatusCard({ status, colors, onAction }: KYCStatusCardProps) 
       style={styles.wrapper}
     >
       <View style={styles.header}>
-        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
+        <Label size="small" tone="secondary" style={styles.sectionTitle}>
           Identity Verification
-        </Text>
+        </Label>
       </View>
       <View style={[styles.container, { backgroundColor: colors.surface }]}>
         <View style={styles.content}>
-          <Text style={[styles.title, { color: display.titleColor }]}>
+          <Data size="medium" style={{ color: display.titleColor }}>
             {display.title}
-          </Text>
-          <Text style={[styles.subtitle, { color: colors.textTertiary }]}>
+          </Data>
+          <Supporting size="small" tone="muted">
             {display.subtitle}
-          </Text>
+          </Supporting>
         </View>
 
         {display.buttonText && (
@@ -132,9 +132,9 @@ export function KYCStatusCard({ status, colors, onAction }: KYCStatusCardProps) 
               },
             ]}
           >
-            <Text style={[styles.actionText, { color: colors.text }]}>
+            <ButtonText size="small">
               {display.buttonText}
-            </Text>
+            </ButtonText>
           </Pressable>
         )}
       </View>
@@ -154,9 +154,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   sectionTitle: {
-    fontSize: Typography.labelSmall.fontSize,
-    lineHeight: Typography.labelSmall.lineHeight,
-    fontFamily: 'Inter_600SemiBold',
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
@@ -171,24 +168,9 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 2,
   },
-  title: {
-    fontSize: Typography.dataMedium.fontSize,
-    lineHeight: Typography.dataMedium.lineHeight,
-    fontFamily: 'Inter_600SemiBold',
-  },
-  subtitle: {
-    fontSize: Typography.supportingSmall.fontSize,
-    lineHeight: Typography.supportingSmall.lineHeight,
-    fontFamily: 'Inter_400Regular',
-  },
   actionButton: {
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 8,
-  },
-  actionText: {
-    fontSize: Typography.buttonSmall.fontSize,
-    lineHeight: Typography.buttonSmall.lineHeight,
-    fontFamily: 'Inter_600SemiBold',
   },
 });

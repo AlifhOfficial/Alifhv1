@@ -470,8 +470,30 @@ export const api = {
     if (data.sellerData?.partner?.logo) {
       data.sellerData.partner.logo = toAbsoluteUrl(data.sellerData.partner.logo);
     }
-    if (data.sellerData?.userProfile?.avatarUrl) {
-      data.sellerData.userProfile.avatarUrl = toAbsoluteUrl(data.sellerData.userProfile.avatarUrl);
+    
+    // Transform user profile from API format to mobile format
+    if (data.sellerData?.type === 'user' && data.sellerData.userProfile) {
+      const p = data.sellerData.userProfile;
+      data.sellerData.userProfile = {
+        displayName: p.userName ?? ([p.firstName, p.lastName].filter(Boolean).join(' ') || null),
+        firstName: p.firstName ?? null,
+        lastName: p.lastName ?? null,
+        avatarUrl: toAbsoluteUrl(p.avatar),
+        isKycVerified: p.kycVerified ?? false,
+        description: p.description ?? null,
+        phone: p.phone ?? null,
+        memberSince: p.memberSince ?? null,
+        locationCity: p.locationCity ?? null,
+        locationEmirate: p.locationEmirate ?? null,
+        locationLat: p.locationLat ?? null,
+        locationLng: p.locationLng ?? null,
+        badges: p.badges ?? [],
+        tags: p.tags ?? [],
+        platformRating: p.platformRating ?? null,
+        platformReviewCount: p.platformReviewCount ?? 0,
+        emailVerified: p.emailVerified ?? false,
+        phoneVerified: p.phoneNumberVerified ?? false,
+      };
     }
     
     return data;

@@ -3,18 +3,25 @@
  */
 
 import React, { memo, ReactNode } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
 import { CheckCircle2 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { Text, Data, Supporting, Label } from '@/components/ui';
 import { SellerData } from '@/lib/api';
 
 interface SellerCardProps {
   sellerData: SellerData;
   isBlk?: boolean;
   action?: ReactNode;
+}
+
+function formatMemberSince(date: Date | string | null | undefined): string | null {
+  if (!date) return null;
+  const d = typeof date === 'string' ? new Date(date) : date;
+  return `Member since ${d.getFullYear()}`;
 }
 
 export const SellerCard = memo(function SellerCard({
@@ -25,21 +32,28 @@ export const SellerCard = memo(function SellerCard({
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
-  const sellerName = sellerData.type === 'partner' 
-    ? sellerData.partner?.brandName || 'Dealer'
-    : sellerData.userProfile?.displayName || 'Private Seller';
+  const isPartner = sellerData.type === 'partner';
+  const partner = isPartner ? sellerData.partner : null;
+  const userProfile = !isPartner ? sellerData.userProfile : null;
+
+  const sellerName = isPartner
+    ? partner?.brandName || 'Dealer'
+    : userProfile?.displayName || 'Private Seller';
   
-  const sellerLogo = sellerData.type === 'partner'
-    ? sellerData.partner?.logo
-    : sellerData.userProfile?.avatarUrl;
+  const sellerLogo = isPartner
+    ? partner?.logo
+    : userProfile?.avatarUrl;
   
-  const isVerified = sellerData.type === 'partner'
-    ? sellerData.partner?.isVerified
-    : sellerData.userProfile?.isKycVerified;
+  const isVerified = isPartner
+    ? partner?.isVerified
+    : userProfile?.isKycVerified;
   
-  const isBlackTier = sellerData.type === 'partner' && sellerData.partner?.tier === 'black';
+  const isBlackTier = isPartner && partner?.tier === 'black';
   
   const textColor = isBlk ? colors.blkText : colors.text;
+
+  // Private seller extra info
+  const memberSince = !isPartner ? formatMemberSince(userProfile?.memberSince) : null;
 
   return (
     <View style={styles.container}>
@@ -52,7 +66,7 @@ export const SellerCard = memo(function SellerCard({
               contentFit="cover"
             />
           ) : (
-            <Text style={[styles.avatarInitial, { color: colors.textSecondary }]}>
+            <Text variant="avatarInitial" tone="secondary">
               {sellerName.charAt(0).toUpperCase()}
             </Text>
           )}
@@ -60,25 +74,38 @@ export const SellerCard = memo(function SellerCard({
         
         <View style={styles.details}>
           <View style={styles.nameRow}>
-            <Text style={[styles.name, { color: textColor }]}>{sellerName}</Text>
+            <Data size="medium" style={{ color: textColor }}>{sellerName}</Data>
             {isVerified && !isBlackTier && (
-              <CheckCircle2 size={16} color={colors.primary} />
+              <CheckCircle2 size={ICON_SIZE} color={colors.primary} />
             )}
             {isBlackTier && (
               <View style={[styles.blkBadge, { backgroundColor: colors.blkBackground }]}>
-                <Text style={[styles.blkBadgeText, { color: colors.blkText }]}>BLK</Text>
+                <Label size="badge" uppercase={false} style={[styles.blkBadgeText, { color: colors.blkText }]}>BLK</Label>
               </View>
             )}
           </View>
-          <Text style={[styles.type, { color: colors.textSecondary }]}>
-            {sellerData.type === 'partner' ? 'Verified Dealer' : 'Private Seller'}
-          </Text>
+          
+          {/* Subtitle: Dealer type or member since */}
+          <Supporting size="small">
+            {isPartner ? 'Verified Dealer' : (memberSince || 'Private Seller')}
+          </Supporting>
         </View>
       </View>
       {action}
     </View>
   );
 });
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const AVATAR_SIZE = 48;
+const ICON_SIZE = 16;
+
+// ============================================================================
+// STYLES
+// ============================================================================
 
 const styles = StyleSheet.create({
   container: {
@@ -93,9 +120,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: AVATAR_SIZE,
+    height: AVATAR_SIZE,
+    borderRadius: AVATAR_SIZE / 2,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -104,9 +131,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  avatarInitial: {
-    ...Typography.avatarInitial,
-  },
   details: {
     flex: 1,
     gap: 2,
@@ -114,21 +138,14 @@ const styles = StyleSheet.create({
   nameRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-  },
-  name: {
-    ...Typography.dataMedium,
-  },
-  type: {
-    ...Typography.supportingSmall,
+    gap: Spacing.sm - 2,
   },
   blkBadge: {
-    paddingHorizontal: 6,
+    paddingHorizontal: Spacing.sm - 2,
     paddingVertical: 2,
     borderRadius: Radius.sm,
   },
   blkBadgeText: {
-    ...Typography.labelBadge,
     fontSize: 8,
   },
 });

@@ -9,8 +9,9 @@ import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@g
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Pressable } from 'react-native';
 
-import { Colors, Typography, Spacing } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { Heading, ButtonText, Supporting, Data } from '@/components/ui';
 
 interface SpecItem {
   label: string;
@@ -33,8 +34,8 @@ function SpecRow({ label, value, labelColor, valueColor }: SpecRowProps) {
 
   return (
     <View style={styles.specRow}>
-      <Text style={[styles.specLabel, { color: labelColor }]}>{label}</Text>
-      <Text style={[styles.specValue, { color: valueColor }]}>{displayValue}</Text>
+      <Supporting size="medium" tone="muted">{label}</Supporting>
+      <Data size="medium">{displayValue}</Data>
     </View>
   );
 }
@@ -81,14 +82,17 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface }}
+      backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
       handleIndicatorStyle={{ backgroundColor: colors.border, width: 36 }}
       stackBehavior="push"
+      detached
+      bottomInset={insets.bottom + 20}
+      style={styles.sheetContainer}
     >
       <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>All Specifications</Text>
+        <Heading size="large" style={{ color: colors.text }}>All Specifications</Heading>
         <Pressable onPress={onClose} hitSlop={12}>
-          <Text style={[styles.doneBtn, { color: colors.primary }]}>Done</Text>
+          <ButtonText size="medium" tone="primary">Done</ButtonText>
         </Pressable>
       </View>
 
@@ -112,18 +116,18 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
 }
 
 const styles = StyleSheet.create({
+  sheetContainer: {
+    marginHorizontal: 16,
+  },
+  background: {
+    borderRadius: 24,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 24,
     paddingBottom: Spacing.md,
-  },
-  headerTitle: {
-    ...Typography.headingLarge,
-  },
-  doneBtn: {
-    ...Typography.buttonMedium,
   },
   scrollView: {
     flex: 1,
@@ -136,11 +140,5 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: Spacing.sm + 2,
-  },
-  specLabel: {
-    ...Typography.supportingMedium,
-  },
-  specValue: {
-    ...Typography.dataMedium,
   },
 });

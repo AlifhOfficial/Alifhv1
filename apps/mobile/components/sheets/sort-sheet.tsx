@@ -10,8 +10,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Typography, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { Heading } from '@/components/ui';
 import type { SearchSortOption } from '@/lib/api';
 
 const SORT_OPTIONS: { value: SearchSortOption; label: string }[] = [
@@ -85,14 +86,16 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.background }}
-      handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
-      stackBehavior="push"
+      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
+      handleIndicatorStyle={{ backgroundColor: colors.border, width: 36 }}
+      detached
+      bottomInset={insets.bottom + 20}
+      style={styles.sheetContainer}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Sort By</Text>
+          <Heading size="medium" style={{ color: colors.text }}>Sort By</Heading>
           <Pressable 
             onPress={onClose} 
             hitSlop={Spacing.md}
@@ -107,7 +110,7 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
 
         {/* Options List */}
         <View style={styles.listContainer}>
-          {SORT_OPTIONS.map((option) => {
+          {SORT_OPTIONS.map((option, index) => {
             const selected = currentSort === option.value;
 
             return (
@@ -125,15 +128,27 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
                   },
                 ]}
               >
-                <Text 
-                  style={[
-                    styles.listItemText, 
-                    { color: selected ? colors.text : colors.textSecondary },
-                  ]} 
-                  numberOfLines={1}
-                >
-                  {option.label}
-                </Text>
+                <View style={styles.radioRow}>
+                  <Text
+                    style={[
+                      styles.optionLabel,
+                      { color: selected ? colors.text : colors.textSecondary },
+                      selected && styles.optionLabelSelected,
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {option.label}
+                  </Text>
+                  {/* Radio button */}
+                  <View style={[
+                    styles.radio,
+                    { borderColor: selected ? colors.text : colors.border },
+                  ]}>
+                    {selected && (
+                      <View style={[styles.radioInner, { backgroundColor: colors.text }]} />
+                    )}
+                  </View>
+                </View>
               </Pressable>
             );
           })}
@@ -146,10 +161,8 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
 }
 
 const styles = StyleSheet.create({
-  handleIndicator: {
-    width: 36,
-    height: 4,
-    borderRadius: Radius.full,
+  sheetContainer: {
+    marginHorizontal: 16,
   },
   content: {
     flex: 1,
@@ -162,9 +175,6 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
     paddingHorizontal: Spacing.xs,
   },
-  headerTitle: {
-    ...Typography.headingLarge,
-  },
   closeButton: {
     width: 32,
     height: 32,
@@ -173,17 +183,40 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   listContainer: {
-    gap: Spacing.sm,
+    gap: 16,
   },
   listItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: Spacing.lg,
+    paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.lg,
     borderRadius: Radius.lg,
   },
-  listItemText: {
-    ...Typography.headingSmall,
+  listItemSpacing: {
+    // kept for compatibility
+  },
+  radioRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  radio: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 12,
+  },
+  radioInner: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+  optionLabel: {
+    ...Typography.bodyMedium,
+    flex: 1,
+  },
+  optionLabelSelected: {
+    fontFamily: 'Inter_500Medium',
   },
 });

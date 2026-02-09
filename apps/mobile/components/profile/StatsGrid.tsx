@@ -4,11 +4,11 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Text, Platform } from 'react-native';
+import { StyleSheet, View, Platform } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Star } from 'lucide-react-native';
 
-import { Typography } from '@/constants/theme';
+import { Label, Heading } from '@/components/ui';
 import type { ThemeColors, ProfileStats } from './types';
 
 interface StatItemProps {
@@ -21,12 +21,12 @@ interface StatItemProps {
 function StatItem({ label, value, colors, showStar }: StatItemProps) {
   return (
     <View style={styles.statItem}>
-      <Text style={[styles.statLabel, { color: colors.textTertiary }]}>{label}</Text>
+      <Label size="small" tone="muted" style={styles.statLabel}>{label}</Label>
       <View style={styles.valueRow}>
         {showStar && value !== '—' && (
           <Star size={16} color="#FACC15" fill="#FACC15" strokeWidth={0} style={styles.starIcon} />
         )}
-        <Text style={[styles.statValue, { color: colors.text }]}>{value}</Text>
+        <Heading size="large" style={styles.statValue}>{value}</Heading>
       </View>
     </View>
   );
@@ -166,7 +166,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   statLabel: {
-    ...Typography.labelSmall,
     textTransform: 'uppercase',
   },
   valueRow: {
@@ -177,8 +176,6 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   statValue: {
-    fontSize: Typography.headingLarge.fontSize,
-    lineHeight: Typography.headingLarge.lineHeight,
     fontFamily: 'Inter_700Bold',
   },
 });

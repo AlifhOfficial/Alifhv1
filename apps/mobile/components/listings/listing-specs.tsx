@@ -4,11 +4,12 @@
  */
 
 import React, { memo } from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Pressable } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
 
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { Label, Data, Supporting } from '@/components/ui';
 import { formatEnumValue } from './types';
 
 const MAX_VISIBLE_SPECS = 4;
@@ -36,15 +37,12 @@ interface ListingSpecsProps {
 }
 
 function SpecRow({ label, value }: SpecItem) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
-  
   const displayValue = value === null || value === undefined ? '—' : String(value);
   
   return (
     <View style={styles.specRow}>
-      <Text style={[styles.specLabel, { color: colors.textTertiary }]}>{label}</Text>
-      <Text style={[styles.specValue, { color: colors.text }]}>{displayValue}</Text>
+      <Supporting size="medium" tone="muted">{label}</Supporting>
+      <Data size="medium">{displayValue}</Data>
     </View>
   );
 }
@@ -87,9 +85,9 @@ export const ListingSpecs = memo(function ListingSpecs({
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.label, { color: colors.textTertiary }]}>
+      <Label size="medium" tone="muted">
         SPECIFICATIONS
-      </Text>
+      </Label>
       <View style={styles.specsList}>
         {visibleSpecs.map((spec) => (
           <SpecRow 
@@ -104,10 +102,10 @@ export const ListingSpecs = memo(function ListingSpecs({
         <Pressable onPress={onViewAll} style={styles.viewAllButton}>
           {({ pressed }) => (
             <View style={[styles.viewAllContent, { opacity: pressed ? 0.7 : 1 }]}>
-              <Text style={[styles.viewAllText, { color: colors.primary }]}>
+              <Data size="medium" tone="primary">
                 View All Specifications
-              </Text>
-              <ChevronRight size={18} color={colors.primary} strokeWidth={2} />
+              </Data>
+              <ChevronRight size={ICON_SIZE_SM} color={colors.primary} strokeWidth={2} />
             </View>
           )}
         </Pressable>
@@ -116,12 +114,19 @@ export const ListingSpecs = memo(function ListingSpecs({
   );
 });
 
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const ICON_SIZE_SM = 18;
+
+// ============================================================================
+// STYLES
+// ============================================================================
+
 const styles = StyleSheet.create({
   container: {
     gap: Spacing.md,
-  },
-  label: {
-    ...Typography.labelMedium,
   },
   specsList: {
     gap: 2,
@@ -132,21 +137,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: Spacing.sm + 2,
   },
-  specLabel: {
-    ...Typography.supportingMedium,
-  },
-  specValue: {
-    ...Typography.dataMedium,
-  },
   viewAllButton: {
     paddingVertical: Spacing.xs,
   },
   viewAllContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-  },
-  viewAllText: {
-    ...Typography.dataMedium,
+    gap: Spacing.xs,
   },
 });

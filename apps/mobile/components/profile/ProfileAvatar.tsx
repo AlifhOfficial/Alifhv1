@@ -11,8 +11,7 @@ import {
   Pressable, 
   Platform, 
   Alert, 
-  ActionSheetIOS, 
-  Text,
+  ActionSheetIOS,
 } from 'react-native';
 import Animated, { 
   FadeIn, 
@@ -29,7 +28,7 @@ import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { Typography } from '@/constants/theme';
+import { Supporting } from '@/components/ui';
 import type { ThemeColors } from './types';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -231,9 +230,9 @@ export function ProfileAvatar({
       {/* Loading overlay */}
       {isUploading && (
         <Animated.View entering={FadeIn.duration(200)} style={styles.overlay}>
-          <Animated.Text style={[styles.loadingText, loadingTextStyle]}>
+          <Supporting size="small" style={[styles.loadingText, loadingTextStyle]}>
             Uploading
-          </Animated.Text>
+          </Supporting>
         </Animated.View>
       )}
       
@@ -259,7 +258,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   loadingText: {
-    ...Typography.supportingSmall,
     // White text on overlay - hardcoded
     color: '#FFFFFF',
   },

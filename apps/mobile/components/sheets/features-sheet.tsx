@@ -8,8 +8,9 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Colors, Typography, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { Heading, ButtonText, Label } from '@/components/ui';
 
 interface FeaturesSheetProps {
   visible: boolean;
@@ -65,14 +66,17 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface }}
+      backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
       handleIndicatorStyle={{ backgroundColor: colors.border, width: 36 }}
       stackBehavior="push"
+      detached
+      bottomInset={insets.bottom + 20}
+      style={styles.sheetContainer}
     >
       <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>All Features</Text>
+        <Heading size="large" style={{ color: colors.text }}>All Features</Heading>
         <Pressable onPress={onClose} hitSlop={12}>
-          <Text style={[styles.doneBtn, { color: colors.primary }]}>Done</Text>
+          <ButtonText size="medium" tone="primary">Done</ButtonText>
         </Pressable>
       </View>
 
@@ -87,9 +91,9 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
               key={idx} 
               style={[styles.badge, { backgroundColor: colors.backgroundSecondary }]}
             >
-              <Text style={[styles.badgeText, { color: colors.text }]}>
+              <Label size="badge">
                 {formatEnumValue(feature)}
-              </Text>
+              </Label>
             </View>
           ))}
         </View>
@@ -99,18 +103,18 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
 }
 
 const styles = StyleSheet.create({
+  sheetContainer: {
+    marginHorizontal: 16,
+  },
+  background: {
+    borderRadius: 24,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 24,
     paddingBottom: Spacing.md,
-  },
-  headerTitle: {
-    ...Typography.headingLarge,
-  },
-  doneBtn: {
-    ...Typography.buttonMedium,
   },
   scrollView: {
     flex: 1,
@@ -127,8 +131,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: Radius.md,
-  },
-  badgeText: {
-    ...Typography.chip,
   },
 });

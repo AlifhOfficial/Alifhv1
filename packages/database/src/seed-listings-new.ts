@@ -9,7 +9,9 @@ import { db } from './dbclient';
 import { carListing, listingPriceHistory } from './schema/listing';
 import { partner } from './schema/partner';
 import { user } from './schema';
+import { userProfile } from './schema/profile';
 import { createId } from '@paralleldrive/cuid2';
+import { eq } from 'drizzle-orm';
 
 const makeListingId = () => `listing_${createId()}`;
 

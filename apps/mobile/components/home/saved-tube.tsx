@@ -6,12 +6,13 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Text, Pressable, Platform } from 'react-native';
+import { StyleSheet, View, Pressable, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 
 import { Colors } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { Data } from '@/components/ui';
 
 export function SavedTube() {
   const router = useRouter();
@@ -39,9 +40,9 @@ export function SavedTube() {
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
         {({ pressed }) => (
-          <Text style={[styles.text, { color: colors.textSecondary, opacity: pressed ? 0.7 : 1 }]}>
+          <Data size="small" tone="secondary" style={{ opacity: pressed ? 0.7 : 1 }}>
             Saved
-          </Text>
+          </Data>
         )}
       </Pressable>
     </View>
@@ -61,10 +62,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  text: {
-    fontSize: 13,
-    fontFamily: 'Inter_600SemiBold',
-    // Color applied inline
   },
 });

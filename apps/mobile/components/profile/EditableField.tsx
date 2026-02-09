@@ -23,7 +23,7 @@ import Animated, {
 import { ChevronRight } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Typography } from '@/constants/theme';
+import { Supporting, Body, Data } from '@/components/ui';
 import type { ThemeColors } from './types';
 
 interface EditableFieldProps {
@@ -98,13 +98,13 @@ export function EditableField({
         entering={FadeIn.duration(200)}
         style={[styles.container, !isLast && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border }]}
       >
-        <Text style={[styles.label, { color: colors.textTertiary }]}>{label}</Text>
+        <Supporting size="small" tone="muted">{label}</Supporting>
         <View style={styles.editContainer}>
           <View style={styles.inputWrapper}>
             {prefix && (
-              <Text style={[styles.prefix, { color: colors.textSecondary }]}>
+              <Body size="medium" tone="secondary" style={styles.prefix}>
                 {prefix}
-              </Text>
+              </Body>
             )}
             <TextInput
               ref={inputRef}
@@ -131,9 +131,9 @@ export function EditableField({
                 pressed && { opacity: 0.6 },
               ]}
             >
-              <Text style={[styles.cancelText, { color: colors.textSecondary }]}>
+              <Supporting size="medium" tone="secondary">
                 Cancel
-              </Text>
+              </Supporting>
             </Pressable>
             <Pressable
               onPress={onSave}
@@ -144,9 +144,9 @@ export function EditableField({
                 pressed && { opacity: 0.6 },
               ]}
             >
-              <Text style={[styles.saveText, { color: colors.primary }]}>
+              <Data size="medium" tone="primary">
                 {saving ? 'Saving...' : 'Save'}
-              </Text>
+              </Data>
             </Pressable>
           </View>
         </View>
@@ -170,16 +170,14 @@ export function EditableField({
       >
         <View style={styles.row}>
           <View style={styles.labelValueContainer}>
-            <Text style={[styles.label, { color: colors.textTertiary }]}>{label}</Text>
-            <Text
-              style={[
-                styles.value,
-                { color: value ? colors.text : colors.textTertiary },
-              ]}
+            <Supporting size="small" tone="muted">{label}</Supporting>
+            <Body
+              size="medium"
+              tone={value ? 'default' : 'muted'}
               numberOfLines={1}
             >
               {value || (disabled ? '—' : 'Add')}
-            </Text>
+            </Body>
           </View>
           <View style={styles.rightContainer}>
             {suffix}
@@ -212,14 +210,6 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 2,
   },
-  label: {
-    ...Typography.supportingSmall,
-  },
-  value: {
-    fontSize: Typography.bodyMedium.fontSize,
-    lineHeight: Typography.bodyMedium.lineHeight,
-    fontFamily: 'Inter_400Regular',
-  },
   rightContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -238,16 +228,14 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   prefix: {
-    fontSize: Typography.bodyMedium.fontSize,
-    lineHeight: Typography.bodyMedium.lineHeight,
-    fontFamily: 'Inter_400Regular',
+    fontFamily: 'Inter_500Medium',
   },
   input: {
     flex: 1,
     height: 44,
     borderRadius: 10,
     paddingHorizontal: 12,
-    fontSize: Typography.bodyMedium.fontSize,
+    fontSize: 15,
     fontFamily: 'Inter_400Regular',
   },
   actions: {
@@ -257,11 +245,5 @@ const styles = StyleSheet.create({
   },
   actionBtn: {
     paddingVertical: 4,
-  },
-  cancelText: {
-    ...Typography.supportingMedium,
-  },
-  saveText: {
-    ...Typography.dataMedium,
   },
 });

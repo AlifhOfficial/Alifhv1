@@ -4,12 +4,12 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Text, Pressable, Platform } from 'react-native';
+import { StyleSheet, View, Pressable, Platform } from 'react-native';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { Heart, LogIn } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Typography } from '@/constants/theme';
+import { Heading, Body, ButtonText } from '@/components/ui';
 import type { ThemeColors } from './types';
 
 interface NotAuthenticatedViewProps {
@@ -51,12 +51,12 @@ export function SavedNotAuthenticatedView({
           entering={FadeInUp.delay(200).duration(400)}
           style={styles.textContainer}
         >
-          <Text style={[styles.title, { color: colors.text }]}>
+          <Heading size="large" style={styles.title}>
             Your Saved Listings
-          </Text>
-          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+          </Heading>
+          <Body size="large" tone="secondary" style={styles.subtitle}>
             Sign in to save your favorite listings and superlikes across all your devices
-          </Text>
+          </Body>
         </Animated.View>
 
         {/* Sign in button */}
@@ -73,9 +73,9 @@ export function SavedNotAuthenticatedView({
             ]}
           >
             <LogIn size={18} color={colors.primaryForeground} strokeWidth={2} />
-            <Text style={[styles.signInText, { color: colors.primaryForeground }]}>
+            <ButtonText size="medium" style={{ color: colors.primaryForeground }}>
               Sign In
-            </Text>
+            </ButtonText>
           </Pressable>
         </Animated.View>
       </Animated.View>
@@ -104,11 +104,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   title: {
-    ...Typography.headingLarge,
     textAlign: 'center',
   },
   subtitle: {
-    ...Typography.bodyLarge,
     textAlign: 'center',
     paddingHorizontal: 16,
   },
@@ -120,8 +118,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     borderRadius: 12,
     marginTop: 8,
-  },
-  signInText: {
-    ...Typography.buttonMedium,
   },
 });

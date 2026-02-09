@@ -4,14 +4,15 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
+import { View, StyleSheet, Pressable, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Bell, Sun, Moon } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { ProfileMenu } from './profile-menu';
 import { useTheme } from '@/context/theme-context';
-import { Typography, Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
+import { Heading } from '@/components/ui';
 
 interface HomeHeaderProps {
   onNotificationPress?: () => void;
@@ -34,9 +35,7 @@ export function HomeHeader({ onNotificationPress }: HomeHeaderProps) {
   return (
     <View style={[styles.container, { paddingTop: insets.top + 8 }]}>
       {/* Left: Title */}
-      <Text style={[styles.title, { color: colors.text }]}>
-        Home
-      </Text>
+      <Heading size="large">Home</Heading>
 
       {/* Right: Theme Toggle + Notifications + Profile Menu */}
       <View style={styles.actions}>
@@ -93,9 +92,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  title: {
-    ...Typography.headingLarge,
   },
   actions: {
     flexDirection: 'row',

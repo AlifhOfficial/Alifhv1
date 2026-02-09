@@ -1,8 +1,10 @@
 import React from 'react';
-import { Text, StyleSheet, Pressable } from 'react-native';
+import { StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Typography, Radius } from '@/constants/theme';
+
+import { Colors, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { Data } from '@/components/ui';
 
 interface FilterPillProps {
   label: string;
@@ -36,12 +38,12 @@ export function FilterPill({
       ]}
       onPress={onPress}
     >
-      <Text style={[
-        styles.label, 
-        { color: isPrimary ? colors.primaryForeground : colors.text }
-      ]}>
+      <Data 
+        size="small" 
+        style={{ color: isPrimary ? colors.primaryForeground : colors.text }}
+      >
         {label}
-      </Text>
+      </Data>
       {showRemove && (
         <Ionicons 
           name="close" 
@@ -62,8 +64,5 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xl,
     borderWidth: 1,
     gap: 6,
-  },
-  label: {
-    ...Typography.link,
   },
 });

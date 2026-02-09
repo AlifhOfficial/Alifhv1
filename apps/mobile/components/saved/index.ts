@@ -5,9 +5,6 @@
 // Types
 export * from './types';
 
-// Hooks
-export { useSavedColors } from './use-saved-colors';
-
 // Components
 export { SavedHeader } from './saved-header';
 export { SavedList } from './saved-list';

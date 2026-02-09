@@ -4,9 +4,9 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { Typography } from '@/constants/theme';
+import { Heading } from '@/components/ui';
 import type { ThemeColors } from './types';
 
 interface SettingsHeaderProps {
@@ -15,12 +15,11 @@ interface SettingsHeaderProps {
 }
 
 export function SettingsHeader({ 
-  colors, 
   topInset, 
 }: SettingsHeaderProps) {
   return (
     <View style={[styles.container, { paddingTop: topInset + 8 }]}>
-      <Text style={[styles.title, { color: colors.text }]}>Settings</Text>
+      <Heading size="large">Settings</Heading>
     </View>
   );
 }
@@ -32,8 +31,5 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingBottom: 12,
     paddingHorizontal: 16,
-  },
-  title: {
-    ...Typography.headingLarge,
   },
 });

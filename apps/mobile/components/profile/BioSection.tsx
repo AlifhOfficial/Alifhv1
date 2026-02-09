@@ -7,7 +7,6 @@ import React, { useRef, useEffect } from 'react';
 import {
   StyleSheet,
   View,
-  Text,
   TextInput,
   Pressable,
   Platform,
@@ -15,7 +14,7 @@ import {
 import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
-import { Typography } from '@/constants/theme';
+import { Body, Supporting, Data } from '@/components/ui';
 import { Section } from './Section';
 import type { ThemeColors, EditingField, ProfileFormData } from './types';
 
@@ -91,18 +90,18 @@ export function BioSection({
               textAlignVertical="top"
             />
             <View style={styles.footer}>
-              <Text style={[styles.charCount, { color: charCountColor }]}>
+              <Supporting size="small" style={{ color: charCountColor }}>
                 {bio.length}/{MAX_BIO_LENGTH}
-              </Text>
+              </Supporting>
               <View style={styles.actions}>
                 <Pressable
                   onPress={onCancel}
                   hitSlop={8}
                   style={({ pressed }) => pressed && { opacity: 0.6 }}
                 >
-                  <Text style={[styles.cancelText, { color: colors.textSecondary }]}>
+                  <Supporting size="medium" tone="secondary">
                     Cancel
-                  </Text>
+                  </Supporting>
                 </Pressable>
                 <Pressable
                   onPress={onSave}
@@ -110,27 +109,26 @@ export function BioSection({
                   hitSlop={8}
                   style={({ pressed }) => pressed && { opacity: 0.6 }}
                 >
-                  <Text style={[styles.saveText, { color: colors.primary }]}>
+                  <Data size="medium" tone="primary">
                     {saving ? 'Saving...' : 'Save'}
-                  </Text>
+                  </Data>
                 </Pressable>
               </View>
             </View>
           </Animated.View>
         ) : (
           <View style={styles.displayContainer}>
-            <Text
-              style={[
-                styles.bioText,
-                { color: bio ? colors.text : colors.textTertiary },
-              ]}
+            <Body
+              size="medium"
+              tone={bio ? 'default' : 'muted'}
+              style={styles.bioText}
             >
               {bio || 'Tap to add bio'}
-            </Text>
+            </Body>
             {bio && (
-              <Text style={[styles.charCount, { color: colors.textTertiary }]}>
+              <Supporting size="small" tone="muted">
                 {bio.length}/{MAX_BIO_LENGTH}
-              </Text>
+              </Supporting>
             )}
           </View>
         )}
@@ -151,8 +149,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     padding: 14,
-    fontSize: Typography.bodyMedium.fontSize,
-    lineHeight: Typography.bodyMedium.lineHeight,
+    fontSize: 15,
+    lineHeight: 22,
     fontFamily: 'Inter_400Regular',
   },
   footer: {
@@ -160,25 +158,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  charCount: {
-    ...Typography.supportingSmall,
-  },
   actions: {
     flexDirection: 'row',
     gap: 24,
-  },
-  cancelText: {
-    ...Typography.supportingMedium,
-  },
-  saveText: {
-    ...Typography.dataMedium,
   },
   displayContainer: {
     gap: 10,
   },
   bioText: {
-    fontSize: Typography.bodyMedium.fontSize,
-    lineHeight: Typography.bodyLarge.lineHeight,
-    fontFamily: 'Inter_400Regular',
+    lineHeight: 24,
   },
 });

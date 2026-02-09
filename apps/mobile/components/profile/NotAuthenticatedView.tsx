@@ -4,12 +4,12 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Text, Pressable, Platform } from 'react-native';
+import { StyleSheet, View, Pressable, Platform } from 'react-native';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { User, LogIn } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Typography } from '@/constants/theme';
+import { Heading, Data, ButtonText } from '@/components/ui';
 import type { ThemeColors } from './types';
 
 interface NotAuthenticatedViewProps {
@@ -51,13 +51,13 @@ export function NotAuthenticatedView({
           entering={FadeInUp.delay(200).duration(400)}
           style={styles.textContainer}
         >
-          <Text style={[styles.title, { color: colors.text }]}>
+          <Heading size="large">
             Welcome to RevvUp
-          </Text>
-          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+          </Heading>
+          <Data size="medium" tone="secondary" style={styles.subtitle}>
             Sign in to access your profile, manage listings, and connect with
             buyers
-          </Text>
+          </Data>
         </Animated.View>
 
         {/* Sign in button */}
@@ -74,9 +74,9 @@ export function NotAuthenticatedView({
             ]}
           >
             <LogIn size={18} color={colors.primaryForeground} strokeWidth={2} />
-            <Text style={[styles.signInText, { color: colors.primaryForeground }]}>
+            <ButtonText size="medium" style={{ color: colors.primaryForeground }}>
               Sign In
-            </Text>
+            </ButtonText>
           </Pressable>
         </Animated.View>
       </Animated.View>
@@ -115,15 +115,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  title: {
-    fontSize: Typography.headingLarge.fontSize,
-    lineHeight: Typography.headingLarge.lineHeight,
-    fontFamily: 'Inter_600SemiBold',
-  },
   subtitle: {
-    fontSize: Typography.dataMedium.fontSize,
-    lineHeight: Typography.headingLarge.lineHeight,
-    fontFamily: 'Inter_400Regular',
     textAlign: 'center',
     maxWidth: 280,
   },
@@ -147,9 +139,5 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  signInText: {
-    fontSize: Typography.buttonMedium.fontSize,
-    lineHeight: Typography.buttonMedium.lineHeight,
-    fontFamily: 'Inter_600SemiBold',
-  },
+
 });

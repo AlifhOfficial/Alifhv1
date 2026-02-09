@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { 
   StyleSheet, 
   View, 
-  Text, 
+  Text as RNText,
   TextInput, 
   Pressable, 
   KeyboardAvoidingView,
@@ -20,7 +20,8 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Typography, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Display, Body, Data, Supporting, ButtonText } from '@/components/ui';
 
 interface SignInScreenProps {
   onBack: () => void;
@@ -84,15 +85,15 @@ export function SignInScreen({
 
           {/* Title */}
           <Animated.View entering={FadeInDown.delay(100).duration(400)} style={styles.titleSection}>
-            <Text style={[styles.title, { color: colors.text }]}>
-              Sign in<Text style={{ color: colors.primary }}>.</Text>
-            </Text>
+            <Display size="large">
+              Sign in<RNText style={{ color: colors.primary }}>.</RNText>
+            </Display>
           </Animated.View>
 
           {/* Error */}
           {error && (
             <Animated.View entering={FadeIn.duration(200)} style={[styles.errorBox, { backgroundColor: colors.errorMuted }]}>
-              <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
+              <Body size="small" tone="error" style={styles.errorText}>{error}</Body>
             </Animated.View>
           )}
 
@@ -100,7 +101,7 @@ export function SignInScreen({
           <Animated.View entering={FadeInDown.delay(150).duration(400)} style={styles.form}>
             {/* Email */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.textSecondary }]}>Email</Text>
+              <Data size="mini" tone="secondary" style={styles.label}>Email</Data>
               <View style={[styles.inputWrapper, { backgroundColor: colors.input, borderColor: colors.border }]}>
                 <TextInput
                   style={[styles.inputInner, { color: colors.text, backgroundColor: colors.input }]}
@@ -122,7 +123,7 @@ export function SignInScreen({
 
             {/* Password */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.textSecondary }]}>Password</Text>
+              <Data size="mini" tone="secondary" style={styles.label}>Password</Data>
               <View style={[styles.inputWrapper, { backgroundColor: colors.input, borderColor: colors.border }]}>
                 <TextInput
                   style={[styles.inputInner, styles.passwordInputInner, { color: colors.text, backgroundColor: colors.input }]}
@@ -141,16 +142,16 @@ export function SignInScreen({
                   onPress={() => setShowPassword(!showPassword)}
                   style={styles.eyeButton}
                 >
-                  <Text style={[styles.showText, { color: colors.textSecondary }]}>
+                  <Data size="mini" tone="secondary">
                     {showPassword ? 'Hide' : 'Show'}
-                  </Text>
+                  </Data>
                 </Pressable>
               </View>
             </View>
 
             {/* Forgot Password */}
             <Pressable onPress={onForgotPassword} style={styles.forgotButton}>
-              <Text style={[styles.forgotText, { color: colors.textSecondary }]}>Forgot password?</Text>
+              <Data size="mini" tone="secondary">Forgot password?</Data>
             </Pressable>
 
             {/* Sign In Button */}
@@ -168,12 +169,11 @@ export function SignInScreen({
               {isLoading ? (
                 <ButtonLoader size="sm" variant="white" />
               ) : (
-                <Text style={[
-                  styles.submitButtonText, 
-                  { color: (!isValid || isLoading) ? colors.textTertiary : colors.primaryForeground }
-                ]}>
+                <ButtonText 
+                  style={{ color: (!isValid || isLoading) ? colors.textTertiary : colors.primaryForeground }}
+                >
                   Continue
-                </Text>
+                </ButtonText>
               )}
             </Pressable>
           </Animated.View>
@@ -182,7 +182,7 @@ export function SignInScreen({
           {(onGoogleSignIn || onAppleSignIn || onPasskeySignIn) && (
             <Animated.View entering={FadeIn.delay(250).duration(300)} style={styles.dividerContainer}>
               <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-              <Text style={[styles.dividerText, { color: colors.textTertiary }]}>or continue with</Text>
+              <Supporting size="small" style={styles.dividerText}>or continue with</Supporting>
               <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
             </Animated.View>
           )}
@@ -243,11 +243,11 @@ export function SignInScreen({
 
           {/* Footer */}
           <Animated.View entering={FadeIn.delay(400).duration(300)} style={styles.footer}>
-            <Text style={[styles.footerText, { color: colors.textSecondary }]}>
+            <Body size="small" tone="secondary">
               Don't have an account?{' '}
-            </Text>
+            </Body>
             <Pressable onPress={onSwitchToSignUp}>
-              <Text style={[styles.footerLink, { color: colors.primary }]}>Sign up</Text>
+              <Data tone="primary">Sign up</Data>
             </Pressable>
           </Animated.View>
         </ScrollView>
@@ -390,16 +390,12 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
     marginBottom: Spacing['3xl'],
   },
-  title: {
-    ...Typography.displayLarge,
-  },
   errorBox: {
     borderRadius: Radius.lg,
     padding: Spacing.md,
     marginBottom: Spacing.xl,
   },
   errorText: {
-    ...Typography.bodySmall,
     textAlign: 'center',
   },
   form: {
@@ -409,15 +405,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   label: {
-    ...Typography.dataMini,
     marginLeft: Spacing.xs,
-  },
-  input: {
-    height: 54,
-    borderRadius: Radius.xl,
-    borderWidth: 1,
-    paddingHorizontal: Spacing.lg,
-    ...Typography.bodyMedium,
   },
   inputWrapper: {
     height: 54,
@@ -431,16 +419,10 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
     paddingHorizontal: Spacing.lg,
-    ...Typography.bodyMedium,
+    fontSize: 16,
     backgroundColor: 'transparent',
   },
   passwordInputInner: {
-    paddingRight: 52,
-  },
-  passwordContainer: {
-    position: 'relative',
-  },
-  passwordInput: {
     paddingRight: 52,
   },
   eyeButton: {
@@ -450,16 +432,10 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
   },
-  showText: {
-    ...Typography.dataMini,
-  },
   forgotButton: {
     alignSelf: 'flex-end',
     paddingVertical: Spacing.xs,
     marginTop: -Spacing.xs,
-  },
-  forgotText: {
-    ...Typography.dataMini,
   },
   submitButton: {
     height: 54,
@@ -467,9 +443,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: Spacing.sm,
-  },
-  submitButtonText: {
-    ...Typography.buttonMedium,
   },
   dividerContainer: {
     flexDirection: 'row',
@@ -482,7 +455,6 @@ const styles = StyleSheet.create({
     height: 1,
   },
   dividerText: {
-    ...Typography.supportingSmall,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -505,28 +477,11 @@ const styles = StyleSheet.create({
   appleButton: {
     borderWidth: 0,
   },
-  socialButton: {
-    height: 54,
-    borderRadius: Radius.xl,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.md,
-  },
-  socialButtonText: {
-    ...Typography.dataMedium,
-  },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 'auto',
     paddingTop: Spacing['3xl'],
-  },
-  footerText: {
-    ...Typography.bodySmall,
-  },
-  footerLink: {
-    ...Typography.dataMedium,
   },
 });

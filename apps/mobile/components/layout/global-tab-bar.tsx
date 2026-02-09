@@ -54,9 +54,12 @@ const GAP = 8;
 
 export function GlobalTabBar() {
   const { colorScheme } = useTheme();
-  const { applySearch, sortBy, applySort, searchParams } = useSearch();
+  const { applySearch, sortBy, applySort, searchParams, triggerScrollToTop } = useSearch();
   const insets = useSafeAreaInsets();
   const isDark = colorScheme === 'dark';
+  
+  // Double-tap detection for browse tab
+  const lastBrowseTapRef = React.useRef<number>(0);
   const colors = Colors[colorScheme];
   const router = useRouter();
   const pathname = usePathname();
@@ -141,6 +144,22 @@ export function GlobalTabBar() {
     if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
+    
+    // Double-tap detection for browse tab
+    if (tab.name === 'browse') {
+      const now = Date.now();
+      const DOUBLE_TAP_DELAY = 300; // ms
+      
+      if (now - lastBrowseTapRef.current < DOUBLE_TAP_DELAY) {
+        // Double-tap detected - scroll to top
+        triggerScrollToTop();
+        lastBrowseTapRef.current = 0; // Reset
+        return;
+      }
+      
+      lastBrowseTapRef.current = now;
+    }
+    
     router.push(tab.path as any);
   };
 

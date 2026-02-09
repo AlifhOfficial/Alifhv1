@@ -3,11 +3,12 @@
  */
 
 import React, { memo, useCallback, useMemo } from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Pressable } from 'react-native';
 import { Heart, Sparkles, CheckCircle2 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { Text, Heading, Data, Label } from '@/components/ui';
 import { SpecialNotes } from '@/lib/api';
 import { formatPrice } from './types';
 
@@ -75,17 +76,17 @@ export const ListingHeader = memo(function ListingHeader({
     <View style={styles.container}>
       <View style={styles.topRow}>
         <View style={styles.textContainer}>
-          <Text style={[styles.title, { color: textColor }]} numberOfLines={2}>
+          <Heading size="large" style={{ color: textColor }} numberOfLines={2}>
             {carTitle}
-          </Text>
+          </Heading>
           <View style={styles.priceRow}>
-            <Text style={[styles.price, { color: priceColor }]}>
+            <Text variant="priceTag" style={{ color: priceColor }}>
               {formatPrice(price)}
             </Text>
             {isNegotiable && (
-              <Text style={[styles.negotiable, { color: colors.success }]}>
+              <Data size="mini" tone="success">
                 Negotiable
-              </Text>
+              </Data>
             )}
           </View>
         </View>
@@ -93,7 +94,7 @@ export const ListingHeader = memo(function ListingHeader({
         <View style={styles.actions}>
         {isBlk && (
           <View style={[styles.blkBadge, { backgroundColor: colors.blkBackground }]}>
-            <Text style={[styles.blkText, { color: colors.blkText }]}>BLK</Text>
+            <Label size="badge" uppercase={false} style={{ color: colors.blkText }}>BLK</Label>
           </View>
         )}
         <Pressable
@@ -104,7 +105,7 @@ export const ListingHeader = memo(function ListingHeader({
           ]}
         >
           <Heart
-            size={20}
+            size={ICON_SIZE}
             color={isFavorite ? colors.favorite : colors.icon}
             fill={isFavorite ? colors.favorite : 'none'}
             strokeWidth={isFavorite ? 2.25 : 1.75}
@@ -118,7 +119,7 @@ export const ListingHeader = memo(function ListingHeader({
           ]}
         >
           <Sparkles
-            size={20}
+            size={ICON_SIZE}
             color={isSuperliked ? colors.warning : colors.icon}
             fill={isSuperliked ? colors.warning : 'none'}
             strokeWidth={1.75}
@@ -132,10 +133,10 @@ export const ListingHeader = memo(function ListingHeader({
         <View style={styles.highlightsRow}>
           {highlights.map((highlight, idx) => (
             <View key={idx} style={styles.highlightItem}>
-              <CheckCircle2 size={14} color={colors.success} />
-              <Text style={[styles.highlightText, { color: textColor }]}>
+              <CheckCircle2 size={ICON_SIZE_SM} color={colors.success} />
+              <Data size="mini" style={{ color: textColor }}>
                 {highlight}
-              </Text>
+              </Data>
             </View>
           ))}
         </View>
@@ -143,6 +144,18 @@ export const ListingHeader = memo(function ListingHeader({
     </View>
   );
 });
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const ICON_SIZE = 20;
+const ICON_SIZE_SM = 14;
+const ACTION_BTN_SIZE = 40;
+
+// ============================================================================
+// STYLES
+// ============================================================================
 
 const styles = StyleSheet.create({
   container: {
@@ -156,21 +169,12 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
-    gap: 4,
-  },
-  title: {
-    ...Typography.headingLarge,
+    gap: Spacing.xs,
   },
   priceRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
     gap: Spacing.sm,
-  },
-  price: {
-    ...Typography.priceTag,
-  },
-  negotiable: {
-    ...Typography.dataMini,
   },
   actions: {
     flexDirection: 'row',
@@ -178,20 +182,16 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   actionBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: ACTION_BTN_SIZE,
+    height: ACTION_BTN_SIZE,
+    borderRadius: ACTION_BTN_SIZE / 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
   blkBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
     borderRadius: Radius.sm,
-  },
-  blkText: {
-    ...Typography.labelBadge,
-    fontFamily: 'Inter_700Bold',
   },
   highlightsRow: {
     flexDirection: 'row',
@@ -202,9 +202,6 @@ const styles = StyleSheet.create({
   highlightItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-  },
-  highlightText: {
-    ...Typography.dataMini,
+    gap: Spacing.xs,
   },
 });

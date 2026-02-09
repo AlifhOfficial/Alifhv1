@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Typography, Radius, Spacing } from '@/constants/theme';
+
+import { Colors, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { Body, Data } from '@/components/ui';
 
 interface SelectableItemProps {
   label: string;
@@ -49,20 +51,17 @@ export function SelectableItem({
             )}
           </View>
         )}
-        <Text style={[
-          styles.label, 
-          { color: colors.text },
-          isSelected && styles.labelSelected
-        ]}>
+        <Body 
+          size="medium" 
+          style={isSelected ? styles.labelSelected : undefined}
+        >
           {label}
-        </Text>
+        </Body>
       </View>
       
       <View style={styles.rightContent}>
         {count !== undefined && count > 0 && (
-          <Text style={[styles.count, { color: colors.textTertiary }]}>
-            {count.toLocaleString()}
-          </Text>
+          <Data size="small" tone="muted">{count.toLocaleString()}</Data>
         )}
         {showChevron && (
           <Ionicons name="chevron-forward" size={18} color={colors.textTertiary} />
@@ -95,10 +94,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  label: {
-    ...Typography.buttonMedium,
-    fontFamily: 'Inter_400Regular',
-  },
   labelSelected: {
     fontFamily: 'Inter_600SemiBold',
   },
@@ -106,9 +101,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
-  },
-  count: {
-    ...Typography.link,
-    fontFamily: 'Inter_400Regular',
   },
 });

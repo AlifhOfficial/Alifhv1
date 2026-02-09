@@ -23,7 +23,7 @@ import React, { memo } from 'react';
 import { Text as RNText, TextProps as RNTextProps, StyleSheet } from 'react-native';
 
 import { Typography, Colors } from '@/constants/theme';
-import { useTheme } from '@/context/theme-context';
+import { useThemeSafe } from '@/context/theme-context';
 
 // ═══════════════════════════════════════════════════
 // TYPES
@@ -59,7 +59,7 @@ export const Text = memo(function Text({
   children,
   ...props
 }: TextProps) {
-  const { colorScheme } = useTheme();
+  const { colorScheme } = useThemeSafe();
   const colors = Colors[colorScheme];
 
   // Determine text color based on tone (mutually exclusive)

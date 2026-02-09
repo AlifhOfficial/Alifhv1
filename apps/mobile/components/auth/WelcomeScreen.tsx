@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { 
   FadeInUp,
@@ -17,7 +17,8 @@ import Animated, {
 import Svg, { Path } from 'react-native-svg';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Typography, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Heading, Supporting } from '@/components/ui';
 
 interface WelcomeScreenProps {
   onGetStarted: () => void;
@@ -108,9 +109,7 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
             }
           ]}
         >
-          <Text style={[styles.ctaButtonText, { color: colors.text }]}>
-            Get Started
-          </Text>
+          <Heading size="small">Get Started</Heading>
         </Pressable>
 
         {/* Secondary CTA - Same size */}
@@ -126,9 +125,7 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
             }
           ]}
         >
-          <Text style={[styles.ctaButtonText, { color: colors.text }]}>
-            Already a user?
-          </Text>
+          <Heading size="small">Already a user?</Heading>
         </Pressable>
       </Animated.View>
 
@@ -143,9 +140,7 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
             hitSlop={{ top: 16, bottom: 16, left: 24, right: 24 }}
             style={({ pressed }) => [{ opacity: pressed ? 0.4 : 1 }]}
           >
-            <Text style={[styles.skipText, { color: colors.textTertiary }]}>
-              Skip
-            </Text>
+            <Supporting size="small" tone="muted">Skip</Supporting>
           </Pressable>
         </Animated.View>
       )}
@@ -179,14 +174,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  ctaButtonText: {
-    ...Typography.headingSmall,
-  },
   skipSection: {
     alignItems: 'center',
     paddingTop: Spacing.sm,
-  },
-  skipText: {
-    ...Typography.buttonSmall,
   },
 });

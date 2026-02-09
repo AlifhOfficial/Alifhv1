@@ -4,14 +4,15 @@
  */
 
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { Data, Supporting } from '@/components/ui';
 
 interface ChatHeaderProps {
   name: string;
@@ -85,25 +86,19 @@ export function ChatHeader({
 
       {/* Name & Status */}
       <View style={styles.info}>
-        <Text style={[styles.name, { color: colors.text }]} numberOfLines={1}>
-          {name}
-        </Text>
+        <Data size="medium" numberOfLines={1}>{name}</Data>
         {listingTitle ? (
-          <Text
-            style={[styles.subtitle, { color: colors.textTertiary }]}
-            numberOfLines={1}
-          >
+          <Supporting size="small" tone="muted" style={{ marginTop: 2 }} numberOfLines={1}>
             Re: {listingTitle}
-          </Text>
+          </Supporting>
         ) : statusText ? (
-          <Text
-            style={[
-              styles.status,
-              { color: isOnline ? colors.success : colors.textTertiary },
-            ]}
+          <Supporting 
+            size="small" 
+            tone={isOnline ? 'success' : 'muted'}
+            style={{ marginTop: 2 }}
           >
             {statusText}
-          </Text>
+          </Supporting>
         ) : null}
       </View>
     </View>
@@ -127,16 +122,5 @@ const styles = StyleSheet.create({
   info: {
     flex: 1,
     minWidth: 0,
-  },
-  name: {
-    ...Typography.dataMedium,
-  },
-  subtitle: {
-    ...Typography.supportingSmall,
-    marginTop: 2,
-  },
-  status: {
-    ...Typography.supportingSmall,
-    marginTop: 2,
   },
 });

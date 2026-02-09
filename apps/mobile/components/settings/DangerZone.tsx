@@ -4,12 +4,12 @@
  */
 
 import React from 'react';
-import { StyleSheet, Text, Pressable, Platform } from 'react-native';
+import { StyleSheet, Pressable, Platform } from 'react-native';
 import { Trash2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
-import { Typography } from '@/constants/theme';
+import { ButtonText } from '@/components/ui';
 import type { ThemeColors } from './types';
 
 interface DangerZoneProps {
@@ -43,7 +43,7 @@ export function DangerZone({
         ]}
       >
         <Trash2 size={18} color={colors.error} strokeWidth={2} />
-        <Text style={[styles.text, { color: colors.error }]}>Delete Account</Text>
+        <ButtonText size="medium" tone="error">Delete Account</ButtonText>
       </Pressable>
     </Animated.View>
   );
@@ -59,8 +59,5 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     marginTop: 12,
     marginBottom: 120,
-  },
-  text: {
-    ...Typography.buttonMedium,
   },
 });

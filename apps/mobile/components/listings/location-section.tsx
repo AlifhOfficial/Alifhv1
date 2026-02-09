@@ -6,13 +6,13 @@
  */
 
 import React, { memo, useCallback } from 'react';
-import { StyleSheet, View, Text, Pressable, Linking } from 'react-native';
+import { StyleSheet, View, Pressable, Linking } from 'react-native';
 import { MapPin, ExternalLink, Navigation } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton, Label, Data, ButtonText } from '@/components/ui';
 
 // ============================================================================
 // TYPES
@@ -88,26 +88,26 @@ export const LocationSection = memo(function LocationSection({
   return (
     <View style={styles.container}>
       {/* Section Label */}
-      <Text style={[styles.label, { color: colors.textTertiary }]}>
+      <Label size="small" tone="muted">
         LOCATION
-      </Text>
+      </Label>
 
       {/* Address Display */}
       <View style={styles.addressRow}>
         <MapPin size={20} color={secondaryTextColor} style={styles.mapIcon} />
         <View style={styles.addressText}>
           {address && (
-            <Text style={[styles.addressMain, { color: textColor }]}>
+            <Data size="medium" style={{ color: textColor }}>
               {address}
-            </Text>
+            </Data>
           )}
           {locationString && (
-            <Text style={[
-              address ? styles.addressSecondary : styles.addressMain,
-              { color: address ? secondaryTextColor : textColor }
-            ]}>
+            <Data 
+              size="small" 
+              style={{ color: address ? secondaryTextColor : textColor }}
+            >
               {locationString}
-            </Text>
+            </Data>
           )}
         </View>
       </View>
@@ -125,9 +125,7 @@ export const LocationSection = memo(function LocationSection({
           ]}
         >
           <ExternalLink size={16} color={textColor} />
-          <Text style={[styles.actionText, { color: textColor }]}>
-            View Map
-          </Text>
+          <ButtonText size="small">View Map</ButtonText>
         </Pressable>
 
         <Pressable
@@ -141,9 +139,7 @@ export const LocationSection = memo(function LocationSection({
           ]}
         >
           <Navigation size={16} color={textColor} />
-          <Text style={[styles.actionText, { color: textColor }]}>
-            Directions
-          </Text>
+          <ButtonText size="small">Directions</ButtonText>
         </Pressable>
       </View>
     </View>
@@ -189,11 +185,6 @@ const styles = StyleSheet.create({
   container: {
     gap: Spacing.md,
   },
-  label: {
-    fontSize: 12,
-    fontFamily: 'Inter_700Bold',
-    letterSpacing: 1.5,
-  },
   addressRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -205,15 +196,6 @@ const styles = StyleSheet.create({
   addressText: {
     flex: 1,
     gap: 2,
-  },
-  addressMain: {
-    fontSize: 15,
-    fontFamily: 'Inter_600SemiBold',
-    lineHeight: 20,
-  },
-  addressSecondary: {
-    ...Typography.link,
-    fontFamily: 'Inter_500Medium',
   },
   actionsRow: {
     flexDirection: 'row',
@@ -228,9 +210,5 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     borderRadius: Radius.full,
     borderWidth: 1,
-  },
-  actionText: {
-    fontSize: 14,
-    fontFamily: 'Inter_600SemiBold',
   },
 });

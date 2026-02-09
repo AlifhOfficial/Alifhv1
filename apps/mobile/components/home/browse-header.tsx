@@ -4,18 +4,19 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { SlidersHorizontal } from 'lucide-react-native';
+import { Settings2 } from 'lucide-react-native';
 
 import { useTheme } from '@/context/theme-context';
-import { Typography, Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Heading } from '@/components/ui';
 
 interface BrowseHeaderProps {
-  onFiltersPress?: () => void;
+  onSettingsPress?: () => void;
 }
 
-export function BrowseHeader({ onFiltersPress }: BrowseHeaderProps) {
+export function BrowseHeader({ onSettingsPress }: BrowseHeaderProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
@@ -23,24 +24,22 @@ export function BrowseHeader({ onFiltersPress }: BrowseHeaderProps) {
   return (
     <View style={[styles.container, { paddingTop: insets.top + 8 }]}>
       {/* Left: Title */}
-      <Text style={[styles.title, { color: colors.text }]}>
-        Browse
-      </Text>
+      <Heading size="large">Browse</Heading>
 
-      {/* Right: Filters Button */}
+      {/* Right: Settings */}
       <Pressable
         style={[
-          styles.filterButton,
+          styles.settingsButton,
           { 
             backgroundColor: colors.surface,
             borderColor: colors.border,
           },
         ]}
-        onPress={onFiltersPress}
+        onPress={onSettingsPress}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
         {({ pressed }) => (
-          <SlidersHorizontal 
+          <Settings2 
             size={20} 
             color={colors.icon} 
             strokeWidth={2}
@@ -60,12 +59,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  title: {
-    ...Typography.headingLarge,
-  },
-  filterButton: {
+  settingsButton: {
     padding: 4,
-    borderRadius: 20,
+    borderRadius: Radius.full,
     borderWidth: 1,
     width: 40,
     height: 40,

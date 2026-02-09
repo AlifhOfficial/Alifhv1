@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { Colors, Typography, Spacing } from '@/constants/theme';
-import { useTheme } from '@/context/theme-context';
+import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
+
+import { Data } from '@/components/ui';
 import { FilterPill } from './filter-pill';
 
 interface SelectedPillsProps {
@@ -13,23 +12,16 @@ interface SelectedPillsProps {
 }
 
 export function SelectedPills({ items, onRemove, onClearAll, label }: SelectedPillsProps) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
-
   if (items.length === 0) return null;
 
   return (
     <View style={styles.container}>
       {label && (
         <View style={styles.header}>
-          <Text style={[styles.label, { color: colors.textSecondary }]}>
-            {label}
-          </Text>
+          <Data size="mini" tone="secondary">{label}</Data>
           {onClearAll && items.length > 1 && (
             <Pressable onPress={onClearAll} hitSlop={8}>
-              <Text style={[styles.clearText, { color: colors.primary }]}>
-                Clear all
-              </Text>
+              <Data size="mini" tone="primary">Clear all</Data>
             </Pressable>
           )}
         </View>
@@ -63,12 +55,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     marginBottom: 10,
-  },
-  label: {
-    ...Typography.dataMini,
-  },
-  clearText: {
-    ...Typography.dataMini,
   },
   scrollContent: {
     paddingHorizontal: 20,

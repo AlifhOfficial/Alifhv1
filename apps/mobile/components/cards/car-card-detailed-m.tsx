@@ -14,13 +14,13 @@
  */
 
 import React, { memo, useCallback, useState } from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Pressable } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
-import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Skeleton } from '@/components/ui';
+import { Skeleton, Data } from '@/components/ui';
 import { DescriptionSheet, FeaturesSheet, SpecsSheet } from '@/components/sheets';
 import { ListingDetailedData, SellerData } from '@/lib/api';
 
@@ -174,10 +174,10 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
             sellerData={sellerData}
             action={
               <View style={styles.contactAction}>
-                <Text style={[styles.contactText, { color: colors.primary }]}>
+                <Data size="medium" tone="primary">
                   Contact
-                </Text>
-                <ChevronRight size={18} color={colors.primary} strokeWidth={2} />
+                </Data>
+                <ChevronRight size={ICON_SIZE_SM} color={colors.primary} strokeWidth={2} />
               </View>
             }
           />
@@ -274,7 +274,13 @@ export function CarCardDetailedMSkeleton() {
 }
 
 // ============================================================================
-// STYLES — all text styles reference Typography tokens
+// CONSTANTS
+// ============================================================================
+
+const ICON_SIZE_SM = 18;
+
+// ============================================================================
+// STYLES
 // ============================================================================
 
 const styles = StyleSheet.create({
@@ -293,10 +299,7 @@ const styles = StyleSheet.create({
   contactAction: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 2,
-  },
-  contactText: {
-    ...Typography.dataMedium,
+    gap: Spacing.xs / 2, // 2
   },
 
   /* Skeleton helpers */

@@ -164,7 +164,6 @@ function RootLayoutNav() {
       </Stack>
       
       {/* Global Safe Area Gradients - hidden when chrome is hidden */}
-      {isHeaderVisible && <TopSafeAreaGradient />}
       {isTabBarVisible && <BottomSafeAreaGradient />}
       
       {/* Global Tab Bar - visible on all screens unless explicitly hidden */}

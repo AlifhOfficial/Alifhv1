@@ -4,10 +4,10 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Text, Pressable, Platform } from 'react-native';
+import { StyleSheet, View, Pressable, Platform } from 'react-native';
 import { ScanFace, Fingerprint, Key, Trash2, Loader2 } from 'lucide-react-native';
 
-import { Typography } from '@/constants/theme';
+import { Supporting, Body, Label } from '@/components/ui';
 import { Section } from './Section';
 import type { ThemeColors, Passkey } from './types';
 
@@ -33,10 +33,8 @@ export function SecuritySection({
       {/* Header with Add button */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <View style={styles.info}>
-          <Text style={[styles.label, { color: colors.textTertiary }]}>Passkeys</Text>
-          <Text style={[styles.value, { color: colors.text }]}>
-            Sign in with biometrics
-          </Text>
+          <Supporting size="small" tone="muted">Passkeys</Supporting>
+          <Body size="medium">Sign in with biometrics</Body>
         </View>
         <Pressable
           onPress={onAddPasskey}
@@ -56,12 +54,8 @@ export function SecuritySection({
       {/* Passkeys List or Empty State */}
       {passkeys.length === 0 ? (
         <View style={styles.empty}>
-          <Text style={[styles.emptyText, { color: colors.textTertiary }]}>
-            No passkeys registered
-          </Text>
-          <Text style={[styles.emptySubtext, { color: colors.textTertiary }]}>
-            Add a passkey for passwordless sign-in
-          </Text>
+          <Label size="small" tone="muted" uppercase={false}>No passkeys registered</Label>
+          <Supporting size="small" tone="muted">Add a passkey for passwordless sign-in</Supporting>
         </View>
       ) : (
         <View style={styles.list}>
@@ -72,12 +66,8 @@ export function SecuritySection({
             >
               <Key size={16} color={colors.textSecondary} strokeWidth={1.5} />
               <View style={styles.itemInfo}>
-                <Text style={[styles.itemName, { color: colors.text }]}>
-                  {pk.name}
-                </Text>
-                <Text style={[styles.itemDate, { color: colors.textTertiary }]}>
-                  Added {pk.createdAt}
-                </Text>
+                <Label size="small" uppercase={false}>{pk.name}</Label>
+                <Supporting size="small" tone="muted">Added {pk.createdAt}</Supporting>
               </View>
               <Pressable
                 onPress={() => onDeletePasskey?.(pk.id)}
@@ -106,14 +96,6 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 2,
   },
-  label: {
-    ...Typography.supportingSmall,
-  },
-  value: {
-    fontSize: Typography.bodyMedium.fontSize,
-    lineHeight: Typography.bodyMedium.lineHeight,
-    fontFamily: 'Inter_400Regular',
-  },
   addButton: {
     width: 36,
     height: 36,
@@ -124,16 +106,7 @@ const styles = StyleSheet.create({
   empty: {
     padding: 20,
     alignItems: 'center',
-  },
-  emptyText: {
-    ...Typography.labelSmall,
-    fontFamily: 'Inter_500Medium',
-  },
-  emptySubtext: {
-    fontSize: Typography.supportingSmall.fontSize,
-    lineHeight: Typography.supportingSmall.lineHeight,
-    fontFamily: 'Inter_400Regular',
-    marginTop: 4,
+    gap: 4,
   },
   list: {
     padding: 12,
@@ -148,16 +121,7 @@ const styles = StyleSheet.create({
   },
   itemInfo: {
     flex: 1,
-  },
-  itemName: {
-    ...Typography.labelSmall,
-    fontFamily: 'Inter_500Medium',
-  },
-  itemDate: {
-    fontSize: Typography.supportingSmall.fontSize,
-    lineHeight: Typography.supportingSmall.lineHeight,
-    fontFamily: 'Inter_400Regular',
-    marginTop: 2,
+    gap: 2,
   },
   deleteButton: {
     padding: 8,

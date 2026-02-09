@@ -8,7 +8,6 @@ import React, { useState, useCallback, useMemo, useRef } from 'react';
 import {
   StyleSheet,
   View,
-  Text,
   Dimensions,
   FlatList,
   Pressable,
@@ -19,9 +18,9 @@ import { Image } from 'expo-image';
 import { Grid3x3 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Skeleton } from '@/components/ui';
+import { Skeleton, Data, ButtonText } from '@/components/ui';
 import { ImageLightbox } from './image-lightbox';
 import { ImageGridModal } from './image-grid-modal';
 
@@ -31,6 +30,7 @@ const MAIN_IMAGE_HEIGHT = SCREEN_WIDTH * (3 / 4);
 const THUMBNAIL_STRIP_HEIGHT = 72;
 const GALLERY_HEIGHT = MAIN_IMAGE_HEIGHT + THUMBNAIL_STRIP_HEIGHT;
 const THUMBNAIL_SIZE = 56;
+const ICON_SIZE = 16;
 
 interface ImageGalleryProps {
   images: string[];
@@ -89,9 +89,9 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
   if (allImages.length === 0) {
     return (
       <View style={[styles.placeholder, { backgroundColor: colors.skeleton }]}>
-        <Text style={[styles.placeholderText, { color: colors.textTertiary }]}>
+        <Data size="medium" tone="muted">
           No Images
-        </Text>
+        </Data>
       </View>
     );
   }
@@ -129,9 +129,9 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
         
         {/* Image Counter Overlay */}
         <View style={styles.counterOverlay} pointerEvents="none">
-          <Text style={styles.counterOverlayText}>
+          <Data size="mini" style={styles.counterOverlayText}>
             {currentIndex + 1}/{allImages.length}
-          </Text>
+          </Data>
         </View>
       </View>
 
@@ -172,8 +172,8 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
         >
           {({ pressed }) => (
             <View style={[styles.viewAllContent, { opacity: pressed ? 0.7 : 1 }]}>
-              <Grid3x3 size={16} color={colors.text} strokeWidth={1.75} />
-              <Text style={[styles.viewAllText, { color: colors.text }]}>All</Text>
+              <Grid3x3 size={ICON_SIZE} color={colors.text} strokeWidth={1.75} />
+              <ButtonText size="small">All</ButtonText>
             </View>
           )}
         </Pressable>
@@ -238,10 +238,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  placeholderText: {
-    ...Typography.dataMedium,
-    fontFamily: 'Inter_400Regular',
-  },
   
   // Main Image
   mainImageWrapper: {
@@ -265,7 +261,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.6)',
   },
   counterOverlayText: {
-    ...Typography.dataMini,
     color: '#FAFAFA',
   },
   
@@ -310,8 +305,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-  },
-  viewAllText: {
-    ...Typography.buttonSmall,
   },
 });

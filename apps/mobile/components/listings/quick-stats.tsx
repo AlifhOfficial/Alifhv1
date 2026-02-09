@@ -3,12 +3,13 @@
  */
 
 import React, { memo, useCallback, useState } from 'react';
-import { StyleSheet, View, Text, Pressable, Platform, Clipboard } from 'react-native';
+import { StyleSheet, View, Pressable, Platform, Clipboard } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { MapPin, Copy, Check } from 'lucide-react-native';
 
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { Data, Supporting } from '@/components/ui';
 import { formatMileage, formatSpecs, formatEmirate } from './types';
 
 interface QuickStatsProps {
@@ -55,19 +56,23 @@ export const QuickStats = memo(function QuickStats({
     <View style={styles.container}>
       {/* Quick Details Row */}
       <View style={styles.statsRow}>
-        <Text style={[styles.statText, { color: secondaryTextColor }]}>
+        <Data size="medium" style={{ color: secondaryTextColor }}>
           {formatMileage(mileage)} km
-        </Text>
-        <Text style={[styles.separator, { color: colors.textTertiary }]}>•</Text>
-        <Text style={[styles.statText, { color: secondaryTextColor }]}>
+        </Data>
+        <Supporting size="small" tone="muted" style={styles.separator}>
+          •
+        </Supporting>
+        <Data size="medium" style={{ color: secondaryTextColor }}>
           {displaySpecs} Specs
-        </Text>
-        <Text style={[styles.separator, { color: colors.textTertiary }]}>•</Text>
+        </Data>
+        <Supporting size="small" tone="muted" style={styles.separator}>
+          •
+        </Supporting>
         <View style={styles.locationRow}>
-          <MapPin size={14} color={secondaryTextColor} />
-          <Text style={[styles.statText, { color: secondaryTextColor }]}>
+          <MapPin size={ICON_SIZE_SM} color={secondaryTextColor} />
+          <Data size="medium" style={{ color: secondaryTextColor }}>
             {displayEmirate}
-          </Text>
+          </Data>
         </View>
       </View>
 
@@ -76,19 +81,14 @@ export const QuickStats = memo(function QuickStats({
         <Pressable onPress={handleCopyVin} style={styles.vinRow}>
           {({ pressed }) => (
             <>
-              <Text style={[styles.vinLabel, { color: colors.textTertiary }]}>VIN</Text>
-              <Text 
-                style={[
-                  styles.vinValue, 
-                  { color: colors.text, opacity: pressed ? 0.7 : 1 }
-                ]}
-              >
+              <Data size="mini" tone="muted">VIN</Data>
+              <Data size="medium" style={[styles.vinValue, { opacity: pressed ? 0.7 : 1 }]}>
                 {vin}
-              </Text>
+              </Data>
               {copied ? (
-                <Check size={14} color={colors.success} strokeWidth={2.5} />
+                <Check size={ICON_SIZE_SM} color={colors.success} strokeWidth={2.5} />
               ) : (
-                <Copy size={14} color={colors.textTertiary} strokeWidth={1.75} />
+                <Copy size={ICON_SIZE_SM} color={colors.textTertiary} strokeWidth={1.75} />
               )}
             </>
           )}
@@ -97,6 +97,16 @@ export const QuickStats = memo(function QuickStats({
     </View>
   );
 });
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const ICON_SIZE_SM = 14;
+
+// ============================================================================
+// STYLES
+// ============================================================================
 
 const styles = StyleSheet.create({
   container: {
@@ -108,28 +118,20 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: Spacing.sm,
   },
-  statText: {
-    ...Typography.dataMedium,
-  },
   separator: {
-    ...Typography.supportingSmall,
     opacity: 0.4,
   },
   locationRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: Spacing.xs,
   },
   vinRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
   },
-  vinLabel: {
-    ...Typography.dataMini,
-  },
   vinValue: {
-    ...Typography.dataMedium,
     fontVariant: ['tabular-nums'],
     letterSpacing: 0.5,
   },

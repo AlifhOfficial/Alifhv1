@@ -4,11 +4,12 @@
  */
 
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, Pressable, Modal, Platform } from 'react-native';
+import { StyleSheet, View, TextInput, Pressable, Modal, Platform } from 'react-native';
 import { BlurView, BlurTint } from 'expo-blur';
 import { Loader2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
+import { Heading, Body, Supporting, ButtonText } from '@/components/ui';
 import { Typography } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
@@ -72,18 +73,18 @@ export function DeleteAccountModal({
             borderColor: colors.border,
           }
         ]}>
-          <Text style={[styles.title, { color: colors.error }]}>
+          <Heading size="small" tone="error" style={styles.title}>
             Delete Account?
-          </Text>
-          <Text style={[styles.description, { color: colors.textSecondary }]}>
+          </Heading>
+          <Body size="medium" tone="secondary" style={styles.description}>
             This action cannot be undone. Your account will be permanently deleted
             after 6 months.
-          </Text>
+          </Body>
 
           <View style={styles.inputContainer}>
-            <Text style={[styles.inputLabel, { color: colors.textTertiary }]}>
+            <Supporting size="small" tone="muted" style={styles.inputLabel}>
               Type "DELETE" to confirm
-            </Text>
+            </Supporting>
             <TextInput
               value={deleteText}
               onChangeText={setDeleteText}
@@ -112,9 +113,7 @@ export function DeleteAccountModal({
                 },
               ]}
             >
-              <Text style={[styles.buttonText, { color: colors.text }]}>
-                Cancel
-              </Text>
+              <ButtonText size="medium">Cancel</ButtonText>
             </Pressable>
             <Pressable
               onPress={handleConfirm}
@@ -130,9 +129,9 @@ export function DeleteAccountModal({
               {isDeleting ? (
                 <Loader2 size={18} color={colors.primaryForeground} strokeWidth={2} />
               ) : (
-                <Text style={[styles.buttonText, { color: colors.primaryForeground }]}>
+                <ButtonText size="medium" style={{ color: colors.primaryForeground }}>
                   Delete
-                </Text>
+                </ButtonText>
               )}
             </Pressable>
           </View>
@@ -171,20 +170,15 @@ const styles = StyleSheet.create({
     }),
   },
   title: {
-    ...Typography.headingSmall,
     marginBottom: 8,
   },
   description: {
-    fontSize: Typography.dataMedium.fontSize,
-    lineHeight: Typography.headingLarge.lineHeight,
-    fontFamily: 'Inter_400Regular',
     marginBottom: 24,
   },
   inputContainer: {
     marginBottom: 24,
   },
   inputLabel: {
-    ...Typography.supportingSmall,
     marginBottom: 8,
   },
   input: {
@@ -205,10 +199,5 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  buttonText: {
-    fontSize: Typography.buttonMedium.fontSize,
-    lineHeight: Typography.buttonMedium.lineHeight,
-    fontFamily: 'Inter_600SemiBold',
   },
 });

@@ -7,7 +7,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { 
   StyleSheet, 
   View, 
-  Text, 
   TextInput, 
   Pressable, 
   KeyboardAvoidingView,
@@ -19,7 +18,8 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Typography, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Display, Body, Heading, Data, Supporting } from '@/components/ui';
 
 interface OTPScreenProps {
   email: string;
@@ -102,16 +102,16 @@ export function OTPScreen({
 
           {/* Title */}
           <Animated.View entering={FadeInDown.delay(100).duration(400)} style={styles.titleSection}>
-            <Text style={[styles.title, { color: colors.text }]}>Enter code</Text>
-            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            <Display size="large">Enter code</Display>
+            <Body tone="secondary" style={styles.subtitle}>
               Sent to {email}
-            </Text>
+            </Body>
           </Animated.View>
 
           {/* Error */}
           {error && (
             <Animated.View entering={FadeIn.duration(200)} style={[styles.errorBox, { backgroundColor: colors.errorMuted }]}>
-              <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
+              <Body size="small" tone="error" style={styles.errorText}>{error}</Body>
             </Animated.View>
           )}
 
@@ -133,9 +133,7 @@ export function OTPScreen({
                       }
                     ]}
                   >
-                    <Text style={[styles.codeDigit, { color: colors.text }]}>
-                      {digit}
-                    </Text>
+                    <Heading size="large">{digit}</Heading>
                     {isActive && !isLoading && (
                       <Animated.View 
                         entering={FadeIn.duration(150)}
@@ -171,22 +169,20 @@ export function OTPScreen({
           <Animated.View entering={FadeIn.delay(250).duration(300)} style={styles.resendSection}>
             {canResend ? (
               <Pressable onPress={handleResend} disabled={isLoading}>
-                <Text style={[styles.resendText, { color: colors.primary }]}>
-                  Resend code
-                </Text>
+                <Data tone="primary">Resend code</Data>
               </Pressable>
             ) : (
-              <Text style={[styles.resendTimer, { color: colors.textTertiary }]}>
+              <Supporting size="small" tone="muted">
                 Resend in {resendTimer}s
-              </Text>
+              </Supporting>
             )}
           </Animated.View>
 
           {/* Help text */}
           <Animated.View entering={FadeIn.delay(350).duration(300)} style={styles.helpSection}>
-            <Text style={[styles.helpText, { color: colors.textTertiary }]}>
+            <Supporting size="small" tone="muted" style={styles.helpText}>
               Check your spam folder if you don't see it
-            </Text>
+            </Supporting>
           </Animated.View>
         </View>
       </KeyboardAvoidingView>
@@ -234,11 +230,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
     marginBottom: Spacing['3xl'],
   },
-  title: {
-    ...Typography.displayLarge,
-  },
   subtitle: {
-    ...Typography.bodyMedium,
     marginTop: Spacing.sm,
   },
   errorBox: {
@@ -247,7 +239,6 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   errorText: {
-    ...Typography.bodySmall,
     textAlign: 'center',
   },
   codeSection: {
@@ -266,9 +257,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
-  },
-  codeDigit: {
-    ...Typography.headingLarge,
   },
   cursor: {
     position: 'absolute',
@@ -291,18 +279,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: Spacing['3xl'],
   },
-  resendText: {
-    ...Typography.link,
-  },
-  resendTimer: {
-    ...Typography.supportingSmall,
-  },
   helpSection: {
     marginTop: 'auto',
     paddingBottom: Spacing['2xl'],
   },
   helpText: {
-    ...Typography.supportingSmall,
     textAlign: 'center',
   },
 });

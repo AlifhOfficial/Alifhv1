@@ -69,6 +69,7 @@ export interface SellerInfo {
   id: string;
   name: string;
   avatar: string | null;
+  heroImage: string | null;
   isVerified: boolean;
   isDealer: boolean;
   tier: string | null;
@@ -83,9 +84,12 @@ export interface SellerInfo {
   reviewCount: number | null;
   badges: string[];
   specialties: string[];
+  tags: string[];  // User tags (interests, preferences)
   description: string | null;
   website: string | null;
   memberSince: string | null;
+  emailVerified: boolean;  // Email verification status
+  phoneVerified: boolean;  // Phone verification status
   totalListings?: number;
   activeListings?: number;
   // Raw data for full access
@@ -148,6 +152,7 @@ export function normalizeSellerData(sellerData: {
       id: sellerData.partnerId || p.id || '',
       name: p.brandName ?? 'Dealer',
       avatar: toAbsoluteUrl(p.logo),
+      heroImage: toAbsoluteUrl(p.heroImage),
       isVerified: p.isVerified,
       isDealer: true,
       tier: p.tier,
@@ -162,9 +167,12 @@ export function normalizeSellerData(sellerData: {
       reviewCount: p.googleReviewCount ?? p.platformReviewCount ?? null,
       badges: p.badges ?? [],
       specialties: p.specialties ?? [],
+      tags: [],  // Partners don't have tags
       description: p.description ?? null,
       website: p.website ?? null,
       memberSince: p.memberSince ?? null,
+      emailVerified: true,  // Partners are always verified
+      phoneVerified: true,  // Partners are always verified
       totalListings: p.totalListings,
       activeListings: p.activeListings,
       partner: p,
@@ -178,6 +186,7 @@ export function normalizeSellerData(sellerData: {
     id: sellerData.userId || u?.id || '',
     name: u?.displayName ?? 'Private Seller',
     avatar: toAbsoluteUrl(u?.avatarUrl),
+    heroImage: null,  // Users don't have hero images
     isVerified: u?.isKycVerified ?? false,
     isDealer: false,
     tier: null,
@@ -192,9 +201,12 @@ export function normalizeSellerData(sellerData: {
     reviewCount: u?.platformReviewCount ?? null,
     badges: u?.badges ?? [],
     specialties: [],
+    tags: u?.tags ?? [],
     description: u?.description ?? null,
     website: null,
     memberSince: u?.memberSince ?? null,
+    emailVerified: u?.emailVerified ?? false,
+    phoneVerified: u?.phoneVerified ?? false,
     totalListings: u?.totalListings,
     activeListings: u?.activeListings,
     userProfile: u ?? null,
@@ -248,10 +260,28 @@ export async function getUserSellerProfile(userId: string): Promise<PrivateSelle
   
   const data = await response.json();
   
-  // Transform URLs
-  if (data.avatarUrl) data.avatarUrl = toAbsoluteUrl(data.avatarUrl);
-  
-  return data;
+  // Transform from API format (kycVerified, avatar) to mobile format (isKycVerified, avatarUrl)
+  return {
+    id: data.id ?? data.userId,
+    displayName: data.userName ?? ([data.firstName, data.lastName].filter(Boolean).join(' ') || null),
+    firstName: data.firstName ?? null,
+    lastName: data.lastName ?? null,
+    avatarUrl: toAbsoluteUrl(data.avatar),
+    isKycVerified: data.kycVerified ?? false,
+    description: data.description ?? null,
+    phone: data.phone ?? null,
+    memberSince: data.memberSince ?? null,
+    locationCity: null,
+    locationEmirate: null,
+    badges: data.badges ?? [],
+    tags: data.tags ?? [],
+    platformRating: data.platformRating ?? null,
+    platformReviewCount: null,
+    emailVerified: data.emailVerified ?? false,
+    phoneVerified: data.phoneNumberVerified ?? false,
+    totalListings: data.totalListings,
+    activeListings: data.activeListings,
+  };
 }
 
 /**

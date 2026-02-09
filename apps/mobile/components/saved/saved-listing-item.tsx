@@ -8,7 +8,8 @@ import { StyleSheet, View, Text, Pressable, Alert } from 'react-native';
 import { Image } from 'expo-image';
 import { CheckCircle2 } from 'lucide-react-native';
 
-import { Radius, Typography } from '@/constants/theme';
+import { Radius } from '@/constants/theme';
+import { Data, Supporting, Price, Label } from '@/components/ui';
 import { SavedListingCard } from '@/lib/saved-api';
 import type { ThemeColors } from './types';
 
@@ -91,16 +92,14 @@ export function SavedListingItem({ listing, colors }: SavedListingItemProps) {
           />
         ) : (
           <View style={[styles.imagePlaceholder, { backgroundColor: colors.surfaceSecondary }]}>
-            <Text style={[styles.placeholderText, { color: colors.textTertiary }]}>
-              No Image
-            </Text>
+            <Supporting size="mini" tone="muted">No Image</Supporting>
           </View>
         )}
         
         {/* BLK Badge */}
         {listing.isBlkListing && (
           <View style={styles.blkBadge}>
-            <Text style={styles.blkText}>BLK</Text>
+            <Label size="badge" uppercase style={styles.blkText}>BLK</Label>
           </View>
         )}
       </View>
@@ -108,38 +107,30 @@ export function SavedListingItem({ listing, colors }: SavedListingItemProps) {
       {/* Details */}
       <View style={styles.details}>
         {/* Title */}
-        <Text style={[styles.title, { color: colors.text }]} numberOfLines={1}>
-          {carTitle}
-        </Text>
+        <Data size="medium" numberOfLines={1}>{carTitle}</Data>
         
         {/* Trim */}
         {listing.trim && (
-          <Text style={[styles.trim, { color: colors.textSecondary }]} numberOfLines={1}>
+          <Supporting size="small" tone="secondary" numberOfLines={1} style={styles.trim}>
             {listing.trim}
-          </Text>
+          </Supporting>
         )}
 
         {/* Price */}
-        <Text style={[styles.price, { color: colors.primary }]}>
-          {formatPrice(listing.price || 0)}
-        </Text>
+        <Price size="tag" style={styles.price}>{formatPrice(listing.price || 0)}</Price>
 
         {/* Meta */}
         <View style={styles.meta}>
-          <Text style={[styles.metaText, { color: colors.textTertiary }]}>
-            {formatMileage(listing.mileage || 0)}
-          </Text>
+          <Supporting size="mini" tone="muted">{formatMileage(listing.mileage || 0)}</Supporting>
           <Text style={[styles.metaDot, { color: colors.textMuted }]}>•</Text>
-          <Text style={[styles.metaText, { color: colors.textTertiary }]}>
-            {displayEmirate}
-          </Text>
+          <Supporting size="mini" tone="muted">{displayEmirate}</Supporting>
         </View>
 
         {/* Seller */}
         <View style={styles.seller}>
-          <Text style={[styles.sellerName, { color: colors.textSecondary }]} numberOfLines={1}>
+          <Supporting size="mini" tone="secondary" numberOfLines={1} style={styles.sellerName}>
             {sellerName}
-          </Text>
+          </Supporting>
           {isVerified && (
             <CheckCircle2 size={12} color={colors.success} strokeWidth={2} />
           )}
@@ -171,10 +162,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  placeholderText: {
-    fontSize: 11,
-    fontFamily: 'Inter_400Regular',
-  },
   blkBadge: {
     position: 'absolute',
     top: 6,
@@ -185,7 +172,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   blkText: {
-    ...Typography.labelBadge,
     color: '#FFF',
   },
   details: {
@@ -193,25 +179,16 @@ const styles = StyleSheet.create({
     padding: 10,
     justifyContent: 'center',
   },
-  title: {
-    ...Typography.dataMedium,
-  },
   trim: {
-    ...Typography.supportingSmall,
     marginTop: 2,
   },
   price: {
-    ...Typography.priceTag,
     marginTop: 4,
   },
   meta: {
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 4,
-  },
-  metaText: {
-    fontSize: 11,
-    fontFamily: 'Inter_400Regular',
   },
   metaDot: {
     fontSize: 11,
@@ -224,8 +201,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   sellerName: {
-    ...Typography.supportingSmall,
-    fontSize: 11,
     flex: 1,
   },
 });

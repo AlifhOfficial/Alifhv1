@@ -7,7 +7,6 @@ import React, { useMemo } from 'react';
 import {
   StyleSheet,
   View,
-  Text,
   Modal,
   Pressable,
   ScrollView,
@@ -19,8 +18,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { X } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { Heading, Supporting, Data } from '@/components/ui';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GRID_GAP = 6;
@@ -85,7 +85,7 @@ export function ImageGridModal({
                 transition={150}
               />
               <View style={styles.indexBadge}>
-                <Text style={styles.indexText}>{baseIndex + 1}</Text>
+                <Data size="mini" style={styles.indexText}>{baseIndex + 1}</Data>
               </View>
             </Pressable>
             <View style={[styles.stackedColumn, { width: smallWidth }]}>
@@ -105,7 +105,7 @@ export function ImageGridModal({
                       transition={150}
                     />
                     <View style={styles.indexBadge}>
-                      <Text style={styles.indexText}>{imgIdx + 1}</Text>
+                      <Data size="mini" style={styles.indexText}>{imgIdx + 1}</Data>
                     </View>
                   </Pressable>
                 );
@@ -135,7 +135,7 @@ export function ImageGridModal({
                     transition={150}
                   />
                   <View style={styles.indexBadge}>
-                    <Text style={styles.indexText}>{imgIdx + 1}</Text>
+                    <Data size="mini" style={styles.indexText}>{imgIdx + 1}</Data>
                   </View>
                 </Pressable>
               );
@@ -164,7 +164,7 @@ export function ImageGridModal({
                       transition={150}
                     />
                     <View style={styles.indexBadge}>
-                      <Text style={styles.indexText}>{imgIdx + 1}</Text>
+                      <Data size="mini" style={styles.indexText}>{imgIdx + 1}</Data>
                     </View>
                   </Pressable>
                 );
@@ -181,7 +181,7 @@ export function ImageGridModal({
                 transition={150}
               />
               <View style={styles.indexBadge}>
-                <Text style={styles.indexText}>{baseIndex + 3}</Text>
+                <Data size="mini" style={styles.indexText}>{baseIndex + 3}</Data>
               </View>
             </Pressable>
           </View>
@@ -207,7 +207,7 @@ export function ImageGridModal({
                     transition={150}
                   />
                   <View style={styles.indexBadge}>
-                    <Text style={styles.indexText}>{imgIdx + 1}</Text>
+                    <Data size="mini" style={styles.indexText}>{imgIdx + 1}</Data>
                   </View>
                 </Pressable>
               );
@@ -230,7 +230,7 @@ export function ImageGridModal({
                 transition={150}
               />
               <View style={styles.indexBadge}>
-                <Text style={styles.indexText}>{baseIndex + 1}</Text>
+                <Data size="mini" style={styles.indexText}>{baseIndex + 1}</Data>
               </View>
             </Pressable>
           </View>
@@ -261,10 +261,10 @@ export function ImageGridModal({
         {/* Header */}
         <View style={[styles.header, { paddingTop: insets.top + 8, backgroundColor: colors.background, borderBottomColor: colors.border }]}>
           <View>
-            <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
-            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            <Heading size="medium">{title}</Heading>
+            <Supporting size="small" style={{ marginTop: 2 }}>
               {totalImages} images
-            </Text>
+            </Supporting>
           </View>
           <Pressable
             onPress={onClose}
@@ -301,15 +301,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 12,
     borderBottomWidth: 1,
-  },
-  title: {
-    fontSize: 18,
-    fontFamily: 'Inter_700Bold',
-  },
-  subtitle: {
-    ...Typography.supportingSmall,
-    fontSize: 12,
-    marginTop: 2,
   },
   closeButton: {
     width: 40,
@@ -373,7 +364,5 @@ const styles = StyleSheet.create({
   },
   indexText: {
     color: '#fff',
-    fontSize: 10,
-    fontFamily: 'Inter_700Bold',
   },
 });

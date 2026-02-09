@@ -7,10 +7,11 @@
  */
 
 import React, { memo, useState, useCallback } from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Text as RNText, Pressable } from 'react-native';
 
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { Label, Body, Text } from '@/components/ui';
 
 interface ListingDescriptionProps {
   description: string;
@@ -46,31 +47,28 @@ export const ListingDescription = memo(function ListingDescription({
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.label, { color: colors.textTertiary }]}>
+      <Label size="medium" tone="muted">
         DESCRIPTION
-      </Text>
+      </Label>
 
       {/* Hidden measurer — same style, no truncation, off-screen */}
       {!measured && (
-        <Text
-          style={[styles.text, styles.hiddenText, { color: textColor }]}
+        <RNText
+          style={[styles.hiddenText, { color: textColor }]}
           onTextLayout={onHiddenTextLayout}
         >
           {description}
-        </Text>
+        </RNText>
       )}
 
       {/* Visible text — always truncated to 3 lines */}
-      <Text
-        style={[styles.text, { color: textColor }]}
-        numberOfLines={3}
-      >
+      <Body size="medium" style={{ color: textColor }} numberOfLines={3}>
         {description}
-      </Text>
+      </Body>
 
       {showReadMore && (
         <Pressable onPress={onReadMore} hitSlop={8}>
-          <Text style={[styles.readMore, { color: colors.primary }]}>
+          <Text variant="link" tone="primary">
             Read more
           </Text>
         </Pressable>
@@ -83,18 +81,12 @@ const styles = StyleSheet.create({
   container: {
     gap: Spacing.sm,
   },
-  label: {
-    ...Typography.labelMedium,
-  },
-  text: {
-    ...Typography.bodyMedium,  // 15 / 22 / Inter_500Medium — readable body weight
-  },
   hiddenText: {
     position: 'absolute',
     opacity: 0,
     pointerEvents: 'none',
-  },
-  readMore: {
-    ...Typography.link,
+    fontSize: 15,
+    lineHeight: 22,
+    fontFamily: 'Inter_500Medium',
   },
 });

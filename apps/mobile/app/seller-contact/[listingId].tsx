@@ -13,87 +13,37 @@ import {
   Text,
   ScrollView,
   Pressable,
-  Linking,
   Alert,
-  ActivityIndicator,
   RefreshControl,
-  Platform,
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from 'react-native';
-import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import {
-  ChevronLeft,
-  Phone,
-  MessageCircle,
-  Calendar,
-  MapPin,
-  Navigation,
-  ExternalLink,
-  Star,
-  CheckCircle2,
-  Building2,
-  User,
-  Globe,
-  ChevronRight,
-  Car,
-  Clock,
-} from 'lucide-react-native';
+import { ChevronLeft } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
+import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { getListingDetailed, ListingDetailed } from '@/lib/listing-api';
 import { normalizeSellerData, SellerInfo, getSellerListings, SellerListingCard } from '@/lib/seller-api';
 import { createConversation } from '@/lib/messaging-api';
-import { Skeleton } from '@/components/ui';
 import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
+import { PhoneActionSheet } from '@/components/sheets/phone-action-sheet';
 
-// ============================================================================
-// HELPERS
-// ============================================================================
-
-function formatPrice(price: number): string {
-  return `AED ${price.toLocaleString('en-AE')}`;
-}
-
-function formatMemberSince(date: string): string {
-  try {
-    return new Date(date).toLocaleDateString('en-AE', { month: 'short', year: 'numeric' });
-  } catch {
-    return date;
-  }
-}
-
-function calculateEMI(principal: number, rate: number, months: number): number {
-  const r = rate / 100 / 12;
-  return Math.round((principal * r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1));
-}
-
-/** Safe URL opener with error handling */
-async function safeOpenURL(url: string, fallbackMessage?: string): Promise<boolean> {
-  try {
-    const canOpen = await Linking.canOpenURL(url);
-    if (canOpen) {
-      await Linking.openURL(url);
-      return true;
-    } else {
-      if (fallbackMessage) {
-        Alert.alert('Unable to Open', fallbackMessage);
-      }
-      return false;
-    }
-  } catch (error) {
-    console.log('[SellerContact] Failed to open URL:', url, error);
-    if (fallbackMessage) {
-      Alert.alert('Unable to Open', fallbackMessage);
-    }
-    return false;
-  }
-}
+// Modular components
+import {
+  SellerHero,
+  SellerActions,
+  SellerStatsGrid,
+  SellerTags,
+  SellerListings,
+  FinancingCalculator,
+  SellerLocation,
+  SellerContactSkeleton,
+  safeOpenURL,
+} from '@/components/seller-contact';
 
 // ============================================================================
 // MAIN COMPONENT
@@ -110,7 +60,7 @@ export default function SellerContactScreen() {
   const [listing, setListing] = useState<ListingDetailed | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [phoneRevealed, setPhoneRevealed] = useState(false);
+  const [phoneSheetVisible, setPhoneSheetVisible] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [otherListings, setOtherListings] = useState<SellerListingCard[]>([]);
   const [otherListingsTotal, setOtherListingsTotal] = useState(0);
@@ -119,7 +69,7 @@ export default function SellerContactScreen() {
   // Calculator state
   const [downPaymentPercent, setDownPaymentPercent] = useState(20);
   const [loanTermMonths, setLoanTermMonths] = useState(48);
-  const [interestRate, setInterestRate] = useState(3.5);
+  const [interestRate] = useState(3.5);
 
   // Fetch listing data
   const fetchListing = useCallback(async (showRefreshing = false) => {
@@ -164,60 +114,15 @@ export default function SellerContactScreen() {
     return normalizeSellerData(listing.sellerData);
   }, [listing]);
 
-  // EMI calculation - now reactive to user inputs
-  const emi = useMemo(() => {
-    if (!listing) return 0;
-    const downPayment = listing.listing.price * (downPaymentPercent / 100);
-    return calculateEMI(listing.listing.price - downPayment, interestRate, loanTermMonths);
-  }, [listing, downPaymentPercent, interestRate, loanTermMonths]);
-  
-  const loanAmount = useMemo(() => {
-    if (!listing) return 0;
-    return listing.listing.price * (1 - downPaymentPercent / 100);
-  }, [listing, downPaymentPercent]);
-  
-  const downPaymentAmount = useMemo(() => {
-    if (!listing) return 0;
-    return listing.listing.price * (downPaymentPercent / 100);
-  }, [listing, downPaymentPercent]);
-
   // Handlers
   const handleBack = useCallback(() => {
     router.back();
   }, [router]);
 
-  const handleRevealPhone = useCallback(() => {
+  const handleShowPhoneSheet = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setPhoneRevealed(true);
+    setPhoneSheetVisible(true);
   }, []);
-
-  const handleCall = useCallback(async () => {
-    if (!seller?.phone) return;
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    const success = await safeOpenURL(
-      `tel:${seller.phone}`,
-      Platform.OS === 'ios' 
-        ? 'Phone calls are not supported on this device.' 
-        : 'Unable to make phone calls on this device.'
-    );
-    if (!success && Platform.OS === 'ios') {
-      // On simulator, show the number to copy
-      Alert.alert('Phone Number', seller.phone, [
-        { text: 'OK' }
-      ]);
-    }
-  }, [seller?.phone]);
-
-  const handleWhatsApp = useCallback(async () => {
-    if (!seller?.phone) return;
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    const cleanPhone = seller.phone.replace(/\D/g, '');
-    const phone = cleanPhone.startsWith('971') ? cleanPhone : `971${cleanPhone}`;
-    await safeOpenURL(
-      `https://wa.me/${phone}`,
-      'Unable to open WhatsApp. Please ensure WhatsApp is installed.'
-    );
-  }, [seller?.phone]);
 
   const handleChat = useCallback(async () => {
     if (!listing || !listingId) return;
@@ -300,7 +205,6 @@ export default function SellerContactScreen() {
   }, [router]);
 
   const handleViewAllListings = useCallback(() => {
-    // TODO: Navigate to seller's full listing page
     Alert.alert('Coming Soon', 'Full seller inventory page coming soon!');
   }, []);
 
@@ -316,7 +220,7 @@ export default function SellerContactScreen() {
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ headerShown: false }} />
         <Header colors={colors} insets={insets} onBack={handleBack} />
-        <SellerScreenSkeleton colors={colors} />
+        <SellerContactSkeleton colors={colors} />
       </View>
     );
   }
@@ -336,7 +240,8 @@ export default function SellerContactScreen() {
     );
   }
 
-  const listingPrice = listing.listing.price;
+  // Combined tags for display
+  const combinedTags = [...seller.specialties, ...seller.badges];
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -347,7 +252,10 @@ export default function SellerContactScreen() {
 
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={[styles.content, { paddingTop: insets.top + Spacing.lg, paddingBottom: insets.bottom + 32 }]}
+        contentContainerStyle={[
+          styles.content, 
+          { paddingTop: insets.top + Spacing.lg, paddingBottom: insets.bottom + 32 }
+        ]}
         showsVerticalScrollIndicator={false}
         onScroll={handleScroll}
         scrollEventThrottle={16}
@@ -359,64 +267,10 @@ export default function SellerContactScreen() {
           />
         }
       >
-        {/* Seller Identity - Hero Style */}
-        <View style={styles.heroSection}>
-          <View style={[styles.avatarLarge, { backgroundColor: colors.surfaceSecondary }]}>
-            {seller.avatar ? (
-              <Image source={{ uri: seller.avatar }} style={styles.avatarImg} contentFit="cover" />
-            ) : seller.isDealer ? (
-              <Building2 size={40} color={colors.textTertiary} />
-            ) : (
-              <User size={40} color={colors.textTertiary} />
-            )}
-          </View>
-          
-          <View style={styles.heroInfo}>
-            <View style={styles.nameRow}>
-              <Text style={[styles.sellerName, { color: colors.text }]}>{seller.name}</Text>
-              {seller.isVerified && (
-                <CheckCircle2 size={18} color={colors.primary} />
-              )}
-            </View>
-            
-            <View style={styles.metaRow}>
-              {!seller.isDealer && (
-                <Text style={[styles.metaText, { color: colors.textSecondary }]}>Private Seller</Text>
-              )}
-              
-              {seller.tier?.toLowerCase() === 'blk' && (
-                <View style={[styles.tierPill, { backgroundColor: colors.blkBackground }]}>
-                  <Text style={[styles.tierText, { color: colors.blkText }]}>BLK</Text>
-                </View>
-              )}
-            </View>
+        {/* Seller Hero */}
+        <SellerHero seller={seller} colors={colors} topInset={insets.top} />
 
-            {/* Rating */}
-            {seller.rating && (
-              <View style={styles.ratingRow}>
-                <Star size={16} color="#F59E0B" fill="#F59E0B" />
-                <Text style={[styles.ratingValue, { color: colors.text }]}>{seller.rating.toFixed(1)}</Text>
-                {seller.reviewCount && (
-                  <Text style={[styles.reviewCount, { color: colors.textSecondary }]}>
-                    ({seller.reviewCount} reviews)
-                  </Text>
-                )}
-              </View>
-            )}
-
-            {/* Member Since - Only for BLK tier */}
-            {seller.memberSince && seller.tier?.toLowerCase() === 'blk' && (
-              <View style={styles.memberRow}>
-                <Clock size={13} color={colors.textTertiary} />
-                <Text style={[styles.memberText, { color: colors.textTertiary }]}>
-                  Member since {formatMemberSince(seller.memberSince)}
-                </Text>
-              </View>
-            )}
-          </View>
-        </View>
-
-        {/* About - Now first after hero */}
+        {/* About Section */}
         {seller.description && (
           <View style={styles.section}>
             <Text style={[styles.sectionLabel, { color: colors.textTertiary }]}>ABOUT</Text>
@@ -424,229 +278,83 @@ export default function SellerContactScreen() {
           </View>
         )}
 
-        {/* CTA Row - Chat and Book together */}
-        <View style={styles.ctaRow}>
-          <Pressable
-            style={[styles.primaryCta, { backgroundColor: colors.primary, flex: seller.isDealer ? 1 : undefined }]}
-            onPress={handleChat}
-            disabled={isChatLoading}
-          >
-            {isChatLoading ? (
-              <ActivityIndicator size="small" color="#FFF" />
-            ) : (
-              <>
-                <MessageCircle size={20} color="#FFF" strokeWidth={2} />
-                <Text style={styles.primaryCtaText}>Chat</Text>
-              </>
-            )}
-          </Pressable>
-          
-          {seller.isDealer && (
-            <Pressable
-              style={[styles.secondaryCta, { borderColor: colors.border }]}
-              onPress={handleBookViewing}
-            >
-              <Calendar size={20} color={colors.text} strokeWidth={2} />
-              <Text style={[styles.secondaryCtaText, { color: colors.text }]}>Book</Text>
-            </Pressable>
-          )}
-        </View>
+        {/* Actions: Chat, Book, Phone */}
+        <SellerActions
+          seller={seller}
+          isChatLoading={isChatLoading}
+          onChat={handleChat}
+          onBookViewing={handleBookViewing}
+          onShowPhone={handleShowPhoneSheet}
+          colors={colors}
+        />
 
-        {/* Phone Number as text */}
-        {seller.phone && (
-          <Pressable
-            style={styles.phoneRow}
-            onPress={phoneRevealed ? handleCall : handleRevealPhone}
-          >
-            {phoneRevealed ? (
-              <>
-                <Phone size={16} color={colors.textSecondary} />
-                <Text style={[styles.phoneText, { color: colors.text }]}>{seller.phone}</Text>
-                <Text style={[styles.phoneCta, { color: colors.primary }]}>Call</Text>
-                <Pressable onPress={handleWhatsApp}>
-                  <Text style={[styles.phoneCta, { color: '#25D366' }]}>WhatsApp</Text>
-                </Pressable>
-              </>
-            ) : (
-              <Text style={[styles.phoneText, { color: colors.primary }]}>Show phone number</Text>
-            )}
-          </Pressable>
+        {/* Stats Grid (private sellers only) */}
+        <SellerStatsGrid
+          seller={seller}
+          listingsCount={otherListingsTotal + 1}
+          colors={colors}
+        />
+
+        {/* User Tags (interests) for private sellers */}
+        {!seller.isDealer && (
+          <SellerTags
+            tags={seller.tags}
+            label="INTERESTS"
+            colors={colors}
+          />
         )}
 
         {/* Specialties & Badges */}
-        {(seller.specialties.length > 0 || seller.badges.length > 0) && (
-          <View style={styles.section}>
-            <Text style={[styles.sectionLabel, { color: colors.textTertiary }]}>
-              {seller.isDealer ? 'SPECIALTIES' : 'BADGES'}
-            </Text>
-            <View style={styles.tagsRow}>
-              {seller.specialties.map((s, i) => (
-                <View key={`s-${i}`} style={[styles.tag, { backgroundColor: colors.surfaceSecondary }]}>
-                  <Text style={[styles.tagText, { color: colors.text }]}>{s}</Text>
-                </View>
-              ))}
-              {seller.badges.map((b, i) => (
-                <View key={`b-${i}`} style={[styles.tag, { backgroundColor: colors.surfaceSecondary }]}>
-                  <Text style={[styles.tagText, { color: colors.text }]}>{b}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        )}
+        <SellerTags
+          tags={combinedTags}
+          label={seller.isDealer ? 'SPECIALTIES' : 'BADGES'}
+          colors={colors}
+        />
 
         {/* Other Listings */}
-        {otherListings.length > 0 && (
-          <View style={styles.section}>
-            <Text style={[styles.sectionLabel, { color: colors.textTertiary }]}>MORE FROM THIS SELLER</Text>
-            <View style={styles.listingsRow}>
-              {otherListings.map((item) => (
-                <Pressable
-                  key={item.id}
-                  style={[styles.listingItem, { backgroundColor: colors.surface }]}
-                  onPress={() => handleViewListing(item.id)}
-                >
-                  <View style={[styles.listingThumb, { backgroundColor: colors.surfaceSecondary }]}>
-                    {item.thumbnail ? (
-                      <Image source={{ uri: item.thumbnail }} style={styles.thumbImg} contentFit="cover" />
-                    ) : (
-                      <Car size={20} color={colors.textTertiary} />
-                    )}
-                  </View>
-                  <Text style={[styles.listingTitle, { color: colors.text }]} numberOfLines={1}>
-                    {item.year} {item.make}
-                  </Text>
-                  <Text style={[styles.listingModel, { color: colors.textSecondary }]} numberOfLines={1}>
-                    {item.model}
-                  </Text>
-                  <Text style={[styles.listingPrice, { color: colors.text }]}>
-                    {formatPrice(item.price)}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-            
-            {/* View All Footer */}
-            <Pressable
-              style={[styles.viewAllBtn, { borderColor: colors.border }]}
-              onPress={handleViewAllListings}
-            >
-              <Text style={[styles.viewAllBtnText, { color: colors.text }]}>
-                View All {otherListingsTotal} Listings
-              </Text>
-              <ChevronRight size={18} color={colors.textSecondary} />
-            </Pressable>
-          </View>
-        )}
+        <SellerListings
+          listings={otherListings}
+          totalCount={otherListingsTotal}
+          onViewListing={handleViewListing}
+          onViewAll={handleViewAllListings}
+          colors={colors}
+        />
 
-        {/* Financing Calculator - Subtle */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionLabel, { color: colors.textTertiary }]}>FINANCING ESTIMATE</Text>
-          
-          {/* Compact Monthly Display */}
-          <View style={styles.emiCompact}>
-            <Text style={[styles.emiCompactLabel, { color: colors.textSecondary }]}>Est. Monthly</Text>
-            <Text style={[styles.emiCompactValue, { color: colors.text }]}>{formatPrice(emi)}/mo</Text>
-          </View>
-          
-          {/* Inline Controls */}
-          <View style={styles.calcRow}>
-            <Text style={[styles.calcLabel, { color: colors.textSecondary }]}>Down</Text>
-            <View style={styles.calcOptions}>
-              {[10, 20, 30].map((dp) => (
-                <Pressable
-                  key={dp}
-                  style={[
-                    styles.calcChip,
-                    { borderColor: downPaymentPercent === dp ? colors.text : colors.border },
-                    downPaymentPercent === dp && { backgroundColor: colors.text },
-                  ]}
-                  onPress={() => setDownPaymentPercent(dp)}
-                >
-                  <Text style={[styles.calcChipText, { color: downPaymentPercent === dp ? colors.background : colors.textSecondary }]}>
-                    {dp}%
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
-          
-          <View style={styles.calcRow}>
-            <Text style={[styles.calcLabel, { color: colors.textSecondary }]}>Term</Text>
-            <View style={styles.calcOptions}>
-              {[36, 48, 60].map((term) => (
-                <Pressable
-                  key={term}
-                  style={[
-                    styles.calcChip,
-                    { borderColor: loanTermMonths === term ? colors.text : colors.border },
-                    loanTermMonths === term && { backgroundColor: colors.text },
-                  ]}
-                  onPress={() => setLoanTermMonths(term)}
-                >
-                  <Text style={[styles.calcChipText, { color: loanTermMonths === term ? colors.background : colors.textSecondary }]}>
-                    {term}mo
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
-          
-          <Text style={[styles.calcDisclaimer, { color: colors.textTertiary }]}>
-            @ {interestRate}% APR · {formatPrice(loanAmount)} financed
-          </Text>
-        </View>
+        {/* Financing Calculator */}
+        <FinancingCalculator
+          price={listing.listing.price}
+          downPaymentPercent={downPaymentPercent}
+          loanTermMonths={loanTermMonths}
+          interestRate={interestRate}
+          onDownPaymentChange={setDownPaymentPercent}
+          onTermChange={setLoanTermMonths}
+          colors={colors}
+        />
 
-        {/* Location & Website - Bottom section */}
-        {(seller.location || seller.website) && (
-          <View style={styles.locationSection}>
-            <Text style={[styles.sectionLabel, { color: colors.textTertiary }]}>LOCATION & LINKS</Text>
-            
-            {seller.location && (
-              <View style={styles.locationTextRow}>
-                <MapPin size={18} color={colors.textSecondary} />
-                <Text style={[styles.locationText, { color: colors.text }]}>{seller.location}</Text>
-              </View>
-            )}
-            
-            {/* Compact action row */}
-            <View style={styles.locationActionsCompact}>
-              {seller.location && (
-                <>
-                  <Pressable
-                    style={[styles.compactBtn, { borderColor: colors.border }]}
-                    onPress={handleViewOnMap}
-                  >
-                    <ExternalLink size={15} color={colors.text} />
-                    <Text style={[styles.compactBtnText, { color: colors.text }]}>View Map</Text>
-                  </Pressable>
-                  <Pressable
-                    style={[styles.compactBtn, { backgroundColor: colors.primary, borderColor: colors.primary }]}
-                    onPress={handleGetDirections}
-                  >
-                    <Navigation size={15} color="#FFF" />
-                    <Text style={[styles.compactBtnText, { color: '#FFF' }]}>Directions</Text>
-                  </Pressable>
-                </>
-              )}
-              {seller.website && (
-                <Pressable
-                  style={[styles.compactBtn, { borderColor: colors.border }]}
-                  onPress={handleWebsite}
-                >
-                  <Globe size={15} color={colors.text} />
-                  <Text style={[styles.compactBtnText, { color: colors.text }]}>Website</Text>
-                </Pressable>
-              )}
-            </View>
-          </View>
-        )}
+        {/* Location & Website */}
+        <SellerLocation
+          seller={seller}
+          onViewMap={handleViewOnMap}
+          onGetDirections={handleGetDirections}
+          onWebsite={handleWebsite}
+          colors={colors}
+        />
       </ScrollView>
+
+      {/* Phone Action Sheet */}
+      {seller.phone && (
+        <PhoneActionSheet
+          visible={phoneSheetVisible}
+          onClose={() => setPhoneSheetVisible(false)}
+          phoneNumber={seller.phone}
+        />
+      )}
     </View>
   );
 }
 
 // ============================================================================
-// COMPONENTS
+// HEADER COMPONENT
 // ============================================================================
 
 function Header({
@@ -664,54 +372,6 @@ function Header({
         <ChevronLeft size={24} color={colors.text} />
       </Pressable>
     </View>
-  );
-}
-
-function EmiRow({
-  label,
-  value,
-  colors,
-}: {
-  label: string;
-  value: string;
-  colors: typeof Colors.light;
-}) {
-  return (
-    <View style={styles.emiRow}>
-      <Text style={[styles.emiRowLabel, { color: colors.textSecondary }]}>{label}</Text>
-      <Text style={[styles.emiRowValue, { color: colors.text }]}>{value}</Text>
-    </View>
-  );
-}
-
-function SellerScreenSkeleton({ colors }: { colors: typeof Colors.light }) {
-  return (
-    <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-      {/* Hero */}
-      <View style={styles.heroSection}>
-        <Skeleton width={80} height={80} borderRadius={40} />
-        <View style={[styles.heroInfo, { gap: 8 }]}>
-          <Skeleton width="60%" height={24} />
-          <Skeleton width={100} height={16} />
-          <Skeleton width={80} height={14} />
-        </View>
-      </View>
-      
-      {/* CTA */}
-      <Skeleton width="100%" height={52} style={{ borderRadius: Radius.lg }} />
-      
-      {/* Contact Grid */}
-      <View style={styles.contactGrid}>
-        <Skeleton width="48%" height={72} style={{ borderRadius: Radius.md }} />
-        <Skeleton width="48%" height={72} style={{ borderRadius: Radius.md }} />
-      </View>
-      
-      {/* Section */}
-      <View style={styles.section}>
-        <Skeleton width={80} height={12} />
-        <Skeleton width="100%" height={60} style={{ marginTop: Spacing.sm }} />
-      </View>
-    </ScrollView>
   );
 }
 
@@ -750,388 +410,14 @@ const styles = StyleSheet.create({
   errorText: {
     ...Typography.bodyLarge,
   },
-
-  // Hero Section
-  heroSection: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: Spacing.lg,
-  },
-  avatarLarge: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  avatarImg: {
-    width: '100%',
-    height: '100%',
-  },
-  heroInfo: {
-    flex: 1,
-    gap: 6,
-  },
-  nameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  sellerName: {
-    ...Typography.headingLarge,
-    flexShrink: 1,
-  },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    marginTop: 4,
-  },
-  metaItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-  },
-  metaText: {
-    ...Typography.supportingSmall,
-  },
-  tierPill: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: Radius.sm,
-  },
-  tierText: {
-    ...Typography.labelBadge,
-  },
-  ratingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    marginTop: 6,
-  },
-  ratingValue: {
-    ...Typography.dataMedium,
-  },
-  reviewCount: {
-    ...Typography.supportingSmall,
-  },
-  memberRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    marginTop: 6,
-  },
-  memberText: {
-    ...Typography.supportingSmall,
-  },
-
-  // CTA Row
-  ctaRow: {
-    flexDirection: 'row',
-    gap: Spacing.md,
-  },
-  primaryCta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.sm,
-    paddingVertical: 16,
-    paddingHorizontal: Spacing.lg,
-    borderRadius: Radius.full,
-  },
-  primaryCtaText: {
-    ...Typography.buttonMedium,
-    color: '#FFF',
-  },
-  secondaryCta: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.sm,
-    paddingVertical: 16,
-    borderRadius: Radius.full,
-    borderWidth: 1,
-  },
-  secondaryCtaText: {
-    ...Typography.buttonMedium,
-  },
-
-  // Phone Row
-  phoneRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    paddingVertical: Spacing.xs,
-  },
-  phoneText: {
-    ...Typography.dataMedium,
-    flex: 1,
-  },
-  phoneCta: {
-    ...Typography.buttonMedium,
-    paddingHorizontal: Spacing.sm,
-  },
-
-  // Contact Grid (kept for backwards compat)
-  contactGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.md,
-  },
-  contactBtn: {
-    flex: 1,
-    minWidth: '45%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.sm,
-    borderRadius: Radius.full,
-    borderWidth: 1,
-  },
-  contactBtnText: {
-    ...Typography.buttonSmall,
-  },
-  phoneNumber: {
-    ...Typography.supportingSmall,
-    marginTop: 2,
-  },
-
-  // Section
   section: {
     gap: Spacing.sm,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
   },
   sectionLabel: {
     ...Typography.labelMedium,
     marginBottom: Spacing.xs,
   },
-  viewAllLink: {
-    ...Typography.link,
-  },
-
-  // Location
-  locationSection: {
-    gap: Spacing.md,
-  },
-  locationContent: {
-    gap: Spacing.sm,
-  },
-  locationTextRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: Spacing.sm,
-  },
-  locationText: {
-    ...Typography.bodyMedium,
-    flex: 1,
-  },
-  locationActionsCompact: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.sm,
-    marginTop: Spacing.xs,
-  },
-  compactBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    borderRadius: Radius.full,
-    borderWidth: 1,
-  },
-  compactBtnText: {
-    ...Typography.buttonSmall,
-  },
-  mapActions: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-  },
-  mapBtn: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    paddingVertical: Spacing.sm + 2,
-    borderRadius: Radius.full,
-    borderWidth: 1,
-  },
-  mapBtnText: {
-    ...Typography.buttonSmall,
-  },
-
-  // Description
   descriptionText: {
     ...Typography.bodyMedium,
-  },
-
-  // Tags
-  tagsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.sm,
-  },
-  tag: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: Radius.full,
-  },
-  tagText: {
-    ...Typography.chip,
-  },
-
-  // Listings
-  listingsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.md,
-  },
-  listingItem: {
-    width: '47%',
-    borderRadius: Radius.md,
-    overflow: 'hidden',
-  },
-  listingThumb: {
-    aspectRatio: 16 / 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  thumbImg: {
-    width: '100%',
-    height: '100%',
-  },
-  listingTitle: {
-    ...Typography.dataMini,
-    paddingHorizontal: Spacing.sm,
-    paddingTop: Spacing.sm,
-  },
-  listingModel: {
-    ...Typography.supportingSmall,
-    paddingHorizontal: Spacing.sm,
-    marginTop: 2,
-  },
-  listingPrice: {
-    ...Typography.dataMedium,
-    paddingHorizontal: Spacing.sm,
-    paddingBottom: Spacing.md,
-    paddingTop: 6,
-  },
-  viewAllBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    paddingVertical: Spacing.md,
-    borderRadius: Radius.full,
-    borderWidth: 1,
-    marginTop: Spacing.sm,
-  },
-  viewAllBtnText: {
-    ...Typography.buttonMedium,
-  },
-
-  // EMI
-  emiContent: {
-    gap: Spacing.lg,
-  },
-  emiMain: {
-    alignItems: 'center',
-    paddingVertical: Spacing.md,
-  },
-  emiLabel: {
-    ...Typography.supportingSmall,
-  },
-  emiValue: {
-    ...Typography.displayNumber,
-    marginTop: 6,
-  },
-  emiPeriod: {
-    ...Typography.supportingSmall,
-    marginTop: 2,
-  },
-  emiDivider: {
-    height: 1,
-  },
-  emiBreakdown: {
-    gap: Spacing.sm,
-  },
-  emiRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  emiRowLabel: {
-    ...Typography.supportingSmall,
-  },
-  emiRowValue: {
-    ...Typography.dataMedium,
-  },
-  emiDisclaimer: {
-    ...Typography.supportingSmall,
-    textAlign: 'center',
-    marginTop: Spacing.xs,
-  },
-  
-  // Compact Calculator
-  emiCompact: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Spacing.sm,
-  },
-  emiCompactLabel: {
-    ...Typography.supportingSmall,
-  },
-  emiCompactValue: {
-    ...Typography.priceTag,
-  },
-  calcRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.md,
-    marginBottom: Spacing.sm,
-  },
-  calcLabel: {
-    ...Typography.supportingSmall,
-    width: 40,
-  },
-  calcOptions: {
-    flexDirection: 'row',
-    gap: Spacing.xs,
-    flex: 1,
-  },
-  calcChip: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: Radius.full,
-    borderWidth: 1,
-  },
-  calcChipText: {
-    ...Typography.chip,
-  },
-  calcDisclaimer: {
-    ...Typography.supportingSmall,
-    marginTop: Spacing.xs,
-  },
-
-  // Website
-  websiteBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.sm,
-    paddingVertical: Spacing.md + 2,
-    borderRadius: Radius.full,
-    borderWidth: 1,
-  },
-  websiteBtnText: {
-    ...Typography.buttonMedium,
   },
 });

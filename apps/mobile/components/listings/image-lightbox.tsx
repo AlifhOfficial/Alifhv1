@@ -7,7 +7,6 @@ import React, { useState, useCallback, useRef, useMemo } from 'react';
 import {
   StyleSheet,
   View,
-  Text,
   Modal,
   Pressable,
   Dimensions,
@@ -23,6 +22,7 @@ import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { Data } from '@/components/ui';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const THUMBNAIL_SIZE = 56;
@@ -121,9 +121,9 @@ export function ImageLightbox({
         {/* Header */}
         <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
           <View style={styles.counterBadge}>
-            <Text style={styles.counterText}>
+            <Data size="small" style={styles.counterText}>
               {safeIndex + 1} / {totalImages}
-            </Text>
+            </Data>
           </View>
 
           <Pressable
@@ -237,8 +237,6 @@ const styles = StyleSheet.create({
   },
   counterText: {
     color: '#fff',
-    fontSize: 13,
-    fontFamily: 'Inter_600SemiBold',
   },
   imageContainer: {
     width: SCREEN_WIDTH,

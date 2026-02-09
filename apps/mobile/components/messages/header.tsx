@@ -4,19 +4,17 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from '@/context/theme-context';
-import { Colors, Typography, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { Heading } from '@/components/ui';
 
 export function MessagesHeader() {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + 8 }]}>
-      <Text style={[styles.title, { color: colors.text }]}>Messages</Text>
+      <Heading size="large">Messages</Heading>
     </View>
   );
 }
@@ -27,8 +25,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  title: {
-    ...Typography.headingLarge,
   },
 });

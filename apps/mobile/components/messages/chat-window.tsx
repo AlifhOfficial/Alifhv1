@@ -9,10 +9,8 @@ import {
   FlatList,
   StyleSheet,
   ActivityIndicator,
-  Text,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   Dimensions,
 } from 'react-native';
 import Animated, {
@@ -25,11 +23,12 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { format, isToday, isYesterday, isThisWeek, isSameDay } from 'date-fns';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Typography, Radius } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 import { ChatHeader } from './chat-header';
 import { MessageBubble } from './message-bubble';
 import { MessageInput } from './message-input';
 import { useMessages } from './hooks/useMessages';
+import { Body, Supporting } from '@/components/ui';
 import type { Message, Conversation } from '@/lib/messaging-api';
 
 const PANEL_WIDTH = 80;
@@ -207,9 +206,9 @@ export function ChatWindow({
           />
           {showDateSeparator && (
             <View style={styles.dateSeparator}>
-              <Text style={[styles.dateLabel, { color: colors.textTertiary }]}>
+              <Supporting size="small" tone="muted">
                 {formatDateLabel(messageDate)}
-              </Text>
+              </Supporting>
             </View>
           )}
         </>
@@ -234,13 +233,13 @@ export function ChatWindow({
       const timestamp = format(new Date(item.createdAt), 'h:mm a');
       return (
         <View style={styles.timestampRow}>
-          <Text style={[styles.timestampText, { color: colors.textTertiary }]}>
+          <Supporting size="mini" tone="muted" style={{ opacity: 0.6 }}>
             {timestamp}
-          </Text>
+          </Supporting>
         </View>
       );
     },
-    [colors.textTertiary]
+    []
   );
 
   // List header (bottom of messages - newest)
@@ -266,9 +265,7 @@ export function ChatWindow({
     }
     return (
       <View style={styles.emptyContainer}>
-        <Text style={[styles.emptyText, { color: colors.textTertiary }]}>
-          No messages yet. Say hi! 👋
-        </Text>
+        <Body size="large" tone="muted">No messages yet. Say hi! 👋</Body>
       </View>
     );
   }, [isLoading, colors]);
@@ -379,26 +376,15 @@ const styles = StyleSheet.create({
     marginBottom: 2,
     paddingHorizontal: Spacing.xs,
   },
-  timestampText: {
-    ...Typography.supportingSmall,
-    fontSize: 11,
-    opacity: 0.6,
-  },
   dateSeparator: {
     alignItems: 'center',
     paddingVertical: Spacing.md,
-  },
-  dateLabel: {
-    ...Typography.supportingSmall,
   },
   emptyContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: Spacing['5xl'],
-  },
-  emptyText: {
-    ...Typography.bodyLarge,
   },
   loadingMore: {
     paddingVertical: Spacing.lg,

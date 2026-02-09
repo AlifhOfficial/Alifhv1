@@ -254,7 +254,7 @@ export const CarCardM = memo(function CarCardM({
         {/* Title Row */}
         <View style={styles.titleRow}>
           <Heading 
-            size="card"
+            size="mini"
             style={[styles.title, { color: titleColor }]} 
             numberOfLines={1}
           >

@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Pressable, Dimensions } from 'react-native';
+import { StyleSheet, View, Pressable, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { 
   FadeIn, 
@@ -21,7 +21,8 @@ import { CheckCircle2 } from 'lucide-react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Typography, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Heading, Body, ButtonText } from '@/components/ui';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CONFETTI_COUNT = 50;
@@ -96,12 +97,12 @@ export function AuthSuccessScreen({
 
           {/* Title */}
           <Animated.View entering={FadeInDown.delay(200).duration(400)} style={styles.titleSection}>
-            <Text style={[styles.title, { color: colors.text }]}>
+            <Heading size="large" style={styles.title}>
               {firstName ? `Welcome, ${firstName}` : "You're in"}
-            </Text>
-            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            </Heading>
+            <Body size="large" tone="secondary" style={styles.subtitle}>
               {"Let's find your next car"}
-            </Text>
+            </Body>
           </Animated.View>
         </View>
 
@@ -116,7 +117,7 @@ export function AuthSuccessScreen({
                 { backgroundColor: colors.primary, opacity: isExiting ? 0.7 : pressed ? 0.9 : 1 }
               ]}
             >
-              <Text style={[styles.continueButtonText, { color: colors.primaryForeground }]}>Time to Revv</Text>
+              <ButtonText style={{ color: colors.primaryForeground }}>Time to Revv</ButtonText>
               <ArrowRightIcon color={colors.primaryForeground} />
             </Pressable>
           </Animated.View>
@@ -232,11 +233,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    ...Typography.headingLarge,
     textAlign: 'center',
   },
   subtitle: {
-    ...Typography.bodyLarge,
     marginTop: Spacing.sm,
     textAlign: 'center',
   },
@@ -252,8 +251,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-  },
-  continueButtonText: {
-    ...Typography.buttonMedium,
   },
 });

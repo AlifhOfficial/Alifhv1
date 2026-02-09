@@ -125,6 +125,24 @@ export function useTheme() {
 }
 
 /**
+ * Safe version of useTheme that returns a fallback when outside provider.
+ * Use this in components that may render before ThemeProvider is mounted.
+ */
+export function useThemeSafe() {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    // Return a safe fallback for components rendering outside provider
+    return {
+      colorScheme: 'light' as const,
+      themeMode: 'system' as const,
+      setThemeMode: () => {},
+      toggleTheme: () => {},
+    };
+  }
+  return context;
+}
+
+/**
  * @deprecated Use useTheme().colorScheme instead
  * Kept for backwards compatibility
  */

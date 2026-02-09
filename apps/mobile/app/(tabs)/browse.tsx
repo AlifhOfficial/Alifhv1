@@ -8,10 +8,18 @@ import { StyleSheet, View, Text, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
-import { DisplayArea, ACTIVE_CHIPS_HEIGHT } from '@/components/layout';
-import { BrowseHeader } from '@/components/home';
-import { CarCardM, CarCardMSkeleton } from '@/components/cards';
-import { LogoLoader } from '@/components/ui';
+import { DisplayArea, ACTIVE_CHIPS_HEIGHT, TopSafeAreaGradient } from '@/components/layout';
+import { FilterPills, type FilterPillType } from '@/components/home';
+import { 
+  PriceFilterSheet, 
+  YearMileageFilterSheet, 
+  LocationFilterSheet, 
+  MoreFiltersSheet,
+  type ViewMode,
+  type MoreFiltersState,
+} from '@/components/sheets';
+import { CarCardM, CarCardMSkeleton, CarCardList, CarCardListSkeleton } from '@/components/cards';
+import { LogoLoader, Heading } from '@/components/ui';
 import { api, type ListingCard, type SearchParams, type SearchFacets, type SearchSortOption } from '@/lib/api';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -28,16 +36,18 @@ type Filters = {
   priceMax?: number;
   yearMin?: number;
   yearMax?: number;
+  mileageMin?: number;
+  mileageMax?: number;
   emirate?: string[];
   bodyType?: string[];
   fuelType?: string[];
   transmission?: string[];
   specs?: string[];
-  mileageMax?: number;
   condition?: 'new' | 'used';
   isNegotiable?: boolean;
   isBlkListing?: boolean;
   isBlackTierPartner?: boolean;
+  sellerType?: 'dealer' | 'private';
   [key: string]: string | string[] | number | boolean | undefined;
 };
 
@@ -60,6 +70,7 @@ const filtersToParams = (f: Filters, q?: string): SearchParams => ({
   isNegotiable: f.isNegotiable,
   isBlkListing: f.isBlkListing,
   isBlackTierPartner: f.isBlackTierPartner,
+  // Note: sellerType is managed locally but may need backend support
 });
 
 // ============================================================================
@@ -68,7 +79,7 @@ const filtersToParams = (f: Filters, q?: string): SearchParams => ({
 
 export default function BrowseScreen() {
   const { colorScheme } = useTheme();
-  const { subscribeToSearch, subscribeToSort, sortBy: contextSortBy, searchParams: contextSearchParams } = useSearch();
+  const { subscribeToSearch, subscribeToSort, subscribeToScrollToTop, sortBy: contextSortBy, searchParams: contextSearchParams } = useSearch();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -94,6 +105,15 @@ export default function BrowseScreen() {
   const [total, setTotal] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [page, setPage] = useState(1);
+
+  // View mode
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+
+  // Filter sheets visibility
+  const [priceSheetVisible, setPriceSheetVisible] = useState(false);
+  const [yearMileageSheetVisible, setYearMileageSheetVisible] = useState(false);
+  const [locationSheetVisible, setLocationSheetVisible] = useState(false);
+  const [settingsSheetVisible, setSettingsSheetVisible] = useState(false);
 
   // ──────────────────────────────────────────────────────────────────────────
   // API CALLS
@@ -174,6 +194,15 @@ export default function BrowseScreen() {
     return unsubscribe;
   }, [subscribeToSort, filters, query, fetchListings]);
 
+  // Subscribe to scroll to top from tab bar double-tap
+  useEffect(() => {
+    const unsubscribe = subscribeToScrollToTop(() => {
+      scrollRef.current?.scrollTo({ y: 0, animated: true });
+    });
+
+    return unsubscribe;
+  }, [subscribeToScrollToTop]);
+
   // Re-fetch when filters change (debounced)
   useEffect(() => {
     const hasFilters = Object.keys(filters).length > 0;
@@ -240,14 +269,158 @@ export default function BrowseScreen() {
     console.log('Favorite:', id);
   }, []);
 
+  // Handle filter pill press
+  const handleFilterPillPress = useCallback((type: FilterPillType) => {
+    switch (type) {
+      case 'price':
+        setPriceSheetVisible(true);
+        break;
+      case 'yearMileage':
+        setYearMileageSheetVisible(true);
+        break;
+      case 'location':
+        setLocationSheetVisible(true);
+        break;
+    }
+  }, []);
+
+  // Handle price filter apply
+  const handlePriceApply = useCallback((priceMin?: number, priceMax?: number) => {
+    setFilters(prev => ({
+      ...prev,
+      priceMin,
+      priceMax,
+    }));
+  }, []);
+
+  // Handle year/mileage filter apply
+  const handleYearMileageApply = useCallback((values: {
+    yearMin?: number;
+    yearMax?: number;
+    mileageMin?: number;
+    mileageMax?: number;
+  }) => {
+    setFilters(prev => ({
+      ...prev,
+      ...values,
+    }));
+  }, []);
+
+  // Handle location filter apply
+  const handleLocationApply = useCallback((emirate: string[]) => {
+    setFilters(prev => ({
+      ...prev,
+      emirate: emirate.length > 0 ? emirate : undefined,
+    }));
+  }, []);
+
+  // Handle more filters apply
+  const handleMoreFiltersApply = useCallback((moreFilters: MoreFiltersState) => {
+    setFilters(prev => ({
+      ...prev,
+      condition: moreFilters.condition,
+      isBlkListing: moreFilters.isBlkListing,
+      isBlackTierPartner: moreFilters.isBlackTierPartner,
+      isNegotiable: moreFilters.isNegotiable,
+      specs: moreFilters.specs,
+      bodyType: moreFilters.bodyType,
+      fuelType: moreFilters.fuelType,
+      transmission: moreFilters.transmission,
+      sellerType: moreFilters.sellerType,
+    }));
+  }, []);
+
+  // Calculate filter counts for pills
+  const filterPillConfigs = useMemo(() => {
+    const priceCount = (filters.priceMin || filters.priceMax) ? 1 : 0;
+    const yearMileageCount = 
+      ((filters.yearMin || filters.yearMax) ? 1 : 0) + 
+      ((filters.mileageMin || filters.mileageMax) ? 1 : 0);
+    const locationCount = filters.emirate?.length ?? 0;
+
+    return [
+      { type: 'price' as FilterPillType, label: 'Price', activeCount: priceCount },
+      { type: 'yearMileage' as FilterPillType, label: 'Year & Km', activeCount: yearMileageCount },
+      { type: 'location' as FilterPillType, label: 'Location', activeCount: locationCount },
+    ];
+  }, [filters]);
+
+  // Build more filters state from current filters
+  const moreFiltersState: MoreFiltersState = useMemo(() => ({
+    condition: filters.condition,
+    isBlkListing: filters.isBlkListing,
+    isBlackTierPartner: filters.isBlackTierPartner,
+    isNegotiable: filters.isNegotiable,
+    specs: filters.specs,
+    bodyType: filters.bodyType,
+    fuelType: filters.fuelType,
+    transmission: filters.transmission,
+    sellerType: filters.sellerType,
+  }), [filters]);
+
   // ──────────────────────────────────────────────────────────────────────────
   // RENDER
   // ──────────────────────────────────────────────────────────────────────────
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Header */}
-      <BrowseHeader />
+      {/* Top safe area gradient */}
+      <TopSafeAreaGradient />
+
+      {/* Header with Filter Pills inline */}
+      <View style={[styles.headerRow, { paddingTop: insets.top + 8 }]}>
+        <Heading size="large">Browse</Heading>
+        <FilterPills 
+          pills={filterPillConfigs}
+          onPillPress={handleFilterPillPress}
+          onSettingsPress={() => setSettingsSheetVisible(true)}
+        />
+      </View>
+
+      {/* Price Filter Sheet */}
+      <PriceFilterSheet
+        visible={priceSheetVisible}
+        onClose={() => setPriceSheetVisible(false)}
+        priceMin={filters.priceMin}
+        priceMax={filters.priceMax}
+        onApply={handlePriceApply}
+      />
+
+      {/* Year & Mileage Filter Sheet */}
+      <YearMileageFilterSheet
+        visible={yearMileageSheetVisible}
+        onClose={() => setYearMileageSheetVisible(false)}
+        yearMin={filters.yearMin}
+        yearMax={filters.yearMax}
+        mileageMin={filters.mileageMin}
+        mileageMax={filters.mileageMax}
+        onApply={handleYearMileageApply}
+      />
+
+      {/* Location Filter Sheet */}
+      <LocationFilterSheet
+        visible={locationSheetVisible}
+        onClose={() => setLocationSheetVisible(false)}
+        options={facets?.emirate ?? []}
+        selected={filters.emirate ?? []}
+        onApply={handleLocationApply}
+      />
+
+      {/* Settings & More Filters Sheet */}
+      <MoreFiltersSheet
+        visible={settingsSheetVisible}
+        onClose={() => setSettingsSheetVisible(false)}
+        filters={moreFiltersState}
+        facets={{
+          specs: facets?.specs,
+          bodyType: facets?.bodyType,
+          fuelType: facets?.fuelType,
+          transmission: facets?.transmission,
+        }}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        onApply={handleMoreFiltersApply}
+      />
 
       {/* Listings */}
       <DisplayArea
@@ -261,42 +434,82 @@ export default function BrowseScreen() {
         extraBottomPadding={hasActiveChips ? ACTIVE_CHIPS_HEIGHT + 8 : 0}
       >
         {isLoading && (!listings || listings.length === 0) ? (
-          <>
-            <CarCardMSkeleton />
-            <CarCardMSkeleton />
-            <CarCardMSkeleton />
-          </>
+          viewMode === 'grid' ? (
+            <>
+              <CarCardMSkeleton />
+              <CarCardMSkeleton />
+              <CarCardMSkeleton />
+            </>
+          ) : (
+            <>
+              <CarCardListSkeleton />
+              <CarCardListSkeleton />
+              <CarCardListSkeleton />
+              <CarCardListSkeleton />
+              <CarCardListSkeleton />
+            </>
+          )
         ) : !listings || listings.length === 0 ? (
           <View style={styles.empty}>
             <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No cars found</Text>
           </View>
         ) : (
           <>
-            {listings.map((listing, index) => (
-              <CarCardM
-                key={`${listing.id}-${index}`}
-                id={listing.id}
-                make={listing.make}
-                model={listing.model}
-                year={listing.year}
-                trim={listing.trim}
-                price={listing.price}
-                mileage={listing.mileage}
-                emirate={listing.emirate}
-                specs={listing.specs}
-                thumbnail={listing.thumbnail}
-                isBlkListing={listing.isBlkListing}
-                partnerName={listing.partnerName}
-                partnerLogo={listing.partnerLogo}
-                partnerVerified={listing.partnerVerified}
-                isBlackTierPartner={listing.isBlackTierPartner}
-                sellerName={listing.sellerName}
-                sellerAvatarUrl={listing.sellerAvatarUrl}
-                kycVerified={listing.sellerKycVerified}
-                onPress={handleCardPress}
-                onFavoritePress={handleFavoritePress}
-              />
-            ))}
+            {viewMode === 'grid' ? (
+              // Grid View - Original Card Layout
+              listings.map((listing, index) => (
+                <CarCardM
+                  key={`${listing.id}-${index}`}
+                  id={listing.id}
+                  make={listing.make}
+                  model={listing.model}
+                  year={listing.year}
+                  trim={listing.trim}
+                  price={listing.price}
+                  mileage={listing.mileage}
+                  emirate={listing.emirate}
+                  specs={listing.specs}
+                  thumbnail={listing.thumbnail}
+                  isBlkListing={listing.isBlkListing}
+                  partnerName={listing.partnerName}
+                  partnerLogo={listing.partnerLogo}
+                  partnerVerified={listing.partnerVerified}
+                  isBlackTierPartner={listing.isBlackTierPartner}
+                  sellerName={listing.sellerName}
+                  sellerAvatarUrl={listing.sellerAvatarUrl}
+                  kycVerified={listing.sellerKycVerified}
+                  onPress={handleCardPress}
+                  onFavoritePress={handleFavoritePress}
+                />
+              ))
+            ) : (
+              // List View - Compact Layout
+              listings.map((listing, index) => (
+                <CarCardList
+                  key={`${listing.id}-${index}`}
+                  id={listing.id}
+                  make={listing.make}
+                  model={listing.model}
+                  year={listing.year}
+                  trim={listing.trim}
+                  price={listing.price}
+                  mileage={listing.mileage}
+                  emirate={listing.emirate}
+                  specs={listing.specs}
+                  thumbnail={listing.thumbnail}
+                  isBlkListing={listing.isBlkListing}
+                  partnerName={listing.partnerName}
+                  partnerLogo={listing.partnerLogo}
+                  partnerVerified={listing.partnerVerified}
+                  isBlackTierPartner={listing.isBlackTierPartner}
+                  sellerName={listing.sellerName}
+                  sellerAvatarUrl={listing.sellerAvatarUrl}
+                  kycVerified={listing.sellerKycVerified}
+                  onPress={handleCardPress}
+                  onFavoritePress={handleFavoritePress}
+                />
+              ))
+            )}
 
             {hasMore && isLoading && (
               <View style={styles.loadingMore}>
@@ -317,6 +530,13 @@ export default function BrowseScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: Spacing.lg,
+    paddingBottom: Spacing.md,
+    gap: 16,
   },
   empty: {
     alignItems: 'center',

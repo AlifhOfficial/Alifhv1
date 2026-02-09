@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { Colors, Typography, Spacing } from '@/constants/theme';
-import { useTheme } from '@/context/theme-context';
+import { View, StyleSheet, Pressable } from 'react-native';
+
+import { Data } from '@/components/ui';
 
 interface SectionHeaderProps {
   title: string;
@@ -11,19 +10,12 @@ interface SectionHeaderProps {
 }
 
 export function SectionHeader({ title, onClear, showClear = false }: SectionHeaderProps) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
-
   return (
     <View style={styles.container}>
-      <Text style={[styles.title, { color: colors.textSecondary }]}>
-        {title}
-      </Text>
+      <Data size="mini" tone="secondary">{title}</Data>
       {showClear && onClear && (
         <Pressable onPress={onClear} hitSlop={8}>
-          <Text style={[styles.clearText, { color: colors.primary }]}>
-            Clear
-          </Text>
+          <Data size="mini" tone="primary">Clear</Data>
         </Pressable>
       )}
     </View>
@@ -38,11 +30,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     paddingTop: 16,
-  },
-  title: {
-    ...Typography.dataMini,
-  },
-  clearText: {
-    ...Typography.dataMini,
   },
 });

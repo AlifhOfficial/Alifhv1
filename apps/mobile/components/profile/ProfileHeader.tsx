@@ -4,11 +4,11 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Settings } from 'lucide-react-native';
 
-import { Typography } from '@/constants/theme';
+import { Heading } from '@/components/ui';
 import type { ThemeColors } from './types';
 
 interface ProfileHeaderProps {
@@ -22,7 +22,7 @@ export function ProfileHeader({ colors, topInset }: ProfileHeaderProps) {
   return (
     <View style={[styles.container, { paddingTop: topInset + 8 }]}>
       {/* Left: Title */}
-      <Text style={[styles.title, { color: colors.text }]}>Profile</Text>
+      <Heading size="large">Profile</Heading>
 
       {/* Right: Settings */}
       <Pressable
@@ -56,9 +56,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  title: {
-    ...Typography.headingLarge,
   },
   iconButton: {
     padding: 4,

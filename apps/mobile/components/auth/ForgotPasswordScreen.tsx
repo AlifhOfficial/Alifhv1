@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { 
   StyleSheet, 
   View, 
-  Text, 
+  Text as RNText,
   TextInput, 
   Pressable, 
   KeyboardAvoidingView,
@@ -20,7 +20,8 @@ import Svg, { Path } from 'react-native-svg';
 import { CheckCircle2 } from 'lucide-react-native';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Typography, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Display, Body, Data, ButtonText } from '@/components/ui';
 
 interface ForgotPasswordScreenProps {
   onBack: () => void;
@@ -72,13 +73,13 @@ export function ForgotPasswordScreen({
             </Animated.View>
 
             <Animated.View entering={FadeInDown.delay(150).duration(400)} style={[styles.titleSection, { alignItems: 'center' }]}>
-              <Text style={[styles.title, { color: colors.text }]}>
-                Check your email<Text style={{ color: colors.success }}>.</Text>
-              </Text>
-              <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+              <Display size="large">
+                Check your email<RNText style={{ color: colors.success }}>.</RNText>
+              </Display>
+              <Body tone="secondary" style={styles.subtitle}>
                 {"We've sent a reset link to"}
-              </Text>
-              <Text style={[styles.emailText, { color: colors.primary }]}>{email}</Text>
+              </Body>
+              <Data tone="primary" style={styles.emailText}>{email}</Data>
             </Animated.View>
           </View>
 
@@ -91,7 +92,7 @@ export function ForgotPasswordScreen({
                 { backgroundColor: colors.primary, opacity: pressed ? 0.9 : 1 }
               ]}
             >
-              <Text style={[styles.submitButtonText, { color: colors.primaryForeground }]}>Back to sign in</Text>
+              <ButtonText style={{ color: colors.primaryForeground }}>Back to sign in</ButtonText>
             </Pressable>
           </Animated.View>
         </View>
@@ -118,25 +119,25 @@ export function ForgotPasswordScreen({
 
           {/* Title */}
           <Animated.View entering={FadeInDown.delay(100).duration(400)} style={styles.titleSection}>
-            <Text style={[styles.title, { color: colors.text }]}>
-              Reset password<Text style={{ color: colors.primary }}>.</Text>
-            </Text>
-            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            <Display size="large">
+              Reset password<RNText style={{ color: colors.primary }}>.</RNText>
+            </Display>
+            <Body tone="secondary" style={styles.subtitle}>
               {"We'll send you a reset link"}
-            </Text>
+            </Body>
           </Animated.View>
 
           {/* Error */}
           {error && (
             <Animated.View entering={FadeIn.duration(200)} style={[styles.errorBox, { backgroundColor: colors.errorMuted }]}>
-              <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
+              <Body size="small" tone="error" style={styles.errorText}>{error}</Body>
             </Animated.View>
           )}
 
           {/* Form */}
           <Animated.View entering={FadeInDown.delay(150).duration(400)} style={styles.form}>
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.textSecondary }]}>Email</Text>
+              <Data size="mini" tone="secondary" style={styles.label}>Email</Data>
               <View style={[styles.inputWrapper, { backgroundColor: colors.input, borderColor: colors.border }]}>
                 <TextInput
                   style={[styles.inputInner, { color: colors.text, backgroundColor: colors.input }]}
@@ -172,23 +173,22 @@ export function ForgotPasswordScreen({
               {isLoading ? (
                 <ButtonLoader size="sm" variant="white" />
               ) : (
-                <Text style={[
-                  styles.submitButtonText, 
-                  { color: (!isValid || isLoading) ? colors.textTertiary : colors.primaryForeground }
-                ]}>
+                <ButtonText
+                  style={{ color: (!isValid || isLoading) ? colors.textTertiary : colors.primaryForeground }}
+                >
                   Send reset link
-                </Text>
+                </ButtonText>
               )}
             </Pressable>
           </Animated.View>
 
           {/* Footer */}
           <Animated.View entering={FadeIn.delay(250).duration(300)} style={styles.footer}>
-            <Text style={[styles.footerText, { color: colors.textSecondary }]}>
+            <Body size="small" tone="secondary">
               Remember your password?{' '}
-            </Text>
+            </Body>
             <Pressable onPress={onBack}>
-              <Text style={[styles.footerLink, { color: colors.primary }]}>Sign in</Text>
+              <Data tone="primary">Sign in</Data>
             </Pressable>
           </Animated.View>
         </View>
@@ -245,15 +245,10 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
     marginBottom: Spacing['3xl'],
   },
-  title: {
-    ...Typography.displayLarge,
-  },
   subtitle: {
-    ...Typography.bodyMedium,
     marginTop: Spacing.sm,
   },
   emailText: {
-    ...Typography.dataMedium,
     marginTop: Spacing.xs,
   },
   errorBox: {
@@ -262,7 +257,6 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   errorText: {
-    ...Typography.bodySmall,
     textAlign: 'center',
   },
   form: {
@@ -272,15 +266,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   label: {
-    ...Typography.dataMini,
     marginLeft: Spacing.xs,
-  },
-  input: {
-    height: 54,
-    borderRadius: Radius.xl,
-    borderWidth: 1,
-    paddingHorizontal: Spacing.lg,
-    ...Typography.bodyLarge,
   },
   inputWrapper: {
     height: 54,
@@ -294,7 +280,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
     paddingHorizontal: Spacing.lg,
-    ...Typography.bodyLarge,
+    fontSize: 16,
     backgroundColor: 'transparent',
   },
   submitButton: {
@@ -303,9 +289,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: Spacing.sm,
-  },
-  submitButtonText: {
-    ...Typography.buttonMedium,
   },
   buttonSection: {
     paddingBottom: Spacing['4xl'],
@@ -316,11 +299,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 'auto',
     paddingBottom: Spacing['2xl'],
-  },
-  footerText: {
-    ...Typography.bodySmall,
-  },
-  footerLink: {
-    ...Typography.dataMedium,
   },
 });

@@ -4,10 +4,10 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Text, Platform } from 'react-native';
+import { StyleSheet, View, Platform } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
-import { Typography } from '@/constants/theme';
+import { Label } from '@/components/ui';
 import type { ThemeColors } from './types';
 
 interface SectionProps {
@@ -33,7 +33,7 @@ export function Section({
       style={styles.container}
     >
       <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.textSecondary }]}>{title}</Text>
+        <Label size="small" tone="secondary" style={styles.title}>{title}</Label>
         {rightElement}
       </View>
       <View
@@ -61,9 +61,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title: {
-    fontSize: Typography.labelSmall.fontSize,
-    lineHeight: Typography.labelSmall.lineHeight,
-    fontFamily: 'Inter_600SemiBold',
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },

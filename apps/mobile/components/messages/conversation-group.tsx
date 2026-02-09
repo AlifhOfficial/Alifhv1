@@ -4,11 +4,12 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Typography, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { Data, Supporting, Label } from '@/components/ui';
 import type { Conversation } from '@/lib/messaging-api';
 
 interface ConversationGroupProps {
@@ -65,15 +66,15 @@ export function ConversationGroup({
         {({ pressed }) => (
           <View style={[styles.headerRow, pressed && { opacity: 0.7 }]}>
             <UserAvatar src={avatarUrl} name={name} size="md" />
-            <Text style={[styles.name, { color: colors.text }]} numberOfLines={1}>
-              {name}
-            </Text>
+            <Data size="medium" style={{ flex: 1 }} numberOfLines={1}>{name}</Data>
             {isOnline && (
               <View style={[styles.onlineDot, { backgroundColor: colors.success }]} />
             )}
             {totalUnread > 0 && (
               <View style={[styles.unreadBadge, { backgroundColor: colors.error }]}>
-                <Text style={[styles.unreadText, { color: '#FFFFFF' }]}>{totalUnread}</Text>
+                <Label size="badge" uppercase={false} style={{ color: '#FFFFFF' }}>
+                  {totalUnread}
+                </Label>
               </View>
             )}
             <ChevronIcon size={18} color={colors.textTertiary} strokeWidth={2} />
@@ -98,36 +99,28 @@ export function ConversationGroup({
               >
                 {/* Title + Time */}
                 <View style={styles.chatRow}>
-                  <Text
-                    style={[
-                      styles.chatTitle,
-                      {
-                        color: hasUnread ? colors.text : colors.textSecondary,
-                        fontWeight: hasUnread ? '600' : '500',
-                      },
-                    ]}
+                  <Data 
+                    size="medium" 
+                    tone={hasUnread ? 'default' : 'secondary'}
+                    style={{ flex: 1 }}
                     numberOfLines={1}
                   >
                     {c.listing?.title || 'General Inquiry'}
-                  </Text>
-                  <Text style={[styles.chatTime, { color: colors.textTertiary }]}>
+                  </Data>
+                  <Supporting size="small" tone="muted" style={{ marginLeft: Spacing.sm }}>
                     {formatTime(c.lastMessageAt)}
-                  </Text>
+                  </Supporting>
                 </View>
                 {/* Preview + Unread */}
                 <View style={styles.chatRow}>
-                  <Text
-                    style={[
-                      styles.chatPreview,
-                      {
-                        color: hasUnread ? colors.textSecondary : colors.textTertiary,
-                        fontWeight: hasUnread ? '500' : '400',
-                      },
-                    ]}
+                  <Supporting 
+                    size="small" 
+                    tone={hasUnread ? 'secondary' : 'muted'}
+                    style={{ flex: 1, marginTop: 2 }}
                     numberOfLines={1}
                   >
                     {c.lastMessagePreview || 'No messages'}
-                  </Text>
+                  </Supporting>
                   {hasUnread && (
                     <View style={[styles.dot, { backgroundColor: colors.error }]} />
                   )}
@@ -151,10 +144,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.sm,
   },
-  name: {
-    ...Typography.dataMedium,
-    flex: 1,
-  },
   onlineDot: {
     width: 8,
     height: 8,
@@ -167,10 +156,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 4,
-  },
-  unreadText: {
-    fontSize: 10,
-    fontFamily: 'Inter_600SemiBold',
   },
   chatList: {
     marginLeft: Spacing.lg + 40 + Spacing.sm,
@@ -188,21 +173,6 @@ const styles = StyleSheet.create({
   chatRow: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  chatTitle: {
-    flex: 1,
-    fontSize: Typography.dataMedium.fontSize,
-    lineHeight: Typography.dataMedium.lineHeight,
-  },
-  chatTime: {
-    ...Typography.supportingSmall,
-    marginLeft: Spacing.sm,
-  },
-  chatPreview: {
-    flex: 1,
-    fontSize: Typography.supportingSmall.fontSize,
-    lineHeight: Typography.supportingSmall.lineHeight,
-    marginTop: 2,
   },
   dot: {
     width: 6,

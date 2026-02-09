@@ -4,11 +4,12 @@
  */
 
 import React, { memo, useMemo } from 'react';
-import { StyleSheet, View, Text, ScrollView } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import { CheckCircle2 } from 'lucide-react-native';
 
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { Data } from '@/components/ui';
 import { SpecialNotes } from '@/lib/api';
 
 interface ListingHighlightsProps {
@@ -49,16 +50,26 @@ export const ListingHighlights = memo(function ListingHighlights({
       >
         {highlights.map((highlight, idx) => (
           <View key={idx} style={styles.highlightItem}>
-            <CheckCircle2 size={14} color={colors.success} />
-            <Text style={[styles.highlightText, { color: textColor }]}>
+            <CheckCircle2 size={ICON_SIZE_SM} color={colors.success} />
+            <Data size="mini" style={{ color: textColor }}>
               {highlight}
-            </Text>
+            </Data>
           </View>
         ))}
       </ScrollView>
     </View>
   );
 });
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const ICON_SIZE_SM = 14;
+
+// ============================================================================
+// STYLES
+// ============================================================================
 
 const styles = StyleSheet.create({
   container: {
@@ -72,9 +83,6 @@ const styles = StyleSheet.create({
   highlightItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-  },
-  highlightText: {
-    ...Typography.dataMini,
+    gap: Spacing.xs,
   },
 });

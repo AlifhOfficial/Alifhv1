@@ -8,8 +8,9 @@ import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Colors, Typography, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { Heading, ButtonText, Body } from '@/components/ui';
 
 interface DescriptionSheetProps {
   visible: boolean;
@@ -59,14 +60,17 @@ export function DescriptionSheet({ visible, onClose, description }: DescriptionS
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface }}
+      backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
       handleIndicatorStyle={{ backgroundColor: colors.border, width: 36 }}
       stackBehavior="push"
+      detached
+      bottomInset={insets.bottom + 20}
+      style={styles.sheetContainer}
     >
       <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Description</Text>
+        <Heading size="large" style={{ color: colors.text }}>Description</Heading>
         <Pressable onPress={onClose} hitSlop={12}>
-          <Text style={[styles.doneBtn, { color: colors.primary }]}>Done</Text>
+          <ButtonText size="medium" tone="primary">Done</ButtonText>
         </Pressable>
       </View>
 
@@ -75,15 +79,21 @@ export function DescriptionSheet({ visible, onClose, description }: DescriptionS
         contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 40 }]}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={[styles.description, { color: colors.textSecondary }]}>
+        <Body size="medium" tone="secondary">
           {description}
-        </Text>
+        </Body>
       </BottomSheetScrollView>
     </BottomSheetModal>
   );
 }
 
 const styles = StyleSheet.create({
+  sheetContainer: {
+    marginHorizontal: 16,
+  },
+  background: {
+    borderRadius: 24,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -91,19 +101,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: Spacing.md,
   },
-  headerTitle: {
-    ...Typography.headingLarge,
-  },
-  doneBtn: {
-    ...Typography.buttonMedium,
-  },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
     paddingHorizontal: 24,
-  },
-  description: {
-    ...Typography.bodyMedium,
   },
 });

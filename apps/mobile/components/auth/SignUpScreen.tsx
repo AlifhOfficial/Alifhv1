@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { 
   StyleSheet, 
   View, 
-  Text, 
+  Text as RNText,
   TextInput, 
   Pressable, 
   KeyboardAvoidingView,
@@ -20,7 +20,8 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Typography, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Display, Body, Data, Supporting, ButtonText } from '@/components/ui';
 
 interface SignUpScreenProps {
   onBack: () => void;
@@ -88,15 +89,15 @@ export function SignUpScreen({
 
           {/* Title */}
           <Animated.View entering={FadeInDown.delay(100).duration(400)} style={styles.titleSection}>
-            <Text style={[styles.title, { color: colors.text }]}>
-              Create account<Text style={{ color: colors.primary }}>.</Text>
-            </Text>
+            <Display size="large">
+              Create account<RNText style={{ color: colors.primary }}>.</RNText>
+            </Display>
           </Animated.View>
 
           {/* Error */}
           {error && (
             <Animated.View entering={FadeIn.duration(200)} style={[styles.errorBox, { backgroundColor: colors.errorMuted }]}>
-              <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
+              <Body size="small" tone="error" style={styles.errorText}>{error}</Body>
             </Animated.View>
           )}
 
@@ -104,7 +105,7 @@ export function SignUpScreen({
           <Animated.View entering={FadeInDown.delay(150).duration(400)} style={styles.form}>
             {/* Name */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.textSecondary }]}>Name</Text>
+              <Data size="mini" tone="secondary" style={styles.label}>Name</Data>
               <View style={[styles.inputWrapper, { backgroundColor: colors.input, borderColor: colors.border }]}>
                 <TextInput
                   style={[styles.inputInner, { color: colors.text, backgroundColor: colors.input }]}
@@ -125,7 +126,7 @@ export function SignUpScreen({
 
             {/* Email */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.textSecondary }]}>Email</Text>
+              <Data size="mini" tone="secondary" style={styles.label}>Email</Data>
               <View style={[styles.inputWrapper, { backgroundColor: colors.input, borderColor: colors.border }]}>
                 <TextInput
                   style={[styles.inputInner, { color: colors.text, backgroundColor: colors.input }]}
@@ -147,7 +148,7 @@ export function SignUpScreen({
 
             {/* Password */}
             <View style={styles.inputGroup}>
-              <Text style={[styles.label, { color: colors.textSecondary }]}>Password</Text>
+              <Data size="mini" tone="secondary" style={styles.label}>Password</Data>
               <View style={[styles.inputWrapper, { backgroundColor: colors.input, borderColor: colors.border }]}>
                 <TextInput
                   style={[styles.inputInner, styles.passwordInputInner, { color: colors.text, backgroundColor: colors.input }]}
@@ -167,9 +168,9 @@ export function SignUpScreen({
                   onPress={() => setShowPassword(!showPassword)}
                   style={styles.showButton}
                 >
-                  <Text style={[styles.showText, { color: colors.textSecondary }]}>
+                  <Data size="mini" tone="secondary">
                     {showPassword ? 'Hide' : 'Show'}
-                  </Text>
+                  </Data>
                 </Pressable>
               </View>
 
@@ -198,12 +199,11 @@ export function SignUpScreen({
               {isLoading ? (
                 <ButtonLoader size="sm" variant="white" />
               ) : (
-                <Text style={[
-                  styles.submitButtonText, 
-                  { color: (!isValid || isLoading) ? colors.textTertiary : colors.primaryForeground }
-                ]}>
+                <ButtonText 
+                  style={{ color: (!isValid || isLoading) ? colors.textTertiary : colors.primaryForeground }}
+                >
                   Continue
-                </Text>
+                </ButtonText>
               )}
             </Pressable>
           </Animated.View>
@@ -212,7 +212,7 @@ export function SignUpScreen({
           {(onGoogleSignUp || onAppleSignUp || onPasskeySignUp) && (
             <Animated.View entering={FadeIn.delay(250).duration(300)} style={styles.dividerContainer}>
               <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-              <Text style={[styles.dividerText, { color: colors.textTertiary }]}>or continue with</Text>
+              <Supporting size="small" style={styles.dividerText}>or continue with</Supporting>
               <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
             </Animated.View>
           )}
@@ -272,21 +272,21 @@ export function SignUpScreen({
 
           {/* Terms */}
           <Animated.View entering={FadeIn.delay(400).duration(300)} style={styles.terms}>
-            <Text style={[styles.termsText, { color: colors.textTertiary }]}>
+            <Body size="small" tone="muted" style={styles.termsText}>
               By continuing, you agree to our{' '}
-              <Text style={{ color: colors.textSecondary }}>Terms</Text>
+              <RNText style={{ color: colors.textSecondary }}>Terms</RNText>
               {' & '}
-              <Text style={{ color: colors.textSecondary }}>Privacy Policy</Text>
-            </Text>
+              <RNText style={{ color: colors.textSecondary }}>Privacy Policy</RNText>
+            </Body>
           </Animated.View>
 
           {/* Footer */}
           <Animated.View entering={FadeIn.delay(450).duration(300)} style={styles.footer}>
-            <Text style={[styles.footerText, { color: colors.textSecondary }]}>
+            <Body size="small" tone="secondary">
               Already have an account?{' '}
-            </Text>
+            </Body>
             <Pressable onPress={onSwitchToSignIn}>
-              <Text style={[styles.footerLink, { color: colors.primary }]}>Sign in</Text>
+              <Data tone="primary">Sign in</Data>
             </Pressable>
           </Animated.View>
         </ScrollView>
@@ -308,9 +308,9 @@ function PasswordRequirement({ met, text, colors }: PasswordRequirementProps) {
   return (
     <View style={styles.requirementRow}>
       <View style={[styles.requirementDot, { backgroundColor: met ? colors.success : colors.textTertiary }]} />
-      <Text style={[styles.requirementText, { color: met ? colors.success : colors.textTertiary }]}>
+      <Supporting size="small" style={{ color: met ? colors.success : colors.textTertiary }}>
         {text}
-      </Text>
+      </Supporting>
     </View>
   );
 }
@@ -384,16 +384,12 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
     marginBottom: Spacing['3xl'],
   },
-  title: {
-    ...Typography.displayLarge,
-  },
   errorBox: {
     borderRadius: Radius.lg,
     padding: Spacing.md,
     marginBottom: Spacing.xl,
   },
   errorText: {
-    ...Typography.bodySmall,
     textAlign: 'center',
   },
   form: {
@@ -403,15 +399,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   label: {
-    ...Typography.dataMini,
     marginLeft: Spacing.xs,
-  },
-  input: {
-    height: 54,
-    borderRadius: Radius.xl,
-    borderWidth: 1,
-    paddingHorizontal: Spacing.lg,
-    ...Typography.bodyMedium,
   },
   inputWrapper: {
     height: 54,
@@ -425,16 +413,10 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
     paddingHorizontal: Spacing.lg,
-    ...Typography.bodyMedium,
+    fontSize: 16,
     backgroundColor: 'transparent',
   },
   passwordInputInner: {
-    paddingRight: 60,
-  },
-  passwordContainer: {
-    position: 'relative',
-  },
-  passwordInput: {
     paddingRight: 60,
   },
   showButton: {
@@ -443,9 +425,6 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     justifyContent: 'center',
-  },
-  showText: {
-    ...Typography.dataMini,
   },
   requirements: {
     flexDirection: 'row',
@@ -463,18 +442,12 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: 3,
   },
-  requirementText: {
-    ...Typography.supportingSmall,
-  },
   submitButton: {
     height: 54,
     borderRadius: Radius.xl,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: Spacing.sm,
-  },
-  submitButtonText: {
-    ...Typography.buttonMedium,
   },
   dividerContainer: {
     flexDirection: 'row',
@@ -487,7 +460,6 @@ const styles = StyleSheet.create({
     height: 1,
   },
   dividerText: {
-    ...Typography.supportingSmall,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -515,7 +487,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.sm,
   },
   termsText: {
-    ...Typography.bodySmall,
     textAlign: 'center',
   },
   footer: {
@@ -524,11 +495,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 'auto',
     paddingTop: Spacing['2xl'],
-  },
-  footerText: {
-    ...Typography.bodySmall,
-  },
-  footerLink: {
-    ...Typography.dataMedium,
   },
 });

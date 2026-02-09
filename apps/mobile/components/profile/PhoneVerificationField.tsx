@@ -18,7 +18,7 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { CheckCircle2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Typography } from '@/constants/theme';
+import { Supporting, Body, Data, ButtonText } from '@/components/ui';
 import { sendPhoneOTP, verifyPhoneOTP } from '@/lib/profile-api';
 import type { ThemeColors } from './types';
 
@@ -177,22 +177,22 @@ export function PhoneVerificationField({
         style={[styles.fieldContainer, { borderBottomWidth: 0 }]}
       >
         <View style={styles.labelRow}>
-          <Text style={[styles.label, { color: colors.textSecondary }]}>
+          <Supporting size="small" tone="secondary">
             Phone Number
-          </Text>
+          </Supporting>
           {displayVerified ? (
             <CheckCircle2 size={16} color={colors.success} strokeWidth={2} />
           ) : phone ? (
             <Pressable onPress={handleSendOTP} hitSlop={8}>
-              <Text style={[styles.verifyLink, { color: colors.primary }]}>
+              <ButtonText size="small" tone="primary">
                 Verify
-              </Text>
+              </ButtonText>
             </Pressable>
           ) : null}
         </View>
-        <Text style={[styles.value, { color: phone ? colors.text : colors.textTertiary }]}>
+        <Body size="medium" tone={phone ? 'default' : 'muted'}>
           {phone ? `+971 ${phone}` : 'Tap to add'}
-        </Text>
+        </Body>
       </Pressable>
     );
   }
@@ -204,11 +204,11 @@ export function PhoneVerificationField({
         entering={FadeIn.duration(200)}
         style={[styles.fieldContainer, { borderBottomWidth: 0 }]}
       >
-        <Text style={[styles.label, { color: colors.textSecondary }]}>
+        <Supporting size="small" tone="secondary">
           Phone Number
-        </Text>
+        </Supporting>
         <View style={styles.editRow}>
-          <Text style={[styles.prefix, { color: colors.textSecondary }]}>+971</Text>
+          <Body size="medium" tone="secondary" style={styles.prefix}>+971</Body>
           <TextInput
             ref={inputRef}
             value={phone}
@@ -228,23 +228,23 @@ export function PhoneVerificationField({
           />
         </View>
         {error && (
-          <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
+          <Supporting size="small" tone="error">{error}</Supporting>
         )}
         <View style={styles.actions}>
           <Pressable onPress={handleCancel} hitSlop={8}>
-            <Text style={[styles.cancelText, { color: colors.textSecondary }]}>
+            <Supporting size="medium" tone="secondary">
               Cancel
-            </Text>
+            </Supporting>
           </Pressable>
           <Pressable onPress={handleRemovePhone} hitSlop={8}>
-            <Text style={[styles.removeText, { color: colors.error }]}>
+            <Supporting size="medium" tone="error">
               Remove
-            </Text>
+            </Supporting>
           </Pressable>
           <Pressable onPress={handleSavePhone} hitSlop={8}>
-            <Text style={[styles.saveText, { color: colors.primary }]}>
+            <Data size="medium" tone="primary">
               Save
-            </Text>
+            </Data>
           </Pressable>
         </View>
       </Animated.View>
@@ -256,9 +256,9 @@ export function PhoneVerificationField({
     return (
       <View style={[styles.fieldContainer, styles.loadingContainer, { borderBottomWidth: 0 }]}>
         <PulseLoader size="sm" variant="primary" />
-        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+        <Data size="medium" tone="secondary">
           {step === 'sending' ? 'Sending code...' : 'Verifying...'}
-        </Text>
+        </Data>
       </View>
     );
   }
@@ -269,12 +269,12 @@ export function PhoneVerificationField({
       entering={FadeInDown.duration(250)}
       style={[styles.fieldContainer, { borderBottomWidth: 0 }]}
     >
-      <Text style={[styles.label, { color: colors.textSecondary }]}>
+      <Supporting size="small" tone="secondary">
         Phone Number
-      </Text>
-      <Text style={[styles.otpHint, { color: colors.textTertiary }]}>
+      </Supporting>
+      <Supporting size="small" tone="muted" style={styles.otpHint}>
         Enter the 6-digit code sent to +971 {phone}
-      </Text>
+      </Supporting>
       
       <TextInput
         ref={otpInputRef}
@@ -295,7 +295,7 @@ export function PhoneVerificationField({
       />
       
       {error && (
-        <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
+        <Supporting size="small" tone="error" style={styles.errorText}>{error}</Supporting>
       )}
 
       <View style={styles.otpActions}>
@@ -304,35 +304,25 @@ export function PhoneVerificationField({
           disabled={countdown > 0}
           hitSlop={8}
         >
-          <Text
-            style={[
-              styles.resendText,
-              { color: countdown > 0 ? colors.textTertiary : colors.textSecondary },
-            ]}
-          >
+          <Supporting size="small" tone={countdown > 0 ? 'muted' : 'secondary'}>
             {countdown > 0 ? `Resend in ${countdown}s` : 'Resend code'}
-          </Text>
+          </Supporting>
         </Pressable>
         
         <View style={styles.otpButtonRow}>
           <Pressable onPress={handleCancel} hitSlop={8}>
-            <Text style={[styles.cancelText, { color: colors.textSecondary }]}>
+            <Supporting size="medium" tone="secondary">
               Cancel
-            </Text>
+            </Supporting>
           </Pressable>
           <Pressable
             onPress={handleVerifyOTP}
             disabled={otp.length !== 6}
             hitSlop={8}
           >
-            <Text
-              style={[
-                styles.verifyButton,
-                { color: otp.length === 6 ? colors.primary : colors.textTertiary },
-              ]}
-            >
+            <ButtonText size="medium" tone={otp.length === 6 ? 'primary' : 'muted'}>
               Verify
-            </Text>
+            </ButtonText>
           </Pressable>
         </View>
       </View>
@@ -351,17 +341,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 4,
   },
-  label: {
-    ...Typography.supportingSmall,
-  },
-  value: {
-    fontSize: Typography.bodyMedium.fontSize,
-    lineHeight: Typography.bodyMedium.lineHeight,
-    fontFamily: 'Inter_400Regular',
-  },
-  verifyLink: {
-    ...Typography.buttonSmall,
-  },
   editRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -369,7 +348,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   prefix: {
-    ...Typography.bodyMedium,
     fontFamily: 'Inter_500Medium',
   },
   input: {
@@ -378,7 +356,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     paddingHorizontal: 12,
-    fontSize: Typography.bodyMedium.fontSize,
+    fontSize: 15,
     fontFamily: 'Inter_400Regular',
   },
   actions: {
@@ -387,30 +365,13 @@ const styles = StyleSheet.create({
     gap: 20,
     marginTop: 12,
   },
-  cancelText: {
-    ...Typography.supportingMedium,
-  },
-  removeText: {
-    ...Typography.supportingMedium,
-  },
-  saveText: {
-    ...Typography.dataMedium,
-  },
   loadingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
     paddingVertical: 20,
   },
-  loadingText: {
-    fontSize: Typography.dataMedium.fontSize,
-    lineHeight: Typography.dataMedium.lineHeight,
-    fontFamily: 'Inter_400Regular',
-  },
   otpHint: {
-    fontSize: Typography.supportingSmall.fontSize,
-    lineHeight: Typography.supportingSmall.lineHeight,
-    fontFamily: 'Inter_400Regular',
     marginTop: 4,
     marginBottom: 12,
   },
@@ -419,15 +380,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     paddingHorizontal: 16,
-    ...Typography.headingLarge,
+    fontSize: 24,
     fontFamily: 'Inter_500Medium',
     textAlign: 'center',
     letterSpacing: 8,
   },
   errorText: {
-    fontSize: Typography.supportingSmall.fontSize,
-    lineHeight: Typography.supportingSmall.lineHeight,
-    fontFamily: 'Inter_400Regular',
     marginTop: 8,
   },
   otpActions: {
@@ -436,14 +394,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 14,
   },
-  resendText: {
-    ...Typography.supportingSmall,
-  },
   otpButtonRow: {
     flexDirection: 'row',
     gap: 20,
-  },
-  verifyButton: {
-    ...Typography.buttonMedium,
   },
 });

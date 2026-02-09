@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Text, Pressable, Platform, Alert } from 'react-native';
+import { StyleSheet, View, Pressable, Platform, Alert } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -12,7 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
-import { Typography } from '@/constants/theme';
+import { Supporting, Label } from '@/components/ui';
 import { Section } from './Section';
 import { PROFILE_TAGS } from './types';
 import type { ThemeColors } from './types';
@@ -56,14 +56,14 @@ function TagItem({ tag, isSelected, colors, onPress }: TagItemProps) {
         },
       ]}
     >
-      <Text
-        style={[
-          styles.tagText,
-          { color: isSelected ? colors.text : colors.textSecondary },
-        ]}
+      <Label
+        size="small"
+        tone={isSelected ? 'default' : 'secondary'}
+        uppercase={false}
+        style={styles.tagText}
       >
         {tag}
-      </Text>
+      </Label>
     </AnimatedPressable>
   );
 }
@@ -98,9 +98,9 @@ export function TagsSection({ selectedTags, colors, onToggle }: TagsSectionProps
       colors={colors}
       delay={275}
       rightElement={
-        <Text style={[styles.counter, { color: colors.textTertiary }]}>
+        <Supporting size="small" tone="muted">
           {selectedTags.length}/{MAX_TAGS}
-        </Text>
+        </Supporting>
       }
     >
       <View style={styles.tagsContainer}>
@@ -119,9 +119,6 @@ export function TagsSection({ selectedTags, colors, onToggle }: TagsSectionProps
 }
 
 const styles = StyleSheet.create({
-  counter: {
-    ...Typography.supportingSmall,
-  },
   tagsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -138,7 +135,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   tagText: {
-    ...Typography.labelSmall,
     fontFamily: 'Inter_500Medium',
   },
 });

@@ -5,10 +5,11 @@
  */
 
 import React, { memo, useState, useCallback, useMemo } from 'react';
-import { StyleSheet, View, Text, Pressable, LayoutChangeEvent } from 'react-native';
+import { StyleSheet, View, Pressable, LayoutChangeEvent } from 'react-native';
 
-import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { Label, Text } from '@/components/ui';
 import { formatEnumValue } from './types';
 
 const MAX_VISIBLE_FEATURES = 8;
@@ -97,16 +98,16 @@ export const ListingFeatures = memo(function ListingFeatures({
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.label, { color: colors.textTertiary }]}>
+      <Label size="medium" tone="muted">
         FEATURES
-      </Text>
+      </Label>
       <View style={styles.badgesContainer} onLayout={handleLayout}>
         {visibleExtras.map((extra, idx) => (
           <View 
             key={idx} 
             style={[styles.badge, { backgroundColor: colors.backgroundSecondary }]}
           >
-            <Text style={[styles.badgeText, { color: textColor }]}>
+            <Text variant="chip" style={{ color: textColor }}>
               {formatEnumValue(extra)}
             </Text>
           </View>
@@ -116,7 +117,7 @@ export const ListingFeatures = memo(function ListingFeatures({
             onPress={onViewAll}
             style={[styles.badge, { backgroundColor: colors.primary + '15' }]}
           >
-            <Text style={[styles.badgeText, { color: colors.primary }]}>
+            <Text variant="chip" tone="primary">
               +{remainingCount} more
             </Text>
           </Pressable>
@@ -130,20 +131,14 @@ const styles = StyleSheet.create({
   container: {
     gap: Spacing.sm,
   },
-  label: {
-    ...Typography.labelMedium,
-  },
   badgesContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: Spacing.sm,
   },
   badge: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingHorizontal: Spacing.md + 2, // 14
+    paddingVertical: Spacing.sm,
     borderRadius: Radius.md,
-  },
-  badgeText: {
-    ...Typography.chip,
   },
 });

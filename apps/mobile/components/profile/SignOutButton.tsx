@@ -4,11 +4,11 @@
  */
 
 import React from 'react';
-import { StyleSheet, Text, Pressable, Platform, Alert } from 'react-native';
+import { StyleSheet, Pressable, Platform, Alert } from 'react-native';
 import { LogOut } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Typography } from '@/constants/theme';
+import { ButtonText } from '@/components/ui';
 import { useAuth } from '@/context/auth-context';
 import type { ThemeColors } from './types';
 
@@ -52,7 +52,7 @@ export function SignOutButton({ colors }: SignOutButtonProps) {
       ]}
     >
       <LogOut size={18} color={colors.error} strokeWidth={2} />
-      <Text style={[styles.text, { color: colors.error }]}>Sign Out</Text>
+      <ButtonText size="medium" tone="error">Sign Out</ButtonText>
     </Pressable>
   );
 }
@@ -66,8 +66,5 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 14,
     marginTop: 12,
-  },
-  text: {
-    ...Typography.buttonMedium,
   },
 });
