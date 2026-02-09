@@ -13,6 +13,7 @@ import { db } from '../../dbclient';
 import { kycRecord, userProfile } from '../../schema/profile';
 import { user } from '../../schema/auth';
 import { memoryCache, CacheKeys } from '../../caches/memory-cache';
+import { invalidateUserListingsInSearch } from '../../caches/invalidation';
 
 const KYC_ID_PREFIX = 'kyc_';
 const makeKycId = () => `${KYC_ID_PREFIX}${createId()}`;
@@ -248,8 +249,10 @@ export const approveKycRecord = async (
       .where(eq(userProfile.userId, existingKyc.userId)),
   ]);
   
-  // Invalidate user profile cache
+  // Invalidate user profile cache AND listing caches that contain seller data
+  // This ensures KYC status change reflects immediately in listing detail pages
   memoryCache.delete(CacheKeys.userProfile(existingKyc.userId));
+  invalidateUserListingsInSearch(existingKyc.userId);
   
   return result ?? null;
 };
@@ -296,8 +299,10 @@ export const rejectKycRecord = async (
       .where(eq(userProfile.userId, existingKyc.userId)),
   ]);
   
-  // Invalidate user profile cache
+  // Invalidate user profile cache AND listing caches that contain seller data
+  // This ensures KYC status change reflects immediately in listing detail pages
   memoryCache.delete(CacheKeys.userProfile(existingKyc.userId));
+  invalidateUserListingsInSearch(existingKyc.userId);
   
   return result ?? null;
 };

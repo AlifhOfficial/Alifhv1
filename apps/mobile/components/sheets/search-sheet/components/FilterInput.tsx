@@ -6,7 +6,7 @@ import React from 'react';
 import { View, Pressable, StyleSheet } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Ionicons } from '@expo/vector-icons';
-import { Typography, Spacing, Radius } from '@/constants/theme';
+import { Spacing, Radius } from '@/constants/theme';
 import type { ThemedComponentProps } from '../types';
 
 interface FilterInputProps extends ThemedComponentProps {
@@ -63,7 +63,6 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    ...Typography.dataMedium,
     paddingVertical: 0,
   },
 });

@@ -18,23 +18,18 @@ interface SpecItem {
   value: string | number | null | undefined;
 }
 
-interface SpecRowProps extends SpecItem {
-  labelColor: string;
-  valueColor: string;
-}
-
 interface SpecsSheetProps {
   visible: boolean;
   onClose: () => void;
   specs: SpecItem[];
 }
 
-function SpecRow({ label, value, labelColor, valueColor }: SpecRowProps) {
+function SpecRow({ label, value }: SpecItem) {
   const displayValue = value === null || value === undefined ? '—' : String(value);
 
   return (
     <View style={styles.specRow}>
-      <Supporting size="medium" tone="secondary">{label}</Supporting>
+      <Supporting size="medium">{label}</Supporting>
       <Data size="medium">{displayValue}</Data>
     </View>
   );
@@ -82,42 +77,47 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
-      handleIndicatorStyle={{ backgroundColor: colors.border, width: 36 }}
-      stackBehavior="push"
+      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
+      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
       detached
       bottomInset={insets.bottom + 20}
       style={styles.sheetContainer}
     >
-      <View style={styles.header}>
-        <Heading size="medium" style={{ color: colors.text }}>All Specifications</Heading>
-        <Pressable
-          onPress={onClose}
-          hitSlop={Spacing.md}
-          style={({ pressed }) => [
-            styles.closeButton,
-            { backgroundColor: pressed ? colors.surfacePressed : colors.surface },
-          ]}
-        >
-          <Ionicons name="close" size={18} color={colors.icon} />
-        </Pressable>
-      </View>
+      <View style={styles.content}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Heading size="medium">All Specifications</Heading>
+          <Pressable
+            onPress={onClose}
+            hitSlop={Spacing.md}
+            style={({ pressed }) => [
+              styles.closeButton,
+              { backgroundColor: pressed ? colors.fill : colors.fillSecondary }
+            ]}
+          >
+            <Ionicons name="close" size={18} color={colors.textSecondary} />
+          </Pressable>
+        </View>
 
-      <BottomSheetScrollView
-        style={styles.scrollView}
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + Spacing['3xl'] }]}
-        showsVerticalScrollIndicator={false}
-      >
-        {specs.map((spec) => (
-          <SpecRow
-            key={spec.label}
-            label={spec.label}
-            value={spec.value}
-            labelColor={colors.textTertiary}
-            valueColor={colors.text}
-          />
-        ))}
-      </BottomSheetScrollView>
+        <BottomSheetScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Specs List */}
+          <View style={styles.listContainer}>
+            {specs.map((spec) => (
+              <SpecRow
+                key={spec.label}
+                label={spec.label}
+                value={spec.value}
+              />
+            ))}
+          </View>
+        </BottomSheetScrollView>
+
+        <View style={{ height: insets.bottom + Spacing['3xl'] }} />
+      </View>
     </BottomSheetModal>
   );
 }
@@ -126,8 +126,9 @@ const styles = StyleSheet.create({
   sheetContainer: {
     marginHorizontal: 16,
   },
-  background: {
-    borderRadius: 24,
+  content: {
+    flex: 1,
+    paddingHorizontal: Spacing.lg,
   },
   header: {
     flexDirection: 'row',
@@ -149,10 +150,13 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: Spacing.lg,
   },
+  listContainer: {
+    gap: 0,
+  },
   specRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: Spacing.sm + 2,
+    paddingVertical: Spacing.md,
   },
 });

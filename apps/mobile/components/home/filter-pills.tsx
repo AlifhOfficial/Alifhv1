@@ -4,11 +4,14 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, Pressable, Platform, ScrollView } from 'react-native';
+import { View, StyleSheet, Pressable, Platform, ScrollView } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { Settings2 } from 'lucide-react-native';
+import { Settings2, LayoutGrid, List } from 'lucide-react-native';
 
-import { Colors, Typography } from '@/constants/theme';
+import { Colors } from '@/constants/theme';
+
+export type ViewMode = 'grid' | 'list';
+import { Body, Label } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 
 export type FilterPillType = 'price' | 'yearMileage' | 'location';
@@ -24,9 +27,11 @@ interface FilterPillsProps {
   onPillPress: (type: FilterPillType) => void;
   onSettingsPress?: () => void;
   settingsCount?: number;
+  viewMode?: ViewMode;
+  onViewModeChange?: (mode: ViewMode) => void;
 }
 
-export function FilterPills({ pills, onPillPress, onSettingsPress, settingsCount = 0 }: FilterPillsProps) {
+export function FilterPills({ pills, onPillPress, onSettingsPress, settingsCount = 0, viewMode = 'grid', onViewModeChange }: FilterPillsProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
@@ -42,6 +47,14 @@ export function FilterPills({ pills, onPillPress, onSettingsPress, settingsCount
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     onSettingsPress?.();
+  };
+
+  const handleViewModeToggle = () => {
+    if (Platform.OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    const newMode = viewMode === 'grid' ? 'list' : 'grid';
+    onViewModeChange?.(newMode);
   };
 
   return (
@@ -76,9 +89,9 @@ export function FilterPills({ pills, onPillPress, onSettingsPress, settingsCount
                   { backgroundColor: colors.text, borderColor: colors.background },
                 ]}
               >
-                <Text style={[styles.settingsBadgeText, { color: colors.background }]}>
+                <Label size="badge" uppercase={false} style={[styles.settingsBadgeText, { color: colors.background }]}>
                   {settingsCount > 9 ? '9+' : settingsCount}
-                </Text>
+                </Label>
               </View>
             )}
           </View>
@@ -103,20 +116,18 @@ export function FilterPills({ pills, onPillPress, onSettingsPress, settingsCount
           >
             {({ pressed }) => (
               <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
-                <Text
-                  style={[
-                    styles.pillLabel,
-                    { color: colors.text },
-                  ]}
+                <Body
+                  size="small"
+                  style={styles.pillLabel}
                   numberOfLines={1}
                 >
                   {pill.label}
-                </Text>
+                </Body>
                 {pill.activeCount > 0 && (
                   <View style={[styles.badge, { backgroundColor: colors.text }]}>
-                    <Text style={[styles.badgeText, { color: colors.background }]}>
+                    <Label size="badge" uppercase={false} style={[styles.badgeText, { color: colors.background }]}>
                       {pill.activeCount}
-                    </Text>
+                    </Label>
                   </View>
                 )}
               </View>
@@ -124,6 +135,28 @@ export function FilterPills({ pills, onPillPress, onSettingsPress, settingsCount
           </Pressable>
         );
       })}
+
+      {/* View Mode Toggle */}
+      <Pressable
+        onPress={handleViewModeToggle}
+        style={[
+          styles.viewModeBubble,
+          { 
+            backgroundColor: colors.background,
+            borderColor: colors.border,
+          },
+        ]}
+      >
+        {({ pressed }) => (
+          <View style={[styles.viewModeContent, { opacity: pressed ? 0.7 : 1 }]}>
+            {viewMode === 'grid' ? (
+              <LayoutGrid size={18} color={colors.text} strokeWidth={2} />
+            ) : (
+              <List size={18} color={colors.text} strokeWidth={2} />
+            )}
+          </View>
+        )}
+      </Pressable>
     </ScrollView>
   );
 }
@@ -175,7 +208,6 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   settingsBadgeText: {
-    ...Typography.labelBadge,
     fontFamily: 'Inter_600SemiBold',
     fontSize: 9,
   },
@@ -197,7 +229,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   pillLabel: {
-    ...Typography.chip,
     fontSize: 14,
     fontFamily: 'Inter_500Medium',
   },
@@ -209,8 +240,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   badgeText: {
-    ...Typography.labelBadge,
     fontFamily: 'Inter_600SemiBold',
     fontSize: 11,
+  },
+  viewModeBubble: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  viewModeContent: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

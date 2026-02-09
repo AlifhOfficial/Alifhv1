@@ -289,19 +289,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: Spacing.sm,
   },
-  emptyTitle: {
-    ...Typography.headingLarge,
-  },
+  emptyTitle: {},
   emptySubtitle: {
-    ...Typography.supportingSmall,
     textAlign: 'center',
   },
   actionLink: {
-    ...Typography.buttonMedium,
     marginTop: Spacing.sm,
   },
   errorText: {
-    ...Typography.supportingSmall,
     textAlign: 'center',
   },
 });

@@ -7,7 +7,8 @@
  */
 
 import React, { memo, useState, useCallback } from 'react';
-import { StyleSheet, View, Text as RNText, Pressable } from 'react-native';
+import { StyleSheet, View, Pressable } from 'react-native';
+import { Text as RNText } from 'react-native';
 
 import { Colors, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';

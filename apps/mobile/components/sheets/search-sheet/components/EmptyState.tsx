@@ -3,8 +3,9 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Typography, Spacing, Radius } from '@/constants/theme';
+import { View, StyleSheet } from 'react-native';
+import { Spacing, Radius } from '@/constants/theme';
+import { Heading, Body } from '@/components/ui';
 import type { ThemedComponentProps } from '../types';
 
 interface EmptyStateProps extends ThemedComponentProps {
@@ -23,11 +24,11 @@ export function EmptyState({ title, subtitle, colors }: EmptyStateProps) {
         },
       ]}
     >
-      <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
+      <Heading size="small" style={styles.title}>{title}</Heading>
       {subtitle && (
-        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+        <Body size="small" tone="secondary" style={styles.subtitle}>
           {subtitle}
-        </Text>
+        </Body>
       )}
     </View>
   );
@@ -42,11 +43,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   title: {
-    ...Typography.headingSmall,
     marginBottom: Spacing.sm,
   },
   subtitle: {
-    ...Typography.bodySmall,
     textAlign: 'center',
   },
 });

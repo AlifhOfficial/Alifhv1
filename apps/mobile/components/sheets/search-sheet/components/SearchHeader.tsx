@@ -3,8 +3,9 @@
  */
 
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { Typography, Spacing } from '@/constants/theme';
+import { View, Pressable, StyleSheet } from 'react-native';
+import { Spacing } from '@/constants/theme';
+import { Heading, ButtonText } from '@/components/ui';
 import type { ThemedComponentProps } from '../types';
 
 interface SearchHeaderProps extends ThemedComponentProps {
@@ -15,9 +16,9 @@ interface SearchHeaderProps extends ThemedComponentProps {
 export function SearchHeader({ title, onCancel, colors }: SearchHeaderProps) {
   return (
     <View style={styles.container}>
-      <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
+      <Heading size="large">{title}</Heading>
       <Pressable onPress={onCancel} hitSlop={12}>
-        <Text style={[styles.cancelBtn, { color: colors.primary }]}>Cancel</Text>
+        <ButtonText size="medium" tone="primary">Cancel</ButtonText>
       </Pressable>
     </View>
   );
@@ -29,11 +30,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: Spacing.lg,
-  },
-  title: {
-    ...Typography.headingLarge,
-  },
-  cancelBtn: {
-    ...Typography.buttonMedium,
   },
 });

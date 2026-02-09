@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -15,7 +15,8 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Typography } from '@/constants/theme';
+import { Colors } from '@/constants/theme';
+import { Body } from './text';
 
 // Main Loader component - uses branded typography
 export function Loader({ message, fullScreen = false }: { message?: string; fullScreen?: boolean }) {
@@ -55,9 +56,9 @@ export function Loader({ message, fullScreen = false }: { message?: string; full
           </Animated.Text>
         </View>
         {message && (
-          <Text style={[styles.message, { color: colors.textSecondary }]}>
+          <Body size="small" tone="secondary" style={styles.message}>
             {message}
-          </Text>
+          </Body>
         )}
       </View>
     );
@@ -75,9 +76,9 @@ export function Loader({ message, fullScreen = false }: { message?: string; full
         Revvup
       </Animated.Text>
       {message && (
-        <Text style={[styles.inlineMessage, { color: colors.textSecondary }]}>
+        <Body size="small" tone="secondary" style={styles.inlineMessage}>
           {message}
-        </Text>
+        </Body>
       )}
     </View>
   );
@@ -240,12 +241,9 @@ const styles = StyleSheet.create({
   },
   message: {
     marginTop: 16,
-    ...Typography.labelSmall,
-    textTransform: 'uppercase',
   },
   inlineMessage: {
     marginTop: 12,
-    ...Typography.supportingSmall,
   },
   refreshContainer: {
     alignItems: 'center',

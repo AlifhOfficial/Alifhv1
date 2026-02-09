@@ -2,14 +2,19 @@
  * Seller Location Section
  * 
  * Location display with map and directions actions.
+ * Follows listings component patterns for consistency.
  */
 
 import React, { memo } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { MapPin, ExternalLink, Navigation, Globe } from 'lucide-react-native';
 
+import { Spacing, Radius } from '@/constants/theme';
+import { Label, Data, ButtonText } from '@/components/ui';
 import type { SellerLocationProps } from './types';
-import { styles } from './styles';
+
+const ICON_SIZE = 20;
+const ICON_SIZE_SM = 16;
 
 export const SellerLocation = memo(function SellerLocation({
   seller,
@@ -21,46 +26,95 @@ export const SellerLocation = memo(function SellerLocation({
   if (!seller.location && !seller.website) return null;
 
   return (
-    <View style={styles.locationSection}>
-      <Text style={[styles.sectionLabel, { color: colors.textTertiary }]}>LOCATION & LINKS</Text>
+    <View style={localStyles.section}>
+      <Label size="small" tone="muted">LOCATION & LINKS</Label>
       
       {seller.location && (
-        <View style={styles.locationTextRow}>
-          <MapPin size={18} color={colors.textSecondary} />
-          <Text style={[styles.locationText, { color: colors.text }]}>{seller.location}</Text>
+        <View style={localStyles.locationRow}>
+          <MapPin size={ICON_SIZE} color={colors.icon} style={{ marginTop: 2 }} />
+          <View style={localStyles.locationText}>
+            <Data size="medium">{seller.location}</Data>
+          </View>
         </View>
       )}
       
-      {/* Compact action row */}
-      <View style={styles.locationActionsCompact}>
+      {/* Action Buttons */}
+      <View style={localStyles.actions}>
         {seller.location && (
           <>
             <Pressable
-              style={[styles.compactBtn, { borderColor: colors.border }]}
+              style={({ pressed }) => [
+                localStyles.button,
+                { 
+                  borderColor: colors.border,
+                  opacity: pressed ? 0.7 : 1,
+                },
+              ]}
               onPress={onViewMap}
             >
-              <ExternalLink size={15} color={colors.text} />
-              <Text style={[styles.compactBtnText, { color: colors.text }]}>View Map</Text>
+              <ExternalLink size={ICON_SIZE_SM} color={colors.icon} />
+              <ButtonText size="small">View Map</ButtonText>
             </Pressable>
             <Pressable
-              style={[styles.compactBtn, { backgroundColor: colors.primary, borderColor: colors.primary }]}
+              style={({ pressed }) => [
+                localStyles.button,
+                { 
+                  borderColor: colors.border,
+                  opacity: pressed ? 0.7 : 1,
+                },
+              ]}
               onPress={onGetDirections}
             >
-              <Navigation size={15} color="#FFF" />
-              <Text style={[styles.compactBtnText, { color: '#FFF' }]}>Directions</Text>
+              <Navigation size={ICON_SIZE_SM} color={colors.icon} />
+              <ButtonText size="small">Directions</ButtonText>
             </Pressable>
           </>
         )}
         {seller.website && (
           <Pressable
-            style={[styles.compactBtn, { borderColor: colors.border }]}
+            style={({ pressed }) => [
+              localStyles.button,
+              { 
+                borderColor: colors.border,
+                opacity: pressed ? 0.7 : 1,
+              },
+            ]}
             onPress={onWebsite}
           >
-            <Globe size={15} color={colors.text} />
-            <Text style={[styles.compactBtnText, { color: colors.text }]}>Website</Text>
+            <Globe size={ICON_SIZE_SM} color={colors.icon} />
+            <ButtonText size="small">Website</ButtonText>
           </Pressable>
         )}
       </View>
     </View>
   );
+});
+
+const localStyles = StyleSheet.create({
+  section: {
+    gap: Spacing.md,
+  },
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: Spacing.sm,
+  },
+  locationText: {
+    flex: 1,
+    gap: 2,
+  },
+  actions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+  },
 });

@@ -7,7 +7,7 @@
  */
 
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { StyleSheet, View, Text, ScrollView } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
@@ -22,7 +22,7 @@ import {
   type MoreFiltersState,
 } from '@/components/sheets';
 import { CarCardM, CarCardMSkeleton, CarCardList, CarCardListSkeleton } from '@/components/cards';
-import { LogoLoader, Heading } from '@/components/ui';
+import { LogoLoader, Heading, Body } from '@/components/ui';
 import { searchApi, type ListingCard, type SearchParams, type SearchFacets, type SearchSortOption } from '@/lib/search-api';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -323,6 +323,8 @@ export default function BrowseScreen() {
           onPillPress={handleFilterPillPress}
           onSettingsPress={() => setSettingsSheetVisible(true)}
           settingsCount={moreFiltersCount}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
         />
       </View>
 
@@ -400,7 +402,7 @@ export default function BrowseScreen() {
           )
         ) : !listings || listings.length === 0 ? (
           <View style={styles.empty}>
-            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No cars found</Text>
+            <Body size="large" tone="secondary">No cars found</Body>
           </View>
         ) : (
           <>
@@ -491,9 +493,6 @@ const styles = StyleSheet.create({
   empty: {
     alignItems: 'center',
     paddingVertical: Spacing['3xl'],
-  },
-  emptyText: {
-    ...Typography.bodyLarge,
   },
   loadingMore: {
     alignItems: 'center',

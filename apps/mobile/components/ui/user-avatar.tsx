@@ -11,9 +11,10 @@
  */
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 import { useTheme } from '@/context/theme-context';
 import { Colors } from '@/constants/theme';
+import { Body } from './text';
 
 // DiceBear style - fun robot characters with transparent backgrounds
 const DICEBEAR_STYLE = 'bottts';
@@ -132,15 +133,9 @@ export function UserAvatar({
         />
       )}
       {showInitials && (
-        <Text style={[
-          styles.initials, 
-          { 
-            fontSize,
-            color: colors.text,
-          }
-        ]}>
+        <Body style={[styles.initials, { fontSize }]}>
           {getInitials(name)}
-        </Text>
+        </Body>
       )}
     </View>
   );

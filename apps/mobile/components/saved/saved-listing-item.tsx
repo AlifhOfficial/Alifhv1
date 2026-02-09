@@ -4,12 +4,12 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Text, Pressable, Alert } from 'react-native';
+import { StyleSheet, View, Pressable, Alert } from 'react-native';
 import { Image } from 'expo-image';
 import { CheckCircle2 } from 'lucide-react-native';
 
 import { Radius } from '@/constants/theme';
-import { Data, Supporting, Price, Label } from '@/components/ui';
+import { Data, Supporting, Price, Label, Body } from '@/components/ui';
 import { SavedListingCard } from '@/lib/saved-api';
 import type { ThemeColors } from './types';
 
@@ -122,7 +122,7 @@ export function SavedListingItem({ listing, colors }: SavedListingItemProps) {
         {/* Meta */}
         <View style={styles.meta}>
           <Supporting size="mini" tone="muted">{formatMileage(listing.mileage || 0)}</Supporting>
-          <Text style={[styles.metaDot, { color: colors.textMuted }]}>•</Text>
+          <Body size="mini" tone="muted" style={styles.metaDot}>•</Body>
           <Supporting size="mini" tone="muted">{displayEmirate}</Supporting>
         </View>
 

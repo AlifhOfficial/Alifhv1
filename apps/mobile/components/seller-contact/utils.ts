@@ -12,6 +12,13 @@ export function formatPrice(price: number): string {
 }
 
 /**
+ * Format mileage with km suffix
+ */
+export function formatMileage(mileage: number): string {
+  return `${mileage.toLocaleString('en-AE')} km`;
+}
+
+/**
  * Format member since date
  */
 export function formatMemberSince(date: string): string {

@@ -271,8 +271,8 @@ export default function RootLayout() {
   // Always render with full provider stack - onboarding is handled inside RootLayoutNav
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.dark.background }}>
-      <BottomSheetModalProvider>
-        <ThemeProvider>
+      <ThemeProvider>
+        <BottomSheetModalProvider>
           <TabBarProvider>
             <SearchProvider>
               <AuthProvider>
@@ -282,8 +282,8 @@ export default function RootLayout() {
               </AuthProvider>
             </SearchProvider>
           </TabBarProvider>
-        </ThemeProvider>
-      </BottomSheetModalProvider>
+        </BottomSheetModalProvider>
+      </ThemeProvider>
     </GestureHandlerRootView>
   );
 }

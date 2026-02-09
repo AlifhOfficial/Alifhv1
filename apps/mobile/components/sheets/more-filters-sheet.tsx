@@ -5,16 +5,16 @@
  */
 
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Platform, Switch } from 'react-native';
+import { View, StyleSheet, Pressable, Platform, Switch } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
-import { Check, ChevronDown, ChevronUp, LayoutGrid, List } from 'lucide-react-native';
+import { Check, ChevronDown, ChevronUp } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading } from '@/components/ui';
+import { Heading, Body, Label, ButtonText, Supporting } from '@/components/ui';
 import type { FacetBucket } from '@/lib/search-api';
 import { 
   BODY_TYPES, 
@@ -25,9 +25,9 @@ import {
 
 export type ViewMode = 'grid' | 'list';
 
-const VIEW_OPTIONS: { value: ViewMode; label: string; icon: typeof LayoutGrid }[] = [
-  { value: 'grid', label: 'Grid', icon: LayoutGrid },
-  { value: 'list', label: 'List', icon: List },
+const VIEW_OPTIONS: { value: ViewMode; label: string }[] = [
+  { value: 'grid', label: 'Grid' },
+  { value: 'list', label: 'List' },
 ];
 
 export interface MoreFiltersState {
@@ -215,10 +215,10 @@ export function MoreFiltersSheet({
           onPress={() => toggleSection(key)}
         >
           <View style={styles.sectionTitleRow}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>{title}</Text>
+            <Body size="large" style={[styles.sectionTitle, { color: colors.text }]}>{title}</Body>
             {selectedCount > 0 && (
               <View style={[styles.badge, { backgroundColor: colors.text }]}>
-                <Text style={[styles.badgeText, { color: colors.background }]}>{selectedCount}</Text>
+                <Label size="badge" style={{ color: colors.background }}>{selectedCount}</Label>
               </View>
             )}
           </View>
@@ -254,27 +254,26 @@ export function MoreFiltersSheet({
               styles.chip,
               { 
                 backgroundColor: isSelected ? colors.text : colors.surfaceSecondary,
-                borderColor: isSelected ? colors.text : colors.border,
+                borderColor: isSelected ? colors.text : colors.textMuted,
               },
             ]}
           >
-            <Text
+            <Body
+              size="small"
               style={[
                 styles.chipLabel,
-                { color: isSelected ? colors.background : colors.textSecondary },
+                { color: isSelected ? colors.background : colors.text },
               ]}
             >
               {option.label}
-            </Text>
+            </Body>
             {count > 0 && (
-              <Text
-                style={[
-                  styles.chipCount,
-                  { color: isSelected ? colors.background : colors.textTertiary },
-                ]}
+              <Supporting
+                size="mini"
+                style={{ color: isSelected ? colors.background : colors.textTertiary }}
               >
                 {count}
-              </Text>
+              </Supporting>
             )}
           </Pressable>
         );
@@ -292,11 +291,11 @@ export function MoreFiltersSheet({
       style={styles.toggleRow}
       onPress={onToggle}
     >
-      <Text style={[styles.toggleLabel, { color: colors.text }]}>{label}</Text>
+      <Body size="medium" style={{ color: colors.text }}>{label}</Body>
       <View style={[
         styles.checkbox,
         { 
-          borderColor: value ? colors.text : colors.border,
+          borderColor: value ? colors.text : colors.textMuted,
           backgroundColor: value ? colors.text : 'transparent',
         },
       ]}>
@@ -313,7 +312,7 @@ export function MoreFiltersSheet({
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
-      handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
+      handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.textMuted }]}
       stackBehavior="push"
       detached
       bottomInset={insets.bottom + 20}
@@ -328,60 +327,11 @@ export function MoreFiltersSheet({
             hitSlop={Spacing.md}
             style={({ pressed }) => [
               styles.closeButton,
-              { backgroundColor: pressed ? colors.surfacePressed : colors.surface }
+              { backgroundColor: pressed ? colors.surfacePressed : colors.surfaceSecondary }
             ]}
           >
-            <Ionicons name="close" size={18} color={colors.icon} />
+            <Ionicons name="close" size={18} color={colors.textSecondary} />
           </Pressable>
-        </View>
-
-        {/* View Mode Section */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <View style={styles.sectionTitleRow}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>View</Text>
-            </View>
-          </View>
-          <View style={[styles.sectionContent, styles.viewModeContent]}>
-            <View style={styles.viewModeRow}>
-              {VIEW_OPTIONS.map((option) => {
-                const selected = viewMode === option.value;
-                const Icon = option.icon;
-
-                return (
-                  <Pressable
-                    key={option.value}
-                    onPress={() => handleViewModeSelect(option.value)}
-                    style={({ pressed }) => [
-                      styles.viewModeButton,
-                      { 
-                        backgroundColor: selected 
-                          ? colors.text 
-                          : pressed 
-                            ? colors.surface 
-                            : colors.surfaceSecondary,
-                        borderColor: selected ? colors.text : colors.border,
-                      },
-                    ]}
-                  >
-                    <Icon 
-                      size={20} 
-                      color={selected ? colors.background : colors.textSecondary} 
-                      strokeWidth={2}
-                    />
-                    <Text
-                      style={[
-                        styles.viewModeLabel,
-                        { color: selected ? colors.background : colors.textSecondary },
-                      ]}
-                    >
-                      {option.label}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-          </View>
         </View>
 
         {/* Popular Section */}
@@ -485,18 +435,19 @@ export function MoreFiltersSheet({
                     styles.chip,
                     { 
                       backgroundColor: isSelected ? colors.text : colors.surfaceSecondary,
-                      borderColor: isSelected ? colors.text : colors.border,
+                      borderColor: isSelected ? colors.text : colors.textMuted,
                     },
                   ]}
                 >
-                  <Text
+                  <Body
+                    size="small"
                     style={[
                       styles.chipLabel,
-                      { color: isSelected ? colors.background : colors.textSecondary },
+                      { color: isSelected ? colors.background : colors.text },
                     ]}
                   >
                     {option.label}
-                  </Text>
+                  </Body>
                 </Pressable>
               );
             })}
@@ -509,18 +460,18 @@ export function MoreFiltersSheet({
           {hasValue && (
             <Pressable
               onPress={handleClear}
-              style={[styles.clearButton, { borderColor: colors.border }]}
+              style={[styles.clearButton, { borderColor: colors.textMuted }]}
             >
-              <Text style={[styles.clearButtonText, { color: colors.textSecondary }]}>Clear</Text>
+              <ButtonText size="medium" tone="secondary">Clear</ButtonText>
             </Pressable>
           )}
           <Pressable
             onPress={handleApply}
             style={[styles.applyButton, { backgroundColor: colors.text }]}
           >
-            <Text style={[styles.applyButtonText, { color: colors.background }]}>
+            <ButtonText size="medium" style={{ color: colors.background }}>
               Apply{activeCount > 0 ? ` (${activeCount})` : ''}
-            </Text>
+            </ButtonText>
           </Pressable>
         </View>
 
@@ -560,27 +511,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  viewModeContent: {
-    paddingBottom: Spacing.md,
-  },
-  viewModeRow: {
-    flexDirection: 'row',
-    gap: Spacing.md,
-  },
-  viewModeButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.sm,
-    paddingVertical: Spacing.md,
-    borderRadius: Radius.lg,
-    borderWidth: 1,
-  },
-  viewModeLabel: {
-    ...Typography.bodyMedium,
-    fontFamily: 'Inter_500Medium',
-  },
   section: {
     marginBottom: Spacing.sm,
   },
@@ -596,7 +526,6 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   sectionTitle: {
-    ...Typography.bodyLarge,
     fontFamily: 'Inter_600SemiBold',
   },
   badge: {
@@ -605,10 +534,6 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
     minWidth: 24,
     alignItems: 'center',
-  },
-  badgeText: {
-    ...Typography.labelBadge,
-    fontFamily: 'Inter_600SemiBold',
   },
   sectionContent: {
     paddingBottom: Spacing.md,
@@ -622,9 +547,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.xs,
-  },
-  toggleLabel: {
-    ...Typography.bodyMedium,
   },
   checkbox: {
     width: 22,
@@ -649,11 +571,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   chipLabel: {
-    ...Typography.chip,
     fontFamily: 'Inter_500Medium',
-  },
-  chipCount: {
-    ...Typography.supportingMini,
   },
   actions: {
     flexDirection: 'row',
@@ -668,19 +586,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  clearButtonText: {
-    ...Typography.bodyLarge,
-    fontFamily: 'Inter_600SemiBold',
-  },
   applyButton: {
     flex: 2,
     height: 48,
     borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  applyButtonText: {
-    ...Typography.bodyLarge,
-    fontFamily: 'Inter_600SemiBold',
   },
 });

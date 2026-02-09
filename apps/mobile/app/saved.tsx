@@ -162,7 +162,5 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_400Regular',
     textAlign: 'center',
   },
-  retryText: {
-    ...Typography.buttonMedium,
-  },
+  retryText: {},
 });

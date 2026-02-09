@@ -18,7 +18,6 @@ export * from './listing-timestamp';
 
 // Seller components
 export * from './seller-card';
-export * from './seller-profile-card';
 
 // Contact & Actions
 export * from './contact-section';

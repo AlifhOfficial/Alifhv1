@@ -3,11 +3,12 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Text, ScrollView } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HomeHeader, SavedTube } from '@/components/home';
-import { Colors, Layout, Typography } from '@/constants/theme';
+import { Colors, Layout } from '@/constants/theme';
+import { Body } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 
 export default function HomeScreen() {
@@ -28,9 +29,9 @@ export default function HomeScreen() {
         
         {/* Placeholder for more content */}
         <View style={styles.placeholder}>
-          <Text style={[styles.text, { color: colors.textSecondary }]}>
+          <Body size="large" tone="secondary" style={styles.text}>
             Browse the latest listings
-          </Text>
+          </Body>
         </View>
       </ScrollView>
     </View>
@@ -52,6 +53,5 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   text: {
-    ...Typography.bodyLarge,
   },
 });

@@ -5,9 +5,10 @@
  */
 
 import React, { useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Platform } from 'react-native';
+import { View, StyleSheet, ScrollView, Pressable, Platform } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { X } from 'lucide-react-native';
+import { Body, ButtonText } from '@/components/ui';
 import Animated, {
   useAnimatedStyle,
   withTiming,
@@ -121,12 +122,14 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
             >
               {({ pressed }) => (
                 <View style={[styles.pillInner, { opacity: pressed ? 0.7 : 1 }]}>
-                  <Text 
-                    style={[styles.pillText, { color: colors.textSecondary }]}
+                  <Body 
+                    size="small"
+                    tone="secondary"
+                    style={styles.pillText}
                     numberOfLines={1}
                   >
                     {chip.label}
-                  </Text>
+                  </Body>
                   <X 
                     size={12} 
                     color={colors.textTertiary} 
@@ -155,9 +158,9 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
               hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
             >
               {({ pressed }) => (
-                <Text style={[styles.clearText, { color: colors.primaryForeground, opacity: pressed ? 0.7 : 1 }]}>
+                <ButtonText size="small" style={[styles.clearText, { color: colors.primaryForeground, opacity: pressed ? 0.7 : 1 }]}>
                   Clear all
-                </Text>
+                </ButtonText>
               )}
             </Pressable>
           </AnimatedView>

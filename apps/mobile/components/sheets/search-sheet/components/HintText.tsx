@@ -3,8 +3,9 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Typography, Spacing } from '@/constants/theme';
+import { View, StyleSheet } from 'react-native';
+import { Spacing } from '@/constants/theme';
+import { Body } from '@/components/ui';
 import type { ThemedComponentProps } from '../types';
 
 interface HintTextProps extends ThemedComponentProps {
@@ -14,7 +15,7 @@ interface HintTextProps extends ThemedComponentProps {
 export function HintText({ text, colors }: HintTextProps) {
   return (
     <View style={styles.container}>
-      <Text style={[styles.text, { color: colors.textTertiary }]}>{text}</Text>
+      <Body size="small" tone="muted">{text}</Body>
     </View>
   );
 }
@@ -23,8 +24,5 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     paddingVertical: Spacing['5xl'],
-  },
-  text: {
-    ...Typography.link,
   },
 });

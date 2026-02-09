@@ -3,9 +3,10 @@
  */
 
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Typography, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
+import { ButtonText, Body } from '@/components/ui';
 import type { ThemedComponentProps } from '../types';
 
 interface SuggestionListItemProps extends ThemedComponentProps {
@@ -34,14 +35,14 @@ export function SuggestionListItem({
       ]}
       onPress={onPress}
     >
-      <Text style={[styles.text, { color: colors.text }]} numberOfLines={1}>
+      <ButtonText size="medium" style={styles.text} numberOfLines={1}>
         {text}
-      </Text>
+      </ButtonText>
       <View style={styles.right}>
         {count !== undefined && count > 0 && (
-          <Text style={[styles.count, { color: colors.textTertiary }]}>
+          <Body size="small" tone="muted">
             {count.toLocaleString()}
-          </Text>
+          </Body>
         )}
         <Ionicons name="chevron-forward" size={16} color={colors.textTertiary} />
       </View>
@@ -58,7 +59,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
   },
   text: {
-    ...Typography.buttonMedium,
     flex: 1,
   },
   right: {
@@ -66,7 +66,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.sm,
   },
-  count: {
-    ...Typography.link,
-  },
+  count: {},
 });

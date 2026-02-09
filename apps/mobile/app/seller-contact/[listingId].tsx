@@ -10,7 +10,6 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   StyleSheet,
   View,
-  Text,
   ScrollView,
   Pressable,
   Alert,
@@ -23,7 +22,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChevronLeft } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
+import { Label, Body, Supporting } from '@/components/ui/text';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { getListingDetailed, ListingDetailed } from '@/lib/listing-api';
@@ -232,9 +232,9 @@ export default function SellerContactScreen() {
         <Stack.Screen options={{ headerShown: false }} />
         <Header colors={colors} insets={insets} onBack={handleBack} />
         <View style={styles.errorContainer}>
-          <Text style={[styles.errorText, { color: colors.textSecondary }]}>
+          <Supporting size="medium">
             Unable to load seller information
-          </Text>
+          </Supporting>
         </View>
       </View>
     );
@@ -273,8 +273,8 @@ export default function SellerContactScreen() {
         {/* About Section */}
         {seller.description && (
           <View style={styles.section}>
-            <Text style={[styles.sectionLabel, { color: colors.textTertiary }]}>ABOUT</Text>
-            <Text style={[styles.descriptionText, { color: colors.text }]}>{seller.description}</Text>
+            <Label size="small" tone="muted">ABOUT</Label>
+            <Body size="medium">{seller.description}</Body>
           </View>
         )}
 
@@ -407,17 +407,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  errorText: {
-    ...Typography.bodyLarge,
-  },
   section: {
     gap: Spacing.sm,
-  },
-  sectionLabel: {
-    ...Typography.labelMedium,
-    marginBottom: Spacing.xs,
-  },
-  descriptionText: {
-    ...Typography.bodyMedium,
   },
 });

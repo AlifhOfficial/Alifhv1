@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Typography, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 interface FilterInputProps {
@@ -64,7 +64,6 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    ...Typography.buttonMedium,
     padding: 0,
   },
 });

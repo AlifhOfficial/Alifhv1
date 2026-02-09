@@ -297,7 +297,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
   },
-  retryText: {
-    ...Typography.buttonMedium,
-  },
+  retryText: {},
 });

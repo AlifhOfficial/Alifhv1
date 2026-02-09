@@ -3,8 +3,9 @@
  */
 
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { Typography, Spacing } from '@/constants/theme';
+import { View, Pressable, StyleSheet } from 'react-native';
+import { Spacing } from '@/constants/theme';
+import { Data } from '@/components/ui';
 import type { ThemedComponentProps } from '../types';
 
 interface SectionHeaderProps extends ThemedComponentProps {
@@ -23,17 +24,17 @@ export function SectionHeader({
 }: SectionHeaderProps) {
   return (
     <View style={styles.container}>
-      <Text style={[styles.title, { color: colors.textSecondary }]}>
+      <Data size="mini" tone="secondary">
         {title}
         {count !== undefined && count > 0 && (
-          <Text style={{ color: colors.textTertiary }}> ({count})</Text>
+          <Data size="mini" tone="muted"> ({count})</Data>
         )}
-      </Text>
+      </Data>
       {onClear && (
         <Pressable onPress={onClear} hitSlop={8}>
-          <Text style={[styles.clearLink, { color: colors.primary }]}>
+          <Data size="mini" tone="primary" style={styles.clearLink}>
             {clearLabel}
-          </Text>
+          </Data>
         </Pressable>
       )}
     </View>
@@ -48,11 +49,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
     paddingHorizontal: Spacing.xs,
   },
-  title: {
-    ...Typography.dataMini,
-  },
   clearLink: {
-    ...Typography.dataMini,
     fontFamily: 'Inter_600SemiBold',
   },
 });

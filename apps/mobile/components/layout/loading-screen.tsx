@@ -4,11 +4,12 @@
  */
 
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/theme-context';
 import { Colors } from '@/constants/theme';
+import { Display, Label } from '@/components/ui';
 
 export function LoadingScreen() {
   const { colorScheme } = useTheme();
@@ -17,12 +18,12 @@ export function LoadingScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.content}>
-        <Text style={[styles.brandName, { color: colors.text }]}>
+        <Display size="large" style={styles.brandName}>
           Revvup
-        </Text>
-        <Text style={[styles.tagline, { color: colors.textTertiary }]}>
+        </Display>
+        <Label size="small" tone="muted" style={styles.tagline}>
           Revved up
-        </Text>
+        </Label>
       </View>
     </SafeAreaView>
   );

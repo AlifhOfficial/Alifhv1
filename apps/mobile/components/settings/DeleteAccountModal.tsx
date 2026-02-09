@@ -10,7 +10,6 @@ import { Loader2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Heading, Body, Supporting, ButtonText } from '@/components/ui';
-import { Typography } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 interface DeleteAccountModalProps {
@@ -186,7 +185,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     paddingHorizontal: 16,
-    ...Typography.bodyMedium,
     fontFamily: 'Inter_500Medium',
   },
   buttons: {

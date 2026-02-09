@@ -4,15 +4,15 @@
  */
 
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, TextInput, Platform } from 'react-native';
+import { View, StyleSheet, Pressable, TextInput, Platform } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Label } from '@/components/ui';
+import { Heading, Label, Body, ButtonText } from '@/components/ui';
 
 const MILEAGE_PRESETS = [
   { label: 'Under 20K', max: 20000 },
@@ -192,7 +192,7 @@ export function YearMileageFilterSheet({
                 maxLength={4}
               />
             </View>
-            <Text style={[styles.rangeDash, { color: colors.textTertiary }]}>–</Text>
+            <Body size="large" tone="muted" style={styles.rangeDash}>–</Body>
             <View style={styles.inputWrapper}>
               <TextInput
                 style={[
@@ -238,14 +238,15 @@ export function YearMileageFilterSheet({
                     },
                   ]}
                 >
-                  <Text
+                  <Body
+                    size="small"
                     style={[
                       styles.presetLabel,
                       { color: isActive ? colors.background : colors.textSecondary },
                     ]}
                   >
                     {preset.label}
-                  </Text>
+                  </Body>
                 </Pressable>
               );
             })}
@@ -270,7 +271,7 @@ export function YearMileageFilterSheet({
                 onChangeText={setLocalMileageMin}
               />
             </View>
-            <Text style={[styles.rangeDash, { color: colors.textTertiary }]}>–</Text>
+            <Body size="large" tone="muted" style={styles.rangeDash}>–</Body>
             <View style={styles.inputWrapper}>
               <TextInput
                 style={[
@@ -298,14 +299,14 @@ export function YearMileageFilterSheet({
               onPress={handleClear}
               style={[styles.clearButton, { borderColor: colors.border }]}
             >
-              <Text style={[styles.clearButtonText, { color: colors.textSecondary }]}>Clear</Text>
+              <ButtonText size="medium" tone="secondary">Clear</ButtonText>
             </Pressable>
           )}
           <Pressable
             onPress={handleApply}
             style={[styles.applyButton, { backgroundColor: colors.text }]}
           >
-            <Text style={[styles.applyButtonText, { color: colors.background }]}>Apply</Text>
+            <ButtonText size="medium" style={{ color: colors.background }}>Apply</ButtonText>
           </Pressable>
         </View>
 
@@ -361,7 +362,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   presetLabel: {
-    ...Typography.chip,
     fontFamily: 'Inter_500Medium',
   },
   rangeRow: {
@@ -377,11 +377,9 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     borderWidth: 1,
     paddingHorizontal: Spacing.md,
-    ...Typography.bodyLarge,
     fontFamily: 'Inter_500Medium',
   },
   rangeDash: {
-    ...Typography.bodyLarge,
   },
   actions: {
     flexDirection: 'row',
@@ -395,19 +393,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  clearButtonText: {
-    ...Typography.bodyLarge,
-    fontFamily: 'Inter_600SemiBold',
-  },
   applyButton: {
     flex: 2,
     height: 48,
     borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  applyButtonText: {
-    ...Typography.bodyLarge,
-    fontFamily: 'Inter_600SemiBold',
   },
 });

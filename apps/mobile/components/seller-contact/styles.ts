@@ -1,19 +1,36 @@
 /**
  * Seller Contact Shared Styles
+ * 
+ * Clean, minimal styles following listings component patterns.
+ * Uses theme constants only - no Typography spreads.
  */
 
 import { StyleSheet, Dimensions } from 'react-native';
-import { Spacing, Radius, Typography } from '@/constants/theme';
+import { Spacing, Radius } from '@/constants/theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-// 16:9 aspect ratio for hero image - cinematic look
 const HERO_IMAGE_HEIGHT = SCREEN_WIDTH * (9 / 16);
 
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+export const AVATAR_SIZE = 56;
+export const LOGO_SIZE = 64;
+export const ICON_SIZE = 20;
+export const ICON_SIZE_SM = 16;
+export const ICON_SIZE_XS = 14;
+
+// ============================================================================
+// STYLES
+// ============================================================================
+
 export const styles = StyleSheet.create({
-  // Hero Image - Full-width cinematic cover (edge-to-edge)
+  // ─────────────────────────────────────────────────────
+  // Hero Image - Full-width cinematic cover
+  // ─────────────────────────────────────────────────────
   heroImageContainer: {
     marginHorizontal: -Spacing.lg,
-    // marginTop is set dynamically to -(topInset + Spacing.lg)
     marginBottom: Spacing.md,
     height: HERO_IMAGE_HEIGHT,
     overflow: 'hidden',
@@ -22,15 +39,10 @@ export const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  heroImageGradient: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: HERO_IMAGE_HEIGHT * 0.6,
-  },
 
-  // Hero Section
+  // ─────────────────────────────────────────────────────
+  // Hero Section - Seller info with avatar
+  // ─────────────────────────────────────────────────────
   heroSection: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -41,54 +53,44 @@ export const styles = StyleSheet.create({
     flex: 1,
     gap: 4,
   },
-  avatarLarge: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+  avatar: {
+    width: AVATAR_SIZE,
+    height: AVATAR_SIZE,
+    borderRadius: AVATAR_SIZE / 2,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
     flexShrink: 0,
   },
-  logoContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: 0,
+  logo: {
+    width: LOGO_SIZE,
+    height: LOGO_SIZE,
+    borderRadius: Radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
     flexShrink: 0,
   },
-  avatarImg: {
+  avatarImage: {
     width: '100%',
     height: '100%',
-  },
-  avatarInitial: {
-    ...Typography.headingLarge,
   },
   nameRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.sm,
     flexWrap: 'wrap',
   },
-  sellerName: {
-    ...Typography.headingMedium,
-    flexShrink: 1,
-  },
-  metaText: {
-    ...Typography.supportingSmall,
-    marginTop: 2,
-  },
-  tierPill: {
-    paddingHorizontal: 6,
+  tierBadge: {
+    paddingHorizontal: Spacing.sm - 2,
     paddingVertical: 2,
     borderRadius: Radius.none,
   },
-  tierText: {
-    ...Typography.labelBadge,
-    fontSize: 9,
-    letterSpacing: 1,
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    marginTop: 2,
   },
   ratingRow: {
     flexDirection: 'row',
@@ -96,70 +98,48 @@ export const styles = StyleSheet.create({
     gap: 4,
     marginTop: 4,
   },
-  ratingValue: {
-    ...Typography.dataSmall,
-  },
-  reviewCount: {
-    ...Typography.supportingSmall,
-  },
-  memberRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    marginTop: 2,
-  },
-  memberText: {
-    ...Typography.supportingSmall,
-  },
 
-  // CTA Row
-  ctaRow: {
+  // ─────────────────────────────────────────────────────
+  // CTA / Actions Row
+  // ─────────────────────────────────────────────────────
+  actionsRow: {
     flexDirection: 'row',
     gap: Spacing.md,
   },
-  primaryCta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.sm,
-    paddingVertical: 16,
-    paddingHorizontal: Spacing.lg,
-    borderRadius: Radius.full,
-  },
-  primaryCtaText: {
-    ...Typography.buttonMedium,
-    color: '#FFF',
-  },
-  secondaryCta: {
+  primaryButton: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-    paddingVertical: 16,
+    paddingVertical: Spacing.lg,
+    borderRadius: Radius.full,
+  },
+  secondaryButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+    paddingVertical: Spacing.lg,
     borderRadius: Radius.full,
     borderWidth: 1,
   },
-  secondaryCtaText: {
-    ...Typography.buttonMedium,
-  },
-  phoneText: {
-    ...Typography.dataMedium,
+  phoneLink: {
+    alignItems: 'center',
+    marginTop: Spacing.sm,
   },
 
-  // Section
+  // ─────────────────────────────────────────────────────
+  // Section Container
+  // ─────────────────────────────────────────────────────
   section: {
-    gap: Spacing.sm,
-  },
-  sectionLabel: {
-    ...Typography.labelMedium,
-    marginBottom: Spacing.xs,
-  },
-  descriptionText: {
-    ...Typography.bodyMedium,
+    gap: Spacing.md,
   },
 
-  // Stats Grid
+  // ─────────────────────────────────────────────────────
+  // Stats Grid - Private seller stats
+  // ─────────────────────────────────────────────────────
   statsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -168,7 +148,6 @@ export const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderBottomWidth: 1,
     gap: Spacing.md,
-    marginBottom: Spacing.md,
   },
   statItem: {
     width: '45%',
@@ -179,37 +158,30 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-  statLabel: {
-    ...Typography.labelSmall,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  statValue: {
-    ...Typography.dataMedium,
-  },
 
-  // Tags
+  // ─────────────────────────────────────────────────────
+  // Tags Row
+  // ─────────────────────────────────────────────────────
   tagsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: Spacing.sm,
   },
   tag: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
     borderRadius: Radius.full,
   },
-  tagText: {
-    ...Typography.chip,
-  },
 
-  // Listings
-  listingsRow: {
+  // ─────────────────────────────────────────────────────
+  // Seller Listings Grid
+  // ─────────────────────────────────────────────────────
+  listingsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: Spacing.md,
   },
-  listingItem: {
+  listingCard: {
     width: '47%',
     borderRadius: Radius.md,
     overflow: 'hidden',
@@ -220,25 +192,9 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'relative',
   },
-  thumbImg: {
+  listingThumbImage: {
     width: '100%',
     height: '100%',
-  },
-  listingTitle: {
-    ...Typography.dataMini,
-    paddingHorizontal: Spacing.sm,
-    paddingTop: Spacing.sm,
-  },
-  listingModel: {
-    ...Typography.supportingSmall,
-    paddingHorizontal: Spacing.sm,
-    marginTop: 2,
-  },
-  listingPrice: {
-    ...Typography.dataMedium,
-    paddingHorizontal: Spacing.sm,
-    paddingBottom: Spacing.md,
-    paddingTop: 6,
   },
   listingBadge: {
     position: 'absolute',
@@ -248,7 +204,11 @@ export const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: Radius.none,
   },
-  viewAllBtn: {
+  listingContent: {
+    padding: Spacing.sm,
+    gap: 2,
+  },
+  viewAllButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -258,22 +218,15 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     marginTop: Spacing.sm,
   },
-  viewAllBtnText: {
-    ...Typography.buttonMedium,
-  },
 
+  // ─────────────────────────────────────────────────────
   // Financing Calculator
-  emiCompact: {
+  // ─────────────────────────────────────────────────────
+  emiDisplay: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: Spacing.sm,
-  },
-  emiCompactLabel: {
-    ...Typography.supportingSmall,
-  },
-  emiCompactValue: {
-    ...Typography.priceTag,
+    marginBottom: Spacing.md,
   },
   calcRow: {
     flexDirection: 'row',
@@ -282,7 +235,6 @@ export const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   calcLabel: {
-    ...Typography.supportingSmall,
     width: 40,
   },
   calcOptions: {
@@ -292,38 +244,29 @@ export const styles = StyleSheet.create({
   },
   calcChip: {
     paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingHorizontal: Spacing.md,
     borderRadius: Radius.full,
     borderWidth: 1,
   },
-  calcChipText: {
-    ...Typography.chip,
-  },
-  calcDisclaimer: {
-    ...Typography.supportingSmall,
-    marginTop: Spacing.xs,
-  },
 
-  // Location
-  locationSection: {
-    gap: Spacing.md,
-  },
-  locationTextRow: {
+  // ─────────────────────────────────────────────────────
+  // Location Section
+  // ─────────────────────────────────────────────────────
+  locationRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: Spacing.sm,
   },
   locationText: {
-    ...Typography.bodyMedium,
     flex: 1,
+    gap: 2,
   },
-  locationActionsCompact: {
+  locationActions: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: Spacing.sm,
-    marginTop: Spacing.xs,
   },
-  compactBtn: {
+  compactButton: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
@@ -331,8 +274,5 @@ export const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     borderRadius: Radius.full,
     borderWidth: 1,
-  },
-  compactBtnText: {
-    ...Typography.buttonSmall,
   },
 });

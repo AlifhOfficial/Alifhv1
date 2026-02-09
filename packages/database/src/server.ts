@@ -54,5 +54,6 @@ export {
   invalidateUserStats,
   invalidateUserMyListings,
   invalidateUserBookings,
+  invalidateUserListingsInSearch,
   invalidateAllCaches,
 } from './caches/invalidation';

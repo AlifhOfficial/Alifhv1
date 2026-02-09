@@ -16,7 +16,7 @@ import {
   buildDuplicateRejectionUpdate,
   type DiditSessionData,
 } from '@/lib/kyc/update-builder';
-import { db, kycRecord, userProfile, eq, invalidateUserProfile, invalidateUserSession } from '@alifh/database';
+import { db, kycRecord, userProfile, eq, invalidateUserProfile, invalidateUserSession, invalidateUserListingsInSearch } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 
 export const runtime = 'nodejs';
@@ -86,6 +86,7 @@ export async function POST(req: NextRequest) {
         
         invalidateUserProfile(user.id);
         invalidateUserSession(user.id);
+        invalidateUserListingsInSearch(user.id);
         
         return NextResponse.json({
           success: false,
@@ -118,6 +119,8 @@ export async function POST(req: NextRequest) {
 
     invalidateUserProfile(user.id);
     invalidateUserSession(user.id);
+    // Also invalidate listing caches that contain seller KYC status
+    invalidateUserListingsInSearch(user.id);
 
     return NextResponse.json({
       success: true,

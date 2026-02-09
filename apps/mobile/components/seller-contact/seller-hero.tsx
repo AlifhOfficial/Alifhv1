@@ -2,19 +2,25 @@
  * Seller Hero Section
  * 
  * Displays seller hero image, name, avatar, verification badges, and member info.
+ * Follows listings component patterns for consistency.
  */
 
 import React, { memo } from 'react';
-import { View, Text } from 'react-native';
+import { View, StyleSheet, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
-import { LinearGradient } from 'expo-linear-gradient';
 import { CheckCircle2, Star, Clock } from 'lucide-react-native';
 
-import { Spacing } from '@/constants/theme';
-import { Label } from '@/components/ui';
+import { Spacing, Radius } from '@/constants/theme';
+import { Label, Heading, Supporting, Data } from '@/components/ui';
 import type { SellerHeroProps } from './types';
 import { formatMemberSince } from './utils';
-import { styles } from './styles';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const HERO_IMAGE_HEIGHT = SCREEN_WIDTH * (9 / 16);
+const AVATAR_SIZE = 56;
+const LOGO_SIZE = 64;
+const ICON_SIZE_SM = 16;
+const ICON_SIZE_XS = 14;
 
 export const SellerHero = memo(function SellerHero({ seller, colors, topInset }: SellerHeroProps) {
   const hasHeroImage = seller.heroImage && seller.isDealer;
@@ -23,29 +29,29 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
     <>
       {/* Hero/Cover Image - Dealers only, fills to top edge */}
       {hasHeroImage && (
-        <View style={[styles.heroImageContainer, { marginTop: -(topInset + Spacing.lg) }]}>
+        <View style={[localStyles.heroImageContainer, { marginTop: -(topInset + Spacing.lg) }]}>
           <Image
             source={{ uri: seller.heroImage! }}
-            style={styles.heroImage}
+            style={localStyles.heroImage}
             contentFit="cover"
             transition={200}
           />
         </View>
       )}
 
-      <View style={styles.heroSection}>
-        <View style={styles.heroInfo}>
-          {/* Name + Badge */}
-          <View style={styles.nameRow}>
-            <Text style={[styles.sellerName, { color: colors.text }]} numberOfLines={1}>
+      <View style={localStyles.heroSection}>
+        <View style={localStyles.heroInfo}>
+          {/* Name + Badges */}
+          <View style={localStyles.nameRow}>
+            <Heading size="medium" numberOfLines={1} style={{ flexShrink: 1 }}>
               {seller.name}
-            </Text>
+            </Heading>
             {seller.isVerified && (
-              <CheckCircle2 size={18} color={colors.primary} />
+              <CheckCircle2 size={ICON_SIZE_SM} color={colors.primary} />
             )}
             {seller.tier?.toLowerCase() === 'blk' && (
-              <View style={[styles.tierPill, { backgroundColor: colors.blkBadgeBackground }]}>
-                <Label size="badge" uppercase={false} style={[styles.tierText, { color: colors.blkBadgeText }]}>
+              <View style={[localStyles.tierBadge, { backgroundColor: colors.blkBadgeBackground }]}>
+                <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>
                   BLK
                 </Label>
               </View>
@@ -53,29 +59,29 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
           </View>
           
           {/* Seller Type */}
-          <Text style={[styles.metaText, { color: colors.textSecondary }]}>
+          <Supporting size="small">
             {seller.isDealer ? 'Verified Dealer' : 'Private Seller'}
-          </Text>
+          </Supporting>
 
           {/* Member Since */}
           {seller.memberSince && (
-            <View style={styles.memberRow}>
-              <Clock size={13} color={colors.textTertiary} />
-              <Text style={[styles.memberText, { color: colors.textTertiary }]}>
+            <View style={localStyles.metaRow}>
+              <Clock size={ICON_SIZE_XS} color={colors.iconMuted} />
+              <Supporting size="mini" tone="muted">
                 Member since {formatMemberSince(seller.memberSince)}
-              </Text>
+              </Supporting>
             </View>
           )}
 
-          {/* Rating - inline */}
-          {seller.rating && (
-            <View style={styles.ratingRow}>
-              <Star size={14} color="#F59E0B" fill="#F59E0B" />
-              <Text style={[styles.ratingValue, { color: colors.text }]}>{seller.rating.toFixed(1)}</Text>
-              {seller.reviewCount && (
-                <Text style={[styles.reviewCount, { color: colors.textSecondary }]}>
+          {/* Rating */}
+          {seller.rating != null && (
+            <View style={localStyles.ratingRow}>
+              <Star size={ICON_SIZE_XS} color={colors.warning} fill={colors.warning} />
+              <Data size="small">{seller.rating.toFixed(1)}</Data>
+              {seller.reviewCount != null && (
+                <Supporting size="small">
                   ({seller.reviewCount})
-                </Text>
+                </Supporting>
               )}
             </View>
           )}
@@ -83,22 +89,90 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
 
         {/* Avatar - Right side (squared for dealers, rounded for private) */}
         <View style={[
-          seller.isDealer ? styles.logoContainer : styles.avatarLarge, 
+          seller.isDealer ? localStyles.logo : localStyles.avatar, 
           { backgroundColor: colors.surfaceSecondary }
         ]}>
           {seller.avatar ? (
             <Image 
               source={{ uri: seller.avatar }} 
-              style={styles.avatarImg} 
+              style={localStyles.avatarImage} 
               contentFit="cover"
             />
           ) : (
-            <Text style={[styles.avatarInitial, { color: colors.textSecondary }]}>
+            <Heading size="large" tone="secondary">
               {seller.name.charAt(0).toUpperCase()}
-            </Text>
+            </Heading>
           )}
         </View>
       </View>
     </>
   );
+});
+
+const localStyles = StyleSheet.create({
+  heroImageContainer: {
+    marginHorizontal: -Spacing.lg,
+    marginBottom: Spacing.md,
+    height: HERO_IMAGE_HEIGHT,
+    overflow: 'hidden',
+  },
+  heroImage: {
+    width: '100%',
+    height: '100%',
+  },
+  heroSection: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: Spacing.md,
+  },
+  heroInfo: {
+    flex: 1,
+    gap: 4,
+  },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    flexWrap: 'wrap',
+  },
+  tierBadge: {
+    paddingHorizontal: Spacing.sm - 2,
+    paddingVertical: 2,
+    borderRadius: Radius.none,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    marginTop: 2,
+  },
+  ratingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 4,
+  },
+  avatar: {
+    width: AVATAR_SIZE,
+    height: AVATAR_SIZE,
+    borderRadius: AVATAR_SIZE / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    flexShrink: 0,
+  },
+  logo: {
+    width: LOGO_SIZE,
+    height: LOGO_SIZE,
+    borderRadius: Radius.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    flexShrink: 0,
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+  },
 });

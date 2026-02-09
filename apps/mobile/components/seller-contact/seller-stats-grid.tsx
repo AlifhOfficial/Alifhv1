@@ -2,14 +2,18 @@
  * Seller Stats Grid
  * 
  * Stats for private sellers: verification status, listings count, response metrics.
+ * Follows listings component patterns for consistency.
  */
 
 import React, { memo } from 'react';
-import { View, Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { CheckCircle2, Car, Clock, MessageCircle } from 'lucide-react-native';
 
+import { Spacing } from '@/constants/theme';
+import { Label, Data } from '@/components/ui';
 import type { SellerStatsGridProps } from './types';
-import { styles } from './styles';
+
+const ICON_SIZE = 14;
 
 export const SellerStatsGrid = memo(function SellerStatsGrid({
   seller,
@@ -27,50 +31,69 @@ export const SellerStatsGrid = memo(function SellerStatsGrid({
     ? 'Phone' 
     : 'N/A';
 
+  const isVerified = seller.emailVerified || seller.phoneVerified;
+
   return (
-    <View style={[styles.statsGrid, { borderColor: colors.border }]}>
+    <View style={[localStyles.grid, { borderColor: colors.border }]}>
       {/* Verified Status */}
-      <View style={styles.statItem}>
-        <View style={styles.statHeader}>
+      <View style={localStyles.item}>
+        <View style={localStyles.header}>
           <CheckCircle2 
-            size={14} 
-            color={seller.emailVerified || seller.phoneVerified ? colors.success : colors.textTertiary} 
+            size={ICON_SIZE} 
+            color={isVerified ? colors.success : colors.iconMuted} 
           />
-          <Text style={[styles.statLabel, { color: colors.textTertiary }]}>STATUS</Text>
+          <Label size="badge" tone="muted">STATUS</Label>
         </View>
-        <Text style={[styles.statValue, { color: colors.text }]}>
-          {verificationStatus}
-        </Text>
+        <Data size="small">{verificationStatus}</Data>
       </View>
 
       {/* Listings Count */}
-      <View style={styles.statItem}>
-        <View style={styles.statHeader}>
-          <Car size={14} color={colors.textTertiary} />
-          <Text style={[styles.statLabel, { color: colors.textTertiary }]}>LISTINGS</Text>
+      <View style={localStyles.item}>
+        <View style={localStyles.header}>
+          <Car size={ICON_SIZE} color={colors.iconMuted} />
+          <Label size="badge" tone="muted">LISTINGS</Label>
         </View>
-        <Text style={[styles.statValue, { color: colors.text }]}>
-          {listingsCount}
-        </Text>
+        <Data size="small">{listingsCount}</Data>
       </View>
 
       {/* Response Time placeholder */}
-      <View style={styles.statItem}>
-        <View style={styles.statHeader}>
-          <Clock size={14} color={colors.textTertiary} />
-          <Text style={[styles.statLabel, { color: colors.textTertiary }]}>RESPONSE</Text>
+      <View style={localStyles.item}>
+        <View style={localStyles.header}>
+          <Clock size={ICON_SIZE} color={colors.iconMuted} />
+          <Label size="badge" tone="muted">RESPONSE</Label>
         </View>
-        <Text style={[styles.statValue, { color: colors.textTertiary }]}>N/A</Text>
+        <Data size="small" tone="muted">N/A</Data>
       </View>
 
       {/* Response Rate placeholder */}
-      <View style={styles.statItem}>
-        <View style={styles.statHeader}>
-          <MessageCircle size={14} color={colors.textTertiary} />
-          <Text style={[styles.statLabel, { color: colors.textTertiary }]}>RATE</Text>
+      <View style={localStyles.item}>
+        <View style={localStyles.header}>
+          <MessageCircle size={ICON_SIZE} color={colors.iconMuted} />
+          <Label size="badge" tone="muted">RATE</Label>
         </View>
-        <Text style={[styles.statValue, { color: colors.textTertiary }]}>N/A</Text>
+        <Data size="small" tone="muted">N/A</Data>
       </View>
     </View>
   );
+});
+
+const localStyles = StyleSheet.create({
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingVertical: Spacing.md,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    gap: Spacing.md,
+  },
+  item: {
+    width: '45%',
+    gap: 4,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
 });

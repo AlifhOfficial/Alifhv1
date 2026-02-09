@@ -11,7 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Label } from '@/components/ui';
+import { Heading, Body } from '@/components/ui';
 
 interface FeaturesSheetProps {
   visible: boolean;
@@ -67,48 +67,51 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
-      handleIndicatorStyle={{ backgroundColor: colors.border, width: 36 }}
-      stackBehavior="push"
+      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
+      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
       detached
       bottomInset={insets.bottom + 20}
       style={styles.sheetContainer}
     >
-      <View style={styles.header}>
-        <Heading size="medium" style={{ color: colors.text }}>All Features</Heading>
-        <Pressable
-          onPress={onClose}
-          hitSlop={Spacing.md}
-          style={({ pressed }) => [
-            styles.closeButton,
-            { backgroundColor: pressed ? colors.surfacePressed : colors.surface },
-          ]}
-        >
-          <Ionicons name="close" size={18} color={colors.icon} />
-        </Pressable>
-      </View>
-
-      <BottomSheetScrollView
-        style={styles.scrollView}
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + Spacing['3xl'] }]}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.badgesContainer}>
-          {features.map((feature, idx) => (
-            <View 
-              key={idx} 
-              style={[
-                styles.badge,
-                { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
-              ]}
-            >
-              <Label size="badge" uppercase={false} tone="secondary">
-                {formatEnumValue(feature)}
-              </Label>
-            </View>
-          ))}
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <Heading size="medium">All Features</Heading>
+          <Pressable
+            onPress={onClose}
+            hitSlop={Spacing.md}
+            style={({ pressed }) => [
+              styles.closeButton,
+              { backgroundColor: pressed ? colors.fill : colors.fillSecondary },
+            ]}
+          >
+            <Ionicons name="close" size={18} color={colors.textSecondary} />
+          </Pressable>
         </View>
-      </BottomSheetScrollView>
+
+        <BottomSheetScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.badgesContainer}>
+            {features.map((feature, idx) => (
+              <View 
+                key={idx} 
+                style={[
+                  styles.badge,
+                  { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+                ]}
+              >
+                <Body size="small" tone="secondary">
+                  {formatEnumValue(feature)}
+                </Body>
+              </View>
+            ))}
+          </View>
+        </BottomSheetScrollView>
+
+        <View style={{ height: insets.bottom + Spacing['3xl'] }} />
+      </View>
     </BottomSheetModal>
   );
 }
@@ -117,8 +120,9 @@ const styles = StyleSheet.create({
   sheetContainer: {
     marginHorizontal: 16,
   },
-  background: {
-    borderRadius: 24,
+  content: {
+    flex: 1,
+    paddingHorizontal: Spacing.lg,
   },
   header: {
     flexDirection: 'row',
@@ -138,7 +142,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.md,
   },
   badgesContainer: {
     flexDirection: 'row',

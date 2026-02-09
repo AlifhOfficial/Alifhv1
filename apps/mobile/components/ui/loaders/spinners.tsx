@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { View, StyleSheet, Text, Dimensions } from 'react-native';
+import { View, StyleSheet, Dimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -18,7 +18,7 @@ import Animated, {
   FadeOut,
 } from 'react-native-reanimated';
 import { useTheme } from '@/context/theme-context';
-import { Typography } from '@/constants/theme';
+import { Body } from '../text';
 import { LoaderProps, LOADER_SIZES, LOADER_COLORS } from './types';
 import { RevvupLogo, RevvupLogoAnimated } from './revvup-logo';
 
@@ -139,14 +139,13 @@ export function FullScreenLoader({
     >
       <RevvupLogoAnimated size={80} animation="pulse" duration={1400} />
       {message && (
-        <Text
-          style={[
-            styles.message,
-            { color: isDark ? '#6B6B6B' : '#6B6B6B' },
-          ]}
+        <Body
+          size="small"
+          tone="muted"
+          style={styles.message}
         >
           {message}
-        </Text>
+        </Body>
       )}
     </Animated.View>
   );
@@ -242,7 +241,6 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   message: {
-    ...Typography.supportingMedium,
     marginTop: 24,
   },
 });

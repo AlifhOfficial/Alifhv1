@@ -3,8 +3,9 @@
  */
 
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { Typography, Spacing } from '@/constants/theme';
+import { View, Pressable, StyleSheet } from 'react-native';
+import { Spacing } from '@/constants/theme';
+import { Body } from '@/components/ui';
 import type { TabType, ThemedComponentProps } from '../types';
 
 interface TabBarProps extends ThemedComponentProps {
@@ -69,7 +70,8 @@ export function TabBar({
             onPress={() => !isDisabled && onTabChange(tab)}
             disabled={isDisabled}
           >
-            <Text
+            <Body
+              size="small"
               style={[
                 styles.tabText,
                 {
@@ -83,7 +85,7 @@ export function TabBar({
               ]}
             >
               {getTabLabel(tab)}
-            </Text>
+            </Body>
           </Pressable>
         );
       })}
@@ -101,7 +103,5 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     alignItems: 'center',
   },
-  tabText: {
-    ...Typography.chip,
-  },
+  tabText: {},
 });

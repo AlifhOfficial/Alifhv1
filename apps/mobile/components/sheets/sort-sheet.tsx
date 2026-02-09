@@ -4,15 +4,15 @@
  */
 
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
+import { View, StyleSheet, Pressable, Platform } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading } from '@/components/ui';
+import { Heading, Body } from '@/components/ui';
 import type { SearchSortOption } from '@/lib/search-api';
 
 const SORT_OPTIONS: { value: SearchSortOption; label: string }[] = [
@@ -87,7 +87,7 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
-      handleIndicatorStyle={{ backgroundColor: colors.border, width: 36 }}
+      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
       detached
       bottomInset={insets.bottom + 20}
       style={styles.sheetContainer}
@@ -101,10 +101,10 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
             hitSlop={Spacing.md}
             style={({ pressed }) => [
               styles.closeButton,
-              { backgroundColor: pressed ? colors.surfacePressed : colors.surface }
+              { backgroundColor: pressed ? colors.fill : colors.fillSecondary }
             ]}
           >
-            <Ionicons name="close" size={18} color={colors.icon} />
+            <Ionicons name="close" size={18} color={colors.textSecondary} />
           </Pressable>
         </View>
 
@@ -123,26 +123,29 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
                     backgroundColor: selected 
                       ? colors.surfaceSecondary 
                       : pressed 
-                        ? colors.surface 
+                        ? colors.fill 
                         : 'transparent',
                   },
                 ]}
               >
                 <View style={styles.radioRow}>
-                  <Text
+                  <Body
+                    size="large"
                     style={[
-                      styles.optionLabel,
+                      styles.optionLabel, 
                       { color: selected ? colors.text : colors.textSecondary },
-                      selected && styles.optionLabelSelected,
+                      selected && styles.optionLabelSelected
                     ]}
                     numberOfLines={1}
                   >
                     {option.label}
-                  </Text>
+                  </Body>
                   {/* Radio button */}
                   <View style={[
                     styles.radio,
-                    { borderColor: selected ? colors.text : colors.border },
+                    { 
+                      borderColor: selected ? colors.text : colors.textMuted,
+                    },
                   ]}>
                     {selected && (
                       <View style={[styles.radioInner, { backgroundColor: colors.text }]} />
@@ -183,7 +186,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   listContainer: {
-    gap: 16,
+    gap: Spacing.sm,
   },
   listItem: {
     paddingVertical: Spacing.md,
@@ -199,21 +202,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   radio: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 12,
   },
   radioInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   optionLabel: {
-    ...Typography.bodyMedium,
     flex: 1,
   },
   optionLabelSelected: {

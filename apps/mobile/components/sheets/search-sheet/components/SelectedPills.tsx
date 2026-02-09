@@ -3,9 +3,10 @@
  */
 
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Typography, Spacing, Radius } from '@/constants/theme';
+import { Spacing, Radius } from '@/constants/theme';
+import { Data, Body } from '@/components/ui';
 import type { FacetBucket, ThemedComponentProps } from '../types';
 
 interface SelectedPillsProps extends ThemedComponentProps {
@@ -32,14 +33,14 @@ export function SelectedPills({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={[styles.label, { color: colors.textSecondary }]}>
+        <Data size="mini" tone="secondary">
           Selected ({items.length})
-        </Text>
+        </Data>
         {items.length > 1 && (
           <Pressable onPress={onClearAll} hitSlop={8}>
-            <Text style={[styles.clearLink, { color: colors.primary }]}>
+            <Data size="mini" tone="primary" style={styles.clearLink}>
               Clear all
-            </Text>
+            </Data>
           </Pressable>
         )}
       </View>
@@ -50,9 +51,9 @@ export function SelectedPills({
             style={[styles.pill, { backgroundColor: colors.primary }]}
             onPress={() => onRemove(item)}
           >
-            <Text style={[styles.pillText, { color: colors.primaryForeground }]}>
+            <Body size="small" style={{ color: colors.primaryForeground }}>
               {getLabel(item)}
-            </Text>
+            </Body>
             <Ionicons name="close" size={14} color={colors.primaryForeground} />
           </Pressable>
         ))}
@@ -72,11 +73,8 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
     paddingHorizontal: Spacing.xs,
   },
-  label: {
-    ...Typography.dataMini,
-  },
+  label: {},
   clearLink: {
-    ...Typography.dataMini,
     fontFamily: 'Inter_600SemiBold',
   },
   pillsRow: {
@@ -92,7 +90,5 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xl,
     gap: Spacing.xs,
   },
-  pillText: {
-    ...Typography.link,
-  },
+  pillText: {},
 });

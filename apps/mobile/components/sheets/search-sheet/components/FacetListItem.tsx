@@ -3,9 +3,10 @@
  */
 
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Typography, Spacing, Radius } from '@/constants/theme';
+import { Spacing, Radius } from '@/constants/theme';
+import { ButtonText, Supporting } from '@/components/ui';
 import type { ThemedComponentProps } from '../types';
 
 interface FacetListItemProps extends ThemedComponentProps {
@@ -50,21 +51,21 @@ export function FacetListItem({
             <Ionicons name="checkmark" size={14} color={colors.primaryForeground} />
           )}
         </View>
-        <Text
+        <ButtonText
+          size="medium"
           style={[
             styles.label,
-            { color: colors.text },
             isSelected && styles.labelSelected,
           ]}
           numberOfLines={1}
         >
           {label}
-        </Text>
+        </ButtonText>
       </View>
       {count !== undefined && (
-        <Text style={[styles.count, { color: colors.textTertiary }]}>
+        <Supporting size="small" tone="muted">
           {count.toLocaleString()}
-        </Text>
+        </Supporting>
       )}
     </Pressable>
   );
@@ -93,13 +94,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   label: {
-    ...Typography.buttonMedium,
     flex: 1,
   },
   labelSelected: {
     fontFamily: 'Inter_700Bold',
   },
-  count: {
-    ...Typography.link,
-  },
+  count: {},
 });

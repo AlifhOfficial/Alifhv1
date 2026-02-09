@@ -4,16 +4,16 @@
  */
 
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
+import { View, StyleSheet, Pressable, Platform } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { Check } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading } from '@/components/ui';
+import { Heading, Body, Supporting, ButtonText } from '@/components/ui';
 import type { FacetBucket } from '@/lib/search-api';
 
 interface LocationFilterSheetProps {
@@ -114,7 +114,7 @@ export function LocationFilterSheet({
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
-      handleIndicatorStyle={{ backgroundColor: colors.border, width: 36 }}
+      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
       detached
       bottomInset={insets.bottom + 20}
       style={styles.sheetContainer}
@@ -128,10 +128,10 @@ export function LocationFilterSheet({
             hitSlop={Spacing.md}
             style={({ pressed }) => [
               styles.closeButton,
-              { backgroundColor: pressed ? colors.surfacePressed : colors.surface }
+              { backgroundColor: pressed ? colors.fill : colors.fillSecondary }
             ]}
           >
-            <Ionicons name="close" size={18} color={colors.icon} />
+            <Ionicons name="close" size={18} color={colors.textSecondary} />
           </Pressable>
         </View>
 
@@ -150,32 +150,33 @@ export function LocationFilterSheet({
                     backgroundColor: isSelected 
                       ? colors.surfaceSecondary 
                       : pressed 
-                        ? colors.surface 
+                        ? colors.fill 
                         : 'transparent',
                   },
                 ]}
               >
-                <View style={styles.itemRow}>
+              <View style={styles.itemRow}>
                   <View style={styles.labelRow}>
-                    <Text
+                    <Body
+                      size="large"
                       style={[
                         styles.optionLabel,
                         { color: isSelected ? colors.text : colors.textSecondary },
-                        isSelected && styles.optionLabelSelected,
+                        isSelected && styles.optionLabelSelected
                       ]}
                       numberOfLines={1}
                     >
                       {option.label}
-                    </Text>
-                    <Text style={[styles.optionCount, { color: colors.textTertiary }]}>
+                    </Body>
+                    <Supporting size="small">
                       {option.count.toLocaleString()}
-                    </Text>
+                    </Supporting>
                   </View>
                   {/* Checkbox */}
                   <View style={[
                     styles.checkbox,
                     { 
-                      borderColor: isSelected ? colors.text : colors.border,
+                      borderColor: isSelected ? colors.text : colors.textMuted,
                       backgroundColor: isSelected ? colors.text : 'transparent',
                     },
                   ]}>
@@ -196,16 +197,16 @@ export function LocationFilterSheet({
               onPress={handleClear}
               style={[styles.clearButton, { borderColor: colors.border }]}
             >
-              <Text style={[styles.clearButtonText, { color: colors.textSecondary }]}>Clear</Text>
+              <ButtonText size="medium" tone="secondary">Clear</ButtonText>
             </Pressable>
           )}
           <Pressable
             onPress={handleApply}
             style={[styles.applyButton, { backgroundColor: colors.text }]}
           >
-            <Text style={[styles.applyButtonText, { color: colors.background }]}>
+            <ButtonText size="medium" style={{ color: colors.background }}>
               Apply{localSelected.length > 0 ? ` (${localSelected.length})` : ''}
-            </Text>
+            </ButtonText>
           </Pressable>
         </View>
 
@@ -238,7 +239,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   listContainer: {
-    gap: 12,
+    gap: Spacing.sm,
     marginBottom: Spacing.xl,
   },
   listItem: {
@@ -258,13 +259,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   optionLabel: {
-    ...Typography.bodyMedium,
   },
   optionLabelSelected: {
     fontFamily: 'Inter_500Medium',
-  },
-  optionCount: {
-    ...Typography.supportingSmall,
   },
   checkbox: {
     width: 22,
@@ -287,19 +284,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  clearButtonText: {
-    ...Typography.bodyMedium,
-    fontFamily: 'Inter_600SemiBold',
-  },
   applyButton: {
     flex: 2,
     height: 48,
     borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  applyButtonText: {
-    ...Typography.bodyMedium,
-    fontFamily: 'Inter_600SemiBold',
   },
 });

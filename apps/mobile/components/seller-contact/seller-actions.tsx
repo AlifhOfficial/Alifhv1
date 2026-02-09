@@ -2,14 +2,18 @@
  * Seller Actions (CTA Row)
  * 
  * Chat, Book Viewing, and Phone actions.
+ * Follows listings component patterns for consistency.
  */
 
 import React, { memo } from 'react';
-import { View, Text, Pressable, ActivityIndicator } from 'react-native';
+import { View, Pressable, ActivityIndicator } from 'react-native';
 import { MessageCircle, Calendar } from 'lucide-react-native';
 
+import { Spacing, Radius } from '@/constants/theme';
+import { ButtonText } from '@/components/ui';
 import type { SellerActionsProps } from './types';
-import { styles } from './styles';
+
+const ICON_SIZE = 20;
 
 export const SellerActions = memo(function SellerActions({
   seller,
@@ -20,44 +24,69 @@ export const SellerActions = memo(function SellerActions({
   colors,
 }: SellerActionsProps) {
   return (
-    <>
+    <View style={{ gap: Spacing.md }}>
       {/* CTA Row - Chat and Book together */}
-      <View style={styles.ctaRow}>
+      <View style={{ flexDirection: 'row', gap: Spacing.md }}>
+        {/* Primary CTA - Chat */}
         <Pressable
-          style={[
-            styles.primaryCta, 
-            { backgroundColor: colors.primary, flex: seller.isDealer ? 1 : undefined }
-          ]}
+          style={({ pressed }) => ({
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: Spacing.sm,
+            paddingVertical: Spacing.lg,
+            borderRadius: Radius.full,
+            backgroundColor: colors.primary,
+            opacity: pressed ? 0.8 : 1,
+          })}
           onPress={onChat}
           disabled={isChatLoading}
         >
           {isChatLoading ? (
-            <ActivityIndicator size="small" color="#FFF" />
+            <ActivityIndicator size="small" color={colors.primaryForeground} />
           ) : (
             <>
-              <MessageCircle size={20} color="#FFF" strokeWidth={2} />
-              <Text style={styles.primaryCtaText}>Chat</Text>
+              <MessageCircle size={ICON_SIZE} color={colors.primaryForeground} />
+              <ButtonText size="medium" style={{ color: colors.primaryForeground }}>
+                Chat
+              </ButtonText>
             </>
           )}
         </Pressable>
         
+        {/* Secondary CTA - Book (dealers only) */}
         {seller.isDealer && (
           <Pressable
-            style={[styles.secondaryCta, { borderColor: colors.border }]}
+            style={({ pressed }) => ({
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: Spacing.sm,
+              paddingVertical: Spacing.lg,
+              borderRadius: Radius.full,
+              borderWidth: 1,
+              borderColor: colors.border,
+              backgroundColor: 'transparent',
+              opacity: pressed ? 0.8 : 1,
+            })}
             onPress={onBookViewing}
           >
-            <Calendar size={20} color={colors.text} strokeWidth={2} />
-            <Text style={[styles.secondaryCtaText, { color: colors.text }]}>Book</Text>
+            <Calendar size={ICON_SIZE} color={colors.icon} />
+            <ButtonText size="medium">Book</ButtonText>
           </Pressable>
         )}
       </View>
 
       {/* Phone Number Link */}
       {seller.phone && (
-        <Pressable onPress={onShowPhone}>
-          <Text style={[styles.phoneText, { color: colors.primary }]}>Show phone number</Text>
+        <Pressable onPress={onShowPhone} style={{ alignItems: 'center', paddingVertical: Spacing.sm }}>
+          <ButtonText size="medium" tone="primary">
+            Show phone number
+          </ButtonText>
         </Pressable>
       )}
-    </>
+    </View>
   );
 });

@@ -4,7 +4,7 @@
  */
 
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, Platform, Linking, Alert } from 'react-native';
+import { View, StyleSheet, Pressable, Platform, Linking, Alert } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -12,8 +12,9 @@ import * as Clipboard from 'expo-clipboard';
 import { Phone, Copy } from 'lucide-react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { Heading, ButtonText } from '@/components/ui';
 
 interface PhoneActionSheetProps {
   visible: boolean;
@@ -106,7 +107,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
       <BottomSheetView style={styles.content}>
         {/* Header with close */}
         <View style={styles.header}>
-          <Text style={[styles.phoneNumber, { color: colors.text }]}>{phoneNumber}</Text>
+          <Heading size="medium">{phoneNumber}</Heading>
           <Pressable 
             onPress={onClose} 
             hitSlop={Spacing.md}
@@ -131,7 +132,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             <View style={[styles.iconCircle, { backgroundColor: colors.primary }]}>
               <Phone size={22} color="#FFF" />
             </View>
-            <Text style={[styles.actionLabel, { color: colors.text }]}>Call</Text>
+            <ButtonText size="small">Call</ButtonText>
           </Pressable>
 
           <Pressable
@@ -144,7 +145,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             <View style={[styles.iconCircle, { backgroundColor: '#25D366' }]}>
               <Ionicons name="logo-whatsapp" size={24} color="#FFF" />
             </View>
-            <Text style={[styles.actionLabel, { color: colors.text }]}>WhatsApp</Text>
+            <ButtonText size="small">WhatsApp</ButtonText>
           </Pressable>
 
           <Pressable
@@ -157,7 +158,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             <View style={[styles.iconCircle, { backgroundColor: colors.surfaceSecondary }]}>
               <Copy size={22} color={colors.text} />
             </View>
-            <Text style={[styles.actionLabel, { color: colors.text }]}>Copy</Text>
+            <ButtonText size="small">Copy</ButtonText>
           </Pressable>
         </View>
       </BottomSheetView>
@@ -188,9 +189,6 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
     paddingHorizontal: Spacing.xs,
   },
-  phoneNumber: {
-    ...Typography.headingMedium,
-  },
   closeButton: {
     width: 32,
     height: 32,
@@ -217,9 +215,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.sm,
-  },
-  actionLabel: {
-    ...Typography.buttonSmall,
-    textAlign: 'center',
   },
 });

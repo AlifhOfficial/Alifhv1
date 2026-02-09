@@ -23,7 +23,7 @@ import {
   buildDuplicateRejectionUpdate,
   type DiditSessionData,
 } from '@/lib/kyc/update-builder';
-import { db, kycRecord, userProfile, eq, invalidateUserProfile, invalidateUserSession } from '@alifh/database';
+import { db, kycRecord, userProfile, eq, invalidateUserProfile, invalidateUserSession, invalidateUserListingsInSearch } from '@alifh/database';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -173,6 +173,10 @@ async function processCallbackSession(sessionId: string, status: string | null) 
 
     invalidateUserProfile(record.userId);
     invalidateUserSession(record.userId);
+    // Also invalidate listing caches that contain seller KYC status
+    if (isApproved || isRejected) {
+      invalidateUserListingsInSearch(record.userId);
+    }
     return createResultHtml(newStatus, sessionId, rejectionReason);
 
   } catch {
@@ -289,6 +293,8 @@ async function handleSessionCompleted(payload: DiditWebhookPayload) {
 
   if (userId) {
     invalidateUserProfile(userId);
+    // Also invalidate listing caches that contain seller KYC status
+    invalidateUserListingsInSearch(userId);
   }
 }
 

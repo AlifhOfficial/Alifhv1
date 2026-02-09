@@ -3,12 +3,13 @@
  */
 
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ChatWindow, useConversations } from '@/components/messages';
-import { Colors, Typography, Spacing } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
+import { Supporting, ButtonText } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { useTabBar } from '@/context/tab-bar-context';
@@ -55,15 +56,16 @@ export default function ChatScreen() {
     return (
       <View style={[styles.screen, { backgroundColor: colors.background, paddingTop: insets.top }]}>
         <View style={styles.centered}>
-          <Text style={[styles.errorText, { color: colors.textSecondary }]}>
+          <Supporting size="medium" tone="secondary" style={styles.errorText}>
             Conversation not found
-          </Text>
-          <Text
-            style={[styles.backLink, { color: colors.primary }]}
+          </Supporting>
+          <ButtonText
+            tone="primary"
+            style={styles.backLink}
             onPress={handleBack}
           >
             ← Go Back
-          </Text>
+          </ButtonText>
         </View>
       </View>
     );
@@ -92,10 +94,8 @@ const styles = StyleSheet.create({
     gap: Spacing.lg,
   },
   errorText: {
-    ...Typography.supportingMedium,
     textAlign: 'center',
   },
   backLink: {
-    ...Typography.buttonMedium,
   },
 });

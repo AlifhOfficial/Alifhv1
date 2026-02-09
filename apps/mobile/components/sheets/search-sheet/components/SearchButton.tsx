@@ -3,10 +3,11 @@
  */
 
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Typography, Spacing, Radius } from '@/constants/theme';
+import { Spacing, Radius } from '@/constants/theme';
+import { ButtonText } from '@/components/ui';
 import type { ThemedComponentProps } from '../types';
 
 interface SearchButtonProps extends ThemedComponentProps {
@@ -81,16 +82,14 @@ export function SearchButton({
           size={18}
           color={canSearch ? colors.primaryForeground : colors.textTertiary}
         />
-        <Text
-          style={[
-            styles.buttonText,
-            {
-              color: canSearch ? colors.primaryForeground : colors.textTertiary,
-            },
-          ]}
+        <ButtonText
+          size="medium"
+          style={{
+            color: canSearch ? colors.primaryForeground : colors.textTertiary,
+          }}
         >
           {getButtonText()}
-        </Text>
+        </ButtonText>
       </Pressable>
     </View>
   );
@@ -113,8 +112,5 @@ const styles = StyleSheet.create({
     height: 52,
     borderRadius: Radius['3xl'],
     gap: Spacing.sm,
-  },
-  buttonText: {
-    ...Typography.buttonMedium,
   },
 });
