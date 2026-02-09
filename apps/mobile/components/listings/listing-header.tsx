@@ -6,7 +6,7 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, View, Text, Pressable } from 'react-native';
 import { Heart, Sparkles, CheckCircle2 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { SpecialNotes } from '@/lib/api';
 import { formatPrice } from './types';
@@ -158,9 +158,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   title: {
-    fontSize: 20,
-    fontFamily: 'Inter_700Bold',
-    lineHeight: 26,
+    ...Typography.title,
   },
   priceRow: {
     flexDirection: 'row',
@@ -168,12 +166,10 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   price: {
-    fontSize: 22,
-    fontFamily: 'Inter_700Bold',
+    ...Typography.titlePrice,
   },
   negotiable: {
-    fontSize: 13,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.valueSmall,
   },
   actions: {
     flexDirection: 'row',
@@ -193,9 +189,8 @@ const styles = StyleSheet.create({
     borderRadius: Radius.sm,
   },
   blkText: {
-    fontSize: 10,
-    fontFamily: 'Inter_800ExtraBold',
-    letterSpacing: 1,
+    ...Typography.labelBadge,
+    fontFamily: 'Inter_700Bold',
   },
   highlightsRow: {
     flexDirection: 'row',
@@ -209,7 +204,6 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   highlightText: {
-    fontSize: 13,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.valueSmall,
   },
 });

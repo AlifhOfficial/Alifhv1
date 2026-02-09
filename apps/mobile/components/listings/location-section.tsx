@@ -10,7 +10,7 @@ import { StyleSheet, View, Text, Pressable, Linking } from 'react-native';
 import { MapPin, ExternalLink, Navigation } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -212,9 +212,8 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   addressSecondary: {
-    fontSize: 14,
+    ...Typography.link,
     fontFamily: 'Inter_500Medium',
-    lineHeight: 18,
   },
   actionsRow: {
     flexDirection: 'row',

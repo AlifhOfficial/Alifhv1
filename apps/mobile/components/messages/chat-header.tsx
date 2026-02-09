@@ -132,15 +132,11 @@ const styles = StyleSheet.create({
     ...Typography.value,
   },
   subtitle: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
-    fontWeight: '500',
+    ...Typography.helperMedium,
     marginTop: 2,
   },
   status: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
-    fontWeight: '500',
+    ...Typography.helperMedium,
     marginTop: 2,
   },
 });

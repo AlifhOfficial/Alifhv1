@@ -5,7 +5,7 @@
 import React, { memo } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { formatEnumValue } from './types';
 
@@ -51,8 +51,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   label: {
-    fontSize: 12,
-    fontFamily: 'Inter_700Bold',
+    ...Typography.label,
     letterSpacing: 1.5,
   },
   badgesContainer: {
@@ -66,7 +65,6 @@ const styles = StyleSheet.create({
     borderRadius: Radius.md,
   },
   badgeText: {
-    fontSize: 13,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.chip,
   },
 });

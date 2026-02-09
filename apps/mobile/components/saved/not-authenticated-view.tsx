@@ -104,16 +104,12 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   title: {
-    fontSize: Typography.title.fontSize,
-    fontFamily: 'Inter_700Bold',
-    fontWeight: '700',
+    ...Typography.title,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: Typography.body.fontSize,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.body,
     textAlign: 'center',
-    lineHeight: 22,
     paddingHorizontal: 16,
   },
   signInButton: {
@@ -126,8 +122,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   signInText: {
-    fontSize: 16,
-    fontFamily: 'Inter_600SemiBold',
-    fontWeight: '600',
+    ...Typography.button,
   },
 });

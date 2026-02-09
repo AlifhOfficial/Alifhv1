@@ -120,10 +120,7 @@ export function TagsSection({ selectedTags, colors, onToggle }: TagsSectionProps
 
 const styles = StyleSheet.create({
   counter: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
-    fontFamily: 'Inter_500Medium',
-    fontWeight: '500' as any,
+    ...Typography.helperMedium,
   },
   tagsContainer: {
     flexDirection: 'row',
@@ -141,8 +138,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   tagText: {
-    fontSize: Typography.labelSmall.fontSize,
-    lineHeight: Typography.labelSmall.lineHeight,
+    ...Typography.labelSmall,
     fontFamily: 'Inter_500Medium',
   },
 });

@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, useColorScheme, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@/constants/theme';
+import { Colors, Typography, Spacing } from '@/constants/theme';
+import { useTheme } from '@/context/theme-context';
 import { FilterPill } from './filter-pill';
 
 interface SelectedPillsProps {
@@ -12,7 +13,7 @@ interface SelectedPillsProps {
 }
 
 export function SelectedPills({ items, onRemove, onClearAll, label }: SelectedPillsProps) {
-  const colorScheme = useColorScheme() ?? 'light';
+  const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
   if (items.length === 0) return null;
@@ -64,12 +65,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   label: {
-    fontSize: 13,
-    fontWeight: '600',
+    ...Typography.valueSmall,
   },
   clearText: {
-    fontSize: 13,
-    fontWeight: '500',
+    ...Typography.valueSmall,
   },
   scrollContent: {
     paddingHorizontal: 20,

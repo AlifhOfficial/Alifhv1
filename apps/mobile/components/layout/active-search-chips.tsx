@@ -5,7 +5,7 @@
  */
 
 import React, { useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Platform, useColorScheme } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Platform } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { X } from 'lucide-react-native';
 import Animated, {
@@ -18,7 +18,8 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useSearch, type SearchChip, type SearchParams } from '@/context/search-context';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Typography } from '@/constants/theme';
+import { useTheme } from '@/context/theme-context';
 
 const AnimatedView = Animated.View;
 
@@ -31,7 +32,7 @@ interface ActiveSearchChipsProps {
 }
 
 export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
-  const colorScheme = useColorScheme() ?? 'light';
+  const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const { searchParams, getSearchChips, removeSearchParam, clearSearch, resetSort, sortBy } = useSearch();
 
@@ -199,9 +200,8 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   pillText: {
-    fontSize: 14,
+    ...Typography.link,
     fontFamily: 'Inter_500Medium',
-    fontWeight: '500',
     maxWidth: 140,
   },
   clearPill: {
@@ -215,9 +215,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   clearText: {
-    fontSize: 14,
+    ...Typography.link,
     fontFamily: 'Inter_500Medium',
-    fontWeight: '500',
     // Color applied inline
   },
 });

@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Calculator, ChevronDown, X, Info, Plus, Minus } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -257,8 +257,8 @@ const tenureStyles = StyleSheet.create({
     fontFamily: 'Inter_600SemiBold',
   },
   hint: {
+    ...Typography.labelMedium,
     fontSize: 12,
-    fontFamily: 'Inter_500Medium',
   },
 });
 
@@ -551,8 +551,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_700Bold',
   },
   emiDetails: {
-    fontSize: 13,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.labelMedium,
     marginTop: 2,
   },
   modalContainer: {
@@ -602,8 +601,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   emiResultAmount: {
-    fontSize: 32,
-    fontFamily: 'Inter_800ExtraBold',
+    ...Typography.heroNumber,
   },
   controlSection: {
     borderBottomWidth: 1,
@@ -611,8 +609,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   controlHint: {
-    fontSize: 13,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.labelMedium,
     textAlign: 'right',
     marginTop: -Spacing.sm,
   },
@@ -634,7 +631,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   breakdownLabel: {
-    fontSize: 14,
+    ...Typography.link,
     fontFamily: 'Inter_500Medium',
   },
   breakdownValue: {

@@ -76,8 +76,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   badgeText: {
-    fontSize: Typography.labelSmall.fontSize,
-    lineHeight: Typography.labelSmall.lineHeight,
+    ...Typography.labelSmall,
     fontFamily: 'Inter_500Medium',
   },
   emptyState: {
@@ -103,9 +102,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   learnMoreText: {
-    fontSize: Typography.labelSmall.fontSize,
-    lineHeight: Typography.labelSmall.lineHeight,
-    fontFamily: 'Inter_600SemiBold',
-    fontWeight: '600' as any,
+    ...Typography.buttonSmall,
   },
 });

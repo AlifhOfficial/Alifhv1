@@ -161,26 +161,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   charCount: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
-    fontFamily: 'Inter_500Medium',
-    fontWeight: '500' as any,
+    ...Typography.helperMedium,
   },
   actions: {
     flexDirection: 'row',
     gap: 24,
   },
   cancelText: {
-    fontSize: Typography.value.fontSize,
-    lineHeight: Typography.value.lineHeight,
-    fontFamily: 'Inter_500Medium',
-    fontWeight: '500' as any,
+    ...Typography.valueMedium,
   },
   saveText: {
-    fontSize: Typography.value.fontSize,
-    lineHeight: Typography.value.lineHeight,
-    fontFamily: 'Inter_600SemiBold',
-    fontWeight: '600' as any,
+    ...Typography.value,
   },
   displayContainer: {
     gap: 10,

@@ -19,7 +19,7 @@ import { Image } from 'expo-image';
 import { Grid3x3 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Skeleton } from '@/components/ui';
 import { ImageLightbox } from './image-lightbox';
@@ -236,8 +236,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   placeholderText: {
-    fontSize: 14,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.stat,
+    fontFamily: 'Inter_400Regular',
   },
   
   // Main Image
@@ -262,8 +262,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.6)',
   },
   counterOverlayText: {
+    ...Typography.labelSmall,
     color: '#fff',
-    fontSize: 11,
     fontFamily: 'Inter_600SemiBold',
   },
   
@@ -310,7 +310,8 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   viewAllText: {
-    fontSize: 12,
+    ...Typography.label,
     fontFamily: 'Inter_600SemiBold',
+    letterSpacing: 0,
   },
 });

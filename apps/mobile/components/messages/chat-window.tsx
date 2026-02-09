@@ -380,8 +380,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xs,
   },
   timestampText: {
+    ...Typography.labelMedium,
     fontSize: 11,
-    fontWeight: '500',
     opacity: 0.6,
   },
   dateSeparator: {
@@ -389,8 +389,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
   },
   dateLabel: {
-    fontSize: Typography.helper.fontSize,
-    fontWeight: '500',
+    ...Typography.helperMedium,
   },
   emptyContainer: {
     flex: 1,

@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, StyleSheet, useColorScheme } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@/constants/theme';
+import { Colors, Typography, Radius, Spacing } from '@/constants/theme';
+import { useTheme } from '@/context/theme-context';
 
 interface FilterInputProps {
   value: string;
@@ -17,7 +18,7 @@ export function FilterInput({
   placeholder = 'Search...', 
   autoFocus = false 
 }: FilterInputProps) {
-  const colorScheme = useColorScheme() ?? 'light';
+  const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
   return (
@@ -52,17 +53,17 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 20,
-    marginVertical: 8,
+    marginHorizontal: Spacing.xl,
+    marginVertical: Spacing.sm,
     paddingHorizontal: 14,
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingVertical: Spacing.md,
+    borderRadius: Radius.lg,
     borderWidth: 1,
     gap: 10,
   },
   input: {
     flex: 1,
-    fontSize: 16,
+    ...Typography.button,
     padding: 0,
   },
 });

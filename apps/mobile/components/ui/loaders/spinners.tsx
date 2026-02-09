@@ -18,6 +18,7 @@ import Animated, {
   FadeOut,
 } from 'react-native-reanimated';
 import { useTheme } from '@/context/theme-context';
+import { Typography } from '@/constants/theme';
 import { LoaderProps, LOADER_SIZES, LOADER_COLORS } from './types';
 import { RevvupLogo, RevvupLogoAnimated } from './revvup-logo';
 
@@ -241,8 +242,7 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   message: {
+    ...Typography.valueMedium,
     marginTop: 24,
-    fontSize: 15,
-    fontWeight: '500',
   },
 });

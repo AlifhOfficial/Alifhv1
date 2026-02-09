@@ -9,7 +9,7 @@ import React, { memo, useMemo } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Clock } from 'lucide-react-native';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -152,11 +152,10 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   postedText: {
-    fontSize: 14,
+    ...Typography.stat,
     fontFamily: 'Inter_700Bold',
   },
   updatedText: {
-    fontSize: 13,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.valueSmall,
   },
 });

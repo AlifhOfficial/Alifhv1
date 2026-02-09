@@ -19,7 +19,7 @@ import {
   BadgeCheck,
 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Skeleton, SkeletonCircle, SkeletonText } from '@/components/ui/skeleton';
 
@@ -609,7 +609,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   avatarInitial: {
-    fontSize: 22,
+    ...Typography.title,
     fontFamily: 'Inter_600SemiBold',
   },
   headerText: {
@@ -622,7 +622,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   name: {
-    fontSize: 17,
+    ...Typography.titleSmall,
     fontFamily: 'Inter_700Bold',
     flexShrink: 1,
   },
@@ -632,13 +632,11 @@ const styles = StyleSheet.create({
     borderRadius: Radius.sm,
   },
   blkBadgeText: {
+    ...Typography.labelBadge,
     fontSize: 9,
-    fontFamily: 'Inter_800ExtraBold',
-    letterSpacing: 0.8,
   },
   sellerType: {
-    fontSize: 13,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.secondary,
   },
   ratingRow: {
     flexDirection: 'row',
@@ -646,12 +644,11 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   ratingValue: {
-    fontSize: 15,
+    ...Typography.value,
     fontFamily: 'Inter_700Bold',
   },
   reviewCount: {
-    fontSize: 13,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.secondary,
   },
   statsRow: {
     flexDirection: 'row',
@@ -665,17 +662,16 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   statValue: {
-    fontSize: 15,
+    ...Typography.value,
     fontFamily: 'Inter_700Bold',
   },
   statLabel: {
-    fontSize: 11,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.labelSmall,
+    fontFamily: 'Inter_600SemiBold',
+    letterSpacing: 0,
   },
   description: {
-    fontSize: 14,
-    fontFamily: 'Inter_400Regular',
-    lineHeight: 20,
+    ...Typography.bodyMini,
   },
   badgesRow: {
     flexDirection: 'row',
@@ -688,20 +684,19 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
   },
   badgeText: {
-    fontSize: 12,
+    ...Typography.label,
     fontFamily: 'Inter_600SemiBold',
+    letterSpacing: 0,
   },
   specialtiesRow: {
     gap: 4,
   },
   specialtiesLabel: {
-    fontSize: 11,
-    fontFamily: 'Inter_700Bold',
+    ...Typography.labelSmall,
     letterSpacing: 1,
   },
   specialtiesText: {
-    fontSize: 13,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.secondary,
   },
   verificationsRow: {
     flexDirection: 'row',
@@ -717,8 +712,9 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
   },
   verificationText: {
-    fontSize: 11,
+    ...Typography.labelSmall,
     fontFamily: 'Inter_600SemiBold',
+    letterSpacing: 0,
   },
   actionsRow: {
     flexDirection: 'row',
@@ -736,8 +732,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   websiteText: {
-    fontSize: 14,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.link,
   },
   viewProfileButton: {
     flex: 1,
@@ -749,7 +744,6 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
   },
   viewProfileText: {
-    fontSize: 14,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.link,
   },
 });

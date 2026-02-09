@@ -153,10 +153,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   name: {
+    ...Typography.value,
     flex: 1,
-    fontSize: Typography.bodySmall.fontSize,
-    lineHeight: Typography.bodySmall.lineHeight,
-    fontWeight: '600',
     marginLeft: Spacing.md,
   },
   onlineDot: {
@@ -175,9 +173,7 @@ const styles = StyleSheet.create({
     marginLeft: Spacing.sm,
   },
   unreadText: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
-    fontWeight: '600',
+    ...Typography.buttonSmall,
     // Color applied inline
   },
   chatList: {
@@ -206,9 +202,7 @@ const styles = StyleSheet.create({
     lineHeight: Typography.value.lineHeight,
   },
   chatTime: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
-    fontWeight: '400',
+    ...Typography.helper,
     marginLeft: Spacing.sm,
   },
   chatPreview: {

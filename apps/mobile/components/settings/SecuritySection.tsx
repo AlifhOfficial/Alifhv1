@@ -107,10 +107,7 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   label: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
-    fontFamily: 'Inter_500Medium',
-    fontWeight: '500' as any,
+    ...Typography.helperMedium,
   },
   value: {
     fontSize: Typography.bodySmall.fontSize,
@@ -129,8 +126,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyText: {
-    fontSize: Typography.labelSmall.fontSize,
-    lineHeight: Typography.labelSmall.lineHeight,
+    ...Typography.labelSmall,
     fontFamily: 'Inter_500Medium',
   },
   emptySubtext: {
@@ -154,8 +150,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   itemName: {
-    fontSize: Typography.labelSmall.fontSize,
-    lineHeight: Typography.labelSmall.lineHeight,
+    ...Typography.labelSmall,
     fontFamily: 'Inter_500Medium',
   },
   itemDate: {

@@ -121,7 +121,7 @@ function RootLayoutNav() {
         presentationStyle="fullScreen"
         statusBarTranslucent
       >
-        <View style={{ flex: 1, backgroundColor: colorScheme === 'dark' ? '#000000' : '#FFFFFF' }}>
+        <View style={{ flex: 1, backgroundColor: colors.background }}>
           <AuthFlow 
             onComplete={handleAuthComplete}
             onSkip={closeAuthFlow}

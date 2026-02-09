@@ -19,7 +19,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { X } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -307,8 +307,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_700Bold',
   },
   subtitle: {
+    ...Typography.labelMedium,
     fontSize: 12,
-    fontFamily: 'Inter_500Medium',
     marginTop: 2,
   },
   closeButton: {

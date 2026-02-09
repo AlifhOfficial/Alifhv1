@@ -36,7 +36,7 @@ export function Toggle({ enabled, onToggle, disabled, colors }: ToggleProps) {
       ]}
     >
       <Animated.View
-        style={[styles.knob, { transform: [{ translateX: enabled ? 20 : 2 }] }]}
+        style={[styles.knob, { backgroundColor: colors.surface }, { transform: [{ translateX: enabled ? 20 : 2 }] }]}
       />
     </Pressable>
   );
@@ -53,7 +53,6 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: '#FFFFFF',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,

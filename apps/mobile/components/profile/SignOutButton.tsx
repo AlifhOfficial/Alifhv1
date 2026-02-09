@@ -68,9 +68,6 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   text: {
-    fontSize: Typography.bodySmall.fontSize,
-    lineHeight: Typography.bodySmall.lineHeight,
-    fontFamily: 'Inter_600SemiBold',
-    fontWeight: '600' as any,
+    ...Typography.button,
   },
 });

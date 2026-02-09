@@ -5,7 +5,7 @@
 import React, { memo, useState, useCallback } from 'react';
 import { StyleSheet, View, Text, Pressable } from 'react-native';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 interface ListingDescriptionProps {
@@ -64,19 +64,17 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   label: {
-    fontSize: 12,
-    fontFamily: 'Inter_700Bold',
+    ...Typography.label,
     letterSpacing: 1.5,
     marginBottom: 4,
   },
   text: {
-    fontSize: 15,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.bodySmall,
+    fontFamily: 'Inter_600SemiBold',
     lineHeight: 24,
   },
   readMore: {
-    fontSize: 14,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.link,
     marginTop: 8,
   },
 });

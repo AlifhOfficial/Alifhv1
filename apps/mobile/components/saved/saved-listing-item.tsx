@@ -8,7 +8,7 @@ import { StyleSheet, View, Text, Pressable, Alert } from 'react-native';
 import { Image } from 'expo-image';
 import { CheckCircle2 } from 'lucide-react-native';
 
-import { Radius } from '@/constants/theme';
+import { Radius, Typography } from '@/constants/theme';
 import { SavedListingCard } from '@/lib/saved-api';
 import type { ThemeColors } from './types';
 
@@ -185,10 +185,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   blkText: {
+    ...Typography.labelBadge,
     color: '#FFF',
-    fontSize: 10,
-    fontFamily: 'Inter_700Bold',
-    fontWeight: '700',
   },
   details: {
     flex: 1,
@@ -196,19 +194,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontSize: 14,
-    fontFamily: 'Inter_600SemiBold',
-    fontWeight: '600',
+    ...Typography.value,
   },
   trim: {
-    fontSize: 12,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.helper,
     marginTop: 2,
   },
   price: {
-    fontSize: 15,
-    fontFamily: 'Inter_700Bold',
-    fontWeight: '700',
+    ...Typography.titlePrice,
     marginTop: 4,
   },
   meta: {
@@ -231,9 +224,8 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   sellerName: {
+    ...Typography.labelMedium,
     fontSize: 11,
-    fontFamily: 'Inter_500Medium',
-    fontWeight: '500',
     flex: 1,
   },
 });

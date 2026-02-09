@@ -15,6 +15,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useTheme } from '@/context/theme-context';
+import { Colors } from '@/constants/theme';
 import * as AuthAPI from '@/lib/auth-api';
 import { WelcomeScreen } from './WelcomeScreen';
 import { SignInScreen } from './SignInScreen';
@@ -43,7 +44,7 @@ export function AuthFlow({
   initialScreen = 'welcome' 
 }: AuthFlowProps) {
   const { colorScheme } = useTheme();
-  const isDark = colorScheme === 'dark';
+  const colors = Colors[colorScheme];
 
   const [currentScreen, setCurrentScreen] = useState<AuthScreen>(initialScreen);
   const [direction, setDirection] = useState<'forward' | 'back'>('forward');
@@ -55,10 +56,6 @@ export function AuthFlow({
   const [userId, setUserId] = useState('');
   const [forgotPasswordSuccess, setForgotPasswordSuccess] = useState(false);
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signup');
-
-  const colors = {
-    bg: isDark ? '#000000' : '#FFFFFF',
-  };
 
   // Navigation helpers
   const navigateTo = useCallback((screen: AuthScreen, dir: 'forward' | 'back' = 'forward') => {
@@ -367,7 +364,7 @@ export function AuthFlow({
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.bg }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {renderScreen()}
     </View>
   );

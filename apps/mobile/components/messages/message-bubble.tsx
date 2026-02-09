@@ -232,9 +232,7 @@ const styles = StyleSheet.create({
     padding: Spacing.sm,
   },
   listingTitle: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
-    fontWeight: '600',
+    ...Typography.buttonSmall,
   },
   bubble: {
     paddingHorizontal: Spacing.md,
@@ -290,8 +288,6 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
   },
   systemText: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
-    fontWeight: '500',
+    ...Typography.helperMedium,
   },
 });

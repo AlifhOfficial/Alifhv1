@@ -4,13 +4,14 @@
  */
 
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, Platform, useColorScheme } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors } from '@/constants/theme';
+import { Colors, Typography, Spacing, Radius } from '@/constants/theme';
+import { useTheme } from '@/context/theme-context';
 import type { SearchSortOption } from '@/lib/api';
 
 const SORT_OPTIONS: { value: SearchSortOption; label: string }[] = [
@@ -33,7 +34,7 @@ interface SortSheetProps {
 }
 
 export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortSheetProps) {
-  const colorScheme = useColorScheme() ?? 'light';
+  const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
@@ -152,16 +153,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    letterSpacing: -0.4,
+    ...Typography.title,
   },
   doneBtn: {
-    fontSize: 16,
-    fontWeight: '600',
+    ...Typography.button,
   },
   listContainer: {
-    borderRadius: 16,
+    borderRadius: Radius.xl,
     borderWidth: 1,
     overflow: 'hidden',
   },
@@ -173,9 +171,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   listItemText: {
-    fontSize: 16,
+    ...Typography.button,
   },
   listItemTextSelected: {
-    fontWeight: '600',
+    fontFamily: 'Inter_700Bold',
   },
 });

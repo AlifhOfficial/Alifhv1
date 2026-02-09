@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { X, ChevronRight } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { formatEnumValue } from './types';
 
@@ -172,8 +172,7 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   label: {
-    fontSize: 12,
-    fontFamily: 'Inter_700Bold',
+    ...Typography.label,
     letterSpacing: 1.5,
   },
   specsList: {
@@ -186,12 +185,10 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm + 2,
   },
   specLabel: {
-    fontSize: 15,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.labelText,
   },
   specValue: {
-    fontSize: 15,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.value,
   },
   viewAllButton: {
     paddingVertical: Spacing.xs,
@@ -202,8 +199,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   viewAllText: {
-    fontSize: 15,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.value,
   },
   modalContainer: {
     flex: 1,
@@ -217,8 +213,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   modalTitle: {
-    fontSize: 18,
-    fontFamily: 'Inter_700Bold',
+    ...Typography.titlePrice,
   },
   closeButton: {
     padding: 4,

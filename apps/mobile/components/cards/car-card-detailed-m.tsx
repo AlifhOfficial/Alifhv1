@@ -13,7 +13,7 @@ import { StyleSheet, View, Text, Pressable } from 'react-native';
 import { MessageCircle } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Skeleton } from '@/components/ui';
 import { ListingDetailedData, SellerData } from '@/lib/api';
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
   },
   ctaText: {
-    fontSize: 16,
+    ...Typography.button,
     fontFamily: 'Inter_600SemiBold',
   },
   skeletonStats: {

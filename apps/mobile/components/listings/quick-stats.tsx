@@ -7,7 +7,7 @@ import { StyleSheet, View, Text, Pressable, Platform, Clipboard } from 'react-na
 import * as Haptics from 'expo-haptics';
 import { MapPin, Copy, Check } from 'lucide-react-native';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { formatMileage, formatSpecs, formatEmirate } from './types';
 
@@ -109,11 +109,11 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   statText: {
-    fontSize: 14,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.stat,
   },
   separator: {
-    fontSize: 14,
+    ...Typography.stat,
+    fontFamily: 'Inter_400Regular',
     opacity: 0.4,
   },
   locationRow: {
@@ -127,13 +127,10 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   vinLabel: {
-    fontSize: 11,
-    fontFamily: 'Inter_700Bold',
-    letterSpacing: 0.5,
+    ...Typography.labelSmall,
   },
   vinValue: {
-    fontSize: 14,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.stat,
     fontVariant: ['tabular-nums'],
     letterSpacing: 0.5,
   },

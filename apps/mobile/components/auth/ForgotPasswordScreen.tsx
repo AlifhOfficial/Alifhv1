@@ -106,7 +106,7 @@ export function ForgotPasswordScreen({
                 { backgroundColor: colors.primary, opacity: pressed ? 0.9 : 1 }
               ]}
             >
-              <Text style={[styles.submitButtonText, { color: '#FFFFFF' }]}>Back to sign in</Text>
+              <Text style={[styles.submitButtonText, { color: themeColors.primaryForeground }]}>Back to sign in</Text>
             </Pressable>
           </Animated.View>
         </View>
@@ -182,7 +182,7 @@ export function ForgotPasswordScreen({
               {isLoading ? (
                 <ButtonLoader size="sm" variant="white" />
               ) : (
-                <Text style={[styles.submitButtonText, { color: '#FFFFFF' }]}>Send reset link</Text>
+                <Text style={[styles.submitButtonText, { color: themeColors.primaryForeground }]}>Send reset link</Text>
               )}
             </Pressable>
           </Animated.View>
@@ -251,20 +251,15 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   title: {
-    fontSize: Typography.titleLarge.fontSize,
-    lineHeight: Typography.titleLarge.lineHeight,
-    fontFamily: 'Inter_700Bold',
+    ...Typography.titleLarge,
   },
   subtitle: {
-    fontSize: Typography.value.fontSize,
-    lineHeight: Typography.value.lineHeight,
+    ...Typography.value,
     fontFamily: 'Inter_400Regular',
     marginTop: 8,
   },
   emailText: {
-    fontSize: Typography.value.fontSize,
-    lineHeight: Typography.value.lineHeight,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.value,
     marginTop: 4,
   },
   errorBox: {
@@ -273,9 +268,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   errorText: {
-    fontSize: Typography.labelSmall.fontSize,
-    lineHeight: Typography.labelSmall.lineHeight,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.labelSmall,
     textAlign: 'center',
   },
   form: {
@@ -285,9 +278,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   label: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.helper,
+    fontFamily: 'Inter_600SemiBold',
     marginLeft: 4,
   },
   input: {
@@ -295,8 +287,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     borderWidth: 1,
     paddingHorizontal: 16,
-    fontSize: Typography.body.fontSize,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.body,
   },
   inputWrapper: {
     height: 54,
@@ -310,8 +301,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
     paddingHorizontal: 16,
-    fontSize: Typography.body.fontSize,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.body,
     backgroundColor: 'transparent',
   },
   submitButton: {
@@ -322,9 +312,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   submitButtonText: {
-    fontSize: Typography.body.fontSize,
-    fontFamily: 'Inter_600SemiBold',
-    // Color applied inline
+    ...Typography.button,
   },
   buttonSection: {
     paddingBottom: 40,
@@ -336,13 +324,10 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
   footerText: {
-    fontSize: Typography.labelSmall.fontSize,
-    lineHeight: Typography.labelSmall.lineHeight,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.helper,
   },
   footerLink: {
-    fontSize: Typography.labelSmall.fontSize,
-    lineHeight: Typography.labelSmall.lineHeight,
+    ...Typography.helper,
     fontFamily: 'Inter_600SemiBold',
   },
 });

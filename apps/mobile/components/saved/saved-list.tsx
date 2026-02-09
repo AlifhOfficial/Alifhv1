@@ -171,8 +171,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   quotaText: {
+    ...Typography.labelMedium,
     fontSize: 12,
-    fontFamily: 'Inter_500Medium',
-    fontWeight: '500',
   },
 });

@@ -213,10 +213,7 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   label: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
-    fontFamily: 'Inter_500Medium',
-    fontWeight: '500' as any,
+    ...Typography.helperMedium,
   },
   value: {
     fontSize: Typography.bodySmall.fontSize,
@@ -262,15 +259,9 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   cancelText: {
-    fontSize: Typography.value.fontSize,
-    lineHeight: Typography.value.lineHeight,
-    fontFamily: 'Inter_500Medium',
-    fontWeight: '500' as any,
+    ...Typography.valueMedium,
   },
   saveText: {
-    fontSize: Typography.value.fontSize,
-    lineHeight: Typography.value.lineHeight,
-    fontFamily: 'Inter_600SemiBold',
-    fontWeight: '600' as any,
+    ...Typography.value,
   },
 });

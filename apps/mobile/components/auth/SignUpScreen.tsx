@@ -209,7 +209,7 @@ export function SignUpScreen({
               {isLoading ? (
                 <ButtonLoader size="sm" variant="white" />
               ) : (
-                <Text style={[styles.submitButtonText, { color: '#FFFFFF' }]}>Continue</Text>
+                <Text style={[styles.submitButtonText, { color: themeColors.primaryForeground }]}>Continue</Text>
               )}
             </Pressable>
           </Animated.View>
@@ -387,9 +387,7 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   title: {
-    fontSize: Typography.titleLarge.fontSize,
-    lineHeight: Typography.titleLarge.lineHeight,
-    fontFamily: 'Inter_700Bold',
+    ...Typography.titleLarge,
   },
   errorBox: {
     borderRadius: 12,
@@ -397,9 +395,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   errorText: {
-    fontSize: Typography.labelSmall.fontSize,
-    lineHeight: Typography.labelSmall.lineHeight,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.labelSmall,
     textAlign: 'center',
   },
   form: {
@@ -409,9 +405,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   label: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.helper,
+    fontFamily: 'Inter_600SemiBold',
     marginLeft: 4,
   },
   input: {
@@ -419,8 +414,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     borderWidth: 1,
     paddingHorizontal: 16,
-    fontSize: Typography.bodySmall.fontSize,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.bodySmall,
   },
   inputWrapper: {
     height: 54,
@@ -434,8 +428,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
     paddingHorizontal: 16,
-    fontSize: Typography.bodySmall.fontSize,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.bodySmall,
     backgroundColor: 'transparent',
   },
   passwordInputInner: {
@@ -455,8 +448,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   showText: {
-    fontSize: Typography.labelSmall.fontSize,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.labelSmall,
+    fontFamily: 'Inter_600SemiBold',
   },
   requirements: {
     flexDirection: 'row',
@@ -475,8 +468,8 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   requirementText: {
-    fontSize: Typography.helper.fontSize,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.helper,
+    fontFamily: 'Inter_600SemiBold',
   },
   submitButton: {
     height: 54,
@@ -486,10 +479,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   submitButtonText: {
-    fontSize: Typography.bodySmall.fontSize,
-    lineHeight: Typography.bodySmall.lineHeight,
-    fontFamily: 'Inter_600SemiBold',
-    // Color applied inline
+    ...Typography.button,
   },
   dividerContainer: {
     flexDirection: 'row',
@@ -502,8 +492,8 @@ const styles = StyleSheet.create({
     height: 1,
   },
   dividerText: {
-    fontSize: Typography.helper.fontSize,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.helper,
+    fontFamily: 'Inter_600SemiBold',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -528,10 +518,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   termsText: {
-    fontSize: Typography.helper.fontSize,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.helper,
     textAlign: 'center',
-    lineHeight: 18,
   },
   footer: {
     flexDirection: 'row',
@@ -540,11 +528,10 @@ const styles = StyleSheet.create({
     paddingTop: 24,
   },
   footerText: {
-    fontSize: Typography.labelSmall.fontSize,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.helper,
   },
   footerLink: {
-    fontSize: Typography.labelSmall.fontSize,
+    ...Typography.helper,
     fontFamily: 'Inter_600SemiBold',
   },
 });

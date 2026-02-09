@@ -124,10 +124,7 @@ export function PersonalInfoSection({
 
 const styles = StyleSheet.create({
   verifyLink: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
-    fontFamily: 'Inter_600SemiBold',
-    fontWeight: '600' as any,
+    ...Typography.buttonSmall,
   },
   divider: {
     height: StyleSheet.hairlineWidth,

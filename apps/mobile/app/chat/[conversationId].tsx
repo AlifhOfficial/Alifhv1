@@ -92,14 +92,10 @@ const styles = StyleSheet.create({
     gap: Spacing.lg,
   },
   errorText: {
-    fontSize: Typography.bodySmall.fontSize,
-    lineHeight: Typography.bodySmall.lineHeight,
-    fontWeight: '500',
+    ...Typography.valueMedium,
     textAlign: 'center',
   },
   backLink: {
-    fontSize: Typography.bodySmall.fontSize,
-    lineHeight: Typography.bodySmall.lineHeight,
-    fontWeight: '600',
+    ...Typography.button,
   },
 });

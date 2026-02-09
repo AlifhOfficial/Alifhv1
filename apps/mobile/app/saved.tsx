@@ -12,7 +12,7 @@ import {
 import { LogoPulse } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Colors } from '@/constants/theme';
+import { Colors, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import {
@@ -163,8 +163,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   retryText: {
-    fontSize: 16,
-    fontFamily: 'Inter_600SemiBold',
-    fontWeight: '600',
+    ...Typography.button,
   },
 });

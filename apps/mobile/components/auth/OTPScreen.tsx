@@ -249,13 +249,10 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   title: {
-    fontSize: Typography.titleLarge.fontSize,
-    lineHeight: Typography.titleLarge.lineHeight,
-    fontFamily: 'Inter_700Bold',
+    ...Typography.titleLarge,
   },
   subtitle: {
-    fontSize: Typography.value.fontSize,
-    lineHeight: Typography.value.lineHeight,
+    ...Typography.value,
     fontFamily: 'Inter_400Regular',
     marginTop: 8,
   },
@@ -265,9 +262,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   errorText: {
-    fontSize: Typography.labelSmall.fontSize,
-    lineHeight: Typography.labelSmall.lineHeight,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.labelSmall,
     textAlign: 'center',
   },
   codeSection: {
@@ -288,8 +283,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   codeDigit: {
-    fontSize: Typography.title.fontSize,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.title,
   },
   cursor: {
     position: 'absolute',
@@ -313,20 +307,17 @@ const styles = StyleSheet.create({
     marginTop: 32,
   },
   resendText: {
-    fontSize: Typography.labelSmall.fontSize,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.link,
   },
   resendTimer: {
-    fontSize: Typography.labelSmall.fontSize,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.helper,
   },
   helpSection: {
     marginTop: 'auto',
     paddingBottom: 24,
   },
   helpText: {
-    fontSize: Typography.helper.fontSize,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.helper,
     textAlign: 'center',
   },
 });

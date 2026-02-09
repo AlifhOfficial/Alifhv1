@@ -1,7 +1,8 @@
 import React from 'react';
-import { Text, StyleSheet, useColorScheme, Pressable } from 'react-native';
+import { Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@/constants/theme';
+import { Colors, Typography, Radius } from '@/constants/theme';
+import { useTheme } from '@/context/theme-context';
 
 interface FilterPillProps {
   label: string;
@@ -18,7 +19,7 @@ export function FilterPill({
   showRemove = false,
   variant = 'default'
 }: FilterPillProps) {
-  const colorScheme = useColorScheme() ?? 'light';
+  const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
   const isPrimary = variant === 'primary' || isSelected;
@@ -58,12 +59,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 8,
     paddingHorizontal: 14,
-    borderRadius: 20,
+    borderRadius: Radius.xl,
     borderWidth: 1,
     gap: 6,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '500',
+    ...Typography.link,
   },
 });

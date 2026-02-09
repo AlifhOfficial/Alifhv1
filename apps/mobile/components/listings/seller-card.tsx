@@ -7,7 +7,7 @@ import { StyleSheet, View, Text } from 'react-native';
 import { Image } from 'expo-image';
 import { CheckCircle2 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { SellerData } from '@/lib/api';
 
@@ -102,8 +102,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   avatarInitial: {
-    fontSize: 18,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.initial,
   },
   details: {
     flex: 1,
@@ -115,12 +114,10 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   name: {
-    fontSize: 15,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.value,
   },
   type: {
-    fontSize: 13,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.secondary,
   },
   blkBadge: {
     paddingHorizontal: 6,
@@ -128,8 +125,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.sm,
   },
   blkBadgeText: {
+    ...Typography.labelBadge,
     fontSize: 8,
-    fontFamily: 'Inter_800ExtraBold',
-    letterSpacing: 0.8,
   },
 });

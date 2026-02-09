@@ -125,7 +125,7 @@ export function AuthSuccessScreen({
                 { backgroundColor: colors.primary, opacity: isExiting ? 0.7 : pressed ? 0.9 : 1 }
               ]}
             >
-              <Text style={[styles.continueButtonText, { color: '#FFFFFF' }]}>Time to Revv</Text>
+              <Text style={[styles.continueButtonText, { color: themeColors.primaryForeground }]}>Time to Revv</Text>
               <ArrowRightIcon />
             </Pressable>
           </Animated.View>
@@ -241,15 +241,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: Typography.title.fontSize,
-    lineHeight: Typography.title.lineHeight,
-    fontFamily: 'Inter_700Bold',
+    ...Typography.title,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: Typography.body.fontSize,
-    lineHeight: Typography.body.lineHeight,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.body,
     marginTop: 8,
     textAlign: 'center',
   },
@@ -267,8 +263,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   continueButtonText: {
-    fontSize: Typography.body.fontSize,
-    fontFamily: 'Inter_600SemiBold',
-    // Color applied inline
+    ...Typography.button,
   },
 });

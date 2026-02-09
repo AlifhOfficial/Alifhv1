@@ -41,7 +41,7 @@ import {
 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { getListingDetailed, ListingDetailed } from '@/lib/listing-api';
@@ -782,7 +782,7 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   metaText: {
-    fontSize: 14,
+    ...Typography.link,
     fontFamily: 'Inter_500Medium',
   },
   tierPill: {
@@ -791,9 +791,8 @@ const styles = StyleSheet.create({
     borderRadius: Radius.sm,
   },
   tierText: {
-    fontSize: 10,
+    ...Typography.labelBadge,
     fontFamily: 'Inter_800ExtraBold',
-    letterSpacing: 1,
   },
   ratingRow: {
     flexDirection: 'row',
@@ -862,8 +861,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xs,
   },
   phoneText: {
-    fontSize: 15,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.valueMedium,
     flex: 1,
   },
   phoneCta: {
@@ -915,7 +913,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   viewAllLink: {
-    fontSize: 14,
+    ...Typography.link,
     fontFamily: 'Inter_500Medium',
   },
 
@@ -953,8 +951,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   compactBtnText: {
-    fontSize: 13,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.labelMedium,
   },
   mapActions: {
     flexDirection: 'row',
@@ -971,7 +968,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   mapBtnText: {
-    fontSize: 14,
+    ...Typography.link,
     fontFamily: 'Inter_500Medium',
   },
 
@@ -994,8 +991,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
   },
   tagText: {
-    fontSize: 13,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.labelMedium,
   },
 
   // Listings
@@ -1048,7 +1044,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
   },
   viewAllBtnText: {
-    fontSize: 14,
+    ...Typography.link,
     fontFamily: 'Inter_500Medium',
   },
 
@@ -1061,8 +1057,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
   },
   emiLabel: {
-    fontSize: 13,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.labelMedium,
   },
   emiValue: {
     fontSize: 36,
@@ -1089,7 +1084,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_400Regular',
   },
   emiRowValue: {
-    fontSize: 14,
+    ...Typography.link,
     fontFamily: 'Inter_500Medium',
   },
   emiDisclaimer: {
@@ -1137,8 +1132,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   calcChipText: {
+    ...Typography.labelMedium,
     fontSize: 12,
-    fontFamily: 'Inter_500Medium',
   },
   calcDisclaimer: {
     fontSize: 11,
@@ -1157,7 +1152,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   websiteBtnText: {
-    fontSize: 15,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.valueMedium,
   },
 });

@@ -17,7 +17,6 @@ import {
   Pressable,
   Platform,
   ActivityIndicator,
-  useColorScheme,
 } from 'react-native';
 import {
   BottomSheetModal,
@@ -30,7 +29,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors } from '@/constants/theme';
+import { Colors, Typography, Spacing, Radius } from '@/constants/theme';
+import { useTheme } from '@/context/theme-context';
 import {
   searchApi,
   type Suggestion,
@@ -56,7 +56,7 @@ type TabType = 'search' | 'makes' | 'models' | 'trims';
 // ============================================================================
 
 export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
-  const colorScheme = useColorScheme() ?? 'light';
+  const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
@@ -744,7 +744,7 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
                       styles.tabText,
                       {
                         color: isDisabled ? colors.textTertiary : isActive ? colors.primary : colors.textSecondary,
-                        fontWeight: isActive ? '600' : '500',
+                        fontFamily: isActive ? 'Inter_700Bold' : 'Inter_600SemiBold',
                       },
                     ]}
                   >
@@ -835,28 +835,24 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    letterSpacing: -0.4,
+    ...Typography.title,
   },
   cancelBtn: {
-    fontSize: 16,
-    fontWeight: '600',
+    ...Typography.button,
   },
   searchInput: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 14,
     height: 48,
-    borderRadius: 24,
+    borderRadius: Radius['3xl'],
     borderWidth: 1,
-    marginBottom: 16,
+    marginBottom: Spacing.lg,
     gap: 10,
   },
   searchInputText: {
     flex: 1,
-    fontSize: 16,
-    fontWeight: '500',
+    ...Typography.button,
     paddingVertical: 0,
   },
   clearBtn: {
@@ -876,7 +872,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tabText: {
-    fontSize: 13,
+    ...Typography.chip,
   },
   scrollView: {
     flex: 1,
@@ -896,31 +892,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   sectionTitle: {
-    fontSize: 13,
-    fontWeight: '600',
-    letterSpacing: 0.2,
+    ...Typography.valueSmall,
   },
   clearLink: {
-    fontSize: 13,
-    fontWeight: '500',
+    ...Typography.valueSmall,
+    fontFamily: 'Inter_600SemiBold',
   },
   filterInput: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 14,
     height: 44,
-    borderRadius: 12,
+    borderRadius: Radius.lg,
     borderWidth: 1,
-    marginBottom: 16,
+    marginBottom: Spacing.lg,
     gap: 10,
   },
   filterInputText: {
     flex: 1,
-    fontSize: 15,
+    ...Typography.value,
     paddingVertical: 0,
   },
   listContainer: {
-    borderRadius: 16,
+    borderRadius: Radius.xl,
     borderWidth: 1,
     overflow: 'hidden',
   },
@@ -946,11 +940,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   listItemText: {
-    fontSize: 16,
+    ...Typography.button,
     flex: 1,
   },
   listItemTextSelected: {
-    fontWeight: '600',
+    fontFamily: 'Inter_700Bold',
   },
   listItemRight: {
     flexDirection: 'row',
@@ -958,7 +952,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   listItemCount: {
-    fontSize: 14,
+    ...Typography.link,
   },
   selectedSection: {
     marginBottom: 16,
@@ -971,8 +965,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   selectedLabel: {
-    fontSize: 13,
-    fontWeight: '600',
+    ...Typography.valueSmall,
   },
   pillsRow: {
     flexDirection: 'row',
@@ -982,40 +975,35 @@ const styles = StyleSheet.create({
   pill: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: Spacing.sm,
     paddingHorizontal: 14,
-    borderRadius: 20,
+    borderRadius: Radius.xl,
     gap: 6,
   },
   pillText: {
-    fontSize: 14,
-    fontWeight: '500',
-    // Color applied inline
+    ...Typography.link,
   },
   emptyState: {
     alignItems: 'center',
-    paddingVertical: 48,
-    paddingHorizontal: 24,
-    borderRadius: 16,
+    paddingVertical: Spacing['5xl'],
+    paddingHorizontal: Spacing['2xl'],
+    borderRadius: Radius.xl,
     borderWidth: 1,
   },
   emptyTitle: {
-    fontSize: 17,
-    fontWeight: '600',
-    marginBottom: 8,
+    ...Typography.titleSmall,
+    marginBottom: Spacing.sm,
   },
   emptySubtitle: {
-    fontSize: 14,
+    ...Typography.bodyMini,
     textAlign: 'center',
-    lineHeight: 20,
   },
   hintContainer: {
     alignItems: 'center',
     paddingVertical: 48,
   },
   hintText: {
-    fontSize: 14,
-    fontWeight: '500',
+    ...Typography.link,
   },
   loadingSection: {
     alignItems: 'center',
@@ -1035,11 +1023,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     height: 52,
-    borderRadius: 26,
-    gap: 8,
+    borderRadius: Radius['3xl'],
+    gap: Spacing.sm,
   },
   searchButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
+    ...Typography.button,
   },
 });

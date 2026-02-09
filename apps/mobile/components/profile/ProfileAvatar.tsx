@@ -29,6 +29,7 @@ import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { Typography } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -258,9 +259,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   loadingText: {
-    fontSize: 13,
-    fontFamily: 'Inter_500Medium',
-    letterSpacing: 0,
+    ...Typography.labelMedium,
     // White text on overlay - hardcoded
     color: '#FFFFFF',
   },

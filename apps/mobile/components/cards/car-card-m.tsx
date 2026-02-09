@@ -503,12 +503,11 @@ const styles = StyleSheet.create({
     marginTop: Spacing.xs,
   },
   stat: {
-    fontSize: 13,
-    lineHeight: 18,
+    ...Typography.stat,
     fontFamily: 'Inter_600SemiBold',
   },
   separator: {
-    fontSize: 13,
+    fontSize: 15,
     fontFamily: 'Inter_400Regular',
     opacity: 0.4,
   },

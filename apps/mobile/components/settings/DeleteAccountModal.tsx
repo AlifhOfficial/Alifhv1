@@ -184,10 +184,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   inputLabel: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
-    fontFamily: 'Inter_500Medium',
-    fontWeight: '500' as any,
+    ...Typography.helperMedium,
     marginBottom: 8,
   },
   input: {
@@ -195,9 +192,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     paddingHorizontal: 16,
-    fontSize: Typography.bodySmall.fontSize,
+    ...Typography.bodySmall,
     fontFamily: 'Inter_500Medium',
-    fontWeight: '500' as any,
   },
   buttons: {
     flexDirection: 'row',

@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, useColorScheme, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@/constants/theme';
+import { Colors, Typography, Spacing } from '@/constants/theme';
+import { useTheme } from '@/context/theme-context';
 
 interface SectionHeaderProps {
   title: string;
@@ -10,7 +11,7 @@ interface SectionHeaderProps {
 }
 
 export function SectionHeader({ title, onClear, showClear = false }: SectionHeaderProps) {
-  const colorScheme = useColorScheme() ?? 'light';
+  const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
   return (
@@ -39,12 +40,9 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
   title: {
-    fontSize: 13,
-    fontWeight: '600',
-    letterSpacing: 0.3,
+    ...Typography.valueSmall,
   },
   clearText: {
-    fontSize: 13,
-    fontWeight: '500',
+    ...Typography.valueSmall,
   },
 });

@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, useColorScheme, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@/constants/theme';
+import { Colors, Typography, Radius, Spacing } from '@/constants/theme';
+import { useTheme } from '@/context/theme-context';
 
 interface SelectableItemProps {
   label: string;
@@ -20,7 +21,7 @@ export function SelectableItem({
   showCheckbox = true,
   showChevron = false 
 }: SelectableItemProps) {
-  const colorScheme = useColorScheme() ?? 'light';
+  const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
   return (
@@ -51,7 +52,7 @@ export function SelectableItem({
         <Text style={[
           styles.label, 
           { color: colors.text },
-          isSelected && { fontWeight: '600' }
+          isSelected && styles.labelSelected
         ]}>
           {label}
         </Text>
@@ -89,20 +90,25 @@ const styles = StyleSheet.create({
   checkbox: {
     width: 22,
     height: 22,
-    borderRadius: 6,
+    borderRadius: Radius.md,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
   label: {
-    fontSize: 16,
+    ...Typography.button,
+    fontFamily: 'Inter_400Regular',
+  },
+  labelSelected: {
+    fontFamily: 'Inter_600SemiBold',
   },
   rightContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.sm,
   },
   count: {
-    fontSize: 14,
+    ...Typography.link,
+    fontFamily: 'Inter_400Regular',
   },
 });

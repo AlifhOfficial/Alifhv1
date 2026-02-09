@@ -166,12 +166,8 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   statLabel: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
-    fontFamily: 'Inter_600SemiBold',
-    fontWeight: '600' as any,
+    ...Typography.labelSmall,
     textTransform: 'uppercase',
-    letterSpacing: 0.8,
   },
   valueRow: {
     flexDirection: 'row',

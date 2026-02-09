@@ -58,14 +58,9 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   label: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
-    fontFamily: 'Inter_500Medium',
-    fontWeight: '500' as any,
+    ...Typography.helperMedium,
   },
   value: {
-    fontSize: Typography.bodySmall.fontSize,
-    lineHeight: Typography.bodySmall.lineHeight,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.bodySmall,
   },
 });

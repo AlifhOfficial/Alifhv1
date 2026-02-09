@@ -17,7 +17,7 @@ import Animated, {
 import Svg, { Path } from 'react-native-svg';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Typography, Radius } from '@/constants/theme';
+import { Colors, Typography, Radius, Spacing } from '@/constants/theme';
 
 interface WelcomeScreenProps {
   onGetStarted: () => void;
@@ -35,10 +35,7 @@ const LOGO_PATH = "M0 0 C11.23582766 4.49433107 11.23582766 4.49433107 16.492187
 const PATH_LENGTH = 2800;
 
 // SVG Logo Component with draw animation
-function RevvupLogo({ isDark, size = 180 }: { isDark: boolean; size?: number }) {
-  const strokeColor = isDark ? '#FAFAFA' : '#18181B';
-  const fillColor = isDark ? '#FAFAFA' : '#18181B';
-  
+function RevvupLogo({ color, size = 180 }: { color: string; size?: number }) {
   // Animation progress values
   const strokeProgress = useSharedValue(0);
   const fillOpacity = useSharedValue(0);
@@ -66,8 +63,8 @@ function RevvupLogo({ isDark, size = 180 }: { isDark: boolean; size?: number }) 
     <Svg width={size} height={size} viewBox="0 0 400 400">
       <AnimatedPath
         d={LOGO_PATH}
-        fill={fillColor}
-        stroke={strokeColor}
+        fill={color}
+        stroke={color}
         strokeWidth={3}
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -82,15 +79,14 @@ function RevvupLogo({ isDark, size = 180 }: { isDark: boolean; size?: number }) 
 export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenProps) {
   const { colorScheme } = useTheme();
   const insets = useSafeAreaInsets();
-  const isDark = colorScheme === 'dark';
-  const colors = isDark ? Colors.dark : Colors.light;
+  const colors = Colors[colorScheme];
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
       {/* Brand Section - Logo centered */}
       <View style={styles.brandSection}>
         <View style={styles.logoContainer}>
-          <RevvupLogo isDark={isDark} size={180} />
+          <RevvupLogo color={colors.text} size={180} />
         </View>
       </View>
 
@@ -110,13 +106,7 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
             }
           ]}
         >
-          <Text style={[
-            styles.ctaButtonText, 
-            { 
-              color: colors.primaryForeground,
-              ...Typography.button,
-            }
-          ]}>
+          <Text style={[styles.ctaButtonText, { color: colors.primaryForeground }]}>
             Get Started
           </Text>
         </Pressable>
@@ -132,13 +122,7 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
             }
           ]}
         >
-          <Text style={[
-            styles.ctaButtonText, 
-            { 
-              color: colors.text,
-              ...Typography.button,
-            }
-          ]}>
+          <Text style={[styles.ctaButtonText, { color: colors.text }]}>
             Already a user?
           </Text>
         </Pressable>
@@ -148,20 +132,14 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
       {onSkip && (
         <Animated.View 
           entering={FadeInUp.delay(1700).duration(400).easing(Easing.out(Easing.ease))}
-          style={[styles.skipSection, { paddingBottom: Math.max(insets.bottom, 20) }]}
+          style={[styles.skipSection, { paddingBottom: Math.max(insets.bottom, Spacing.xl) }]}
         >
           <Pressable
             onPress={onSkip}
             hitSlop={{ top: 16, bottom: 16, left: 24, right: 24 }}
             style={({ pressed }) => [{ opacity: pressed ? 0.4 : 1 }]}
           >
-            <Text style={[
-              styles.skipText, 
-              { 
-                color: colors.textTertiary,
-                ...Typography.labelSmall,
-              }
-            ]}>
+            <Text style={[styles.skipText, { color: colors.textTertiary }]}>
               Skip
             </Text>
           </Pressable>
@@ -187,20 +165,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   ctaSection: {
-    paddingHorizontal: 24,
-    gap: 12,
-    marginBottom: 32,
+    paddingHorizontal: Spacing['2xl'],
+    gap: Spacing.lg,
+    marginBottom: Spacing['4xl'],
   },
   ctaButton: {
-    height: 54,
+    height: 56,
     borderRadius: Radius.xl,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  ctaButtonText: {},
+  ctaButtonText: {
+    ...Typography.button,
+  },
   skipSection: {
     alignItems: 'center',
-    paddingTop: 8,
+    paddingTop: Spacing.sm,
   },
-  skipText: {},
+  skipText: {
+    ...Typography.buttonSmall,
+  },
 });

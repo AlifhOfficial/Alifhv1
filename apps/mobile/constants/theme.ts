@@ -3,6 +3,32 @@
  * Primary: #0066FF | OLED Dark Mode | Clean Neutrals
  */
 
+import { Dimensions, PixelRatio } from 'react-native';
+
+// ═══════════════════════════════════════════════════
+// RESPONSIVE SCALING
+// ═══════════════════════════════════════════════════
+// Base design width: iPhone 14/15 (393px)
+// Scales proportionally to device screen width
+// Factor of 0.5 = moderate scaling (not too aggressive)
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const BASE_WIDTH = 393;
+
+/**
+ * Scales a size value based on screen width
+ * @param size - Base size in design pixels
+ * @param factor - How aggressively to scale (0 = none, 1 = full). Default 0.5
+ */
+const scale = (size: number, factor = 0.5): number => {
+  const scaleRatio = SCREEN_WIDTH / BASE_WIDTH;
+  const newSize = size + (size * (scaleRatio - 1) * factor);
+  return Math.round(PixelRatio.roundToNearestPixel(newSize));
+};
+
+// Font-specific scaling (slightly less aggressive for readability)
+const fontScale = (size: number): number => scale(size, 0.4);
+
 export const Colors = {
   light: {
     // BACKGROUNDS
@@ -155,10 +181,12 @@ export const Radius = {
 // TYPOGRAPHY SYSTEM
 // ═══════════════════════════════════════════════════
 // 
-// LOAD ONLY THESE 3 FONTS:
-//   • Inter_400Regular  (body, descriptions)
-//   • Inter_600SemiBold (values, buttons, emphasis)
-//   • Inter_700Bold     (titles, prices, headers)
+// LOADED FONTS (5 weights):
+//   • Inter_400Regular   (body, descriptions)
+//   • Inter_500Medium    (secondary labels, hints)
+//   • Inter_600SemiBold  (values, buttons, emphasis)
+//   • Inter_700Bold      (titles, prices, headers)
+//   • Inter_800ExtraBold (hero numbers, feature callouts)
 //
 // RULES:
 //   1. NEVER set fontWeight - fontFamily handles it
@@ -199,45 +227,47 @@ const base = {
 
 export const Typography = {
   // TITLES (Bold)
-  // 34→41, 22→28, 20→26, 17→22, 15→20
-  titleLarge: { ...base, fontSize: 34, lineHeight: 41, fontFamily: 'Inter_700Bold' },
-  titlePrice: { ...base, fontSize: 22, lineHeight: 28, fontFamily: 'Inter_700Bold' },
-  title: { ...base, fontSize: 20, lineHeight: 26, fontFamily: 'Inter_700Bold' },
-  titleSmall: { ...base, fontSize: 17, lineHeight: 22, fontFamily: 'Inter_600SemiBold' },
-  titleCard: { ...base, fontSize: 15, lineHeight: 20, fontFamily: 'Inter_700Bold' },
+  titleLarge: { ...base, fontSize: fontScale(34), lineHeight: fontScale(41), fontFamily: 'Inter_700Bold' },
+  titlePrice: { ...base, fontSize: fontScale(18), lineHeight: fontScale(24), fontFamily: 'Inter_700Bold' },
+  title: { ...base, fontSize: fontScale(20), lineHeight: fontScale(26), fontFamily: 'Inter_700Bold' },
+  titleSmall: { ...base, fontSize: fontScale(17), lineHeight: fontScale(22), fontFamily: 'Inter_600SemiBold' },
+  titleCard: { ...base, fontSize: fontScale(15), lineHeight: fontScale(20), fontFamily: 'Inter_700Bold' },
 
   // BODY (Regular) - slightly looser for readability
-  // 17→24 (paragraphs), 15→22, 14→20
-  body: { ...base, fontSize: 17, lineHeight: 24, fontFamily: 'Inter_400Regular' },
-  bodySmall: { ...base, fontSize: 15, lineHeight: 22, fontFamily: 'Inter_400Regular' },
-  bodyMini: { ...base, fontSize: 14, lineHeight: 20, fontFamily: 'Inter_400Regular' },
+  body: { ...base, fontSize: fontScale(17), lineHeight: fontScale(24), fontFamily: 'Inter_400Regular' },
+  bodySmall: { ...base, fontSize: fontScale(15), lineHeight: fontScale(22), fontFamily: 'Inter_400Regular' },
+  bodyMini: { ...base, fontSize: fontScale(14), lineHeight: fontScale(20), fontFamily: 'Inter_400Regular' },
 
   // VALUES (SemiBold) - tight for data display
-  // 15→20, 14→20, 13→18, 18→22
-  value: { ...base, fontSize: 15, lineHeight: 20, fontFamily: 'Inter_600SemiBold' },
-  stat: { ...base, fontSize: 14, lineHeight: 20, fontFamily: 'Inter_600SemiBold' },
-  valueSmall: { ...base, fontSize: 13, lineHeight: 18, fontFamily: 'Inter_600SemiBold' },
-  initial: { ...base, fontSize: 18, lineHeight: 22, fontFamily: 'Inter_600SemiBold' },
+  value: { ...base, fontSize: fontScale(15), lineHeight: fontScale(20), fontFamily: 'Inter_600SemiBold' },
+  stat: { ...base, fontSize: fontScale(15), lineHeight: fontScale(20), fontFamily: 'Inter_600SemiBold' },
+  valueSmall: { ...base, fontSize: fontScale(13), lineHeight: fontScale(18), fontFamily: 'Inter_600SemiBold' },
+  initial: { ...base, fontSize: fontScale(18), lineHeight: fontScale(22), fontFamily: 'Inter_600SemiBold' },
 
   // LABELS (Bold + tracking) - reduced tracking for cross-platform consistency
-  // 12→16, 11→14, 10→14
-  label: { ...base, fontSize: 12, lineHeight: 16, fontFamily: 'Inter_700Bold', letterSpacing: 1 },
-  labelSmall: { ...base, fontSize: 11, lineHeight: 14, fontFamily: 'Inter_700Bold', letterSpacing: 0.3 },
-  labelBadge: { ...base, fontSize: 10, lineHeight: 14, fontFamily: 'Inter_700Bold', letterSpacing: 0.5 },
+  label: { ...base, fontSize: fontScale(12), lineHeight: fontScale(16), fontFamily: 'Inter_700Bold', letterSpacing: 1 },
+  labelSmall: { ...base, fontSize: fontScale(11), lineHeight: fontScale(14), fontFamily: 'Inter_700Bold', letterSpacing: 0.3 },
+  labelBadge: { ...base, fontSize: fontScale(10), lineHeight: fontScale(14), fontFamily: 'Inter_700Bold', letterSpacing: 0.5 },
 
   // UI ELEMENTS (SemiBold)
-  // 15→20, 13→18, 10→14
-  button: { ...base, fontSize: 15, lineHeight: 20, fontFamily: 'Inter_600SemiBold' },
-  buttonSmall: { ...base, fontSize: 13, lineHeight: 18, fontFamily: 'Inter_600SemiBold' },
-  tab: { ...base, fontSize: 10, lineHeight: 14, fontFamily: 'Inter_600SemiBold' },
-  chip: { ...base, fontSize: 13, lineHeight: 18, fontFamily: 'Inter_600SemiBold' },
-  link: { ...base, fontSize: 14, lineHeight: 20, fontFamily: 'Inter_600SemiBold' },
+  button: { ...base, fontSize: fontScale(15), lineHeight: fontScale(20), fontFamily: 'Inter_600SemiBold' },
+  buttonSmall: { ...base, fontSize: fontScale(13), lineHeight: fontScale(18), fontFamily: 'Inter_600SemiBold' },
+  tab: { ...base, fontSize: fontScale(10), lineHeight: fontScale(14), fontFamily: 'Inter_600SemiBold' },
+  chip: { ...base, fontSize: fontScale(13), lineHeight: fontScale(18), fontFamily: 'Inter_600SemiBold' },
+  link: { ...base, fontSize: fontScale(14), lineHeight: fontScale(20), fontFamily: 'Inter_600SemiBold' },
 
   // SUPPORTING (Regular)
-  // 15→20, 13→18
-  labelText: { ...base, fontSize: 15, lineHeight: 20, fontFamily: 'Inter_400Regular' },
-  helper: { ...base, fontSize: 13, lineHeight: 18, fontFamily: 'Inter_400Regular' },
-  secondary: { ...base, fontSize: 13, lineHeight: 18, fontFamily: 'Inter_400Regular' },
+  labelText: { ...base, fontSize: fontScale(15), lineHeight: fontScale(20), fontFamily: 'Inter_400Regular' },
+  helper: { ...base, fontSize: fontScale(13), lineHeight: fontScale(18), fontFamily: 'Inter_400Regular' },
+  secondary: { ...base, fontSize: fontScale(13), lineHeight: fontScale(18), fontFamily: 'Inter_400Regular' },
+
+  // MEDIUM WEIGHT (Inter_500Medium) - for secondary labels, hints
+  labelMedium: { ...base, fontSize: fontScale(13), lineHeight: fontScale(18), fontFamily: 'Inter_500Medium' },
+  helperMedium: { ...base, fontSize: fontScale(13), lineHeight: fontScale(18), fontFamily: 'Inter_500Medium' },
+  valueMedium: { ...base, fontSize: fontScale(15), lineHeight: fontScale(20), fontFamily: 'Inter_500Medium' },
+
+  // EXTRA BOLD (Inter_800ExtraBold) - for hero numbers
+  heroNumber: { ...base, fontSize: fontScale(32), lineHeight: fontScale(38), fontFamily: 'Inter_800ExtraBold' },
 } as const;
 
 // ═══════════════════════════════════════════════════
@@ -270,3 +300,6 @@ export const Shadows = {
 // Type helpers
 export type ColorScheme = keyof typeof Colors;
 export type ThemeColors = typeof Colors.light;
+
+// Export scaling utilities for custom use
+export { scale, fontScale, SCREEN_WIDTH, BASE_WIDTH };

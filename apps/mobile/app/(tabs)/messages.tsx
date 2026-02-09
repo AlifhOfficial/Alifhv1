@@ -293,28 +293,18 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   emptyTitle: {
-    fontSize: Typography.title.fontSize,
-    lineHeight: Typography.title.lineHeight,
-    fontFamily: 'Inter_700Bold',
-    fontWeight: '700',
+    ...Typography.title,
   },
   emptySubtitle: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.helper,
     textAlign: 'center',
   },
   actionLink: {
-    fontSize: Typography.value.fontSize,
-    lineHeight: Typography.value.lineHeight,
-    fontFamily: 'Inter_600SemiBold',
-    fontWeight: '600',
+    ...Typography.button,
     marginTop: Spacing.sm,
   },
   errorText: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.helperMedium,
     textAlign: 'center',
   },
 });
