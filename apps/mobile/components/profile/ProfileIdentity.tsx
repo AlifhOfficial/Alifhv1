@@ -108,30 +108,19 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   name: {
-    fontSize: Typography.h3.fontSize,
-    lineHeight: Typography.h3.lineHeight,
-    fontFamily: 'Inter_700Bold',
-    fontWeight: Typography.h3.fontWeight as any,
-    letterSpacing: Typography.h3.letterSpacing,
+    ...Typography.title,
     flexShrink: 1,
   },
   expiringBadge: {
     opacity: 0.5,
   },
   email: {
-    fontSize: Typography.subhead.fontSize,
-    lineHeight: Typography.subhead.lineHeight,
+    ...Typography.value,
     fontFamily: 'Inter_400Regular',
-    fontWeight: Typography.subhead.fontWeight as any,
-    letterSpacing: Typography.subhead.letterSpacing,
     marginTop: 2,
   },
   memberSince: {
-    fontSize: Typography.footnote.fontSize,
-    lineHeight: Typography.footnote.lineHeight,
-    fontFamily: 'Inter_400Regular',
-    fontWeight: Typography.footnote.fontWeight as any,
-    letterSpacing: Typography.footnote.letterSpacing,
+    ...Typography.helper,
     marginTop: 2,
   },
 });

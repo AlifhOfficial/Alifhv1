@@ -176,7 +176,7 @@ export default function MessagesScreen() {
       <View style={[styles.screen, { backgroundColor: colors.background }]}>
         <MessagesHeader />
         <View style={styles.emptyState}>
-          <View style={[styles.iconCircle, { backgroundColor: colors.fillQuaternary }]}>
+          <View style={[styles.iconCircle, { backgroundColor: colors.fillSecondary }]}>
             <MessageCircle size={32} color={colors.textTertiary} strokeWidth={1.5} />
           </View>
           <Text style={[styles.emptyTitle, { color: colors.text }]}>
@@ -186,7 +186,7 @@ export default function MessagesScreen() {
             Connect with buyers and sellers on Revvup
           </Text>
           <Text
-            style={[styles.actionLink, { color: colors.tint }]}
+            style={[styles.actionLink, { color: colors.primary }]}
             onPress={openAuthFlow}
           >
             Sign In
@@ -202,7 +202,7 @@ export default function MessagesScreen() {
       <View style={[styles.screen, { backgroundColor: colors.background }]}>
         <MessagesHeader />
         <View style={styles.centered}>
-          <ActivityIndicator size="small" color={colors.tint} />
+          <ActivityIndicator size="small" color={colors.primary} />
         </View>
       </View>
     );
@@ -226,7 +226,7 @@ export default function MessagesScreen() {
       <View style={[styles.screen, { backgroundColor: colors.background }]}>
         <MessagesHeader />
         <View style={styles.emptyState}>
-          <View style={[styles.iconCircle, { backgroundColor: colors.fillQuaternary }]}>
+          <View style={[styles.iconCircle, { backgroundColor: colors.fillSecondary }]}>
             <MessageCircle size={32} color={colors.textTertiary} strokeWidth={1.5} />
           </View>
           <Text style={[styles.emptyTitle, { color: colors.text }]}>
@@ -253,13 +253,13 @@ export default function MessagesScreen() {
           paddingBottom: insets.bottom + Layout.tabBarHeight,
         }}
         ItemSeparatorComponent={() => (
-          <View style={{ height: 1, backgroundColor: colors.separator, marginVertical: Spacing.lg, marginLeft: 56 }} />
+          <View style={{ height: 1, backgroundColor: colors.border, marginVertical: Spacing.lg, marginLeft: 56 }} />
         )}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={refresh}
-            tintColor={colors.tint}
+            tintColor={colors.primary}
           />
         }
         showsVerticalScrollIndicator={false}
@@ -293,28 +293,27 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   emptyTitle: {
-    fontSize: Typography.large.fontSize,
-    lineHeight: Typography.large.lineHeight,
+    fontSize: Typography.title.fontSize,
+    lineHeight: Typography.title.lineHeight,
     fontFamily: 'Inter_700Bold',
     fontWeight: '700',
-    letterSpacing: Typography.large.letterSpacing,
   },
   emptySubtitle: {
-    fontSize: Typography.muted.fontSize,
-    lineHeight: Typography.muted.lineHeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     fontFamily: 'Inter_400Regular',
     textAlign: 'center',
   },
   actionLink: {
-    fontSize: Typography.subhead.fontSize,
-    lineHeight: Typography.subhead.lineHeight,
+    fontSize: Typography.value.fontSize,
+    lineHeight: Typography.value.lineHeight,
     fontFamily: 'Inter_600SemiBold',
     fontWeight: '600',
     marginTop: Spacing.sm,
   },
   errorText: {
-    fontSize: Typography.muted.fontSize,
-    lineHeight: Typography.muted.lineHeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     fontFamily: 'Inter_500Medium',
     textAlign: 'center',
   },

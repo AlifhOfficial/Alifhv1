@@ -167,16 +167,16 @@ export const CarCardM = memo(function CarCardM({
     ? colors.blkTextSecondary 
     : colors.textSecondary;
   const metaColor = isBlkListing 
-    ? colors.blkTextMuted 
+    ? colors.blkTextSecondary 
     : colors.textSecondary;
   const separatorColor = isBlkListing 
-    ? colors.blkSeparator 
+    ? colors.blkBorder 
     : colors.textTertiary;
   const sellerTextColor = isBlkListing 
     ? colors.blkTextSecondary 
     : colors.text;
   const actionIconColor = isBlkListing 
-    ? colors.blkTextMuted 
+    ? colors.blkTextSecondary 
     : colors.icon;
 
   // Handlers
@@ -221,11 +221,11 @@ export const CarCardM = memo(function CarCardM({
     >
       {/* BLK Listing Top Accent */}
       {isBlkListing && (
-        <View style={[styles.blkAccent, { backgroundColor: colors.blkSeparator }]} />
+        <View style={[styles.blkAccent, { backgroundColor: colors.blkBorder }]} />
       )}
 
       {/* Image Section */}
-      <View style={[styles.imageContainer, { backgroundColor: isBlkListing ? colors.blkImageBackground : colors.backgroundSecondary }]}>
+      <View style={[styles.imageContainer, { backgroundColor: isBlkListing ? colors.blkBackground : colors.backgroundSecondary }]}>
         {displayImage ? (
           <Image
             source={{ uri: displayImage }}
@@ -286,8 +286,8 @@ export const CarCardM = memo(function CarCardM({
             <View style={[
               styles.avatar,
               { 
-                backgroundColor: isBlkListing ? colors.blkAvatarBackground : colors.backgroundSecondary,
-                borderColor: isBlackTierPartner ? colors.blkBackground : (isBlkListing ? colors.blkAvatarBorder : colors.border),
+                backgroundColor: isBlkListing ? colors.blkBackground : colors.backgroundSecondary,
+                borderColor: isBlackTierPartner ? colors.blkBackground : (isBlkListing ? colors.blkBorder : colors.border),
               },
               isBlackTierPartner && styles.avatarBlackTier,
             ]}>
@@ -463,7 +463,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   placeholderText: {
-    ...Typography.footnote,
+    ...Typography.helper,
   },
 
   // Content
@@ -481,17 +481,17 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    ...Typography.cardTitle,
+    ...Typography.titleCard,
     fontFamily: 'Inter_700Bold',
   },
   year: {
-    ...Typography.cardMeta,
+    ...Typography.stat,
     fontFamily: 'Inter_600SemiBold',
   },
 
   // Price
   price: {
-    ...Typography.cardPrice,
+    ...Typography.titlePrice,
     fontFamily: 'Inter_700Bold',
   },
 
@@ -569,7 +569,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.sm,
   },
   blkBadgeText: {
-    ...Typography.badge,
+    ...Typography.labelBadge,
     fontFamily: 'Inter_700Bold',
   },
 

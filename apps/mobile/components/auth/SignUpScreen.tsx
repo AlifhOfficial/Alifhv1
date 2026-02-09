@@ -60,12 +60,13 @@ export function SignUpScreen({
     textTertiary: themeColors.textTertiary,
     primary: themeColors.primary,
     primarySoft: isDark ? 'rgba(0,102,255,0.12)' : 'rgba(0,102,255,0.04)',
-    inputBg: themeColors.input,
-    inputBorder: themeColors.inputBorder,
-    inputFocusBorder: themeColors.inputFocusBorder,
+    inputBg: themeColors.surface,
+    inputBorder: themeColors.border,
+    inputFocusBorder: themeColors.primary,
     error: themeColors.error,
     success: themeColors.success,
-    divider: themeColors.separator,
+    divider: themeColors.border,
+    border: themeColors.border,
   };
 
   const handleSubmit = async () => {
@@ -118,7 +119,7 @@ export function SignUpScreen({
             {/* Name */}
             <View style={styles.inputGroup}>
               <Text style={[styles.label, { color: colors.textSecondary }]}>Name</Text>
-              <View style={[styles.inputWrapper, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
+              <View style={[styles.inputWrapper, { backgroundColor: colors.inputBg, borderColor: colors.border }]}>
                 <TextInput
                   style={[styles.inputInner, { color: colors.text, backgroundColor: colors.inputBg }]}
                   value={name}
@@ -139,7 +140,7 @@ export function SignUpScreen({
             {/* Email */}
             <View style={styles.inputGroup}>
               <Text style={[styles.label, { color: colors.textSecondary }]}>Email</Text>
-              <View style={[styles.inputWrapper, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
+              <View style={[styles.inputWrapper, { backgroundColor: colors.inputBg, borderColor: colors.border }]}>
                 <TextInput
                   style={[styles.inputInner, { color: colors.text, backgroundColor: colors.inputBg }]}
                   value={email}
@@ -161,7 +162,7 @@ export function SignUpScreen({
             {/* Password */}
             <View style={styles.inputGroup}>
               <Text style={[styles.label, { color: colors.textSecondary }]}>Password</Text>
-              <View style={[styles.inputWrapper, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
+              <View style={[styles.inputWrapper, { backgroundColor: colors.inputBg, borderColor: colors.border }]}>
                 <TextInput
                   style={[styles.inputInner, styles.passwordInputInner, { color: colors.text, backgroundColor: colors.inputBg }]}
                   value={password}
@@ -233,7 +234,7 @@ export function SignUpScreen({
                     disabled={isLoading}
                     style={({ pressed }) => [
                       styles.socialIconButton,
-                      { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, opacity: isLoading ? 0.5 : pressed ? 0.7 : 1 }
+                      { backgroundColor: colors.inputBg, borderColor: colors.border, opacity: isLoading ? 0.5 : pressed ? 0.7 : 1 }
                     ]}
                   >
                     <PasskeyIcon color={colors.text} />
@@ -261,7 +262,7 @@ export function SignUpScreen({
                     disabled={isLoading}
                     style={({ pressed }) => [
                       styles.socialIconButton,
-                      { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, opacity: isLoading ? 0.5 : pressed ? 0.7 : 1 }
+                      { backgroundColor: colors.inputBg, borderColor: colors.border, opacity: isLoading ? 0.5 : pressed ? 0.7 : 1 }
                     ]}
                   >
                     <GoogleIcon />
@@ -386,10 +387,9 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   title: {
-    fontSize: Typography.largeTitle.fontSize,
-    lineHeight: Typography.largeTitle.lineHeight,
+    fontSize: Typography.titleLarge.fontSize,
+    lineHeight: Typography.titleLarge.lineHeight,
     fontFamily: 'Inter_700Bold',
-    letterSpacing: Typography.largeTitle.letterSpacing,
   },
   errorBox: {
     borderRadius: 12,
@@ -397,8 +397,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   errorText: {
-    fontSize: Typography.small.fontSize,
-    lineHeight: Typography.small.lineHeight,
+    fontSize: Typography.labelSmall.fontSize,
+    lineHeight: Typography.labelSmall.lineHeight,
     fontFamily: 'Inter_500Medium',
     textAlign: 'center',
   },
@@ -409,8 +409,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   label: {
-    fontSize: Typography.footnote.fontSize,
-    lineHeight: Typography.footnote.lineHeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     fontFamily: 'Inter_500Medium',
     marginLeft: 4,
   },
@@ -419,7 +419,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     borderWidth: 1,
     paddingHorizontal: 16,
-    fontSize: Typography.callout.fontSize,
+    fontSize: Typography.bodySmall.fontSize,
     fontFamily: 'Inter_400Regular',
   },
   inputWrapper: {
@@ -434,7 +434,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
     paddingHorizontal: 16,
-    fontSize: Typography.callout.fontSize,
+    fontSize: Typography.bodySmall.fontSize,
     fontFamily: 'Inter_400Regular',
     backgroundColor: 'transparent',
   },
@@ -455,7 +455,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   showText: {
-    fontSize: Typography.small.fontSize,
+    fontSize: Typography.labelSmall.fontSize,
     fontFamily: 'Inter_500Medium',
   },
   requirements: {
@@ -475,7 +475,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   requirementText: {
-    fontSize: Typography.caption2.fontSize,
+    fontSize: Typography.helper.fontSize,
     fontFamily: 'Inter_500Medium',
   },
   submitButton: {
@@ -487,10 +487,9 @@ const styles = StyleSheet.create({
   },
   submitButtonText: {
     color: '#FFFFFF',
-    fontSize: Typography.callout.fontSize,
-    lineHeight: Typography.callout.lineHeight,
+    fontSize: Typography.bodySmall.fontSize,
+    lineHeight: Typography.bodySmall.lineHeight,
     fontFamily: 'Inter_600SemiBold',
-    letterSpacing: Typography.callout.letterSpacing,
   },
   dividerContainer: {
     flexDirection: 'row',
@@ -503,7 +502,7 @@ const styles = StyleSheet.create({
     height: 1,
   },
   dividerText: {
-    fontSize: Typography.caption2.fontSize,
+    fontSize: Typography.helper.fontSize,
     fontFamily: 'Inter_500Medium',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -529,7 +528,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   termsText: {
-    fontSize: Typography.caption2.fontSize,
+    fontSize: Typography.helper.fontSize,
     fontFamily: 'Inter_400Regular',
     textAlign: 'center',
     lineHeight: 18,
@@ -541,11 +540,11 @@ const styles = StyleSheet.create({
     paddingTop: 24,
   },
   footerText: {
-    fontSize: Typography.small.fontSize,
+    fontSize: Typography.labelSmall.fontSize,
     fontFamily: 'Inter_400Regular',
   },
   footerLink: {
-    fontSize: Typography.small.fontSize,
+    fontSize: Typography.labelSmall.fontSize,
     fontFamily: 'Inter_600SemiBold',
   },
 });

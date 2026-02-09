@@ -129,7 +129,7 @@ export const ContactSection = memo(function ContactSection({
           style={({ pressed }) => [
             styles.chatButton,
             {
-              backgroundColor: isBlocked ? colors.buttonDisabled : colors.primary,
+              backgroundColor: isBlocked ? colors.surfaceSecondary : colors.primary,
               opacity: pressed && !isBlocked ? 0.8 : 1,
             },
           ]}
@@ -138,10 +138,10 @@ export const ContactSection = memo(function ContactSection({
             <Loader2 size={20} color={colors.primaryForeground} />
           ) : (
             <>
-              <MessageCircle size={20} color={isBlocked ? colors.buttonDisabledForeground : colors.primaryForeground} />
+              <MessageCircle size={20} color={isBlocked ? colors.textTertiary : colors.primaryForeground} />
               <Text style={[
                 styles.buttonText, 
-                { color: isBlocked ? colors.buttonDisabledForeground : colors.primaryForeground }
+                { color: isBlocked ? colors.textTertiary : colors.primaryForeground }
               ]}>
                 {isBlocked ? blockedMessage : 'Chat'}
               </Text>
@@ -156,13 +156,13 @@ export const ContactSection = memo(function ContactSection({
             style={({ pressed }) => [
               styles.secondaryButton,
               { 
-                backgroundColor: colors.buttonSecondary,
+                backgroundColor: colors.surfaceSecondary,
                 opacity: pressed ? 0.8 : 1,
               },
             ]}
           >
-            <Phone size={20} color={colors.buttonSecondaryForeground} />
-            <Text style={[styles.buttonText, { color: colors.buttonSecondaryForeground }]}>
+            <Phone size={20} color={colors.text} />
+            <Text style={[styles.buttonText, { color: colors.text }]}>
               Call
             </Text>
           </Pressable>

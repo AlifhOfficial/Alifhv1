@@ -222,7 +222,7 @@ export function ChatWindow({
       conversation?.listing,
       otherUserAvatar,
       otherUserName,
-      colors.separator,
+      colors.border,
       colors.textTertiary,
       formatDateLabel,
     ]
@@ -260,7 +260,7 @@ export function ChatWindow({
     if (isLoading) {
       return (
         <View style={styles.emptyContainer}>
-          <ActivityIndicator size="small" color={colors.tint} />
+          <ActivityIndicator size="small" color={colors.primary} />
         </View>
       );
     }
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
   },
   dateLabel: {
-    fontSize: Typography.caption2.fontSize,
+    fontSize: Typography.helper.fontSize,
     fontWeight: '500',
   },
   emptyContainer: {
@@ -399,10 +399,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing['5xl'],
   },
   emptyText: {
-    fontSize: Typography.body.fontSize,
-    lineHeight: Typography.body.lineHeight,
-    fontWeight: '500',
-    letterSpacing: Typography.body.letterSpacing,
+    ...Typography.body,
   },
   loadingMore: {
     paddingVertical: Spacing.lg,

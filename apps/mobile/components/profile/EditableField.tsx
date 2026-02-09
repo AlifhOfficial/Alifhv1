@@ -114,7 +114,7 @@ export function EditableField({
               placeholderTextColor={colors.textTertiary}
               style={[
                 styles.input,
-                { backgroundColor: colors.input, color: colors.text },
+                { backgroundColor: colors.surface, color: colors.text },
               ]}
               keyboardType={keyboardType}
               maxLength={maxLength}
@@ -213,18 +213,15 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   label: {
-    fontSize: Typography.caption1.fontSize,
-    lineHeight: Typography.caption1.lineHeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     fontFamily: 'Inter_500Medium',
     fontWeight: '500' as any,
-    letterSpacing: Typography.caption1.letterSpacing,
   },
   value: {
-    fontSize: Typography.callout.fontSize,
-    lineHeight: Typography.callout.lineHeight,
+    fontSize: Typography.bodySmall.fontSize,
+    lineHeight: Typography.bodySmall.lineHeight,
     fontFamily: 'Inter_400Regular',
-    fontWeight: Typography.callout.fontWeight as any,
-    letterSpacing: Typography.callout.letterSpacing,
   },
   rightContainer: {
     flexDirection: 'row',
@@ -244,21 +241,17 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   prefix: {
-    fontSize: Typography.callout.fontSize,
-    lineHeight: Typography.callout.lineHeight,
+    fontSize: Typography.bodySmall.fontSize,
+    lineHeight: Typography.bodySmall.lineHeight,
     fontFamily: 'Inter_400Regular',
-    fontWeight: Typography.callout.fontWeight as any,
-    letterSpacing: Typography.callout.letterSpacing,
   },
   input: {
     flex: 1,
     height: 44,
     borderRadius: 10,
     paddingHorizontal: 12,
-    fontSize: Typography.callout.fontSize,
+    fontSize: Typography.bodySmall.fontSize,
     fontFamily: 'Inter_400Regular',
-    fontWeight: Typography.callout.fontWeight as any,
-    letterSpacing: Typography.callout.letterSpacing,
   },
   actions: {
     flexDirection: 'row',
@@ -269,17 +262,15 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   cancelText: {
-    fontSize: Typography.subhead.fontSize,
-    lineHeight: Typography.subhead.lineHeight,
+    fontSize: Typography.value.fontSize,
+    lineHeight: Typography.value.lineHeight,
     fontFamily: 'Inter_500Medium',
     fontWeight: '500' as any,
-    letterSpacing: Typography.subhead.letterSpacing,
   },
   saveText: {
-    fontSize: Typography.subhead.fontSize,
-    lineHeight: Typography.subhead.lineHeight,
+    fontSize: Typography.value.fontSize,
+    lineHeight: Typography.value.lineHeight,
     fontFamily: 'Inter_600SemiBold',
     fontWeight: '600' as any,
-    letterSpacing: Typography.subhead.letterSpacing,
   },
 });

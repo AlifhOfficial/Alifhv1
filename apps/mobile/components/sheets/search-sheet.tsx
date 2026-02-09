@@ -429,7 +429,7 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
                 style={({ pressed }) => [
                   styles.listItem,
                   { 
-                    backgroundColor: pressed ? colors.backgroundElevated : 'transparent',
+                    backgroundColor: pressed ? colors.backgroundTertiary : 'transparent',
                     borderBottomColor: colors.border,
                     borderBottomWidth: index < popularMakes.length - 1 ? StyleSheet.hairlineWidth : 0,
                   }
@@ -466,7 +466,7 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
                 style={({ pressed }) => [
                   styles.listItem,
                   { 
-                    backgroundColor: pressed ? colors.backgroundElevated : 'transparent',
+                    backgroundColor: pressed ? colors.backgroundTertiary : 'transparent',
                     borderBottomColor: colors.border,
                     borderBottomWidth: index < suggestions.length - 1 ? StyleSheet.hairlineWidth : 0,
                   }
@@ -530,7 +530,7 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
               style={({ pressed }) => [
                 styles.listItem,
                 { 
-                  backgroundColor: pressed ? colors.backgroundElevated : 'transparent',
+                  backgroundColor: pressed ? colors.backgroundTertiary : 'transparent',
                   borderBottomColor: colors.border,
                   borderBottomWidth: index < arr.length - 1 ? StyleSheet.hairlineWidth : 0,
                 }
@@ -582,7 +582,7 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
                   style={({ pressed }) => [
                     styles.listItem,
                     { 
-                      backgroundColor: pressed ? colors.backgroundElevated : 'transparent',
+                      backgroundColor: pressed ? colors.backgroundTertiary : 'transparent',
                       borderBottomColor: colors.border,
                       borderBottomWidth: index < arr.length - 1 ? StyleSheet.hairlineWidth : 0,
                     }
@@ -636,7 +636,7 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
                   style={({ pressed }) => [
                     styles.listItem,
                     { 
-                      backgroundColor: pressed ? colors.backgroundElevated : 'transparent',
+                      backgroundColor: pressed ? colors.backgroundTertiary : 'transparent',
                       borderBottomColor: colors.border,
                       borderBottomWidth: index < arr.length - 1 ? StyleSheet.hairlineWidth : 0,
                     }
@@ -710,7 +710,7 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
               <Pressable 
                 onPress={() => setQuery('')} 
                 hitSlop={12} 
-                style={[styles.clearBtn, { backgroundColor: colors.fillTertiary }]}
+                style={[styles.clearBtn, { backgroundColor: colors.fillSecondary }]}
               >
                 <Ionicons name="close" size={12} color={colors.text} />
               </Pressable>
@@ -784,7 +784,7 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
             style={({ pressed }) => [
               styles.searchButton,
               {
-                backgroundColor: canSearch ? colors.primary : colors.fillTertiary,
+                backgroundColor: canSearch ? colors.primary : colors.fillSecondary,
                 opacity: pressed && canSearch ? 0.9 : 1,
               },
             ]}

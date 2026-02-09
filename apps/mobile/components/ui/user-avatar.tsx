@@ -106,7 +106,7 @@ export function UserAvatar({
     borderRadius: pixelSize / 2,
     backgroundColor: showInitials 
       ? (isDark ? '#1C1C1E' : '#F2F2F7') // muted background
-      : colors.card,
+      : colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
     overflow: 'hidden' as const,

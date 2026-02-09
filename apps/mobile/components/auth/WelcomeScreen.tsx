@@ -114,7 +114,7 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
             styles.ctaButtonText, 
             { 
               color: colors.primaryForeground,
-              ...Typography.buttonLarge,
+              ...Typography.button,
             }
           ]}>
             Get Started
@@ -127,7 +127,7 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
           style={({ pressed }) => [
             styles.ctaButton,
             { 
-              backgroundColor: colors.fillTertiary,
+              backgroundColor: colors.fillSecondary,
               transform: [{ scale: pressed ? 0.98 : 1 }],
             }
           ]}
@@ -136,7 +136,7 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
             styles.ctaButtonText, 
             { 
               color: colors.text,
-              ...Typography.buttonLarge,
+              ...Typography.button,
             }
           ]}>
             Already a user?
@@ -159,7 +159,7 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
               styles.skipText, 
               { 
                 color: colors.textTertiary,
-                ...Typography.small,
+                ...Typography.labelSmall,
               }
             ]}>
               Skip

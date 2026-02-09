@@ -28,7 +28,7 @@ export function SelectableItem({
       style={({ pressed }) => [
         styles.container,
         { 
-          backgroundColor: pressed ? colors.backgroundElevated : 'transparent',
+          backgroundColor: pressed ? colors.backgroundTertiary : 'transparent',
           borderBottomColor: colors.border,
         }
       ]}

@@ -240,18 +240,12 @@ const styles = StyleSheet.create({
   },
   message: {
     marginTop: 16,
-    fontSize: Typography.small.fontSize,
-    lineHeight: Typography.small.lineHeight,
-    fontFamily: 'Inter_500Medium',
-    letterSpacing: Typography.small.letterSpacing,
+    ...Typography.labelSmall,
     textTransform: 'uppercase',
   },
   inlineMessage: {
     marginTop: 12,
-    fontSize: Typography.footnote.fontSize,
-    lineHeight: Typography.footnote.lineHeight,
-    fontFamily: 'Inter_400Regular',
-    letterSpacing: Typography.footnote.letterSpacing,
+    ...Typography.helper,
   },
   refreshContainer: {
     alignItems: 'center',

@@ -109,7 +109,7 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
                 style={({ pressed }) => [
                   styles.listItem,
                   { 
-                    backgroundColor: pressed ? colors.backgroundElevated : 'transparent',
+                    backgroundColor: pressed ? colors.backgroundTertiary : 'transparent',
                     borderBottomColor: colors.border,
                     borderBottomWidth: index < SORT_OPTIONS.length - 1 ? StyleSheet.hairlineWidth : 0,
                   },

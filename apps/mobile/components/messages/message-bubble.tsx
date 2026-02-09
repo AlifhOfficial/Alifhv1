@@ -44,7 +44,7 @@ export function MessageBubble({
         <View
           style={[
             styles.systemBubble,
-            { backgroundColor: colors.fillQuaternary },
+            { backgroundColor: colors.fillSecondary },
           ]}
         >
           <Text style={[styles.systemText, { color: colors.textTertiary }]}>
@@ -84,7 +84,7 @@ export function MessageBubble({
           <View
             style={[
               styles.listingPreview,
-              { borderColor: colors.border, backgroundColor: colors.card },
+              { borderColor: colors.border, backgroundColor: colors.surface },
             ]}
           >
             {listing.thumbnail ? (
@@ -119,7 +119,7 @@ export function MessageBubble({
                   styles.bubbleOther,
                   {
                     backgroundColor: colors.surfaceSecondary,
-                    borderColor: colors.separator,
+                    borderColor: colors.border,
                   },
                 ],
           ]}
@@ -213,9 +213,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   senderName: {
-    fontSize: Typography.caption2.fontSize,
-    lineHeight: Typography.caption2.lineHeight,
-    fontWeight: Typography.caption2.fontWeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     marginBottom: 2,
     marginLeft: 12,
   },
@@ -233,8 +232,8 @@ const styles = StyleSheet.create({
     padding: Spacing.sm,
   },
   listingTitle: {
-    fontSize: Typography.caption1.fontSize,
-    lineHeight: Typography.caption1.lineHeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     fontWeight: '600',
   },
   bubble: {
@@ -257,21 +256,17 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   messageText: {
-    fontSize: Typography.callout.fontSize,
-    lineHeight: Typography.callout.lineHeight,
-    fontWeight: Typography.callout.fontWeight,
-    letterSpacing: Typography.callout.letterSpacing,
+    fontSize: Typography.bodySmall.fontSize,
+    lineHeight: Typography.bodySmall.lineHeight,
   },
   editedText: {
-    fontSize: Typography.caption2.fontSize,
-    lineHeight: Typography.caption2.lineHeight,
-    fontWeight: Typography.caption2.fontWeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     marginTop: 2,
   },
   sendingText: {
-    fontSize: Typography.caption2.fontSize,
-    lineHeight: Typography.caption2.lineHeight,
-    fontWeight: Typography.caption2.fontWeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     marginTop: 2,
     marginHorizontal: Spacing.xs,
   },
@@ -282,9 +277,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   seenText: {
-    fontSize: Typography.caption2.fontSize,
-    lineHeight: Typography.caption2.lineHeight,
-    fontWeight: Typography.caption2.fontWeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
   },
   systemContainer: {
     alignItems: 'center',
@@ -296,8 +290,8 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
   },
   systemText: {
-    fontSize: Typography.caption2.fontSize,
-    lineHeight: Typography.caption2.lineHeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     fontWeight: '500',
   },
 });

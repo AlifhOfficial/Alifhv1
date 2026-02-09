@@ -13,7 +13,7 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-import { DotsLoader } from '@/components/ui';
+import { PulseLoader } from '@/components/ui';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { CheckCircle2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
@@ -220,7 +220,7 @@ export function PhoneVerificationField({
             style={[
               styles.input,
               {
-                backgroundColor: colors.input,
+                backgroundColor: colors.surface,
                 color: colors.text,
                 borderColor: colors.border,
               },
@@ -255,7 +255,7 @@ export function PhoneVerificationField({
   if (step === 'sending' || step === 'verifying') {
     return (
       <View style={[styles.fieldContainer, styles.loadingContainer, { borderBottomWidth: 0 }]}>
-        <DotsLoader size="sm" variant="primary" />
+        <PulseLoader size="sm" variant="primary" />
         <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
           {step === 'sending' ? 'Sending code...' : 'Verifying...'}
         </Text>
@@ -287,7 +287,7 @@ export function PhoneVerificationField({
         style={[
           styles.otpInput,
           {
-            backgroundColor: colors.input,
+            backgroundColor: colors.surface,
             color: colors.text,
             borderColor: error ? colors.error : colors.border,
           },
@@ -352,25 +352,21 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   label: {
-    fontSize: Typography.footnote.fontSize,
-    lineHeight: Typography.footnote.lineHeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     fontFamily: 'Inter_500Medium',
     fontWeight: '500' as any,
-    letterSpacing: Typography.footnote.letterSpacing,
   },
   value: {
-    fontSize: Typography.callout.fontSize,
-    lineHeight: Typography.callout.lineHeight,
+    fontSize: Typography.bodySmall.fontSize,
+    lineHeight: Typography.bodySmall.lineHeight,
     fontFamily: 'Inter_400Regular',
-    fontWeight: Typography.callout.fontWeight as any,
-    letterSpacing: Typography.callout.letterSpacing,
   },
   verifyLink: {
-    fontSize: Typography.footnote.fontSize,
-    lineHeight: Typography.footnote.lineHeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     fontFamily: 'Inter_600SemiBold',
     fontWeight: '600' as any,
-    letterSpacing: Typography.footnote.letterSpacing,
   },
   editRow: {
     flexDirection: 'row',
@@ -379,11 +375,10 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   prefix: {
-    fontSize: Typography.callout.fontSize,
-    lineHeight: Typography.callout.lineHeight,
+    fontSize: Typography.bodySmall.fontSize,
+    lineHeight: Typography.bodySmall.lineHeight,
     fontFamily: 'Inter_500Medium',
     fontWeight: '500' as any,
-    letterSpacing: Typography.callout.letterSpacing,
   },
   input: {
     flex: 1,
@@ -391,10 +386,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     paddingHorizontal: 12,
-    fontSize: Typography.callout.fontSize,
+    fontSize: Typography.bodySmall.fontSize,
     fontFamily: 'Inter_400Regular',
-    fontWeight: Typography.callout.fontWeight as any,
-    letterSpacing: Typography.callout.letterSpacing,
   },
   actions: {
     flexDirection: 'row',
@@ -403,25 +396,22 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   cancelText: {
-    fontSize: Typography.subhead.fontSize,
-    lineHeight: Typography.subhead.lineHeight,
+    fontSize: Typography.value.fontSize,
+    lineHeight: Typography.value.lineHeight,
     fontFamily: 'Inter_500Medium',
     fontWeight: '500' as any,
-    letterSpacing: Typography.subhead.letterSpacing,
   },
   removeText: {
-    fontSize: Typography.subhead.fontSize,
-    lineHeight: Typography.subhead.lineHeight,
+    fontSize: Typography.value.fontSize,
+    lineHeight: Typography.value.lineHeight,
     fontFamily: 'Inter_500Medium',
     fontWeight: '500' as any,
-    letterSpacing: Typography.subhead.letterSpacing,
   },
   saveText: {
-    fontSize: Typography.subhead.fontSize,
-    lineHeight: Typography.subhead.lineHeight,
+    fontSize: Typography.value.fontSize,
+    lineHeight: Typography.value.lineHeight,
     fontFamily: 'Inter_600SemiBold',
     fontWeight: '600' as any,
-    letterSpacing: Typography.subhead.letterSpacing,
   },
   loadingContainer: {
     flexDirection: 'row',
@@ -430,18 +420,14 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   loadingText: {
-    fontSize: Typography.subhead.fontSize,
-    lineHeight: Typography.subhead.lineHeight,
+    fontSize: Typography.value.fontSize,
+    lineHeight: Typography.value.lineHeight,
     fontFamily: 'Inter_400Regular',
-    fontWeight: Typography.subhead.fontWeight as any,
-    letterSpacing: Typography.subhead.letterSpacing,
   },
   otpHint: {
-    fontSize: Typography.footnote.fontSize,
-    lineHeight: Typography.footnote.lineHeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     fontFamily: 'Inter_400Regular',
-    fontWeight: Typography.footnote.fontWeight as any,
-    letterSpacing: Typography.footnote.letterSpacing,
     marginTop: 4,
     marginBottom: 12,
   },
@@ -450,18 +436,16 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     paddingHorizontal: 16,
-    fontSize: Typography.h2.fontSize,
+    fontSize: Typography.title.fontSize,
     fontFamily: 'Inter_500Medium',
     fontWeight: '500' as any,
     textAlign: 'center',
     letterSpacing: 8,
   },
   errorText: {
-    fontSize: Typography.footnote.fontSize,
-    lineHeight: Typography.footnote.lineHeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     fontFamily: 'Inter_400Regular',
-    fontWeight: Typography.footnote.fontWeight as any,
-    letterSpacing: Typography.footnote.letterSpacing,
     marginTop: 8,
   },
   otpActions: {
@@ -471,21 +455,19 @@ const styles = StyleSheet.create({
     marginTop: 14,
   },
   resendText: {
-    fontSize: Typography.footnote.fontSize,
-    lineHeight: Typography.footnote.lineHeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     fontFamily: 'Inter_500Medium',
     fontWeight: '500' as any,
-    letterSpacing: Typography.footnote.letterSpacing,
   },
   otpButtonRow: {
     flexDirection: 'row',
     gap: 20,
   },
   verifyButton: {
-    fontSize: Typography.subhead.fontSize,
-    lineHeight: Typography.subhead.lineHeight,
+    fontSize: Typography.value.fontSize,
+    lineHeight: Typography.value.lineHeight,
     fontFamily: 'Inter_600SemiBold',
     fontWeight: '600' as any,
-    letterSpacing: Typography.subhead.letterSpacing,
   },
 });

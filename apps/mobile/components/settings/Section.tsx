@@ -74,10 +74,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title: {
-    fontSize: Typography.small.fontSize,
-    lineHeight: Typography.small.lineHeight,
+    fontSize: Typography.labelSmall.fontSize,
+    lineHeight: Typography.labelSmall.lineHeight,
     fontFamily: 'Inter_600SemiBold',
-    fontWeight: Typography.small.fontWeight as any,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },

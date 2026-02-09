@@ -61,10 +61,9 @@ const styles = StyleSheet.create({
     marginBottom: 120,
   },
   text: {
-    fontSize: Typography.callout.fontSize,
-    lineHeight: Typography.callout.lineHeight,
+    fontSize: Typography.bodySmall.fontSize,
+    lineHeight: Typography.bodySmall.lineHeight,
     fontFamily: 'Inter_600SemiBold',
     fontWeight: '600' as any,
-    letterSpacing: Typography.callout.letterSpacing,
   },
 });

@@ -58,17 +58,14 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   label: {
-    fontSize: Typography.caption1.fontSize,
-    lineHeight: Typography.caption1.lineHeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     fontFamily: 'Inter_500Medium',
     fontWeight: '500' as any,
-    letterSpacing: Typography.caption1.letterSpacing,
   },
   value: {
-    fontSize: Typography.callout.fontSize,
-    lineHeight: Typography.callout.lineHeight,
+    fontSize: Typography.bodySmall.fontSize,
+    lineHeight: Typography.bodySmall.lineHeight,
     fontFamily: 'Inter_400Regular',
-    fontWeight: Typography.callout.fontWeight as any,
-    letterSpacing: Typography.callout.letterSpacing,
   },
 });

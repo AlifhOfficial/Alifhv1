@@ -44,7 +44,7 @@ export default function ChatScreen() {
     return (
       <View style={[styles.screen, { backgroundColor: colors.background, paddingTop: insets.top }]}>
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color={colors.tint} />
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       </View>
     );
@@ -59,7 +59,7 @@ export default function ChatScreen() {
             Conversation not found
           </Text>
           <Text
-            style={[styles.backLink, { color: colors.tint }]}
+            style={[styles.backLink, { color: colors.primary }]}
             onPress={handleBack}
           >
             ← Go Back
@@ -92,14 +92,14 @@ const styles = StyleSheet.create({
     gap: Spacing.lg,
   },
   errorText: {
-    fontSize: Typography.callout.fontSize,
-    lineHeight: Typography.callout.lineHeight,
+    fontSize: Typography.bodySmall.fontSize,
+    lineHeight: Typography.bodySmall.lineHeight,
     fontWeight: '500',
     textAlign: 'center',
   },
   backLink: {
-    fontSize: Typography.callout.fontSize,
-    lineHeight: Typography.callout.lineHeight,
+    fontSize: Typography.bodySmall.fontSize,
+    lineHeight: Typography.bodySmall.lineHeight,
     fontWeight: '600',
   },
 });

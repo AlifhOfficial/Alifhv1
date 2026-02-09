@@ -76,11 +76,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   badgeText: {
-    fontSize: Typography.small.fontSize,
-    lineHeight: Typography.small.lineHeight,
+    fontSize: Typography.labelSmall.fontSize,
+    lineHeight: Typography.labelSmall.lineHeight,
     fontFamily: 'Inter_500Medium',
-    fontWeight: Typography.small.fontWeight as any,
-    letterSpacing: Typography.small.letterSpacing,
   },
   emptyState: {
     alignItems: 'center',
@@ -89,16 +87,14 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   emptyTitle: {
-    fontSize: Typography.callout.fontSize,
-    lineHeight: Typography.callout.lineHeight,
+    fontSize: Typography.bodySmall.fontSize,
+    lineHeight: Typography.bodySmall.lineHeight,
     fontFamily: 'Inter_600SemiBold',
-    letterSpacing: Typography.callout.letterSpacing,
   },
   emptySubtitle: {
-    fontSize: Typography.small.fontSize,
-    lineHeight: Typography.muted.lineHeight,
+    fontSize: Typography.labelSmall.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     fontFamily: 'Inter_400Regular',
-    fontWeight: Typography.muted.fontWeight as any,
     textAlign: 'center',
   },
   learnMoreBtn: {
@@ -107,8 +103,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   learnMoreText: {
-    fontSize: Typography.small.fontSize,
-    lineHeight: Typography.small.lineHeight,
+    fontSize: Typography.labelSmall.fontSize,
+    lineHeight: Typography.labelSmall.lineHeight,
     fontFamily: 'Inter_600SemiBold',
     fontWeight: '600' as any,
   },

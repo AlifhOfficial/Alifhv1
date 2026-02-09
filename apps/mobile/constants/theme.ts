@@ -1,284 +1,115 @@
 /**
- * Revvup Design System - Mobile Theme
- * Aligned with web globals.css palette
+ * Revvup Design System - Mobile Theme (Simplified)
  * Primary: #0066FF | OLED Dark Mode | Clean Neutrals
  */
 
 export const Colors = {
   light: {
-    // ═══════════════════════════════════════════
-    // BACKGROUNDS - Pure white base (mirrors dark #000000)
-    // ═══════════════════════════════════════════
+    // BACKGROUNDS
     background: '#FFFFFF',
     backgroundSecondary: '#F5F5F5',
     backgroundTertiary: '#EBEBEB',
-    backgroundElevated: '#EBEBEB',
-    backgroundGrouped: '#FFFFFF',
     
-    // ═══════════════════════════════════════════
-    // SURFACES (Cards, Sheets, Modals) - ~10-15% darker
-    // ═══════════════════════════════════════════
+    // SURFACES (Cards, Sheets, Modals)
     surface: '#F5F5F5',
     surfaceSecondary: '#EBEBEB',
     surfacePressed: '#E0E0E0',
-    surfaceHover: '#EBEBEB',
     
-    // ═══════════════════════════════════════════
-    // TEXT HIERARCHY (mirrors dark text)
-    // ═══════════════════════════════════════════
+    // TEXT
     text: '#0A0A0A',
     textSecondary: '#525252',
     textTertiary: '#737373',
-    textQuaternary: '#A3A3A3',
-    textInverse: '#FAFAFA',
+    textMuted: '#A3A3A3',
     
-    // ═══════════════════════════════════════════
-    // BRAND & ACCENT - Revvup Blue #0066FF
-    // ═══════════════════════════════════════════
+    // BRAND
     primary: '#0066FF',
     primaryForeground: '#FFFFFF',
-    accent: '#0066FF',
-    accentForeground: '#FFFFFF',
-    accentMuted: '#E6F0FF',
+    primaryMuted: '#E6F0FF',
     
-    // ═══════════════════════════════════════════
-    // SEMANTIC COLORS (same as dark, muted inverted)
-    // ═══════════════════════════════════════════
+    // SEMANTIC
     success: '#22C55E',
     successMuted: '#DCFCE7',
-    successForeground: '#FFFFFF',
-    
     warning: '#F59E0B',
     warningMuted: '#FEF3C7',
-    warningForeground: '#FFFFFF',
-    
     error: '#EF4444',
     errorMuted: '#FEE2E2',
-    errorForeground: '#FFFFFF',
     
-    info: '#8B5CF6',
-    infoMuted: '#EDE9FE',
-    infoForeground: '#FFFFFF',
-    
-    // ═══════════════════════════════════════════
-    // UI ELEMENTS (mirrors dark)
-    // ═══════════════════════════════════════════
-    tint: '#0066FF',
-    card: '#F5F5F5',
-    cardElevated: '#EBEBEB',
+    // BORDERS
     border: '#E5E5E5',
     borderSecondary: '#D4D4D4',
-    separator: '#E5E5E5',
-    separatorOpaque: '#D4D4D4',
     
-    // ═══════════════════════════════════════════
-    // ICONS (mirrors dark)
-    // ═══════════════════════════════════════════
+    // ICONS
     icon: '#525252',
-    iconSecondary: '#737373',
-    iconTertiary: '#A3A3A3',
-    iconActive: '#0066FF',
+    iconMuted: '#A3A3A3',
     
-    // ═══════════════════════════════════════════
-    // TAB BAR (mirrors dark)
-    // ═══════════════════════════════════════════
-    tabBar: '#FFFFFF',
-    tabBarBorder: '#E5E5E5',
-    tabIconDefault: '#737373',
-    tabIconSelected: '#0066FF',
-    
-    // ═══════════════════════════════════════════
-    // INTERACTIVE FILLS (mirrors dark)
-    // ═══════════════════════════════════════════
-    fill: '#737373',
-    fillSecondary: 'rgba(115, 115, 115, 0.16)',
-    fillTertiary: 'rgba(115, 115, 115, 0.12)',
-    fillQuaternary: 'rgba(115, 115, 115, 0.08)',
-    
-    // ═══════════════════════════════════════════
-    // BUTTONS (mirrors dark)
-    // ═══════════════════════════════════════════
-    buttonPrimary: '#0066FF',
-    buttonPrimaryForeground: '#FFFFFF',
-    buttonSecondary: '#EBEBEB',
-    buttonSecondaryForeground: '#0A0A0A',
-    buttonDestructive: '#EF4444',
-    buttonDestructiveForeground: '#FFFFFF',
-    buttonDisabled: '#E5E5E5',
-    buttonDisabledForeground: '#A3A3A3',
-    
-    // ═══════════════════════════════════════════
-    // INPUTS (mirrors dark)
-    // ═══════════════════════════════════════════
-    input: '#F5F5F5',
-    inputBorder: '#E5E5E5',
-    inputFocusBorder: '#0066FF',
-    inputPlaceholder: '#A3A3A3',
-    
-    // ═══════════════════════════════════════════
-    // MISC (mirrors dark)
-    // ═══════════════════════════════════════════
-    muted: '#525252',
-    placeholder: '#A3A3A3',
-    link: '#0066FF',
+    // INTERACTIVE
+    fill: 'rgba(115, 115, 115, 0.12)',
+    fillSecondary: 'rgba(115, 115, 115, 0.08)',
     overlay: 'rgba(0, 0, 0, 0.4)',
     skeleton: '#EBEBEB',
-    shimmer: '#D4D4D4',
     
-    // ═══════════════════════════════════════════    // INTERACTIVE STATES
-    // ═══════════════════════════════════════════════
+    // ACTIONS
     favorite: '#F43F5E',
-    superlike: '#EAB308',
     
-    // ═══════════════════════════════════════════════    // BLK LISTING - Premium tier styling (same as dark)
-    // ═══════════════════════════════════════════
+    // BLK LISTING - Premium tier
     blkBackground: '#0D0D0D',
     blkBorder: '#262626',
     blkText: '#FAFAFA',
-    blkTextSecondary: '#E5E5E5',
-    blkTextMuted: '#525252',
-    blkSeparator: '#333333',
-    blkImageBackground: '#0A0A0A',
-    blkAvatarBackground: '#1A1A1A',
-    blkAvatarBorder: '#262626',
+    blkTextSecondary: '#A3A3A3',
   },
   
   dark: {
-    // ═══════════════════════════════════════════
-    // BACKGROUNDS - OLED Black base
-    // ═══════════════════════════════════════════
+    // BACKGROUNDS - OLED Black
     background: '#000000',
     backgroundSecondary: '#141414',
     backgroundTertiary: '#1A1A1A',
-    backgroundElevated: '#1A1A1A',
-    backgroundGrouped: '#000000',
     
-    // ═══════════════════════════════════════════
-    // SURFACES (Cards, Sheets, Modals) - ~10-15%
-    // ═══════════════════════════════════════════
+    // SURFACES (Cards, Sheets, Modals)
     surface: '#1A1A1A',
     surfaceSecondary: '#262626',
     surfacePressed: '#333333',
-    surfaceHover: '#262626',
     
-    // ═══════════════════════════════════════════
-    // TEXT HIERARCHY
-    // ═══════════════════════════════════════════
+    // TEXT
     text: '#FAFAFA',
     textSecondary: '#A3A3A3',
     textTertiary: '#737373',
-    textQuaternary: '#525252',
-    textInverse: '#000000',
+    textMuted: '#525252',
     
-    // ═══════════════════════════════════════════
-    // BRAND & ACCENT - Revvup Blue #0066FF
-    // ═══════════════════════════════════════════
+    // BRAND
     primary: '#0066FF',
     primaryForeground: '#FAFAFA',
-    accent: '#0066FF',
-    accentForeground: '#FAFAFA',
-    accentMuted: '#0D2847',
+    primaryMuted: '#0D2847',
     
-    // ═══════════════════════════════════════════
-    // SEMANTIC COLORS
-    // ═══════════════════════════════════════════
+    // SEMANTIC
     success: '#22C55E',
     successMuted: '#14532D',
-    successForeground: '#FAFAFA',
-    
     warning: '#F59E0B',
     warningMuted: '#451A03',
-    warningForeground: '#FAFAFA',
-    
     error: '#EF4444',
     errorMuted: '#450A0A',
-    errorForeground: '#FAFAFA',
     
-    info: '#8B5CF6',
-    infoMuted: '#2E1065',
-    infoForeground: '#FAFAFA',
-    
-    // ═══════════════════════════════════════════
-    // UI ELEMENTS
-    // ═══════════════════════════════════════════
-    tint: '#0066FF',
-    card: '#1A1A1A',
-    cardElevated: '#262626',
+    // BORDERS
     border: '#262626',
     borderSecondary: '#333333',
-    separator: '#262626',
-    separatorOpaque: '#333333',
     
-    // ═══════════════════════════════════════════
     // ICONS
-    // ═══════════════════════════════════════════
     icon: '#A3A3A3',
-    iconSecondary: '#737373',
-    iconTertiary: '#525252',
-    iconActive: '#0066FF',
+    iconMuted: '#525252',
     
-    // ═══════════════════════════════════════════
-    // TAB BAR
-    // ═══════════════════════════════════════════
-    tabBar: '#000000',
-    tabBarBorder: '#262626',
-    tabIconDefault: '#737373',
-    tabIconSelected: '#0066FF',
-    
-    // ═══════════════════════════════════════════
-    // INTERACTIVE FILLS
-    // ═══════════════════════════════════════════
-    fill: '#737373',
-    fillSecondary: 'rgba(115, 115, 115, 0.32)',
-    fillTertiary: 'rgba(115, 115, 115, 0.24)',
-    fillQuaternary: 'rgba(115, 115, 115, 0.18)',
-    
-    // ═══════════════════════════════════════════
-    // BUTTONS
-    // ═══════════════════════════════════════════
-    buttonPrimary: '#0066FF',
-    buttonPrimaryForeground: '#FAFAFA',
-    buttonSecondary: '#262626',
-    buttonSecondaryForeground: '#FAFAFA',
-    buttonDestructive: '#EF4444',
-    buttonDestructiveForeground: '#FAFAFA',
-    buttonDisabled: '#262626',
-    buttonDisabledForeground: '#525252',
-    
-    // ═══════════════════════════════════════════
-    // INPUTS
-    // ═══════════════════════════════════════════
-    input: '#1A1A1A',
-    inputBorder: '#262626',
-    inputFocusBorder: '#0066FF',
-    inputPlaceholder: '#525252',
-    
-    // ═══════════════════════════════════════════
-    // MISC
-    // ═══════════════════════════════════════════
-    muted: '#A3A3A3',
-    placeholder: '#525252',
-    link: '#0066FF',
+    // INTERACTIVE
+    fill: 'rgba(115, 115, 115, 0.24)',
+    fillSecondary: 'rgba(115, 115, 115, 0.16)',
     overlay: 'rgba(0, 0, 0, 0.7)',
     skeleton: '#262626',
-    shimmer: '#333333',
     
-    // ═══════════════════════════════════════════    // INTERACTIVE STATES
-    // ═══════════════════════════════════════════════════
+    // ACTIONS
     favorite: '#F43F5E',
-    superlike: '#EAB308',
     
-    // ═══════════════════════════════════════════════════    // BLK LISTING - Premium tier styling
-    // ═══════════════════════════════════════════
+    // BLK LISTING - Premium tier
     blkBackground: '#0D0D0D',
     blkBorder: '#262626',
     blkText: '#FAFAFA',
-    blkTextSecondary: '#E5E5E5',
-    blkTextMuted: '#525252',
-    blkSeparator: '#333333',
-    blkImageBackground: '#0A0A0A',
-    blkAvatarBackground: '#1A1A1A',
-    blkAvatarBorder: '#262626',
+    blkTextSecondary: '#A3A3A3',
   },
 };
 
@@ -301,11 +132,8 @@ export const Spacing = {
 // LAYOUT CONSTANTS
 // ═══════════════════════════════════════════════════
 export const Layout = {
-  /** Tab bar height for bottom padding calculations */
   tabBarHeight: 85,
-  /** Content horizontal padding */
   screenPadding: 16,
-  /** Header vertical padding */
   headerPadding: 8,
 } as const;
 
@@ -324,259 +152,92 @@ export const Radius = {
 } as const;
 
 // ═══════════════════════════════════════════════════
-// TYPOGRAPHY - Mobile-First Inter System
-// Based on iOS HIG & shadcn/ui semantic patterns
+// TYPOGRAPHY SYSTEM
 // ═══════════════════════════════════════════════════
+// 
+// LOAD ONLY THESE 3 FONTS:
+//   • Inter_400Regular  (body, descriptions)
+//   • Inter_600SemiBold (values, buttons, emphasis)
+//   • Inter_700Bold     (titles, prices, headers)
+//
+// RULES:
+//   1. NEVER set fontWeight - fontFamily handles it
+//   2. Use tokens via ...Typography.xxx
+//   3. Set allowFontScaling={false} on UI text for consistency
+//
+// SEMANTIC GUIDE:
+//   titleLarge   → Hero screens, onboarding
+//   titlePrice   → Listing prices only
+//   title        → Section headers, screen titles
+//   titleSmall   → Navigation titles, card headers
+//   titleCard    → Car make/model in cards
+//   body         → Long-form reading, descriptions
+//   bodySmall    → Secondary descriptions
+//   bodyMini     → Fine print, disclaimers
+//   value        → Spec values, names with emphasis
+//   stat         → Metadata row (km, specs, location)
+//   valueSmall   → Seller names, small emphasis
+//   initial      → Avatar initials
+//   label        → UPPERCASE section headers
+//   labelSmall   → Small labels (VIN, tags)
+//   labelBadge   → Badge text (BLK, VERIFIED)
+//   button       → Primary/secondary buttons
+//   buttonSmall  → Compact buttons, chips
+//   tab          → Tab bar labels
+//   chip         → Filter chips, tags
+//   link         → Clickable text links
+//   labelText    → Form field labels
+//   helper       → Timestamps, helper text
+//   secondary    → Tertiary info (seller type)
+//
+// ═══════════════════════════════════════════════════
+
+// Base style for Android consistency (spread into all tokens)
+const base = {
+  includeFontPadding: false, // Removes extra Android padding
+};
+
 export const Typography = {
-  // ─────────────────────────────────────────────────
-  // HEADINGS - Semantic hierarchy (shadcn pattern)
-  // ─────────────────────────────────────────────────
-  h1: { 
-    fontSize: 34, 
-    lineHeight: 41, 
-    fontWeight: '800' as const,  // extrabold
-    letterSpacing: -1.2,         // tracking-tighter
-  },
-  h2: { 
-    fontSize: 28, 
-    lineHeight: 34, 
-    fontWeight: '600' as const,  // semibold
-    letterSpacing: -0.6,         // tracking-tight
-  },
-  h3: { 
-    fontSize: 22, 
-    lineHeight: 28, 
-    fontWeight: '600' as const,
-    letterSpacing: -0.4,
-  },
-  h4: { 
-    fontSize: 20, 
-    lineHeight: 25, 
-    fontWeight: '600' as const,
-    letterSpacing: -0.3,
-  },
-  
-  // ─────────────────────────────────────────────────
-  // BODY TEXT
-  // ─────────────────────────────────────────────────
-  p: { 
-    fontSize: 17, 
-    lineHeight: 28,              // leading-7 (relaxed)
-    fontWeight: '400' as const,
-    letterSpacing: -0.41,
-  },
-  
-  // ─────────────────────────────────────────────────
-  // SPECIAL TEXT STYLES (shadcn utilities)
-  // ─────────────────────────────────────────────────
-  lead: {  // Intro paragraphs, prominent descriptions
-    fontSize: 20, 
-    lineHeight: 32, 
-    fontWeight: '400' as const,
-    letterSpacing: -0.3,
-    // color: textMuted
-  },
-  large: {  // Emphasized content
-    fontSize: 18, 
-    lineHeight: 28, 
-    fontWeight: '600' as const,
-    letterSpacing: -0.3,
-  },
-  small: {  // Fine print, helper text
-    fontSize: 14, 
-    lineHeight: 14, 
-    fontWeight: '500' as const,
-    letterSpacing: 0,
-  },
-  muted: {  // Secondary/tertiary content
-    fontSize: 14, 
-    lineHeight: 20, 
-    fontWeight: '400' as const,
-    letterSpacing: 0,
-    // color: textMuted
-  },
-  
-  // ─────────────────────────────────────────────────
-  // BLOCKQUOTE
-  // ─────────────────────────────────────────────────
-  blockquote: { 
-    fontSize: 17, 
-    lineHeight: 28, 
-    fontWeight: '400' as const,
-    fontStyle: 'italic' as const,
-    letterSpacing: -0.2,
-    // borderLeftWidth: 2, borderLeftColor: border
-  },
-  
-  // ─────────────────────────────────────────────────
-  // CODE
-  // ─────────────────────────────────────────────────
-  inlineCode: { 
-    fontSize: 14, 
-    lineHeight: 20, 
-    fontWeight: '600' as const,
-    fontFamily: 'monospace',
-    letterSpacing: 0,
-    // backgroundColor: muted, borderRadius: 4
-  },
-  
-  // ─────────────────────────────────────────────────
-  // LIST ITEMS
-  // ─────────────────────────────────────────────────
-  list: { 
-    fontSize: 17, 
-    lineHeight: 28, 
-    fontWeight: '400' as const,
-    letterSpacing: -0.41,
-  },
-  
-  // ─────────────────────────────────────────────────
-  // TABLE
-  // ─────────────────────────────────────────────────
-  tableHeader: { 
-    fontSize: 15, 
-    lineHeight: 20, 
-    fontWeight: '700' as const,
-    letterSpacing: -0.2,
-  },
-  tableCell: { 
-    fontSize: 15, 
-    lineHeight: 20, 
-    fontWeight: '400' as const,
-    letterSpacing: -0.2,
-  },
-  
-  // ─────────────────────────────────────────────────
-  // MOBILE-SPECIFIC (iOS HIG aligned)
-  // ─────────────────────────────────────────────────
-  largeTitle: {  // Screen headers, hero
-    fontSize: 34, 
-    lineHeight: 41, 
-    fontWeight: '700' as const,
-    letterSpacing: 0.37,
-  },
-  headline: {  // List row titles, card headers
-    fontSize: 17, 
-    lineHeight: 22, 
-    fontWeight: '600' as const,
-    letterSpacing: -0.41,
-  },
-  body: {  // Primary content
-    fontSize: 17, 
-    lineHeight: 22, 
-    fontWeight: '400' as const,
-    letterSpacing: -0.41,
-  },
-  callout: {  // Secondary content
-    fontSize: 16, 
-    lineHeight: 21, 
-    fontWeight: '400' as const,
-    letterSpacing: -0.32,
-  },
-  subhead: {  // Form labels, section subtitles
-    fontSize: 15, 
-    lineHeight: 20, 
-    fontWeight: '400' as const,
-    letterSpacing: -0.24,
-  },
-  footnote: {  // Helper text, timestamps
-    fontSize: 13, 
-    lineHeight: 18, 
-    fontWeight: '400' as const,
-    letterSpacing: -0.08,
-  },
-  caption1: {  // Badges, tags
-    fontSize: 12, 
-    lineHeight: 16, 
-    fontWeight: '400' as const,
-    letterSpacing: 0,
-  },
-  caption2: {  // Smallest text
-    fontSize: 11, 
-    lineHeight: 13, 
-    fontWeight: '400' as const,
-    letterSpacing: 0.07,
-  },
-  
-  // ─────────────────────────────────────────────────
-  // BUTTONS
-  // ─────────────────────────────────────────────────
-  buttonLarge: { 
-    fontSize: 17, 
-    lineHeight: 22, 
-    fontWeight: '600' as const,
-    letterSpacing: -0.41,
-  },
-  buttonMedium: { 
-    fontSize: 15, 
-    lineHeight: 20, 
-    fontWeight: '600' as const,
-    letterSpacing: -0.24,
-  },
-  buttonSmall: { 
-    fontSize: 13, 
-    lineHeight: 18, 
-    fontWeight: '600' as const,
-    letterSpacing: -0.08,
-  },
-  
-  // ─────────────────────────────────────────────────
-  // TAB BAR
-  // ─────────────────────────────────────────────────
-  tabBar: { 
-    fontSize: 10, 
-    lineHeight: 12, 
-    fontWeight: '500' as const,
-    letterSpacing: 0.16,
-  },
-  
-  // ─────────────────────────────────────────────────
-  // NAVIGATION & HEADERS
-  // ─────────────────────────────────────────────────
-  navTitle: {  // Screen titles in headers
-    fontSize: 20, 
-    lineHeight: 24, 
-    fontWeight: '700' as const,
-    letterSpacing: -0.5,
-  },
-  
-  // ─────────────────────────────────────────────────
-  // CARD STYLES
-  // ─────────────────────────────────────────────────
-  cardTitle: {  // Card main title (e.g., car make/model)
-    fontSize: 15, 
-    lineHeight: 20, 
-    fontWeight: '700' as const,
-    letterSpacing: -0.3,
-  },
-  cardPrice: {  // Price display on cards
-    fontSize: 17, 
-    lineHeight: 22, 
-    fontWeight: '700' as const,
-    letterSpacing: -0.4,
-  },
-  cardMeta: {  // Card metadata (year, mileage, specs)
-    fontSize: 13, 
-    lineHeight: 18, 
-    fontWeight: '500' as const,
-    letterSpacing: -0.08,
-  },
-  cardSeller: {  // Seller name on cards
-    fontSize: 13, 
-    lineHeight: 18, 
-    fontWeight: '600' as const,
-    letterSpacing: -0.08,
-  },
-  
-  // ─────────────────────────────────────────────────
-  // BADGES
-  // ─────────────────────────────────────────────────
-  badge: {  // Standard badge text
-    fontSize: 9, 
-    lineHeight: 12, 
-    fontWeight: '700' as const,
-    letterSpacing: 1.2,
-  },
+  // TITLES (Bold)
+  // 34→41, 22→28, 20→26, 17→22, 15→20
+  titleLarge: { ...base, fontSize: 34, lineHeight: 41, fontFamily: 'Inter_700Bold' },
+  titlePrice: { ...base, fontSize: 22, lineHeight: 28, fontFamily: 'Inter_700Bold' },
+  title: { ...base, fontSize: 20, lineHeight: 26, fontFamily: 'Inter_700Bold' },
+  titleSmall: { ...base, fontSize: 17, lineHeight: 22, fontFamily: 'Inter_600SemiBold' },
+  titleCard: { ...base, fontSize: 15, lineHeight: 20, fontFamily: 'Inter_700Bold' },
+
+  // BODY (Regular) - slightly looser for readability
+  // 17→24 (paragraphs), 15→22, 14→20
+  body: { ...base, fontSize: 17, lineHeight: 24, fontFamily: 'Inter_400Regular' },
+  bodySmall: { ...base, fontSize: 15, lineHeight: 22, fontFamily: 'Inter_400Regular' },
+  bodyMini: { ...base, fontSize: 14, lineHeight: 20, fontFamily: 'Inter_400Regular' },
+
+  // VALUES (SemiBold) - tight for data display
+  // 15→20, 14→20, 13→18, 18→22
+  value: { ...base, fontSize: 15, lineHeight: 20, fontFamily: 'Inter_600SemiBold' },
+  stat: { ...base, fontSize: 14, lineHeight: 20, fontFamily: 'Inter_600SemiBold' },
+  valueSmall: { ...base, fontSize: 13, lineHeight: 18, fontFamily: 'Inter_600SemiBold' },
+  initial: { ...base, fontSize: 18, lineHeight: 22, fontFamily: 'Inter_600SemiBold' },
+
+  // LABELS (Bold + tracking) - reduced tracking for cross-platform consistency
+  // 12→16, 11→14, 10→14
+  label: { ...base, fontSize: 12, lineHeight: 16, fontFamily: 'Inter_700Bold', letterSpacing: 1 },
+  labelSmall: { ...base, fontSize: 11, lineHeight: 14, fontFamily: 'Inter_700Bold', letterSpacing: 0.3 },
+  labelBadge: { ...base, fontSize: 10, lineHeight: 14, fontFamily: 'Inter_700Bold', letterSpacing: 0.5 },
+
+  // UI ELEMENTS (SemiBold)
+  // 15→20, 13→18, 10→14
+  button: { ...base, fontSize: 15, lineHeight: 20, fontFamily: 'Inter_600SemiBold' },
+  buttonSmall: { ...base, fontSize: 13, lineHeight: 18, fontFamily: 'Inter_600SemiBold' },
+  tab: { ...base, fontSize: 10, lineHeight: 14, fontFamily: 'Inter_600SemiBold' },
+  chip: { ...base, fontSize: 13, lineHeight: 18, fontFamily: 'Inter_600SemiBold' },
+  link: { ...base, fontSize: 14, lineHeight: 20, fontFamily: 'Inter_600SemiBold' },
+
+  // SUPPORTING (Regular)
+  // 15→20, 13→18
+  labelText: { ...base, fontSize: 15, lineHeight: 20, fontFamily: 'Inter_400Regular' },
+  helper: { ...base, fontSize: 13, lineHeight: 18, fontFamily: 'Inter_400Regular' },
+  secondary: { ...base, fontSize: 13, lineHeight: 18, fontFamily: 'Inter_400Regular' },
 } as const;
 
 // ═══════════════════════════════════════════════════
@@ -603,13 +264,6 @@ export const Shadows = {
     shadowOpacity: 0.12,
     shadowRadius: 8,
     elevation: 4,
-  },
-  xl: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.16,
-    shadowRadius: 16,
-    elevation: 8,
   },
 } as const;
 

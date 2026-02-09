@@ -154,10 +154,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   sectionTitle: {
-    fontSize: Typography.small.fontSize,
-    lineHeight: Typography.small.lineHeight,
+    fontSize: Typography.labelSmall.fontSize,
+    lineHeight: Typography.labelSmall.lineHeight,
     fontFamily: 'Inter_600SemiBold',
-    fontWeight: Typography.small.fontWeight as any,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
@@ -173,17 +172,14 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   title: {
-    fontSize: Typography.subhead.fontSize,
-    lineHeight: Typography.subhead.lineHeight,
+    fontSize: Typography.value.fontSize,
+    lineHeight: Typography.value.lineHeight,
     fontFamily: 'Inter_600SemiBold',
-    letterSpacing: Typography.subhead.letterSpacing,
   },
   subtitle: {
-    fontSize: Typography.footnote.fontSize,
-    lineHeight: Typography.footnote.lineHeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     fontFamily: 'Inter_400Regular',
-    fontWeight: Typography.footnote.fontWeight as any,
-    letterSpacing: Typography.footnote.letterSpacing,
   },
   actionButton: {
     paddingHorizontal: 14,
@@ -194,7 +190,5 @@ const styles = StyleSheet.create({
     fontSize: Typography.buttonSmall.fontSize,
     lineHeight: Typography.buttonSmall.lineHeight,
     fontFamily: 'Inter_600SemiBold',
-    fontWeight: Typography.buttonSmall.fontWeight as any,
-    letterSpacing: Typography.buttonSmall.letterSpacing,
   },
 });

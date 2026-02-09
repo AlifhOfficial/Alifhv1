@@ -241,10 +241,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: Typography.h2.fontSize,
-    lineHeight: Typography.h2.lineHeight,
+    fontSize: Typography.title.fontSize,
+    lineHeight: Typography.title.lineHeight,
     fontFamily: 'Inter_700Bold',
-    letterSpacing: Typography.h2.letterSpacing,
     textAlign: 'center',
   },
   subtitle: {
@@ -271,6 +270,5 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: Typography.body.fontSize,
     fontFamily: 'Inter_600SemiBold',
-    letterSpacing: Typography.body.letterSpacing,
   },
 });

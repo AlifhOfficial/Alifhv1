@@ -124,11 +124,10 @@ export function PersonalInfoSection({
 
 const styles = StyleSheet.create({
   verifyLink: {
-    fontSize: Typography.footnote.fontSize,
-    lineHeight: Typography.footnote.lineHeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     fontFamily: 'Inter_600SemiBold',
     fontWeight: '600' as any,
-    letterSpacing: Typography.footnote.letterSpacing,
   },
   divider: {
     height: StyleSheet.hairlineWidth,

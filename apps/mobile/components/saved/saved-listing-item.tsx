@@ -129,7 +129,7 @@ export function SavedListingItem({ listing, colors }: SavedListingItemProps) {
           <Text style={[styles.metaText, { color: colors.textTertiary }]}>
             {formatMileage(listing.mileage || 0)}
           </Text>
-          <Text style={[styles.metaDot, { color: colors.textQuaternary }]}>•</Text>
+          <Text style={[styles.metaDot, { color: colors.textMuted }]}>•</Text>
           <Text style={[styles.metaText, { color: colors.textTertiary }]}>
             {displayEmirate}
           </Text>

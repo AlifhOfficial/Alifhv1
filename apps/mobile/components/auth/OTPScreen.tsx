@@ -60,6 +60,7 @@ export function OTPScreen({
     inputBorder: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.06)',
     inputBorderActive: isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.15)',
     error: themeColors.error,
+    border: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.06)',
   };
 
   // Resend timer
@@ -142,7 +143,7 @@ export function OTPScreen({
                       styles.codeBox,
                       { 
                         backgroundColor: colors.inputBg,
-                        borderColor: error ? colors.error : isActive ? colors.primary : colors.inputBorder,
+                        borderColor: error ? colors.error : isActive ? colors.primary : colors.border,
                       }
                     ]}
                   >
@@ -248,14 +249,13 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   title: {
-    fontSize: Typography.largeTitle.fontSize,
-    lineHeight: Typography.largeTitle.lineHeight,
+    fontSize: Typography.titleLarge.fontSize,
+    lineHeight: Typography.titleLarge.lineHeight,
     fontFamily: 'Inter_700Bold',
-    letterSpacing: Typography.largeTitle.letterSpacing,
   },
   subtitle: {
-    fontSize: Typography.subhead.fontSize,
-    lineHeight: Typography.subhead.lineHeight,
+    fontSize: Typography.value.fontSize,
+    lineHeight: Typography.value.lineHeight,
     fontFamily: 'Inter_400Regular',
     marginTop: 8,
   },
@@ -265,8 +265,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   errorText: {
-    fontSize: Typography.small.fontSize,
-    lineHeight: Typography.small.lineHeight,
+    fontSize: Typography.labelSmall.fontSize,
+    lineHeight: Typography.labelSmall.lineHeight,
     fontFamily: 'Inter_500Medium',
     textAlign: 'center',
   },
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   codeDigit: {
-    fontSize: Typography.h2.fontSize,
+    fontSize: Typography.title.fontSize,
     fontFamily: 'Inter_600SemiBold',
   },
   cursor: {
@@ -313,11 +313,11 @@ const styles = StyleSheet.create({
     marginTop: 32,
   },
   resendText: {
-    fontSize: Typography.small.fontSize,
+    fontSize: Typography.labelSmall.fontSize,
     fontFamily: 'Inter_600SemiBold',
   },
   resendTimer: {
-    fontSize: Typography.small.fontSize,
+    fontSize: Typography.labelSmall.fontSize,
     fontFamily: 'Inter_400Regular',
   },
   helpSection: {
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
   helpText: {
-    fontSize: Typography.caption2.fontSize,
+    fontSize: Typography.helper.fontSize,
     fontFamily: 'Inter_400Regular',
     textAlign: 'center',
   },

@@ -28,7 +28,7 @@ export function FilterPill({
       style={({ pressed }) => [
         styles.container,
         { 
-          backgroundColor: isPrimary ? colors.primary : colors.backgroundElevated,
+          backgroundColor: isPrimary ? colors.primary : colors.backgroundTertiary,
           borderColor: isPrimary ? colors.primary : colors.border,
           opacity: pressed ? 0.8 : 1,
         }

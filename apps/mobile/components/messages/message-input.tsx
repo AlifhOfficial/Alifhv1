@@ -175,7 +175,7 @@ export function MessageInput({
       <View
         style={[
           styles.inputWrapper,
-          { backgroundColor: colors.input, borderColor: colors.inputBorder },
+          { backgroundColor: colors.surface, borderColor: colors.border },
         ]}
       >
         <TextInput
@@ -185,7 +185,7 @@ export function MessageInput({
           onChangeText={handleChangeText}
           onContentSizeChange={handleContentSizeChange}
           placeholder={placeholder}
-          placeholderTextColor={colors.inputPlaceholder}
+          placeholderTextColor={colors.textMuted}
           multiline
           editable={!disabled}
           returnKeyType="default"
@@ -199,8 +199,8 @@ export function MessageInput({
         style={[
           styles.sendWrapper,
           {
-            backgroundColor: canSend ? colors.primary : colors.input,
-            borderColor: canSend ? colors.primary : colors.inputBorder,
+            backgroundColor: canSend ? colors.primary : colors.surface,
+            borderColor: canSend ? colors.primary : colors.border,
           },
         ]}
       >
@@ -232,10 +232,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   input: {
-    fontSize: Typography.callout.fontSize,
-    lineHeight: Typography.callout.lineHeight,
-    fontWeight: '400',
-    letterSpacing: Typography.callout.letterSpacing,
+    ...Typography.bodySmall,
     paddingVertical: Platform.OS === 'ios' ? Spacing.sm : Spacing.sm,
   },
   sendWrapper: {

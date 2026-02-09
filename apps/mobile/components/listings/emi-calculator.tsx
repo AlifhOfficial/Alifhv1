@@ -114,12 +114,12 @@ function Stepper({
           style={({ pressed }) => [
             stepperStyles.button,
             { 
-              backgroundColor: colors.buttonSecondary,
+              backgroundColor: colors.surfaceSecondary,
               opacity: !canDecrement ? 0.4 : pressed ? 0.7 : 1,
             },
           ]}
         >
-          <Minus size={18} color={colors.buttonSecondaryForeground} />
+          <Minus size={18} color={colors.text} />
         </Pressable>
         <View style={stepperStyles.valueContainer}>
           <Text style={[stepperStyles.value, { color: colors.primary }]}>
@@ -132,12 +132,12 @@ function Stepper({
           style={({ pressed }) => [
             stepperStyles.button,
             { 
-              backgroundColor: colors.buttonSecondary,
+              backgroundColor: colors.surfaceSecondary,
               opacity: !canIncrement ? 0.4 : pressed ? 0.7 : 1,
             },
           ]}
         >
-          <Plus size={18} color={colors.buttonSecondaryForeground} />
+          <Plus size={18} color={colors.text} />
         </Pressable>
       </View>
     </View>
@@ -209,7 +209,7 @@ function TenureSelector({ value, onChange }: TenureSelectorProps) {
               style={({ pressed }) => [
                 tenureStyles.option,
                 {
-                  backgroundColor: isSelected ? colors.primary : colors.buttonSecondary,
+                  backgroundColor: isSelected ? colors.primary : colors.surfaceSecondary,
                   opacity: pressed ? 0.8 : 1,
                 },
               ]}
@@ -218,7 +218,7 @@ function TenureSelector({ value, onChange }: TenureSelectorProps) {
                 style={[
                   tenureStyles.optionText,
                   {
-                    color: isSelected ? colors.primaryForeground : colors.buttonSecondaryForeground,
+                    color: isSelected ? colors.primaryForeground : colors.text,
                   },
                 ]}
               >

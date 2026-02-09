@@ -144,13 +144,13 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   emptyTitle: {
-    ...Typography.h3,
+    ...Typography.title,
     fontFamily: 'Inter_600SemiBold',
     textAlign: 'center',
     marginTop: 8,
   },
   emptySubtitle: {
-    ...Typography.muted,
+    ...Typography.helper,
     fontFamily: 'Inter_400Regular',
     textAlign: 'center',
   },

@@ -94,7 +94,7 @@ export function ConversationGroup({
                 onPress={() => onSelect(c)}
                 style={({ pressed }) => [
                   styles.chatItem,
-                  !isLast && [styles.chatItemBorder, { borderBottomColor: colors.separator }],
+                  !isLast && [styles.chatItemBorder, { borderBottomColor: colors.border }],
                   { backgroundColor: pressed || isActive ? colors.surface : 'transparent' },
                 ]}
               >
@@ -154,10 +154,9 @@ const styles = StyleSheet.create({
   },
   name: {
     flex: 1,
-    fontSize: Typography.callout.fontSize,
-    lineHeight: Typography.callout.lineHeight,
+    fontSize: Typography.bodySmall.fontSize,
+    lineHeight: Typography.bodySmall.lineHeight,
     fontWeight: '600',
-    letterSpacing: Typography.callout.letterSpacing,
     marginLeft: Spacing.md,
   },
   onlineDot: {
@@ -176,8 +175,8 @@ const styles = StyleSheet.create({
     marginLeft: Spacing.sm,
   },
   unreadText: {
-    fontSize: Typography.caption2.fontSize,
-    lineHeight: Typography.caption2.lineHeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     fontWeight: '600',
     color: '#FFFFFF',
   },
@@ -203,21 +202,19 @@ const styles = StyleSheet.create({
   },
   chatTitle: {
     flex: 1,
-    fontSize: Typography.subhead.fontSize,
-    lineHeight: Typography.subhead.lineHeight,
-    letterSpacing: Typography.subhead.letterSpacing,
+    fontSize: Typography.value.fontSize,
+    lineHeight: Typography.value.lineHeight,
   },
   chatTime: {
-    fontSize: Typography.caption1.fontSize,
-    lineHeight: Typography.caption1.lineHeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     fontWeight: '400',
     marginLeft: Spacing.sm,
   },
   chatPreview: {
     flex: 1,
-    fontSize: Typography.footnote.fontSize,
-    lineHeight: Typography.footnote.lineHeight,
-    letterSpacing: Typography.footnote.letterSpacing,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     marginTop: Spacing.xs,
   },
   dot: {

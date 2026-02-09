@@ -51,12 +51,13 @@ export function ForgotPasswordScreen({
     textTertiary: themeColors.textTertiary,
     primary: themeColors.primary,
     primarySoft: isDark ? 'rgba(0,102,255,0.12)' : 'rgba(0,102,255,0.04)',
-    inputBg: themeColors.input,
+    inputBg: themeColors.surface,
     inputBorder: themeColors.border,
     inputFocusBorder: isDark ? 'rgba(0,102,255,0.5)' : 'rgba(0,102,255,0.2)',
     error: themeColors.error,
     success: themeColors.success,
     successSoft: isDark ? 'rgba(52,199,89,0.15)' : 'rgba(52,199,89,0.06)',
+    border: themeColors.border,
   };
 
   const handleSubmit = async () => {
@@ -149,7 +150,7 @@ export function ForgotPasswordScreen({
           <Animated.View entering={FadeInDown.delay(150).duration(400)} style={styles.form}>
             <View style={styles.inputGroup}>
               <Text style={[styles.label, { color: colors.textSecondary }]}>Email</Text>
-              <View style={[styles.inputWrapper, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
+              <View style={[styles.inputWrapper, { backgroundColor: colors.inputBg, borderColor: colors.border }]}>
                 <TextInput
                   style={[styles.inputInner, { color: colors.text, backgroundColor: colors.inputBg }]}
                   value={email}
@@ -250,20 +251,19 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   title: {
-    fontSize: Typography.largeTitle.fontSize,
-    lineHeight: Typography.largeTitle.lineHeight,
+    fontSize: Typography.titleLarge.fontSize,
+    lineHeight: Typography.titleLarge.lineHeight,
     fontFamily: 'Inter_700Bold',
-    letterSpacing: Typography.largeTitle.letterSpacing,
   },
   subtitle: {
-    fontSize: Typography.subhead.fontSize,
-    lineHeight: Typography.subhead.lineHeight,
+    fontSize: Typography.value.fontSize,
+    lineHeight: Typography.value.lineHeight,
     fontFamily: 'Inter_400Regular',
     marginTop: 8,
   },
   emailText: {
-    fontSize: Typography.subhead.fontSize,
-    lineHeight: Typography.subhead.lineHeight,
+    fontSize: Typography.value.fontSize,
+    lineHeight: Typography.value.lineHeight,
     fontFamily: 'Inter_600SemiBold',
     marginTop: 4,
   },
@@ -273,8 +273,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   errorText: {
-    fontSize: Typography.small.fontSize,
-    lineHeight: Typography.small.lineHeight,
+    fontSize: Typography.labelSmall.fontSize,
+    lineHeight: Typography.labelSmall.lineHeight,
     fontFamily: 'Inter_500Medium',
     textAlign: 'center',
   },
@@ -285,8 +285,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   label: {
-    fontSize: Typography.caption1.fontSize,
-    lineHeight: Typography.caption1.lineHeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     fontFamily: 'Inter_500Medium',
     marginLeft: 4,
   },
@@ -325,7 +325,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: Typography.body.fontSize,
     fontFamily: 'Inter_600SemiBold',
-    letterSpacing: Typography.body.letterSpacing,
   },
   buttonSection: {
     paddingBottom: 40,
@@ -337,13 +336,13 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
   footerText: {
-    fontSize: Typography.small.fontSize,
-    lineHeight: Typography.small.lineHeight,
+    fontSize: Typography.labelSmall.fontSize,
+    lineHeight: Typography.labelSmall.lineHeight,
     fontFamily: 'Inter_400Regular',
   },
   footerLink: {
-    fontSize: Typography.small.fontSize,
-    lineHeight: Typography.small.lineHeight,
+    fontSize: Typography.labelSmall.fontSize,
+    lineHeight: Typography.labelSmall.lineHeight,
     fontFamily: 'Inter_600SemiBold',
   },
 });

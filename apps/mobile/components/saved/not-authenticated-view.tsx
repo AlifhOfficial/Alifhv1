@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   title: {
-    fontSize: Typography.h2.fontSize,
+    fontSize: Typography.title.fontSize,
     fontFamily: 'Inter_700Bold',
     fontWeight: '700',
     textAlign: 'center',

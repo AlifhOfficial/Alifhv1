@@ -166,8 +166,8 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   statLabel: {
-    fontSize: Typography.caption2.fontSize,
-    lineHeight: Typography.caption2.lineHeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     fontFamily: 'Inter_600SemiBold',
     fontWeight: '600' as any,
     textTransform: 'uppercase',
@@ -181,10 +181,8 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   statValue: {
-    fontSize: Typography.h2.fontSize,
-    lineHeight: Typography.h2.lineHeight,
+    fontSize: Typography.title.fontSize,
+    lineHeight: Typography.title.lineHeight,
     fontFamily: 'Inter_700Bold',
-    fontWeight: Typography.h2.fontWeight as any,
-    letterSpacing: Typography.h2.letterSpacing,
   },
 });

@@ -61,11 +61,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   title: {
-    fontSize: Typography.navTitle.fontSize,
-    lineHeight: Typography.navTitle.lineHeight,
-    fontFamily: 'Inter_700Bold',
-    fontWeight: Typography.navTitle.fontWeight as any,
-    letterSpacing: Typography.navTitle.letterSpacing,
+    ...Typography.title,
   },
   filterButton: {
     padding: 4,

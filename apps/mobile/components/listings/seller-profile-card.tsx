@@ -256,7 +256,7 @@ function PartnerProfile({
           {badges.slice(0, 3).map((badge) => (
             <View 
               key={badge} 
-              style={[styles.badge, { backgroundColor: colors.accentMuted }]}
+              style={[styles.badge, { backgroundColor: colors.primaryMuted }]}
             >
               <Text style={[styles.badgeText, { color: colors.primary }]}>
                 {badge}
@@ -478,7 +478,7 @@ function UserProfile({
           {tags.slice(0, 3).map((tag) => (
             <View 
               key={tag} 
-              style={[styles.badge, { backgroundColor: colors.fillQuaternary }]}
+              style={[styles.badge, { backgroundColor: colors.fillSecondary }]}
             >
               <Text style={[styles.badgeText, { color: secondaryTextColor }]}>
                 {tag}

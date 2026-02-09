@@ -7,7 +7,7 @@ export { Skeleton, SkeletonText, SkeletonCircle, SkeletonImage } from './skeleto
 // Legacy loader exports (for backwards compatibility)
 export { Loader, SpinnerLoader, LogoLoader, RefreshLoader } from './loader';
 
-// New Premium Loaders
+// Premium Loaders
 export {
   // Brand logo components
   RevvupLogo,
@@ -15,9 +15,7 @@ export {
   // Spinner variations
   PulseLoader,
   SpinLoader,
-  DotsLoader,
-  WaveLoader,
-  RingLoader,
+  BreatheLoader,
   GlowLoader,
   ButtonLoader,
   InlineLoader,

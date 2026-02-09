@@ -40,10 +40,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: Typography.navTitle.fontSize,
-    lineHeight: Typography.navTitle.lineHeight,
-    fontWeight: Typography.navTitle.fontWeight,
-    letterSpacing: Typography.navTitle.letterSpacing,
+    ...Typography.title,
   },
   badge: {
     marginLeft: Spacing.sm,
@@ -54,9 +51,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   badgeText: {
-    fontSize: Typography.caption1.fontSize,
-    lineHeight: Typography.caption1.lineHeight,
-    fontWeight: '600',
+    ...Typography.labelBadge,
     color: '#FFFFFF',
   },
 });

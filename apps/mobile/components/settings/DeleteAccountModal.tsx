@@ -88,12 +88,12 @@ export function DeleteAccountModal({
               value={deleteText}
               onChangeText={setDeleteText}
               placeholder="DELETE"
-              placeholderTextColor={colors.inputPlaceholder}
+              placeholderTextColor={colors.textMuted}
               style={[
                 styles.input,
                 {
-                  backgroundColor: colors.input,
-                  borderColor: colors.inputBorder,
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
                   color: colors.text,
                 },
               ]}
@@ -107,12 +107,12 @@ export function DeleteAccountModal({
               style={({ pressed }) => [
                 styles.button,
                 { 
-                  backgroundColor: colors.buttonSecondary, 
+                  backgroundColor: colors.surfaceSecondary, 
                   opacity: pressed ? 0.7 : 1 
                 },
               ]}
             >
-              <Text style={[styles.buttonText, { color: colors.buttonSecondaryForeground }]}>
+              <Text style={[styles.buttonText, { color: colors.text }]}>
                 Cancel
               </Text>
             </Pressable>
@@ -122,15 +122,15 @@ export function DeleteAccountModal({
               style={({ pressed }) => [
                 styles.button,
                 {
-                  backgroundColor: colors.buttonDestructive,
+                  backgroundColor: colors.error,
                   opacity: deleteText !== 'DELETE' ? 0.5 : pressed ? 0.8 : 1,
                 },
               ]}
             >
               {isDeleting ? (
-                <Loader2 size={18} color={colors.buttonDestructiveForeground} strokeWidth={2} />
+                <Loader2 size={18} color={colors.primaryForeground} strokeWidth={2} />
               ) : (
-                <Text style={[styles.buttonText, { color: colors.buttonDestructiveForeground }]}>
+                <Text style={[styles.buttonText, { color: colors.primaryForeground }]}>
                   Delete
                 </Text>
               )}
@@ -171,30 +171,23 @@ const styles = StyleSheet.create({
     }),
   },
   title: {
-    fontSize: Typography.h4.fontSize,
-    lineHeight: Typography.h4.lineHeight,
-    fontFamily: 'Inter_600SemiBold',
-    fontWeight: Typography.h4.fontWeight as any,
-    letterSpacing: Typography.h4.letterSpacing,
+    ...Typography.titleSmall,
     marginBottom: 8,
   },
   description: {
-    fontSize: Typography.subhead.fontSize,
-    lineHeight: Typography.headline.lineHeight,
+    fontSize: Typography.value.fontSize,
+    lineHeight: Typography.title.lineHeight,
     fontFamily: 'Inter_400Regular',
-    fontWeight: Typography.subhead.fontWeight as any,
-    letterSpacing: Typography.subhead.letterSpacing,
     marginBottom: 24,
   },
   inputContainer: {
     marginBottom: 24,
   },
   inputLabel: {
-    fontSize: Typography.footnote.fontSize,
-    lineHeight: Typography.footnote.lineHeight,
+    fontSize: Typography.helper.fontSize,
+    lineHeight: Typography.helper.lineHeight,
     fontFamily: 'Inter_500Medium',
     fontWeight: '500' as any,
-    letterSpacing: Typography.footnote.letterSpacing,
     marginBottom: 8,
   },
   input: {
@@ -202,10 +195,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     paddingHorizontal: 16,
-    fontSize: Typography.callout.fontSize,
+    fontSize: Typography.bodySmall.fontSize,
     fontFamily: 'Inter_500Medium',
     fontWeight: '500' as any,
-    letterSpacing: Typography.callout.letterSpacing,
   },
   buttons: {
     flexDirection: 'row',
@@ -219,10 +211,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonText: {
-    fontSize: Typography.buttonMedium.fontSize,
-    lineHeight: Typography.buttonMedium.lineHeight,
+    fontSize: Typography.button.fontSize,
+    lineHeight: Typography.button.lineHeight,
     fontFamily: 'Inter_600SemiBold',
-    fontWeight: Typography.buttonMedium.fontWeight as any,
-    letterSpacing: Typography.buttonMedium.letterSpacing,
   },
 });
