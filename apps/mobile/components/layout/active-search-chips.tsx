@@ -24,7 +24,7 @@ import { useTheme } from '@/context/theme-context';
 const AnimatedView = Animated.View;
 
 // Height of the chips bar
-const CHIPS_BAR_HEIGHT = 48;
+const CHIPS_BAR_HEIGHT = 36;
 
 interface ActiveSearchChipsProps {
   /** Whether the chips bar should be visible (on browse tab) */
@@ -72,12 +72,12 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
     }
   }, [clearSearch, clearFilterParams, resetSort, sortBy]);
 
-  // Container animation
+  // Container animation - simple fade
   const containerStyle = useAnimatedStyle(() => {
     return {
-      opacity: withTiming(shouldShow ? 1 : 0, { duration: 200 }),
+      opacity: withTiming(shouldShow ? 1 : 0, { duration: 150 }),
       transform: [
-        { translateY: withSpring(shouldShow ? 0 : 20, { damping: 20, stiffness: 300 }) },
+        { translateY: withTiming(shouldShow ? 0 : 8, { duration: 150 }) },
       ],
     };
   }, [shouldShow]);
@@ -104,9 +104,9 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
         {chips.map((chip, index) => (
           <AnimatedView
             key={`${chip.key}-${chip.value}-${chip.index ?? index}`}
-            entering={FadeIn.duration(200).delay(index * 50)}
-            exiting={FadeOut.duration(150)}
-            layout={Layout.springify().damping(20).stiffness(200)}
+            entering={FadeIn.duration(150)}
+            exiting={FadeOut.duration(100)}
+            layout={Layout.duration(150)}
           >
             <Pressable
               onPress={() => handleRemoveChip(chip)}
@@ -141,8 +141,8 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
         {/* Clear all button */}
         {chips.length > 1 && (
           <AnimatedView
-            entering={FadeIn.duration(200).delay(chips.length * 50)}
-            exiting={FadeOut.duration(150)}
+            entering={FadeIn.duration(150)}
+            exiting={FadeOut.duration(100)}
           >
             <Pressable
               onPress={handleClearAll}
@@ -185,44 +185,33 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    gap: 8,
+    paddingHorizontal: 12,
+    gap: 6,
     height: CHIPS_BAR_HEIGHT,
   },
   pill: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 14,
     borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
   },
   pillInner: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 4,
   },
   pillText: {
-    ...Typography.link,
+    fontSize: 12,
     fontFamily: 'Inter_500Medium',
-    maxWidth: 140,
+    maxWidth: 100,
   },
   clearPill: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 14,
   },
   clearText: {
-    ...Typography.link,
+    fontSize: 12,
     fontFamily: 'Inter_500Medium',
-    // Color applied inline
   },
 });

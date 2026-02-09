@@ -43,7 +43,7 @@ import {
 
 export interface CarCardDetailedMProps {
   listing: ListingDetailedData;
-  sellerData: SellerData | undefined | null;
+  sellerData: SellerData;
   listingId: string;
   isFavorite?: boolean;
   onFavoritePress?: (id: string) => void;
@@ -216,7 +216,7 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
       />
 
       {/* Features Sheet — rendered at root level for proper gesture handling */}
-      {listing.extras && listing.extras.length > 0 && (
+      {listing.extras.length > 0 && (
         <FeaturesSheet
           visible={featuresSheetVisible}
           onClose={closeFeaturesSheet}

@@ -70,6 +70,8 @@ interface SearchContextValue {
   subscribeToSearch: (callback: (params: SearchParams) => void) => () => void;
   /** Get active search chips */
   getSearchChips: () => SearchChip[];
+  /** Get total count of all active filters (for badge display) */
+  getActiveFilterCount: () => number;
   
   /** Current sort option */
   sortBy: SearchSortOption;
@@ -245,6 +247,37 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     return chips;
   }, [searchParams, sortBy, filterParams]);
 
+  // Get total count of active filters (for badge display)
+  const getActiveFilterCount = useCallback((): number => {
+    let count = 0;
+    
+    // Count search params
+    if (searchParams?.q) count++;
+    count += searchParams?.make?.length ?? 0;
+    count += searchParams?.model?.length ?? 0;
+    count += searchParams?.trim?.length ?? 0;
+    
+    // Count filter params
+    if (filterParams.priceMin || filterParams.priceMax) count++;
+    if (filterParams.yearMin || filterParams.yearMax) count++;
+    if (filterParams.mileageMin || filterParams.mileageMax) count++;
+    count += filterParams.emirate?.length ?? 0;
+    count += filterParams.bodyType?.length ?? 0;
+    count += filterParams.fuelType?.length ?? 0;
+    count += filterParams.transmission?.length ?? 0;
+    count += filterParams.specs?.length ?? 0;
+    if (filterParams.condition) count++;
+    if (filterParams.isNegotiable) count++;
+    if (filterParams.isBlkListing) count++;
+    if (filterParams.isBlackTierPartner) count++;
+    if (filterParams.sellerType) count++;
+    
+    // Count non-default sort
+    if (sortBy !== 'relevance') count++;
+    
+    return count;
+  }, [searchParams, filterParams, sortBy]);
+
   const subscribeToSearch = useCallback((callback: (params: SearchParams) => void) => {
     listenersRef.current.add(callback);
     return () => {
@@ -354,6 +387,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
         removeSearchParam,
         subscribeToSearch,
         getSearchChips,
+        getActiveFilterCount,
         sortBy,
         applySort,
         resetSort,

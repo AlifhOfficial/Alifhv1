@@ -120,6 +120,8 @@ export default function BrowseScreen() {
     try {
       setIsLoading(true);
       setPage(1);
+      // Clear listings immediately to show skeletons (prevents stale cards)
+      setListings([]);
 
       const params = {
         ...filtersToParams(filterParams, searchParams),
