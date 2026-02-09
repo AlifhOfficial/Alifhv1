@@ -34,7 +34,7 @@ export function MessageBubble({
 
   const { sender, text, mediaUrl, mediaType, isEdited, isSystemMessage } = message;
 
-  // Check if optimistic message
+  // Check if optimistic message (sending state)
   const isOptimistic = message.id.startsWith('temp-');
 
   // System message (centered, muted)
@@ -60,7 +60,6 @@ export function MessageBubble({
       style={[
         styles.container,
         isOwn ? styles.containerOwn : styles.containerOther,
-        isOptimistic && styles.optimistic,
       ]}
     >
       {/* Avatar - only for received messages */}
@@ -110,20 +109,21 @@ export function MessageBubble({
         )}
 
         {/* Message Bubble */}
-        <View
-          style={[
-            styles.bubble,
-            isOwn
-              ? [styles.bubbleOwn, { backgroundColor: colors.primary }]
-              : [
-                  styles.bubbleOther,
-                  {
-                    backgroundColor: colors.surfaceSecondary,
-                    borderColor: colors.border,
-                  },
-                ],
-          ]}
-        >
+        <View style={styles.bubbleRow}>
+          <View
+            style={[
+              styles.bubble,
+              isOwn
+                ? [styles.bubbleOwn, { backgroundColor: colors.primary }]
+                : [
+                    styles.bubbleOther,
+                    {
+                      backgroundColor: colors.surfaceSecondary,
+                      borderColor: colors.border,
+                    },
+                  ],
+            ]}
+          >
           {/* Media */}
           {mediaUrl && mediaType === 'image' && (
             <Image
@@ -157,13 +157,12 @@ export function MessageBubble({
             </Text>
           )}
         </View>
-
-        {/* Sending indicator for optimistic messages */}
-        {isOptimistic && isOwn && (
-          <Text style={[styles.sendingText, { color: colors.textTertiary }]}>
-            Sending...
-          </Text>
-        )}
+          
+          {/* Sending dot - right of bubble for own messages */}
+          {isOptimistic && isOwn && (
+            <View style={[styles.sendingDot, { backgroundColor: colors.textTertiary }]} />
+          )}
+        </View>
 
         {/* Seen indicator */}
         {showSeen && isOwn && (
@@ -196,9 +195,6 @@ const styles = StyleSheet.create({
   },
   containerOther: {
     justifyContent: 'flex-start',
-  },
-  optimistic: {
-    opacity: 0.6,
   },
   avatarPlaceholder: {
     width: 28,
@@ -234,17 +230,26 @@ const styles = StyleSheet.create({
   listingTitle: {
     ...Typography.buttonSmall,
   },
+  bubbleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  sendingDot: {
+    width: 5,
+    height: 5,
+    borderRadius: Radius.full,
+  },
   bubble: {
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.sm,
-    borderRadius: Radius['2xl'],
+    borderRadius: Radius.full,
     minHeight: 36,
   },
   bubbleOwn: {
-    borderTopRightRadius: 6,
+    // Pill shape - no corner override
   },
   bubbleOther: {
-    borderTopLeftRadius: 6,
     borderWidth: 0.5,
   },
   mediaImage: {
@@ -261,12 +266,6 @@ const styles = StyleSheet.create({
     fontSize: Typography.helper.fontSize,
     lineHeight: Typography.helper.lineHeight,
     marginTop: 2,
-  },
-  sendingText: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
-    marginTop: 2,
-    marginHorizontal: Spacing.xs,
   },
   seenContainer: {
     flexDirection: 'row',

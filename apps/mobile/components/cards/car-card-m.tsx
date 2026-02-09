@@ -469,7 +469,7 @@ const styles = StyleSheet.create({
   // Content
   content: {
     padding: CARD_PADDING,
-    gap: Spacing.xs,
+    gap: Spacing.sm,
   },
 
   // Title Row
@@ -482,17 +482,18 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     ...Typography.titleCard,
-    fontFamily: 'Inter_700Bold',
+    fontSize: 17,
+    lineHeight: 22,
   },
   year: {
     ...Typography.stat,
-    fontFamily: 'Inter_600SemiBold',
   },
 
   // Price
   price: {
     ...Typography.titlePrice,
-    fontFamily: 'Inter_700Bold',
+    fontSize: 16,
+    lineHeight: 22,
   },
 
   // Stats
@@ -500,13 +501,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
-    marginTop: Spacing.xs,
   },
   stat: {
-    ...Typography.valueSmall,
+    ...Typography.stat,
   },
   separator: {
-    ...Typography.valueSmall,
+    ...Typography.stat,
     opacity: 0.4,
   },
 
@@ -515,8 +515,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: Spacing.sm,
-    marginTop: Spacing.xs,
+    paddingTop: Spacing.xs,
   },
 
   // Seller Info
@@ -556,6 +555,8 @@ const styles = StyleSheet.create({
   },
   sellerName: {
     ...Typography.value,
+    fontSize: 14,
+    lineHeight: 18,
     flexShrink: 1,
   },
   blkBadge: {
@@ -572,10 +573,13 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
-    marginRight: -Spacing.sm,
+    gap: Spacing.xs,
   },
   actionButton: {
-    padding: Spacing.sm,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: Radius.full,
   },
 });

@@ -18,16 +18,16 @@ const BASE_WIDTH = 393;
 /**
  * Scales a size value based on screen width
  * @param size - Base size in design pixels
- * @param factor - How aggressively to scale (0 = none, 1 = full). Default 0.5
+ * @param factor - How aggressively to scale (0 = none, 1 = full). Default 0.15
  */
-const scale = (size: number, factor = 0.5): number => {
+const scale = (size: number, factor = 0.15): number => {
   const scaleRatio = SCREEN_WIDTH / BASE_WIDTH;
   const newSize = size + (size * (scaleRatio - 1) * factor);
   return Math.round(PixelRatio.roundToNearestPixel(newSize));
 };
 
-// Font-specific scaling (slightly less aggressive for readability)
-const fontScale = (size: number): number => scale(size, 0.4);
+// Font-specific scaling - very subtle to maintain consistency
+const fontScale = (size: number): number => scale(size, 0.1);
 
 export const Colors = {
   light: {

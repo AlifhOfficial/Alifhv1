@@ -26,8 +26,11 @@ import { ImageLightbox } from './image-lightbox';
 import { ImageGridModal } from './image-grid-modal';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const GALLERY_HEIGHT = SCREEN_HEIGHT * 0.38;
-const THUMBNAIL_SIZE = 48;
+// 4:3 aspect ratio for main image + thumbnail strip
+const MAIN_IMAGE_HEIGHT = SCREEN_WIDTH * (3 / 4);
+const THUMBNAIL_STRIP_HEIGHT = 72;
+const GALLERY_HEIGHT = MAIN_IMAGE_HEIGHT + THUMBNAIL_STRIP_HEIGHT;
+const THUMBNAIL_SIZE = 56;
 
 interface ImageGalleryProps {
   images: string[];

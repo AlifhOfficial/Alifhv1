@@ -72,8 +72,8 @@ export function ConversationGroup({
               <View style={[styles.onlineDot, { backgroundColor: colors.success }]} />
             )}
             {totalUnread > 0 && (
-              <View style={[styles.unreadBadge, { backgroundColor: colors.primary }]}>
-                <Text style={[styles.unreadText, { color: colors.primaryForeground }]}>{totalUnread}</Text>
+              <View style={[styles.unreadBadge, { backgroundColor: colors.error }]}>
+                <Text style={[styles.unreadText, { color: '#FFFFFF' }]}>{totalUnread}</Text>
               </View>
             )}
             <ChevronIcon size={18} color={colors.textTertiary} strokeWidth={2} />
@@ -84,17 +84,15 @@ export function ConversationGroup({
       {/* Dropdown: Nested conversations */}
       {isExpanded && (
         <View style={[styles.chatList, { borderLeftColor: colors.border }]}>
-          {conversations.map((c, index) => {
+          {conversations.map((c) => {
             const hasUnread = c.unreadCount > 0;
             const isActive = c.id === activeConversationId;
-            const isLast = index === conversations.length - 1;
             return (
               <Pressable
                 key={c.id}
                 onPress={() => onSelect(c)}
                 style={({ pressed }) => [
                   styles.chatItem,
-                  !isLast && [styles.chatItemBorder, { borderBottomColor: colors.border }],
                   { backgroundColor: pressed || isActive ? colors.surface : 'transparent' },
                 ]}
               >
@@ -131,7 +129,7 @@ export function ConversationGroup({
                     {c.lastMessagePreview || 'No messages'}
                   </Text>
                   {hasUnread && (
-                    <View style={[styles.dot, { backgroundColor: colors.primary }]} />
+                    <View style={[styles.dot, { backgroundColor: colors.error }]} />
                   )}
                 </View>
               </Pressable>
@@ -145,52 +143,47 @@ export function ConversationGroup({
 
 const styles = StyleSheet.create({
   header: {
-    paddingVertical: Spacing.md,
+    paddingVertical: Spacing.xs,
     paddingHorizontal: Spacing.lg,
   },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: Spacing.sm,
   },
   name: {
     ...Typography.value,
     flex: 1,
-    marginLeft: Spacing.md,
   },
   onlineDot: {
     width: 8,
     height: 8,
     borderRadius: Radius.full,
-    marginLeft: Spacing.sm,
   },
   unreadBadge: {
-    minWidth: 20,
-    height: 20,
+    minWidth: 16,
+    height: 16,
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: Spacing.xs,
-    marginLeft: Spacing.sm,
+    paddingHorizontal: 4,
   },
   unreadText: {
-    ...Typography.buttonSmall,
-    // Color applied inline
+    fontSize: 10,
+    fontFamily: 'Inter_600SemiBold',
   },
   chatList: {
-    marginLeft: 52,
+    marginLeft: Spacing.lg + 40 + Spacing.sm,
     marginRight: Spacing.lg,
-    marginTop: Spacing.sm,
-    marginBottom: Spacing.sm,
-    borderLeftWidth: 2,
+    borderLeftWidth: 1,
     paddingLeft: Spacing.md,
-    paddingTop: Spacing.sm,
+    gap: Spacing.md,
+    marginBottom: Spacing.sm,
   },
   chatItem: {
-    paddingVertical: Spacing.md,
+    paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.sm,
-  },
-  chatItemBorder: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderRadius: Radius.sm,
   },
   chatRow: {
     flexDirection: 'row',
@@ -209,11 +202,11 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: Typography.helper.fontSize,
     lineHeight: Typography.helper.lineHeight,
-    marginTop: Spacing.xs,
+    marginTop: 2,
   },
   dot: {
-    width: 8,
-    height: 8,
+    width: 6,
+    height: 6,
     borderRadius: Radius.full,
     marginLeft: Spacing.sm,
   },

@@ -21,7 +21,7 @@ import { useRouter } from 'expo-router';
 import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Skeleton } from '@/components/ui';
-import { DescriptionSheet, SpecsSheet } from '@/components/sheets';
+import { DescriptionSheet, FeaturesSheet, SpecsSheet } from '@/components/sheets';
 import { ListingDetailedData, SellerData } from '@/lib/api';
 
 import {
@@ -87,6 +87,11 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
   const [specsSheetVisible, setSpecsSheetVisible] = useState(false);
   const openSpecsSheet = useCallback(() => setSpecsSheetVisible(true), []);
   const closeSpecsSheet = useCallback(() => setSpecsSheetVisible(false), []);
+
+  // Features sheet state
+  const [featuresSheetVisible, setFeaturesSheetVisible] = useState(false);
+  const openFeaturesSheet = useCallback(() => setFeaturesSheetVisible(true), []);
+  const closeFeaturesSheet = useCallback(() => setFeaturesSheetVisible(false), []);
 
   // Navigate to the dedicated seller contact screen
   const handleTalkToSeller = useCallback(() => {
@@ -162,7 +167,7 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
         <SectionDivider color={dividerColor} />
 
         {/* 5. Features / Extras */}
-        <ListingFeatures extras={listing.extras} isBlk={isBlk} />
+        <ListingFeatures extras={listing.extras} isBlk={isBlk} onViewAll={openFeaturesSheet} />
 
         <SectionDivider color={dividerColor} />
 
@@ -236,6 +241,15 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
           { label: 'Steering', value: listing.steeringSide },
         ].filter(s => s.value != null)}
       />
+
+      {/* Features Sheet — rendered at root level for proper gesture handling */}
+      {listing.extras.length > 0 && (
+        <FeaturesSheet
+          visible={featuresSheetVisible}
+          onClose={closeFeaturesSheet}
+          features={listing.extras}
+        />
+      )}
     </View>
   );
 });

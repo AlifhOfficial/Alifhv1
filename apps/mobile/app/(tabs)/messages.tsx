@@ -243,18 +243,15 @@ export default function MessagesScreen() {
   // ── Conversation list ─────────────────────────
   return (
     <View style={[styles.screen, { backgroundColor: colors.background }]}>
-      <MessagesHeader unreadCount={totalUnread} />
+      <MessagesHeader />
       <FlatList
         data={listItems}
         renderItem={renderItem}
         keyExtractor={(item) => item.key}
         contentContainerStyle={{
-          paddingTop: Spacing['2xl'],
+          paddingTop: Spacing.lg,
           paddingBottom: insets.bottom + Layout.tabBarHeight,
         }}
-        ItemSeparatorComponent={() => (
-          <View style={{ height: 1, backgroundColor: colors.border, marginVertical: Spacing.lg, marginLeft: 56 }} />
-        )}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}

@@ -40,7 +40,7 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   // Snap points - enough for all options + padding
-  const snapPoints = useMemo(() => ['65%'], []);
+  const snapPoints = useMemo(() => ['70%'], []);
 
   // Handle open/close based on visible prop
   useEffect(() => {
@@ -85,22 +85,29 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface }}
-      handleIndicatorStyle={{ backgroundColor: colors.border, width: 36 }}
+      backgroundStyle={{ backgroundColor: colors.background }}
+      handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
       stackBehavior="push"
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
           <Text style={[styles.headerTitle, { color: colors.text }]}>Sort By</Text>
-          <Pressable onPress={onClose} hitSlop={12}>
-            <Text style={[styles.doneBtn, { color: colors.primary }]}>Done</Text>
+          <Pressable 
+            onPress={onClose} 
+            hitSlop={Spacing.md}
+            style={({ pressed }) => [
+              styles.closeButton,
+              { backgroundColor: pressed ? colors.surfacePressed : colors.surface }
+            ]}
+          >
+            <Ionicons name="close" size={18} color={colors.icon} />
           </Pressable>
         </View>
 
         {/* Options List */}
-        <View style={[styles.listContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          {SORT_OPTIONS.map((option, index) => {
+        <View style={styles.listContainer}>
+          {SORT_OPTIONS.map((option) => {
             const selected = currentSort === option.value;
 
             return (
@@ -110,70 +117,73 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
                 style={({ pressed }) => [
                   styles.listItem,
                   { 
-                    backgroundColor: pressed ? colors.backgroundTertiary : 'transparent',
-                    borderBottomColor: colors.border,
-                    borderBottomWidth: index < SORT_OPTIONS.length - 1 ? StyleSheet.hairlineWidth : 0,
+                    backgroundColor: selected 
+                      ? colors.surfaceSecondary 
+                      : pressed 
+                        ? colors.surface 
+                        : 'transparent',
                   },
                 ]}
               >
                 <Text 
                   style={[
                     styles.listItemText, 
-                    { color: colors.text },
-                    selected && styles.listItemTextSelected
+                    { color: selected ? colors.text : colors.textSecondary },
                   ]} 
                   numberOfLines={1}
                 >
                   {option.label}
                 </Text>
-                {selected && (
-                  <Ionicons name="checkmark" size={20} color={colors.primary} />
-                )}
               </Pressable>
             );
           })}
         </View>
 
-        <View style={{ height: insets.bottom + 40 }} />
+        <View style={{ height: insets.bottom + Spacing['3xl'] }} />
       </BottomSheetView>
     </BottomSheetModal>
   );
 }
 
 const styles = StyleSheet.create({
+  handleIndicator: {
+    width: 36,
+    height: 4,
+    borderRadius: Radius.full,
+  },
   content: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.lg,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 20,
-    paddingHorizontal: 4,
+    marginBottom: Spacing.xl,
+    paddingHorizontal: Spacing.xs,
   },
   headerTitle: {
     ...Typography.title,
   },
-  doneBtn: {
-    ...Typography.button,
+  closeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   listContainer: {
-    borderRadius: Radius.xl,
-    borderWidth: 1,
-    overflow: 'hidden',
+    gap: Spacing.sm,
   },
   listItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    justifyContent: 'center',
+    paddingVertical: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: Radius.lg,
   },
   listItemText: {
-    ...Typography.button,
-  },
-  listItemTextSelected: {
-    fontFamily: 'Inter_700Bold',
+    ...Typography.titleSmall,
   },
 });

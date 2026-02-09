@@ -12,6 +12,8 @@ import {
   Text,
   Share,
   Platform,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -36,6 +38,13 @@ export default function ListingDetailScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showTopGradient, setShowTopGradient] = useState(false);
+
+  // Handle scroll to show/hide top gradient
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const scrollY = event.nativeEvent.contentOffset.y;
+    setShowTopGradient(scrollY > 10);
+  }, []);
 
   // Hide tab bar on this screen for immersive view
   useEffect(() => {
@@ -102,8 +111,8 @@ export default function ListingDetailScreen() {
         }}
       />
 
-      {/* Top Safe Area Gradient */}
-      <TopSafeAreaGradient />
+      {/* Top Safe Area Gradient - visible on scroll */}
+      {showTopGradient && <TopSafeAreaGradient />}
       
       <ScrollView
         style={styles.scrollView}
@@ -112,6 +121,8 @@ export default function ListingDetailScreen() {
           { paddingBottom: insets.bottom + Spacing['3xl'] },
         ]}
         showsVerticalScrollIndicator={false}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}

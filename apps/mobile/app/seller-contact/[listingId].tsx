@@ -18,6 +18,8 @@ import {
   ActivityIndicator,
   RefreshControl,
   Platform,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
@@ -48,6 +50,7 @@ import { getListingDetailed, ListingDetailed } from '@/lib/listing-api';
 import { normalizeSellerData, SellerInfo, getSellerListings, SellerListingCard } from '@/lib/seller-api';
 import { createConversation } from '@/lib/messaging-api';
 import { Skeleton } from '@/components/ui';
+import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
 
 // ============================================================================
 // HELPERS
@@ -111,6 +114,7 @@ export default function SellerContactScreen() {
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [otherListings, setOtherListings] = useState<SellerListingCard[]>([]);
   const [otherListingsTotal, setOtherListingsTotal] = useState(0);
+  const [showTopGradient, setShowTopGradient] = useState(false);
   
   // Calculator state
   const [downPaymentPercent, setDownPaymentPercent] = useState(20);
@@ -300,6 +304,12 @@ export default function SellerContactScreen() {
     Alert.alert('Coming Soon', 'Full seller inventory page coming soon!');
   }, []);
 
+  // Handle scroll to show/hide top gradient
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const scrollY = event.nativeEvent.contentOffset.y;
+    setShowTopGradient(scrollY > 10);
+  }, []);
+
   // Loading state
   if (isLoading) {
     return (
@@ -331,12 +341,16 @@ export default function SellerContactScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen options={{ headerShown: false }} />
-      <Header colors={colors} insets={insets} onBack={handleBack} />
+      
+      {/* Top Safe Area Gradient - visible on scroll */}
+      {showTopGradient && <TopSafeAreaGradient />}
 
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 32 }]}
+        contentContainerStyle={[styles.content, { paddingTop: insets.top + Spacing.lg, paddingBottom: insets.bottom + 32 }]}
         showsVerticalScrollIndicator={false}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
@@ -734,8 +748,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   errorText: {
-    fontSize: 15,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.body,
   },
 
   // Hero Section
@@ -766,8 +779,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   sellerName: {
-    fontSize: 22,
-    fontFamily: 'Inter_700Bold',
+    ...Typography.title,
     flexShrink: 1,
   },
   metaRow: {
@@ -782,8 +794,7 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   metaText: {
-    ...Typography.link,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.secondary,
   },
   tierPill: {
     paddingHorizontal: 8,
@@ -792,7 +803,6 @@ const styles = StyleSheet.create({
   },
   tierText: {
     ...Typography.labelBadge,
-    fontFamily: 'Inter_800ExtraBold',
   },
   ratingRow: {
     flexDirection: 'row',
@@ -801,12 +811,10 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   ratingValue: {
-    fontSize: 15,
-    fontFamily: 'Inter_700Bold',
+    ...Typography.value,
   },
   reviewCount: {
-    fontSize: 13,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.secondary,
   },
   memberRow: {
     flexDirection: 'row',
@@ -815,8 +823,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   memberText: {
-    fontSize: 12,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.helper,
   },
 
   // CTA Row
@@ -834,8 +841,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
   },
   primaryCtaText: {
-    fontSize: 16,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.button,
     color: '#FFF',
   },
   secondaryCta: {
@@ -849,8 +855,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   secondaryCtaText: {
-    fontSize: 16,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.button,
   },
 
   // Phone Row
@@ -861,12 +866,11 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xs,
   },
   phoneText: {
-    ...Typography.valueMedium,
+    ...Typography.value,
     flex: 1,
   },
   phoneCta: {
-    fontSize: 15,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.button,
     paddingHorizontal: Spacing.sm,
   },
 
@@ -888,12 +892,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   contactBtnText: {
-    fontSize: 14,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.buttonSmall,
   },
   phoneNumber: {
-    fontSize: 12,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.helper,
     marginTop: 2,
   },
 
@@ -907,14 +909,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   sectionLabel: {
-    fontSize: 12,
-    fontFamily: 'Inter_700Bold',
-    letterSpacing: 1.5,
+    ...Typography.label,
     marginBottom: Spacing.xs,
   },
   viewAllLink: {
     ...Typography.link,
-    fontFamily: 'Inter_500Medium',
   },
 
   // Location
@@ -930,10 +929,8 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   locationText: {
+    ...Typography.bodySmall,
     flex: 1,
-    fontSize: 15,
-    fontFamily: 'Inter_400Regular',
-    lineHeight: 22,
   },
   locationActionsCompact: {
     flexDirection: 'row',
@@ -951,7 +948,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   compactBtnText: {
-    ...Typography.labelMedium,
+    ...Typography.buttonSmall,
   },
   mapActions: {
     flexDirection: 'row',
@@ -968,15 +965,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   mapBtnText: {
-    ...Typography.link,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.buttonSmall,
   },
 
   // Description
   descriptionText: {
-    fontSize: 15,
-    fontFamily: 'Inter_400Regular',
-    lineHeight: 24,
+    ...Typography.bodySmall,
   },
 
   // Tags
@@ -991,7 +985,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
   },
   tagText: {
-    ...Typography.labelMedium,
+    ...Typography.chip,
   },
 
   // Listings
@@ -1015,20 +1009,17 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   listingTitle: {
-    fontSize: 13,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.valueSmall,
     paddingHorizontal: Spacing.sm,
     paddingTop: Spacing.sm,
   },
   listingModel: {
-    fontSize: 12,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.helper,
     paddingHorizontal: Spacing.sm,
     marginTop: 2,
   },
   listingPrice: {
-    fontSize: 14,
-    fontFamily: 'Inter_700Bold',
+    ...Typography.value,
     paddingHorizontal: Spacing.sm,
     paddingBottom: Spacing.md,
     paddingTop: 6,
@@ -1044,8 +1035,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
   },
   viewAllBtnText: {
-    ...Typography.link,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.button,
   },
 
   // EMI
@@ -1057,16 +1047,14 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
   },
   emiLabel: {
-    ...Typography.labelMedium,
+    ...Typography.secondary,
   },
   emiValue: {
-    fontSize: 36,
-    fontFamily: 'Inter_700Bold',
+    ...Typography.heroNumber,
     marginTop: 6,
   },
   emiPeriod: {
-    fontSize: 13,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.helper,
     marginTop: 2,
   },
   emiDivider: {
@@ -1080,16 +1068,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   emiRowLabel: {
-    fontSize: 14,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.secondary,
   },
   emiRowValue: {
-    ...Typography.link,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.value,
   },
   emiDisclaimer: {
-    fontSize: 11,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.helper,
     textAlign: 'center',
     marginTop: Spacing.xs,
   },
@@ -1102,12 +1087,10 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   emiCompactLabel: {
-    fontSize: 14,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.secondary,
   },
   emiCompactValue: {
-    fontSize: 18,
-    fontFamily: 'Inter_700Bold',
+    ...Typography.titlePrice,
   },
   calcRow: {
     flexDirection: 'row',
@@ -1116,8 +1099,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   calcLabel: {
-    fontSize: 13,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.helper,
     width: 40,
   },
   calcOptions: {
@@ -1132,12 +1114,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   calcChipText: {
-    ...Typography.labelMedium,
-    fontSize: 12,
+    ...Typography.chip,
   },
   calcDisclaimer: {
-    fontSize: 11,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.helper,
     marginTop: Spacing.xs,
   },
 
@@ -1152,6 +1132,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   websiteBtnText: {
-    ...Typography.valueMedium,
+    ...Typography.button,
   },
 });
