@@ -15,7 +15,7 @@
 
 import React, { memo, useCallback, useState } from 'react';
 import { StyleSheet, View, Text, Pressable } from 'react-native';
-import { MessageCircle } from 'lucide-react-native';
+import { ChevronRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
@@ -28,6 +28,7 @@ import {
   ImageGallery,
   ImageGallerySkeleton,
   ListingHeader,
+  ListingHighlights,
   QuickStats,
   ListingDescription,
   ListingSpecs,
@@ -50,14 +51,6 @@ export interface CarCardDetailedMProps {
 }
 
 // ============================================================================
-// SECTION DIVIDER (reusable thin rule between content blocks)
-// ============================================================================
-
-function SectionDivider({ color }: { color: string }) {
-  return <View style={[styles.divider, { backgroundColor: color }]} />;
-}
-
-// ============================================================================
 // MAIN COMPONENT
 // ============================================================================
 
@@ -73,8 +66,8 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
   const colors = Colors[colorScheme];
   const router = useRouter();
   const isBlk = listing.isBlkListing;
-  const bgColor = isBlk ? colors.blkBackground : colors.background;
-  const dividerColor = isBlk ? colors.blkBorder : colors.border;
+  // Use standard theme colors for all listings (BLK branding shown via badges only)
+  const bgColor = colors.background;
 
   const carTitle = `${listing.year} ${listing.make} ${listing.model}${listing.trim ? ` ${listing.trim}` : ''}`;
 
@@ -103,10 +96,16 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
       {/* ── Image Gallery — 40 % of viewport ── */}
       <ImageGallery images={listing.images} title={carTitle} />
 
+      {/* ── Highlights — positioned right below gallery for prominence ── */}
+      <ListingHighlights
+        specialNotes={listing.specialNotes}
+        tags={listing.tags}
+      />
+
       {/* ── Content — padded with generous vertical rhythm ── */}
       <View style={styles.content}>
 
-        {/* 1. Header: Title + Price + Actions + Highlights */}
+        {/* 1. Header: Title + Price + Actions */}
         <ListingHeader
           id={listing.id}
           year={listing.year}
@@ -117,8 +116,6 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
           isNegotiable={listing.isNegotiable}
           isBlk={isBlk}
           isFavorite={isFavorite}
-          specialNotes={listing.specialNotes}
-          tags={listing.tags}
           onFavoritePress={onFavoritePress}
         />
 
@@ -129,20 +126,15 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
           emirate={listing.emirate}
           city={listing.city}
           vin={listing.vin}
-          isBlk={isBlk}
         />
-
-        <SectionDivider color={dividerColor} />
 
         {/* 3. Description (optional) */}
         {listing.description && (
           <>
             <ListingDescription
               description={listing.description}
-              isBlk={isBlk}
               onReadMore={openDescSheet}
             />
-            <SectionDivider color={dividerColor} />
           </>
         )}
 
@@ -160,56 +152,35 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
           doors={listing.doors}
           seatingCapacity={listing.seatingCapacity}
           steeringSide={listing.steeringSide}
-          isBlk={isBlk}
           onViewAll={openSpecsSheet}
         />
 
-        <SectionDivider color={dividerColor} />
-
         {/* 5. Features / Extras */}
-        <ListingFeatures extras={listing.extras} isBlk={isBlk} onViewAll={openFeaturesSheet} />
-
-        <SectionDivider color={dividerColor} />
+        <ListingFeatures extras={listing.extras} onViewAll={openFeaturesSheet} />
 
         {/* 6. Timestamp — subtle, non-blocking */}
         <ListingTimestamp
           createdAt={listing.createdAt}
           lastEditedAt={listing.lastEditedAt}
           publishedAt={listing.approvedAt}
-          isBlk={isBlk}
         />
 
-        <SectionDivider color={dividerColor} />
-
-        {/* 7. Seller Card — tappable to open seller screen */}
-        <Pressable onPress={handleTalkToSeller}>
-          <SellerCard sellerData={sellerData} isBlk={isBlk} />
-        </Pressable>
-
-        {/* 8. Talk to Seller CTA — inverse in dark mode */}
-        <Pressable
-          style={({ pressed }) => [
-            styles.ctaButton,
-            {
-              backgroundColor: colorScheme === 'dark' ? colors.text : colors.primary,
-              opacity: pressed ? 0.85 : 1,
-            },
-          ]}
+        {/* 7. Seller Section — merged profile + contact action */}
+        <Pressable 
           onPress={handleTalkToSeller}
+          style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
         >
-          <MessageCircle
-            size={20}
-            color={colorScheme === 'dark' ? colors.primary : colors.primaryForeground}
-            strokeWidth={2}
+          <SellerCard 
+            sellerData={sellerData}
+            action={
+              <View style={styles.contactAction}>
+                <Text style={[styles.contactText, { color: colors.primary }]}>
+                  Contact
+                </Text>
+                <ChevronRight size={18} color={colors.primary} strokeWidth={2} />
+              </View>
+            }
           />
-          <Text
-            style={[
-              styles.ctaText,
-              { color: colorScheme === 'dark' ? colors.primary : colors.primaryForeground },
-            ]}
-          >
-            Talk to Seller
-          </Text>
         </Pressable>
       </View>
 
@@ -318,30 +289,14 @@ const styles = StyleSheet.create({
     gap: Spacing['2xl'],
   },
 
-  /* Section divider */
-  divider: {
-    height: StyleSheet.hairlineWidth,
-    width: '100%',
-  },
-
-  /* CTA button */
-  ctaButton: {
+  /* Contact action */
+  contactAction: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.sm,
-    height: 52,
-    paddingHorizontal: Spacing.xl,
-    borderRadius: Radius.lg,
-    // Lift the button off the surface
-    shadowColor: '#0066FF',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
+    gap: 2,
   },
-  ctaText: {
-    ...Typography.titleSmall, // 17px / SemiBold — larger for primary CTA
+  contactText: {
+    ...Typography.value,
   },
 
   /* Skeleton helpers */

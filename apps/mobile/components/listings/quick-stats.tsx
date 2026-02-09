@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   vinLabel: {
-    ...Typography.labelSmall,
+    ...Typography.valueSmall,
   },
   vinValue: {
     ...Typography.stat,

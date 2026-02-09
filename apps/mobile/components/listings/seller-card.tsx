@@ -2,7 +2,7 @@
  * Seller Card - Seller info with avatar
  */
 
-import React, { memo } from 'react';
+import React, { memo, ReactNode } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Image } from 'expo-image';
 import { CheckCircle2 } from 'lucide-react-native';
@@ -14,11 +14,13 @@ import { SellerData } from '@/lib/api';
 interface SellerCardProps {
   sellerData: SellerData;
   isBlk?: boolean;
+  action?: ReactNode;
 }
 
 export const SellerCard = memo(function SellerCard({
   sellerData,
   isBlk = false,
+  action,
 }: SellerCardProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
@@ -38,10 +40,9 @@ export const SellerCard = memo(function SellerCard({
   const isBlackTier = sellerData.type === 'partner' && sellerData.partner?.tier === 'black';
   
   const textColor = isBlk ? colors.blkText : colors.text;
-  const borderColor = isBlk ? colors.blkBorder : colors.border;
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.surface, borderColor }]}>
+    <View style={styles.container}>
       <View style={styles.content}>
         <View style={[styles.avatar, { backgroundColor: colors.backgroundSecondary }]}>
           {sellerLogo ? (
@@ -74,20 +75,22 @@ export const SellerCard = memo(function SellerCard({
           </Text>
         </View>
       </View>
+      {action}
     </View>
   );
 });
 
 const styles = StyleSheet.create({
   container: {
-    padding: Spacing.md,
-    borderRadius: Radius.lg,
-    borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   content: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
+    flex: 1,
   },
   avatar: {
     width: 48,

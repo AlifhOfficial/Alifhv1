@@ -37,7 +37,7 @@ export const ListingDescription = memo(function ListingDescription({
   const onHiddenTextLayout = useCallback(
     (e: { nativeEvent: { lines: unknown[] } }) => {
       if (!measured) {
-        setShowReadMore(e.nativeEvent.lines.length > MAX_LINES);
+        setShowReadMore(e.nativeEvent.lines.length > 3);
         setMeasured(true);
       }
     },
@@ -60,10 +60,10 @@ export const ListingDescription = memo(function ListingDescription({
         </Text>
       )}
 
-      {/* Visible text — always truncated to MAX_LINES */}
+      {/* Visible text — always truncated to 3 lines */}
       <Text
         style={[styles.text, { color: textColor }]}
-        numberOfLines={MAX_LINES}
+        numberOfLines={3}
       >
         {description}
       </Text>

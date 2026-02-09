@@ -9,6 +9,7 @@ export * from './image-grid-modal';
 
 // Listing info components
 export * from './listing-header';
+export * from './listing-highlights';
 export * from './quick-stats';
 export * from './listing-description';
 export * from './listing-specs';

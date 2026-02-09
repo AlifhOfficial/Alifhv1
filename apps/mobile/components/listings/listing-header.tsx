@@ -49,8 +49,9 @@ export const ListingHeader = memo(function ListingHeader({
 
   const carTitle = `${year} ${make} ${model}${trim ? ` ${trim}` : ''}`;
   
-  const textColor = isBlk ? colors.blkText : colors.text;
-  const priceColor = isBlk ? colors.blkText : colors.primary;
+  // Use standard theme colors (BLK branding shown via badge only)
+  const textColor = colors.text;
+  const priceColor = colors.primary;
 
   // Highlights from special notes and tags
   const highlights = useMemo(() => {
