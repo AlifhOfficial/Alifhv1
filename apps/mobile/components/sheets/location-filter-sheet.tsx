@@ -5,7 +5,7 @@
 
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,7 +14,7 @@ import { Check } from 'lucide-react-native';
 import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading } from '@/components/ui';
-import type { FacetBucket } from '@/lib/api';
+import type { FacetBucket } from '@/lib/search-api';
 
 interface LocationFilterSheetProps {
   visible: boolean;
@@ -113,17 +113,16 @@ export function LocationFilterSheet({
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
-      handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
-      stackBehavior="push"
+      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
+      handleIndicatorStyle={{ backgroundColor: colors.border, width: 36 }}
       detached
       bottomInset={insets.bottom + 20}
       style={styles.sheetContainer}
     >
-      <BottomSheetScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="large" style={{ color: colors.text }}>Location</Heading>
+          <Heading size="medium" style={{ color: colors.text }}>Location</Heading>
           <Pressable 
             onPress={onClose} 
             hitSlop={Spacing.md}
@@ -169,7 +168,7 @@ export function LocationFilterSheet({
                       {option.label}
                     </Text>
                     <Text style={[styles.optionCount, { color: colors.textTertiary }]}>
-                      {option.count}
+                      {option.count.toLocaleString()}
                     </Text>
                   </View>
                   {/* Checkbox */}
@@ -181,7 +180,7 @@ export function LocationFilterSheet({
                     },
                   ]}>
                     {isSelected && (
-                      <Check size={14} color={colors.background} strokeWidth={3} />
+                      <Check size={14} color={colors.surface} strokeWidth={3} />
                     )}
                   </View>
                 </View>
@@ -211,7 +210,7 @@ export function LocationFilterSheet({
         </View>
 
         <View style={{ height: insets.bottom + Spacing['3xl'] }} />
-      </BottomSheetScrollView>
+      </BottomSheetView>
     </BottomSheetModal>
   );
 }
@@ -219,14 +218,6 @@ export function LocationFilterSheet({
 const styles = StyleSheet.create({
   sheetContainer: {
     marginHorizontal: 16,
-  },
-  background: {
-    borderRadius: 24,
-  },
-  handleIndicator: {
-    width: 36,
-    height: 4,
-    borderRadius: Radius.full,
   },
   content: {
     flex: 1,
@@ -247,12 +238,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   listContainer: {
-    gap: 4,
+    gap: 12,
     marginBottom: Spacing.xl,
   },
   listItem: {
     paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.lg,
     borderRadius: Radius.lg,
   },
   itemRow: {
@@ -267,13 +258,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   optionLabel: {
-    ...Typography.bodyLarge,
+    ...Typography.bodyMedium,
   },
   optionLabelSelected: {
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: 'Inter_500Medium',
   },
   optionCount: {
-    ...Typography.bodyMedium,
+    ...Typography.supportingSmall,
   },
   checkbox: {
     width: 22,
@@ -297,7 +288,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   clearButtonText: {
-    ...Typography.bodyLarge,
+    ...Typography.bodyMedium,
     fontFamily: 'Inter_600SemiBold',
   },
   applyButton: {
@@ -308,7 +299,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   applyButtonText: {
-    ...Typography.bodyLarge,
+    ...Typography.bodyMedium,
     fontFamily: 'Inter_600SemiBold',
   },
 });

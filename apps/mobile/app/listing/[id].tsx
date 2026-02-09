@@ -24,7 +24,7 @@ import { useTabBar } from '@/context/tab-bar-context';
 import { CarCardDetailedM, CarCardDetailedMSkeleton } from '@/components/cards';
 import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
-import { api, ListingDetailed } from '@/lib/api';
+import { listingApi, ListingDetailed } from '@/lib/listing-api';
 
 export default function ListingDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -65,7 +65,7 @@ export default function ListingDetailScreen() {
     setError(null);
 
     try {
-      const data = await api.getListingDetailed(id);
+      const data = await listingApi.getDetailed(id);
       setListing(data);
     } catch (err) {
       console.error('Failed to fetch listing:', err);

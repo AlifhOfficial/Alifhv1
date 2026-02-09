@@ -1,6 +1,9 @@
 /**
  * Browse Screen
  * Header + Listings Results
+ * 
+ * ARCHITECTURE: Uses SearchContext as single source of truth for all filters.
+ * No local filter state - all updates go through context.
  */
 
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
@@ -20,57 +23,35 @@ import {
 } from '@/components/sheets';
 import { CarCardM, CarCardMSkeleton, CarCardList, CarCardListSkeleton } from '@/components/cards';
 import { LogoLoader, Heading } from '@/components/ui';
-import { api, type ListingCard, type SearchParams, type SearchFacets, type SearchSortOption } from '@/lib/api';
+import { searchApi, type ListingCard, type SearchParams, type SearchFacets, type SearchSortOption } from '@/lib/search-api';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { useSearch } from '@/context/search-context';
+import { useSearch, type FilterParams } from '@/context/search-context';
 
 // ============================================================================
-// TYPES
+// HELPERS
 // ============================================================================
 
-type Filters = {
-  make?: string[];
-  model?: string[];
-  priceMin?: number;
-  priceMax?: number;
-  yearMin?: number;
-  yearMax?: number;
-  mileageMin?: number;
-  mileageMax?: number;
-  emirate?: string[];
-  bodyType?: string[];
-  fuelType?: string[];
-  transmission?: string[];
-  specs?: string[];
-  condition?: 'new' | 'used';
-  isNegotiable?: boolean;
-  isBlkListing?: boolean;
-  isBlackTierPartner?: boolean;
-  sellerType?: 'dealer' | 'private';
-  [key: string]: string | string[] | number | boolean | undefined;
-};
-
-// Convert local filters to API params
-const filtersToParams = (f: Filters, q?: string): SearchParams => ({
-  q,
-  make: f.make?.join(','),
-  model: f.model?.join(','),
+// Convert context filter params to API params
+// Note: Mobile uses string[] for filter arrays, cast to database literal types
+const filtersToParams = (f: FilterParams, searchParams: { make?: string[]; model?: string[]; q?: string } | null): SearchParams => ({
+  q: searchParams?.q,
+  make: searchParams?.make,
+  model: searchParams?.model,
   yearMin: f.yearMin,
   yearMax: f.yearMax,
   priceMin: f.priceMin,
   priceMax: f.priceMax,
   mileageMax: f.mileageMax,
-  emirate: f.emirate?.join(','),
-  bodyType: f.bodyType?.join(','),
-  fuelType: f.fuelType?.join(','),
-  transmission: f.transmission?.join(','),
-  specs: f.specs?.join(','),
+  emirate: f.emirate,
+  bodyType: f.bodyType as SearchParams['bodyType'],
+  fuelType: f.fuelType as SearchParams['fuelType'],
+  transmission: f.transmission as SearchParams['transmission'],
+  specs: f.specs as SearchParams['specs'],
   condition: f.condition,
   isNegotiable: f.isNegotiable,
   isBlkListing: f.isBlkListing,
   isBlackTierPartner: f.isBlackTierPartner,
-  // Note: sellerType is managed locally but may need backend support
 });
 
 // ============================================================================
@@ -79,32 +60,46 @@ const filtersToParams = (f: Filters, q?: string): SearchParams => ({
 
 export default function BrowseScreen() {
   const { colorScheme } = useTheme();
-  const { subscribeToSearch, subscribeToSort, subscribeToScrollToTop, sortBy: contextSortBy, searchParams: contextSearchParams } = useSearch();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // CONTEXT - Single Source of Truth
+  // ─────────────────────────────────────────────────────────────────────────
+  const { 
+    // Search params (make/model/q from search sheet)
+    searchParams,
+    subscribeToSearch,
+    // Sort
+    sortBy,
+    subscribeToSort, 
+    // Filters - THE source of truth
+    filterParams,
+    updateFilterParams,
+    // Scroll
+    subscribeToScrollToTop, 
+  } = useSearch();
+
   // Scroll ref for auto-scroll to top
   const scrollRef = useRef<ScrollView>(null);
 
-  // Check if we have active search chips
-  const hasActiveChips = contextSearchParams !== null && Object.keys(contextSearchParams).length > 0;
+  // Check if we have active search/filter chips
+  const hasActiveChips = useMemo(() => {
+    const hasSearch = searchParams !== null && Object.keys(searchParams).length > 0;
+    const hasFilters = Object.keys(filterParams).length > 0;
+    return hasSearch || hasFilters || sortBy !== 'relevance';
+  }, [searchParams, filterParams, sortBy]);
 
-  // Search
-  const [query, setQuery] = useState('');
-
-  // Filters & Sort
-  const [filters, setFilters] = useState<Filters>({});
+  // Results state (not filters - those come from context)
   const [facets, setFacets] = useState<SearchFacets | undefined>(undefined);
-  const [sortBy, setSortBy] = useState<SearchSortOption>(contextSortBy);
-
-  // Results
   const [listings, setListings] = useState<ListingCard[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [total, setTotal] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [page, setPage] = useState(1);
+  const requestIdRef = useRef(0);
 
   // View mode
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
@@ -119,80 +114,52 @@ export default function BrowseScreen() {
   // API CALLS
   // ──────────────────────────────────────────────────────────────────────────
 
-  const fetchListings = useCallback(async (currentFilters: Filters, searchQuery?: string, sort?: SearchSortOption, reset = false) => {
+  // Fetch listings - reads from latest context values
+  const fetchListingsStable = useCallback(async () => {
+    const requestId = ++requestIdRef.current;
     try {
-      if (reset) {
-        setIsLoading(true);
-        setPage(1);
+      setIsLoading(true);
+      setPage(1);
+
+      const params = {
+        ...filtersToParams(filterParams, searchParams),
+        sortBy: sortBy,
+        page: 1,
+        limit: 20,
+      };
+      
+      console.log('[Browse] Fetching with params:', params);
+
+      const response = await searchApi.search(params);
+
+      if (requestId !== requestIdRef.current) {
+        return;
       }
 
-      const response = await api.search({
-        ...filtersToParams(currentFilters, searchQuery),
-        sortBy: sort || sortBy,
-        page: reset ? 1 : page,
-        limit: 20,
-      });
+      console.log('[Browse] Response facets:', response.facets ? Object.keys(response.facets) : 'none');
 
-      setListings((prev) => {
-        if (reset) return response.listings;
-        // Deduplicate by ID when appending
-        const existingIds = new Set(prev.map(l => l.id));
-        const newListings = response.listings.filter(l => !existingIds.has(l.id));
-        return [...prev, ...newListings];
-      });
+      setListings(response.listings);
       setFacets(response.facets);
       setTotal(response.meta.total);
       setHasMore(response.meta.hasMore);
     } catch (error) {
       console.error('Search error:', error);
     } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
+      if (requestId === requestIdRef.current) {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      }
     }
-  }, [page, sortBy]);
+  }, [filterParams, searchParams, sortBy]);
 
-  // Initial load
+  // Re-fetch when filters change and scroll to top
   useEffect(() => {
-    fetchListings({}, undefined, sortBy, true);
-  }, []);
-
-  // Subscribe to search from global search sheet
-  useEffect(() => {
-    const unsubscribe = subscribeToSearch((searchParams) => {
-      // Apply search params
-      const newFilters: Filters = {};
-      
-      // Handle array-based search params from SearchSheet
-      if (searchParams.make?.length) {
-        newFilters.make = searchParams.make;
-      }
-      if (searchParams.model?.length) {
-        newFilters.model = searchParams.model;
-      }
-      
-      setFilters(newFilters);
-      setQuery(searchParams.q || '');
-      fetchListings(newFilters, searchParams.q, sortBy, true);
-
-      // Auto-scroll to top when search is applied
-      setTimeout(() => {
-        scrollRef.current?.scrollTo({ y: 0, animated: true });
-      }, 100);
-    });
-
-    return unsubscribe;
-  }, [subscribeToSearch, sortBy, fetchListings]);
-
-  // Subscribe to sort from global sort sheet
-  useEffect(() => {
-    const unsubscribe = subscribeToSort((newSort) => {
-      setSortBy(newSort);
-      // Immediately fetch with new sort
-      fetchListings(filters, query, newSort, true);
-    });
-
-    return unsubscribe;
-  }, [subscribeToSort, filters, query, fetchListings]);
+    fetchListingsStable();
+    // Scroll to top when filters change
+    setTimeout(() => {
+      scrollRef.current?.scrollTo({ y: 0, animated: true });
+    }, 100);
+  }, [fetchListingsStable]);
 
   // Subscribe to scroll to top from tab bar double-tap
   useEffect(() => {
@@ -203,62 +170,48 @@ export default function BrowseScreen() {
     return unsubscribe;
   }, [subscribeToScrollToTop]);
 
-  // Re-fetch when filters change (debounced)
-  useEffect(() => {
-    const hasFilters = Object.keys(filters).length > 0;
-    if (!hasFilters && !query) return;
-    
-    const timer = setTimeout(() => {
-      fetchListings(filters, query, sortBy, true);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [filters]);
-
   // ──────────────────────────────────────────────────────────────────────────
   // HANDLERS
   // ──────────────────────────────────────────────────────────────────────────
 
-  const handleSearch = () => {
-    fetchListings(filters, query, sortBy, true);
-  };
-
-  const handleFilterChange = (key: string, value: any) => {
-    setFilters((prev) => {
-      if (value === undefined || value === null || value === '' || (Array.isArray(value) && value.length === 0)) {
-        const newFilters = { ...prev };
-        delete newFilters[key];
-        return newFilters;
-      }
-      return { ...prev, [key]: value };
-    });
-  };
-
-  const handleClearFilters = () => {
-    setFilters({});
-    setQuery('');
-    fetchListings({}, undefined, sortBy, true);
-  };
-
-  const handleSortChange = (newSort: SearchSortOption) => {
-    setSortBy(newSort);
-    fetchListings(filters, query, newSort, true);
-  };
-
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
     setIsRefreshing(true);
-    fetchListings(filters, query, sortBy, true);
-  };
+    fetchListingsStable();
+  }, [fetchListingsStable]);
 
   const isLoadingMore = useRef(false);
-  const handleLoadMore = useCallback(() => {
+  const handleLoadMore = useCallback(async () => {
     if (hasMore && !isLoading && !isLoadingMore.current) {
       isLoadingMore.current = true;
-      setPage((p) => p + 1);
-      fetchListings(filters, query, sortBy, false).finally(() => {
+      const requestId = ++requestIdRef.current;
+      const nextPage = page + 1;
+      
+      try {
+        const response = await searchApi.search({
+          ...filtersToParams(filterParams, searchParams),
+          sortBy: sortBy,
+          page: nextPage,
+          limit: 20,
+        });
+
+        if (requestId !== requestIdRef.current) {
+          return;
+        }
+
+        setListings((prev) => {
+          const existingIds = new Set(prev.map(l => l.id));
+          const newListings = response.listings.filter(l => !existingIds.has(l.id));
+          return [...prev, ...newListings];
+        });
+        setPage(nextPage);
+        setHasMore(response.meta.hasMore);
+      } catch (error) {
+        console.error('Load more error:', error);
+      } finally {
         isLoadingMore.current = false;
-      });
+      }
     }
-  }, [hasMore, isLoading, filters, query, sortBy, fetchListings]);
+  }, [hasMore, isLoading, page, filterParams, searchParams, sortBy]);
 
   const handleCardPress = useCallback((id: string) => {
     router.push(`/listing/${id}`);
@@ -284,79 +237,58 @@ export default function BrowseScreen() {
     }
   }, []);
 
-  // Handle price filter apply
+  // Handle price filter apply - updates context (single source of truth)
   const handlePriceApply = useCallback((priceMin?: number, priceMax?: number) => {
-    setFilters(prev => ({
-      ...prev,
-      priceMin,
-      priceMax,
-    }));
-  }, []);
+    updateFilterParams({ priceMin, priceMax });
+  }, [updateFilterParams]);
 
-  // Handle year/mileage filter apply
+  // Handle year/mileage filter apply - updates context
   const handleYearMileageApply = useCallback((values: {
     yearMin?: number;
     yearMax?: number;
     mileageMin?: number;
     mileageMax?: number;
   }) => {
-    setFilters(prev => ({
-      ...prev,
-      ...values,
-    }));
-  }, []);
+    updateFilterParams(values);
+  }, [updateFilterParams]);
 
-  // Handle location filter apply
+  // Handle location filter apply - updates context
   const handleLocationApply = useCallback((emirate: string[]) => {
-    setFilters(prev => ({
-      ...prev,
-      emirate: emirate.length > 0 ? emirate : undefined,
-    }));
-  }, []);
+    updateFilterParams({ emirate: emirate.length > 0 ? emirate : undefined });
+  }, [updateFilterParams]);
 
-  // Handle more filters apply
+  // Handle more filters apply - updates context
   const handleMoreFiltersApply = useCallback((moreFilters: MoreFiltersState) => {
-    setFilters(prev => ({
-      ...prev,
-      condition: moreFilters.condition,
-      isBlkListing: moreFilters.isBlkListing,
-      isBlackTierPartner: moreFilters.isBlackTierPartner,
-      isNegotiable: moreFilters.isNegotiable,
-      specs: moreFilters.specs,
-      bodyType: moreFilters.bodyType,
-      fuelType: moreFilters.fuelType,
-      transmission: moreFilters.transmission,
-      sellerType: moreFilters.sellerType,
-    }));
-  }, []);
+    updateFilterParams(moreFilters);
+  }, [updateFilterParams]);
 
-  // Calculate filter counts for pills
+  // Calculate filter counts for pills (read from context)
   const filterPillConfigs = useMemo(() => {
-    const priceCount = (filters.priceMin || filters.priceMax) ? 1 : 0;
+    const priceCount = (filterParams.priceMin || filterParams.priceMax) ? 1 : 0;
     const yearMileageCount = 
-      ((filters.yearMin || filters.yearMax) ? 1 : 0) + 
-      ((filters.mileageMin || filters.mileageMax) ? 1 : 0);
-    const locationCount = filters.emirate?.length ?? 0;
+      ((filterParams.yearMin || filterParams.yearMax) ? 1 : 0) + 
+      ((filterParams.mileageMin || filterParams.mileageMax) ? 1 : 0);
+    const locationCount = filterParams.emirate?.length ?? 0;
 
     return [
       { type: 'price' as FilterPillType, label: 'Price', activeCount: priceCount },
       { type: 'yearMileage' as FilterPillType, label: 'Year & Km', activeCount: yearMileageCount },
       { type: 'location' as FilterPillType, label: 'Location', activeCount: locationCount },
     ];
-  }, [filters]);
+  }, [filterParams]);
 
-  // Build more filters state from current filters
+  // Build more filters state from context
   const moreFiltersState: MoreFiltersState = useMemo(() => ({
-    condition: filters.condition,
-    isBlkListing: filters.isBlkListing,
-    isBlackTierPartner: filters.isBlackTierPartner,
-    isNegotiable: filters.isNegotiable,
-    specs: filters.specs,
-    bodyType: filters.bodyType,
-    fuelType: filters.fuelType,
-    transmission: filters.transmission,
-    sellerType: filters.sellerType,
-  }), [filters]);
+    condition: filterParams.condition,
+    isBlkListing: filterParams.isBlkListing,
+    isBlackTierPartner: filterParams.isBlackTierPartner,
+    isNegotiable: filterParams.isNegotiable,
+    specs: filterParams.specs,
+    bodyType: filterParams.bodyType,
+    fuelType: filterParams.fuelType,
+    transmission: filterParams.transmission,
+    sellerType: filterParams.sellerType,
+  }), [filterParams]);
 
   // ──────────────────────────────────────────────────────────────────────────
   // RENDER
@@ -377,36 +309,36 @@ export default function BrowseScreen() {
         />
       </View>
 
-      {/* Price Filter Sheet */}
+      {/* Price Filter Sheet - reads from context */}
       <PriceFilterSheet
         visible={priceSheetVisible}
         onClose={() => setPriceSheetVisible(false)}
-        priceMin={filters.priceMin}
-        priceMax={filters.priceMax}
+        priceMin={filterParams.priceMin}
+        priceMax={filterParams.priceMax}
         onApply={handlePriceApply}
       />
 
-      {/* Year & Mileage Filter Sheet */}
+      {/* Year & Mileage Filter Sheet - reads from context */}
       <YearMileageFilterSheet
         visible={yearMileageSheetVisible}
         onClose={() => setYearMileageSheetVisible(false)}
-        yearMin={filters.yearMin}
-        yearMax={filters.yearMax}
-        mileageMin={filters.mileageMin}
-        mileageMax={filters.mileageMax}
+        yearMin={filterParams.yearMin}
+        yearMax={filterParams.yearMax}
+        mileageMin={filterParams.mileageMin}
+        mileageMax={filterParams.mileageMax}
         onApply={handleYearMileageApply}
       />
 
-      {/* Location Filter Sheet */}
+      {/* Location Filter Sheet - reads from context */}
       <LocationFilterSheet
         visible={locationSheetVisible}
         onClose={() => setLocationSheetVisible(false)}
         options={facets?.emirate ?? []}
-        selected={filters.emirate ?? []}
+        selected={filterParams.emirate ?? []}
         onApply={handleLocationApply}
       />
 
-      {/* Settings & More Filters Sheet */}
+      {/* Settings & More Filters Sheet - reads from context */}
       <MoreFiltersSheet
         visible={settingsSheetVisible}
         onClose={() => setSettingsSheetVisible(false)}

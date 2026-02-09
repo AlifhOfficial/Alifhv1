@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading } from '@/components/ui';
-import type { SearchSortOption } from '@/lib/api';
+import type { SearchSortOption } from '@/lib/search-api';
 
 const SORT_OPTIONS: { value: SearchSortOption; label: string }[] = [
   { value: 'relevance', label: 'Default' },

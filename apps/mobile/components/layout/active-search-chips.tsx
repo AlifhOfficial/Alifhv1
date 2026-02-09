@@ -17,7 +17,7 @@ import Animated, {
   Layout,
 } from 'react-native-reanimated';
 
-import { useSearch, type SearchChip, type SearchParams } from '@/context/search-context';
+import { useSearch, type SearchChip, type SearchParams, type FilterParams, type RemovableFilterKey } from '@/context/search-context';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
@@ -34,7 +34,7 @@ interface ActiveSearchChipsProps {
 export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const { searchParams, getSearchChips, removeSearchParam, clearSearch, resetSort, sortBy } = useSearch();
+  const { searchParams, getSearchChips, removeSearchParam, clearSearch, resetSort, sortBy, removeFilterParam, clearFilterParams, filterParams } = useSearch();
 
   const chips = getSearchChips();
   const hasChips = chips.length > 0;
@@ -51,20 +51,26 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
       resetSort();
       return;
     }
-    // Pass the index for array-based params
-    removeSearchParam(chip.key as keyof SearchParams, chip.index);
-  }, [removeSearchParam, resetSort]);
+    // Handle search params (make, model, trim, q)
+    if (['make', 'model', 'trim', 'q'].includes(chip.key)) {
+      removeSearchParam(chip.key as keyof SearchParams, chip.index);
+      return;
+    }
+    // Handle filter params (includes compound keys like 'price', 'year', 'mileage')
+    removeFilterParam(chip.key as RemovableFilterKey, chip.index);
+  }, [removeSearchParam, resetSort, removeFilterParam]);
 
   const handleClearAll = useCallback(() => {
     if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
     clearSearch();
+    clearFilterParams();
     // Also reset sort when clearing all
     if (sortBy !== 'relevance') {
       resetSort();
     }
-  }, [clearSearch, resetSort, sortBy]);
+  }, [clearSearch, clearFilterParams, resetSort, sortBy]);
 
   // Container animation
   const containerStyle = useAnimatedStyle(() => {

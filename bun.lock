@@ -24,6 +24,7 @@
       "name": "@alifh/mobile",
       "version": "0.1.0",
       "dependencies": {
+        "@alifh/database": "workspace:*",
         "@expo-google-fonts/inter": "0.4.2",
         "@expo/vector-icons": "^15.0.3",
         "@gorhom/bottom-sheet": "5.2.8",

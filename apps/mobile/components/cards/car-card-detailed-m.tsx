@@ -22,7 +22,7 @@ import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Skeleton, Data } from '@/components/ui';
 import { DescriptionSheet, FeaturesSheet, SpecsSheet } from '@/components/sheets';
-import { ListingDetailedData, SellerData } from '@/lib/api';
+import { ListingDetailedData, SellerData } from '@/lib/listing-api';
 
 import {
   ImageGallery,
@@ -43,7 +43,7 @@ import {
 
 export interface CarCardDetailedMProps {
   listing: ListingDetailedData;
-  sellerData: SellerData;
+  sellerData: SellerData | undefined | null;
   listingId: string;
   isFavorite?: boolean;
   onFavoritePress?: (id: string) => void;
@@ -166,22 +166,24 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
         />
 
         {/* 7. Seller Section — merged profile + contact action */}
-        <Pressable 
-          onPress={handleTalkToSeller}
-          style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
-        >
-          <SellerCard 
-            sellerData={sellerData}
-            action={
-              <View style={styles.contactAction}>
-                <Data size="medium" tone="primary">
-                  Contact
-                </Data>
-                <ChevronRight size={ICON_SIZE_SM} color={colors.primary} strokeWidth={2} />
-              </View>
-            }
-          />
-        </Pressable>
+        {sellerData && (
+          <Pressable 
+            onPress={handleTalkToSeller}
+            style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
+          >
+            <SellerCard 
+              sellerData={sellerData}
+              action={
+                <View style={styles.contactAction}>
+                  <Data size="medium" tone="primary">
+                    Contact
+                  </Data>
+                  <ChevronRight size={ICON_SIZE_SM} color={colors.primary} strokeWidth={2} />
+                </View>
+              }
+            />
+          </Pressable>
+        )}
       </View>
 
       {/* Description Sheet — rendered at root level for proper gesture handling */}
@@ -214,7 +216,7 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
       />
 
       {/* Features Sheet — rendered at root level for proper gesture handling */}
-      {listing.extras.length > 0 && (
+      {listing.extras && listing.extras.length > 0 && (
         <FeaturesSheet
           visible={featuresSheetVisible}
           onClose={closeFeaturesSheet}

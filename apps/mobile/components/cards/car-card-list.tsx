@@ -6,11 +6,11 @@
 import React, { useCallback, memo } from 'react';
 import { StyleSheet, View, Pressable } from 'react-native';
 import { Image } from 'expo-image';
-import { Heart } from 'lucide-react-native';
+import { Heart, Share2 } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Skeleton, Text, Data } from '@/components/ui';
+import { Skeleton, Data } from '@/components/ui';
 
 // ============================================================================
 // UTILITIES
@@ -83,13 +83,14 @@ export interface CarCardListProps {
   isFavorite?: boolean;
   onPress?: (id: string) => void;
   onFavoritePress?: (id: string) => void;
+  onSharePress?: (id: string) => void;
 }
 
 // ============================================================================
 // COMPONENT
 // ============================================================================
 
-const IMAGE_WIDTH = 150;
+const IMAGE_WIDTH = 145;
 const IMAGE_HEIGHT = 110;
 
 export const CarCardList = memo(function CarCardList({
@@ -107,6 +108,7 @@ export const CarCardList = memo(function CarCardList({
   isFavorite = false,
   onPress,
   onFavoritePress,
+  onSharePress,
 }: CarCardListProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
@@ -125,6 +127,7 @@ export const CarCardList = memo(function CarCardList({
 
   const handlePress = useCallback(() => onPress?.(id), [id, onPress]);
   const handleFavoritePress = useCallback(() => onFavoritePress?.(id), [id, onFavoritePress]);
+  const handleSharePress = useCallback(() => onSharePress?.(id), [id, onSharePress]);
 
   return (
     <Pressable
@@ -147,39 +150,48 @@ export const CarCardList = memo(function CarCardList({
 
       {/* Content */}
       <View style={styles.content}>
-        {/* Name */}
-        <Data size="medium" style={{ color: textColor, fontWeight: '600' }} numberOfLines={1}>
-          {make} {model}
-        </Data>
+        {/* Row 1: Name + Actions */}
+        <View style={styles.titleRow}>
+          <Data size="small" style={{ color: textColor, fontWeight: '600', flex: 1 }} numberOfLines={1}>
+            {make} {model}
+          </Data>
+          <View style={styles.actions}>
+            <Pressable
+              onPress={handleSharePress}
+              hitSlop={8}
+              style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+            >
+              <Share2 size={16} color={iconColor} strokeWidth={1.75} />
+            </Pressable>
+            <Pressable
+              onPress={handleFavoritePress}
+              hitSlop={8}
+              style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+            >
+              <Heart
+                size={16}
+                color={isFavorite ? colors.favorite : iconColor}
+                fill={isFavorite ? colors.favorite : 'none'}
+                strokeWidth={1.75}
+              />
+            </Pressable>
+          </View>
+        </View>
 
-        {/* Year */}
-        <Data size="small" style={{ color: metaColor }}>
+        {/* Row 2: Year */}
+        <Data size="mini" style={{ color: metaColor }}>
           {year}
         </Data>
 
-        {/* Price */}
-        <Text variant="priceMini" style={{ color: priceColor }}>
+        {/* Row 3: Price */}
+        <Data size="medium" style={{ color: priceColor, fontWeight: '700' }}>
           {formatPrice(price)}
-        </Text>
+        </Data>
 
-        {/* Meta + Fav */}
-        <View style={styles.bottomRow}>
-          <Data size="small" style={{ color: metaColor }}>
-            {formatMileage(mileage)} · {displaySpecs} · {displayEmirate}
-          </Data>
-          <Pressable
-            onPress={handleFavoritePress}
-            hitSlop={10}
-            style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
-          >
-            <Heart
-              size={20}
-              color={isFavorite ? colors.favorite : iconColor}
-              fill={isFavorite ? colors.favorite : 'none'}
-              strokeWidth={1.75}
-            />
-          </Pressable>
-        </View>
+        {/* Row 4: Meta */}
+        <Data size="mini" style={{ color: metaColor }}>
+          {formatMileage(mileage)} · {displaySpecs} · {displayEmirate}
+        </Data>
       </View>
     </Pressable>
   );
@@ -197,12 +209,9 @@ export function CarCardListSkeleton() {
     <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       <Skeleton width={IMAGE_WIDTH} height={IMAGE_HEIGHT} borderRadius={Radius.md} />
       <View style={styles.content}>
-        <View>
-          <Skeleton width={100} height={14} />
-          <Skeleton width={40} height={12} style={{ marginTop: 4 }} />
-        </View>
-        <Skeleton width={85} height={18} />
-        <Skeleton width={120} height={12} />
+        <Skeleton width={130} height={14} />
+        <Skeleton width={90} height={15} />
+        <Skeleton width={110} height={12} />
       </View>
     </View>
   );
@@ -215,9 +224,10 @@ export function CarCardListSkeleton() {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
+    alignItems: 'center',
     borderRadius: Radius.lg,
     borderWidth: 1,
-    padding: Spacing.sm,
+    padding: Spacing.md,
     marginBottom: Spacing.sm,
     gap: Spacing.md,
   },
@@ -233,12 +243,16 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    justifyContent: 'space-between',
-    paddingVertical: 2,
+    gap: 2,
   },
-  bottomRow: {
+  titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: Spacing.sm,
+  },
+  actions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
   },
 });

@@ -2,16 +2,16 @@
  * Listing API Client - Mobile
  * 
  * Handles detailed listing data fetching.
- * Separated from main api.ts for better organization.
+ * Single source of truth for listing detail types and API calls.
  */
 
 import { API_BASE, CDN_BASE } from './config';
 
 // ============================================================================
-// TYPES
+// TECHNICAL FEATURES
 // ============================================================================
 
-interface TechnicalFeatures {
+export interface TechnicalFeatures {
   abs?: boolean;
   airbags?: number;
   parkingSensors?: boolean;

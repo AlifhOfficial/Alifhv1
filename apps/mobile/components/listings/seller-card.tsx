@@ -10,10 +10,10 @@ import { CheckCircle2 } from 'lucide-react-native';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Text, Data, Supporting, Label } from '@/components/ui';
-import { SellerData } from '@/lib/api';
+import { SellerData } from '@/lib/listing-api';
 
 interface SellerCardProps {
-  sellerData: SellerData;
+  sellerData: SellerData | undefined | null;
   isBlk?: boolean;
   action?: ReactNode;
 }
@@ -31,6 +31,11 @@ export const SellerCard = memo(function SellerCard({
 }: SellerCardProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+
+  // Handle undefined sellerData gracefully
+  if (!sellerData) {
+    return null;
+  }
 
   const isPartner = sellerData.type === 'partner';
   const partner = isPartner ? sellerData.partner : null;

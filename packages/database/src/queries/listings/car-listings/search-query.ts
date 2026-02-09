@@ -489,17 +489,15 @@ const emirateLabelMap = Object.fromEntries(UAE_EMIRATES.map(e => [e.value, e.lab
 const sellerTypeLabelMap = { dealer: 'Dealer', private: 'Private Seller' };
 
 /**
- * Get all enum facets in a single optimized query
+ * Get all enum facets with FILTERED counts
  * 
- * Instead of 9 separate queries, we use a UNION ALL approach to get all
- * field/value/count combinations in one database round-trip.
+ * For proper faceted search behavior, each facet shows counts considering
+ * all OTHER active filters (but not the field being counted).
  * 
- * This reduces DB queries from 13 to 5:
- * - 1 for make facets (special filter handling)
- * - 1 for model facets (special filter handling)  
- * - 1 for trim facets (special filter handling)
- * - 1 for ranges (already single query)
- * - 1 for all 9 enum facets (consolidated here)
+ * Example: If user filters by "Sharjah" + "sedan", the fuelType facet
+ * shows counts for diesel/petrol/etc WITHIN Sharjah sedans only.
+ * 
+ * Uses separate queries per field to apply correct filter exclusions.
  */
 async function getAllEnumFacets(
   params: SearchParams, 
@@ -515,83 +513,69 @@ async function getAllEnumFacets(
   interiorColor: FacetBucket[];
   sellerType: FacetBucket[];
 }> {
-  // Base conditions for public listings
-  const baseConditions = buildPublicBaseConditions(now);
-  
-  // Build a UNION ALL query for all enum fields
-  // Each subquery groups by one field and returns field name, value, and count
-  // IMPORTANT: Cast all enum columns to TEXT for UNION compatibility
-  const result = await db.execute(sql`
-    WITH base AS (
-      SELECT * FROM car_listing 
-      WHERE ${and(...baseConditions)}
-    )
-    SELECT 'emirate' as field, emirate::text as value, count(*)::int as count FROM base WHERE emirate IS NOT NULL GROUP BY emirate
-    UNION ALL
-    SELECT 'specs' as field, specs::text as value, count(*)::int as count FROM base WHERE specs IS NOT NULL GROUP BY specs
-    UNION ALL
-    SELECT 'bodyType' as field, body_type::text as value, count(*)::int as count FROM base WHERE body_type IS NOT NULL GROUP BY body_type
-    UNION ALL
-    SELECT 'fuelType' as field, fuel_type::text as value, count(*)::int as count FROM base WHERE fuel_type IS NOT NULL GROUP BY fuel_type
-    UNION ALL
-    SELECT 'transmission' as field, transmission::text as value, count(*)::int as count FROM base WHERE transmission IS NOT NULL GROUP BY transmission
-    UNION ALL
-    SELECT 'engineSize' as field, engine_size::text as value, count(*)::int as count FROM base WHERE engine_size IS NOT NULL GROUP BY engine_size
-    UNION ALL
-    SELECT 'exteriorColor' as field, exterior_color::text as value, count(*)::int as count FROM base WHERE exterior_color IS NOT NULL GROUP BY exterior_color
-    UNION ALL
-    SELECT 'interiorColor' as field, interior_color::text as value, count(*)::int as count FROM base WHERE interior_color IS NOT NULL GROUP BY interior_color
-    UNION ALL
-    SELECT 'sellerType' as field, seller_type::text as value, count(*)::int as count FROM base WHERE seller_type IS NOT NULL GROUP BY seller_type
-  `);
-
-  // Parse rows into facet buckets grouped by field
-  const rows = (result as any).rows ?? result;
-  const facetMap: Record<string, FacetBucket[]> = {
-    emirate: [],
-    specs: [],
-    bodyType: [],
-    fuelType: [],
-    transmission: [],
-    engineSize: [],
-    exteriorColor: [],
-    interiorColor: [],
-    sellerType: [],
-  };
-
-  const labelMaps: Record<string, Record<string, string>> = {
-    emirate: emirateLabelMap,
-    specs: specsLabelMap,
-    bodyType: bodyTypeLabelMap,
-    fuelType: fuelTypeLabelMap,
-    transmission: transmissionLabelMap,
-    engineSize: engineSizeLabelMap,
-    exteriorColor: exteriorColorLabelMap,
-    interiorColor: interiorColorLabelMap,
-    sellerType: sellerTypeLabelMap,
-  };
-
-  for (const row of rows) {
-    const field = row.field as string;
-    const value = String(row.value);
-    const count = Number(row.count);
-    const labelMap = labelMaps[field];
+  // Helper to get facet counts for a field, excluding that field from filters
+  const getFacetForField = async (
+    fieldName: string,
+    columnName: string,
+    labelMap: Record<string, string>
+  ): Promise<FacetBucket[]> => {
+    // Build conditions excluding this field
+    const paramsWithoutField = { ...params };
+    delete (paramsWithoutField as any)[fieldName];
     
-    if (facetMap[field]) {
-      facetMap[field].push({
-        value,
-        label: labelMap?.[value] || value,
-        count,
-      });
-    }
-  }
+    const conditions = buildSearchConditions(paramsWithoutField, now);
+    
+    const results = await db.execute(sql`
+      SELECT ${sql.raw(columnName)}::text as value, count(*)::int as count 
+      FROM car_listing 
+      WHERE ${conditions.length > 0 ? and(...conditions) : sql`true`}
+        AND ${sql.raw(columnName)} IS NOT NULL
+      GROUP BY ${sql.raw(columnName)}
+      ORDER BY count DESC
+    `);
+    
+    const rows = (results as any).rows ?? results;
+    return rows.map((r: any) => ({
+      value: String(r.value),
+      label: labelMap[String(r.value)] || String(r.value),
+      count: Number(r.count),
+    }));
+  };
 
-  // Sort each facet by count descending
-  for (const key of Object.keys(facetMap)) {
-    facetMap[key].sort((a, b) => b.count - a.count);
-  }
+  // Run all facet queries in parallel
+  const [
+    emirate,
+    specs,
+    bodyType,
+    fuelType,
+    transmission,
+    engineSize,
+    exteriorColor,
+    interiorColor,
+    sellerType,
+  ] = await Promise.all([
+    getFacetForField('emirate', 'emirate', emirateLabelMap),
+    getFacetForField('specs', 'specs', specsLabelMap),
+    getFacetForField('bodyType', 'body_type', bodyTypeLabelMap),
+    getFacetForField('fuelType', 'fuel_type', fuelTypeLabelMap),
+    getFacetForField('transmission', 'transmission', transmissionLabelMap),
+    getFacetForField('engineSize', 'engine_size', engineSizeLabelMap),
+    getFacetForField('exteriorColor', 'exterior_color', exteriorColorLabelMap),
+    getFacetForField('interiorColor', 'interior_color', interiorColorLabelMap),
+    getFacetForField('sellerType', 'seller_type', sellerTypeLabelMap),
+  ]);
 
-  return facetMap as any;
+  return {
+    emirate,
+    specs,
+    bodyType,
+    fuelType,
+    transmission,
+    engineSize,
+    exteriorColor,
+    interiorColor,
+    sellerType,
+  };
 }
 
 /**

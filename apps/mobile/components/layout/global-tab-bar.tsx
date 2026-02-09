@@ -23,7 +23,7 @@ import { useSearch } from '@/context/search-context';
 import { Colors } from '@/constants/theme';
 import { SearchSheet, SortSheet } from '@/components/sheets';
 import { ActiveSearchChips, ACTIVE_CHIPS_HEIGHT } from './active-search-chips';
-import type { SearchSortOption } from '@/lib/api';
+import type { SearchSortOption } from '@/lib/search-api';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const AnimatedView = Animated.View;

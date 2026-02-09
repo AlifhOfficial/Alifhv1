@@ -332,8 +332,8 @@ export const CarCardM = memo(function CarCardM({
 
               {/* BLK Badge */}
               {isBlackTierPartner && (
-                <View style={[styles.blkBadge, { backgroundColor: colors.blkBackground }]}>
-                  <Label size="badge" uppercase={false} style={{ color: colors.blkText }}>
+                <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBackground }]}>
+                  <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>
                     BLK
                   </Label>
                 </View>

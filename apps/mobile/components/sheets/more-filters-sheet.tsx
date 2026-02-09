@@ -15,42 +15,19 @@ import { Check, ChevronDown, ChevronUp, LayoutGrid, List } from 'lucide-react-na
 import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Label } from '@/components/ui';
-import type { FacetBucket } from '@/lib/api';
+import type { FacetBucket } from '@/lib/search-api';
+import { 
+  BODY_TYPES, 
+  FUEL_TYPES, 
+  TRANSMISSION_TYPES, 
+  SELLER_TYPE_OPTIONS 
+} from '@/lib/filter-constants';
 
 export type ViewMode = 'grid' | 'list';
 
 const VIEW_OPTIONS: { value: ViewMode; label: string; icon: typeof LayoutGrid }[] = [
   { value: 'grid', label: 'Grid', icon: LayoutGrid },
   { value: 'list', label: 'List', icon: List },
-];
-
-// Static filter options
-const BODY_TYPES = [
-  { value: 'sedan', label: 'Sedan' },
-  { value: 'suv', label: 'SUV' },
-  { value: 'coupe', label: 'Coupe' },
-  { value: 'hatchback', label: 'Hatchback' },
-  { value: 'convertible', label: 'Convertible' },
-  { value: 'wagon', label: 'Wagon' },
-  { value: 'pickup', label: 'Pickup' },
-  { value: 'van', label: 'Van' },
-];
-
-const FUEL_TYPES = [
-  { value: 'petrol', label: 'Petrol' },
-  { value: 'diesel', label: 'Diesel' },
-  { value: 'hybrid', label: 'Hybrid' },
-  { value: 'electric', label: 'Electric' },
-];
-
-const TRANSMISSION_TYPES = [
-  { value: 'automatic', label: 'Automatic' },
-  { value: 'manual', label: 'Manual' },
-];
-
-const SELLER_TYPES = [
-  { value: 'dealer', label: 'Dealer' },
-  { value: 'private', label: 'Private' },
 ];
 
 export interface MoreFiltersState {
@@ -258,7 +235,7 @@ export function MoreFiltersSheet({
 
   // Render chip options
   const renderChipOptions = (
-    options: { value: string; label: string }[],
+    options: readonly { readonly value: string; readonly label: string }[],
     selected: string[] | undefined,
     onToggle: (value: string) => void,
     facetData?: FacetBucket[]
@@ -494,7 +471,7 @@ export function MoreFiltersSheet({
           'Seller Type',
           'sellerType',
           <View style={styles.chipsRow}>
-            {SELLER_TYPES.map(option => {
+            {SELLER_TYPE_OPTIONS.map(option => {
               const isSelected = localFilters.sellerType === option.value;
               return (
                 <Pressable

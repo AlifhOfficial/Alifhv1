@@ -9,7 +9,7 @@ import { Heart, Sparkles, CheckCircle2 } from 'lucide-react-native';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Text, Heading, Data, Label } from '@/components/ui';
-import { SpecialNotes } from '@/lib/api';
+import { SpecialNotes } from '@/lib/listing-api';
 import { formatPrice } from './types';
 
 interface ListingHeaderProps {

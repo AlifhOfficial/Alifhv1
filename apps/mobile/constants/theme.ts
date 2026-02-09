@@ -110,11 +110,14 @@ export const Colors = {
     // ACTIONS
     favorite: '#F43F5E',
     
-    // BLK LISTING - Premium tier
-    blkBackground: '#0D0D0D',
-    blkBorder: '#262626',
-    blkText: '#FAFAFA',
-    blkTextSecondary: '#A3A3A3',
+    // BLK LISTING - Premium tier (light mode variant - macOS-style gray)
+    blkBackground: '#C8C8C8',
+    blkBorder: '#B6B6B6',
+    blkText: '#1C1C1E',
+    blkTextSecondary: '#6E6E73',
+    // BLK Badge - stays dark in both modes
+    blkBadgeBackground: '#0D0D0D',
+    blkBadgeText: '#FAFAFA',
   },
   
   dark: {
@@ -173,6 +176,9 @@ export const Colors = {
     blkBorder: '#262626',
     blkText: '#FAFAFA',
     blkTextSecondary: '#A3A3A3',
+    // BLK Badge - stays dark in both modes
+    blkBadgeBackground: '#0D0D0D',
+    blkBadgeText: '#FAFAFA',
   },
 };
 

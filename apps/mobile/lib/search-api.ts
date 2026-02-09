@@ -1,83 +1,54 @@
 /**
- * Search API - Dedicated search functionality
+ * Search API - Mobile Client
  * 
- * Handles all search-related API calls including:
- * - Faceted search with make/model/trim hierarchy
- * - Suggestions and autocomplete
- * - Popular makes
- * - Dynamic facet fetching for multi-select
+ * Thin wrapper around the web API that:
+ * 1. Re-exports types from @alifh/database (single source of truth)
+ * 2. Handles URL transformation (relative → absolute for images)
+ * 3. Provides mobile-friendly API methods
+ * 
+ * @module apps/mobile/lib/search-api
  */
 
 import { API_BASE, CDN_BASE } from './config';
 
 // ============================================================================
-// TYPES
+// RE-EXPORT TYPES FROM DATABASE (Single Source of Truth)
 // ============================================================================
 
-export type SearchSortOption = 
-  | 'relevance'
-  | 'newest'
-  | 'oldest'
-  | 'price_low'
-  | 'price_high'
-  | 'mileage_low'
-  | 'year_new'
-  | 'year_old'
-  | 'popular';
+import type {
+  SearchParams as DBSearchParams,
+  SearchSortOption,
+  FacetBucket,
+  SearchFacets,
+  SearchResultItem,
+  SearchResponse as DBSearchResponse,
+  SearchSuggestion,
+} from '@alifh/database';
 
-export interface SearchParams {
-  q?: string;
-  make?: string[];  // Support multi-select
-  model?: string[]; // Support multi-select
-  trim?: string[];  // Support multi-select
-  yearMin?: number;
-  yearMax?: number;
-  priceMin?: number;
-  priceMax?: number;
-  mileageMax?: number;
-  emirate?: string[];
-  specs?: string[];
-  bodyType?: string[];
-  fuelType?: string[];
-  transmission?: string[];
-  condition?: 'new' | 'used';
-  isNegotiable?: boolean;
-  isBlkListing?: boolean;
-  isBlackTierPartner?: boolean;
-  limit?: number;
+import { SORT_OPTIONS as DB_SORT_OPTIONS } from '@alifh/database';
+
+// Re-export for consumers
+export type { SearchSortOption, FacetBucket, SearchFacets };
+
+// Re-export sort options from database (mobile-friendly labels)
+export const SORT_OPTIONS: { value: SearchSortOption; label: string }[] = [
+  { value: 'relevance', label: 'Most Relevant' },
+  { value: 'popular', label: 'Most Popular' },
+  { value: 'newest', label: 'Recently Listed' },
+  { value: 'oldest', label: 'Oldest Listings' },
+  { value: 'price_low', label: 'Price: Low to High' },
+  { value: 'price_high', label: 'Price: High to Low' },
+  { value: 'mileage_low', label: 'Lowest Mileage' },
+  { value: 'year_new', label: 'Year: Newest' },
+  { value: 'year_old', label: 'Year: Oldest' },
+];
+
+// Extend SearchParams for mobile (page instead of offset)
+export interface SearchParams extends Omit<DBSearchParams, 'offset'> {
   page?: number;
-  sortBy?: SearchSortOption;
 }
 
-export interface FacetBucket {
-  value: string;
-  label: string;
-  count: number;
-}
-
-export interface SearchFacets {
-  make: FacetBucket[];
-  model: FacetBucket[];
-  trim: FacetBucket[];
-  yearRange: { min: number; max: number };
-  priceRange: { min: number; max: number };
-  mileageRange: { min: number; max: number };
-  emirate: FacetBucket[];
-  specs: FacetBucket[];
-  bodyType: FacetBucket[];
-  fuelType: FacetBucket[];
-  transmission: FacetBucket[];
-}
-
-export interface Suggestion {
-  type: 'make' | 'model' | 'make_model' | 'make_model_trim' | 'partner';
-  text: string;
-  make?: string;
-  model?: string;
-  trim?: string;
-  count?: number;
-}
-
+// Mobile-friendly listing card (with absolute URLs)
 export interface ListingCard {
   id: string;
   slug: string | null;
@@ -101,6 +72,7 @@ export interface ListingCard {
   sellerKycVerified: boolean;
 }
 
+// Mobile search response (with page-based pagination)
 export interface SearchResponse {
   listings: ListingCard[];
   facets?: SearchFacets;
@@ -112,42 +84,14 @@ export interface SearchResponse {
   };
 }
 
-// ============================================================================
-// INTERNAL TYPES (Web API Response shapes)
-// ============================================================================
-
-interface WebSearchResultItem {
-  id: string;
-  slug: string | null;
-  make: string | null;
-  model: string | null;
-  year: number | null;
-  trim: string | null;
-  price: number | null;
-  mileage: number | null;
-  emirate: string | null;
-  specs: string | null;
-  thumbnail: string | null;
-  isBlkListing: boolean | null;
-  sellerType: 'dealer' | 'private' | null;
-  partnerName: string | null;
-  partnerLogo: string | null;
-  partnerVerified: boolean | null;
-  isBlackTierPartner: boolean | null;
-  sellerName: string | null;
-  sellerAvatarUrl: string | null;
-  sellerKycVerified: boolean | null;
-}
-
-interface WebSearchResponse {
-  data: WebSearchResultItem[];
-  facets?: SearchFacets;
-  meta: {
-    total?: number;
-    limit: number;
-    offset: number;
-    hasMore: boolean;
-  };
+// Suggestion type (re-mapped from database)
+export interface Suggestion {
+  type: 'make' | 'model' | 'make_model' | 'make_model_trim' | 'partner';
+  text: string;
+  make?: string;
+  model?: string;
+  trim?: string;
+  count?: number;
 }
 
 // ============================================================================
@@ -162,6 +106,21 @@ function toAbsoluteUrl(path: string | null): string | null {
   return `${CDN_BASE}/${path}`;
 }
 
+/** 
+ * Map internal param names to API URL param names
+ * The web API uses different param names than our internal SearchParams
+ */
+const PARAM_KEY_MAP: Record<string, string> = {
+  sortBy: 'sort',
+  sortOrder: 'order',
+  isNegotiable: 'negotiable',
+  underWarranty: 'warranty',
+  isBlkListing: 'black',
+  partnerVerified: 'verified',
+  isBlackTierPartner: 'blackTier',
+  sellerType: 'seller',
+};
+
 /** Convert SearchParams to URLSearchParams for API call */
 function paramsToUrl(params: SearchParams): URLSearchParams {
   const urlParams = new URLSearchParams();
@@ -169,10 +128,13 @@ function paramsToUrl(params: SearchParams): URLSearchParams {
   Object.entries(params).forEach(([key, value]) => {
     if (value === undefined || value === null || value === '') return;
     
+    // Map internal param name to API param name
+    const urlKey = PARAM_KEY_MAP[key] || key;
+    
     // Handle arrays (multi-select) - join with comma
     if (Array.isArray(value)) {
       if (value.length > 0) {
-        urlParams.set(key, value.join(','));
+        urlParams.set(urlKey, value.join(','));
       }
       return;
     }
@@ -183,15 +145,15 @@ function paramsToUrl(params: SearchParams): URLSearchParams {
       const offset = ((value as number) - 1) * limit;
       urlParams.set('offset', String(offset));
     } else {
-      urlParams.set(key, String(value));
+      urlParams.set(urlKey, String(value));
     }
   });
   
   return urlParams;
 }
 
-/** Transform web API item to mobile ListingCard */
-function transformItem(item: WebSearchResultItem): ListingCard {
+/** Transform web API item to mobile ListingCard (with absolute URLs) */
+function transformItem(item: SearchResultItem): ListingCard {
   return {
     id: item.id,
     slug: item.slug,
@@ -236,7 +198,7 @@ export const searchApi = {
       throw new Error(`Search failed: ${response.status}`);
     }
     
-    const webResponse: WebSearchResponse = await response.json();
+    const webResponse: DBSearchResponse = await response.json();
     const page = params.page || 1;
     
     return {
@@ -266,7 +228,7 @@ export const searchApi = {
       throw new Error(`Facets failed: ${response.status}`);
     }
     
-    const webResponse: WebSearchResponse = await response.json();
+    const webResponse: DBSearchResponse = await response.json();
     return webResponse.facets || null;
   },
 
@@ -286,7 +248,7 @@ export const searchApi = {
     const response = await fetch(url);
     if (!response.ok) return [];
     
-    const webResponse: WebSearchResponse = await response.json();
+    const webResponse: DBSearchResponse = await response.json();
     return webResponse.facets?.model || [];
   },
 
@@ -307,7 +269,7 @@ export const searchApi = {
     const response = await fetch(url);
     if (!response.ok) return [];
     
-    const webResponse: WebSearchResponse = await response.json();
+    const webResponse: DBSearchResponse = await response.json();
     return webResponse.facets?.trim || [];
   },
 
@@ -364,26 +326,10 @@ export const searchApi = {
     const response = await fetch(url);
     if (!response.ok) return 0;
     
-    const webResponse: WebSearchResponse = await response.json();
+    const webResponse: DBSearchResponse = await response.json();
     return webResponse.meta.total || 0;
   },
 };
-
-// ============================================================================
-// SORT OPTIONS
-// ============================================================================
-
-export const SORT_OPTIONS: { value: SearchSortOption; label: string }[] = [
-  { value: 'relevance', label: 'Most Relevant' },
-  { value: 'popular', label: 'Most Popular' },
-  { value: 'newest', label: 'Recently Listed' },
-  { value: 'oldest', label: 'Oldest Listings' },
-  { value: 'price_low', label: 'Price: Low to High' },
-  { value: 'price_high', label: 'Price: High to Low' },
-  { value: 'mileage_low', label: 'Lowest Mileage' },
-  { value: 'year_new', label: 'Year: Newest' },
-  { value: 'year_old', label: 'Year: Oldest' },
-];
 
 // ============================================================================
 // FILTER CHIP HELPERS

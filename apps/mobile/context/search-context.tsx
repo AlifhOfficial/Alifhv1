@@ -4,7 +4,7 @@
  */
 
 import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
-import type { SearchSortOption } from '@/lib/api';
+import type { SearchSortOption } from '@/lib/search-api';
 
 // Sort option labels for display
 const SORT_LABELS: Record<SearchSortOption, string> = {
@@ -26,6 +26,26 @@ export type SearchParams = {
   trim?: string[];
 };
 
+// Filter params for browse screen
+export type FilterParams = {
+  priceMin?: number;
+  priceMax?: number;
+  yearMin?: number;
+  yearMax?: number;
+  mileageMin?: number;
+  mileageMax?: number;
+  emirate?: string[];
+  bodyType?: string[];
+  fuelType?: string[];
+  transmission?: string[];
+  specs?: string[];
+  condition?: 'new' | 'used';
+  isNegotiable?: boolean;
+  isBlkListing?: boolean;
+  isBlackTierPartner?: boolean;
+  sellerType?: 'dealer' | 'private';
+};
+
 // Chip type for active search display
 export type SearchChip = {
   key: string;
@@ -33,6 +53,9 @@ export type SearchChip = {
   value: string;
   index?: number; // For array items
 };
+
+// Keys that can be removed - includes compound keys for range filters
+export type RemovableFilterKey = keyof FilterParams | 'price' | 'year' | 'mileage';
 
 interface SearchContextValue {
   /** Current search parameters */
@@ -57,6 +80,17 @@ interface SearchContextValue {
   /** Subscribe to sort changes (for browse screen) */
   subscribeToSort: (callback: (sort: SearchSortOption) => void) => () => void;
   
+  /** Current filter parameters */
+  filterParams: FilterParams;
+  /** Update filter params */
+  updateFilterParams: (params: Partial<FilterParams>) => void;
+  /** Clear all filter params */
+  clearFilterParams: () => void;
+  /** Remove a specific filter param (accepts compound keys like 'price', 'year', 'mileage') */
+  removeFilterParam: (key: RemovableFilterKey, index?: number) => void;
+  /** Subscribe to filter changes */
+  subscribeToFilters: (callback: (params: FilterParams) => void) => () => void;
+  
   /** Trigger scroll to top (from tab bar double-tap) */
   triggerScrollToTop: () => void;
   /** Subscribe to scroll to top events (for browse screen) */
@@ -68,8 +102,10 @@ const SearchContext = createContext<SearchContextValue | undefined>(undefined);
 export function SearchProvider({ children }: { children: React.ReactNode }) {
   const [searchParams, setSearchParams] = useState<SearchParams | null>(null);
   const [sortBy, setSortBy] = useState<SearchSortOption>('relevance');
+  const [filterParams, setFilterParams] = useState<FilterParams>({});
   const listenersRef = useRef<Set<(params: SearchParams) => void>>(new Set());
   const sortListenersRef = useRef<Set<(sort: SearchSortOption) => void>>(new Set());
+  const filterListenersRef = useRef<Set<(params: FilterParams) => void>>(new Set());
   const scrollToTopListenersRef = useRef<Set<() => void>>(new Set());
 
   const applySearch = useCallback((params: SearchParams) => {
@@ -129,29 +165,85 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
       chips.push({ key: 'sort', label: SORT_LABELS[sortBy], value: sortBy });
     }
     
-    if (!searchParams) return chips;
+    if (searchParams) {
+      if (searchParams.q) {
+        chips.push({ key: 'q', label: `"${searchParams.q}"`, value: searchParams.q });
+      }
+      if (searchParams.make?.length) {
+        searchParams.make.forEach((make, index) => {
+          chips.push({ key: 'make', label: make, value: make, index });
+        });
+      }
+      if (searchParams.model?.length) {
+        searchParams.model.forEach((model, index) => {
+          chips.push({ key: 'model', label: model, value: model, index });
+        });
+      }
+      if (searchParams.trim?.length) {
+        searchParams.trim.forEach((trim, index) => {
+          chips.push({ key: 'trim', label: trim, value: trim, index });
+        });
+      }
+    }
     
-    if (searchParams.q) {
-      chips.push({ key: 'q', label: `"${searchParams.q}"`, value: searchParams.q });
+    // Add filter chips
+    if (filterParams.priceMin || filterParams.priceMax) {
+      const min = filterParams.priceMin ? `${(filterParams.priceMin / 1000).toFixed(0)}K` : '0';
+      const max = filterParams.priceMax ? `${(filterParams.priceMax / 1000).toFixed(0)}K` : 'Any';
+      chips.push({ key: 'price', label: `AED ${min}-${max}`, value: 'price' });
     }
-    if (searchParams.make?.length) {
-      searchParams.make.forEach((make, index) => {
-        chips.push({ key: 'make', label: make, value: make, index });
+    if (filterParams.yearMin || filterParams.yearMax) {
+      const min = filterParams.yearMin || 'Any';
+      const max = filterParams.yearMax || 'Any';
+      chips.push({ key: 'year', label: `${min}-${max}`, value: 'year' });
+    }
+    if (filterParams.mileageMin || filterParams.mileageMax) {
+      const max = filterParams.mileageMax ? `${(filterParams.mileageMax / 1000).toFixed(0)}K km` : 'Any';
+      chips.push({ key: 'mileage', label: `Under ${max}`, value: 'mileage' });
+    }
+    if (filterParams.emirate?.length) {
+      filterParams.emirate.forEach((emirate, index) => {
+        chips.push({ key: 'emirate', label: emirate, value: emirate, index });
       });
     }
-    if (searchParams.model?.length) {
-      searchParams.model.forEach((model, index) => {
-        chips.push({ key: 'model', label: model, value: model, index });
+    if (filterParams.bodyType?.length) {
+      filterParams.bodyType.forEach((type, index) => {
+        chips.push({ key: 'bodyType', label: type, value: type, index });
       });
     }
-    if (searchParams.trim?.length) {
-      searchParams.trim.forEach((trim, index) => {
-        chips.push({ key: 'trim', label: trim, value: trim, index });
+    if (filterParams.fuelType?.length) {
+      filterParams.fuelType.forEach((type, index) => {
+        chips.push({ key: 'fuelType', label: type, value: type, index });
       });
+    }
+    if (filterParams.transmission?.length) {
+      filterParams.transmission.forEach((type, index) => {
+        chips.push({ key: 'transmission', label: type, value: type, index });
+      });
+    }
+    if (filterParams.specs?.length) {
+      filterParams.specs.forEach((spec, index) => {
+        chips.push({ key: 'specs', label: spec, value: spec, index });
+      });
+    }
+    if (filterParams.condition) {
+      chips.push({ key: 'condition', label: filterParams.condition === 'new' ? 'New' : 'Used', value: filterParams.condition });
+    }
+    if (filterParams.isNegotiable) {
+      chips.push({ key: 'isNegotiable', label: 'Negotiable', value: 'true' });
+    }
+    if (filterParams.isBlkListing) {
+      chips.push({ key: 'isBlkListing', label: 'BLK', value: 'true' });
+    }
+    if (filterParams.isBlackTierPartner) {
+      chips.push({ key: 'isBlackTierPartner', label: 'Black Tier', value: 'true' });
+    }
+    if (filterParams.sellerType) {
+      chips.push({ key: 'sellerType', label: filterParams.sellerType === 'dealer' ? 'Dealer' : 'Private', value: filterParams.sellerType });
     }
     
     return chips;
-  }, [searchParams, sortBy]);
+  }, [searchParams, sortBy, filterParams]);
 
   const subscribeToSearch = useCallback((callback: (params: SearchParams) => void) => {
     listenersRef.current.add(callback);
@@ -179,6 +271,69 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // Filter params functions
+  const updateFilterParams = useCallback((params: Partial<FilterParams>) => {
+    setFilterParams(prev => {
+      const newParams = { ...prev };
+      // Clean up undefined values
+      Object.entries(params).forEach(([key, value]) => {
+        if (value === undefined || value === null || (Array.isArray(value) && value.length === 0)) {
+          delete newParams[key as keyof FilterParams];
+        } else {
+          (newParams as any)[key] = value;
+        }
+      });
+      // Notify listeners
+      filterListenersRef.current.forEach(listener => listener(newParams));
+      return newParams;
+    });
+  }, []);
+
+  const clearFilterParams = useCallback(() => {
+    setFilterParams({});
+    filterListenersRef.current.forEach(listener => listener({}));
+  }, []);
+
+  const removeFilterParam = useCallback((key: RemovableFilterKey, index?: number) => {
+    setFilterParams(prev => {
+      const newParams = { ...prev };
+      
+      // Handle compound range filters - remove both min and max
+      if (key === 'price') {
+        delete newParams.priceMin;
+        delete newParams.priceMax;
+      } else if (key === 'year') {
+        delete newParams.yearMin;
+        delete newParams.yearMax;
+      } else if (key === 'mileage') {
+        delete newParams.mileageMin;
+        delete newParams.mileageMax;
+      } else if (index !== undefined && Array.isArray(newParams[key as keyof FilterParams])) {
+        // Handle array removal
+        const arr = [...(newParams[key as keyof FilterParams] as string[])];
+        arr.splice(index, 1);
+        if (arr.length === 0) {
+          delete newParams[key as keyof FilterParams];
+        } else {
+          (newParams[key as keyof FilterParams] as string[]) = arr;
+        }
+      } else {
+        delete newParams[key as keyof FilterParams];
+      }
+      
+      // Notify listeners
+      filterListenersRef.current.forEach(listener => listener(newParams));
+      return newParams;
+    });
+  }, []);
+
+  const subscribeToFilters = useCallback((callback: (params: FilterParams) => void) => {
+    filterListenersRef.current.add(callback);
+    return () => {
+      filterListenersRef.current.delete(callback);
+    };
+  }, []);
+
   const triggerScrollToTop = useCallback(() => {
     scrollToTopListenersRef.current.forEach(listener => listener());
   }, []);
@@ -203,6 +358,11 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
         applySort,
         resetSort,
         subscribeToSort,
+        filterParams,
+        updateFilterParams,
+        clearFilterParams,
+        removeFilterParam,
+        subscribeToFilters,
         triggerScrollToTop,
         subscribeToScrollToTop,
       }}

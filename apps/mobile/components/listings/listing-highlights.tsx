@@ -10,7 +10,7 @@ import { CheckCircle2 } from 'lucide-react-native';
 import { Colors, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Data } from '@/components/ui';
-import { SpecialNotes } from '@/lib/api';
+import { SpecialNotes } from '@/lib/listing-api';
 
 interface ListingHighlightsProps {
   specialNotes?: SpecialNotes;
