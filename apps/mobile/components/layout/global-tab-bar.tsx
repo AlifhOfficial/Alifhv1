@@ -54,7 +54,7 @@ const GAP = 8;
 
 export function GlobalTabBar() {
   const { colorScheme } = useTheme();
-  const { applySearch, sortBy, applySort, searchParams, filterParams, triggerScrollToTop } = useSearch();
+  const { applySearch, sortBy, applySort, searchParams, filterParams, updateFilterParams, triggerScrollToTop } = useSearch();
   const insets = useSafeAreaInsets();
   
   // Double-tap detection for browse tab
@@ -181,9 +181,25 @@ export function GlobalTabBar() {
     setIsSearchOpen(false);
   }, []);
 
-  const handleSearchSubmit = useCallback((params: { q?: string; make?: string[]; model?: string[]; trim?: string[] }) => {
-    applySearch(params);
-  }, [applySearch]);
+  const handleSearchSubmit = useCallback((params: { q?: string; make?: string[]; model?: string[]; trim?: string[]; tags?: string[]; extras?: string[]; partnerId?: string; partnerName?: string; bodyType?: string[]; fuelType?: string[]; transmission?: string[]; specs?: string[]; condition?: string; sellerType?: string }) => {
+    // Split: search-level params → applySearch, filter-level params → updateFilterParams
+    const { bodyType, fuelType, transmission, specs, condition, sellerType, ...searchLevel } = params;
+    
+    applySearch(searchLevel);
+    
+    // Route filter-category params through FilterParams (they already exist there)
+    const filterUpdates: Record<string, any> = {};
+    if (bodyType?.length) filterUpdates.bodyType = bodyType;
+    if (fuelType?.length) filterUpdates.fuelType = fuelType;
+    if (transmission?.length) filterUpdates.transmission = transmission;
+    if (specs?.length) filterUpdates.specs = specs;
+    if (condition) filterUpdates.condition = condition;
+    if (sellerType) filterUpdates.sellerType = sellerType;
+    
+    if (Object.keys(filterUpdates).length > 0) {
+      updateFilterParams(filterUpdates);
+    }
+  }, [applySearch, updateFilterParams]);
 
   const handleSortPress = useCallback(() => {
     if (Platform.OS === 'ios') {

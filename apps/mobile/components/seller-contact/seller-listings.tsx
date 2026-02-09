@@ -30,7 +30,7 @@ export const SellerListings = memo(function SellerListings({
 
   return (
     <View style={localStyles.section}>
-      <Label size="small" tone="muted">MORE FROM THIS SELLER</Label>
+      <Label size="medium" tone="muted">MORE FROM THIS SELLER</Label>
       
       {/* Two-column grid */}
       <View style={localStyles.grid}>
@@ -42,6 +42,7 @@ export const SellerListings = memo(function SellerListings({
               localStyles.card,
               { 
                 backgroundColor: colors.surface,
+                borderColor: colors.border,
                 opacity: pressed ? 0.7 : 1,
               }
             ]}
@@ -82,7 +83,7 @@ export const SellerListings = memo(function SellerListings({
           <ButtonText size="medium">
             View All {totalCount} Listings
           </ButtonText>
-          <ChevronRight size={16} color={colors.icon} />
+          <ChevronRight size={18} color={colors.text} />
         </Pressable>
       )}
     </View>
@@ -91,7 +92,7 @@ export const SellerListings = memo(function SellerListings({
 
 const localStyles = StyleSheet.create({
   section: {
-    gap: Spacing.md,
+    gap: Spacing.lg,
   },
   grid: {
     flexDirection: 'row',
@@ -101,6 +102,7 @@ const localStyles = StyleSheet.create({
   card: {
     width: CARD_WIDTH,
     borderRadius: Radius.lg,
+    borderWidth: 1,
     overflow: 'hidden',
   },
   thumb: {
@@ -108,7 +110,7 @@ const localStyles = StyleSheet.create({
     aspectRatio: 16 / 10,
   },
   content: {
-    padding: Spacing.sm,
+    padding: Spacing.md,
     gap: 2,
   },
   viewAllBtn: {
@@ -116,9 +118,8 @@ const localStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-    paddingVertical: Spacing.md,
-    borderRadius: Radius.full,
-    borderWidth: 1,
-    marginTop: Spacing.sm,
+    paddingVertical: Spacing.lg,
+    borderRadius: Radius.xl,
+    borderWidth: 1.5,
   },
 });

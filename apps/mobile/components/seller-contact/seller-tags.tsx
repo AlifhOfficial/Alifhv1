@@ -9,7 +9,7 @@ import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import { Spacing, Radius } from '@/constants/theme';
-import { Label, Data } from '@/components/ui';
+import { Label, Body } from '@/components/ui';
 import type { SellerTagsProps } from './types';
 
 export const SellerTags = memo(function SellerTags({ tags, label, colors }: SellerTagsProps) {
@@ -17,11 +17,11 @@ export const SellerTags = memo(function SellerTags({ tags, label, colors }: Sell
 
   return (
     <View style={localStyles.section}>
-      <Label size="small" tone="muted">{label}</Label>
+      <Label size="medium" tone="muted">{label}</Label>
       <View style={localStyles.tagsRow}>
         {tags.map((tag, i) => (
           <View key={`tag-${i}`} style={[localStyles.tag, { backgroundColor: colors.surfaceSecondary }]}>
-            <Data size="mini">{tag}</Data>
+            <Body size="small">{tag}</Body>
           </View>
         ))}
       </View>
@@ -39,8 +39,8 @@ const localStyles = StyleSheet.create({
     gap: Spacing.sm,
   },
   tag: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: Radius.full,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.sm + 2,
+    borderRadius: Radius.xl,
   },
 });

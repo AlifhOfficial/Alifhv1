@@ -10,11 +10,11 @@ import { View, Pressable, StyleSheet } from 'react-native';
 import { MapPin, ExternalLink, Navigation, Globe } from 'lucide-react-native';
 
 import { Spacing, Radius } from '@/constants/theme';
-import { Label, Data, ButtonText } from '@/components/ui';
+import { Label, Body, ButtonText } from '@/components/ui';
 import type { SellerLocationProps } from './types';
 
-const ICON_SIZE = 20;
-const ICON_SIZE_SM = 16;
+const ICON_SIZE = 22;
+const ICON_SIZE_SM = 18;
 
 export const SellerLocation = memo(function SellerLocation({
   seller,
@@ -27,13 +27,13 @@ export const SellerLocation = memo(function SellerLocation({
 
   return (
     <View style={localStyles.section}>
-      <Label size="small" tone="muted">LOCATION & LINKS</Label>
+      <Label size="medium" tone="muted">LOCATION & LINKS</Label>
       
       {seller.location && (
         <View style={localStyles.locationRow}>
           <MapPin size={ICON_SIZE} color={colors.icon} style={{ marginTop: 2 }} />
           <View style={localStyles.locationText}>
-            <Data size="medium">{seller.location}</Data>
+            <Body size="medium">{seller.location}</Body>
           </View>
         </View>
       )}
@@ -52,8 +52,8 @@ export const SellerLocation = memo(function SellerLocation({
               ]}
               onPress={onViewMap}
             >
-              <ExternalLink size={ICON_SIZE_SM} color={colors.icon} />
-              <ButtonText size="small">View Map</ButtonText>
+              <ExternalLink size={ICON_SIZE_SM} color={colors.text} />
+              <ButtonText size="medium">View Map</ButtonText>
             </Pressable>
             <Pressable
               style={({ pressed }) => [
@@ -65,8 +65,8 @@ export const SellerLocation = memo(function SellerLocation({
               ]}
               onPress={onGetDirections}
             >
-              <Navigation size={ICON_SIZE_SM} color={colors.icon} />
-              <ButtonText size="small">Directions</ButtonText>
+              <Navigation size={ICON_SIZE_SM} color={colors.text} />
+              <ButtonText size="medium">Directions</ButtonText>
             </Pressable>
           </>
         )}
@@ -81,8 +81,8 @@ export const SellerLocation = memo(function SellerLocation({
             ]}
             onPress={onWebsite}
           >
-            <Globe size={ICON_SIZE_SM} color={colors.icon} />
-            <ButtonText size="small">Website</ButtonText>
+            <Globe size={ICON_SIZE_SM} color={colors.text} />
+            <ButtonText size="medium">Website</ButtonText>
           </Pressable>
         )}
       </View>
@@ -92,7 +92,7 @@ export const SellerLocation = memo(function SellerLocation({
 
 const localStyles = StyleSheet.create({
   section: {
-    gap: Spacing.md,
+    gap: Spacing.lg,
   },
   locationRow: {
     flexDirection: 'row',
@@ -112,9 +112,9 @@ const localStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    borderRadius: Radius.full,
-    borderWidth: 1,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: Radius.xl,
+    borderWidth: 1.5,
   },
 });

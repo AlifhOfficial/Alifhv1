@@ -28,12 +28,14 @@ import {
   CAR_MODELS,
   BODY_TYPES,
   FUEL_TYPES,
+  LISTING_TAGS,
   TRANSMISSION_TYPES,
   SPECS_TYPES,
   ENGINE_SIZES,
   EXTERIOR_COLORS,
   INTERIOR_COLORS,
   UAE_EMIRATES,
+  VEHICLE_EXTRAS,
 } from '../../../schema/listing-constants';
 
 const DEFAULT_LIMIT = 30;
@@ -59,18 +61,34 @@ function buildSearchConditions(params: SearchParams, now: Date): SQL[] {
 
   // === BASIC TIER ===
   
-  // Text search (q) - searches make, model, trim
+  // Text search (q) - searches across make, model, trim, tags, extras, and filter fields
+  // Supports multiple keywords: "audi rs5" matches listings with BOTH "audi" AND "rs5"
+  // Also works for mixed queries like "accident free audi" — matches tag + make
   if (params.q?.trim()) {
-    const searchTerm = `%${params.q.trim().toLowerCase()}%`;
-    conditions.push(
-      or(
-        ilike(carListing.make, searchTerm),
-        ilike(carListing.model, searchTerm),
-        ilike(carListing.trim, searchTerm),
-        // Combined make + model search (e.g., "Toyota Camry")
-        sql`lower(${carListing.make} || ' ' || ${carListing.model}) LIKE ${searchTerm}`
-      )!
-    );
+    const keywords = params.q.trim().toLowerCase().split(/\s+/).filter(k => k.length >= 2);
+    
+    if (keywords.length > 0) {
+      // Each keyword must match somewhere across ANY searchable field
+      const keywordConditions = keywords.map(keyword => {
+        const searchTerm = `%${keyword}%`;
+        return or(
+          // Vehicle identity
+          ilike(carListing.make, searchTerm),
+          ilike(carListing.model, searchTerm),
+          ilike(carListing.trim, searchTerm),
+          // Tags & extras (JSONB text search)
+          sql`${carListing.tags}::text ILIKE ${searchTerm}`,
+          sql`${carListing.extras}::text ILIKE ${searchTerm}`,
+          // Filter fields
+          ilike(carListing.bodyType, searchTerm),
+          ilike(carListing.fuelType, searchTerm),
+          ilike(carListing.condition, searchTerm),
+        )!;
+      });
+      
+      // ALL keywords must match (AND logic) — narrows results with each word
+      conditions.push(and(...keywordConditions)!);
+    }
   }
 
   // === MEDIUM TIER ===
@@ -222,6 +240,14 @@ function buildSearchConditions(params: SearchParams, now: Date): SQL[] {
     // Check if listing tags contains any of the requested tags
     conditions.push(
       sql`${carListing.tags} ?| array[${sql.join(params.tags.map(t => sql`${t}`), sql`, `)}]`
+    );
+  }
+
+  // Extras/Features (JSONB contains check)
+  if (params.extras?.length) {
+    // Check if listing extras contains ALL of the requested extras
+    conditions.push(
+      sql`${carListing.extras} ?& array[${sql.join(params.extras.map(e => sql`${e}`), sql`, `)}]`
     );
   }
 
@@ -751,19 +777,36 @@ export async function searchListings(
  * Hierarchical: shows makes → models → trims based on context
  * 
  * OPTIMIZATION: Runs partner and make/model queries in parallel
+ * MULTI-KEYWORD: "audi rs5" splits into ["audi", "rs5"] - both must match
+ * CATEGORY SEARCH: Matches tags, extras, body types, fuel types, etc.
+ * 
+ * Suggestion Categories:
+ * - vehicle: make, model, make_model, make_model_trim (blue)
+ * - partner: dealers (yellow)
+ * - tag: quality indicators (green)
+ * - extra: features/extras (purple)
+ * - filter: body type, fuel, transmission, specs, condition, seller (orange)
  */
 export async function quickSearch(
   query: string, 
   limit = 4,
   context?: { make?: string; model?: string }
 ): Promise<Array<{
-  type: 'make' | 'model' | 'make_model' | 'make_model_trim' | 'partner';
+  type: 'make' | 'model' | 'make_model' | 'make_model_trim' | 'partner' | 'tag' | 'extra' | 'bodyType' | 'fuelType' | 'transmission' | 'specs' | 'condition' | 'sellerType';
   text: string;
   make?: string;
   model?: string;
   trim?: string;
   partnerId?: string;
   partnerName?: string;
+  tag?: string;
+  extra?: string;
+  bodyType?: string;
+  fuelType?: string;
+  transmission?: string;
+  specs?: string;
+  condition?: 'new' | 'used';
+  sellerType?: 'dealer' | 'private';
   count: number;
 }>> {
   // Allow empty query if context is provided (for popular suggestions)
@@ -772,9 +815,30 @@ export async function quickSearch(
     return [];
   }
 
+  // Split query into keywords (min 2 chars each)
+  const keywords = (query?.trim().toLowerCase() || '')
+    .split(/\s+/)
+    .filter(k => k.length >= 2);
+  
   const searchTerm = query?.trim().toLowerCase() || '';
   const now = new Date();
   const conditions = buildPublicBaseConditions(now);
+
+  // Helper to build multi-keyword match condition
+  // Each keyword must match in make OR model OR trim (for make_model searches)
+  const buildKeywordConditions = (keywords: string[]) => {
+    if (keywords.length === 0) return undefined;
+    
+    // Each keyword must match somewhere
+    return and(
+      ...keywords.map(keyword => 
+        or(
+          ilike(carListing.make, `%${keyword}%`),
+          ilike(carListing.model, `%${keyword}%`),
+        )!
+      )
+    );
+  };
 
   // Determine what to search based on context
   let makeModelQuery;
@@ -838,6 +902,9 @@ export async function quickSearch(
       return [];
     }
     
+    // Build keyword-based conditions for multi-word queries like "audi rs5"
+    const keywordCondition = buildKeywordConditions(keywords);
+    
     // Query for make+model combinations (for make_model suggestions)
     makeModelQuery = db
       .select({
@@ -850,7 +917,7 @@ export async function quickSearch(
       .where(
         and(
           ...conditions,
-          or(
+          keywordCondition || or(
             ilike(carListing.make, `${searchTerm}%`), // Prefix match is faster (can use index)
             ilike(carListing.model, `${searchTerm}%`),
             ilike(carListing.make, `%${searchTerm}%`), // Fallback to contains
@@ -914,17 +981,151 @@ export async function quickSearch(
   ]);
 
   const suggestions: Array<{
-    type: 'make' | 'model' | 'make_model' | 'make_model_trim' | 'partner';
+    type: 'make' | 'model' | 'make_model' | 'make_model_trim' | 'partner' | 'tag' | 'extra' | 'bodyType' | 'fuelType' | 'transmission' | 'specs' | 'condition' | 'sellerType';
     text: string;
     make?: string;
     model?: string;
     trim?: string;
     partnerId?: string;
     partnerName?: string;
+    tag?: string;
+    extra?: string;
+    bodyType?: string;
+    fuelType?: string;
+    transmission?: string;
+    specs?: string;
+    condition?: 'new' | 'used';
+    sellerType?: 'dealer' | 'private';
     count: number;
   }> = [];
 
-  // Process partner results - always show
+  // ========================================
+  // CATEGORY MATCHING (no DB query needed)
+  // ========================================
+  
+  if (searchTerm && !context) {
+    // Tags (quality indicators) - green category
+    const matchingTags = LISTING_TAGS.filter(tag => 
+      tag.label.toLowerCase().includes(searchTerm) ||
+      tag.value.toLowerCase().includes(searchTerm)
+    );
+    for (const tag of matchingTags.slice(0, 2)) {
+      suggestions.push({
+        type: 'tag',
+        text: tag.label,
+        tag: tag.value,
+        count: 0,
+      });
+    }
+    
+    // Extras/Features (purple category)
+    const matchingExtras = VEHICLE_EXTRAS.filter(extra => 
+      extra.label.toLowerCase().includes(searchTerm) ||
+      extra.value.toLowerCase().includes(searchTerm)
+    );
+    for (const extra of matchingExtras.slice(0, 2)) {
+      suggestions.push({
+        type: 'extra',
+        text: extra.label,
+        extra: extra.value,
+        count: 0,
+      });
+    }
+    
+    // Body Types (orange category)
+    const matchingBodyTypes = BODY_TYPES.filter(bt => 
+      bt.label.toLowerCase().includes(searchTerm) ||
+      bt.value.toLowerCase().includes(searchTerm)
+    );
+    for (const bt of matchingBodyTypes.slice(0, 2)) {
+      suggestions.push({
+        type: 'bodyType',
+        text: bt.label,
+        bodyType: bt.value,
+        count: 0,
+      });
+    }
+    
+    // Fuel Types (orange category)
+    const matchingFuelTypes = FUEL_TYPES.filter(ft => 
+      ft.label.toLowerCase().includes(searchTerm) ||
+      ft.value.toLowerCase().includes(searchTerm)
+    );
+    for (const ft of matchingFuelTypes.slice(0, 2)) {
+      suggestions.push({
+        type: 'fuelType',
+        text: ft.label,
+        fuelType: ft.value,
+        count: 0,
+      });
+    }
+    
+    // Transmission (orange category)
+    const matchingTransmission = TRANSMISSION_TYPES.filter(t => 
+      t.label.toLowerCase().includes(searchTerm) ||
+      t.value.toLowerCase().includes(searchTerm)
+    );
+    for (const t of matchingTransmission.slice(0, 1)) {
+      suggestions.push({
+        type: 'transmission',
+        text: t.label,
+        transmission: t.value,
+        count: 0,
+      });
+    }
+    
+    // Specs (orange category)
+    const matchingSpecs = SPECS_TYPES.filter(s => 
+      s.label.toLowerCase().includes(searchTerm) ||
+      s.value.toLowerCase().includes(searchTerm)
+    );
+    for (const s of matchingSpecs.slice(0, 2)) {
+      suggestions.push({
+        type: 'specs',
+        text: s.label,
+        specs: s.value,
+        count: 0,
+      });
+    }
+    
+    // Condition (orange category)
+    if ('new'.includes(searchTerm) || 'brand new'.includes(searchTerm)) {
+      suggestions.push({
+        type: 'condition',
+        text: 'New Cars',
+        condition: 'new',
+        count: 0,
+      });
+    }
+    if ('used'.includes(searchTerm) || 'pre-owned'.includes(searchTerm) || 'preowned'.includes(searchTerm)) {
+      suggestions.push({
+        type: 'condition',
+        text: 'Used Cars',
+        condition: 'used',
+        count: 0,
+      });
+    }
+    
+    // Seller Type (orange category)
+    if ('dealer'.includes(searchTerm) || 'showroom'.includes(searchTerm)) {
+      suggestions.push({
+        type: 'sellerType',
+        text: 'Dealers Only',
+        sellerType: 'dealer',
+        count: 0,
+      });
+    }
+    if ('private'.includes(searchTerm) || 'owner'.includes(searchTerm) || 'individual'.includes(searchTerm)) {
+      suggestions.push({
+        type: 'sellerType',
+        text: 'Private Sellers',
+        sellerType: 'private',
+        count: 0,
+      });
+    }
+  }
+
+  // Process partner results - always show (yellow category)
   const seenPartners = new Set<string>();
   for (const r of partnerResults) {
     if (r.partnerId && r.partnerName && !seenPartners.has(r.partnerId)) {

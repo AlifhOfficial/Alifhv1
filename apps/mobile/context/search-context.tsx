@@ -24,6 +24,10 @@ export type SearchParams = {
   make?: string[];
   model?: string[];
   trim?: string[];
+  tags?: string[];
+  extras?: string[];
+  partnerId?: string;
+  partnerName?: string;
 };
 
 // Filter params for browse screen
@@ -146,6 +150,13 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
         }
       } else {
         delete newParams[key];
+        // Clear partnerId + partnerName together
+        if (key === 'partnerId') {
+          delete newParams.partnerName;
+        }
+        if (key === 'partnerName') {
+          delete newParams.partnerId;
+        }
       }
       
       // If no params left, return null
@@ -185,6 +196,22 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
         searchParams.trim.forEach((trim, index) => {
           chips.push({ key: 'trim', label: trim, value: trim, index });
         });
+      }
+      // Tags chip
+      if (searchParams.tags?.length) {
+        searchParams.tags.forEach((tag, index) => {
+          chips.push({ key: 'tags', label: tag, value: tag, index });
+        });
+      }
+      // Extras/features chip
+      if (searchParams.extras?.length) {
+        searchParams.extras.forEach((extra, index) => {
+          chips.push({ key: 'extras', label: extra, value: extra, index });
+        });
+      }
+      // Partner/dealer chip
+      if (searchParams.partnerId && searchParams.partnerName) {
+        chips.push({ key: 'partnerId', label: `Dealer: ${searchParams.partnerName}`, value: searchParams.partnerId });
       }
     }
     

@@ -564,7 +564,7 @@ export const LISTING_TAGS = [
   { value: 'accidentFree', label: 'Accident Free', icon: '✅' },
   { value: 'underWarranty', label: 'Under Warranty', icon: '🛡️' },
   { value: 'lowMileage', label: 'Low Mileage', icon: '🔢' },
-  { value: 'garageSept', label: 'Garage Kept', icon: '🏠' },
+  { value: 'garageKept', label: 'Garage Kept', icon: '🏠' },
   { value: 'nonSmoker', label: 'Non-Smoker', icon: '🚭' },
   { value: 'recentlyServiced', label: 'Recently Serviced', icon: '🔧' },
   { value: 'originalPaint', label: 'Original Paint', icon: '🎨' },

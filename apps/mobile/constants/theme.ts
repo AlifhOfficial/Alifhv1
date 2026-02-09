@@ -114,7 +114,7 @@ export const Colors = {
     blkBadgeBackground: '#0D0D0D',
     blkBadgeText: '#FAFAFA',
     // BLK LISTING - Premium tier (light mode variant - macOS-style gray)
-    blkBackground: '#C8C8C8',
+    blkBackground: '#FFFFFF',
     blkBorder: '#B6B6B6',
     blkText: '#1C1C1E',
     blkTextSecondary: '#6E6E73',

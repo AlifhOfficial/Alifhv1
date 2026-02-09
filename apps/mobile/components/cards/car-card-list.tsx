@@ -90,8 +90,8 @@ export interface CarCardListProps {
 // COMPONENT
 // ============================================================================
 
-const IMAGE_WIDTH = 145;
-const IMAGE_HEIGHT = 110;
+const IMAGE_WIDTH = 160;
+const IMAGE_HEIGHT = 140;
 
 export const CarCardList = memo(function CarCardList({
   id,

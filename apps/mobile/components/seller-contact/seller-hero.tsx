@@ -16,7 +16,7 @@ import type { SellerHeroProps } from './types';
 import { formatMemberSince } from './utils';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const HERO_IMAGE_HEIGHT = SCREEN_WIDTH * (9 / 16);
+const HERO_IMAGE_HEIGHT = SCREEN_WIDTH * 0.65;
 const AVATAR_SIZE = 56;
 const LOGO_SIZE = 64;
 const ICON_SIZE_SM = 16;

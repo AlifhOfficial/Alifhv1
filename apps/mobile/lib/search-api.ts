@@ -86,11 +86,20 @@ export interface SearchResponse {
 
 // Suggestion type (re-mapped from database)
 export interface Suggestion {
-  type: 'make' | 'model' | 'make_model' | 'make_model_trim' | 'partner';
+  type: 'make' | 'model' | 'make_model' | 'make_model_trim' | 'partner' | 'tag' | 'extra' | 'bodyType' | 'fuelType' | 'transmission' | 'specs' | 'condition' | 'sellerType';
   text: string;
   make?: string;
   model?: string;
   trim?: string;
+  partnerId?: string;
+  tag?: string;
+  extra?: string;
+  bodyType?: string;
+  fuelType?: string;
+  transmission?: string;
+  specs?: string;
+  condition?: 'new' | 'used';
+  sellerType?: 'dealer' | 'private';
   count?: number;
 }
 
@@ -234,14 +243,15 @@ export const searchApi = {
 
   /**
    * Get models for selected makes
-   * Returns models filtered by the selected makes
+   * Returns models filtered by the selected makes + any active filter context
    */
-  async getModelsForMakes(makes: string[]): Promise<FacetBucket[]> {
+  async getModelsForMakes(makes: string[], filterContext: Record<string, any> = {}): Promise<FacetBucket[]> {
     if (!makes.length) return [];
     
-    const urlParams = new URLSearchParams({
-      make: makes.join(','),
-      limit: '0',
+    const urlParams = paramsToUrl({
+      ...filterContext,
+      make: makes,
+      limit: 0,
     });
     const url = `${API_BASE}/api/listings/search?${urlParams}`;
     
@@ -254,15 +264,16 @@ export const searchApi = {
 
   /**
    * Get trims for selected makes and models
-   * Returns trims filtered by selected makes and models
+   * Returns trims filtered by selected makes and models + any active filter context
    */
-  async getTrimsForModels(makes: string[], models: string[]): Promise<FacetBucket[]> {
+  async getTrimsForModels(makes: string[], models: string[], filterContext: Record<string, any> = {}): Promise<FacetBucket[]> {
     if (!makes.length || !models.length) return [];
     
-    const urlParams = new URLSearchParams({
-      make: makes.join(','),
-      model: models.join(','),
-      limit: '0',
+    const urlParams = paramsToUrl({
+      ...filterContext,
+      make: makes,
+      model: models,
+      limit: 0,
     });
     const url = `${API_BASE}/api/listings/search?${urlParams}`;
     

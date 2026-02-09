@@ -34,10 +34,14 @@ import { useSearch, type FilterParams } from '@/context/search-context';
 
 // Convert context filter params to API params
 // Note: Mobile uses string[] for filter arrays, cast to database literal types
-const filtersToParams = (f: FilterParams, searchParams: { make?: string[]; model?: string[]; q?: string } | null): SearchParams => ({
+const filtersToParams = (f: FilterParams, searchParams: { make?: string[]; model?: string[]; trim?: string[]; tags?: string[]; extras?: string[]; q?: string; partnerId?: string; partnerName?: string } | null): SearchParams => ({
   q: searchParams?.q,
   make: searchParams?.make,
   model: searchParams?.model,
+  trim: searchParams?.trim,
+  tags: searchParams?.tags,
+  extras: searchParams?.extras,
+  partnerId: searchParams?.partnerId,
   yearMin: f.yearMin,
   yearMax: f.yearMax,
   priceMin: f.priceMin,

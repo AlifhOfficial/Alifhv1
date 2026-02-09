@@ -6,6 +6,7 @@ import { Theme as NavTheme, ThemeProvider as NavigationThemeProvider } from '@re
 import { Stack, useRouter, router as expoRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, Inter_800ExtraBold } from '@expo-google-fonts/inter';
 import * as SplashScreen from 'expo-splash-screen';
@@ -261,9 +262,11 @@ export default function RootLayout() {
   if (!fontsLoaded || !minTimeElapsed) {
     return (
       <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.dark.background }}>
-        <ThemeProvider>
-          <Loader />
-        </ThemeProvider>
+        <SafeAreaProvider>
+          <ThemeProvider>
+            <Loader />
+          </ThemeProvider>
+        </SafeAreaProvider>
       </GestureHandlerRootView>
     );
   }
@@ -271,19 +274,21 @@ export default function RootLayout() {
   // Always render with full provider stack - onboarding is handled inside RootLayoutNav
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.dark.background }}>
-      <ThemeProvider>
-        <BottomSheetModalProvider>
-          <TabBarProvider>
-            <SearchProvider>
-              <AuthProvider>
-                <WebSocketWrapper>
-                  <RootLayoutNav />
-                </WebSocketWrapper>
-              </AuthProvider>
-            </SearchProvider>
-          </TabBarProvider>
-        </BottomSheetModalProvider>
-      </ThemeProvider>
+      <SafeAreaProvider>
+        <ThemeProvider>
+          <BottomSheetModalProvider>
+            <TabBarProvider>
+              <SearchProvider>
+                <AuthProvider>
+                  <WebSocketWrapper>
+                    <RootLayoutNav />
+                  </WebSocketWrapper>
+                </AuthProvider>
+              </SearchProvider>
+            </TabBarProvider>
+          </BottomSheetModalProvider>
+        </ThemeProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }

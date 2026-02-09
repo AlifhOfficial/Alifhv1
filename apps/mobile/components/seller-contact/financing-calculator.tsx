@@ -36,7 +36,7 @@ export const FinancingCalculator = memo(function FinancingCalculator({
 
   return (
     <View style={localStyles.section}>
-      <Label size="small" tone="muted">FINANCING ESTIMATE</Label>
+      <Label size="medium" tone="muted">FINANCING ESTIMATE</Label>
       
       {/* Monthly Payment Display */}
       <View style={localStyles.emiDisplay}>
@@ -63,7 +63,7 @@ export const FinancingCalculator = memo(function FinancingCalculator({
                 onPress={() => onDownPaymentChange(dp)}
               >
                 <Data 
-                  size="mini" 
+                  size="small" 
                   style={{ color: isSelected ? colors.background : colors.textSecondary }}
                 >
                   {dp}%
@@ -93,7 +93,7 @@ export const FinancingCalculator = memo(function FinancingCalculator({
                 onPress={() => onTermChange(term)}
               >
                 <Data 
-                  size="mini" 
+                  size="small" 
                   style={{ color: isSelected ? colors.background : colors.textSecondary }}
                 >
                   {term}mo

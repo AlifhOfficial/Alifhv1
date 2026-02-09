@@ -30,6 +30,7 @@ import { getListingDetailed, ListingDetailed } from '@/lib/listing-api';
 import { normalizeSellerData, SellerInfo, getSellerListings, SellerListingCard } from '@/lib/seller-api';
 import { createConversation } from '@/lib/messaging-api';
 import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
+import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { PhoneActionSheet } from '@/components/sheets/phone-action-sheet';
 
 // Modular components
@@ -273,7 +274,7 @@ export default function SellerContactScreen() {
         {/* About Section */}
         {seller.description && (
           <View style={styles.section}>
-            <Label size="small" tone="muted">ABOUT</Label>
+            <Label size="medium" tone="muted">ABOUT</Label>
             <Body size="medium">{seller.description}</Body>
           </View>
         )}
@@ -340,6 +341,9 @@ export default function SellerContactScreen() {
           colors={colors}
         />
       </ScrollView>
+
+      {/* Bottom Safe Area Gradient */}
+      <BottomSafeAreaGradient />
 
       {/* Phone Action Sheet */}
       {seller.phone && (

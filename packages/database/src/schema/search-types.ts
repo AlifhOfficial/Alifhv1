@@ -75,6 +75,9 @@ export interface AdvancedFilterParams {
   // Tags (max 3 per listing)
   tags?: string[];
   
+  // Extras/features
+  extras?: string[];
+  
   // Seller type
   sellerType?: 'dealer' | 'private';
   
@@ -306,6 +309,7 @@ export function searchParamsToUrl(params: SearchParams): URLSearchParams {
   if (params.exteriorColor?.length) urlParams.set('exteriorColor', params.exteriorColor.join(','));
   if (params.interiorColor?.length) urlParams.set('interiorColor', params.interiorColor.join(','));
   if (params.tags?.length) urlParams.set('tags', params.tags.join(','));
+  if (params.extras?.length) urlParams.set('extras', params.extras.join(','));
   
   // Ranges
   if (params.yearMin) urlParams.set('yearMin', String(params.yearMin));
@@ -373,6 +377,7 @@ export function urlToSearchParams(urlParams: URLSearchParams): SearchParams {
     exteriorColor: parseArray('exteriorColor') as SearchParams['exteriorColor'],
     interiorColor: parseArray('interiorColor') as SearchParams['interiorColor'],
     tags: parseArray('tags'),
+    extras: parseArray('extras'),
     
     yearMin: parseNumber('yearMin'),
     yearMax: parseNumber('yearMax'),
