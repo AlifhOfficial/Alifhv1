@@ -83,7 +83,7 @@ export const styles = StyleSheet.create({
   tierPill: {
     paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: Radius.sm,
+    borderRadius: Radius.none,
   },
   tierText: {
     ...Typography.labelBadge,
@@ -218,6 +218,7 @@ export const styles = StyleSheet.create({
     aspectRatio: 16 / 10,
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'relative',
   },
   thumbImg: {
     width: '100%',
@@ -238,6 +239,14 @@ export const styles = StyleSheet.create({
     paddingHorizontal: Spacing.sm,
     paddingBottom: Spacing.md,
     paddingTop: 6,
+  },
+  listingBadge: {
+    position: 'absolute',
+    top: Spacing.sm,
+    left: Spacing.sm,
+    paddingHorizontal: Spacing.sm - 2,
+    paddingVertical: 2,
+    borderRadius: Radius.none,
   },
   viewAllBtn: {
     flexDirection: 'row',

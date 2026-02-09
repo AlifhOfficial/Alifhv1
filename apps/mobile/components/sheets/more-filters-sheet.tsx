@@ -14,7 +14,7 @@ import { Check, ChevronDown, ChevronUp, LayoutGrid, List } from 'lucide-react-na
 
 import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Label } from '@/components/ui';
+import { Heading } from '@/components/ui';
 import type { FacetBucket } from '@/lib/search-api';
 import { 
   BODY_TYPES, 
@@ -336,47 +336,51 @@ export function MoreFiltersSheet({
         </View>
 
         {/* View Mode Section */}
-        <View style={styles.viewModeSection}>
-          <Label size="small" style={{ color: colors.textSecondary, marginBottom: Spacing.md }}>
-            VIEW
-          </Label>
-          <View style={styles.viewModeRow}>
-            {VIEW_OPTIONS.map((option) => {
-              const selected = viewMode === option.value;
-              const Icon = option.icon;
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <View style={styles.sectionTitleRow}>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>View</Text>
+            </View>
+          </View>
+          <View style={[styles.sectionContent, styles.viewModeContent]}>
+            <View style={styles.viewModeRow}>
+              {VIEW_OPTIONS.map((option) => {
+                const selected = viewMode === option.value;
+                const Icon = option.icon;
 
-              return (
-                <Pressable
-                  key={option.value}
-                  onPress={() => handleViewModeSelect(option.value)}
-                  style={({ pressed }) => [
-                    styles.viewModeButton,
-                    { 
-                      backgroundColor: selected 
-                        ? colors.text 
-                        : pressed 
-                          ? colors.surface 
-                          : colors.surfaceSecondary,
-                      borderColor: selected ? colors.text : colors.border,
-                    },
-                  ]}
-                >
-                  <Icon 
-                    size={20} 
-                    color={selected ? colors.background : colors.textSecondary} 
-                    strokeWidth={2}
-                  />
-                  <Text
-                    style={[
-                      styles.viewModeLabel,
-                      { color: selected ? colors.background : colors.textSecondary },
+                return (
+                  <Pressable
+                    key={option.value}
+                    onPress={() => handleViewModeSelect(option.value)}
+                    style={({ pressed }) => [
+                      styles.viewModeButton,
+                      { 
+                        backgroundColor: selected 
+                          ? colors.text 
+                          : pressed 
+                            ? colors.surface 
+                            : colors.surfaceSecondary,
+                        borderColor: selected ? colors.text : colors.border,
+                      },
                     ]}
                   >
-                    {option.label}
-                  </Text>
-                </Pressable>
-              );
-            })}
+                    <Icon 
+                      size={20} 
+                      color={selected ? colors.background : colors.textSecondary} 
+                      strokeWidth={2}
+                    />
+                    <Text
+                      style={[
+                        styles.viewModeLabel,
+                        { color: selected ? colors.background : colors.textSecondary },
+                      ]}
+                    >
+                      {option.label}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
           </View>
         </View>
 
@@ -556,8 +560,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  viewModeSection: {
-    marginBottom: Spacing.xl,
+  viewModeContent: {
+    paddingBottom: Spacing.md,
   },
   viewModeRow: {
     flexDirection: 'row',

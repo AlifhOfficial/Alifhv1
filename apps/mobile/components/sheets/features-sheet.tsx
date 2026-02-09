@@ -4,13 +4,14 @@
  */
 
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet, Pressable } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, ButtonText, Label } from '@/components/ui';
+import { Heading, Label } from '@/components/ui';
 
 interface FeaturesSheetProps {
   visible: boolean;
@@ -74,24 +75,34 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
       style={styles.sheetContainer}
     >
       <View style={styles.header}>
-        <Heading size="large" style={{ color: colors.text }}>All Features</Heading>
-        <Pressable onPress={onClose} hitSlop={12}>
-          <ButtonText size="medium" tone="primary">Done</ButtonText>
+        <Heading size="medium" style={{ color: colors.text }}>All Features</Heading>
+        <Pressable
+          onPress={onClose}
+          hitSlop={Spacing.md}
+          style={({ pressed }) => [
+            styles.closeButton,
+            { backgroundColor: pressed ? colors.surfacePressed : colors.surface },
+          ]}
+        >
+          <Ionicons name="close" size={18} color={colors.icon} />
         </Pressable>
       </View>
 
       <BottomSheetScrollView
         style={styles.scrollView}
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 40 }]}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + Spacing['3xl'] }]}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.badgesContainer}>
           {features.map((feature, idx) => (
             <View 
               key={idx} 
-              style={[styles.badge, { backgroundColor: colors.backgroundSecondary }]}
+              style={[
+                styles.badge,
+                { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+              ]}
             >
-              <Label size="badge">
+              <Label size="badge" uppercase={false} tone="secondary">
                 {formatEnumValue(feature)}
               </Label>
             </View>
@@ -113,14 +124,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    paddingBottom: Spacing.md,
+    marginBottom: Spacing.xl,
+    paddingHorizontal: Spacing.xs,
+  },
+  closeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 24,
+    paddingHorizontal: Spacing.lg,
   },
   badgesContainer: {
     flexDirection: 'row',
@@ -131,5 +149,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: Radius.md,
+    borderWidth: 1,
   },
 });

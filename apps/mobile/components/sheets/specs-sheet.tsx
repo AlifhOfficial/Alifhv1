@@ -4,14 +4,14 @@
  */
 
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet, Pressable } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Pressable } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, ButtonText, Supporting, Data } from '@/components/ui';
+import { Heading, Supporting, Data } from '@/components/ui';
 
 interface SpecItem {
   label: string;
@@ -34,7 +34,7 @@ function SpecRow({ label, value, labelColor, valueColor }: SpecRowProps) {
 
   return (
     <View style={styles.specRow}>
-      <Supporting size="medium" tone="muted">{label}</Supporting>
+      <Supporting size="medium" tone="secondary">{label}</Supporting>
       <Data size="medium">{displayValue}</Data>
     </View>
   );
@@ -90,15 +90,22 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
       style={styles.sheetContainer}
     >
       <View style={styles.header}>
-        <Heading size="large" style={{ color: colors.text }}>All Specifications</Heading>
-        <Pressable onPress={onClose} hitSlop={12}>
-          <ButtonText size="medium" tone="primary">Done</ButtonText>
+        <Heading size="medium" style={{ color: colors.text }}>All Specifications</Heading>
+        <Pressable
+          onPress={onClose}
+          hitSlop={Spacing.md}
+          style={({ pressed }) => [
+            styles.closeButton,
+            { backgroundColor: pressed ? colors.surfacePressed : colors.surface },
+          ]}
+        >
+          <Ionicons name="close" size={18} color={colors.icon} />
         </Pressable>
       </View>
 
       <BottomSheetScrollView
         style={styles.scrollView}
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 40 }]}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + Spacing['3xl'] }]}
         showsVerticalScrollIndicator={false}
       >
         {specs.map((spec) => (
@@ -126,14 +133,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    paddingBottom: Spacing.md,
+    marginBottom: Spacing.xl,
+    paddingHorizontal: Spacing.xs,
+  },
+  closeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 24,
+    paddingHorizontal: Spacing.lg,
   },
   specRow: {
     flexDirection: 'row',

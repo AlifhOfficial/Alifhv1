@@ -3,7 +3,7 @@
  */
 
 import { Theme as NavTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useRouter, router as expoRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
@@ -68,6 +68,54 @@ const CustomDarkTheme: NavTheme = {
     heavy: { fontFamily: 'Inter_700Bold', fontWeight: '800' },
   },
 };
+
+const NAVIGATION_LOCK_MS = 600;
+const NAV_LOCK_KEY = '__revvup_nav_lock__';
+
+type NavLockState = {
+  locked: boolean;
+  timer: ReturnType<typeof setTimeout> | null;
+  installed: boolean;
+  originalPush?: typeof expoRouter.push;
+  originalReplace?: typeof expoRouter.replace;
+};
+
+const navLockState = ((globalThis as unknown as Record<string, NavLockState>)[NAV_LOCK_KEY] ||= {
+  locked: false,
+  timer: null,
+  installed: false,
+});
+
+if (!navLockState.installed) {
+  navLockState.originalPush = expoRouter.push.bind(expoRouter);
+  navLockState.originalReplace = expoRouter.replace.bind(expoRouter);
+
+  (expoRouter as typeof expoRouter).push = (...args: Parameters<typeof expoRouter.push>) => {
+    if (navLockState.locked) return;
+    navLockState.locked = true;
+    if (navLockState.timer) {
+      clearTimeout(navLockState.timer);
+    }
+    navLockState.timer = setTimeout(() => {
+      navLockState.locked = false;
+    }, NAVIGATION_LOCK_MS);
+    navLockState.originalPush?.(...args);
+  };
+
+  (expoRouter as typeof expoRouter).replace = (...args: Parameters<typeof expoRouter.replace>) => {
+    if (navLockState.locked) return;
+    navLockState.locked = true;
+    if (navLockState.timer) {
+      clearTimeout(navLockState.timer);
+    }
+    navLockState.timer = setTimeout(() => {
+      navLockState.locked = false;
+    }, NAVIGATION_LOCK_MS);
+    navLockState.originalReplace?.(...args);
+  };
+
+  navLockState.installed = true;
+}
 
 function RootLayoutNav() {
   const { colorScheme } = useTheme();

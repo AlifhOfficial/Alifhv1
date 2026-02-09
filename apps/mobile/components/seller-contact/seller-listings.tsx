@@ -12,6 +12,7 @@ import { Car, ChevronRight } from 'lucide-react-native';
 import type { SellerListingsProps } from './types';
 import { formatPrice } from './utils';
 import { styles } from './styles';
+import { Label } from '@/components/ui';
 
 export const SellerListings = memo(function SellerListings({
   listings,
@@ -38,6 +39,13 @@ export const SellerListings = memo(function SellerListings({
                 <Image source={{ uri: item.thumbnail }} style={styles.thumbImg} contentFit="cover" />
               ) : (
                 <Car size={20} color={colors.textTertiary} />
+              )}
+              {item.isBlkListing && (
+                <View style={[styles.listingBadge, { backgroundColor: colors.blkBadgeBackground }]}>
+                  <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>
+                    BLK
+                  </Label>
+                </View>
               )}
             </View>
             <Text style={[styles.listingTitle, { color: colors.text }]} numberOfLines={1}>

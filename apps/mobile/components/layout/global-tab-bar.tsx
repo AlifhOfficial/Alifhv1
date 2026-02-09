@@ -5,11 +5,11 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { View, Pressable, StyleSheet, Platform, Text } from 'react-native';
+import { View, Pressable, StyleSheet, Platform } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { Home, MessageCircle, LayoutGrid, ChevronLeft, Search, ArrowUpDown, SlidersHorizontal } from 'lucide-react-native';
+import { Home, MessageCircle, LayoutGrid, ChevronLeft, Search, ArrowUpDown } from 'lucide-react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -21,7 +21,7 @@ import Animated, {
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { Colors } from '@/constants/theme';
-import { SearchSheet, SortSheet, MoreFiltersSheet, type ViewMode } from '@/components/sheets';
+import { SearchSheet, SortSheet } from '@/components/sheets';
 import { ActiveSearchChips, ACTIVE_CHIPS_HEIGHT } from './active-search-chips';
 import type { SearchSortOption } from '@/lib/search-api';
 
@@ -54,9 +54,8 @@ const GAP = 8;
 
 export function GlobalTabBar() {
   const { colorScheme } = useTheme();
-  const { applySearch, sortBy, applySort, searchParams, filterParams, triggerScrollToTop, getActiveFilterCount, updateFilterParams } = useSearch();
+  const { applySearch, sortBy, applySort, searchParams, filterParams, triggerScrollToTop } = useSearch();
   const insets = useSafeAreaInsets();
-  const isDark = colorScheme === 'dark';
   
   // Double-tap detection for browse tab
   const lastBrowseTapRef = React.useRef<number>(0);
@@ -67,8 +66,6 @@ export function GlobalTabBar() {
   // Sheet states
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
   // Check if current screen is NOT a main tab (show back button)
   const showBackButton = !MAIN_TAB_PATHS.includes(pathname);
@@ -84,10 +81,6 @@ export function GlobalTabBar() {
   const progress = useSharedValue(showBackButton ? 1 : 0);
   const searchProgress = useSharedValue(showSearchBubble ? 1 : 0);
   const sortProgress = useSharedValue(showSearchBubble ? 1 : 0);
-  const filtersProgress = useSharedValue(showSearchBubble ? 1 : 0);
-
-  // Get filter count for badge
-  const filterCount = getActiveFilterCount();
 
   React.useEffect(() => {
     progress.value = withTiming(showBackButton ? 1 : 0, {
@@ -102,10 +95,6 @@ export function GlobalTabBar() {
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
     });
     sortProgress.value = withTiming(showSearchBubble ? 1 : 0, {
-      duration: 200,
-      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-    });
-    filtersProgress.value = withTiming(showSearchBubble ? 1 : 0, {
       duration: 200,
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
     });
@@ -144,18 +133,6 @@ export function GlobalTabBar() {
       ],
       width: interpolate(sortProgress.value, [0, 1], [0, SORT_BUBBLE_SIZE]),
       marginLeft: interpolate(sortProgress.value, [0, 1], [0, GAP]),
-    };
-  });
-
-  // Filters bubble animates in from right (first bubble, before search)
-  const filtersBubbleStyle = useAnimatedStyle(() => {
-    return {
-      opacity: filtersProgress.value,
-      transform: [
-        { scale: interpolate(filtersProgress.value, [0, 1], [0.8, 1]) },
-      ],
-      width: interpolate(filtersProgress.value, [0, 1], [0, SORT_BUBBLE_SIZE]),
-      marginLeft: interpolate(filtersProgress.value, [0, 1], [0, GAP]),
     };
   });
 
@@ -222,21 +199,6 @@ export function GlobalTabBar() {
   const handleSortChange = useCallback((sort: SearchSortOption) => {
     applySort(sort);
   }, [applySort]);
-
-  const handleFiltersPress = useCallback(() => {
-    if (Platform.OS === 'ios') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-    setIsFiltersOpen(true);
-  }, []);
-
-  const handleFiltersClose = useCallback(() => {
-    setIsFiltersOpen(false);
-  }, []);
-
-  const handleFiltersApply = useCallback((filters: Parameters<typeof updateFilterParams>[0]) => {
-    updateFilterParams(filters);
-  }, [updateFilterParams]);
 
   // Determine which tab is active
   const getIsActive = (tab: TabRoute) => {
@@ -314,33 +276,6 @@ export function GlobalTabBar() {
             </View>
           </AnimatedView>
 
-          {/* Filters bubble (appears on browse tab - first) */}
-          <AnimatedPressable
-            onPress={handleFiltersPress}
-            style={[
-              styles.filtersBubble,
-              { 
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-              },
-              filtersBubbleStyle,
-            ]}
-            pointerEvents={showSearchBubble ? 'auto' : 'none'}
-          >
-            <SlidersHorizontal
-              size={20}
-              color={colors.text}
-              strokeWidth={2}
-            />
-            {filterCount > 0 && (
-              <View style={[styles.filtersBadge, { backgroundColor: colors.primary }]}>
-                <Text style={[styles.filtersBadgeText, { color: colors.primaryForeground }]}>
-                  {filterCount > 9 ? '9+' : filterCount}
-                </Text>
-              </View>
-            )}
-          </AnimatedPressable>
-
           {/* Search bubble (appears on browse tab) */}
           <AnimatedPressable
             onPress={handleSearchPress}
@@ -398,15 +333,6 @@ export function GlobalTabBar() {
         onSortChange={handleSortChange}
       />
 
-      {/* More Filters Sheet */}
-      <MoreFiltersSheet
-        visible={isFiltersOpen}
-        onClose={handleFiltersClose}
-        filters={filterParams}
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        onApply={handleFiltersApply}
-      />
     </View>
   );
 }

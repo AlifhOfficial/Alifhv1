@@ -10,7 +10,7 @@ import { Heart, Share2 } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Skeleton, Data } from '@/components/ui';
+import { Skeleton, Data, Label } from '@/components/ui';
 
 // ============================================================================
 // UTILITIES
@@ -146,6 +146,13 @@ export const CarCardList = memo(function CarCardList({
         ) : (
           <View style={[styles.image, { backgroundColor: colors.skeleton }]} />
         )}
+        {isBlkListing && (
+          <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBackground }]}>
+            <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>
+              BLK
+            </Label>
+          </View>
+        )}
       </View>
 
       {/* Content */}
@@ -236,6 +243,7 @@ const styles = StyleSheet.create({
     height: IMAGE_HEIGHT,
     borderRadius: Radius.md,
     overflow: 'hidden',
+    position: 'relative',
   },
   image: {
     width: '100%',
@@ -254,5 +262,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
+  },
+  blkBadge: {
+    position: 'absolute',
+    top: Spacing.sm,
+    left: Spacing.sm,
+    paddingHorizontal: Spacing.sm - 2,
+    paddingVertical: 2,
+    borderRadius: Radius.none,
   },
 });

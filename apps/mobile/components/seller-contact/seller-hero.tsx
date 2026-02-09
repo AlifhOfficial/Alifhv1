@@ -11,6 +11,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { CheckCircle2, Star, Clock } from 'lucide-react-native';
 
 import { Spacing } from '@/constants/theme';
+import { Label } from '@/components/ui';
 import type { SellerHeroProps } from './types';
 import { formatMemberSince } from './utils';
 import { styles } from './styles';
@@ -43,8 +44,10 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
               <CheckCircle2 size={18} color={colors.primary} />
             )}
             {seller.tier?.toLowerCase() === 'blk' && (
-              <View style={[styles.tierPill, { backgroundColor: colors.blkBackground }]}>
-                <Text style={[styles.tierText, { color: colors.blkText }]}>BLK</Text>
+              <View style={[styles.tierPill, { backgroundColor: colors.blkBadgeBackground }]}>
+                <Label size="badge" uppercase={false} style={[styles.tierText, { color: colors.blkBadgeText }]}>
+                  BLK
+                </Label>
               </View>
             )}
           </View>

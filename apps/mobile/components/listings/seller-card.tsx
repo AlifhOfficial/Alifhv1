@@ -84,8 +84,8 @@ export const SellerCard = memo(function SellerCard({
               <CheckCircle2 size={ICON_SIZE} color={colors.primary} />
             )}
             {isBlackTier && (
-              <View style={[styles.blkBadge, { backgroundColor: colors.blkBackground }]}>
-                <Label size="badge" uppercase={false} style={[styles.blkBadgeText, { color: colors.blkText }]}>BLK</Label>
+              <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBackground }]}>
+                <Label size="badge" uppercase={false} style={[styles.blkBadgeText, { color: colors.blkBadgeText }]}>BLK</Label>
               </View>
             )}
           </View>
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
   blkBadge: {
     paddingHorizontal: Spacing.sm - 2,
     paddingVertical: 2,
-    borderRadius: Radius.sm,
+    borderRadius: Radius.none,
   },
   blkBadgeText: {
     fontSize: 8,

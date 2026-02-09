@@ -292,6 +292,20 @@ export default function BrowseScreen() {
     sellerType: filterParams.sellerType,
   }), [filterParams]);
 
+  const moreFiltersCount = useMemo(() => {
+    let count = 0;
+    if (filterParams.condition) count++;
+    if (filterParams.isBlkListing) count++;
+    if (filterParams.isBlackTierPartner) count++;
+    if (filterParams.isNegotiable) count++;
+    count += filterParams.specs?.length ?? 0;
+    count += filterParams.bodyType?.length ?? 0;
+    count += filterParams.fuelType?.length ?? 0;
+    count += filterParams.transmission?.length ?? 0;
+    if (filterParams.sellerType) count++;
+    return count;
+  }, [filterParams]);
+
   // ──────────────────────────────────────────────────────────────────────────
   // RENDER
   // ──────────────────────────────────────────────────────────────────────────
@@ -301,13 +315,14 @@ export default function BrowseScreen() {
       {/* Top safe area gradient */}
       <TopSafeAreaGradient />
 
-      {/* Header with Filter Pills inline */}
-      <View style={[styles.headerRow, { paddingTop: insets.top + 8 }]}>
+      {/* Header with Filter Pills below */}
+      <View style={[styles.headerRow, { paddingTop: insets.top + 8, backgroundColor: colors.background }]}>
         <Heading size="large">Browse</Heading>
         <FilterPills 
           pills={filterPillConfigs}
           onPillPress={handleFilterPillPress}
           onSettingsPress={() => setSettingsSheetVisible(true)}
+          settingsCount={moreFiltersCount}
         />
       </View>
 
@@ -466,11 +481,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
     paddingLeft: Spacing.lg,
+    paddingRight: Spacing.lg,
     paddingBottom: Spacing.md,
-    gap: 16,
+    gap: 8,
   },
   empty: {
     alignItems: 'center',

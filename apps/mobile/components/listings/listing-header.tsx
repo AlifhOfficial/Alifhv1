@@ -93,8 +93,8 @@ export const ListingHeader = memo(function ListingHeader({
 
         <View style={styles.actions}>
         {isBlk && (
-          <View style={[styles.blkBadge, { backgroundColor: colors.blkBackground }]}>
-            <Label size="badge" uppercase={false} style={{ color: colors.blkText }}>BLK</Label>
+          <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBackground }]}>
+            <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>BLK</Label>
           </View>
         )}
         <Pressable
@@ -189,9 +189,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   blkBadge: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: Radius.sm,
+    paddingHorizontal: Spacing.sm - 2,
+    paddingVertical: 2,
+    borderRadius: Radius.none,
   },
   highlightsRow: {
     flexDirection: 'row',

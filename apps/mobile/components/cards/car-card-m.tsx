@@ -554,7 +554,7 @@ const styles = StyleSheet.create({
   blkBadge: {
     paddingHorizontal: Spacing.sm - 2, // 6
     paddingVertical: Spacing.xs - 1,   // 3
-    borderRadius: Radius.sm,
+    borderRadius: Radius.none,
   },
 
   // Actions

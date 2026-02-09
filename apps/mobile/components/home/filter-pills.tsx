@@ -23,9 +23,10 @@ interface FilterPillsProps {
   pills: FilterPillConfig[];
   onPillPress: (type: FilterPillType) => void;
   onSettingsPress?: () => void;
+  settingsCount?: number;
 }
 
-export function FilterPills({ pills, onPillPress, onSettingsPress }: FilterPillsProps) {
+export function FilterPills({ pills, onPillPress, onSettingsPress, settingsCount = 0 }: FilterPillsProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
@@ -47,8 +48,43 @@ export function FilterPills({ pills, onPillPress, onSettingsPress }: FilterPills
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.container}
+      style={[styles.scrollView, { backgroundColor: colors.background }]}
+      contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}
     >
+      {/* Settings bubble first */}
+      <Pressable
+        onPress={handleSettingsPress}
+        style={[
+          styles.settingsBubble,
+          { 
+            backgroundColor: colors.background,
+            borderColor: colors.border,
+          },
+        ]}
+      >
+        {({ pressed }) => (
+          <View style={[styles.settingsContent, { opacity: pressed ? 0.7 : 1 }]}>
+            <Settings2 
+              size={20} 
+              color={colors.text} 
+              strokeWidth={2}
+            />
+            {settingsCount > 0 && (
+              <View
+                style={[
+                  styles.settingsBadge,
+                  { backgroundColor: colors.text, borderColor: colors.background },
+                ]}
+              >
+                <Text style={[styles.settingsBadgeText, { color: colors.background }]}>
+                  {settingsCount > 9 ? '9+' : settingsCount}
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
+      </Pressable>
+
       {/* Individual floating pills */}
       {pills.map((pill) => {
         const isActive = pill.activeCount > 0;
@@ -60,7 +96,7 @@ export function FilterPills({ pills, onPillPress, onSettingsPress }: FilterPills
             style={[
               styles.pill,
               { 
-                backgroundColor: colors.surface,
+                backgroundColor: colors.background,
                 borderColor: colors.border,
               },
             ]}
@@ -88,37 +124,21 @@ export function FilterPills({ pills, onPillPress, onSettingsPress }: FilterPills
           </Pressable>
         );
       })}
-
-      {/* Settings bubble at the end */}
-      <Pressable
-        onPress={handleSettingsPress}
-        style={[
-          styles.settingsBubble,
-          { 
-            backgroundColor: colors.surface,
-            borderColor: colors.border,
-          },
-        ]}
-      >
-        {({ pressed }) => (
-          <Settings2 
-            size={20} 
-            color={colors.text} 
-            strokeWidth={2}
-            style={{ opacity: pressed ? 0.7 : 1 }}
-          />
-        )}
-      </Pressable>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollView: {
+    backgroundColor: 'transparent',
+    overflow: 'visible',
+  },
   container: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingRight: 16,
     gap: 8,
+    overflow: 'visible',
   },
   settingsBubble: {
     width: 36,
@@ -127,11 +147,37 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'relative',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 12,
     elevation: 4,
+  },
+  settingsContent: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  settingsBadge: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    minWidth: 16,
+    height: 16,
+    paddingHorizontal: 3,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    zIndex: 2,
+    elevation: 2,
+  },
+  settingsBadgeText: {
+    ...Typography.labelBadge,
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 9,
   },
   pill: {
     height: 36,
