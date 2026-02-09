@@ -120,7 +120,7 @@ export function TagsSection({ selectedTags, colors, onToggle }: TagsSectionProps
 
 const styles = StyleSheet.create({
   counter: {
-    ...Typography.helperMedium,
+    ...Typography.supportingSmall,
   },
   tagsContainer: {
     flexDirection: 'row',

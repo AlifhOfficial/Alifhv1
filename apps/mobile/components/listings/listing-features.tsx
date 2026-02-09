@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   label: {
-    ...Typography.label,
+    ...Typography.labelMedium,
   },
   badgesContainer: {
     flexDirection: 'row',

@@ -92,10 +92,10 @@ const styles = StyleSheet.create({
     gap: Spacing.lg,
   },
   errorText: {
-    ...Typography.valueMedium,
+    ...Typography.supportingMedium,
     textAlign: 'center',
   },
   backLink: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
   },
 });

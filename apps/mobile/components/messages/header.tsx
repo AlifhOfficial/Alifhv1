@@ -29,6 +29,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    ...Typography.title,
+    ...Typography.headingLarge,
   },
 });

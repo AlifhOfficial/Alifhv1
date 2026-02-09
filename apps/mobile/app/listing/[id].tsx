@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
   },
   errorText: {
-    ...Typography.body,
+    ...Typography.bodyLarge,
     textAlign: 'center',
   },
 });

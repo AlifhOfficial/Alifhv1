@@ -108,19 +108,19 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   name: {
-    ...Typography.title,
+    ...Typography.headingLarge,
     flexShrink: 1,
   },
   expiringBadge: {
     opacity: 0.5,
   },
   email: {
-    ...Typography.value,
+    ...Typography.dataMedium,
     fontFamily: 'Inter_400Regular',
     marginTop: 2,
   },
   memberSince: {
-    ...Typography.helper,
+    ...Typography.supportingSmall,
     marginTop: 2,
   },
 });

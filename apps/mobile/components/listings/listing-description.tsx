@@ -84,10 +84,10 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   label: {
-    ...Typography.label,
+    ...Typography.labelMedium,
   },
   text: {
-    ...Typography.bodySmall,  // 15 / 22 / Inter_500Medium — readable body weight
+    ...Typography.bodyMedium,  // 15 / 22 / Inter_500Medium — readable body weight
   },
   hiddenText: {
     position: 'absolute',

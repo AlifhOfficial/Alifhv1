@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   contactText: {
-    ...Typography.value,
+    ...Typography.dataMedium,
   },
 
   /* Skeleton helpers */

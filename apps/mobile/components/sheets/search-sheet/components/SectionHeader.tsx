@@ -49,10 +49,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xs,
   },
   title: {
-    ...Typography.valueSmall,
+    ...Typography.dataMini,
   },
   clearLink: {
-    ...Typography.valueSmall,
+    ...Typography.dataMini,
     fontFamily: 'Inter_600SemiBold',
   },
 });

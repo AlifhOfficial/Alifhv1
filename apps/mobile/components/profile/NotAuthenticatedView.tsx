@@ -116,13 +116,13 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   title: {
-    fontSize: Typography.title.fontSize,
-    lineHeight: Typography.title.lineHeight,
+    fontSize: Typography.headingLarge.fontSize,
+    lineHeight: Typography.headingLarge.lineHeight,
     fontFamily: 'Inter_600SemiBold',
   },
   subtitle: {
-    fontSize: Typography.value.fontSize,
-    lineHeight: Typography.title.lineHeight,
+    fontSize: Typography.dataMedium.fontSize,
+    lineHeight: Typography.headingLarge.lineHeight,
     fontFamily: 'Inter_400Regular',
     textAlign: 'center',
     maxWidth: 280,
@@ -148,8 +148,8 @@ const styles = StyleSheet.create({
     }),
   },
   signInText: {
-    fontSize: Typography.button.fontSize,
-    lineHeight: Typography.button.lineHeight,
+    fontSize: Typography.buttonMedium.fontSize,
+    lineHeight: Typography.buttonMedium.lineHeight,
     fontFamily: 'Inter_600SemiBold',
   },
 });

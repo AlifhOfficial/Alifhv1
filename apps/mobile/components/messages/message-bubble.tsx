@@ -209,8 +209,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   senderName: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
+    fontSize: Typography.supportingSmall.fontSize,
+    lineHeight: Typography.supportingSmall.lineHeight,
     marginBottom: 2,
     marginLeft: 12,
   },
@@ -259,12 +259,12 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   messageText: {
-    fontSize: Typography.bodySmall.fontSize,
-    lineHeight: Typography.bodySmall.lineHeight,
+    fontSize: Typography.bodyMedium.fontSize,
+    lineHeight: Typography.bodyMedium.lineHeight,
   },
   editedText: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
+    fontSize: Typography.supportingSmall.fontSize,
+    lineHeight: Typography.supportingSmall.lineHeight,
     marginTop: 2,
   },
   seenContainer: {
@@ -274,8 +274,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   seenText: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
+    fontSize: Typography.supportingSmall.fontSize,
+    lineHeight: Typography.supportingSmall.lineHeight,
   },
   systemContainer: {
     alignItems: 'center',
@@ -287,6 +287,6 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
   },
   systemText: {
-    ...Typography.helperMedium,
+    ...Typography.supportingSmall,
   },
 });

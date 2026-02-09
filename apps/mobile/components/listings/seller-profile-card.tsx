@@ -609,7 +609,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   avatarInitial: {
-    ...Typography.title,
+    ...Typography.headingLarge,
     fontFamily: 'Inter_600SemiBold',
   },
   headerText: {
@@ -622,7 +622,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   name: {
-    ...Typography.titleSmall,
+    ...Typography.headingSmall,
     fontFamily: 'Inter_700Bold',
     flexShrink: 1,
   },
@@ -636,7 +636,7 @@ const styles = StyleSheet.create({
     fontSize: 9,
   },
   sellerType: {
-    ...Typography.secondary,
+    ...Typography.supportingSmall,
   },
   ratingRow: {
     flexDirection: 'row',
@@ -644,11 +644,11 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   ratingValue: {
-    ...Typography.value,
+    ...Typography.dataMedium,
     fontFamily: 'Inter_700Bold',
   },
   reviewCount: {
-    ...Typography.secondary,
+    ...Typography.supportingSmall,
   },
   statsRow: {
     flexDirection: 'row',
@@ -662,7 +662,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   statValue: {
-    ...Typography.value,
+    ...Typography.dataMedium,
     fontFamily: 'Inter_700Bold',
   },
   statLabel: {
@@ -671,7 +671,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
   },
   description: {
-    ...Typography.bodyMini,
+    ...Typography.bodySmall,
   },
   badgesRow: {
     flexDirection: 'row',
@@ -684,7 +684,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
   },
   badgeText: {
-    ...Typography.label,
+    ...Typography.labelMedium,
     fontFamily: 'Inter_600SemiBold',
     letterSpacing: 0,
   },
@@ -696,7 +696,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   specialtiesText: {
-    ...Typography.secondary,
+    ...Typography.supportingSmall,
   },
   verificationsRow: {
     flexDirection: 'row',

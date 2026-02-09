@@ -31,9 +31,9 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   title: {
-    ...Typography.title,
+    ...Typography.headingLarge,
   },
   cancelBtn: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
   },
 });

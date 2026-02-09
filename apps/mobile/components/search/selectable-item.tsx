@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   label: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
     fontFamily: 'Inter_400Regular',
   },
   labelSelected: {

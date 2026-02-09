@@ -40,9 +40,9 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
   title: {
-    ...Typography.valueSmall,
+    ...Typography.dataMini,
   },
   clearText: {
-    ...Typography.valueSmall,
+    ...Typography.dataMini,
   },
 });

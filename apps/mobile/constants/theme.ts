@@ -1,22 +1,48 @@
 /**
- * Revvup Design System - Mobile Theme (Simplified)
+ * Revvup Design System - Mobile Theme
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 
  * Primary: #0066FF | OLED Dark Mode | Clean Neutrals
+ * 
+ * Typography System Architecture:
+ * ─────────────────────────────────────────────────────────────────────────────
+ * This theme implements a comprehensive typography system designed for
+ * automotive marketplace UI patterns. Every text style is tokenized to ensure
+ * consistency across the entire app.
+ * 
+ * FONT WEIGHTS LOADED:
+ *   • Inter_400Regular   → Supporting text, placeholders
+ *   • Inter_500Medium    → Body text, labels, descriptions
+ *   • Inter_600SemiBold  → Data values, stats, interactive elements
+ *   • Inter_700Bold      → Titles, prices, headings
+ *   • Inter_800ExtraBold → Hero numbers, marketing callouts
+ * 
+ * IMPORTANT RULES:
+ *   1. NEVER set fontWeight inline - fontFamily handles weight
+ *   2. Always use tokens via ...Typography.xxx spread
+ *   3. Font scaling is DISABLED for UI consistency across devices
+ *   4. Do NOT override fontSize/lineHeight unless absolutely necessary
+ * 
+ * CROSS-PLATFORM CONSISTENCY:
+ *   • Fixed font sizes (no responsive scaling) for pixel-perfect UI
+ *   • allowFontScaling: false prevents accessibility font scaling
+ *   • includeFontPadding: false removes Android extra padding
+ *   • textAlignVertical: 'center' ensures vertical alignment on Android
+ * 
+ * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-import { Dimensions, PixelRatio } from 'react-native';
+import { Dimensions, PixelRatio, TextStyle } from 'react-native';
 
 // ═══════════════════════════════════════════════════
-// RESPONSIVE SCALING
+// SCREEN METRICS (for layout, NOT for fonts)
 // ═══════════════════════════════════════════════════
-// Base design width: iPhone 14/15 (393px)
-// Scales proportionally to device screen width
-// Factor of 0.5 = moderate scaling (not too aggressive)
-
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const BASE_WIDTH = 393;
 
 /**
- * Scales a size value based on screen width
+ * Scales a LAYOUT size value based on screen width
+ * Use ONLY for spacing/layout, NOT for fonts
  * @param size - Base size in design pixels
  * @param factor - How aggressively to scale (0 = none, 1 = full). Default 0.15
  */
@@ -26,8 +52,11 @@ const scale = (size: number, factor = 0.15): number => {
   return Math.round(PixelRatio.roundToNearestPixel(newSize));
 };
 
-// Font-specific scaling - very subtle to maintain consistency
-const fontScale = (size: number): number => scale(size, 0.1);
+/**
+ * FIXED font sizes - NO scaling for consistency
+ * Fonts are designed at base size and stay fixed across all devices
+ */
+const fontScale = (size: number): number => size;
 
 export const Colors = {
   light: {
@@ -189,93 +218,452 @@ export const Radius = {
 // TYPOGRAPHY SYSTEM
 // ═══════════════════════════════════════════════════
 // 
-// LOADED FONTS (5 weights):
-//   • Inter_400Regular   (body, descriptions)
-//   • Inter_500Medium    (secondary labels, hints)
-//   • Inter_600SemiBold  (values, buttons, emphasis)
-//   • Inter_700Bold      (titles, prices, headers)
-//   • Inter_800ExtraBold (hero numbers, feature callouts)
+// A comprehensive, semantic typography system designed for
+// automotive marketplace UI. Organized by purpose, not just size.
 //
-// RULES:
-//   1. NEVER set fontWeight - fontFamily handles it
-//   2. Use tokens via ...Typography.xxx
-//   3. Set allowFontScaling={false} on UI text for consistency
+// ═══════════════════════════════════════════════════
+// CATEGORY GUIDE
+// ═══════════════════════════════════════════════════
 //
-// SEMANTIC GUIDE:
-//   titleLarge   → Hero screens, onboarding
-//   titlePrice   → Listing prices only
-//   title        → Section headers, screen titles
-//   titleSmall   → Navigation titles, card headers
-//   titleCard    → Car make/model in cards
-//   body         → Long-form reading, descriptions
-//   bodySmall    → Secondary descriptions
-//   bodyMini     → Fine print, disclaimers
-//   value        → Spec values, names with emphasis
-//   stat         → Metadata row (km, specs, location)
-//   valueSmall   → Seller names, small emphasis
-//   initial      → Avatar initials
-//   label        → UPPERCASE section headers
-//   labelSmall   → Small labels (VIN, tags)
-//   labelBadge   → Badge text (BLK, VERIFIED)
-//   button       → Primary/secondary buttons
-//   buttonSmall  → Compact buttons, chips
-//   tab          → Tab bar labels
-//   chip         → Filter chips, tags
-//   link         → Clickable text links
-//   labelText    → Form field labels
-//   helper       → Timestamps, helper text
-//   secondary    → Tertiary info (seller type)
+// ┌─────────────────────────────────────────────────────────────────────────┐
+// │ DISPLAY (Inter_800ExtraBold / Inter_700Bold)                           │
+// │ Hero screens, large numbers, marketing callouts                        │
+// ├─────────────────────────────────────────────────────────────────────────┤
+// │ displayLarge   → 34px  Hero onboarding, splash screens                 │
+// │ displayMedium  → 28px  Feature highlights, empty states                │
+// │ displayNumber  → 32px  Large stats (price totals, counts)              │
+// └─────────────────────────────────────────────────────────────────────────┘
+//
+// ┌─────────────────────────────────────────────────────────────────────────┐
+// │ HEADINGS (Inter_700Bold / Inter_600SemiBold)                           │
+// │ Screen titles, section headers, card titles                            │
+// ├─────────────────────────────────────────────────────────────────────────┤
+// │ headingLarge   → 20px  Screen titles, detail page titles               │
+// │ headingMedium  → 18px  Large prices, modal titles                      │
+// │ headingSmall   → 17px  Navigation titles, card headers                 │
+// │ headingCard    → 17px  Car make/model in list cards                    │
+// │ headingMini    → 15px  Small section titles, drawer headers            │
+// └─────────────────────────────────────────────────────────────────────────┘
+//
+// ┌─────────────────────────────────────────────────────────────────────────┐
+// │ BODY (Inter_500Medium / Inter_400Regular)                              │
+// │ Long-form content, descriptions, readable paragraphs                   │
+// ├─────────────────────────────────────────────────────────────────────────┤
+// │ bodyLarge      → 17px  Primary body text, descriptions                 │
+// │ bodyMedium     → 15px  Standard body, listing descriptions             │
+// │ bodySmall      → 14px  Secondary descriptions, compact text            │
+// │ bodyMini       → 13px  Fine print, disclaimers, captions               │
+// └─────────────────────────────────────────────────────────────────────────┘
+//
+// ┌─────────────────────────────────────────────────────────────────────────┐
+// │ DATA / VALUES (Inter_600SemiBold)                                      │
+// │ Statistics, specs, metadata - tight line heights for data density      │
+// ├─────────────────────────────────────────────────────────────────────────┤
+// │ dataLarge      → 16px  Prominent prices in cards                       │
+// │ dataMedium     → 15px  Spec values, stats (mileage, km, year)          │
+// │ dataSmall      → 14px  Seller names, secondary values                  │
+// │ dataMini       → 13px  Highlights, negotiable labels, VIN              │
+// └─────────────────────────────────────────────────────────────────────────┘
+//
+// ┌─────────────────────────────────────────────────────────────────────────┐
+// │ LABELS (Inter_700Bold + letter-spacing)                                │
+// │ Section headers (uppercase), category titles, form labels              │
+// ├─────────────────────────────────────────────────────────────────────────┤
+// │ labelLarge     → 13px  Form labels, filter headers                     │
+// │ labelMedium    → 12px  SECTION HEADERS (uppercase)                     │
+// │ labelSmall     → 11px  Small tags, VIN labels                          │
+// │ labelBadge     → 10px  Badge text (BLK, VERIFIED)                      │
+// └─────────────────────────────────────────────────────────────────────────┘
+//
+// ┌─────────────────────────────────────────────────────────────────────────┐
+// │ UI CONTROLS (Inter_600SemiBold)                                        │
+// │ Buttons, tabs, chips, interactive elements                             │
+// ├─────────────────────────────────────────────────────────────────────────┤
+// │ buttonLarge    → 17px  Primary CTA buttons                             │
+// │ buttonMedium   → 15px  Standard buttons                                │
+// │ buttonSmall    → 13px  Compact buttons, action links                   │
+// │ tabLabel       → 10px  Tab bar labels                                  │
+// │ chip           → 13px  Filter chips, feature tags                      │
+// │ link           → 14px  Clickable text links ("Read more")              │
+// └─────────────────────────────────────────────────────────────────────────┘
+//
+// ┌─────────────────────────────────────────────────────────────────────────┐
+// │ SUPPORTING (Inter_500Medium / Inter_400Regular)                        │
+// │ Helper text, timestamps, tertiary information                          │
+// ├─────────────────────────────────────────────────────────────────────────┤
+// │ supportingMedium → 15px  Spec labels (left side), form hints           │
+// │ supportingSmall  → 13px  Seller type, timestamps, helper text          │
+// │ supportingMini   → 12px  Subtle metadata, copyright text               │
+// │ placeholder      → 15px  Input placeholders                            │
+// └─────────────────────────────────────────────────────────────────────────┘
+//
+// ┌─────────────────────────────────────────────────────────────────────────┐
+// │ SPECIAL PURPOSE                                                        │
+// │ Unique use cases with specific requirements                            │
+// ├─────────────────────────────────────────────────────────────────────────┤
+// │ avatarInitial  → 18px  Avatar letter initials                          │
+// │ avatarSmall    → 14px  Small avatar initials                           │
+// │ priceTag       → 18px  Standalone price display                        │
+// │ priceMini      → 16px  Compact price (in cards)                        │
+// │ vinCode        → 15px  VIN numbers (monospace feel)                    │
+// │ counter        → 20px  Notification badges, counts                     │
+// └─────────────────────────────────────────────────────────────────────────┘
+//
+// ═══════════════════════════════════════════════════
+// USAGE EXAMPLES
+// ═══════════════════════════════════════════════════
+//
+// Screen Title:         ...Typography.headingLarge
+// Car Title (Detail):   ...Typography.headingLarge
+// Car Title (Card):     ...Typography.headingCard
+// Price (Detail):       ...Typography.priceTag
+// Price (Card):         ...Typography.priceMini
+// Stats Row:            ...Typography.dataMedium
+// Description:          ...Typography.bodyMedium
+// Section Header:       ...Typography.labelMedium (+ uppercase)
+// Spec Label:           ...Typography.supportingMedium
+// Spec Value:           ...Typography.dataMedium
+// Feature Badge:        ...Typography.chip
+// Seller Name:          ...Typography.dataSmall
+// Seller Type:          ...Typography.supportingSmall
+// Timestamp:            ...Typography.dataMedium
+// "Read more" link:     ...Typography.link
+// Primary Button:       ...Typography.buttonMedium
+// Tab Bar:              ...Typography.tabLabel
 //
 // ═══════════════════════════════════════════════════
 
-// Base style for Android consistency (spread into all tokens)
-const base = {
-  includeFontPadding: false, // Removes extra Android padding
+// ═══════════════════════════════════════════════════
+// BASE TEXT STYLE - Cross-platform consistency
+// ═══════════════════════════════════════════════════
+// Applied to ALL typography tokens for consistent rendering
+//
+// NOTE: To disable font scaling, set allowFontScaling={false} 
+// on Text components, or use a custom Text wrapper component.
+
+const base: TextStyle = {
+  // Android-specific fix for consistent rendering
+  includeFontPadding: false,        // Remove extra top/bottom padding
 };
 
+// Centered variant for single-line UI controls (buttons, labels, chips, tabs)
+// NOT for multi-line body text which would look "off" on Android
+const centered: TextStyle = {
+  textAlignVertical: 'center',
+};
+
+// ═══════════════════════════════════════════════════
+// TEXT COMPONENT DEFAULTS
+// ═══════════════════════════════════════════════════
+// Export these to use in a custom Text wrapper component
+// to ensure consistent behavior app-wide
+
+export const TextDefaults = {
+  allowFontScaling: false,  // Disable accessibility font scaling for UI consistency
+  maxFontSizeMultiplier: 1, // Cap font scaling if allowFontScaling is enabled
+} as const;
+
+// ═══════════════════════════════════════════════════
+// PRIMARY SEMANTIC TOKENS
+// ═══════════════════════════════════════════════════
+
+const SemanticTypography = {
+  // ─────────────────────────────────────────────────────
+  // DISPLAY - Hero screens, large attention text
+  // ─────────────────────────────────────────────────────
+  displayLarge: { 
+    ...base, 
+    fontSize: fontScale(34), 
+    lineHeight: fontScale(41), 
+    fontFamily: 'Inter_700Bold' 
+  },
+  displayMedium: { 
+    ...base, 
+    fontSize: fontScale(28), 
+    lineHeight: fontScale(34), 
+    fontFamily: 'Inter_700Bold' 
+  },
+  displayNumber: { 
+    ...base, 
+    fontSize: fontScale(32), 
+    lineHeight: fontScale(38), 
+    fontFamily: 'Inter_800ExtraBold' 
+  },
+
+  // ─────────────────────────────────────────────────────
+  // HEADINGS - Titles and section headers
+  // ─────────────────────────────────────────────────────
+  headingLarge: { 
+    ...base, 
+    fontSize: fontScale(20), 
+    lineHeight: fontScale(26), 
+    fontFamily: 'Inter_700Bold' 
+  },
+  headingMedium: { 
+    ...base, 
+    fontSize: fontScale(18), 
+    lineHeight: fontScale(24), 
+    fontFamily: 'Inter_700Bold' 
+  },
+  headingSmall: { 
+    ...base, 
+    fontSize: fontScale(17), 
+    lineHeight: fontScale(22), 
+    fontFamily: 'Inter_600SemiBold' 
+  },
+  headingCard: { 
+    ...base, 
+    fontSize: fontScale(17), 
+    lineHeight: fontScale(22), 
+    fontFamily: 'Inter_700Bold' 
+  },
+  headingMini: { 
+    ...base, 
+    fontSize: fontScale(15), 
+    lineHeight: fontScale(20), 
+    fontFamily: 'Inter_700Bold' 
+  },
+
+  // ─────────────────────────────────────────────────────
+  // BODY - Long-form readable content
+  // ─────────────────────────────────────────────────────
+  bodyLarge: { 
+    ...base, 
+    fontSize: fontScale(17), 
+    lineHeight: fontScale(24), 
+    fontFamily: 'Inter_500Medium' 
+  },
+  bodyMedium: { 
+    ...base, 
+    fontSize: fontScale(15), 
+    lineHeight: fontScale(22), 
+    fontFamily: 'Inter_500Medium' 
+  },
+  bodySmall: { 
+    ...base, 
+    fontSize: fontScale(14), 
+    lineHeight: fontScale(20), 
+    fontFamily: 'Inter_500Medium' 
+  },
+  bodyMini: { 
+    ...base, 
+    fontSize: fontScale(13), 
+    lineHeight: fontScale(18), 
+    fontFamily: 'Inter_500Medium' 
+  },
+
+  // ─────────────────────────────────────────────────────
+  // DATA / VALUES - Stats, specs, metadata (tight)
+  // ─────────────────────────────────────────────────────
+  dataLarge: { 
+    ...base, 
+    fontSize: fontScale(16), 
+    lineHeight: fontScale(22), 
+    fontFamily: 'Inter_600SemiBold' 
+  },
+  dataMedium: { 
+    ...base, 
+    fontSize: fontScale(15), 
+    lineHeight: fontScale(20), 
+    fontFamily: 'Inter_600SemiBold' 
+  },
+  dataSmall: { 
+    ...base, 
+    fontSize: fontScale(14), 
+    lineHeight: fontScale(18), 
+    fontFamily: 'Inter_600SemiBold' 
+  },
+  dataMini: { 
+    ...base, 
+    fontSize: fontScale(13), 
+    lineHeight: fontScale(18), 
+    fontFamily: 'Inter_600SemiBold' 
+  },
+
+  // ─────────────────────────────────────────────────────
+  // LABELS - Section headers, form labels, tags
+  // ─────────────────────────────────────────────────────
+  labelLarge: { 
+    ...base, 
+    ...centered,
+    fontSize: fontScale(13), 
+    lineHeight: fontScale(18), 
+    fontFamily: 'Inter_700Bold', 
+    letterSpacing: 0.5 
+  },
+  labelMedium: { 
+    ...base, 
+    ...centered,
+    fontSize: fontScale(12), 
+    lineHeight: fontScale(16), 
+    fontFamily: 'Inter_700Bold', 
+    letterSpacing: 1 
+  },
+  labelSmall: { 
+    ...base, 
+    ...centered,
+    fontSize: fontScale(11), 
+    lineHeight: fontScale(14), 
+    fontFamily: 'Inter_700Bold', 
+    letterSpacing: 0.3 
+  },
+  labelBadge: { 
+    ...base, 
+    ...centered,
+    fontSize: fontScale(10), 
+    lineHeight: fontScale(14), 
+    fontFamily: 'Inter_700Bold', 
+    letterSpacing: 0.5 
+  },
+
+  // ─────────────────────────────────────────────────────
+  // UI CONTROLS - Buttons, tabs, chips, links
+  // ─────────────────────────────────────────────────────
+  buttonLarge: { 
+    ...base, 
+    ...centered,
+    fontSize: fontScale(17), 
+    lineHeight: fontScale(22), 
+    fontFamily: 'Inter_600SemiBold' 
+  },
+  buttonMedium: { 
+    ...base, 
+    ...centered,
+    fontSize: fontScale(15), 
+    lineHeight: fontScale(20), 
+    fontFamily: 'Inter_600SemiBold' 
+  },
+  buttonSmall: { 
+    ...base, 
+    ...centered,
+    fontSize: fontScale(13), 
+    lineHeight: fontScale(18), 
+    fontFamily: 'Inter_600SemiBold' 
+  },
+  tabLabel: { 
+    ...base, 
+    ...centered,
+    fontSize: fontScale(10), 
+    lineHeight: fontScale(14), 
+    fontFamily: 'Inter_600SemiBold' 
+  },
+  chip: { 
+    ...base, 
+    ...centered,
+    fontSize: fontScale(13), 
+    lineHeight: fontScale(18), 
+    fontFamily: 'Inter_600SemiBold' 
+  },
+  link: { 
+    ...base, 
+    ...centered,
+    fontSize: fontScale(14), 
+    lineHeight: fontScale(20), 
+    fontFamily: 'Inter_600SemiBold' 
+  },
+
+  // ─────────────────────────────────────────────────────
+  // SUPPORTING - Helper text, captions, metadata
+  // ─────────────────────────────────────────────────────
+  supportingMedium: { 
+    ...base, 
+    fontSize: fontScale(15), 
+    lineHeight: fontScale(20), 
+    fontFamily: 'Inter_500Medium' 
+  },
+  supportingSmall: { 
+    ...base, 
+    fontSize: fontScale(13), 
+    lineHeight: fontScale(18), 
+    fontFamily: 'Inter_500Medium' 
+  },
+  supportingMini: { 
+    ...base, 
+    fontSize: fontScale(12), 
+    lineHeight: fontScale(16), 
+    fontFamily: 'Inter_500Medium' 
+  },
+  placeholder: { 
+    ...base, 
+    fontSize: fontScale(15), 
+    lineHeight: fontScale(20), 
+    fontFamily: 'Inter_400Regular' 
+  },
+
+  // ─────────────────────────────────────────────────────
+  // SPECIAL PURPOSE - Unique use cases
+  // ─────────────────────────────────────────────────────
+  avatarInitial: { 
+    ...base, 
+    fontSize: fontScale(18), 
+    lineHeight: fontScale(22), 
+    fontFamily: 'Inter_600SemiBold' 
+  },
+  avatarSmall: { 
+    ...base, 
+    fontSize: fontScale(14), 
+    lineHeight: fontScale(18), 
+    fontFamily: 'Inter_600SemiBold' 
+  },
+  priceTag: { 
+    ...base, 
+    fontSize: fontScale(18), 
+    lineHeight: fontScale(24), 
+    fontFamily: 'Inter_700Bold' 
+  },
+  priceMini: { 
+    ...base, 
+    fontSize: fontScale(16), 
+    lineHeight: fontScale(22), 
+    fontFamily: 'Inter_700Bold' 
+  },
+  vinCode: { 
+    ...base, 
+    fontSize: fontScale(15), 
+    lineHeight: fontScale(20), 
+    fontFamily: 'Inter_600SemiBold',
+    letterSpacing: 0.5 
+  },
+  counter: { 
+    ...base, 
+    ...centered,
+    fontSize: fontScale(20), 
+    lineHeight: fontScale(24), 
+    fontFamily: 'Inter_700Bold' 
+  },
+} as const;
+
+// ═══════════════════════════════════════════════════
+// LEGACY ALIASES → NEW SEMANTIC TOKENS
+// ═══════════════════════════════════════════════════
+// Maps old token names to new semantic system.
+// All existing components continue to work unchanged.
+//
+// Migration map (for reference when writing new code):
+//   titleLarge   → displayLarge
+//   titlePrice   → priceTag
+//   title        → headingLarge
+//   titleSmall   → headingSmall
+//   titleCard    → headingCard
+//   body         → bodyLarge
+//   bodySmall    → bodyMedium (note: renamed for consistency)
+//   bodyMini     → bodySmall
+//   value        → dataMedium
+//   stat         → dataMedium
+//   valueSmall   → dataMini
+//   initial      → avatarInitial
+//   label        → labelMedium
+//   button       → buttonMedium
+//   buttonSmall  → buttonSmall
+//   tab          → tabLabel
+//   labelText    → supportingMedium
+//   helper       → supportingSmall
+//   secondary    → supportingSmall
+//   heroNumber   → displayNumber
+// ═══════════════════════════════════════════════════
+
 export const Typography = {
-  // TITLES (Bold)
-  titleLarge: { ...base, fontSize: fontScale(34), lineHeight: fontScale(41), fontFamily: 'Inter_700Bold' },
-  titlePrice: { ...base, fontSize: fontScale(18), lineHeight: fontScale(24), fontFamily: 'Inter_700Bold' },
-  title: { ...base, fontSize: fontScale(20), lineHeight: fontScale(26), fontFamily: 'Inter_700Bold' },
-  titleSmall: { ...base, fontSize: fontScale(17), lineHeight: fontScale(22), fontFamily: 'Inter_600SemiBold' },
-  titleCard: { ...base, fontSize: fontScale(15), lineHeight: fontScale(20), fontFamily: 'Inter_700Bold' },
-
-  // BODY (Medium) - slightly looser for readability
-  body: { ...base, fontSize: fontScale(17), lineHeight: fontScale(24), fontFamily: 'Inter_500Medium' },
-  bodySmall: { ...base, fontSize: fontScale(15), lineHeight: fontScale(22), fontFamily: 'Inter_500Medium' },
-  bodyMini: { ...base, fontSize: fontScale(14), lineHeight: fontScale(20), fontFamily: 'Inter_500Medium' },
-
-  // VALUES (SemiBold) - tight for data display
-  value: { ...base, fontSize: fontScale(15), lineHeight: fontScale(20), fontFamily: 'Inter_600SemiBold' },
-  stat: { ...base, fontSize: fontScale(15), lineHeight: fontScale(20), fontFamily: 'Inter_600SemiBold' },
-  valueSmall: { ...base, fontSize: fontScale(13), lineHeight: fontScale(18), fontFamily: 'Inter_600SemiBold' },
-  initial: { ...base, fontSize: fontScale(18), lineHeight: fontScale(22), fontFamily: 'Inter_600SemiBold' },
-
-  // LABELS (Bold + tracking) - reduced tracking for cross-platform consistency
-  label: { ...base, fontSize: fontScale(12), lineHeight: fontScale(16), fontFamily: 'Inter_700Bold', letterSpacing: 1 },
-  labelSmall: { ...base, fontSize: fontScale(11), lineHeight: fontScale(14), fontFamily: 'Inter_700Bold', letterSpacing: 0.3 },
-  labelBadge: { ...base, fontSize: fontScale(10), lineHeight: fontScale(14), fontFamily: 'Inter_700Bold', letterSpacing: 0.5 },
-
-  // UI ELEMENTS (SemiBold)
-  button: { ...base, fontSize: fontScale(15), lineHeight: fontScale(20), fontFamily: 'Inter_600SemiBold' },
-  buttonSmall: { ...base, fontSize: fontScale(13), lineHeight: fontScale(18), fontFamily: 'Inter_600SemiBold' },
-  tab: { ...base, fontSize: fontScale(10), lineHeight: fontScale(14), fontFamily: 'Inter_600SemiBold' },
-  chip: { ...base, fontSize: fontScale(13), lineHeight: fontScale(18), fontFamily: 'Inter_600SemiBold' },
-  link: { ...base, fontSize: fontScale(14), lineHeight: fontScale(20), fontFamily: 'Inter_600SemiBold' },
-
-  // SUPPORTING (Medium)
-  labelText: { ...base, fontSize: fontScale(15), lineHeight: fontScale(20), fontFamily: 'Inter_500Medium' },
-  helper: { ...base, fontSize: fontScale(13), lineHeight: fontScale(18), fontFamily: 'Inter_500Medium' },
-  secondary: { ...base, fontSize: fontScale(13), lineHeight: fontScale(18), fontFamily: 'Inter_500Medium' },
-
-  // MEDIUM WEIGHT (Inter_500Medium) - for secondary labels, hints
-  labelMedium: { ...base, fontSize: fontScale(13), lineHeight: fontScale(18), fontFamily: 'Inter_500Medium' },
-  helperMedium: { ...base, fontSize: fontScale(13), lineHeight: fontScale(18), fontFamily: 'Inter_500Medium' },
-  valueMedium: { ...base, fontSize: fontScale(15), lineHeight: fontScale(20), fontFamily: 'Inter_500Medium' },
-
-  // EXTRA BOLD (Inter_800ExtraBold) - for hero numbers
-  heroNumber: { ...base, fontSize: fontScale(32), lineHeight: fontScale(38), fontFamily: 'Inter_800ExtraBold' },
+  ...SemanticTypography,
 } as const;
 
 // ═══════════════════════════════════════════════════

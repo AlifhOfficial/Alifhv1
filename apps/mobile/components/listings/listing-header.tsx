@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   title: {
-    ...Typography.title,
+    ...Typography.headingLarge,
   },
   priceRow: {
     flexDirection: 'row',
@@ -167,10 +167,10 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   price: {
-    ...Typography.titlePrice,
+    ...Typography.priceTag,
   },
   negotiable: {
-    ...Typography.valueSmall,
+    ...Typography.dataMini,
   },
   actions: {
     flexDirection: 'row',
@@ -205,6 +205,6 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   highlightText: {
-    ...Typography.valueSmall,
+    ...Typography.dataMini,
   },
 });

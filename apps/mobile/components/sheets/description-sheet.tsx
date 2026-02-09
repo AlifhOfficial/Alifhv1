@@ -92,10 +92,10 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.md,
   },
   headerTitle: {
-    ...Typography.title,
+    ...Typography.headingLarge,
   },
   doneBtn: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
   },
   scrollView: {
     flex: 1,
@@ -104,6 +104,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   description: {
-    ...Typography.bodySmall,
+    ...Typography.bodyMedium,
   },
 });

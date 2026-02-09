@@ -68,6 +68,6 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   text: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
   },
 });

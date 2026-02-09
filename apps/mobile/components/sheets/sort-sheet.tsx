@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xs,
   },
   headerTitle: {
-    ...Typography.title,
+    ...Typography.headingLarge,
   },
   closeButton: {
     width: 32,
@@ -184,6 +184,6 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
   },
   listItemText: {
-    ...Typography.titleSmall,
+    ...Typography.headingSmall,
   },
 });

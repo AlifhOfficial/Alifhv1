@@ -107,11 +107,11 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   label: {
-    ...Typography.helperMedium,
+    ...Typography.supportingSmall,
   },
   value: {
-    fontSize: Typography.bodySmall.fontSize,
-    lineHeight: Typography.bodySmall.lineHeight,
+    fontSize: Typography.bodyMedium.fontSize,
+    lineHeight: Typography.bodyMedium.lineHeight,
     fontFamily: 'Inter_400Regular',
   },
   addButton: {
@@ -130,8 +130,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_500Medium',
   },
   emptySubtext: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
+    fontSize: Typography.supportingSmall.fontSize,
+    lineHeight: Typography.supportingSmall.lineHeight,
     fontFamily: 'Inter_400Regular',
     marginTop: 4,
   },
@@ -154,8 +154,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_500Medium',
   },
   itemDate: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
+    fontSize: Typography.supportingSmall.fontSize,
+    lineHeight: Typography.supportingSmall.lineHeight,
     fontFamily: 'Inter_400Regular',
     marginTop: 2,
   },

@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xs,
   },
   timestampText: {
-    ...Typography.labelMedium,
+    ...Typography.supportingSmall,
     fontSize: 11,
     opacity: 0.6,
   },
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
   },
   dateLabel: {
-    ...Typography.helperMedium,
+    ...Typography.supportingSmall,
   },
   emptyContainer: {
     flex: 1,
@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing['5xl'],
   },
   emptyText: {
-    ...Typography.body,
+    ...Typography.bodyLarge,
   },
   loadingMore: {
     paddingVertical: Spacing.lg,

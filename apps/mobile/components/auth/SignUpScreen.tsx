@@ -385,7 +385,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing['3xl'],
   },
   title: {
-    ...Typography.titleLarge,
+    ...Typography.displayLarge,
   },
   errorBox: {
     borderRadius: Radius.lg,
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   errorText: {
-    ...Typography.bodyMini,
+    ...Typography.bodySmall,
     textAlign: 'center',
   },
   form: {
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   label: {
-    ...Typography.valueSmall,
+    ...Typography.dataMini,
     marginLeft: Spacing.xs,
   },
   input: {
@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xl,
     borderWidth: 1,
     paddingHorizontal: Spacing.lg,
-    ...Typography.bodySmall,
+    ...Typography.bodyMedium,
   },
   inputWrapper: {
     height: 54,
@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
     paddingHorizontal: Spacing.lg,
-    ...Typography.bodySmall,
+    ...Typography.bodyMedium,
     backgroundColor: 'transparent',
   },
   passwordInputInner: {
@@ -445,7 +445,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   showText: {
-    ...Typography.valueSmall,
+    ...Typography.dataMini,
   },
   requirements: {
     flexDirection: 'row',
@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   requirementText: {
-    ...Typography.helper,
+    ...Typography.supportingSmall,
   },
   submitButton: {
     height: 54,
@@ -474,7 +474,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
   },
   submitButtonText: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
   },
   dividerContainer: {
     flexDirection: 'row',
@@ -487,7 +487,7 @@ const styles = StyleSheet.create({
     height: 1,
   },
   dividerText: {
-    ...Typography.helper,
+    ...Typography.supportingSmall,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -515,7 +515,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.sm,
   },
   termsText: {
-    ...Typography.bodyMini,
+    ...Typography.bodySmall,
     textAlign: 'center',
   },
   footer: {
@@ -526,9 +526,9 @@ const styles = StyleSheet.create({
     paddingTop: Spacing['2xl'],
   },
   footerText: {
-    ...Typography.bodyMini,
+    ...Typography.bodySmall,
   },
   footerLink: {
-    ...Typography.value,
+    ...Typography.dataMedium,
   },
 });

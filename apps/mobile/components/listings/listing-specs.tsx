@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   label: {
-    ...Typography.label,
+    ...Typography.labelMedium,
   },
   specsList: {
     gap: 2,
@@ -133,10 +133,10 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm + 2,
   },
   specLabel: {
-    ...Typography.labelText,
+    ...Typography.supportingMedium,
   },
   specValue: {
-    ...Typography.value,
+    ...Typography.dataMedium,
   },
   viewAllButton: {
     paddingVertical: Spacing.xs,
@@ -147,6 +147,6 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   viewAllText: {
-    ...Typography.value,
+    ...Typography.dataMedium,
   },
 });

@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
   },
   text: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
     flex: 1,
   },
   right: {

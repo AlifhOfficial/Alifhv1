@@ -29,3 +29,25 @@ export {
   type LoaderSize,
   type LoaderVariant,
 } from './loaders';
+
+// Typography components (with font scaling disabled)
+export {
+  Text,
+  Display,
+  Heading,
+  Body,
+  Data,
+  Label,
+  Supporting,
+  ButtonText,
+  Price,
+  type TextProps,
+  type DisplayProps,
+  type HeadingProps,
+  type BodyProps,
+  type DataProps,
+  type LabelProps,
+  type SupportingProps,
+  type ButtonTextProps,
+  type PriceProps,
+} from './text';

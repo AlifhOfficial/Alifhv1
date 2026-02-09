@@ -194,14 +194,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    ...Typography.value,
+    ...Typography.dataMedium,
   },
   trim: {
-    ...Typography.helper,
+    ...Typography.supportingSmall,
     marginTop: 2,
   },
   price: {
-    ...Typography.titlePrice,
+    ...Typography.priceTag,
     marginTop: 4,
   },
   meta: {
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   sellerName: {
-    ...Typography.labelMedium,
+    ...Typography.supportingSmall,
     fontSize: 11,
     flex: 1,
   },

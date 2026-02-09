@@ -75,6 +75,6 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   highlightText: {
-    ...Typography.valueSmall,
+    ...Typography.dataMini,
   },
 });

@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    ...Typography.button,
+    ...Typography.buttonMedium,
     padding: 0,
   },
 });

@@ -246,14 +246,14 @@ const styles = StyleSheet.create({
     marginBottom: Spacing['3xl'],
   },
   title: {
-    ...Typography.titleLarge,
+    ...Typography.displayLarge,
   },
   subtitle: {
-    ...Typography.bodySmall,
+    ...Typography.bodyMedium,
     marginTop: Spacing.sm,
   },
   emailText: {
-    ...Typography.value,
+    ...Typography.dataMedium,
     marginTop: Spacing.xs,
   },
   errorBox: {
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   errorText: {
-    ...Typography.bodyMini,
+    ...Typography.bodySmall,
     textAlign: 'center',
   },
   form: {
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   label: {
-    ...Typography.valueSmall,
+    ...Typography.dataMini,
     marginLeft: Spacing.xs,
   },
   input: {
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xl,
     borderWidth: 1,
     paddingHorizontal: Spacing.lg,
-    ...Typography.body,
+    ...Typography.bodyLarge,
   },
   inputWrapper: {
     height: 54,
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
     paddingHorizontal: Spacing.lg,
-    ...Typography.body,
+    ...Typography.bodyLarge,
     backgroundColor: 'transparent',
   },
   submitButton: {
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
   },
   submitButtonText: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
   },
   buttonSection: {
     paddingBottom: Spacing['4xl'],
@@ -318,9 +318,9 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing['2xl'],
   },
   footerText: {
-    ...Typography.bodyMini,
+    ...Typography.bodySmall,
   },
   footerLink: {
-    ...Typography.value,
+    ...Typography.dataMedium,
   },
 });

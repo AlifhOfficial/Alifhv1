@@ -151,8 +151,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     padding: 14,
-    fontSize: Typography.bodySmall.fontSize,
-    lineHeight: Typography.bodySmall.lineHeight,
+    fontSize: Typography.bodyMedium.fontSize,
+    lineHeight: Typography.bodyMedium.lineHeight,
     fontFamily: 'Inter_400Regular',
   },
   footer: {
@@ -161,24 +161,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   charCount: {
-    ...Typography.helperMedium,
+    ...Typography.supportingSmall,
   },
   actions: {
     flexDirection: 'row',
     gap: 24,
   },
   cancelText: {
-    ...Typography.valueMedium,
+    ...Typography.supportingMedium,
   },
   saveText: {
-    ...Typography.value,
+    ...Typography.dataMedium,
   },
   displayContainer: {
     gap: 10,
   },
   bioText: {
-    fontSize: Typography.bodySmall.fontSize,
-    lineHeight: Typography.body.lineHeight,
+    fontSize: Typography.bodyMedium.fontSize,
+    lineHeight: Typography.bodyLarge.lineHeight,
     fontFamily: 'Inter_400Regular',
   },
 });

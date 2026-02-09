@@ -109,10 +109,10 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   statText: {
-    ...Typography.stat,
+    ...Typography.dataMedium,
   },
   separator: {
-    ...Typography.helperMedium,
+    ...Typography.supportingSmall,
     opacity: 0.4,
   },
   locationRow: {
@@ -126,10 +126,10 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   vinLabel: {
-    ...Typography.valueSmall,
+    ...Typography.dataMini,
   },
   vinValue: {
-    ...Typography.stat,
+    ...Typography.dataMedium,
     fontVariant: ['tabular-nums'],
     letterSpacing: 0.5,
   },

@@ -115,6 +115,6 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   buttonText: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
   },
 });

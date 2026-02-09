@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   loadingText: {
-    ...Typography.labelMedium,
+    ...Typography.supportingSmall,
     // White text on overlay - hardcoded
     color: '#FFFFFF',
   },

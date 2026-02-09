@@ -104,11 +104,11 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   title: {
-    ...Typography.title,
+    ...Typography.headingLarge,
     textAlign: 'center',
   },
   subtitle: {
-    ...Typography.body,
+    ...Typography.bodyLarge,
     textAlign: 'center',
     paddingHorizontal: 16,
   },
@@ -122,6 +122,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   signInText: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
   },
 });

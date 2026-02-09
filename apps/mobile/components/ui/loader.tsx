@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
   },
   inlineMessage: {
     marginTop: 12,
-    ...Typography.helper,
+    ...Typography.supportingSmall,
   },
   refreshContainer: {
     alignItems: 'center',

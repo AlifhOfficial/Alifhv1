@@ -257,7 +257,7 @@ const tenureStyles = StyleSheet.create({
     fontFamily: 'Inter_600SemiBold',
   },
   hint: {
-    ...Typography.labelMedium,
+    ...Typography.supportingSmall,
     fontSize: 12,
   },
 });
@@ -551,7 +551,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_700Bold',
   },
   emiDetails: {
-    ...Typography.labelMedium,
+    ...Typography.supportingSmall,
     marginTop: 2,
   },
   modalContainer: {
@@ -601,7 +601,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   emiResultAmount: {
-    ...Typography.heroNumber,
+    ...Typography.displayNumber,
   },
   controlSection: {
     borderBottomWidth: 1,
@@ -609,7 +609,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   controlHint: {
-    ...Typography.labelMedium,
+    ...Typography.supportingSmall,
     textAlign: 'right',
     marginTop: -Spacing.sm,
   },

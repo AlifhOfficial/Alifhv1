@@ -73,10 +73,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xs,
   },
   label: {
-    ...Typography.valueSmall,
+    ...Typography.dataMini,
   },
   clearLink: {
-    ...Typography.valueSmall,
+    ...Typography.dataMini,
     fontFamily: 'Inter_600SemiBold',
   },
   pillsRow: {

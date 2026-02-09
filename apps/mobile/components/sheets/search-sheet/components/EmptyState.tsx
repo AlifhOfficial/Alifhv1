@@ -42,11 +42,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   title: {
-    ...Typography.titleSmall,
+    ...Typography.headingSmall,
     marginBottom: Spacing.sm,
   },
   subtitle: {
-    ...Typography.bodyMini,
+    ...Typography.bodySmall,
     textAlign: 'center',
   },
 });

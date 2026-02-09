@@ -152,9 +152,9 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   postedText: {
-    ...Typography.stat,
+    ...Typography.dataMedium,
   },
   updatedText: {
-    ...Typography.valueSmall,
+    ...Typography.dataMini,
   },
 });

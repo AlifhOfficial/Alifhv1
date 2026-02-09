@@ -172,13 +172,13 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   title: {
-    fontSize: Typography.value.fontSize,
-    lineHeight: Typography.value.lineHeight,
+    fontSize: Typography.dataMedium.fontSize,
+    lineHeight: Typography.dataMedium.lineHeight,
     fontFamily: 'Inter_600SemiBold',
   },
   subtitle: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
+    fontSize: Typography.supportingSmall.fontSize,
+    lineHeight: Typography.supportingSmall.lineHeight,
     fontFamily: 'Inter_400Regular',
   },
   actionButton: {

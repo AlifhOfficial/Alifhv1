@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   placeholderText: {
-    ...Typography.stat,
+    ...Typography.dataMedium,
     fontFamily: 'Inter_400Regular',
   },
   
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.6)',
   },
   counterOverlayText: {
-    ...Typography.valueSmall,
+    ...Typography.dataMini,
     color: '#FAFAFA',
   },
   

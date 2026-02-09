@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_700Bold',
   },
   subtitle: {
-    ...Typography.labelMedium,
+    ...Typography.supportingSmall,
     fontSize: 12,
     marginTop: 2,
   },

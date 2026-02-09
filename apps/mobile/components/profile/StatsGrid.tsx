@@ -177,8 +177,8 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   statValue: {
-    fontSize: Typography.title.fontSize,
-    lineHeight: Typography.title.lineHeight,
+    fontSize: Typography.headingLarge.fontSize,
+    lineHeight: Typography.headingLarge.lineHeight,
     fontFamily: 'Inter_700Bold',
   },
 });

@@ -118,9 +118,9 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   label: {
-    ...Typography.helperMedium,
+    ...Typography.supportingSmall,
   },
   value: {
-    ...Typography.bodySmall,
+    ...Typography.bodyMedium,
   },
 });

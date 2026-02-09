@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   title: {
-    ...Typography.title,
+    ...Typography.headingLarge,
   },
   iconButton: {
     padding: 4,

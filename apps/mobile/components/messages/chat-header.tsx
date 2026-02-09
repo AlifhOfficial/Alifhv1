@@ -129,14 +129,14 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   name: {
-    ...Typography.value,
+    ...Typography.dataMedium,
   },
   subtitle: {
-    ...Typography.helperMedium,
+    ...Typography.supportingSmall,
     marginTop: 2,
   },
   status: {
-    ...Typography.helperMedium,
+    ...Typography.supportingSmall,
     marginTop: 2,
   },
 });

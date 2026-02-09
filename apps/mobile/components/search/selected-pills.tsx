@@ -65,10 +65,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   label: {
-    ...Typography.valueSmall,
+    ...Typography.dataMini,
   },
   clearText: {
-    ...Typography.valueSmall,
+    ...Typography.dataMini,
   },
   scrollContent: {
     paddingHorizontal: 20,

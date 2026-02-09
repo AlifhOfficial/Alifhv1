@@ -86,13 +86,13 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   emptyTitle: {
-    fontSize: Typography.bodySmall.fontSize,
-    lineHeight: Typography.bodySmall.lineHeight,
+    fontSize: Typography.bodyMedium.fontSize,
+    lineHeight: Typography.bodyMedium.lineHeight,
     fontFamily: 'Inter_600SemiBold',
   },
   emptySubtitle: {
     fontSize: Typography.labelSmall.fontSize,
-    lineHeight: Typography.helper.lineHeight,
+    lineHeight: Typography.supportingSmall.lineHeight,
     fontFamily: 'Inter_400Regular',
     textAlign: 'center',
   },

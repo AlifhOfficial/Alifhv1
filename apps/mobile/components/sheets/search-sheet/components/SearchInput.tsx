@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    ...Typography.button,
+    ...Typography.buttonMedium,
     paddingVertical: 0,
   },
   clearBtn: {

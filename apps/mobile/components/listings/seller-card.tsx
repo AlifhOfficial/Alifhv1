@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   avatarInitial: {
-    ...Typography.initial,
+    ...Typography.avatarInitial,
   },
   details: {
     flex: 1,
@@ -117,10 +117,10 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   name: {
-    ...Typography.value,
+    ...Typography.dataMedium,
   },
   type: {
-    ...Typography.secondary,
+    ...Typography.supportingSmall,
   },
   blkBadge: {
     paddingHorizontal: 6,

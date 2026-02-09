@@ -144,13 +144,13 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   emptyTitle: {
-    ...Typography.title,
+    ...Typography.headingLarge,
     fontFamily: 'Inter_600SemiBold',
     textAlign: 'center',
     marginTop: 8,
   },
   emptySubtitle: {
-    ...Typography.helper,
+    ...Typography.supportingSmall,
     fontFamily: 'Inter_400Regular',
     textAlign: 'center',
   },
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   quotaText: {
-    ...Typography.labelMedium,
+    ...Typography.supportingSmall,
     fontSize: 12,
   },
 });

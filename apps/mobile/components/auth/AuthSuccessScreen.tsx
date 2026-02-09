@@ -232,11 +232,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    ...Typography.title,
+    ...Typography.headingLarge,
     textAlign: 'center',
   },
   subtitle: {
-    ...Typography.body,
+    ...Typography.bodyLarge,
     marginTop: Spacing.sm,
     textAlign: 'center',
   },
@@ -254,6 +254,6 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   continueButtonText: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
   },
 });

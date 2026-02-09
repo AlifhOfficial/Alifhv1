@@ -352,11 +352,11 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   label: {
-    ...Typography.helperMedium,
+    ...Typography.supportingSmall,
   },
   value: {
-    fontSize: Typography.bodySmall.fontSize,
-    lineHeight: Typography.bodySmall.lineHeight,
+    fontSize: Typography.bodyMedium.fontSize,
+    lineHeight: Typography.bodyMedium.lineHeight,
     fontFamily: 'Inter_400Regular',
   },
   verifyLink: {
@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   prefix: {
-    ...Typography.bodySmall,
+    ...Typography.bodyMedium,
     fontFamily: 'Inter_500Medium',
   },
   input: {
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     paddingHorizontal: 12,
-    fontSize: Typography.bodySmall.fontSize,
+    fontSize: Typography.bodyMedium.fontSize,
     fontFamily: 'Inter_400Regular',
   },
   actions: {
@@ -388,13 +388,13 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   cancelText: {
-    ...Typography.valueMedium,
+    ...Typography.supportingMedium,
   },
   removeText: {
-    ...Typography.valueMedium,
+    ...Typography.supportingMedium,
   },
   saveText: {
-    ...Typography.value,
+    ...Typography.dataMedium,
   },
   loadingContainer: {
     flexDirection: 'row',
@@ -403,13 +403,13 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   loadingText: {
-    fontSize: Typography.value.fontSize,
-    lineHeight: Typography.value.lineHeight,
+    fontSize: Typography.dataMedium.fontSize,
+    lineHeight: Typography.dataMedium.lineHeight,
     fontFamily: 'Inter_400Regular',
   },
   otpHint: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
+    fontSize: Typography.supportingSmall.fontSize,
+    lineHeight: Typography.supportingSmall.lineHeight,
     fontFamily: 'Inter_400Regular',
     marginTop: 4,
     marginBottom: 12,
@@ -419,14 +419,14 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     paddingHorizontal: 16,
-    ...Typography.title,
+    ...Typography.headingLarge,
     fontFamily: 'Inter_500Medium',
     textAlign: 'center',
     letterSpacing: 8,
   },
   errorText: {
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
+    fontSize: Typography.supportingSmall.fontSize,
+    lineHeight: Typography.supportingSmall.lineHeight,
     fontFamily: 'Inter_400Regular',
     marginTop: 8,
   },
@@ -437,13 +437,13 @@ const styles = StyleSheet.create({
     marginTop: 14,
   },
   resendText: {
-    ...Typography.helperMedium,
+    ...Typography.supportingSmall,
   },
   otpButtonRow: {
     flexDirection: 'row',
     gap: 20,
   },
   verifyButton: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
   },
 });

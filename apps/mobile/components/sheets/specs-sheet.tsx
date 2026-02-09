@@ -120,10 +120,10 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.md,
   },
   headerTitle: {
-    ...Typography.title,
+    ...Typography.headingLarge,
   },
   doneBtn: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
   },
   scrollView: {
     flex: 1,
@@ -138,9 +138,9 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm + 2,
   },
   specLabel: {
-    ...Typography.labelText,
+    ...Typography.supportingMedium,
   },
   specValue: {
-    ...Typography.value,
+    ...Typography.dataMedium,
   },
 });

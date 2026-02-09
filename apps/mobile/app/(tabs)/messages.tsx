@@ -290,18 +290,18 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   emptyTitle: {
-    ...Typography.title,
+    ...Typography.headingLarge,
   },
   emptySubtitle: {
-    ...Typography.helper,
+    ...Typography.supportingSmall,
     textAlign: 'center',
   },
   actionLink: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
     marginTop: Spacing.sm,
   },
   errorText: {
-    ...Typography.helperMedium,
+    ...Typography.supportingSmall,
     textAlign: 'center',
   },
 });

@@ -52,6 +52,6 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   text: {
-    ...Typography.body,
+    ...Typography.bodyLarge,
   },
 });

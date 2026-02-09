@@ -171,12 +171,12 @@ const styles = StyleSheet.create({
     }),
   },
   title: {
-    ...Typography.titleSmall,
+    ...Typography.headingSmall,
     marginBottom: 8,
   },
   description: {
-    fontSize: Typography.value.fontSize,
-    lineHeight: Typography.title.lineHeight,
+    fontSize: Typography.dataMedium.fontSize,
+    lineHeight: Typography.headingLarge.lineHeight,
     fontFamily: 'Inter_400Regular',
     marginBottom: 24,
   },
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   inputLabel: {
-    ...Typography.helperMedium,
+    ...Typography.supportingSmall,
     marginBottom: 8,
   },
   input: {
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     paddingHorizontal: 16,
-    ...Typography.bodySmall,
+    ...Typography.bodyMedium,
     fontFamily: 'Inter_500Medium',
   },
   buttons: {
@@ -207,8 +207,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonText: {
-    fontSize: Typography.button.fontSize,
-    lineHeight: Typography.button.lineHeight,
+    fontSize: Typography.buttonMedium.fontSize,
+    lineHeight: Typography.buttonMedium.lineHeight,
     fontFamily: 'Inter_600SemiBold',
   },
 });

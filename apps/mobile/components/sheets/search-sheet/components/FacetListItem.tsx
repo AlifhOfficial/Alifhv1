@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   label: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
     flex: 1,
   },
   labelSelected: {

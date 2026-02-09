@@ -235,10 +235,10 @@ const styles = StyleSheet.create({
     marginBottom: Spacing['3xl'],
   },
   title: {
-    ...Typography.titleLarge,
+    ...Typography.displayLarge,
   },
   subtitle: {
-    ...Typography.bodySmall,
+    ...Typography.bodyMedium,
     marginTop: Spacing.sm,
   },
   errorBox: {
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   errorText: {
-    ...Typography.bodyMini,
+    ...Typography.bodySmall,
     textAlign: 'center',
   },
   codeSection: {
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   codeDigit: {
-    ...Typography.title,
+    ...Typography.headingLarge,
   },
   cursor: {
     position: 'absolute',
@@ -295,14 +295,14 @@ const styles = StyleSheet.create({
     ...Typography.link,
   },
   resendTimer: {
-    ...Typography.helper,
+    ...Typography.supportingSmall,
   },
   helpSection: {
     marginTop: 'auto',
     paddingBottom: Spacing['2xl'],
   },
   helpText: {
-    ...Typography.helper,
+    ...Typography.supportingSmall,
     textAlign: 'center',
   },
 });

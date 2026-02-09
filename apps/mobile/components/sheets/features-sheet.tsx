@@ -107,10 +107,10 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.md,
   },
   headerTitle: {
-    ...Typography.title,
+    ...Typography.headingLarge,
   },
   doneBtn: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
   },
   scrollView: {
     flex: 1,

@@ -213,11 +213,11 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   label: {
-    ...Typography.helperMedium,
+    ...Typography.supportingSmall,
   },
   value: {
-    fontSize: Typography.bodySmall.fontSize,
-    lineHeight: Typography.bodySmall.lineHeight,
+    fontSize: Typography.bodyMedium.fontSize,
+    lineHeight: Typography.bodyMedium.lineHeight,
     fontFamily: 'Inter_400Regular',
   },
   rightContainer: {
@@ -238,8 +238,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   prefix: {
-    fontSize: Typography.bodySmall.fontSize,
-    lineHeight: Typography.bodySmall.lineHeight,
+    fontSize: Typography.bodyMedium.fontSize,
+    lineHeight: Typography.bodyMedium.lineHeight,
     fontFamily: 'Inter_400Regular',
   },
   input: {
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 10,
     paddingHorizontal: 12,
-    fontSize: Typography.bodySmall.fontSize,
+    fontSize: Typography.bodyMedium.fontSize,
     fontFamily: 'Inter_400Regular',
   },
   actions: {
@@ -259,9 +259,9 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   cancelText: {
-    ...Typography.valueMedium,
+    ...Typography.supportingMedium,
   },
   saveText: {
-    ...Typography.value,
+    ...Typography.dataMedium,
   },
 });

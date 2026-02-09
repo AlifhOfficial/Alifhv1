@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   message: {
-    ...Typography.valueMedium,
+    ...Typography.supportingMedium,
     marginTop: 24,
   },
 });

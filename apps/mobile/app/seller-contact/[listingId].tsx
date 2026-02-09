@@ -748,7 +748,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   errorText: {
-    ...Typography.body,
+    ...Typography.bodyLarge,
   },
 
   // Hero Section
@@ -779,7 +779,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   sellerName: {
-    ...Typography.title,
+    ...Typography.headingLarge,
     flexShrink: 1,
   },
   metaRow: {
@@ -794,7 +794,7 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   metaText: {
-    ...Typography.secondary,
+    ...Typography.supportingSmall,
   },
   tierPill: {
     paddingHorizontal: 8,
@@ -811,10 +811,10 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   ratingValue: {
-    ...Typography.value,
+    ...Typography.dataMedium,
   },
   reviewCount: {
-    ...Typography.secondary,
+    ...Typography.supportingSmall,
   },
   memberRow: {
     flexDirection: 'row',
@@ -823,7 +823,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   memberText: {
-    ...Typography.helper,
+    ...Typography.supportingSmall,
   },
 
   // CTA Row
@@ -841,7 +841,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
   },
   primaryCtaText: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
     color: '#FFF',
   },
   secondaryCta: {
@@ -855,7 +855,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   secondaryCtaText: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
   },
 
   // Phone Row
@@ -866,11 +866,11 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xs,
   },
   phoneText: {
-    ...Typography.value,
+    ...Typography.dataMedium,
     flex: 1,
   },
   phoneCta: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
     paddingHorizontal: Spacing.sm,
   },
 
@@ -895,7 +895,7 @@ const styles = StyleSheet.create({
     ...Typography.buttonSmall,
   },
   phoneNumber: {
-    ...Typography.helper,
+    ...Typography.supportingSmall,
     marginTop: 2,
   },
 
@@ -909,7 +909,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   sectionLabel: {
-    ...Typography.label,
+    ...Typography.labelMedium,
     marginBottom: Spacing.xs,
   },
   viewAllLink: {
@@ -929,7 +929,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   locationText: {
-    ...Typography.bodySmall,
+    ...Typography.bodyMedium,
     flex: 1,
   },
   locationActionsCompact: {
@@ -970,7 +970,7 @@ const styles = StyleSheet.create({
 
   // Description
   descriptionText: {
-    ...Typography.bodySmall,
+    ...Typography.bodyMedium,
   },
 
   // Tags
@@ -1009,17 +1009,17 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   listingTitle: {
-    ...Typography.valueSmall,
+    ...Typography.dataMini,
     paddingHorizontal: Spacing.sm,
     paddingTop: Spacing.sm,
   },
   listingModel: {
-    ...Typography.helper,
+    ...Typography.supportingSmall,
     paddingHorizontal: Spacing.sm,
     marginTop: 2,
   },
   listingPrice: {
-    ...Typography.value,
+    ...Typography.dataMedium,
     paddingHorizontal: Spacing.sm,
     paddingBottom: Spacing.md,
     paddingTop: 6,
@@ -1035,7 +1035,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
   },
   viewAllBtnText: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
   },
 
   // EMI
@@ -1047,14 +1047,14 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
   },
   emiLabel: {
-    ...Typography.secondary,
+    ...Typography.supportingSmall,
   },
   emiValue: {
-    ...Typography.heroNumber,
+    ...Typography.displayNumber,
     marginTop: 6,
   },
   emiPeriod: {
-    ...Typography.helper,
+    ...Typography.supportingSmall,
     marginTop: 2,
   },
   emiDivider: {
@@ -1068,13 +1068,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   emiRowLabel: {
-    ...Typography.secondary,
+    ...Typography.supportingSmall,
   },
   emiRowValue: {
-    ...Typography.value,
+    ...Typography.dataMedium,
   },
   emiDisclaimer: {
-    ...Typography.helper,
+    ...Typography.supportingSmall,
     textAlign: 'center',
     marginTop: Spacing.xs,
   },
@@ -1087,10 +1087,10 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   emiCompactLabel: {
-    ...Typography.secondary,
+    ...Typography.supportingSmall,
   },
   emiCompactValue: {
-    ...Typography.titlePrice,
+    ...Typography.priceTag,
   },
   calcRow: {
     flexDirection: 'row',
@@ -1099,7 +1099,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   calcLabel: {
-    ...Typography.helper,
+    ...Typography.supportingSmall,
     width: 40,
   },
   calcOptions: {
@@ -1117,7 +1117,7 @@ const styles = StyleSheet.create({
     ...Typography.chip,
   },
   calcDisclaimer: {
-    ...Typography.helper,
+    ...Typography.supportingSmall,
     marginTop: Spacing.xs,
   },
 
@@ -1132,6 +1132,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   websiteBtnText: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
   },
 });

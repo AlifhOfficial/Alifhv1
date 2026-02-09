@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   input: {
-    ...Typography.bodySmall,
+    ...Typography.bodyMedium,
     paddingVertical: Platform.OS === 'ios' ? Spacing.sm : Spacing.sm,
   },
   sendWrapper: {

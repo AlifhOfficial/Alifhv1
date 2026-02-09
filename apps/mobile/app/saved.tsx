@@ -163,6 +163,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   retryText: {
-    ...Typography.button,
+    ...Typography.buttonMedium,
   },
 });

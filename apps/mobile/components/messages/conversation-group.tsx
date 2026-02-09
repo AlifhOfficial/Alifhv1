@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   name: {
-    ...Typography.value,
+    ...Typography.dataMedium,
     flex: 1,
   },
   onlineDot: {
@@ -191,17 +191,17 @@ const styles = StyleSheet.create({
   },
   chatTitle: {
     flex: 1,
-    fontSize: Typography.value.fontSize,
-    lineHeight: Typography.value.lineHeight,
+    fontSize: Typography.dataMedium.fontSize,
+    lineHeight: Typography.dataMedium.lineHeight,
   },
   chatTime: {
-    ...Typography.helper,
+    ...Typography.supportingSmall,
     marginLeft: Spacing.sm,
   },
   chatPreview: {
     flex: 1,
-    fontSize: Typography.helper.fontSize,
-    lineHeight: Typography.helper.lineHeight,
+    fontSize: Typography.supportingSmall.fontSize,
+    lineHeight: Typography.supportingSmall.lineHeight,
     marginTop: 2,
   },
   dot: {

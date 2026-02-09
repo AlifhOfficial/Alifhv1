@@ -34,6 +34,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   title: {
-    ...Typography.title,
+    ...Typography.headingLarge,
   },
 });

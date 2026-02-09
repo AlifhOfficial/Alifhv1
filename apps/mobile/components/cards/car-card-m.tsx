@@ -2,23 +2,31 @@
  * Car Card Mobile (CarCardM) - Revvup Design System
  * Mobile-optimized car listing card following web car-card patterns
  * All data points preserved, theme-driven styling
+ * 
+ * Uses semantic Text components for cross-platform consistency
  */
 
 import React, { useCallback, memo } from 'react';
 import {
   StyleSheet,
   View,
-  Text,
   Pressable,
   Share,
-  Dimensions,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { Heart, Share2, CheckCircle2 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Typography, Shadows } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Skeleton, SkeletonCircle } from '@/components/ui';
+import { 
+  Skeleton, 
+  SkeletonCircle,
+  Text,
+  Heading,
+  Data,
+  Label,
+  Supporting,
+} from '@/components/ui';
 
 // ============================================================================
 // FORMAT UTILITIES
@@ -139,14 +147,12 @@ export const CarCardM = memo(function CarCardM({
 }: CarCardMProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const isDark = colorScheme === 'dark';
 
   // Derived display values
   const displayImage = thumbnail || images?.[0];
   const displaySpecs = formatSpecs(specs || 'GCC');
   const displayEmirate = formatEmirate(emirate);
   const displaySellerName = partnerName || sellerName || 'Private Seller';
-  const isPartnerListing = Boolean(partnerLogo || partnerName);
   const isVerified = partnerVerified || kycVerified;
   const carTitle = `${year} ${make} ${model}${trim ? ` ${trim}` : ''}`;
 
@@ -236,9 +242,9 @@ export const CarCardM = memo(function CarCardM({
           />
         ) : (
           <View style={[styles.imagePlaceholder, { backgroundColor: colors.skeleton }]}>
-            <Text style={[styles.placeholderText, { color: colors.textTertiary }]}>
+            <Supporting size="small" style={{ color: colors.textTertiary }}>
               No Image
-            </Text>
+            </Supporting>
           </View>
         )}
       </View>
@@ -247,35 +253,36 @@ export const CarCardM = memo(function CarCardM({
       <View style={styles.content}>
         {/* Title Row */}
         <View style={styles.titleRow}>
-          <Text 
+          <Heading 
+            size="card"
             style={[styles.title, { color: titleColor }]} 
             numberOfLines={1}
           >
             {make} {model}
-          </Text>
-          <Text style={[styles.year, { color: metaColor }]}>
+          </Heading>
+          <Data size="medium" style={{ color: metaColor }}>
             {year}
-          </Text>
+          </Data>
         </View>
 
         {/* Price */}
-        <Text style={[styles.price, { color: priceColor }]}>
+        <Text variant="priceMini" style={{ color: priceColor }}>
           {formatPrice(price)}
         </Text>
 
         {/* Stats Row */}
         <View style={styles.statsRow}>
-          <Text style={[styles.stat, { color: statsColor }]}>
+          <Data size="medium" style={{ color: statsColor }}>
             {formatMileage(mileage)} km
-          </Text>
-          <Text style={[styles.separator, { color: separatorColor }]}>·</Text>
-          <Text style={[styles.stat, { color: statsColor }]}>
+          </Data>
+          <Data size="medium" style={[styles.separator, { color: separatorColor }]}>·</Data>
+          <Data size="medium" style={{ color: statsColor }}>
             {displaySpecs}
-          </Text>
-          <Text style={[styles.separator, { color: separatorColor }]}>·</Text>
-          <Text style={[styles.stat, { color: statsColor }]} numberOfLines={1}>
+          </Data>
+          <Data size="medium" style={[styles.separator, { color: separatorColor }]}>·</Data>
+          <Data size="medium" style={{ color: statsColor }} numberOfLines={1}>
             {displayEmirate}
-          </Text>
+          </Data>
         </View>
 
         {/* Bottom Section: Seller + Actions */}
@@ -299,7 +306,7 @@ export const CarCardM = memo(function CarCardM({
                   transition={150}
                 />
               ) : (
-                <Text style={[styles.avatarInitial, { color: metaColor }]}>
+                <Text variant="avatarSmall" style={{ color: metaColor }}>
                   {displaySellerName.charAt(0).toUpperCase()}
                 </Text>
               )}
@@ -307,17 +314,18 @@ export const CarCardM = memo(function CarCardM({
             
             {/* Seller Name + Badge Container */}
             <View style={styles.sellerNameContainer}>
-              <Text 
+              <Data 
+                size="small"
                 style={[styles.sellerName, { color: sellerTextColor }]} 
                 numberOfLines={1}
               >
                 {displaySellerName}
-              </Text>
+              </Data>
 
               {/* Verification Badge */}
               {!isBlackTierPartner && isVerified && (
                 <CheckCircle2 
-                  size={18} 
+                  size={ICON_SIZE_SM} 
                   color={colors.primary}
                 />
               )}
@@ -325,7 +333,9 @@ export const CarCardM = memo(function CarCardM({
               {/* BLK Badge */}
               {isBlackTierPartner && (
                 <View style={[styles.blkBadge, { backgroundColor: colors.blkBackground }]}>
-                  <Text style={[styles.blkBadgeText, { color: colors.blkText }]}>BLK</Text>
+                  <Label size="badge" uppercase={false} style={{ color: colors.blkText }}>
+                    BLK
+                  </Label>
                 </View>
               )}
             </View>
@@ -343,7 +353,7 @@ export const CarCardM = memo(function CarCardM({
               ]}
             >
               <Heart
-                size={22}
+                size={ICON_SIZE}
                 color={isFavorite ? colors.favorite : actionIconColor}
                 fill={isFavorite ? colors.favorite : 'none'}
                 strokeWidth={isFavorite ? 2.25 : 1.75}
@@ -360,7 +370,7 @@ export const CarCardM = memo(function CarCardM({
               ]}
             >
               <Share2 
-                size={22} 
+                size={ICON_SIZE} 
                 color={actionIconColor}
                 strokeWidth={1.75}
               />
@@ -395,7 +405,7 @@ export function CarCardMSkeleton() {
         {/* Title Row */}
         <View style={styles.titleRow}>
           <Skeleton width="60%" height={17} />
-          <Skeleton width={32} height={13} />
+          <Skeleton width={AVATAR_SIZE_SM} height={13} />
         </View>
 
         {/* Price */}
@@ -411,13 +421,12 @@ export function CarCardMSkeleton() {
         {/* Bottom */}
         <View style={styles.bottomRow}>
           <View style={styles.sellerInfo}>
-            <SkeletonCircle size={32} />
+            <SkeletonCircle size={AVATAR_SIZE_SM} />
             <Skeleton width={90} height={15} />
           </View>
           <View style={styles.actions}>
-            <SkeletonCircle size={36} />
-            <SkeletonCircle size={36} />
-            <SkeletonCircle size={36} />
+            <SkeletonCircle size={ACTION_BUTTON_SIZE_SM} />
+            <SkeletonCircle size={ACTION_BUTTON_SIZE_SM} />
           </View>
         </View>
       </View>
@@ -426,11 +435,21 @@ export function CarCardMSkeleton() {
 }
 
 // ============================================================================
-// STYLES
+// CONSTANTS
 // ============================================================================
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_PADDING = Spacing.md;
+const AVATAR_SIZE = Spacing['4xl']; // 40 → using 32 (Spacing['3xl'] + 8)
+const AVATAR_SIZE_SM = 32;
+const ACTION_BUTTON_SIZE = Spacing['5xl']; // 48 → close to 40
+const ACTION_BUTTON_SIZE_SM = 40;
+const ICON_SIZE = 22;
+const ICON_SIZE_SM = 18;
+const SEPARATOR_OPACITY = 0.4;
+
+// ============================================================================
+// STYLES
+// ============================================================================
 
 const styles = StyleSheet.create({
   container: {
@@ -462,9 +481,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  placeholderText: {
-    ...Typography.helper,
-  },
 
   // Content
   content: {
@@ -481,19 +497,6 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    ...Typography.titleCard,
-    fontSize: 17,
-    lineHeight: 22,
-  },
-  year: {
-    ...Typography.stat,
-  },
-
-  // Price
-  price: {
-    ...Typography.titlePrice,
-    fontSize: 16,
-    lineHeight: 22,
   },
 
   // Stats
@@ -502,12 +505,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.xs,
   },
-  stat: {
-    ...Typography.stat,
-  },
   separator: {
-    ...Typography.stat,
-    opacity: 0.4,
+    opacity: SEPARATOR_OPACITY,
   },
 
   // Bottom Row
@@ -527,8 +526,8 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   avatar: {
-    width: 32,
-    height: 32,
+    width: AVATAR_SIZE_SM,
+    height: AVATAR_SIZE_SM,
     borderRadius: Radius.full,
     borderWidth: 1,
     alignItems: 'center',
@@ -542,10 +541,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  avatarInitial: {
-    ...Typography.labelSmall,
-    fontFamily: 'Inter_600SemiBold',
-  },
   sellerNameContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -554,19 +549,12 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   sellerName: {
-    ...Typography.value,
-    fontSize: 14,
-    lineHeight: 18,
     flexShrink: 1,
   },
   blkBadge: {
-    paddingHorizontal: 6,
-    paddingVertical: 3,
+    paddingHorizontal: Spacing.sm - 2, // 6
+    paddingVertical: Spacing.xs - 1,   // 3
     borderRadius: Radius.sm,
-  },
-  blkBadgeText: {
-    ...Typography.labelBadge,
-    fontFamily: 'Inter_700Bold',
   },
 
   // Actions
@@ -576,8 +564,8 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   actionButton: {
-    width: 40,
-    height: 40,
+    width: ACTION_BUTTON_SIZE_SM,
+    height: ACTION_BUTTON_SIZE_SM,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Radius.full,

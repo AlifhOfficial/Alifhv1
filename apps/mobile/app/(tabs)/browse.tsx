@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing['3xl'],
   },
   emptyText: {
-    ...Typography.body,
+    ...Typography.bodyLarge,
   },
   loadingMore: {
     alignItems: 'center',

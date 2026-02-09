@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   ctaButtonText: {
-    ...Typography.titleSmall,
+    ...Typography.headingSmall,
   },
   skipSection: {
     alignItems: 'center',
