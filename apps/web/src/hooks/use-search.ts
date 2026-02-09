@@ -287,13 +287,21 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
  */
 interface QuickSearchResult {
   suggestions: Array<{
-    type: 'make' | 'model' | 'make_model' | 'make_model_trim' | 'partner';
+    type: 'make' | 'model' | 'make_model' | 'make_model_trim' | 'partner' | 'tag' | 'extra' | 'bodyType' | 'fuelType' | 'transmission' | 'specs' | 'condition' | 'sellerType';
     text: string;
     make?: string;
     model?: string;
     trim?: string;
     partnerId?: string;
     partnerName?: string;
+    tag?: string;
+    extra?: string;
+    bodyType?: string;
+    fuelType?: string;
+    transmission?: string;
+    specs?: string;
+    condition?: 'new' | 'used';
+    sellerType?: 'dealer' | 'private';
     count: number;
   }>;
   isLoading: boolean;

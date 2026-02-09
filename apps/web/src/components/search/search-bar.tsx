@@ -14,7 +14,7 @@
 
 import { useState, useRef, useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, X, Loader2, CircleDot, Package, FileKey2, FileText } from 'lucide-react';
+import { Search, X, Loader2, FileKey2, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { searchParamsToUrl, type SearchParams } from '@/lib/search-utils';
 import { useQuickSearch } from '@/hooks/use-search';
@@ -116,7 +116,7 @@ interface SearchBarProps {
 }
 
 export function SearchBar({
-  placeholder = 'Search make, model, dealer...',
+  placeholder = 'Search make, model, dealer, feature...',
   size = 'md',
   className,
   autoFocus = false,
@@ -182,9 +182,9 @@ export function SearchBar({
   const showDropdown = isFocused && (suggestions.length > 0 || isLoading || vinLookup?.loading);
 
   // Handle search submission
-  const handleSearch = useCallback((searchQuery: string, make?: string, model?: string, trim?: string, partnerId?: string, partnerName?: string) => {
-    // Build filters object for callback - clear all search-related filters first
-    const filters: Partial<SearchParams> = {
+  const handleSearch = useCallback((searchQuery: string, filters?: Partial<SearchParams>) => {
+    // Build filters object for callback
+    const searchFilters: Partial<SearchParams> = {
       // Clear all search-related filters
       q: undefined,
       make: undefined,
@@ -192,53 +192,34 @@ export function SearchBar({
       trim: undefined,
       partnerId: undefined,
       partnerName: undefined,
+      tags: undefined,
+      extras: undefined,
     };
     
-    // Then set the new ones
-    if (partnerId && partnerId.trim()) {
-      filters.partnerId = partnerId.trim();
-      if (partnerName && partnerName.trim()) {
-        filters.partnerName = partnerName.trim();
-      }
-    } else if (make && make.trim()) {
-      filters.make = [make.trim()];
-      if (model && model.trim()) {
-        filters.model = [model.trim()];
-      }
-      if (trim && trim.trim()) {
-        filters.trim = [trim.trim()];
-      }
+    // Merge in provided filters
+    if (filters) {
+      Object.assign(searchFilters, filters);
     } else if (searchQuery && searchQuery.trim()) {
-      filters.q = searchQuery.trim();
+      // Fallback to text search
+      searchFilters.q = searchQuery.trim();
     }
     
     if (onSearch) {
-      onSearch(filters);
+      onSearch(searchFilters);
     }
     
     if (redirectOnSearch) {
-      // Build proper SearchParams object
+      // Build proper SearchParams object from merged filters
       const searchParams: SearchParams = {};
       
-      // Partner ID takes priority
-      if (partnerId && partnerId.trim()) {
-        searchParams.partnerId = partnerId.trim();
-        if (partnerName && partnerName.trim()) {
-          searchParams.partnerName = partnerName.trim();
-        }
-      } 
-      // Make, model, and trim filters
-      else if (make && make.trim()) {
-        searchParams.make = [make.trim()];
-        if (model && model.trim()) {
-          searchParams.model = [model.trim()];
-        }
-        if (trim && trim.trim()) {
-          searchParams.trim = [trim.trim()];
-        }
-      }
-      // Fallback to text search
-      else if (searchQuery && searchQuery.trim()) {
+      if (filters) {
+        // Copy all non-undefined filters
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value !== undefined) {
+            (searchParams as any)[key] = value;
+          }
+        });
+      } else if (searchQuery && searchQuery.trim()) {
         searchParams.q = searchQuery.trim();
       }
       
@@ -268,16 +249,29 @@ export function SearchBar({
       setIsFocused(false);
       inputRef.current?.blur();
     } else if (suggestion.type === 'partner') {
-      handleSearch(suggestion.text, undefined, undefined, undefined, suggestion.partnerId, suggestion.partnerName);
+      handleSearch(suggestion.text, { partnerId: suggestion.partnerId, partnerName: suggestion.partnerName });
+    } else if (suggestion.type === 'tag') {
+      handleSearch('', { tags: [suggestion.tag!] });
+    } else if (suggestion.type === 'extra') {
+      handleSearch('', { extras: [suggestion.extra!] });
+    } else if (suggestion.type === 'bodyType') {
+      handleSearch('', { bodyType: [suggestion.bodyType!] });
+    } else if (suggestion.type === 'fuelType') {
+      handleSearch('', { fuelType: [suggestion.fuelType!] });
+    } else if (suggestion.type === 'transmission') {
+      handleSearch('', { transmission: [suggestion.transmission!] });
+    } else if (suggestion.type === 'specs') {
+      handleSearch('', { specs: [suggestion.specs!] });
+    } else if (suggestion.type === 'condition') {
+      handleSearch('', { condition: suggestion.condition });
+    } else if (suggestion.type === 'sellerType') {
+      handleSearch('', { sellerType: suggestion.sellerType });
     } else if (suggestion.type === 'make_model_trim') {
-      // Full selection - apply filters
-      handleSearch(suggestion.text, suggestion.make, suggestion.model, suggestion.trim);
+      handleSearch('', { make: [suggestion.make!], model: [suggestion.model!], trim: [suggestion.trim!] });
     } else if (suggestion.type === 'make_model') {
-      // Direct selection - apply make + model filters
-      handleSearch('', suggestion.make, suggestion.model);
+      handleSearch('', { make: [suggestion.make!], model: [suggestion.model!] });
     } else if (suggestion.type === 'make') {
-      // Apply make filter immediately - facets will update to show models
-      handleSearch('', suggestion.make);
+      handleSearch('', { make: [suggestion.make || suggestion.text] });
     } else {
       handleSearch(suggestion.text);
     }
@@ -350,6 +344,39 @@ export function SearchBar({
     lg: 'h-5 w-5',
   };
 
+  // Category colors matching mobile scheme
+  const SUGGESTION_COLORS: Record<string, string> = {
+    make: '#3B82F6',
+    model: '#3B82F6',
+    make_model: '#3B82F6',
+    make_model_trim: '#3B82F6',
+    partner: '#EAB308',
+    tag: '#22C55E',
+    extra: '#A855F7',
+    bodyType: '#F97316',
+    fuelType: '#F97316',
+    transmission: '#F97316',
+    specs: '#F97316',
+    condition: '#F97316',
+    sellerType: '#F97316',
+  };
+
+  const SUGGESTION_LABELS: Record<string, string> = {
+    make: 'Make',
+    model: 'Model',
+    make_model: 'Make & Model',
+    make_model_trim: 'Full Match',
+    partner: 'Dealer',
+    tag: 'Tag',
+    extra: 'Feature',
+    bodyType: 'Body Type',
+    fuelType: 'Fuel',
+    transmission: 'Transmission',
+    specs: 'Specs',
+    condition: 'Condition',
+    sellerType: 'Seller',
+  };
+
   // Get icon for suggestion type
   const getSuggestionIcon = (type: string) => {
     switch (type) {
@@ -358,12 +385,15 @@ export function SearchBar({
       case 'vin_decode':
       case 'vin_partial':
         return <FileKey2 className="h-4 w-4 text-blue-500" />;
-      case 'partner':
-        return <Package className="h-4 w-4 text-muted-foreground/80" />;
-      case 'make':
-      case 'make_model':
-      default:
-        return <CircleDot className="h-4 w-4 text-muted-foreground/60" />;
+      default: {
+        const dotColor = SUGGESTION_COLORS[type] || '#9CA3AF';
+        return (
+          <span
+            className="inline-block h-2 w-2 rounded-full flex-shrink-0"
+            style={{ backgroundColor: dotColor }}
+          />
+        );
+      }
     }
   };
 
@@ -505,9 +535,9 @@ export function SearchBar({
                             Decode VIN
                           </span>
                         )}
-                        {suggestion.type === 'partner' && (
-                          <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70 bg-muted rounded">
-                            Dealer
+                        {!['vin_listing', 'vin_decode', 'vin_partial'].includes(suggestion.type) && SUGGESTION_LABELS[suggestion.type] && (
+                          <span className="text-xs text-muted-foreground/60 font-medium">
+                            {SUGGESTION_LABELS[suggestion.type]}
                           </span>
                         )}
                       </div>

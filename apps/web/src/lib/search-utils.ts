@@ -61,6 +61,7 @@ export interface SearchParams {
   underWarranty?: boolean;
   isBlkListing?: boolean;
   tags?: string[];
+  extras?: string[];
   sellerType?: 'dealer' | 'private';
   partnerId?: string;
   partnerName?: string;
@@ -166,6 +167,7 @@ export function searchParamsToUrl(params: SearchParams): URLSearchParams {
   if (params.exteriorColor?.length) urlParams.set('exteriorColor', params.exteriorColor.join(','));
   if (params.interiorColor?.length) urlParams.set('interiorColor', params.interiorColor.join(','));
   if (params.tags?.length) urlParams.set('tags', params.tags.join(','));
+  if (params.extras?.length) urlParams.set('extras', params.extras.join(','));
   
   if (params.yearMin) urlParams.set('yearMin', String(params.yearMin));
   if (params.yearMax) urlParams.set('yearMax', String(params.yearMax));
@@ -230,6 +232,7 @@ export function urlToSearchParams(urlParams: URLSearchParams): SearchParams {
     exteriorColor: parseArray('exteriorColor'),
     interiorColor: parseArray('interiorColor'),
     tags: parseArray('tags'),
+    extras: parseArray('extras'),
     
     yearMin: parseNumber('yearMin'),
     yearMax: parseNumber('yearMax'),

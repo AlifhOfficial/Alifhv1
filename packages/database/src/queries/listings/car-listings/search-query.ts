@@ -1000,128 +1000,170 @@ export async function quickSearch(
   }> = [];
 
   // ========================================
-  // CATEGORY MATCHING (no DB query needed)
+  // CATEGORY MATCHING + COUNT QUERIES
   // ========================================
   
   if (searchTerm && !context) {
-    // Tags (quality indicators) - green category
+    // First collect all matched categories in-memory
     const matchingTags = LISTING_TAGS.filter(tag => 
       tag.label.toLowerCase().includes(searchTerm) ||
       tag.value.toLowerCase().includes(searchTerm)
-    );
-    for (const tag of matchingTags.slice(0, 2)) {
-      suggestions.push({
-        type: 'tag',
-        text: tag.label,
-        tag: tag.value,
-        count: 0,
-      });
-    }
+    ).slice(0, 2);
     
-    // Extras/Features (purple category)
     const matchingExtras = VEHICLE_EXTRAS.filter(extra => 
       extra.label.toLowerCase().includes(searchTerm) ||
       extra.value.toLowerCase().includes(searchTerm)
-    );
-    for (const extra of matchingExtras.slice(0, 2)) {
-      suggestions.push({
-        type: 'extra',
-        text: extra.label,
-        extra: extra.value,
-        count: 0,
-      });
-    }
+    ).slice(0, 2);
     
-    // Body Types (orange category)
     const matchingBodyTypes = BODY_TYPES.filter(bt => 
       bt.label.toLowerCase().includes(searchTerm) ||
       bt.value.toLowerCase().includes(searchTerm)
-    );
-    for (const bt of matchingBodyTypes.slice(0, 2)) {
-      suggestions.push({
-        type: 'bodyType',
-        text: bt.label,
-        bodyType: bt.value,
-        count: 0,
-      });
-    }
+    ).slice(0, 2);
     
-    // Fuel Types (orange category)
     const matchingFuelTypes = FUEL_TYPES.filter(ft => 
       ft.label.toLowerCase().includes(searchTerm) ||
       ft.value.toLowerCase().includes(searchTerm)
-    );
-    for (const ft of matchingFuelTypes.slice(0, 2)) {
-      suggestions.push({
-        type: 'fuelType',
-        text: ft.label,
-        fuelType: ft.value,
-        count: 0,
-      });
-    }
+    ).slice(0, 2);
     
-    // Transmission (orange category)
     const matchingTransmission = TRANSMISSION_TYPES.filter(t => 
       t.label.toLowerCase().includes(searchTerm) ||
       t.value.toLowerCase().includes(searchTerm)
-    );
-    for (const t of matchingTransmission.slice(0, 1)) {
-      suggestions.push({
-        type: 'transmission',
-        text: t.label,
-        transmission: t.value,
-        count: 0,
-      });
-    }
+    ).slice(0, 1);
     
-    // Specs (orange category)
     const matchingSpecs = SPECS_TYPES.filter(s => 
       s.label.toLowerCase().includes(searchTerm) ||
       s.value.toLowerCase().includes(searchTerm)
-    );
-    for (const s of matchingSpecs.slice(0, 2)) {
-      suggestions.push({
-        type: 'specs',
-        text: s.label,
-        specs: s.value,
-        count: 0,
-      });
-    }
+    ).slice(0, 2);
     
-    // Condition (orange category)
+    const matchedConditions: Array<{ text: string; value: 'new' | 'used' }> = [];
     if ('new'.includes(searchTerm) || 'brand new'.includes(searchTerm)) {
-      suggestions.push({
-        type: 'condition',
-        text: 'New Cars',
-        condition: 'new',
-        count: 0,
-      });
+      matchedConditions.push({ text: 'New Cars', value: 'new' });
     }
     if ('used'.includes(searchTerm) || 'pre-owned'.includes(searchTerm) || 'preowned'.includes(searchTerm)) {
-      suggestions.push({
-        type: 'condition',
-        text: 'Used Cars',
-        condition: 'used',
-        count: 0,
-      });
+      matchedConditions.push({ text: 'Used Cars', value: 'used' });
     }
     
-    // Seller Type (orange category)
+    const matchedSellerTypes: Array<{ text: string; value: 'dealer' | 'private' }> = [];
     if ('dealer'.includes(searchTerm) || 'showroom'.includes(searchTerm)) {
-      suggestions.push({
-        type: 'sellerType',
-        text: 'Dealers Only',
-        sellerType: 'dealer',
-        count: 0,
-      });
+      matchedSellerTypes.push({ text: 'Dealers Only', value: 'dealer' });
     }
     if ('private'.includes(searchTerm) || 'owner'.includes(searchTerm) || 'individual'.includes(searchTerm)) {
-      suggestions.push({
-        type: 'sellerType',
-        text: 'Private Sellers',
-        sellerType: 'private',
-        count: 0,
-      });
+      matchedSellerTypes.push({ text: 'Private Sellers', value: 'private' });
+    }
+
+    // Check if we have any category matches at all
+    const hasCategories = matchingTags.length || matchingExtras.length || matchingBodyTypes.length || 
+      matchingFuelTypes.length || matchingTransmission.length || matchingSpecs.length || 
+      matchedConditions.length || matchedSellerTypes.length;
+    
+    if (hasCategories) {
+      // Build a single efficient count query using SUM(CASE WHEN ...) for all matched categories
+      const countFields: Record<string, ReturnType<typeof sql>> = {};
+      
+      // Tags: jsonb ?| array check
+      for (const tag of matchingTags) {
+        countFields[`tag_${tag.value}`] = sql<number>`SUM(CASE WHEN ${carListing.tags} ? ${tag.value} THEN 1 ELSE 0 END)`;
+      }
+      // Extras: jsonb ? check
+      for (const extra of matchingExtras) {
+        countFields[`extra_${extra.value}`] = sql<number>`SUM(CASE WHEN ${carListing.extras} ? ${extra.value} THEN 1 ELSE 0 END)`;
+      }
+      // Simple equality columns
+      for (const bt of matchingBodyTypes) {
+        countFields[`bt_${bt.value}`] = sql<number>`SUM(CASE WHEN ${carListing.bodyType} = ${bt.value} THEN 1 ELSE 0 END)`;
+      }
+      for (const ft of matchingFuelTypes) {
+        countFields[`ft_${ft.value}`] = sql<number>`SUM(CASE WHEN ${carListing.fuelType} = ${ft.value} THEN 1 ELSE 0 END)`;
+      }
+      for (const t of matchingTransmission) {
+        countFields[`tr_${t.value}`] = sql<number>`SUM(CASE WHEN ${carListing.transmission} = ${t.value} THEN 1 ELSE 0 END)`;
+      }
+      for (const s of matchingSpecs) {
+        countFields[`sp_${s.value}`] = sql<number>`SUM(CASE WHEN ${carListing.specs} = ${s.value} THEN 1 ELSE 0 END)`;
+      }
+      for (const c of matchedConditions) {
+        countFields[`cond_${c.value}`] = sql<number>`SUM(CASE WHEN ${carListing.condition} = ${c.value} THEN 1 ELSE 0 END)`;
+      }
+      for (const st of matchedSellerTypes) {
+        countFields[`st_${st.value}`] = sql<number>`SUM(CASE WHEN ${carListing.sellerType} = ${st.value} THEN 1 ELSE 0 END)`;
+      }
+
+      // Run a single query to get all counts
+      const selectObj: Record<string, any> = {};
+      for (const [key, sqlExpr] of Object.entries(countFields)) {
+        selectObj[key] = sqlExpr.as(key);
+      }
+
+      const [countRow] = await db
+        .select(selectObj)
+        .from(carListing)
+        .where(and(...conditions));
+      
+      // Now push suggestions with real counts
+      for (const tag of matchingTags) {
+        suggestions.push({
+          type: 'tag',
+          text: tag.label,
+          tag: tag.value,
+          count: Number(countRow?.[`tag_${tag.value}`] ?? 0),
+        });
+      }
+      for (const extra of matchingExtras) {
+        suggestions.push({
+          type: 'extra',
+          text: extra.label,
+          extra: extra.value,
+          count: Number(countRow?.[`extra_${extra.value}`] ?? 0),
+        });
+      }
+      for (const bt of matchingBodyTypes) {
+        suggestions.push({
+          type: 'bodyType',
+          text: bt.label,
+          bodyType: bt.value,
+          count: Number(countRow?.[`bt_${bt.value}`] ?? 0),
+        });
+      }
+      for (const ft of matchingFuelTypes) {
+        suggestions.push({
+          type: 'fuelType',
+          text: ft.label,
+          fuelType: ft.value,
+          count: Number(countRow?.[`ft_${ft.value}`] ?? 0),
+        });
+      }
+      for (const t of matchingTransmission) {
+        suggestions.push({
+          type: 'transmission',
+          text: t.label,
+          transmission: t.value,
+          count: Number(countRow?.[`tr_${t.value}`] ?? 0),
+        });
+      }
+      for (const s of matchingSpecs) {
+        suggestions.push({
+          type: 'specs',
+          text: s.label,
+          specs: s.value,
+          count: Number(countRow?.[`sp_${s.value}`] ?? 0),
+        });
+      }
+      for (const c of matchedConditions) {
+        suggestions.push({
+          type: 'condition',
+          text: c.text,
+          condition: c.value,
+          count: Number(countRow?.[`cond_${c.value}`] ?? 0),
+        });
+      }
+      for (const st of matchedSellerTypes) {
+        suggestions.push({
+          type: 'sellerType',
+          text: st.text,
+          sellerType: st.value,
+          count: Number(countRow?.[`st_${st.value}`] ?? 0),
+        });
+      }
     }
   }
 
