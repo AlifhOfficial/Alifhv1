@@ -36,12 +36,12 @@ SplashScreen.hideAsync().catch(() => {});
 const LightTheme: NavTheme = {
   dark: false,
   colors: {
-    primary: Colors.light.tint,
+    primary: Colors.light.primary,
     background: Colors.light.background,
-    card: Colors.light.card,
+    card: Colors.light.surface,
     text: Colors.light.text,
     border: Colors.light.border,
-    notification: Colors.light.tint,
+    notification: Colors.light.primary,
   },
   fonts: {
     regular: { fontFamily: 'Inter_400Regular', fontWeight: '400' },
@@ -54,12 +54,12 @@ const LightTheme: NavTheme = {
 const CustomDarkTheme: NavTheme = {
   dark: true,
   colors: {
-    primary: Colors.dark.tint,
+    primary: Colors.dark.primary,
     background: Colors.dark.background,
-    card: Colors.dark.card,
+    card: Colors.dark.surface,
     text: Colors.dark.text,
     border: Colors.dark.border,
-    notification: Colors.dark.tint,
+    notification: Colors.dark.primary,
   },
   fonts: {
     regular: { fontFamily: 'Inter_400Regular', fontWeight: '400' },
@@ -76,14 +76,72 @@ function RootLayoutNav() {
   const router = useRouter();
   const colors = Colors[colorScheme];
 
+  // Track if user has completed onboarding
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean | null>(null);
+
+  // Check if user has completed onboarding
+  useEffect(() => {
+    const checkOnboarding = async () => {
+      try {
+        const value = await AsyncStorage.getItem('hasCompletedOnboarding');
+        setHasCompletedOnboarding(value === 'true');
+      } catch {
+        setHasCompletedOnboarding(false);
+      }
+    };
+    checkOnboarding();
+  }, []);
+
+  const handleOnboardingComplete = async (user?: { id: string; name: string; email: string }) => {
+    try {
+      await AsyncStorage.setItem('hasCompletedOnboarding', 'true');
+      if (user) {
+        signIn(user);
+      }
+      setHasCompletedOnboarding(true);
+    } catch {
+      setHasCompletedOnboarding(true);
+    }
+  };
+
+  const handleOnboardingSkip = async () => {
+    try {
+      await AsyncStorage.setItem('hasCompletedOnboarding', 'true');
+      setHasCompletedOnboarding(true);
+    } catch {
+      setHasCompletedOnboarding(true);
+    }
+  };
+
   const handleAuthComplete = (user?: { id: string; name: string; email: string }) => {
     if (user) {
       signIn(user);
     }
     closeAuthFlow();
-    // Navigate to browse tab after successful auth
     router.replace('/(tabs)/browse');
   };
+
+  // Show onboarding auth flow if not completed
+  if (hasCompletedOnboarding === false) {
+    return (
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
+        <AuthFlow 
+          onComplete={handleOnboardingComplete}
+          onSkip={handleOnboardingSkip}
+        />
+        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+      </View>
+    );
+  }
+
+  // Show loading while checking onboarding status
+  if (hasCompletedOnboarding === null) {
+    return (
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
+        <Loader />
+      </View>
+    );
+  }
 
   return (
     <NavigationThemeProvider value={colorScheme === 'dark' ? CustomDarkTheme : LightTheme}>
@@ -143,8 +201,6 @@ export default function RootLayout() {
 
   // Minimum splash time to show branded loader (2 seconds)
   const [minTimeElapsed, setMinTimeElapsed] = useState(false);
-  // Track if user has completed onboarding
-  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -154,42 +210,10 @@ export default function RootLayout() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Check if user has completed onboarding
-  useEffect(() => {
-    const checkOnboarding = async () => {
-      try {
-        const value = await AsyncStorage.getItem('hasCompletedOnboarding');
-        setHasCompletedOnboarding(value === 'true');
-      } catch {
-        setHasCompletedOnboarding(false);
-      }
-    };
-    checkOnboarding();
-  }, []);
-
-  const handleAuthComplete = async () => {
-    try {
-      await AsyncStorage.setItem('hasCompletedOnboarding', 'true');
-      setHasCompletedOnboarding(true);
-    } catch (e) {
-      // Still proceed even if storage fails
-      setHasCompletedOnboarding(true);
-    }
-  };
-
-  const handleSkip = async () => {
-    try {
-      await AsyncStorage.setItem('hasCompletedOnboarding', 'true');
-      setHasCompletedOnboarding(true);
-    } catch (e) {
-      setHasCompletedOnboarding(true);
-    }
-  };
-
-  // Show branded loader until fonts are loaded AND minimum time has passed AND onboarding check complete
-  if (!fontsLoaded || !minTimeElapsed || hasCompletedOnboarding === null) {
+  // Show branded loader until fonts are loaded AND minimum time has passed
+  if (!fontsLoaded || !minTimeElapsed) {
     return (
-      <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#000000' }}>
+      <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.dark.background }}>
         <ThemeProvider>
           <Loader />
         </ThemeProvider>
@@ -197,23 +221,9 @@ export default function RootLayout() {
     );
   }
 
-  // Show auth flow if user hasn't completed onboarding
-  if (!hasCompletedOnboarding) {
-    return (
-      <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#000000' }}>
-        <ThemeProvider>
-          <AuthFlow 
-            onComplete={handleAuthComplete}
-            onSkip={handleSkip}
-          />
-          <StatusBar style="auto" />
-        </ThemeProvider>
-      </GestureHandlerRootView>
-    );
-  }
-
+  // Always render with full provider stack - onboarding is handled inside RootLayoutNav
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#000000' }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.dark.background }}>
       <BottomSheetModalProvider>
         <ThemeProvider>
           <TabBarProvider>

@@ -112,8 +112,7 @@ const styles = StyleSheet.create({
     ...Typography.stat,
   },
   separator: {
-    ...Typography.stat,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.helperMedium,
     opacity: 0.4,
   },
   locationRow: {

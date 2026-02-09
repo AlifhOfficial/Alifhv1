@@ -21,7 +21,7 @@ import { CheckCircle2 } from 'lucide-react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Typography } from '@/constants/theme';
+import { Colors, Typography, Radius, Spacing } from '@/constants/theme';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CONFETTI_COUNT = 50;
@@ -39,23 +39,14 @@ export function AuthSuccessScreen({
   autoRedirectDelay,
 }: AuthSuccessScreenProps) {
   const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
-  const isDark = colorScheme === 'dark';
 
   const [showConfetti, setShowConfetti] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
   
   const iconScale = useSharedValue(0);
   const buttonScale = useSharedValue(0.95);
-
-  const themeColors = Colors[colorScheme];
-  const colors = {
-    bg: themeColors.background,
-    text: themeColors.text,
-    textSecondary: themeColors.textSecondary,
-    primary: themeColors.primary,
-    success: themeColors.success,
-  };
 
   useEffect(() => {
     iconScale.value = withDelay(150, withSpring(1, { damping: 12, stiffness: 180 }));
@@ -89,11 +80,11 @@ export function AuthSuccessScreen({
   const firstName = userName?.split(' ')[0];
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.bg }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Confetti Layer */}
       {showConfetti && <ConfettiExplosion />}
       
-      <View style={[styles.content, { paddingTop: insets.top, paddingBottom: insets.bottom + 24 }]}>
+      <View style={[styles.content, { paddingTop: insets.top, paddingBottom: insets.bottom + Spacing['2xl'] }]}>
         {/* Centered Content */}
         <View style={styles.centerSection}>
           {/* Success Check */}
@@ -125,8 +116,8 @@ export function AuthSuccessScreen({
                 { backgroundColor: colors.primary, opacity: isExiting ? 0.7 : pressed ? 0.9 : 1 }
               ]}
             >
-              <Text style={[styles.continueButtonText, { color: themeColors.primaryForeground }]}>Time to Revv</Text>
-              <ArrowRightIcon />
+              <Text style={[styles.continueButtonText, { color: colors.primaryForeground }]}>Time to Revv</Text>
+              <ArrowRightIcon color={colors.primaryForeground} />
             </Pressable>
           </Animated.View>
         </Animated.View>
@@ -200,12 +191,12 @@ function ConfettiPiece({ index }: { index: number }) {
   );
 }
 
-function ArrowRightIcon() {
+function ArrowRightIcon({ color = '#FFFFFF' }: { color?: string }) {
   return (
     <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
       <Path
         d="M5 12h14M12 5l7 7-7 7"
-        stroke="#FFFFFF"
+        stroke={color}
         strokeWidth={2}
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -220,7 +211,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: Spacing['2xl'],
   },
   confettiContainer: {
     ...StyleSheet.absoluteFillObject,
@@ -235,7 +226,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconSection: {
-    marginBottom: 32,
+    marginBottom: Spacing['3xl'],
   },
   titleSection: {
     alignItems: 'center',
@@ -246,21 +237,21 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     ...Typography.body,
-    marginTop: 8,
+    marginTop: Spacing.sm,
     textAlign: 'center',
   },
   buttonSection: {
     alignItems: 'flex-end',
-    paddingBottom: 40,
+    paddingBottom: Spacing['4xl'],
   },
   continueButton: {
     height: 54,
-    paddingHorizontal: 24,
-    borderRadius: 27,
+    paddingHorizontal: Spacing['2xl'],
+    borderRadius: Radius.full,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: Spacing.sm,
   },
   continueButtonText: {
     ...Typography.button,

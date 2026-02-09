@@ -33,13 +33,17 @@ export const Colors = {
   light: {
     // BACKGROUNDS
     background: '#FFFFFF',
-    backgroundSecondary: '#F5F5F5',
-    backgroundTertiary: '#EBEBEB',
+    backgroundSecondary: '#F2F2F4',
+    backgroundTertiary: '#EAEAEC',
     
-    // SURFACES (Cards, Sheets, Modals) - White to contrast against gray backgrounds
-    surface: '#FFFFFF',
-    surfaceSecondary: '#F5F5F5',
-    surfacePressed: '#EBEBEB',
+    // SURFACES (Cards, Sheets, Modals) - Noticeable contrast on white
+    surface: '#F2F2F4',
+    surfaceSecondary: '#EAEAEC',
+    surfacePressed: '#DDDDE0',
+    
+    // INPUT FIELDS - Distinct from both background and surface
+    input: '#EDEDF0',
+    inputFocused: '#FFFFFF',
     
     // TEXT
     text: '#0A0A0A',
@@ -61,18 +65,18 @@ export const Colors = {
     errorMuted: '#FEE2E2',
     
     // BORDERS
-    border: '#E5E5E5',
-    borderSecondary: '#D4D4D4',
+    border: '#DCDCDE',
+    borderSecondary: '#C8C8CC',
     
     // ICONS
     icon: '#525252',
     iconMuted: '#A3A3A3',
     
     // INTERACTIVE
-    fill: 'rgba(115, 115, 115, 0.12)',
-    fillSecondary: 'rgba(115, 115, 115, 0.08)',
+    fill: 'rgba(115, 115, 115, 0.16)',
+    fillSecondary: 'rgba(115, 115, 115, 0.10)',
     overlay: 'rgba(0, 0, 0, 0.4)',
-    skeleton: '#E5E5E5',
+    skeleton: '#DCDCDE',
     
     // ACTIONS
     favorite: '#F43F5E',
@@ -94,6 +98,10 @@ export const Colors = {
     surface: '#1A1A1A',
     surfaceSecondary: '#262626',
     surfacePressed: '#333333',
+    
+    // INPUT FIELDS
+    input: '#1A1A1A',
+    inputFocused: '#262626',
     
     // TEXT
     text: '#FAFAFA',
@@ -233,10 +241,10 @@ export const Typography = {
   titleSmall: { ...base, fontSize: fontScale(17), lineHeight: fontScale(22), fontFamily: 'Inter_600SemiBold' },
   titleCard: { ...base, fontSize: fontScale(15), lineHeight: fontScale(20), fontFamily: 'Inter_700Bold' },
 
-  // BODY (Regular) - slightly looser for readability
-  body: { ...base, fontSize: fontScale(17), lineHeight: fontScale(24), fontFamily: 'Inter_400Regular' },
-  bodySmall: { ...base, fontSize: fontScale(15), lineHeight: fontScale(22), fontFamily: 'Inter_400Regular' },
-  bodyMini: { ...base, fontSize: fontScale(14), lineHeight: fontScale(20), fontFamily: 'Inter_400Regular' },
+  // BODY (Medium) - slightly looser for readability
+  body: { ...base, fontSize: fontScale(17), lineHeight: fontScale(24), fontFamily: 'Inter_500Medium' },
+  bodySmall: { ...base, fontSize: fontScale(15), lineHeight: fontScale(22), fontFamily: 'Inter_500Medium' },
+  bodyMini: { ...base, fontSize: fontScale(14), lineHeight: fontScale(20), fontFamily: 'Inter_500Medium' },
 
   // VALUES (SemiBold) - tight for data display
   value: { ...base, fontSize: fontScale(15), lineHeight: fontScale(20), fontFamily: 'Inter_600SemiBold' },
@@ -256,10 +264,10 @@ export const Typography = {
   chip: { ...base, fontSize: fontScale(13), lineHeight: fontScale(18), fontFamily: 'Inter_600SemiBold' },
   link: { ...base, fontSize: fontScale(14), lineHeight: fontScale(20), fontFamily: 'Inter_600SemiBold' },
 
-  // SUPPORTING (Regular)
-  labelText: { ...base, fontSize: fontScale(15), lineHeight: fontScale(20), fontFamily: 'Inter_400Regular' },
-  helper: { ...base, fontSize: fontScale(13), lineHeight: fontScale(18), fontFamily: 'Inter_400Regular' },
-  secondary: { ...base, fontSize: fontScale(13), lineHeight: fontScale(18), fontFamily: 'Inter_400Regular' },
+  // SUPPORTING (Medium)
+  labelText: { ...base, fontSize: fontScale(15), lineHeight: fontScale(20), fontFamily: 'Inter_500Medium' },
+  helper: { ...base, fontSize: fontScale(13), lineHeight: fontScale(18), fontFamily: 'Inter_500Medium' },
+  secondary: { ...base, fontSize: fontScale(13), lineHeight: fontScale(18), fontFamily: 'Inter_500Medium' },
 
   // MEDIUM WEIGHT (Inter_500Medium) - for secondary labels, hints
   labelMedium: { ...base, fontSize: fontScale(13), lineHeight: fontScale(18), fontFamily: 'Inter_500Medium' },

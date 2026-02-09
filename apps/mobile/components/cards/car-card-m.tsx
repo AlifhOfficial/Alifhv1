@@ -469,7 +469,7 @@ const styles = StyleSheet.create({
   // Content
   content: {
     padding: CARD_PADDING,
-    gap: 2,
+    gap: Spacing.xs,
   },
 
   // Title Row
@@ -503,12 +503,10 @@ const styles = StyleSheet.create({
     marginTop: Spacing.xs,
   },
   stat: {
-    ...Typography.stat,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.valueSmall,
   },
   separator: {
-    fontSize: 15,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.valueSmall,
     opacity: 0.4,
   },
 
@@ -546,20 +544,18 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   avatarInitial: {
-    fontSize: 12,
+    ...Typography.labelSmall,
     fontFamily: 'Inter_600SemiBold',
   },
   sellerNameContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: Spacing.xs,
     flex: 1,
     minWidth: 0,
   },
   sellerName: {
-    fontSize: 13,
-    lineHeight: 18,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.value,
     flexShrink: 1,
   },
   blkBadge: {

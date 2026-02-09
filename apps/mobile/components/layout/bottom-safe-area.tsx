@@ -16,13 +16,12 @@ export function BottomSafeAreaGradient() {
   const { colorScheme } = useTheme();
   const insets = useSafeAreaInsets();
   const colors = Colors[colorScheme];
-  const isDark = colorScheme === 'dark';
 
   return (
     <View style={styles.container} pointerEvents="none">
       <LinearGradient
         colors={[
-          isDark ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
+          `${colors.background}00`,
           colors.background,
         ]}
         style={[styles.gradient, { height: insets.bottom + 70 }]}

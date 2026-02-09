@@ -153,7 +153,6 @@ const styles = StyleSheet.create({
   },
   postedText: {
     ...Typography.stat,
-    fontFamily: 'Inter_700Bold',
   },
   updatedText: {
     ...Typography.valueSmall,

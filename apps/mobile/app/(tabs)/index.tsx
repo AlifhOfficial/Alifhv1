@@ -7,7 +7,7 @@ import { StyleSheet, View, Text, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HomeHeader, SavedTube } from '@/components/home';
-import { Colors, Layout } from '@/constants/theme';
+import { Colors, Layout, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 export default function HomeScreen() {
@@ -52,7 +52,6 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   text: {
-    fontSize: 16,
-    fontFamily: 'Inter_400Regular',
+    ...Typography.body,
   },
 });

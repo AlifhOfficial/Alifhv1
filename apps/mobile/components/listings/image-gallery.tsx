@@ -262,9 +262,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.6)',
   },
   counterOverlayText: {
-    ...Typography.labelSmall,
-    color: '#fff',
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.valueSmall,
+    color: '#FAFAFA',
   },
   
   // Thumbnails
@@ -310,8 +309,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   viewAllText: {
-    ...Typography.label,
-    fontFamily: 'Inter_600SemiBold',
-    letterSpacing: 0,
+    ...Typography.buttonSmall,
   },
 });

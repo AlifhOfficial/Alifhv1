@@ -16,7 +16,6 @@ export function TopSafeAreaGradient() {
   const { colorScheme } = useTheme();
   const insets = useSafeAreaInsets();
   const colors = Colors[colorScheme];
-  const isDark = colorScheme === 'dark';
 
   if (insets.top <= 0) return null;
 
@@ -25,7 +24,7 @@ export function TopSafeAreaGradient() {
       <LinearGradient
         colors={[
           colors.background,
-          isDark ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
+          `${colors.background}00`,
         ]}
         style={[styles.gradient, { height: insets.top + 16 }]}
       />

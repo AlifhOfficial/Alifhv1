@@ -78,8 +78,8 @@ function RevvupLogo({ color, size = 180 }: { color: string; size?: number }) {
 
 export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenProps) {
   const { colorScheme } = useTheme();
-  const insets = useSafeAreaInsets();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
@@ -101,12 +101,14 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
           style={({ pressed }) => [
             styles.ctaButton,
             { 
-              backgroundColor: colors.primary, 
+              backgroundColor: colors.surface,
+              borderWidth: 1,
+              borderColor: colors.border,
               transform: [{ scale: pressed ? 0.98 : 1 }],
             }
           ]}
         >
-          <Text style={[styles.ctaButtonText, { color: colors.primaryForeground }]}>
+          <Text style={[styles.ctaButtonText, { color: colors.text }]}>
             Get Started
           </Text>
         </Pressable>
@@ -117,7 +119,9 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
           style={({ pressed }) => [
             styles.ctaButton,
             { 
-              backgroundColor: colors.fillSecondary,
+              backgroundColor: colors.surface,
+              borderWidth: 1,
+              borderColor: colors.border,
               transform: [{ scale: pressed ? 0.98 : 1 }],
             }
           ]}
@@ -176,7 +180,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   ctaButtonText: {
-    ...Typography.button,
+    ...Typography.titleSmall,
   },
   skipSection: {
     alignItems: 'center',

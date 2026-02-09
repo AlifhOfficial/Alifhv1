@@ -1,14 +1,19 @@
 /**
  * Car Card Detailed Mobile (CarCardDetailedM) - Revvup Design System
- * 
- * Full listing detail view - composes modular components.
- * Clean, gesture-based gallery with 40% viewport height.
- * 
- * "Talk to Seller" navigates to a dedicated seller screen
- * for better space utilization and progressive disclosure.
+ *
+ * Full listing detail view — composes modular components.
+ * Clean, gesture-based gallery with 40 % viewport height.
+ *
+ * Visual hierarchy:
+ *   Gallery → Header → Stats → Description → Specs → Features
+ *   → Timestamp → Seller → CTA
+ *
+ * Every text style references a Typography token — zero hardcoded
+ * font sizes / families.  Sections breathe with generous spacing
+ * and a thin divider keeps the rhythm.
  */
 
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { StyleSheet, View, Text, Pressable } from 'react-native';
 import { MessageCircle } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
@@ -16,6 +21,7 @@ import { useRouter } from 'expo-router';
 import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Skeleton } from '@/components/ui';
+import { DescriptionSheet, SpecsSheet } from '@/components/sheets';
 import { ListingDetailedData, SellerData } from '@/lib/api';
 
 import {
@@ -44,6 +50,14 @@ export interface CarCardDetailedMProps {
 }
 
 // ============================================================================
+// SECTION DIVIDER (reusable thin rule between content blocks)
+// ============================================================================
+
+function SectionDivider({ color }: { color: string }) {
+  return <View style={[styles.divider, { backgroundColor: color }]} />;
+}
+
+// ============================================================================
 // MAIN COMPONENT
 // ============================================================================
 
@@ -60,8 +74,19 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
   const router = useRouter();
   const isBlk = listing.isBlkListing;
   const bgColor = isBlk ? colors.blkBackground : colors.background;
+  const dividerColor = isBlk ? colors.blkBorder : colors.border;
 
   const carTitle = `${listing.year} ${listing.make} ${listing.model}${listing.trim ? ` ${listing.trim}` : ''}`;
+
+  // Description sheet state
+  const [descSheetVisible, setDescSheetVisible] = useState(false);
+  const openDescSheet = useCallback(() => setDescSheetVisible(true), []);
+  const closeDescSheet = useCallback(() => setDescSheetVisible(false), []);
+
+  // Specs sheet state
+  const [specsSheetVisible, setSpecsSheetVisible] = useState(false);
+  const openSpecsSheet = useCallback(() => setSpecsSheetVisible(true), []);
+  const closeSpecsSheet = useCallback(() => setSpecsSheetVisible(false), []);
 
   // Navigate to the dedicated seller contact screen
   const handleTalkToSeller = useCallback(() => {
@@ -70,12 +95,13 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
 
   return (
     <View style={[styles.container, { backgroundColor: bgColor }]}>
-      {/* Image Gallery - 40% of viewport */}
+      {/* ── Image Gallery — 40 % of viewport ── */}
       <ImageGallery images={listing.images} title={carTitle} />
 
-      {/* Content */}
+      {/* ── Content — padded with generous vertical rhythm ── */}
       <View style={styles.content}>
-        {/* Header: Title + Price + Actions + Highlights */}
+
+        {/* 1. Header: Title + Price + Actions + Highlights */}
         <ListingHeader
           id={listing.id}
           year={listing.year}
@@ -91,7 +117,7 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
           onFavoritePress={onFavoritePress}
         />
 
-        {/* Quick Stats: Mileage, Specs, Location, VIN */}
+        {/* 2. Quick Stats: Mileage · Specs · Location · VIN */}
         <QuickStats
           mileage={listing.mileage}
           specs={listing.specs}
@@ -101,15 +127,21 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
           isBlk={isBlk}
         />
 
-        {/* Description */}
+        <SectionDivider color={dividerColor} />
+
+        {/* 3. Description (optional) */}
         {listing.description && (
-          <ListingDescription
-            description={listing.description}
-            isBlk={isBlk}
-          />
+          <>
+            <ListingDescription
+              description={listing.description}
+              isBlk={isBlk}
+              onReadMore={openDescSheet}
+            />
+            <SectionDivider color={dividerColor} />
+          </>
         )}
 
-        {/* Specifications */}
+        {/* 4. Specifications */}
         <ListingSpecs
           condition={listing.condition}
           bodyType={listing.bodyType}
@@ -124,12 +156,17 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
           seatingCapacity={listing.seatingCapacity}
           steeringSide={listing.steeringSide}
           isBlk={isBlk}
+          onViewAll={openSpecsSheet}
         />
 
-        {/* Features */}
+        <SectionDivider color={dividerColor} />
+
+        {/* 5. Features / Extras */}
         <ListingFeatures extras={listing.extras} isBlk={isBlk} />
 
-        {/* Timestamp - subtle, non-blocking */}
+        <SectionDivider color={dividerColor} />
+
+        {/* 6. Timestamp — subtle, non-blocking */}
         <ListingTimestamp
           createdAt={listing.createdAt}
           lastEditedAt={listing.lastEditedAt}
@@ -137,23 +174,68 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
           isBlk={isBlk}
         />
 
-        {/* Seller Card - Tappable to open seller screen */}
+        <SectionDivider color={dividerColor} />
+
+        {/* 7. Seller Card — tappable to open seller screen */}
         <Pressable onPress={handleTalkToSeller}>
           <SellerCard sellerData={sellerData} isBlk={isBlk} />
         </Pressable>
 
-        {/* Talk to Seller CTA */}
+        {/* 8. Talk to Seller CTA — inverse in dark mode */}
         <Pressable
-          style={[
+          style={({ pressed }) => [
             styles.ctaButton,
-            { backgroundColor: colors.primary }
+            {
+              backgroundColor: colorScheme === 'dark' ? colors.text : colors.primary,
+              opacity: pressed ? 0.85 : 1,
+            },
           ]}
           onPress={handleTalkToSeller}
         >
-          <MessageCircle size={20} color={colors.primaryForeground} strokeWidth={2} />
-          <Text style={[styles.ctaText, { color: colors.primaryForeground }]}>Talk to Seller</Text>
+          <MessageCircle
+            size={20}
+            color={colorScheme === 'dark' ? colors.primary : colors.primaryForeground}
+            strokeWidth={2}
+          />
+          <Text
+            style={[
+              styles.ctaText,
+              { color: colorScheme === 'dark' ? colors.primary : colors.primaryForeground },
+            ]}
+          >
+            Talk to Seller
+          </Text>
         </Pressable>
       </View>
+
+      {/* Description Sheet — rendered at root level for proper gesture handling */}
+      {listing.description && (
+        <DescriptionSheet
+          visible={descSheetVisible}
+          onClose={closeDescSheet}
+          description={listing.description}
+        />
+      )}
+
+      {/* Specs Sheet — rendered at root level for proper gesture handling */}
+      <SpecsSheet
+        visible={specsSheetVisible}
+        onClose={closeSpecsSheet}
+        specs={[
+          { label: 'Condition', value: listing.condition },
+          { label: 'Body Type', value: listing.bodyType },
+          { label: 'Transmission', value: listing.transmission },
+          { label: 'Fuel Type', value: listing.fuelType },
+          { label: 'Engine', value: listing.engineSize },
+          { label: 'Cylinders', value: listing.cylinders },
+          { label: 'Power', value: listing.powerRange },
+          { label: 'Exterior Color', value: listing.exteriorColor },
+          { label: 'Interior Color', value: listing.interiorColor },
+          { label: 'Doors', value: listing.doors },
+          { label: 'Seats', value: listing.seatingCapacity },
+          { label: 'Steering', value: listing.steeringSide },
+        ].filter(s => s.value != null)}
+      />
     </View>
   );
 });
@@ -169,55 +251,94 @@ export function CarCardDetailedMSkeleton() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ImageGallerySkeleton />
-      
+
       <View style={styles.content}>
-        {/* Title Skeleton */}
-        <Skeleton width="70%" height={24} />
-        <Skeleton width={140} height={26} style={{ marginTop: 4 }} />
-        
-        {/* Stats Skeleton */}
+        {/* Title block */}
+        <View style={styles.skeletonTitleBlock}>
+          <Skeleton width="70%" height={24} />
+          <Skeleton width={140} height={22} />
+        </View>
+
+        {/* Stats row */}
         <View style={styles.skeletonStats}>
           <Skeleton width={60} height={16} />
           <Skeleton width={70} height={16} />
           <Skeleton width={80} height={16} />
         </View>
 
-        {/* Section Skeleton */}
-        <Skeleton width={120} height={12} style={{ marginTop: Spacing.lg }} />
-        <Skeleton width="100%" height={80} style={{ marginTop: Spacing.sm }} />
+        {/* Divider placeholder */}
+        <Skeleton width="100%" height={1} />
+
+        {/* Description block */}
+        <View style={styles.skeletonDescBlock}>
+          <Skeleton width={100} height={14} />
+          <Skeleton width="100%" height={60} />
+        </View>
+
+        {/* Specs block */}
+        <View style={styles.skeletonDescBlock}>
+          <Skeleton width={120} height={14} />
+          <Skeleton width="100%" height={80} />
+        </View>
+
+        {/* CTA */}
+        <Skeleton width="100%" height={48} borderRadius={Radius.lg} />
       </View>
     </View>
   );
 }
 
 // ============================================================================
-// STYLES
+// STYLES — all text styles reference Typography tokens
 // ============================================================================
 
 const styles = StyleSheet.create({
+  /* Layout */
   container: {
     flex: 1,
   },
   content: {
-    padding: Spacing.md,
-    gap: Spacing['xl'],
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing['3xl'],
+    gap: Spacing['2xl'],
   },
+
+  /* Section divider */
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    width: '100%',
+  },
+
+  /* CTA button */
   ctaButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.lg,
+    height: 52,
+    paddingHorizontal: Spacing.xl,
     borderRadius: Radius.lg,
+    // Lift the button off the surface
+    shadowColor: '#0066FF',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   ctaText: {
-    ...Typography.button,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.titleSmall, // 17px / SemiBold — larger for primary CTA
+  },
+
+  /* Skeleton helpers */
+  skeletonTitleBlock: {
+    gap: Spacing.xs,
   },
   skeletonStats: {
     flexDirection: 'row',
     gap: Spacing.sm,
-    marginTop: Spacing.sm,
+  },
+  skeletonDescBlock: {
+    gap: Spacing.sm,
   },
 });

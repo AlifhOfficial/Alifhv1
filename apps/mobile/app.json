@@ -9,11 +9,13 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "userInterfaceStyle": "automatic",
       "supportsTablet": true,
       "backgroundColor": "#000000",
       "bundleIdentifier": "com.anonymous.mobile"
     },
     "android": {
+      "userInterfaceStyle": "automatic",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

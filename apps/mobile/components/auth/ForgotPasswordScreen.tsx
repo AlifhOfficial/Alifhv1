@@ -20,7 +20,7 @@ import Svg, { Path } from 'react-native-svg';
 import { CheckCircle2 } from 'lucide-react-native';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Typography } from '@/constants/theme';
+import { Colors, Typography, Radius, Spacing } from '@/constants/theme';
 
 interface ForgotPasswordScreenProps {
   onBack: () => void;
@@ -38,27 +38,10 @@ export function ForgotPasswordScreen({
   success = false,
 }: ForgotPasswordScreenProps) {
   const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
-  const isDark = colorScheme === 'dark';
 
   const [email, setEmail] = useState('');
-
-  const themeColors = Colors[colorScheme];
-  const colors = {
-    bg: themeColors.background,
-    text: themeColors.text,
-    textSecondary: themeColors.textSecondary,
-    textTertiary: themeColors.textTertiary,
-    primary: themeColors.primary,
-    primarySoft: isDark ? 'rgba(0,102,255,0.12)' : 'rgba(0,102,255,0.04)',
-    inputBg: themeColors.surface,
-    inputBorder: themeColors.border,
-    inputFocusBorder: isDark ? 'rgba(0,102,255,0.5)' : 'rgba(0,102,255,0.2)',
-    error: themeColors.error,
-    success: themeColors.success,
-    successSoft: isDark ? 'rgba(52,199,89,0.15)' : 'rgba(52,199,89,0.06)',
-    border: themeColors.border,
-  };
 
   const handleSubmit = async () => {
     if (!email || isLoading) return;
@@ -70,8 +53,8 @@ export function ForgotPasswordScreen({
   // Success state
   if (success) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.bg }]}>
-        <View style={[styles.content, { paddingTop: insets.top, paddingBottom: insets.bottom + 24 }]}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={[styles.content, { paddingTop: insets.top, paddingBottom: insets.bottom + Spacing['2xl'] }]}>
           {/* Header */}
           <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
             <Pressable
@@ -89,7 +72,9 @@ export function ForgotPasswordScreen({
             </Animated.View>
 
             <Animated.View entering={FadeInDown.delay(150).duration(400)} style={[styles.titleSection, { alignItems: 'center' }]}>
-              <Text style={[styles.title, { color: colors.text }]}>Check your email<Text style={{ color: colors.success, opacity: 0.9 }}>.</Text></Text>
+              <Text style={[styles.title, { color: colors.text }]}>
+                Check your email<Text style={{ color: colors.success }}>.</Text>
+              </Text>
               <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
                 {"We've sent a reset link to"}
               </Text>
@@ -106,7 +91,7 @@ export function ForgotPasswordScreen({
                 { backgroundColor: colors.primary, opacity: pressed ? 0.9 : 1 }
               ]}
             >
-              <Text style={[styles.submitButtonText, { color: themeColors.primaryForeground }]}>Back to sign in</Text>
+              <Text style={[styles.submitButtonText, { color: colors.primaryForeground }]}>Back to sign in</Text>
             </Pressable>
           </Animated.View>
         </View>
@@ -115,12 +100,12 @@ export function ForgotPasswordScreen({
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.bg }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
-        <View style={[styles.content, { paddingTop: insets.top, paddingBottom: insets.bottom + 24 }]}>
+        <View style={[styles.content, { paddingTop: insets.top, paddingBottom: insets.bottom + Spacing['2xl'] }]}>
           {/* Header */}
           <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
             <Pressable
@@ -133,7 +118,9 @@ export function ForgotPasswordScreen({
 
           {/* Title */}
           <Animated.View entering={FadeInDown.delay(100).duration(400)} style={styles.titleSection}>
-            <Text style={[styles.title, { color: colors.text }]}>Reset password<Text style={{ color: colors.primary, opacity: 0.8 }}>.</Text></Text>
+            <Text style={[styles.title, { color: colors.text }]}>
+              Reset password<Text style={{ color: colors.primary }}>.</Text>
+            </Text>
             <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
               {"We'll send you a reset link"}
             </Text>
@@ -141,7 +128,7 @@ export function ForgotPasswordScreen({
 
           {/* Error */}
           {error && (
-            <Animated.View entering={FadeIn.duration(200)} style={[styles.errorBox, { backgroundColor: `${colors.error}08` }]}>
+            <Animated.View entering={FadeIn.duration(200)} style={[styles.errorBox, { backgroundColor: colors.errorMuted }]}>
               <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
             </Animated.View>
           )}
@@ -150,9 +137,9 @@ export function ForgotPasswordScreen({
           <Animated.View entering={FadeInDown.delay(150).duration(400)} style={styles.form}>
             <View style={styles.inputGroup}>
               <Text style={[styles.label, { color: colors.textSecondary }]}>Email</Text>
-              <View style={[styles.inputWrapper, { backgroundColor: colors.inputBg, borderColor: colors.border }]}>
+              <View style={[styles.inputWrapper, { backgroundColor: colors.input, borderColor: colors.border }]}>
                 <TextInput
-                  style={[styles.inputInner, { color: colors.text, backgroundColor: colors.inputBg }]}
+                  style={[styles.inputInner, { color: colors.text, backgroundColor: colors.input }]}
                   value={email}
                   onChangeText={setEmail}
                   placeholder="your@email.com"
@@ -176,13 +163,21 @@ export function ForgotPasswordScreen({
               disabled={!isValid || isLoading}
               style={({ pressed }) => [
                 styles.submitButton,
-                { backgroundColor: colors.primary, opacity: (!isValid || isLoading) ? 0.4 : pressed ? 0.9 : 1 }
+                { 
+                  backgroundColor: (!isValid || isLoading) ? colors.surface : colors.primary,
+                  opacity: pressed ? 0.9 : 1 
+                }
               ]}
             >
               {isLoading ? (
                 <ButtonLoader size="sm" variant="white" />
               ) : (
-                <Text style={[styles.submitButtonText, { color: themeColors.primaryForeground }]}>Send reset link</Text>
+                <Text style={[
+                  styles.submitButtonText, 
+                  { color: (!isValid || isLoading) ? colors.textTertiary : colors.primaryForeground }
+                ]}>
+                  Send reset link
+                </Text>
               )}
             </Pressable>
           </Animated.View>
@@ -225,7 +220,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: Spacing['2xl'],
   },
   header: {
     height: 52,
@@ -234,7 +229,7 @@ const styles = StyleSheet.create({
   backButton: {
     width: 40,
     height: 40,
-    marginLeft: -8,
+    marginLeft: -Spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -244,54 +239,52 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   successIcon: {
-    marginBottom: 24,
+    marginBottom: Spacing['2xl'],
   },
   titleSection: {
-    marginTop: 8,
-    marginBottom: 32,
+    marginTop: Spacing.sm,
+    marginBottom: Spacing['3xl'],
   },
   title: {
     ...Typography.titleLarge,
   },
   subtitle: {
-    ...Typography.value,
-    fontFamily: 'Inter_400Regular',
-    marginTop: 8,
+    ...Typography.bodySmall,
+    marginTop: Spacing.sm,
   },
   emailText: {
     ...Typography.value,
-    marginTop: 4,
+    marginTop: Spacing.xs,
   },
   errorBox: {
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 20,
+    borderRadius: Radius.lg,
+    padding: Spacing.md,
+    marginBottom: Spacing.xl,
   },
   errorText: {
-    ...Typography.labelSmall,
+    ...Typography.bodyMini,
     textAlign: 'center',
   },
   form: {
-    gap: 16,
+    gap: Spacing.lg,
   },
   inputGroup: {
-    gap: 8,
+    gap: Spacing.sm,
   },
   label: {
-    ...Typography.helper,
-    fontFamily: 'Inter_600SemiBold',
-    marginLeft: 4,
+    ...Typography.valueSmall,
+    marginLeft: Spacing.xs,
   },
   input: {
     height: 54,
-    borderRadius: 14,
+    borderRadius: Radius.xl,
     borderWidth: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing.lg,
     ...Typography.body,
   },
   inputWrapper: {
     height: 54,
-    borderRadius: 14,
+    borderRadius: Radius.xl,
     borderWidth: 1,
     flexDirection: 'row',
     alignItems: 'center',
@@ -300,34 +293,34 @@ const styles = StyleSheet.create({
   inputInner: {
     flex: 1,
     height: '100%',
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing.lg,
     ...Typography.body,
     backgroundColor: 'transparent',
   },
   submitButton: {
     height: 54,
-    borderRadius: 14,
+    borderRadius: Radius.xl,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 8,
+    marginTop: Spacing.sm,
   },
   submitButtonText: {
     ...Typography.button,
   },
   buttonSection: {
-    paddingBottom: 40,
+    paddingBottom: Spacing['4xl'],
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 'auto',
-    paddingBottom: 24,
+    paddingBottom: Spacing['2xl'],
   },
   footerText: {
-    ...Typography.helper,
+    ...Typography.bodyMini,
   },
   footerLink: {
-    ...Typography.helper,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.value,
   },
 });

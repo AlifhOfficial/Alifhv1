@@ -39,7 +39,7 @@ import { KYCStatusCard, type ProfileStatus } from '@/components/profile';
 
 export default function SettingsScreen() {
   const colors = useSettingsColors();
-  const { colorScheme, setColorScheme } = useTheme();
+  const { colorScheme, setThemeMode } = useTheme();
   const { signOut, isAuthenticated, user } = useAuth();
   const insets = useSafeAreaInsets();
 

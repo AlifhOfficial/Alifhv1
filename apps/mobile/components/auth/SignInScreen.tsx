@@ -20,7 +20,7 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Typography } from '@/constants/theme';
+import { Colors, Typography, Radius, Spacing } from '@/constants/theme';
 
 interface SignInScreenProps {
   onBack: () => void;
@@ -46,29 +46,13 @@ export function SignInScreen({
   error,
 }: SignInScreenProps) {
   const { colorScheme } = useTheme();
-  const insets = useSafeAreaInsets();
+  const colors = Colors[colorScheme];
   const isDark = colorScheme === 'dark';
+  const insets = useSafeAreaInsets();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-
-  const themeColors = Colors[colorScheme];
-  const colors = {
-    bg: themeColors.background,
-    text: themeColors.text,
-    textSecondary: themeColors.textSecondary,
-    textTertiary: themeColors.textTertiary,
-    primary: themeColors.primary,
-    primarySoft: isDark ? 'rgba(0,102,255,0.12)' : 'rgba(0,102,255,0.04)',
-    inputBg: themeColors.surface,
-    inputBorder: themeColors.border,
-    inputFocusBorder: themeColors.primary,
-    error: themeColors.error,
-    divider: themeColors.border,
-    border: themeColors.border,
-    surfaceBg: themeColors.surface,
-  };
 
   const handleSubmit = async () => {
     if (!email || !password || isLoading) return;
@@ -78,13 +62,13 @@ export function SignInScreen({
   const isValid = email.length > 0 && password.length > 0;
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.bg }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
         <ScrollView 
-          contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top, paddingBottom: insets.bottom + 24 }]}
+          contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top, paddingBottom: insets.bottom + Spacing['2xl'] }]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
@@ -100,12 +84,14 @@ export function SignInScreen({
 
           {/* Title */}
           <Animated.View entering={FadeInDown.delay(100).duration(400)} style={styles.titleSection}>
-            <Text style={[styles.title, { color: colors.text }]}>Sign in<Text style={{ color: colors.primary, opacity: 0.8 }}>.</Text></Text>
+            <Text style={[styles.title, { color: colors.text }]}>
+              Sign in<Text style={{ color: colors.primary }}>.</Text>
+            </Text>
           </Animated.View>
 
           {/* Error */}
           {error && (
-            <Animated.View entering={FadeIn.duration(200)} style={[styles.errorBox, { backgroundColor: `${colors.error}08` }]}>
+            <Animated.View entering={FadeIn.duration(200)} style={[styles.errorBox, { backgroundColor: colors.errorMuted }]}>
               <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
             </Animated.View>
           )}
@@ -115,9 +101,9 @@ export function SignInScreen({
             {/* Email */}
             <View style={styles.inputGroup}>
               <Text style={[styles.label, { color: colors.textSecondary }]}>Email</Text>
-              <View style={[styles.inputWrapper, { backgroundColor: colors.inputBg, borderColor: colors.border }]}>
+              <View style={[styles.inputWrapper, { backgroundColor: colors.input, borderColor: colors.border }]}>
                 <TextInput
-                  style={[styles.inputInner, { color: colors.text, backgroundColor: colors.inputBg }]}
+                  style={[styles.inputInner, { color: colors.text, backgroundColor: colors.input }]}
                   value={email}
                   onChangeText={setEmail}
                   placeholder="your@email.com"
@@ -137,9 +123,9 @@ export function SignInScreen({
             {/* Password */}
             <View style={styles.inputGroup}>
               <Text style={[styles.label, { color: colors.textSecondary }]}>Password</Text>
-              <View style={[styles.inputWrapper, { backgroundColor: colors.inputBg, borderColor: colors.border }]}>
+              <View style={[styles.inputWrapper, { backgroundColor: colors.input, borderColor: colors.border }]}>
                 <TextInput
-                  style={[styles.inputInner, styles.passwordInputInner, { color: colors.text, backgroundColor: colors.inputBg }]}
+                  style={[styles.inputInner, styles.passwordInputInner, { color: colors.text, backgroundColor: colors.input }]}
                   value={password}
                   onChangeText={setPassword}
                   placeholder="••••••••"
@@ -173,13 +159,21 @@ export function SignInScreen({
               disabled={!isValid || isLoading}
               style={({ pressed }) => [
                 styles.submitButton,
-                { backgroundColor: colors.primary, opacity: (!isValid || isLoading) ? 0.4 : pressed ? 0.9 : 1 }
+                { 
+                  backgroundColor: (!isValid || isLoading) ? colors.surface : colors.primary,
+                  opacity: pressed ? 0.9 : 1 
+                }
               ]}
             >
               {isLoading ? (
                 <ButtonLoader size="sm" variant="white" />
               ) : (
-                <Text style={[styles.submitButtonText, { color: themeColors.primaryForeground }]}>Continue</Text>
+                <Text style={[
+                  styles.submitButtonText, 
+                  { color: (!isValid || isLoading) ? colors.textTertiary : colors.primaryForeground }
+                ]}>
+                  Continue
+                </Text>
               )}
             </Pressable>
           </Animated.View>
@@ -187,9 +181,9 @@ export function SignInScreen({
           {/* Divider */}
           {(onGoogleSignIn || onAppleSignIn || onPasskeySignIn) && (
             <Animated.View entering={FadeIn.delay(250).duration(300)} style={styles.dividerContainer}>
-              <View style={[styles.dividerLine, { backgroundColor: colors.divider }]} />
+              <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
               <Text style={[styles.dividerText, { color: colors.textTertiary }]}>or continue with</Text>
-              <View style={[styles.dividerLine, { backgroundColor: colors.divider }]} />
+              <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
             </Animated.View>
           )}
 
@@ -205,7 +199,7 @@ export function SignInScreen({
                     disabled={isLoading}
                     style={({ pressed }) => [
                       styles.socialIconButton,
-                      { backgroundColor: colors.inputBg, borderColor: colors.border, opacity: isLoading ? 0.5 : pressed ? 0.7 : 1 }
+                      { backgroundColor: colors.input, borderColor: colors.border, opacity: isLoading ? 0.5 : pressed ? 0.7 : 1 }
                     ]}
                   >
                     <PasskeyIcon color={colors.text} />
@@ -219,10 +213,14 @@ export function SignInScreen({
                     disabled={isLoading}
                     style={({ pressed }) => [
                       styles.socialIconButton,
-                      { backgroundColor: isDark ? '#FFFFFF' : '#000000', opacity: isLoading ? 0.5 : pressed ? 0.7 : 1 }
+                      styles.appleButton,
+                      { 
+                        backgroundColor: isDark ? Colors.light.background : Colors.dark.background, 
+                        opacity: isLoading ? 0.5 : pressed ? 0.7 : 1 
+                      }
                     ]}
                   >
-                    <AppleIcon color={isDark ? '#000000' : '#FFFFFF'} />
+                    <AppleIcon color={isDark ? Colors.dark.background : Colors.light.background} />
                   </Pressable>
                 )}
 
@@ -233,7 +231,7 @@ export function SignInScreen({
                     disabled={isLoading}
                     style={({ pressed }) => [
                       styles.socialIconButton,
-                      { backgroundColor: colors.inputBg, borderColor: colors.border, opacity: isLoading ? 0.5 : pressed ? 0.7 : 1 }
+                      { backgroundColor: colors.input, borderColor: colors.border, opacity: isLoading ? 0.5 : pressed ? 0.7 : 1 }
                     ]}
                   >
                     <GoogleIcon />
@@ -375,7 +373,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: Spacing['2xl'],
   },
   header: {
     height: 52,
@@ -384,47 +382,46 @@ const styles = StyleSheet.create({
   backButton: {
     width: 40,
     height: 40,
-    marginLeft: -8,
+    marginLeft: -Spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },
   titleSection: {
-    marginTop: 8,
-    marginBottom: 32,
+    marginTop: Spacing.sm,
+    marginBottom: Spacing['3xl'],
   },
   title: {
     ...Typography.titleLarge,
   },
   errorBox: {
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 20,
+    borderRadius: Radius.lg,
+    padding: Spacing.md,
+    marginBottom: Spacing.xl,
   },
   errorText: {
-    ...Typography.labelSmall,
+    ...Typography.bodyMini,
     textAlign: 'center',
   },
   form: {
-    gap: 16,
+    gap: Spacing.lg,
   },
   inputGroup: {
-    gap: 8,
+    gap: Spacing.sm,
   },
   label: {
-    ...Typography.helper,
-    fontFamily: 'Inter_600SemiBold',
-    marginLeft: 4,
+    ...Typography.valueSmall,
+    marginLeft: Spacing.xs,
   },
   input: {
     height: 54,
-    borderRadius: 14,
+    borderRadius: Radius.xl,
     borderWidth: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing.lg,
     ...Typography.bodySmall,
   },
   inputWrapper: {
     height: 54,
-    borderRadius: 14,
+    borderRadius: Radius.xl,
     borderWidth: 1,
     flexDirection: 'row',
     alignItems: 'center',
@@ -433,7 +430,7 @@ const styles = StyleSheet.create({
   inputInner: {
     flex: 1,
     height: '100%',
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing.lg,
     ...Typography.bodySmall,
     backgroundColor: 'transparent',
   },
@@ -448,30 +445,28 @@ const styles = StyleSheet.create({
   },
   eyeButton: {
     position: 'absolute',
-    right: 16,
+    right: Spacing.lg,
     top: 0,
     bottom: 0,
     justifyContent: 'center',
   },
   showText: {
-    ...Typography.labelSmall,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.valueSmall,
   },
   forgotButton: {
     alignSelf: 'flex-end',
-    paddingVertical: 4,
-    marginTop: -4,
+    paddingVertical: Spacing.xs,
+    marginTop: -Spacing.xs,
   },
   forgotText: {
-    ...Typography.helper,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.valueSmall,
   },
   submitButton: {
     height: 54,
-    borderRadius: 14,
+    borderRadius: Radius.xl,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 8,
+    marginTop: Spacing.sm,
   },
   submitButtonText: {
     ...Typography.button,
@@ -479,8 +474,8 @@ const styles = StyleSheet.create({
   dividerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 28,
-    gap: 16,
+    marginVertical: Spacing['3xl'],
+    gap: Spacing.lg,
   },
   dividerLine: {
     flex: 1,
@@ -488,49 +483,50 @@ const styles = StyleSheet.create({
   },
   dividerText: {
     ...Typography.helper,
-    fontFamily: 'Inter_600SemiBold',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   socialSection: {
-    gap: 12,
+    gap: Spacing.md,
   },
   socialRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 16,
+    gap: Spacing.lg,
   },
   socialIconButton: {
     width: 60,
     height: 54,
-    borderRadius: 14,
+    borderRadius: Radius.xl,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  appleButton: {
+    borderWidth: 0,
+  },
   socialButton: {
     height: 54,
-    borderRadius: 14,
+    borderRadius: Radius.xl,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
+    gap: Spacing.md,
   },
   socialButtonText: {
-    fontSize: Typography.value.fontSize,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.value,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 'auto',
-    paddingTop: 32,
+    paddingTop: Spacing['3xl'],
   },
   footerText: {
-    ...Typography.helper,
+    ...Typography.bodyMini,
   },
   footerLink: {
-    ...Typography.helper,
-    fontFamily: 'Inter_600SemiBold',
+    ...Typography.value,
   },
 });

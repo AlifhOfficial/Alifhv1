@@ -15,7 +15,6 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors } from '@/constants/theme';
 import * as AuthAPI from '@/lib/auth-api';
 import { WelcomeScreen } from './WelcomeScreen';
 import { SignInScreen } from './SignInScreen';
@@ -43,8 +42,7 @@ export function AuthFlow({
   onSkip,
   initialScreen = 'welcome' 
 }: AuthFlowProps) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
+  const { colors } = useTheme();
 
   const [currentScreen, setCurrentScreen] = useState<AuthScreen>(initialScreen);
   const [direction, setDirection] = useState<'forward' | 'back'>('forward');

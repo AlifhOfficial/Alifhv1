@@ -19,7 +19,7 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Typography } from '@/constants/theme';
+import { Colors, Typography, Radius, Spacing } from '@/constants/theme';
 
 interface OTPScreenProps {
   email: string;
@@ -41,27 +41,13 @@ export function OTPScreen({
   error,
 }: OTPScreenProps) {
   const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
-  const isDark = colorScheme === 'dark';
 
   const [code, setCode] = useState('');
   const [resendTimer, setResendTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
   const inputRef = useRef<TextInput>(null);
-
-  const themeColors = Colors[colorScheme];
-  const colors = {
-    bg: themeColors.background,
-    text: themeColors.text,
-    textSecondary: themeColors.textSecondary,
-    textTertiary: themeColors.textTertiary,
-    primary: themeColors.primary,
-    inputBg: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.04)',
-    inputBorder: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.06)',
-    inputBorderActive: isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.15)',
-    error: themeColors.error,
-    border: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.06)',
-  };
 
   // Resend timer
   useEffect(() => {
@@ -98,12 +84,12 @@ export function OTPScreen({
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.bg }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
-        <View style={[styles.content, { paddingTop: insets.top, paddingBottom: insets.bottom + 24 }]}>
+        <View style={[styles.content, { paddingTop: insets.top, paddingBottom: insets.bottom + Spacing['2xl'] }]}>
           {/* Header */}
           <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
             <Pressable
@@ -124,7 +110,7 @@ export function OTPScreen({
 
           {/* Error */}
           {error && (
-            <Animated.View entering={FadeIn.duration(200)} style={[styles.errorBox, { backgroundColor: `${colors.error}08` }]}>
+            <Animated.View entering={FadeIn.duration(200)} style={[styles.errorBox, { backgroundColor: colors.errorMuted }]}>
               <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
             </Animated.View>
           )}
@@ -142,7 +128,7 @@ export function OTPScreen({
                     style={[
                       styles.codeBox,
                       { 
-                        backgroundColor: colors.inputBg,
+                        backgroundColor: colors.input,
                         borderColor: error ? colors.error : isActive ? colors.primary : colors.border,
                       }
                     ]}
@@ -231,7 +217,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: Spacing['2xl'],
   },
   header: {
     height: 52,
@@ -240,29 +226,28 @@ const styles = StyleSheet.create({
   backButton: {
     width: 40,
     height: 40,
-    marginLeft: -8,
+    marginLeft: -Spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },
   titleSection: {
-    marginTop: 8,
-    marginBottom: 32,
+    marginTop: Spacing.sm,
+    marginBottom: Spacing['3xl'],
   },
   title: {
     ...Typography.titleLarge,
   },
   subtitle: {
-    ...Typography.value,
-    fontFamily: 'Inter_400Regular',
-    marginTop: 8,
+    ...Typography.bodySmall,
+    marginTop: Spacing.sm,
   },
   errorBox: {
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 20,
+    borderRadius: Radius.lg,
+    padding: Spacing.md,
+    marginBottom: Spacing.xl,
   },
   errorText: {
-    ...Typography.labelSmall,
+    ...Typography.bodyMini,
     textAlign: 'center',
   },
   codeSection: {
@@ -271,12 +256,12 @@ const styles = StyleSheet.create({
   codeBoxes: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 8,
+    gap: Spacing.sm,
   },
   codeBox: {
     width: 50,
     height: 60,
-    borderRadius: 14,
+    borderRadius: Radius.xl,
     borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -300,11 +285,11 @@ const styles = StyleSheet.create({
   loadingSection: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 24,
+    marginTop: Spacing['2xl'],
   },
   resendSection: {
     alignItems: 'center',
-    marginTop: 32,
+    marginTop: Spacing['3xl'],
   },
   resendText: {
     ...Typography.link,
@@ -314,7 +299,7 @@ const styles = StyleSheet.create({
   },
   helpSection: {
     marginTop: 'auto',
-    paddingBottom: 24,
+    paddingBottom: Spacing['2xl'],
   },
   helpText: {
     ...Typography.helper,

@@ -107,7 +107,10 @@ export default function ListingDetailScreen() {
       
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: insets.bottom + Spacing['3xl'] },
+        ]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -148,7 +151,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: Spacing['3xl'],
+    flexGrow: 1,
+    paddingBottom: Spacing['5xl'],
   },
   errorContainer: {
     flex: 1,

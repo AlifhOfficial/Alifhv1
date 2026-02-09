@@ -1,20 +1,19 @@
 /**
  * Listing Specifications - Key/Value pairs for car specs
+ * Tapping "View All" fires onViewAll so the parent can open a sheet.
  */
 
-import React, { memo, useState, useCallback } from 'react';
-import { StyleSheet, View, Text, Pressable, Modal, ScrollView } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { X, ChevronRight } from 'lucide-react-native';
-import * as Haptics from 'expo-haptics';
+import React, { memo } from 'react';
+import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { ChevronRight } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
+import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { formatEnumValue } from './types';
 
 const MAX_VISIBLE_SPECS = 4;
 
-interface SpecItem {
+export interface SpecItem {
   label: string;
   value: string | number | null | undefined;
 }
@@ -33,6 +32,7 @@ interface ListingSpecsProps {
   seatingCapacity?: string | null;
   steeringSide?: string;
   isBlk?: boolean;
+  onViewAll?: () => void;
 }
 
 function SpecRow({ label, value }: SpecItem) {
@@ -62,11 +62,10 @@ export const ListingSpecs = memo(function ListingSpecs({
   doors,
   seatingCapacity,
   steeringSide,
+  onViewAll,
 }: ListingSpecsProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const insets = useSafeAreaInsets();
-  const [modalVisible, setModalVisible] = useState(false);
 
   const specs: SpecItem[] = [
     { label: 'Condition', value: formatEnumValue(condition || null) },
@@ -86,15 +85,6 @@ export const ListingSpecs = memo(function ListingSpecs({
   const visibleSpecs = specs.slice(0, MAX_VISIBLE_SPECS);
   const hasMore = specs.length > MAX_VISIBLE_SPECS;
 
-  const openModal = useCallback(() => {
-    Haptics.selectionAsync();
-    setModalVisible(true);
-  }, []);
-
-  const closeModal = useCallback(() => {
-    setModalVisible(false);
-  }, []);
-
   return (
     <View style={styles.container}>
       <Text style={[styles.label, { color: colors.textTertiary }]}>
@@ -111,7 +101,7 @@ export const ListingSpecs = memo(function ListingSpecs({
       </View>
 
       {hasMore && (
-        <Pressable onPress={openModal} style={styles.viewAllButton}>
+        <Pressable onPress={onViewAll} style={styles.viewAllButton}>
           {({ pressed }) => (
             <View style={[styles.viewAllContent, { opacity: pressed ? 0.7 : 1 }]}>
               <Text style={[styles.viewAllText, { color: colors.primary }]}>
@@ -122,47 +112,6 @@ export const ListingSpecs = memo(function ListingSpecs({
           )}
         </Pressable>
       )}
-
-      {/* All Specs Modal */}
-      <Modal
-        visible={modalVisible}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={closeModal}
-      >
-        <View style={[styles.modalContainer, { backgroundColor: colors.background }]}>
-          {/* Modal Header */}
-          <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
-            <Text style={[styles.modalTitle, { color: colors.text }]}>
-              All Specifications
-            </Text>
-            <Pressable
-              onPress={closeModal}
-              style={styles.closeButton}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >
-              {({ pressed }) => (
-                <X size={22} color={colors.text} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
-              )}
-            </Pressable>
-          </View>
-
-          {/* All Specs List */}
-          <ScrollView 
-            style={styles.modalContent}
-            contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}
-            showsVerticalScrollIndicator={false}
-          >
-            {specs.map((spec) => (
-              <SpecRow 
-                key={spec.label} 
-                label={spec.label} 
-                value={spec.value} 
-              />
-            ))}
-          </ScrollView>
-        </View>
-      </Modal>
     </View>
   );
 });
@@ -173,7 +122,6 @@ const styles = StyleSheet.create({
   },
   label: {
     ...Typography.label,
-    letterSpacing: 1.5,
   },
   specsList: {
     gap: 2,
@@ -200,27 +148,5 @@ const styles = StyleSheet.create({
   },
   viewAllText: {
     ...Typography.value,
-  },
-  modalContainer: {
-    flex: 1,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  modalTitle: {
-    ...Typography.titlePrice,
-  },
-  closeButton: {
-    padding: 4,
-  },
-  modalContent: {
-    flex: 1,
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.md,
   },
 });

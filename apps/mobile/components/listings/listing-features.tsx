@@ -52,7 +52,6 @@ const styles = StyleSheet.create({
   },
   label: {
     ...Typography.label,
-    letterSpacing: 1.5,
   },
   badgesContainer: {
     flexDirection: 'row',
