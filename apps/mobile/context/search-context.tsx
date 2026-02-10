@@ -43,6 +43,9 @@ export type FilterParams = {
   fuelType?: string[];
   transmission?: string[];
   specs?: string[];
+  exteriorColor?: string[];
+  interiorColor?: string[];
+  engineSize?: string[];
   condition?: 'new' | 'used';
   isNegotiable?: boolean;
   isBlkListing?: boolean;
@@ -270,6 +273,21 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     if (filterParams.sellerType) {
       chips.push({ key: 'sellerType', label: filterParams.sellerType === 'dealer' ? 'Dealer' : 'Private', value: filterParams.sellerType });
     }
+    if (filterParams.exteriorColor?.length) {
+      filterParams.exteriorColor.forEach((color, index) => {
+        chips.push({ key: 'exteriorColor', label: `Ext: ${color.charAt(0).toUpperCase() + color.slice(1)}`, value: color, index });
+      });
+    }
+    if (filterParams.interiorColor?.length) {
+      filterParams.interiorColor.forEach((color, index) => {
+        chips.push({ key: 'interiorColor', label: `Int: ${color.charAt(0).toUpperCase() + color.slice(1)}`, value: color, index });
+      });
+    }
+    if (filterParams.engineSize?.length) {
+      filterParams.engineSize.forEach((size, index) => {
+        chips.push({ key: 'engineSize', label: `${size}L`, value: size, index });
+      });
+    }
     
     return chips;
   }, [searchParams, sortBy, filterParams]);
@@ -298,6 +316,9 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     if (filterParams.isBlkListing) count++;
     if (filterParams.isBlackTierPartner) count++;
     if (filterParams.sellerType) count++;
+    count += filterParams.exteriorColor?.length ?? 0;
+    count += filterParams.interiorColor?.length ?? 0;
+    count += filterParams.engineSize?.length ?? 0;
     
     // Count non-default sort
     if (sortBy !== 'relevance') count++;

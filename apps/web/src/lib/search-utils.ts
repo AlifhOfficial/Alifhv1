@@ -265,6 +265,7 @@ export function urlToSearchParams(urlParams: URLSearchParams): SearchParams {
 export function countActiveFilters(params: SearchParams): number {
   let count = 0;
   
+  if (params.q) count++;
   if (params.make?.length) count++;
   if (params.model?.length) count++;
   if (params.yearMin || params.yearMax) count++;
@@ -280,6 +281,7 @@ export function countActiveFilters(params: SearchParams): number {
   if (params.interiorColor?.length) count++;
   if (params.sellerType) count++;
   if (params.tags?.length) count++;
+  if (params.extras?.length) count++;
   if (params.isNegotiable !== undefined) count++;
   if (params.underWarranty !== undefined) count++;
   if (params.isBlkListing !== undefined) count++;

@@ -16,7 +16,7 @@ const nextConfig = {
   // Disable React Strict Mode to prevent double rendering in development
   reactStrictMode: false,
   
-  transpilePackages: ['@alifh/shared', '@alifh/database'],
+  transpilePackages: ['@alifh/shared', '@alifh/database', '@alifh/ai'],
   serverExternalPackages: ['better-auth', '@node-rs/argon2', '@node-rs/bcrypt'],
   
   // Content Security Policy and PWA Service Worker headers

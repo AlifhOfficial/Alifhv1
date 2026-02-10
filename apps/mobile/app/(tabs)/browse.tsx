@@ -14,10 +14,13 @@ import { useRouter } from 'expo-router';
 import { DisplayArea, ACTIVE_CHIPS_HEIGHT, TopSafeAreaGradient } from '@/components/layout';
 import { FilterPills, type FilterPillType } from '@/components/home';
 import { 
+  MakeFilterSheet,
+  ModelFilterSheet,
   PriceFilterSheet, 
   YearMileageFilterSheet, 
   LocationFilterSheet, 
   MoreFiltersSheet,
+  AmnaSheet,
   type ViewMode,
   type MoreFiltersState,
 } from '@/components/sheets';
@@ -27,6 +30,7 @@ import { searchApi, type ListingCard, type SearchParams, type SearchFacets, type
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch, type FilterParams } from '@/context/search-context';
+import { getModelsForMake } from '@/lib/filter-constants';
 
 // ============================================================================
 // HELPERS
@@ -52,7 +56,11 @@ const filtersToParams = (f: FilterParams, searchParams: { make?: string[]; model
   fuelType: f.fuelType as SearchParams['fuelType'],
   transmission: f.transmission as SearchParams['transmission'],
   specs: f.specs as SearchParams['specs'],
+  exteriorColor: f.exteriorColor as SearchParams['exteriorColor'],
+  interiorColor: f.interiorColor as SearchParams['interiorColor'],
+  engineSize: f.engineSize as SearchParams['engineSize'],
   condition: f.condition,
+  sellerType: f.sellerType,
   isNegotiable: f.isNegotiable,
   isBlkListing: f.isBlkListing,
   isBlackTierPartner: f.isBlackTierPartner,
@@ -74,9 +82,12 @@ export default function BrowseScreen() {
   const { 
     // Search params (make/model/q from search sheet)
     searchParams,
+    applySearch,
+    clearSearch,
     subscribeToSearch,
     // Sort
     sortBy,
+    applySort,
     subscribeToSort, 
     // Filters - THE source of truth
     filterParams,
@@ -109,10 +120,13 @@ export default function BrowseScreen() {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
   // Filter sheets visibility
+  const [makeSheetVisible, setMakeSheetVisible] = useState(false);
+  const [modelSheetVisible, setModelSheetVisible] = useState(false);
   const [priceSheetVisible, setPriceSheetVisible] = useState(false);
   const [yearMileageSheetVisible, setYearMileageSheetVisible] = useState(false);
   const [locationSheetVisible, setLocationSheetVisible] = useState(false);
   const [settingsSheetVisible, setSettingsSheetVisible] = useState(false);
+  const [amnaSheetVisible, setAmnaSheetVisible] = useState(false);
 
   // ──────────────────────────────────────────────────────────────────────────
   // API CALLS
@@ -231,6 +245,12 @@ export default function BrowseScreen() {
   // Handle filter pill press
   const handleFilterPillPress = useCallback((type: FilterPillType) => {
     switch (type) {
+      case 'make':
+        setMakeSheetVisible(true);
+        break;
+      case 'model':
+        setModelSheetVisible(true);
+        break;
       case 'price':
         setPriceSheetVisible(true);
         break;
@@ -242,6 +262,46 @@ export default function BrowseScreen() {
         break;
     }
   }, []);
+
+  // Stable callbacks for FilterPills (prevents ScrollView scroll-reset)
+  const handleSettingsPress = useCallback(() => setSettingsSheetVisible(true), []);
+  const handleAmnaPress = useCallback(() => setAmnaSheetVisible(true), []);
+
+  // Handle make filter apply — updates searchParams in context
+  const handleMakeApply = useCallback((makes: string[]) => {
+    const current = searchParams ?? {};
+    if (makes.length > 0) {
+      // If makes changed, clear models that no longer belong
+      const currentModels = current.model ?? [];
+      const validModels = currentModels.filter((m: string) =>
+        makes.some((mk: string) => (getModelsForMake(mk) as readonly string[]).includes(m))
+      );
+      applySearch({ ...current, make: makes, model: validModels.length > 0 ? validModels : undefined });
+    } else {
+      // Clear make + model + trim
+      const { make, model, trim, ...rest } = current;
+      if (Object.keys(rest).length > 0) {
+        applySearch(rest);
+      } else {
+        clearSearch();
+      }
+    }
+  }, [searchParams, applySearch, clearSearch]);
+
+  // Handle model filter apply — updates searchParams in context
+  const handleModelApply = useCallback((models: string[]) => {
+    const current = searchParams ?? {};
+    if (models.length > 0) {
+      applySearch({ ...current, model: models });
+    } else {
+      const { model, trim, ...rest } = current;
+      if (Object.keys(rest).length > 0) {
+        applySearch(rest);
+      } else {
+        clearSearch();
+      }
+    }
+  }, [searchParams, applySearch, clearSearch]);
 
   // Handle price filter apply - updates context (single source of truth)
   const handlePriceApply = useCallback((priceMin?: number, priceMax?: number) => {
@@ -268,8 +328,56 @@ export default function BrowseScreen() {
     updateFilterParams(moreFilters);
   }, [updateFilterParams]);
 
+  // Handle Amna AI search — routes parsed filters through context
+  const handleAmnaSearch = useCallback((params: Record<string, any>) => {
+    // Split into search-level vs filter-level params
+    const { make, model, trim, tags, extras, q, ...filterLevel } = params;
+    
+    // Apply search-level params
+    const searchLevel: Record<string, any> = {};
+    if (make?.length) searchLevel.make = make;
+    if (model?.length) searchLevel.model = model;
+    if (trim?.length) searchLevel.trim = trim;
+    if (tags?.length) searchLevel.tags = tags;
+    if (extras?.length) searchLevel.extras = extras;
+    if (q) searchLevel.q = q;
+    
+    if (Object.keys(searchLevel).length > 0) {
+      applySearch(searchLevel);
+    }
+    
+    // Apply filter-level params
+    const filterUpdates: Record<string, any> = {};
+    if (filterLevel.bodyType?.length) filterUpdates.bodyType = filterLevel.bodyType;
+    if (filterLevel.fuelType?.length) filterUpdates.fuelType = filterLevel.fuelType;
+    if (filterLevel.transmission?.length) filterUpdates.transmission = filterLevel.transmission;
+    if (filterLevel.specs?.length) filterUpdates.specs = filterLevel.specs;
+    if (filterLevel.exteriorColor?.length) filterUpdates.exteriorColor = filterLevel.exteriorColor;
+    if (filterLevel.interiorColor?.length) filterUpdates.interiorColor = filterLevel.interiorColor;
+    if (filterLevel.engineSize?.length) filterUpdates.engineSize = filterLevel.engineSize;
+    if (filterLevel.emirate?.length) filterUpdates.emirate = filterLevel.emirate;
+    if (filterLevel.priceMin) filterUpdates.priceMin = filterLevel.priceMin;
+    if (filterLevel.priceMax) filterUpdates.priceMax = filterLevel.priceMax;
+    if (filterLevel.yearMin) filterUpdates.yearMin = filterLevel.yearMin;
+    if (filterLevel.yearMax) filterUpdates.yearMax = filterLevel.yearMax;
+    if (filterLevel.mileageMax) filterUpdates.mileageMax = filterLevel.mileageMax;
+    if (filterLevel.condition) filterUpdates.condition = filterLevel.condition;
+    if (filterLevel.sellerType) filterUpdates.sellerType = filterLevel.sellerType;
+    
+    if (Object.keys(filterUpdates).length > 0) {
+      updateFilterParams(filterUpdates);
+    }
+    
+    // Handle sort
+    if (filterLevel.sortBy) {
+      applySort(filterLevel.sortBy);
+    }
+  }, [applySearch, updateFilterParams, applySort]);
+
   // Calculate filter counts for pills (read from context)
   const filterPillConfigs = useMemo(() => {
+    const makeCount = searchParams?.make?.length ?? 0;
+    const modelCount = searchParams?.model?.length ?? 0;
     const priceCount = (filterParams.priceMin || filterParams.priceMax) ? 1 : 0;
     const yearMileageCount = 
       ((filterParams.yearMin || filterParams.yearMax) ? 1 : 0) + 
@@ -277,11 +385,13 @@ export default function BrowseScreen() {
     const locationCount = filterParams.emirate?.length ?? 0;
 
     return [
+      { type: 'make' as FilterPillType, label: 'Make', activeCount: makeCount },
+      { type: 'model' as FilterPillType, label: 'Model', activeCount: modelCount },
       { type: 'price' as FilterPillType, label: 'Price', activeCount: priceCount },
       { type: 'yearMileage' as FilterPillType, label: 'Year & Km', activeCount: yearMileageCount },
       { type: 'location' as FilterPillType, label: 'Location', activeCount: locationCount },
     ];
-  }, [filterParams]);
+  }, [filterParams, searchParams]);
 
   // Build more filters state from context
   const moreFiltersState: MoreFiltersState = useMemo(() => ({
@@ -293,6 +403,9 @@ export default function BrowseScreen() {
     bodyType: filterParams.bodyType,
     fuelType: filterParams.fuelType,
     transmission: filterParams.transmission,
+    exteriorColor: filterParams.exteriorColor,
+    interiorColor: filterParams.interiorColor,
+    engineSize: filterParams.engineSize,
     sellerType: filterParams.sellerType,
   }), [filterParams]);
 
@@ -306,6 +419,9 @@ export default function BrowseScreen() {
     count += filterParams.bodyType?.length ?? 0;
     count += filterParams.fuelType?.length ?? 0;
     count += filterParams.transmission?.length ?? 0;
+    count += filterParams.exteriorColor?.length ?? 0;
+    count += filterParams.interiorColor?.length ?? 0;
+    count += filterParams.engineSize?.length ?? 0;
     if (filterParams.sellerType) count++;
     return count;
   }, [filterParams]);
@@ -325,12 +441,30 @@ export default function BrowseScreen() {
         <FilterPills 
           pills={filterPillConfigs}
           onPillPress={handleFilterPillPress}
-          onSettingsPress={() => setSettingsSheetVisible(true)}
+          onSettingsPress={handleSettingsPress}
           settingsCount={moreFiltersCount}
           viewMode={viewMode}
           onViewModeChange={setViewMode}
+          onAmnaPress={handleAmnaPress}
         />
       </View>
+
+      {/* Make Filter Sheet - reads from searchParams */}
+      <MakeFilterSheet
+        visible={makeSheetVisible}
+        onClose={() => setMakeSheetVisible(false)}
+        selected={searchParams?.make ?? []}
+        onApply={handleMakeApply}
+      />
+
+      {/* Model Filter Sheet - reads from searchParams */}
+      <ModelFilterSheet
+        visible={modelSheetVisible}
+        onClose={() => setModelSheetVisible(false)}
+        selectedMakes={searchParams?.make ?? []}
+        selected={searchParams?.model ?? []}
+        onApply={handleModelApply}
+      />
 
       {/* Price Filter Sheet - reads from context */}
       <PriceFilterSheet
@@ -371,10 +505,20 @@ export default function BrowseScreen() {
           bodyType: facets?.bodyType,
           fuelType: facets?.fuelType,
           transmission: facets?.transmission,
+          exteriorColor: facets?.exteriorColor,
+          interiorColor: facets?.interiorColor,
+          engineSize: facets?.engineSize,
         }}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         onApply={handleMoreFiltersApply}
+      />
+
+      {/* Amna AI Sheet */}
+      <AmnaSheet
+        visible={amnaSheetVisible}
+        onClose={() => setAmnaSheetVisible(false)}
+        onSearch={handleAmnaSearch}
       />
 
       {/* Listings */}
@@ -488,9 +632,8 @@ const styles = StyleSheet.create({
   },
   headerRow: {
     flexDirection: 'column',
-    alignItems: 'flex-start',
+    alignItems: 'stretch',
     paddingLeft: Spacing.lg,
-    paddingRight: Spacing.lg,
     paddingBottom: Spacing.md,
     gap: 8,
   },

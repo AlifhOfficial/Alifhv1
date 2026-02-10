@@ -20,6 +20,9 @@ import {
   BODY_TYPES, 
   FUEL_TYPES, 
   TRANSMISSION_TYPES, 
+  EXTERIOR_COLORS,
+  INTERIOR_COLORS,
+  ENGINE_SIZES,
   SELLER_TYPE_OPTIONS 
 } from '@/lib/filter-constants';
 
@@ -39,6 +42,9 @@ export interface MoreFiltersState {
   bodyType?: string[];
   fuelType?: string[];
   transmission?: string[];
+  exteriorColor?: string[];
+  interiorColor?: string[];
+  engineSize?: string[];
   sellerType?: 'dealer' | 'private';
 }
 
@@ -51,6 +57,9 @@ interface MoreFiltersSheetProps {
     bodyType?: FacetBucket[];
     fuelType?: FacetBucket[];
     transmission?: FacetBucket[];
+    exteriorColor?: FacetBucket[];
+    interiorColor?: FacetBucket[];
+    engineSize?: FacetBucket[];
   };
   viewMode: ViewMode;
   onViewModeChange: (mode: ViewMode) => void;
@@ -194,6 +203,9 @@ export function MoreFiltersSheet({
     count += localFilters.bodyType?.length ?? 0;
     count += localFilters.fuelType?.length ?? 0;
     count += localFilters.transmission?.length ?? 0;
+    count += localFilters.exteriorColor?.length ?? 0;
+    count += localFilters.interiorColor?.length ?? 0;
+    count += localFilters.engineSize?.length ?? 0;
     if (localFilters.sellerType) count++;
     return count;
   }, [localFilters]);
@@ -418,6 +430,45 @@ export function MoreFiltersSheet({
             facets?.transmission
           ),
           localFilters.transmission?.length ?? 0
+        )}
+
+        {/* Exterior Color Section */}
+        {renderSection(
+          'Exterior Color',
+          'exteriorColor',
+          renderChipOptions(
+            EXTERIOR_COLORS,
+            localFilters.exteriorColor,
+            (value) => handleToggleArray('exteriorColor', value),
+            facets?.exteriorColor
+          ),
+          localFilters.exteriorColor?.length ?? 0
+        )}
+
+        {/* Interior Color Section */}
+        {renderSection(
+          'Interior Color',
+          'interiorColor',
+          renderChipOptions(
+            INTERIOR_COLORS,
+            localFilters.interiorColor,
+            (value) => handleToggleArray('interiorColor', value),
+            facets?.interiorColor
+          ),
+          localFilters.interiorColor?.length ?? 0
+        )}
+
+        {/* Engine Size Section */}
+        {renderSection(
+          'Engine Size',
+          'engineSize',
+          renderChipOptions(
+            ENGINE_SIZES,
+            localFilters.engineSize,
+            (value) => handleToggleArray('engineSize', value),
+            facets?.engineSize
+          ),
+          localFilters.engineSize?.length ?? 0
         )}
 
         {/* Seller Type Section */}

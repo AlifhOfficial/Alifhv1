@@ -183,25 +183,25 @@ export function SearchBar({
 
   // Handle search submission
   const handleSearch = useCallback((searchQuery: string, filters?: Partial<SearchParams>) => {
-    // Build filters object for callback
-    const searchFilters: Partial<SearchParams> = {
-      // Clear all search-related filters
-      q: undefined,
-      make: undefined,
-      model: undefined,
-      trim: undefined,
-      partnerId: undefined,
-      partnerName: undefined,
-      tags: undefined,
-      extras: undefined,
-    };
+    // Build filters: only include what's explicitly being set.
+    // Don't nuke unrelated existing filters with undefined.
+    const searchFilters: Partial<SearchParams> = {};
     
-    // Merge in provided filters
     if (filters) {
-      Object.assign(searchFilters, filters);
+      // Structured filter search (suggestion click) — pass through only defined values
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined) {
+          (searchFilters as any)[key] = value;
+        }
+      });
+      // Clear text query when switching to structured filters
+      searchFilters.q = undefined;
     } else if (searchQuery && searchQuery.trim()) {
-      // Fallback to text search
+      // Free-text search — set q, clear structured search fields
       searchFilters.q = searchQuery.trim();
+      searchFilters.make = undefined;
+      searchFilters.model = undefined;
+      searchFilters.trim = undefined;
     }
     
     if (onSearch) {
@@ -284,7 +284,6 @@ export function SearchBar({
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (!showDropdown) {
       if (e.key === 'Enter' && query.trim()) {
-        // Simple text search
         handleSearch(query.trim());
       }
       return;
@@ -308,7 +307,6 @@ export function SearchBar({
         if (clampedSelectedIndex >= 0 && suggestions[clampedSelectedIndex]) {
           handleSuggestionClick(suggestions[clampedSelectedIndex]);
         } else if (query.trim()) {
-          // Simple text search
           handleSearch(query.trim());
         }
         break;
@@ -399,93 +397,90 @@ export function SearchBar({
 
   return (
     <div ref={containerRef} className={cn('relative w-full', className)}>
-      {/* Input */}
-      <div className={cn(
-        'relative flex items-center',
-        'bg-sidebar border border-sidebar-border rounded-full',
-        'shadow-sm hover:shadow-md',
-        'hover:border-sidebar-border/80',
-        'transition-all duration-200',
-        isFocused && 'border-primary/50 ring-2 ring-primary/20 shadow-md',
-        sizeClasses[size]
-      )}>
-        <Search className={cn(
-          'absolute left-3 sm:left-3.5 transition-colors',
-          isFocused ? 'text-primary' : 'text-sidebar-foreground/60',
-          iconSizes[size]
-        )} />
-        
-        {/* Styled display overlay - hides dots completely */}
-        {query && (
-          <div className="absolute left-10 sm:left-11 right-12 sm:right-10 pointer-events-none font-semibold tracking-tight text-sidebar-foreground truncate">
-            {query.split(/(\s*\.\s*)/).map((part, i) => 
-              part.match(/^\s*\.\s*$/) 
-                ? <span key={i} className="text-transparent select-none">{part}</span>
-                : <span key={i}>{part}</span>
-            )}
-          </div>
-        )}
-        
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          suppressHydrationWarning
-          onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => {
-            setIsFocused(true);
-            onFocusProp?.();
-          }}
-          onBlur={() => {
-            // Delay to allow click on suggestions
-            setTimeout(() => {
-              onBlurProp?.();
-            }, 150);
-          }}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          autoFocus={autoFocus}
-          // Prevent iOS zoom on focus
-          autoComplete="off"
-          autoCorrect="off"
-          autoCapitalize="off"
-          spellCheck="false"
-          className={cn(
-            'w-full h-full bg-transparent pl-10 sm:pl-11 pr-12 sm:pr-10',
-            'placeholder:text-sidebar-foreground/50 placeholder:font-medium',
-            'focus:outline-none touch-manipulation',
-            'font-semibold tracking-tight',
-            // Hide text when showing styled overlay (but keep for caret positioning)
-            query ? 'text-transparent caret-sidebar-foreground' : 'text-sidebar-foreground'
-          )}
-          aria-label="Search cars"
-          aria-expanded={showDropdown}
-          aria-haspopup="listbox"
-          aria-autocomplete="list"
-          aria-controls="search-suggestions-listbox"
-          role="combobox"
-        />
+        {/* ── Normal Search Bar ── */}
+        <div className={cn(
+          'relative flex items-center',
+          'bg-sidebar border border-sidebar-border rounded-full',
+          'shadow-sm hover:shadow-md',
+          'hover:border-sidebar-border/80',
+          'transition-all duration-200',
+          isFocused && 'border-primary/50 ring-2 ring-primary/20 shadow-md',
+          sizeClasses[size]
+        )}>
+              <Search className={cn(
+                'absolute left-3 sm:left-3.5 transition-colors',
+                isFocused ? 'text-primary' : 'text-sidebar-foreground/60',
+                iconSizes[size]
+              )} />
+              
+              {/* Styled display overlay - hides dots completely */}
+              {query && (
+                <div className="absolute left-10 sm:left-11 right-12 sm:right-10 pointer-events-none font-semibold tracking-tight text-sidebar-foreground truncate">
+                  {query.split(/(\s*\.\s*)/).map((part, i) => 
+                    part.match(/^\s*\.\s*$/) 
+                      ? <span key={i} className="text-transparent select-none">{part}</span>
+                      : <span key={i}>{part}</span>
+                  )}
+                </div>
+              )}
+              
+              <input
+                ref={inputRef}
+                type="text"
+                value={query}
+                suppressHydrationWarning
+                onChange={(e) => setQuery(e.target.value)}
+                onFocus={() => {
+                  setIsFocused(true);
+                  onFocusProp?.();
+                }}
+                onBlur={() => {
+                  setTimeout(() => {
+                    onBlurProp?.();
+                  }, 150);
+                }}
+                onKeyDown={handleKeyDown}
+                placeholder={placeholder}
+                autoFocus={autoFocus}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck="false"
+                className={cn(
+                  'w-full h-full bg-transparent pl-10 sm:pl-11 pr-12 sm:pr-10',
+                  'placeholder:text-sidebar-foreground/50 placeholder:font-medium',
+                  'focus:outline-none touch-manipulation',
+                  'font-semibold tracking-tight',
+                  query ? 'text-transparent caret-sidebar-foreground' : 'text-sidebar-foreground'
+                )}
+                aria-label="Search cars"
+                aria-expanded={!!showDropdown}
+                aria-haspopup="listbox"
+                aria-autocomplete="list"
+                aria-controls="search-suggestions-listbox"
+                role="combobox"
+              />
 
-        {/* Clear / Loading */}
-        {query && (
-          <button
-            onClick={() => setQuery('')}
-            className={cn(
-              "absolute right-2 sm:right-3 p-2 sm:p-1 rounded-full transition-all touch-manipulation",
-              "text-muted-foreground/50 hover:text-foreground hover:bg-muted active:bg-muted"
-            )}
-            aria-label="Clear search"
-          >
-            {isLoading ? (
-              <Loader2 className={cn('animate-spin', iconSizes[size])} />
-            ) : (
-              <X className={iconSizes[size]} />
-            )}
-          </button>
-        )}
-      </div>
+              {/* Clear / Loading */}
+              {query && (
+                <button
+                  onClick={() => setQuery('')}
+                  className={cn(
+                    "absolute right-2 sm:right-3 p-2 sm:p-1 rounded-full transition-all touch-manipulation",
+                    "text-muted-foreground/50 hover:text-foreground hover:bg-muted active:bg-muted"
+                  )}
+                  aria-label="Clear search"
+                >
+                  {isLoading ? (
+                    <Loader2 className={cn('animate-spin', iconSizes[size])} />
+                  ) : (
+                    <X className={iconSizes[size]} />
+                  )}
+                </button>
+              )}
+            </div>
 
-      {/* Suggestions Dropdown */}
+        {/* ── Suggestions Dropdown ── */}
       {showDropdown && (
         <div 
           className={cn(

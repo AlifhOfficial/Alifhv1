@@ -65,7 +65,22 @@ function buildSearchConditions(params: SearchParams, now: Date): SQL[] {
   // Supports multiple keywords: "audi rs5" matches listings with BOTH "audi" AND "rs5"
   // Also works for mixed queries like "accident free audi" — matches tag + make
   if (params.q?.trim()) {
-    const keywords = params.q.trim().toLowerCase().split(/\s+/).filter(k => k.length >= 2);
+    // Common stop words to filter out (avoids pointless DB matches)
+    const STOP_WORDS = new Set([
+      'i', 'me', 'my', 'we', 'a', 'an', 'the', 'is', 'am', 'are', 'was', 'were',
+      'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will',
+      'would', 'could', 'should', 'can', 'may', 'might', 'shall', 'to', 'of',
+      'in', 'for', 'on', 'with', 'at', 'by', 'from', 'it', 'its', 'this', 'that',
+      'and', 'or', 'but', 'not', 'no', 'so', 'if', 'then', 'than', 'too', 'very',
+      'just', 'about', 'also', 'some', 'any', 'all', 'each', 'every', 'both',
+      'want', 'need', 'like', 'looking', 'find', 'show', 'get', 'give', 'search',
+      'car', 'cars', 'vehicle', 'vehicles', 'please', 'hey', 'hi', 'hello',
+      'think', 'know', 'what', 'which', 'who', 'how', 'where', 'when', 'why',
+      'im', 'ive', 'dont', 'cant', 'wont', 'youre', 'thats', 'theres',
+    ]);
+    
+    const keywords = params.q.trim().toLowerCase().split(/\s+/)
+      .filter(k => k.length >= 2 && !STOP_WORDS.has(k));
     
     if (keywords.length > 0) {
       // Each keyword must match somewhere across ANY searchable field
@@ -79,10 +94,10 @@ function buildSearchConditions(params: SearchParams, now: Date): SQL[] {
           // Tags & extras (JSONB text search)
           sql`${carListing.tags}::text ILIKE ${searchTerm}`,
           sql`${carListing.extras}::text ILIKE ${searchTerm}`,
-          // Filter fields
-          ilike(carListing.bodyType, searchTerm),
-          ilike(carListing.fuelType, searchTerm),
-          ilike(carListing.condition, searchTerm),
+          // Filter fields (enum columns — must cast to text for ILIKE)
+          sql`${carListing.bodyType}::text ILIKE ${searchTerm}`,
+          sql`${carListing.fuelType}::text ILIKE ${searchTerm}`,
+          sql`${carListing.condition}::text ILIKE ${searchTerm}`,
         )!;
       });
       

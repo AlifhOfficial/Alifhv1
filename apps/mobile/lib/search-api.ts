@@ -340,6 +340,55 @@ export const searchApi = {
     const webResponse: DBSearchResponse = await response.json();
     return webResponse.meta.total || 0;
   },
+
+  /**
+   * AI Search: Parse natural language into structured search filters.
+   * Returns parsed intent with search params and a redirect URL.
+   */
+  async aiSearch(query: string): Promise<{
+    intent: {
+      confidence: number;
+      summary: string;
+      message?: string;
+      make?: string[];
+      model?: string[];
+      trim?: string[];
+      priceMin?: number;
+      priceMax?: number;
+      yearMin?: number;
+      yearMax?: number;
+      mileageMax?: number;
+      bodyType?: string[];
+      fuelType?: string[];
+      transmission?: string[];
+      specs?: string[];
+      exteriorColor?: string[];
+      interiorColor?: string[];
+      engineSize?: string[];
+      tags?: string[];
+      extras?: string[];
+      emirate?: string[];
+      condition?: 'new' | 'used';
+      sellerType?: 'dealer' | 'private';
+      sortBy?: string;
+      q?: string;
+    };
+    searchParams: Record<string, any>;
+    searchUrl: string;
+    cached: boolean;
+    processingTimeMs: number;
+  }> {
+    const url = `${API_BASE}/api/listings/search/ai`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query }),
+    });
+    if (!response.ok) {
+      throw new Error(`AI search failed: ${response.status}`);
+    }
+    return response.json();
+  },
 };
 
 // ============================================================================

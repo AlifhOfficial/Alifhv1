@@ -60,8 +60,18 @@ interface SearchParams {
   fuelType?: string[];
   transmission?: string[];
   specs?: string[];
+  exteriorColor?: string[];
+  interiorColor?: string[];
+  engineSize?: string[];
+  emirate?: string[];
+  priceMin?: number;
+  priceMax?: number;
+  yearMin?: number;
+  yearMax?: number;
+  mileageMax?: number;
   condition?: 'new' | 'used';
   sellerType?: 'dealer' | 'private';
+  sortBy?: string;
   partnerId?: string;
   partnerName?: string;
 }
@@ -668,6 +678,7 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
               <Label size="small" tone="muted" style={styles.sectionLabel}>
                 SUGGESTIONS
               </Label>
+
               {isLoadingSuggestions ? (
                 <View style={styles.loadingRow}>
                   <ActivityIndicator size="small" color={colors.textMuted} />

@@ -6,7 +6,7 @@
 import React from 'react';
 import { View, StyleSheet, Pressable, Platform, ScrollView } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { Settings2, LayoutGrid, List } from 'lucide-react-native';
+import { Settings2, LayoutGrid, List, Sparkles } from 'lucide-react-native';
 
 import { Colors } from '@/constants/theme';
 
@@ -14,7 +14,7 @@ export type ViewMode = 'grid' | 'list';
 import { Body, Label } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 
-export type FilterPillType = 'price' | 'yearMileage' | 'location';
+export type FilterPillType = 'make' | 'model' | 'price' | 'yearMileage' | 'location';
 
 interface FilterPillConfig {
   type: FilterPillType;
@@ -29,9 +29,10 @@ interface FilterPillsProps {
   settingsCount?: number;
   viewMode?: ViewMode;
   onViewModeChange?: (mode: ViewMode) => void;
+  onAmnaPress?: () => void;
 }
 
-export function FilterPills({ pills, onPillPress, onSettingsPress, settingsCount = 0, viewMode = 'grid', onViewModeChange }: FilterPillsProps) {
+export const FilterPills = React.memo(function FilterPills({ pills, onPillPress, onSettingsPress, settingsCount = 0, viewMode = 'grid', onViewModeChange, onAmnaPress }: FilterPillsProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
@@ -64,7 +65,39 @@ export function FilterPills({ pills, onPillPress, onSettingsPress, settingsCount
       style={[styles.scrollView, { backgroundColor: colors.background }]}
       contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}
     >
-      {/* Settings bubble first */}
+      {/* Amna AI Pill */}
+      {onAmnaPress && (
+        <Pressable
+          onPress={() => {
+            if (Platform.OS === 'ios') {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }
+            onAmnaPress();
+          }}
+          style={[
+            styles.amnaPill,
+            {
+              backgroundColor: colors.background,
+              borderColor: 'rgba(139, 92, 246, 0.30)',
+            },
+          ]}
+        >
+          {({ pressed }) => (
+            <View style={[styles.pillContent, { opacity: pressed ? 0.8 : 1 }]}>
+              <Sparkles size={14} color="#8B5CF6" strokeWidth={2.5} />
+              <Body
+                size="small"
+                style={[styles.pillLabel, { color: '#8B5CF6', fontFamily: 'Inter_600SemiBold' }]}
+                numberOfLines={1}
+              >
+                Amna
+              </Body>
+            </View>
+          )}
+        </Pressable>
+      )}
+
+      {/* Settings bubble */}
       <Pressable
         onPress={handleSettingsPress}
         style={[
@@ -159,19 +192,19 @@ export function FilterPills({ pills, onPillPress, onSettingsPress, settingsCount
       </Pressable>
     </ScrollView>
   );
-}
+});
 
 const styles = StyleSheet.create({
   scrollView: {
     backgroundColor: 'transparent',
-    overflow: 'visible',
+    flexGrow: 0,
   },
   container: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingRight: 16,
+    paddingVertical: 4,
     gap: 8,
-    overflow: 'visible',
   },
   settingsBubble: {
     width: 36,
@@ -261,5 +294,17 @@ const styles = StyleSheet.create({
     height: 36,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  amnaPill: {
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    paddingHorizontal: 14,
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
   },
 });
