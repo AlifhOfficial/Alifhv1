@@ -9,7 +9,7 @@ import { View, Pressable, StyleSheet, Platform } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { Home, MessageCircle, LayoutGrid, ChevronLeft, Search, ArrowUpDown } from 'lucide-react-native';
+import { Home, MessageCircle, LayoutGrid, ChevronLeft, Search, ArrowUpDown, Plus } from 'lucide-react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -46,11 +46,24 @@ const MAIN_TAB_PATHS = ['/', '/messages', '/browse', '/(tabs)', '/(tabs)/index',
 // Browse tab paths (show search bubble)
 const BROWSE_PATHS = ['/browse', '/(tabs)/browse'];
 
+// Home tab paths (show create bubble)
+const HOME_PATHS = ['/', '/(tabs)', '/(tabs)/index'];
+
 // Back bubble size (matches pill height: 44 + padding 4*2 = 52)
 const BACK_BUBBLE_SIZE = 52;
 const SEARCH_BUBBLE_SIZE = 52;
 const SORT_BUBBLE_SIZE = 52;
+const CREATE_BUBBLE_SIZE = 52;
 const GAP = 8;
+
+/**
+ * Screens that must NEVER show the tab bar.
+ * This is a hard blocklist checked synchronously — no useEffect race.
+ */
+const HIDE_TAB_BAR_PATHS = [
+  '/create-listing',
+  '/inventory',
+];
 
 export function GlobalTabBar() {
   const { colorScheme } = useTheme();
@@ -63,6 +76,9 @@ export function GlobalTabBar() {
   const router = useRouter();
   const pathname = usePathname();
 
+  // ── Hard hide: never render on blocklisted screens ─────────────────────
+  const shouldHide = HIDE_TAB_BAR_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'));
+
   // Sheet states
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
@@ -73,6 +89,9 @@ export function GlobalTabBar() {
   // Check if on browse tab (show search bubble)
   const showSearchBubble = BROWSE_PATHS.includes(pathname);
 
+  // Check if on home tab (show create bubble)
+  const showCreateBubble = HOME_PATHS.includes(pathname);
+
   // Check if we have active search, filters, or non-default sort (show chips)
   const hasActiveFilters = filterParams && Object.keys(filterParams).length > 0;
   const hasActiveSearch = (searchParams !== null && Object.keys(searchParams).length > 0) || hasActiveFilters || sortBy !== 'relevance';
@@ -81,6 +100,7 @@ export function GlobalTabBar() {
   const progress = useSharedValue(showBackButton ? 1 : 0);
   const searchProgress = useSharedValue(showSearchBubble ? 1 : 0);
   const sortProgress = useSharedValue(showSearchBubble ? 1 : 0);
+  const createProgress = useSharedValue(showCreateBubble ? 1 : 0);
 
   React.useEffect(() => {
     progress.value = withTiming(showBackButton ? 1 : 0, {
@@ -99,6 +119,13 @@ export function GlobalTabBar() {
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
     });
   }, [showSearchBubble]);
+
+  React.useEffect(() => {
+    createProgress.value = withTiming(showCreateBubble ? 1 : 0, {
+      duration: 200,
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+    });
+  }, [showCreateBubble]);
 
   // Back bubble animates in from left
   const backBubbleStyle = useAnimatedStyle(() => {
@@ -136,6 +163,18 @@ export function GlobalTabBar() {
     };
   });
 
+  // Create bubble animates in from right (on home tab)
+  const createBubbleStyle = useAnimatedStyle(() => {
+    return {
+      opacity: createProgress.value,
+      transform: [
+        { scale: interpolate(createProgress.value, [0, 1], [0.8, 1]) },
+      ],
+      width: interpolate(createProgress.value, [0, 1], [0, CREATE_BUBBLE_SIZE]),
+      marginLeft: interpolate(createProgress.value, [0, 1], [0, GAP]),
+    };
+  });
+
   const pillStyle = useAnimatedStyle(() => {
     return {};
   });
@@ -169,6 +208,13 @@ export function GlobalTabBar() {
     }
     router.push('/');
   };
+
+  const handleCreatePress = useCallback(() => {
+    if (Platform.OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
+    router.push('/create-listing' as any);
+  }, [router]);
 
   const handleSearchPress = useCallback(() => {
     if (Platform.OS === 'ios') {
@@ -223,6 +269,11 @@ export function GlobalTabBar() {
     }
     return pathname === tab.path || pathname === `/(tabs)/${tab.name}`;
   };
+
+  // ── Hard hide: return null AFTER all hooks ─────────────────────
+  if (shouldHide) {
+    return null;
+  }
 
   return (
     <View style={styles.container}>
@@ -331,6 +382,26 @@ export function GlobalTabBar() {
               strokeWidth={2}
             />
           </AnimatedPressable>
+
+          {/* Create bubble (appears on home tab) */}
+          <AnimatedPressable
+            onPress={handleCreatePress}
+            style={[
+              styles.createBubble,
+              { 
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+              },
+              createBubbleStyle,
+            ]}
+            pointerEvents={showCreateBubble ? 'auto' : 'none'}
+          >
+            <Plus
+              size={22}
+              color={colors.text}
+              strokeWidth={2}
+            />
+          </AnimatedPressable>
         </View>
       </View>
 
@@ -431,6 +502,20 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   sortBubble: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  createBubble: {
     width: 52,
     height: 52,
     borderRadius: 26,

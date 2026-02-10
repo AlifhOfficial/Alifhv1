@@ -15,6 +15,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
 import { Body, Supporting, Data } from '@/components/ui';
+import { Typography } from '@/constants/theme';
 import { Section } from './Section';
 import type { ThemeColors, EditingField, ProfileFormData } from './types';
 
@@ -80,6 +81,7 @@ export function BioSection({
               placeholderTextColor={colors.textTertiary}
               style={[
                 styles.input,
+                Typography.bodyMedium,
                 {
                   backgroundColor: colors.surface,
                   color: colors.text,
@@ -90,7 +92,7 @@ export function BioSection({
               textAlignVertical="top"
             />
             <View style={styles.footer}>
-              <Supporting size="small" style={{ color: charCountColor }}>
+              <Supporting size="medium" style={{ color: charCountColor }}>
                 {bio.length}/{MAX_BIO_LENGTH}
               </Supporting>
               <View style={styles.actions}>
@@ -119,14 +121,14 @@ export function BioSection({
         ) : (
           <View style={styles.displayContainer}>
             <Body
-              size="medium"
+              size="large"
               tone={bio ? 'default' : 'muted'}
               style={styles.bioText}
             >
               {bio || 'Tap to add bio'}
             </Body>
             {bio && (
-              <Supporting size="small" tone="muted">
+              <Supporting size="medium" tone="muted">
                 {bio.length}/{MAX_BIO_LENGTH}
               </Supporting>
             )}
@@ -149,9 +151,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     padding: 14,
-    fontSize: 15,
-    lineHeight: 22,
-    fontFamily: 'Inter_400Regular',
   },
   footer: {
     flexDirection: 'row',
@@ -166,6 +165,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   bioText: {
-    lineHeight: 24,
+    // lineHeight handled by <Body size="large"> component
   },
 });

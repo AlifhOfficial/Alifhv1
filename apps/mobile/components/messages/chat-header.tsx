@@ -12,7 +12,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { Data, Supporting } from '@/components/ui';
+import { Heading, Supporting } from '@/components/ui';
 
 interface ChatHeaderProps {
   name: string;
@@ -86,14 +86,14 @@ export function ChatHeader({
 
       {/* Name & Status */}
       <View style={styles.info}>
-        <Data size="medium" numberOfLines={1}>{name}</Data>
+        <Heading size="small" numberOfLines={1}>{name}</Heading>
         {listingTitle ? (
-          <Supporting size="small" tone="muted" style={{ marginTop: 2 }} numberOfLines={1}>
+          <Supporting size="medium" tone="muted" style={{ marginTop: 2 }} numberOfLines={1}>
             Re: {listingTitle}
           </Supporting>
         ) : statusText ? (
           <Supporting 
-            size="small" 
+            size="medium" 
             tone={isOnline ? 'success' : 'muted'}
             style={{ marginTop: 2 }}
           >

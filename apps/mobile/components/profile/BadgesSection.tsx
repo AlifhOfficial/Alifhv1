@@ -34,18 +34,18 @@ export function BadgesSection({ badges, colors, onLearnMore }: BadgesSectionProp
               key={index}
               style={[styles.badge, { backgroundColor: colors.surfaceSecondary }]}
             >
-              <Label size="small" style={styles.badgeText}>{badge}</Label>
+              <Label size="medium" style={styles.badgeText}>{badge}</Label>
             </View>
           ))}
         </View>
       ) : (
         <View style={styles.emptyState}>
-          <Body size="medium" tone="secondary" style={styles.emptyTitle}>
+          <Body size="large" tone="secondary" style={styles.emptyTitle}>
             No badges yet
           </Body>
-          <Supporting size="small" tone="muted" style={styles.emptySubtitle}>
+          <Body size="medium" tone="muted" style={styles.emptySubtitle}>
             Complete activities to earn badges
-          </Supporting>
+          </Body>
           <Pressable
             onPress={handleLearnMore}
             style={({ pressed }) => [
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   badgeText: {
-    fontFamily: 'Inter_500Medium',
+    // Typography handled by <Label> component
   },
   emptyState: {
     alignItems: 'center',
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   emptyTitle: {
-    fontFamily: 'Inter_600SemiBold',
+    // Typography handled by <Body> component
   },
   emptySubtitle: {
     textAlign: 'center',

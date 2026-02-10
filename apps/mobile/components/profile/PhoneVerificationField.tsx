@@ -7,7 +7,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   StyleSheet,
   View,
-  Text,
   TextInput,
   Pressable,
   Platform,
@@ -19,6 +18,7 @@ import { CheckCircle2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Supporting, Body, Data, ButtonText } from '@/components/ui';
+import { Typography } from '@/constants/theme';
 import { sendPhoneOTP, verifyPhoneOTP } from '@/lib/profile-api';
 import type { ThemeColors } from './types';
 
@@ -177,7 +177,7 @@ export function PhoneVerificationField({
         style={[styles.fieldContainer, { borderBottomWidth: 0 }]}
       >
         <View style={styles.labelRow}>
-          <Supporting size="small" tone="secondary">
+          <Supporting size="medium" tone="secondary">
             Phone Number
           </Supporting>
           {displayVerified ? (
@@ -190,7 +190,7 @@ export function PhoneVerificationField({
             </Pressable>
           ) : null}
         </View>
-        <Body size="medium" tone={phone ? 'default' : 'muted'}>
+        <Body size="large" tone={phone ? 'default' : 'muted'}>
           {phone ? `+971 ${phone}` : 'Tap to add'}
         </Body>
       </Pressable>
@@ -204,11 +204,11 @@ export function PhoneVerificationField({
         entering={FadeIn.duration(200)}
         style={[styles.fieldContainer, { borderBottomWidth: 0 }]}
       >
-        <Supporting size="small" tone="secondary">
+        <Supporting size="medium" tone="secondary">
           Phone Number
         </Supporting>
         <View style={styles.editRow}>
-          <Body size="medium" tone="secondary" style={styles.prefix}>+971</Body>
+          <Body size="large" tone="secondary" style={styles.prefix}>+971</Body>
           <TextInput
             ref={inputRef}
             value={phone}
@@ -219,6 +219,7 @@ export function PhoneVerificationField({
             maxLength={9}
             style={[
               styles.input,
+              Typography.bodyLarge,
               {
                 backgroundColor: colors.surface,
                 color: colors.text,
@@ -228,7 +229,7 @@ export function PhoneVerificationField({
           />
         </View>
         {error && (
-          <Supporting size="small" tone="error">{error}</Supporting>
+          <Supporting size="medium" tone="error">{error}</Supporting>
         )}
         <View style={styles.actions}>
           <Pressable onPress={handleCancel} hitSlop={8}>
@@ -269,10 +270,10 @@ export function PhoneVerificationField({
       entering={FadeInDown.duration(250)}
       style={[styles.fieldContainer, { borderBottomWidth: 0 }]}
     >
-      <Supporting size="small" tone="secondary">
+      <Supporting size="medium" tone="secondary">
         Phone Number
       </Supporting>
-      <Supporting size="small" tone="muted" style={styles.otpHint}>
+      <Supporting size="medium" tone="muted" style={styles.otpHint}>
         Enter the 6-digit code sent to +971 {phone}
       </Supporting>
       
@@ -286,16 +287,18 @@ export function PhoneVerificationField({
         maxLength={6}
         style={[
           styles.otpInput,
+          Typography.headingMedium,
           {
             backgroundColor: colors.surface,
             color: colors.text,
             borderColor: error ? colors.error : colors.border,
+            letterSpacing: 8,
           },
         ]}
       />
       
       {error && (
-        <Supporting size="small" tone="error" style={styles.errorText}>{error}</Supporting>
+        <Supporting size="medium" tone="error" style={styles.errorText}>{error}</Supporting>
       )}
 
       <View style={styles.otpActions}>
@@ -304,7 +307,7 @@ export function PhoneVerificationField({
           disabled={countdown > 0}
           hitSlop={8}
         >
-          <Supporting size="small" tone={countdown > 0 ? 'muted' : 'secondary'}>
+          <Supporting size="medium" tone={countdown > 0 ? 'muted' : 'secondary'}>
             {countdown > 0 ? `Resend in ${countdown}s` : 'Resend code'}
           </Supporting>
         </Pressable>
@@ -348,7 +351,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   prefix: {
-    fontFamily: 'Inter_500Medium',
+    // Typography handled by <Body> component
   },
   input: {
     flex: 1,
@@ -356,8 +359,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     paddingHorizontal: 12,
-    fontSize: 15,
-    fontFamily: 'Inter_400Regular',
   },
   actions: {
     flexDirection: 'row',
@@ -380,10 +381,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     paddingHorizontal: 16,
-    fontSize: 24,
-    fontFamily: 'Inter_500Medium',
     textAlign: 'center',
-    letterSpacing: 8,
   },
   errorText: {
     marginTop: 8,

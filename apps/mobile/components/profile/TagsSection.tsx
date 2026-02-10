@@ -5,19 +5,13 @@
 
 import React from 'react';
 import { StyleSheet, View, Pressable, Platform, Alert } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
-import { Supporting, Label } from '@/components/ui';
+import { Supporting, ButtonText } from '@/components/ui';
 import { Section } from './Section';
 import { PROFILE_TAGS } from './types';
 import type { ThemeColors } from './types';
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const MAX_TAGS = 3;
 
 interface TagItemProps {
@@ -28,43 +22,25 @@ interface TagItemProps {
 }
 
 function TagItem({ tag, isSelected, colors, onPress }: TagItemProps) {
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  const handlePressIn = () => {
-    scale.value = withSpring(0.95, { damping: 15, stiffness: 400 });
-  };
-
-  const handlePressOut = () => {
-    scale.value = withSpring(1, { damping: 15, stiffness: 400 });
-  };
-
   return (
-    <AnimatedPressable
+    <Pressable
       onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      style={[
+      style={({ pressed }) => [
         styles.tag,
-        animatedStyle,
         {
-          backgroundColor: isSelected ? `${colors.text}12` : `${colors.text}06`,
-          borderColor: isSelected ? `${colors.text}30` : `${colors.border}50`,
+          backgroundColor: isSelected ? colors.surfaceSecondary : colors.surface,
+          borderColor: isSelected ? colors.textSecondary : colors.border,
+          opacity: pressed ? 0.7 : 1,
         },
       ]}
     >
-      <Label
-        size="small"
+      <ButtonText
+        size="medium"
         tone={isSelected ? 'default' : 'secondary'}
-        uppercase={false}
-        style={styles.tagText}
       >
         {tag}
-      </Label>
-    </AnimatedPressable>
+      </ButtonText>
+    </Pressable>
   );
 }
 
@@ -98,12 +74,12 @@ export function TagsSection({ selectedTags, colors, onToggle }: TagsSectionProps
       colors={colors}
       delay={275}
       rightElement={
-        <Supporting size="small" tone="muted">
+        <Supporting size="medium" tone="muted">
           {selectedTags.length}/{MAX_TAGS}
         </Supporting>
       }
     >
-      <View style={styles.tagsContainer}>
+      <View style={styles.container}>
         {PROFILE_TAGS.map((tag) => (
           <TagItem
             key={tag}
@@ -119,22 +95,16 @@ export function TagsSection({ selectedTags, colors, onToggle }: TagsSectionProps
 }
 
 const styles = StyleSheet.create({
-  tagsContainer: {
+  container: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    padding: 14,
+    padding: 16,
     gap: 10,
   },
   tag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 14,
+    paddingHorizontal: 20,
     paddingVertical: 10,
-    borderRadius: 22,
-    borderWidth: 1,
-  },
-  tagText: {
-    fontFamily: 'Inter_500Medium',
+    borderRadius: 9999,
+    borderWidth: StyleSheet.hairlineWidth,
   },
 });

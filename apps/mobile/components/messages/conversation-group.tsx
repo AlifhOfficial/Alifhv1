@@ -9,7 +9,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { Data, Supporting, Label } from '@/components/ui';
+import { Heading, Data, Body, Supporting, Label } from '@/components/ui';
 import type { Conversation } from '@/lib/messaging-api';
 
 interface ConversationGroupProps {
@@ -66,13 +66,13 @@ export function ConversationGroup({
         {({ pressed }) => (
           <View style={[styles.headerRow, pressed && { opacity: 0.7 }]}>
             <UserAvatar src={avatarUrl} name={name} size="md" />
-            <Data size="medium" style={{ flex: 1 }} numberOfLines={1}>{name}</Data>
+            <Heading size="small" style={{ flex: 1 }} numberOfLines={1}>{name}</Heading>
             {isOnline && (
               <View style={[styles.onlineDot, { backgroundColor: colors.success }]} />
             )}
             {totalUnread > 0 && (
               <View style={[styles.unreadBadge, { backgroundColor: colors.error }]}>
-                <Label size="badge" uppercase={false} style={{ color: '#FFFFFF' }}>
+                <Label size="small" uppercase={false} style={{ color: '#FFFFFF' }}>
                   {totalUnread}
                 </Label>
               </View>
@@ -100,27 +100,27 @@ export function ConversationGroup({
                 {/* Title + Time */}
                 <View style={styles.chatRow}>
                   <Data 
-                    size="medium" 
+                    size="large" 
                     tone={hasUnread ? 'default' : 'secondary'}
                     style={{ flex: 1 }}
                     numberOfLines={1}
                   >
                     {c.listing?.title || 'General Inquiry'}
                   </Data>
-                  <Supporting size="small" tone="muted" style={{ marginLeft: Spacing.sm }}>
+                  <Supporting size="medium" tone="muted" style={{ marginLeft: Spacing.sm }}>
                     {formatTime(c.lastMessageAt)}
                   </Supporting>
                 </View>
                 {/* Preview + Unread */}
                 <View style={styles.chatRow}>
-                  <Supporting 
+                  <Body 
                     size="small" 
                     tone={hasUnread ? 'secondary' : 'muted'}
                     style={{ flex: 1, marginTop: 2 }}
                     numberOfLines={1}
                   >
                     {c.lastMessagePreview || 'No messages'}
-                  </Supporting>
+                  </Body>
                   {hasUnread && (
                     <View style={[styles.dot, { backgroundColor: colors.error }]} />
                   )}
@@ -136,13 +136,13 @@ export function ConversationGroup({
 
 const styles = StyleSheet.create({
   header: {
-    paddingVertical: Spacing.xs,
+    paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.lg,
   },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
+    gap: Spacing.md,
   },
   onlineDot: {
     width: 8,
@@ -150,25 +150,25 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
   },
   unreadBadge: {
-    minWidth: 16,
-    height: 16,
+    minWidth: 20,
+    height: 20,
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 4,
+    paddingHorizontal: 5,
   },
   chatList: {
-    marginLeft: Spacing.lg + 40 + Spacing.sm,
+    marginLeft: Spacing.lg + 40 + Spacing.md,
     marginRight: Spacing.lg,
     borderLeftWidth: 1,
     paddingLeft: Spacing.md,
-    gap: Spacing.md,
+    gap: Spacing.xs,
     marginBottom: Spacing.sm,
   },
   chatItem: {
-    paddingVertical: Spacing.sm,
+    paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.sm,
-    borderRadius: Radius.sm,
+    borderRadius: Radius.md,
   },
   chatRow: {
     flexDirection: 'row',

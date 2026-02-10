@@ -210,6 +210,8 @@ function RootLayoutNav() {
         <Stack.Screen name="settings" options={{ presentation: 'card' }} />
         <Stack.Screen name="saved" options={{ presentation: 'card' }} />
         <Stack.Screen name="chat/[conversationId]" options={{ presentation: 'card' }} />
+        <Stack.Screen name="create-listing" options={{ presentation: 'card' }} />
+        <Stack.Screen name="inventory" options={{ presentation: 'card' }} />
       </Stack>
       
       {/* Global Safe Area Gradients - hidden when chrome is hidden */}

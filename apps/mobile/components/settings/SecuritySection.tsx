@@ -33,7 +33,7 @@ export function SecuritySection({
       {/* Header with Add button */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <View style={styles.info}>
-          <Supporting size="small" tone="muted">Passkeys</Supporting>
+          <Supporting size="medium" tone="muted">Passkeys</Supporting>
           <Body size="medium">Sign in with biometrics</Body>
         </View>
         <Pressable
@@ -54,8 +54,8 @@ export function SecuritySection({
       {/* Passkeys List or Empty State */}
       {passkeys.length === 0 ? (
         <View style={styles.empty}>
-          <Label size="small" tone="muted" uppercase={false}>No passkeys registered</Label>
-          <Supporting size="small" tone="muted">Add a passkey for passwordless sign-in</Supporting>
+          <Label size="medium" tone="muted" uppercase={false}>No passkeys registered</Label>
+          <Supporting size="medium" tone="muted">Add a passkey for passwordless sign-in</Supporting>
         </View>
       ) : (
         <View style={styles.list}>
@@ -66,8 +66,8 @@ export function SecuritySection({
             >
               <Key size={16} color={colors.textSecondary} strokeWidth={1.5} />
               <View style={styles.itemInfo}>
-                <Label size="small" uppercase={false}>{pk.name}</Label>
-                <Supporting size="small" tone="muted">Added {pk.createdAt}</Supporting>
+                <Label size="medium" uppercase={false}>{pk.name}</Label>
+                <Supporting size="medium" tone="muted">Added {pk.createdAt}</Supporting>
               </View>
               <Pressable
                 onPress={() => onDeletePasskey?.(pk.id)}
@@ -88,13 +88,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 12,
+    paddingVertical: 14,
     paddingHorizontal: 16,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   info: {
     flex: 1,
-    gap: 2,
+    gap: 4,
   },
   addButton: {
     width: 36,
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   empty: {
     padding: 20,
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
   },
   list: {
     padding: 12,
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   },
   itemInfo: {
     flex: 1,
-    gap: 2,
+    gap: 4,
   },
   deleteButton: {
     padding: 8,

@@ -30,6 +30,19 @@ export {
   type LoaderVariant,
 } from './loaders';
 
+// Premium Backgrounds (Skia GPU-accelerated)
+export {
+  PremiumBackground,
+  MeshBG,
+  RadialBG,
+  AuroraBG,
+  NoiseBG,
+  ACCENT_PALETTES,
+  type PremiumBackgroundProps,
+  type BackgroundVariant,
+  type AccentPalette,
+} from './premium-background';
+
 // Typography components (with font scaling disabled)
 export {
   Text,

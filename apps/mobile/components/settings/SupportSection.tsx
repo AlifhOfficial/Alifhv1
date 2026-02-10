@@ -66,8 +66,8 @@ function SupportItem({
         <View style={styles.itemLeft}>
           <Icon size={18} color={colors.textSecondary} strokeWidth={1.5} />
           <View style={styles.itemContent}>
-            <Supporting size="small" tone="muted">Navigate</Supporting>
-            <Body size="medium">{label}</Body>
+            <Supporting size="medium" tone="muted">Navigate</Supporting>
+            <Body size="large">{label}</Body>
           </View>
         </View>
         <ChevronRight size={18} color={colors.textTertiary} strokeWidth={2} />
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 12,
+    paddingVertical: 14,
     paddingHorizontal: 16,
   },
   itemLeft: {
@@ -115,6 +115,6 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   itemContent: {
-    gap: 2,
+    gap: 4,
   },
 });

@@ -21,7 +21,7 @@ interface StatItemProps {
 function StatItem({ label, value, colors, showStar }: StatItemProps) {
   return (
     <View style={styles.statItem}>
-      <Label size="small" tone="muted" style={styles.statLabel}>{label}</Label>
+      <Label size="medium" tone="muted" style={styles.statLabel}>{label}</Label>
       <View style={styles.valueRow}>
         {showStar && value !== '—' && (
           <Star size={16} color="#FACC15" fill="#FACC15" strokeWidth={0} style={styles.starIcon} />
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   statLabel: {
-    textTransform: 'uppercase',
+    // textTransform handled by <Label> component
   },
   valueRow: {
     flexDirection: 'row',
@@ -176,6 +176,6 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   statValue: {
-    fontFamily: 'Inter_700Bold',
+    // Typography handled by <Heading> component
   },
 });

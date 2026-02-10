@@ -36,7 +36,7 @@ export function Section({
     >
       <View style={styles.header}>
         <Label 
-          size="small" 
+          size="medium" 
           tone={danger ? 'error' : 'secondary'} 
           style={styles.title}
         >
@@ -73,8 +73,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title: {
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
+    // textTransform and letterSpacing handled by <Label> component
   },
   content: {
     borderRadius: 14,

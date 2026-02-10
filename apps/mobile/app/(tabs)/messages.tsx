@@ -11,23 +11,26 @@ import React, { useMemo, useCallback } from 'react';
 import {
   StyleSheet,
   View,
-  Text,
   FlatList,
   ActivityIndicator,
   RefreshControl,
+  Pressable,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MessageCircle } from 'lucide-react-native';
+import { MessageCircle, LogIn } from 'lucide-react-native';
+import * as Haptics from 'expo-haptics';
 
 import {
   MessagesHeader,
   ConversationGroup,
   useConversations,
 } from '@/components/messages';
-import { Colors, Layout, Spacing, Radius, Typography } from '@/constants/theme';
+import { Colors, Layout, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
+import { Heading, Body, ButtonText } from '@/components/ui';
 import type { Conversation } from '@/lib/messaging-api';
 
 // ── List Item Type - Always grouped ─────────────────────────────
@@ -179,18 +182,33 @@ export default function MessagesScreen() {
           <View style={[styles.iconCircle, { backgroundColor: colors.fillSecondary }]}>
             <MessageCircle size={32} color={colors.textTertiary} strokeWidth={1.5} />
           </View>
-          <Text style={[styles.emptyTitle, { color: colors.text }]}>
+          <Heading size="medium">
             Sign In to Message
-          </Text>
-          <Text style={[styles.emptySubtitle, { color: colors.textTertiary }]}>
+          </Heading>
+          <Body size="medium" tone="secondary" style={{ textAlign: 'center' }}>
             Connect with buyers and sellers on Revvup
-          </Text>
-          <Text
-            style={[styles.actionLink, { color: colors.primary }]}
-            onPress={openAuthFlow}
+          </Body>
+          <Pressable
+            onPress={() => {
+              if (Platform.OS === 'ios') {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }
+              openAuthFlow();
+            }}
+            style={({ pressed }) => [
+              styles.signInButton,
+              {
+                backgroundColor: colors.primary,
+                opacity: pressed ? 0.9 : 1,
+                transform: [{ scale: pressed ? 0.98 : 1 }],
+              },
+            ]}
           >
-            Sign In
-          </Text>
+            <LogIn size={18} color={colors.primaryForeground} strokeWidth={2} />
+            <ButtonText size="medium" style={{ color: colors.primaryForeground }}>
+              Sign In
+            </ButtonText>
+          </Pressable>
         </View>
       </View>
     );
@@ -214,7 +232,7 @@ export default function MessagesScreen() {
       <View style={[styles.screen, { backgroundColor: colors.background }]}>
         <MessagesHeader />
         <View style={styles.emptyState}>
-          <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
+          <Body size="medium" tone="secondary" style={{ textAlign: 'center' }}>{error}</Body>
         </View>
       </View>
     );
@@ -229,12 +247,12 @@ export default function MessagesScreen() {
           <View style={[styles.iconCircle, { backgroundColor: colors.fillSecondary }]}>
             <MessageCircle size={32} color={colors.textTertiary} strokeWidth={1.5} />
           </View>
-          <Text style={[styles.emptyTitle, { color: colors.text }]}>
+          <Heading size="medium">
             No Messages Yet
-          </Text>
-          <Text style={[styles.emptySubtitle, { color: colors.textTertiary }]}>
+          </Heading>
+          <Body size="medium" tone="secondary" style={{ textAlign: 'center' }}>
             Your conversations will appear here
-          </Text>
+          </Body>
         </View>
       </View>
     );
@@ -289,14 +307,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: Spacing.sm,
   },
-  emptyTitle: {},
-  emptySubtitle: {
-    textAlign: 'center',
-  },
-  actionLink: {
-    marginTop: Spacing.sm,
-  },
-  errorText: {
-    textAlign: 'center',
+  signInButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+    height: 48,
+    paddingHorizontal: Spacing['2xl'],
+    borderRadius: Radius.lg,
+    marginTop: Spacing.md,
   },
 });

@@ -11,7 +11,7 @@ import * as Haptics from 'expo-haptics';
 
 import { ProfileMenu } from './profile-menu';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { Heading } from '@/components/ui';
 
 interface HomeHeaderProps {
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 4,
-    borderRadius: 20,
+    borderRadius: Radius.full,
     borderWidth: 1,
     width: 40,
     height: 40,

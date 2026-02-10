@@ -107,16 +107,16 @@ export function KYCStatusCard({ status, colors, onAction }: KYCStatusCardProps) 
       style={styles.wrapper}
     >
       <View style={styles.header}>
-        <Label size="small" tone="secondary" style={styles.sectionTitle}>
+        <Label size="medium" tone="secondary" style={styles.sectionTitle}>
           Identity Verification
         </Label>
       </View>
       <View style={[styles.container, { backgroundColor: colors.surface }]}>
         <View style={styles.content}>
-          <Data size="medium" style={{ color: display.titleColor }}>
+          <Data size="large" style={{ color: display.titleColor }}>
             {display.title}
           </Data>
-          <Supporting size="small" tone="muted">
+          <Supporting size="medium" tone="muted">
             {display.subtitle}
           </Supporting>
         </View>
@@ -132,7 +132,7 @@ export function KYCStatusCard({ status, colors, onAction }: KYCStatusCardProps) 
               },
             ]}
           >
-            <ButtonText size="small">
+            <ButtonText size="medium">
               {display.buttonText}
             </ButtonText>
           </Pressable>
@@ -154,8 +154,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   sectionTitle: {
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
+    // textTransform and letterSpacing handled by <Label> component
   },
   container: {
     flexDirection: 'row',

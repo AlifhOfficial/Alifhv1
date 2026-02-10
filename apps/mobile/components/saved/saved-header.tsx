@@ -1,14 +1,13 @@
 /**
- * Saved Header - Matches ProfileHeader style for consistency
- * Title on left, toggle button on right for Favorites/Superlikes
+ * Saved Header - Title + pill tabs for Favourites / Superlikes
  */
 
 import React from 'react';
 import { StyleSheet, View, Pressable, Platform } from 'react-native';
-import { Heart, Sparkles } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Heading } from '@/components/ui';
+import { Heading, Body } from '@/components/ui';
+import { Spacing, Radius } from '@/constants/theme';
 import type { ThemeColors, SavedTab } from './types';
 
 interface SavedHeaderProps {
@@ -20,6 +19,11 @@ interface SavedHeaderProps {
   superlikesCount: number;
 }
 
+const TABS: { key: SavedTab; label: string }[] = [
+  { key: 'favorites', label: 'Favourites' },
+  { key: 'superlikes', label: 'Superlikes' },
+];
+
 export function SavedHeader({ 
   colors,
   topInset,
@@ -28,62 +32,71 @@ export function SavedHeader({
   favoritesCount,
   superlikesCount,
 }: SavedHeaderProps) {
-  const currentCount = activeTab === 'favorites' ? favoritesCount : superlikesCount;
-  
-  const handleToggle = () => {
+  const handleTab = (tab: SavedTab) => {
+    if (tab === activeTab) return;
     if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    onTabChange(activeTab === 'favorites' ? 'superlikes' : 'favorites');
+    onTabChange(tab);
   };
 
-  const Icon = activeTab === 'favorites' ? Heart : Sparkles;
-  
+  const getCount = (key: SavedTab) => key === 'favorites' ? favoritesCount : superlikesCount;
+
   return (
     <View style={[styles.container, { paddingTop: topInset + 8 }]}>
-      {/* Left: Title */}
+      {/* Title */}
       <Heading size="large">Saved</Heading>
 
-      {/* Right: Toggle Button */}
-      <Pressable
-        onPress={handleToggle}
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        style={[
-          styles.iconButton, 
-          { 
-            borderColor: colors.border,
-            backgroundColor: colors.surface,
-          }
-        ]}
-      >
-        {({ pressed }) => (
-          <Icon 
-            size={20} 
-            color={colors.iconMuted}
-            strokeWidth={2}
-            style={{ opacity: pressed ? 0.7 : 1 }}
-          />
-        )}
-      </Pressable>
+      {/* Pill tabs */}
+      <View style={styles.pillRow}>
+        {TABS.map(({ key, label }) => {
+          const active = activeTab === key;
+          const count = getCount(key);
+          return (
+            <Pressable
+              key={key}
+              onPress={() => handleTab(key)}
+              style={[
+                styles.pill,
+                {
+                  backgroundColor: active ? colors.text : 'transparent',
+                  borderColor: active ? colors.text : colors.border,
+                },
+              ]}
+            >
+              <Body
+                size="small"
+                style={{
+                  color: active ? colors.surface : colors.textSecondary,
+                  fontFamily: active ? 'Inter_600SemiBold' : 'Inter_500Medium',
+                }}
+              >
+                {label}{count > 0 ? ` ${count}` : ''}
+              </Body>
+            </Pressable>
+          );
+        })}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 12,
-    paddingHorizontal: 16,
+    paddingBottom: Spacing.md,
+    paddingHorizontal: Spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  iconButton: {
-    padding: 4,
-    borderWidth: 1,
-    width: 40,
-    height: 40,
+  pillRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  pill: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
     borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderWidth: 1,
   },
 });

@@ -10,6 +10,7 @@ import { Loader2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Heading, Body, Supporting, ButtonText } from '@/components/ui';
+import { Typography } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 interface DeleteAccountModalProps {
@@ -81,7 +82,7 @@ export function DeleteAccountModal({
           </Body>
 
           <View style={styles.inputContainer}>
-            <Supporting size="small" tone="muted" style={styles.inputLabel}>
+            <Supporting size="medium" tone="muted" style={styles.inputLabel}>
               Type "DELETE" to confirm
             </Supporting>
             <TextInput
@@ -91,6 +92,7 @@ export function DeleteAccountModal({
               placeholderTextColor={colors.textMuted}
               style={[
                 styles.input,
+                Typography.dataMedium,
                 {
                   backgroundColor: colors.surface,
                   borderColor: colors.border,
@@ -185,7 +187,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     paddingHorizontal: 16,
-    fontFamily: 'Inter_500Medium',
   },
   buttons: {
     flexDirection: 'row',

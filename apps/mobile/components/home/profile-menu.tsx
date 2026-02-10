@@ -76,8 +76,8 @@ const styles = StyleSheet.create({
   unauthTrigger: {
     padding: 4,
     borderWidth: 1,
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
   },

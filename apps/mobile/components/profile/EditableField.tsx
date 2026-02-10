@@ -7,7 +7,6 @@ import React, { useRef, useEffect } from 'react';
 import {
   StyleSheet,
   View,
-  Text,
   TextInput,
   Pressable,
   Platform,
@@ -24,6 +23,7 @@ import { ChevronRight } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Supporting, Body, Data } from '@/components/ui';
+import { Typography } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 interface EditableFieldProps {
@@ -98,7 +98,7 @@ export function EditableField({
         entering={FadeIn.duration(200)}
         style={[styles.container, !isLast && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border }]}
       >
-        <Supporting size="small" tone="muted">{label}</Supporting>
+        <Supporting size="medium" tone="muted">{label}</Supporting>
         <View style={styles.editContainer}>
           <View style={styles.inputWrapper}>
             {prefix && (
@@ -114,6 +114,7 @@ export function EditableField({
               placeholderTextColor={colors.textTertiary}
               style={[
                 styles.input,
+                Typography.bodyLarge,
                 { backgroundColor: colors.surface, color: colors.text },
               ]}
               keyboardType={keyboardType}
@@ -170,9 +171,9 @@ export function EditableField({
       >
         <View style={styles.row}>
           <View style={styles.labelValueContainer}>
-            <Supporting size="small" tone="muted">{label}</Supporting>
+            <Supporting size="medium" tone="muted">{label}</Supporting>
             <Body
-              size="medium"
+              size="large"
               tone={value ? 'default' : 'muted'}
               numberOfLines={1}
             >
@@ -198,7 +199,7 @@ export function EditableField({
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 12,
+    paddingVertical: 14,
     paddingHorizontal: 16,
   },
   row: {
@@ -208,7 +209,7 @@ const styles = StyleSheet.create({
   },
   labelValueContainer: {
     flex: 1,
-    gap: 2,
+    gap: 4,
   },
   rightContainer: {
     flexDirection: 'row',
@@ -228,15 +229,13 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   prefix: {
-    fontFamily: 'Inter_500Medium',
+    // Typography handled by <Body> component
   },
   input: {
     flex: 1,
     height: 44,
     borderRadius: 10,
     paddingHorizontal: 12,
-    fontSize: 15,
-    fontFamily: 'Inter_400Regular',
   },
   actions: {
     flexDirection: 'row',

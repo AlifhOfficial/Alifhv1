@@ -32,9 +32,9 @@ export function SettingRow({
       ]}
     >
       <View style={styles.content}>
-        <Supporting size="small" tone="muted">{title}</Supporting>
+        <Supporting size="medium" tone="muted">{title}</Supporting>
         {description && (
-          <Body size="medium">{description}</Body>
+          <Body size="large">{description}</Body>
         )}
       </View>
       {children}
@@ -47,12 +47,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 12,
+    paddingVertical: 14,
     paddingHorizontal: 16,
   },
   content: {
     flex: 1,
     marginRight: 12,
-    gap: 2,
+    gap: 4,
   },
 });

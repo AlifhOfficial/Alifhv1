@@ -1,8 +1,8 @@
 /**
- * Saved Tube - Home screen quick access to saved listings
- * 
- * A compact tube/pill component that navigates to the Saved screen.
- * Matches notifications icon button styling.
+ * Inventory Tube — Home screen quick access to My Inventory
+ *
+ * A compact tube/pill component that navigates to the Inventory screen.
+ * Matches SavedTube styling. Auth-gated — triggers auth flow if not signed in.
  */
 
 import React from 'react';
@@ -12,18 +12,26 @@ import * as Haptics from 'expo-haptics';
 
 import { Colors } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { useAuth } from '@/context/auth-context';
 import { Data } from '@/components/ui';
 
-export function SavedTube() {
+export function InventoryTube() {
   const router = useRouter();
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const { isAuthenticated, openAuthFlow } = useAuth();
 
   const handlePress = () => {
     if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    router.push('/saved');
+
+    if (!isAuthenticated) {
+      openAuthFlow();
+      return;
+    }
+
+    router.push('/inventory');
   };
 
   return (
@@ -40,7 +48,7 @@ export function SavedTube() {
     >
       {({ pressed }) => (
         <Data size="small" tone="secondary" style={{ opacity: pressed ? 0.7 : 1 }}>
-          Saved
+          Inventory
         </Data>
       )}
     </Pressable>

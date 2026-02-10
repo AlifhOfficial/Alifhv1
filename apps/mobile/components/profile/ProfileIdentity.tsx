@@ -84,7 +84,7 @@ export function ProfileIdentity({
           </Data>
         )}
 
-        <Supporting size="small" tone="muted" style={styles.memberSince}>
+        <Supporting size="medium" tone="muted" style={styles.memberSince}>
           Member since {memberSince}
         </Supporting>
       </View>

@@ -103,7 +103,7 @@ export const FilterPills = React.memo(function FilterPills({ pills, onPillPress,
         style={[
           styles.settingsBubble,
           { 
-            backgroundColor: colors.background,
+            backgroundColor: colors.surface,
             borderColor: colors.border,
           },
         ]}
@@ -142,7 +142,7 @@ export const FilterPills = React.memo(function FilterPills({ pills, onPillPress,
             style={[
               styles.pill,
               { 
-                backgroundColor: colors.background,
+                backgroundColor: colors.surface,
                 borderColor: colors.border,
               },
             ]}
@@ -175,7 +175,7 @@ export const FilterPills = React.memo(function FilterPills({ pills, onPillPress,
         style={[
           styles.viewModeBubble,
           { 
-            backgroundColor: colors.background,
+            backgroundColor: colors.surface,
             borderColor: colors.border,
           },
         ]}
@@ -196,7 +196,6 @@ export const FilterPills = React.memo(function FilterPills({ pills, onPillPress,
 
 const styles = StyleSheet.create({
   scrollView: {
-    backgroundColor: 'transparent',
     flexGrow: 0,
   },
   container: {
@@ -241,8 +240,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   settingsBadgeText: {
-    fontFamily: 'Inter_600SemiBold',
-    fontSize: 9,
+    // Typography handled by <Label size="badge"> component
   },
   pill: {
     height: 36,
@@ -262,8 +260,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   pillLabel: {
-    fontSize: 14,
-    fontFamily: 'Inter_500Medium',
+    // Typography handled by <Body size="small"> component
   },
   badge: {
     paddingHorizontal: 6,
@@ -273,8 +270,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   badgeText: {
-    fontFamily: 'Inter_600SemiBold',
-    fontSize: 11,
+    // Typography handled by <Label size="badge"> component
   },
   viewModeBubble: {
     width: 36,

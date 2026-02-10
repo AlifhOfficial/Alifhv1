@@ -3,15 +3,17 @@
  * Uses @gorhom/bottom-sheet modal for proper iOS gesture handling
  */
 
-import React, { useCallback, useMemo, useRef, useEffect } from 'react';
+import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as Clipboard from 'expo-clipboard';
+import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Body } from '@/components/ui';
+import { Heading, Body, ButtonText } from '@/components/ui';
 
 interface FeaturesSheetProps {
   visible: boolean;
@@ -31,7 +33,17 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
+  const [copied, setCopied] = useState(false);
+
   const snapPoints = useMemo(() => ['70%', '90%'], []);
+
+  const handleCopy = useCallback(async () => {
+    const text = features.map(f => formatEnumValue(f)).join(', ');
+    await Clipboard.setStringAsync(text);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [features]);
 
   useEffect(() => {
     if (visible) {
@@ -110,7 +122,28 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
           </View>
         </BottomSheetScrollView>
 
-        <View style={{ height: insets.bottom + Spacing['3xl'] }} />
+        {/* Copy Button */}
+        <Pressable
+          onPress={handleCopy}
+          style={({ pressed }) => [
+            styles.copyButton,
+            { 
+              backgroundColor: copied ? colors.surfaceSecondary : colors.text,
+              opacity: pressed ? 0.85 : 1,
+            },
+          ]}
+        >
+          <Ionicons 
+            name={copied ? 'checkmark' : 'copy-outline'} 
+            size={18} 
+            color={copied ? colors.textSecondary : colors.surface} 
+          />
+          <ButtonText size="medium" style={{ color: copied ? colors.textSecondary : colors.surface }}>
+            {copied ? 'Copied' : 'Copy Features'}
+          </ButtonText>
+        </Pressable>
+
+        <View style={{ height: insets.bottom + Spacing.md }} />
       </View>
     </BottomSheetModal>
   );
@@ -154,5 +187,14 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: Radius.md,
     borderWidth: 1,
+  },
+  copyButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+    paddingVertical: 14,
+    borderRadius: Radius.lg,
+    marginTop: Spacing.sm,
   },
 });

@@ -401,7 +401,7 @@ const SemanticTypography = {
   // ─────────────────────────────────────────────────────
   headingLarge: { 
     ...base, 
-    fontSize: fontScale(20), 
+    fontSize: fontScale(22), 
     lineHeight: fontScale(26), 
     fontFamily: 'Inter_700Bold' 
   },
