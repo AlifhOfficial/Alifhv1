@@ -10,7 +10,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { Heading, Data, Body, Supporting, Label } from '@/components/ui';
+import { Data, Supporting, Label } from '@/components/ui';
 import type { Conversation } from '@/lib/messaging-api';
 
 interface ConversationGroupProps {
@@ -66,19 +66,23 @@ export function ConversationGroup({
       >
         {({ pressed }) => (
           <View style={[styles.headerRow, pressed && { opacity: 0.7 }]}>
-            <UserAvatar src={avatarUrl} name={name} size="md" />
-            <Heading size="small" style={{ flex: 1 }} numberOfLines={1}>{name}</Heading>
-            {isOnline && (
-              <View style={[styles.onlineDot, { backgroundColor: colors.success }]} />
-            )}
+            <View>
+              <UserAvatar src={avatarUrl} name={name} size="md" />
+              {isOnline && (
+                <View style={[styles.onlineDot, { backgroundColor: colors.success, borderColor: colors.background }]} />
+              )}
+            </View>
+            <Data size="large" style={{ flex: 1, color: colors.text, fontWeight: '600' }} numberOfLines={1}>
+              {name}
+            </Data>
             {totalUnread > 0 && (
-              <View style={[styles.unreadBadge, { backgroundColor: colors.error }]}>
-                <Label size="small" uppercase={false} style={{ color: '#FFFFFF' }}>
+              <View style={[styles.unreadBadge, { backgroundColor: colors.primary }]}>
+                <Label size="badge" uppercase={false} style={{ color: '#FFFFFF', fontWeight: '600' }}>
                   {totalUnread}
                 </Label>
               </View>
             )}
-            <ChevronIcon size={18} color={colors.textTertiary} strokeWidth={2} />
+            <ChevronIcon size={16} color={colors.textTertiary} strokeWidth={2} />
           </View>
         )}
       </HapticPressable>
@@ -101,29 +105,35 @@ export function ConversationGroup({
                 {/* Title + Time */}
                 <View style={styles.chatRow}>
                   <Data 
-                    size="large" 
-                    tone={hasUnread ? 'default' : 'secondary'}
-                    style={{ flex: 1 }}
+                    size="medium" 
+                    style={{ 
+                      flex: 1, 
+                      color: hasUnread ? colors.text : colors.textSecondary,
+                      fontWeight: hasUnread ? '600' : '400',
+                    }}
                     numberOfLines={1}
                   >
                     {c.listing?.title || 'General Inquiry'}
                   </Data>
-                  <Supporting size="medium" tone="muted" style={{ marginLeft: Spacing.sm }}>
+                  <Data size="mini" style={{ color: colors.textTertiary, marginLeft: Spacing.sm }}>
                     {formatTime(c.lastMessageAt)}
-                  </Supporting>
+                  </Data>
                 </View>
                 {/* Preview + Unread */}
                 <View style={styles.chatRow}>
-                  <Body 
-                    size="small" 
-                    tone={hasUnread ? 'secondary' : 'muted'}
-                    style={{ flex: 1, marginTop: 2 }}
+                  <Supporting 
+                    size="small"
+                    style={{ 
+                      flex: 1, 
+                      marginTop: 2,
+                      color: hasUnread ? colors.textSecondary : colors.textTertiary,
+                    }}
                     numberOfLines={1}
                   >
                     {c.lastMessagePreview || 'No messages'}
-                  </Body>
+                  </Supporting>
                   {hasUnread && (
-                    <View style={[styles.dot, { backgroundColor: colors.error }]} />
+                    <View style={[styles.dot, { backgroundColor: colors.primary }]} />
                   )}
                 </View>
               </HapticPressable>
@@ -146,9 +156,13 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   onlineDot: {
-    width: 8,
-    height: 8,
-    borderRadius: Radius.full,
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    borderWidth: 2,
   },
   unreadBadge: {
     minWidth: 20,

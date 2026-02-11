@@ -1,6 +1,7 @@
 /**
  * Message Bubble - Mobile Native
  * Individual message display with sender/receiver styling
+ * Chat-style rounded rectangles with directional tail corners
  */
 
 import React from 'react';
@@ -8,7 +9,7 @@ import { View, Image, StyleSheet } from 'react-native';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { Body, Supporting, ButtonText } from '@/components/ui';
+import { Body, Data, Supporting } from '@/components/ui';
 import type { Message } from '@/lib/messaging-api';
 
 interface MessageBubbleProps {
@@ -48,7 +49,7 @@ export function MessageBubble({
             { backgroundColor: colors.fillSecondary },
           ]}
         >
-          <Supporting size="small" tone="muted">{text}</Supporting>
+          <Data size="mini" style={{ color: colors.textTertiary }}>{text}</Data>
         </View>
       </View>
     );
@@ -97,7 +98,9 @@ export function MessageBubble({
               />
             )}
             <View style={styles.listingInfo}>
-              <ButtonText size="small" numberOfLines={2}>{listing.title}</ButtonText>
+              <Data size="small" style={{ fontWeight: '600' }} numberOfLines={2}>
+                {listing.title}
+              </Data>
             </View>
           </View>
         )}
@@ -108,12 +111,16 @@ export function MessageBubble({
             style={[
               styles.bubble,
               isOwn
-                ? [styles.bubbleOwn, { backgroundColor: colors.primary }]
+                ? [
+                    styles.bubbleOwn,
+                    showAvatar ? styles.bubbleOwnTail : styles.bubbleOwnContinuation,
+                    { backgroundColor: colors.primary },
+                  ]
                 : [
                     styles.bubbleOther,
+                    showAvatar ? styles.bubbleOtherTail : styles.bubbleOtherContinuation,
                     {
                       backgroundColor: colors.surfaceSecondary,
-                      borderColor: colors.border,
                     },
                   ],
             ]}
@@ -139,15 +146,15 @@ export function MessageBubble({
 
           {/* Edited indicator */}
           {isEdited && (
-            <Supporting
-              size="small"
+            <Data
+              size="mini"
               style={{ 
-                color: isOwn ? 'rgba(255,255,255,0.7)' : colors.textTertiary,
+                color: isOwn ? 'rgba(255,255,255,0.6)' : colors.textTertiary,
                 marginTop: 2,
               }}
             >
-              (edited)
-            </Supporting>
+              edited
+            </Data>
           )}
         </View>
           
@@ -160,7 +167,7 @@ export function MessageBubble({
         {/* Seen indicator */}
         {showSeen && isOwn && (
           <View style={styles.seenContainer}>
-            <Supporting size="small" tone="muted">Seen</Supporting>
+            <Data size="mini" style={{ color: colors.textTertiary }}>Seen</Data>
             <UserAvatar
               src={otherUserAvatar}
               name={otherUserName || 'User'}
@@ -173,13 +180,17 @@ export function MessageBubble({
   );
 }
 
+// Bubble corner radii
+const BUBBLE_RADIUS = 18;
+const BUBBLE_TAIL = 4;
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     marginBottom: 2,
     paddingHorizontal: Spacing.md,
     gap: Spacing.sm,
-    alignItems: 'center',
+    alignItems: 'flex-end',
   },
   containerOwn: {
     justifyContent: 'flex-end',
@@ -188,10 +199,10 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   avatarPlaceholder: {
-    width: 28,
+    width: 24,
   },
   content: {
-    maxWidth: '70%',
+    maxWidth: '75%',
   },
   contentOwn: {
     alignItems: 'flex-end',
@@ -200,10 +211,11 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   listingPreview: {
-    borderRadius: Radius.xl,
+    borderRadius: BUBBLE_RADIUS,
     overflow: 'hidden',
     marginBottom: Spacing.xs,
-    width: 180,
+    width: 200,
+    borderWidth: StyleSheet.hairlineWidth,
   },
   listingImage: {
     width: '100%',
@@ -223,16 +235,41 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
   },
   bubble: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm,
-    borderRadius: Radius.full,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
     minHeight: 36,
   },
+  // Own message bubble shapes
   bubbleOwn: {
-    // Pill shape - no corner override
+    // Default - no tail
   },
+  bubbleOwnTail: {
+    borderTopLeftRadius: BUBBLE_RADIUS,
+    borderTopRightRadius: BUBBLE_RADIUS,
+    borderBottomLeftRadius: BUBBLE_RADIUS,
+    borderBottomRightRadius: BUBBLE_TAIL,
+  },
+  bubbleOwnContinuation: {
+    borderTopLeftRadius: BUBBLE_RADIUS,
+    borderTopRightRadius: BUBBLE_RADIUS,
+    borderBottomLeftRadius: BUBBLE_RADIUS,
+    borderBottomRightRadius: BUBBLE_RADIUS,
+  },
+  // Other message bubble shapes
   bubbleOther: {
-    borderWidth: 0.5,
+    // Default - no tail
+  },
+  bubbleOtherTail: {
+    borderTopLeftRadius: BUBBLE_RADIUS,
+    borderTopRightRadius: BUBBLE_RADIUS,
+    borderBottomLeftRadius: BUBBLE_TAIL,
+    borderBottomRightRadius: BUBBLE_RADIUS,
+  },
+  bubbleOtherContinuation: {
+    borderTopLeftRadius: BUBBLE_RADIUS,
+    borderTopRightRadius: BUBBLE_RADIUS,
+    borderBottomLeftRadius: BUBBLE_RADIUS,
+    borderBottomRightRadius: BUBBLE_RADIUS,
   },
   mediaImage: {
     width: 200,

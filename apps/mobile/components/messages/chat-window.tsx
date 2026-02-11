@@ -28,7 +28,7 @@ import { ChatHeader } from './chat-header';
 import { MessageBubble } from './message-bubble';
 import { MessageInput } from './message-input';
 import { useMessages } from './hooks/useMessages';
-import { Body, Supporting } from '@/components/ui';
+import { Body, Data, Supporting } from '@/components/ui';
 import { markConversationAsRead, type Message, type Conversation } from '@/lib/messaging-api';
 
 const PANEL_WIDTH = 80;
@@ -237,9 +237,9 @@ export function ChatWindow({
           />
           {showDateSeparator && (
             <View style={styles.dateSeparator}>
-              <Supporting size="small" tone="muted">
+              <Data size="mini" style={{ color: colors.textTertiary }}>
                 {formatDateLabel(messageDate)}
-              </Supporting>
+              </Data>
             </View>
           )}
         </>
@@ -264,9 +264,9 @@ export function ChatWindow({
       const timestamp = format(new Date(item.createdAt), 'h:mm a');
       return (
         <View style={styles.timestampRow}>
-          <Supporting size="mini" tone="muted" style={{ opacity: 0.6 }}>
+          <Data size="mini" style={{ color: colors.textTertiary, opacity: 0.6 }}>
             {timestamp}
-          </Supporting>
+          </Data>
         </View>
       );
     },
@@ -296,7 +296,7 @@ export function ChatWindow({
     }
     return (
       <View style={styles.emptyContainer}>
-        <Body size="large" tone="muted">No messages yet. Say hi! 👋</Body>
+        <Data size="medium" style={{ color: colors.textTertiary }}>No messages yet. Say hi! 👋</Data>
       </View>
     );
   }, [isLoading, colors]);
@@ -446,8 +446,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   typingBubble: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
     borderRadius: 18,
     borderBottomLeftRadius: 4,
   },

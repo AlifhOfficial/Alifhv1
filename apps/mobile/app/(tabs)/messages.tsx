@@ -31,7 +31,7 @@ import {
 import { Colors, Layout, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
-import { Heading, Body, ButtonText } from '@/components/ui';
+import { Heading, Body, Data, ButtonText } from '@/components/ui';
 import type { Conversation } from '@/lib/messaging-api';
 
 // ── List Item Type - Always grouped ─────────────────────────────
@@ -243,7 +243,7 @@ export default function MessagesScreen() {
       <View style={styles.screen}>
         <MessagesHeader />
         <View style={styles.emptyState}>
-          <Body size="medium" tone="secondary" style={{ textAlign: 'center' }}>{error}</Body>
+          <Data size="medium" style={{ textAlign: 'center', color: colors.textSecondary }}>{error}</Data>
         </View>
       </View>
     );

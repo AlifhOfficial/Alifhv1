@@ -1,6 +1,6 @@
 /**
  * Chat Header - Mobile Native
- * Header for chat screen with back button, avatar, name, online status
+ * Header for chat screen with back button, avatar, name, activity status
  */
 
 import React from 'react';
@@ -13,7 +13,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { Heading, Supporting } from '@/components/ui';
+import { Data, Supporting } from '@/components/ui';
 
 interface ChatHeaderProps {
   name: string;
@@ -50,18 +50,17 @@ export function ChatHeader({
   // Format last seen
   const getStatusText = () => {
     if (isTyping) return 'typing...';
-    if (isOnline) return 'Online';
+    if (isOnline) return 'Active now';
     if (lastSeenAt) {
       const date = lastSeenAt instanceof Date ? lastSeenAt : new Date(lastSeenAt);
       if (!isNaN(date.getTime())) {
-        return `Last seen ${formatDistanceToNow(date, { addSuffix: false })} ago`;
+        return `Active ${formatDistanceToNow(date, { addSuffix: false })} ago`;
       }
     }
     return null;
   };
 
   const statusText = getStatusText();
-  const statusTone = isTyping ? 'primary' : (isOnline ? 'success' : 'muted');
 
   return (
     <View
@@ -83,27 +82,36 @@ export function ChatHeader({
         ]}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
-        <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
+        <ArrowLeft size={22} color={colors.text} strokeWidth={2} />
       </HapticPressable>
 
-      {/* Avatar */}
-      <UserAvatar src={avatarUrl} name={name} size="md" />
+      {/* Avatar with online indicator */}
+      <View>
+        <UserAvatar src={avatarUrl} name={name} size="md" />
+        {isOnline && (
+          <View style={[styles.onlineIndicator, { backgroundColor: colors.success, borderColor: colors.background }]} />
+        )}
+      </View>
 
       {/* Name & Status */}
       <View style={styles.info}>
-        <Heading size="small" numberOfLines={1}>{name}</Heading>
+        <Data size="large" style={{ color: colors.text, fontWeight: '600' }} numberOfLines={1}>
+          {name}
+        </Data>
         {listingTitle ? (
-          <Supporting size="medium" tone="muted" style={{ marginTop: 2 }} numberOfLines={1}>
+          <Supporting size="small" style={{ color: colors.textTertiary, marginTop: 1 }} numberOfLines={1}>
             Re: {listingTitle}
           </Supporting>
         ) : statusText ? (
-          <Supporting 
-            size="medium" 
-            tone={statusTone as 'primary' | 'success' | 'muted'}
-            style={{ marginTop: 2 }}
+          <Data
+            size="mini"
+            style={{
+              color: isTyping ? colors.primary : (isOnline ? colors.success : colors.textTertiary),
+              marginTop: 1,
+            }}
           >
             {statusText}
-          </Supporting>
+          </Data>
         ) : null}
       </View>
     </View>
@@ -116,8 +124,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: Spacing.md,
     paddingBottom: Spacing.md,
-    borderBottomWidth: 0.5,
-    gap: Spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    gap: Spacing.sm,
   },
   backButton: {
     padding: Spacing.xs,
@@ -127,5 +135,14 @@ const styles = StyleSheet.create({
   info: {
     flex: 1,
     minWidth: 0,
+  },
+  onlineIndicator: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    borderWidth: 2,
   },
 });
