@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { View, StyleSheet, Pressable, Platform, ScrollView } from 'react-native';
+import { View, StyleSheet, Platform, ScrollView } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 import { Settings2, LayoutGrid, List, Sparkles } from 'lucide-react-native';
 
@@ -67,7 +68,7 @@ export const FilterPills = React.memo(function FilterPills({ pills, onPillPress,
     >
       {/* Amna AI Pill */}
       {onAmnaPress && (
-        <Pressable
+        <HapticPressable
           onPress={() => {
             if (Platform.OS === 'ios') {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -94,11 +95,11 @@ export const FilterPills = React.memo(function FilterPills({ pills, onPillPress,
               </Body>
             </View>
           )}
-        </Pressable>
+        </HapticPressable>
       )}
 
       {/* Settings bubble */}
-      <Pressable
+      <HapticPressable
         onPress={handleSettingsPress}
         style={[
           styles.settingsBubble,
@@ -129,14 +130,14 @@ export const FilterPills = React.memo(function FilterPills({ pills, onPillPress,
             )}
           </View>
         )}
-      </Pressable>
+      </HapticPressable>
 
       {/* Individual floating pills */}
       {pills.map((pill) => {
         const isActive = pill.activeCount > 0;
         
         return (
-          <Pressable
+          <HapticPressable
             key={pill.type}
             onPress={() => handlePress(pill.type)}
             style={[
@@ -165,12 +166,12 @@ export const FilterPills = React.memo(function FilterPills({ pills, onPillPress,
                 )}
               </View>
             )}
-          </Pressable>
+          </HapticPressable>
         );
       })}
 
       {/* View Mode Toggle */}
-      <Pressable
+      <HapticPressable
         onPress={handleViewModeToggle}
         style={[
           styles.viewModeBubble,
@@ -189,7 +190,7 @@ export const FilterPills = React.memo(function FilterPills({ pills, onPillPress,
             )}
           </View>
         )}
-      </Pressable>
+      </HapticPressable>
     </ScrollView>
   );
 });

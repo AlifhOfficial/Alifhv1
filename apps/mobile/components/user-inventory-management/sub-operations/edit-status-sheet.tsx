@@ -15,7 +15,8 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { View, StyleSheet, Pressable, Image } from 'react-native';
+import { View, StyleSheet, Image } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -243,7 +244,7 @@ export function EditStatusSheet({
         {/* Header */}
         <View style={styles.header}>
           <Heading size="medium">Manage Listing</Heading>
-          <Pressable
+          <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
             style={[
@@ -252,7 +253,7 @@ export function EditStatusSheet({
             ]}
           >
             <Ionicons name="close" size={18} color={colors.textSecondary} />
-          </Pressable>
+          </HapticPressable>
         </View>
 
         {/* Listing preview with status badge */}
@@ -283,7 +284,7 @@ export function EditStatusSheet({
             const isDestructive = action.key === 'delete' || action.key === 'hard_delete';
 
             return (
-              <Pressable
+              <HapticPressable
                 key={action.key}
                 onPress={() => handleAction(action.key)}
                 style={[
@@ -305,7 +306,7 @@ export function EditStatusSheet({
                   {action.label}
                 </Body>
                 <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
-              </Pressable>
+              </HapticPressable>
             );
           })}
         </View>

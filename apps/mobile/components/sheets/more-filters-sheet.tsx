@@ -5,12 +5,12 @@
  */
 
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
-import { View, StyleSheet, Pressable, Platform, Switch } from 'react-native';
+import { View, StyleSheet, Platform, Switch } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
-import { Check, ChevronDown, ChevronUp } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -93,7 +93,7 @@ export function MoreFiltersSheet({
     }
   }, [visible, filters]);
 
-  const snapPoints = useMemo(() => ['85%'], []);
+  const snapPoints = useMemo(() => ['60%', '94%'], []);
 
   useEffect(() => {
     if (visible) {
@@ -222,24 +222,32 @@ export function MoreFiltersSheet({
     const isExpanded = expandedSections.has(key);
     return (
       <View style={styles.section}>
-        <Pressable 
+        <HapticPressable 
           style={styles.sectionHeader}
           onPress={() => toggleSection(key)}
         >
           <View style={styles.sectionTitleRow}>
-            <Body size="large" style={[styles.sectionTitle, { color: colors.text }]}>{title}</Body>
+            <Body 
+              size="medium" 
+              style={{ 
+                color: colors.text,
+                fontFamily: 'Inter_500Medium',
+              }}
+            >
+              {title}
+            </Body>
             {selectedCount > 0 && (
-              <View style={[styles.badge, { backgroundColor: colors.text }]}>
+              <View style={[styles.badge, { backgroundColor: colors.text }]}>  
                 <Label size="badge" style={{ color: colors.background }}>{selectedCount}</Label>
               </View>
             )}
           </View>
-          {isExpanded ? (
-            <ChevronUp size={20} color={colors.textSecondary} />
-          ) : (
-            <ChevronDown size={20} color={colors.textSecondary} />
-          )}
-        </Pressable>
+          <Ionicons 
+            name={isExpanded ? 'chevron-up' : 'chevron-down'} 
+            size={20} 
+            color={colors.textSecondary} 
+          />
+        </HapticPressable>
         {isExpanded && <View style={styles.sectionContent}>{content}</View>}
       </View>
     );
@@ -259,26 +267,23 @@ export function MoreFiltersSheet({
         const count = facet?.count ?? 0;
 
         return (
-          <Pressable
+          <HapticPressable
             key={option.value}
             onPress={() => onToggle(option.value)}
             style={[
               styles.chip,
               { 
                 backgroundColor: isSelected ? colors.text : colors.surfaceSecondary,
-                borderColor: isSelected ? colors.text : colors.textMuted,
+                borderColor: isSelected ? colors.text : colors.border,
               },
             ]}
           >
-            <Body
+            <Supporting
               size="small"
-              style={[
-                styles.chipLabel,
-                { color: isSelected ? colors.background : colors.text },
-              ]}
+              style={{ color: isSelected ? colors.background : colors.text }}
             >
               {option.label}
-            </Body>
+            </Supporting>
             {count > 0 && (
               <Supporting
                 size="mini"
@@ -287,7 +292,7 @@ export function MoreFiltersSheet({
                 {count}
               </Supporting>
             )}
-          </Pressable>
+          </HapticPressable>
         );
       })}
     </View>
@@ -299,27 +304,35 @@ export function MoreFiltersSheet({
     value: boolean | undefined,
     onToggle: () => void
   ) => (
-    <Pressable 
+    <HapticPressable 
       style={styles.toggleRow}
       onPress={onToggle}
     >
-      <Body size="medium" style={{ color: colors.text }}>{label}</Body>
+      <Body 
+        size="medium" 
+        style={{ 
+          color: value ? colors.text : colors.textSecondary,
+          fontFamily: value ? 'Inter_500Medium' : 'Inter_400Regular',
+        }}
+      >
+        {label}
+      </Body>
       <View style={[
-        styles.checkbox,
-        { 
-          borderColor: value ? colors.text : colors.textMuted,
-          backgroundColor: value ? colors.text : 'transparent',
-        },
+        styles.radio,
+        { borderColor: value ? colors.text : colors.border },
       ]}>
-        {value && <Check size={14} color={colors.background} strokeWidth={3} />}
+        {value && (
+          <View style={[styles.radioInner, { backgroundColor: colors.text }]} />
+        )}
       </View>
-    </Pressable>
+    </HapticPressable>
   );
 
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
       snapPoints={snapPoints}
+      enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
@@ -333,17 +346,17 @@ export function MoreFiltersSheet({
       <BottomSheetScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="large" style={{ color: colors.text }}>Settings</Heading>
-          <Pressable 
+          <Heading size="medium">Filters</Heading>
+          <HapticPressable 
             onPress={onClose} 
             hitSlop={Spacing.md}
             style={[
               styles.closeButton,
-              { backgroundColor: colors.surfaceSecondary }
+              { backgroundColor: colors.fillSecondary }
             ]}
           >
             <Ionicons name="close" size={18} color={colors.textSecondary} />
-          </Pressable>
+          </HapticPressable>
         </View>
 
         {/* Popular Section */}
@@ -479,27 +492,24 @@ export function MoreFiltersSheet({
             {SELLER_TYPE_OPTIONS.map(option => {
               const isSelected = localFilters.sellerType === option.value;
               return (
-                <Pressable
+                <HapticPressable
                   key={option.value}
                   onPress={() => handleSetSellerType(option.value as 'dealer' | 'private')}
                   style={[
                     styles.chip,
                     { 
                       backgroundColor: isSelected ? colors.text : colors.surfaceSecondary,
-                      borderColor: isSelected ? colors.text : colors.textMuted,
+                      borderColor: isSelected ? colors.text : colors.border,
                     },
                   ]}
                 >
-                  <Body
+                  <Supporting
                     size="small"
-                    style={[
-                      styles.chipLabel,
-                      { color: isSelected ? colors.background : colors.text },
-                    ]}
+                    style={{ color: isSelected ? colors.background : colors.text }}
                   >
                     {option.label}
-                  </Body>
-                </Pressable>
+                  </Supporting>
+                </HapticPressable>
               );
             })}
           </View>,
@@ -509,21 +519,21 @@ export function MoreFiltersSheet({
         {/* Actions */}
         <View style={styles.actions}>
           {hasValue && (
-            <Pressable
+            <HapticPressable
               onPress={handleClear}
               style={[styles.clearButton, { borderColor: colors.textMuted }]}
             >
               <ButtonText size="medium" tone="secondary">Clear</ButtonText>
-            </Pressable>
+            </HapticPressable>
           )}
-          <Pressable
+          <HapticPressable
             onPress={handleApply}
             style={[styles.applyButton, { backgroundColor: colors.text }]}
           >
             <ButtonText size="medium" style={{ color: colors.background }}>
               Apply{activeCount > 0 ? ` (${activeCount})` : ''}
             </ButtonText>
-          </Pressable>
+          </HapticPressable>
         </View>
 
         <View style={{ height: insets.bottom + Spacing['3xl'] }} />
@@ -596,16 +606,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.xs,
+    paddingVertical: 14,
+    paddingHorizontal: Spacing.sm,
   },
-  checkbox: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
+  radio: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  radioInner: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
   },
   chipsRow: {
     flexDirection: 'row',
@@ -620,9 +635,6 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     borderRadius: Radius.full,
     borderWidth: 1,
-  },
-  chipLabel: {
-    fontFamily: 'Inter_500Medium',
   },
   actions: {
     flexDirection: 'row',

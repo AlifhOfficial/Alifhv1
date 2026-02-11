@@ -17,6 +17,7 @@ import {
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChevronLeft } from 'lucide-react-native';
@@ -370,9 +371,9 @@ function Header({
 }) {
   return (
     <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-      <Pressable style={styles.backBtn} onPress={onBack} hitSlop={12}>
+      <HapticPressable style={styles.backBtn} onPress={onBack} hitSlop={12}>
         <ChevronLeft size={24} color={colors.text} />
-      </Pressable>
+      </HapticPressable>
     </View>
   );
 }

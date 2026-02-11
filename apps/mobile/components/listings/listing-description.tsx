@@ -7,8 +7,9 @@
  */
 
 import React, { memo, useState, useCallback } from 'react';
-import { StyleSheet, View, Pressable } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Text as RNText } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 
 import { Colors, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -68,11 +69,11 @@ export const ListingDescription = memo(function ListingDescription({
       </Body>
 
       {showReadMore && (
-        <Pressable onPress={onReadMore} hitSlop={8}>
+        <HapticPressable onPress={onReadMore} hitSlop={8}>
           <Text variant="link" tone="primary">
             Read more
           </Text>
-        </Pressable>
+        </HapticPressable>
       )}
     </View>
   );

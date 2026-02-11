@@ -4,7 +4,8 @@
  */
 
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
@@ -29,7 +30,7 @@ export function DescriptionSheet({ visible, onClose, description }: DescriptionS
 
   const [copied, setCopied] = useState(false);
 
-  const snapPoints = useMemo(() => ['70%', '90%'], []);
+  const snapPoints = useMemo(() => ['60%', '94%'], []);
 
   const handleCopy = useCallback(async () => {
     await Clipboard.setStringAsync(description);
@@ -69,6 +70,7 @@ export function DescriptionSheet({ visible, onClose, description }: DescriptionS
     <BottomSheetModal
       ref={bottomSheetRef}
       snapPoints={snapPoints}
+      enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
@@ -82,7 +84,7 @@ export function DescriptionSheet({ visible, onClose, description }: DescriptionS
         {/* Header */}
         <View style={styles.header}>
           <Heading size="medium">Description</Heading>
-          <Pressable 
+          <HapticPressable 
             onPress={onClose} 
             hitSlop={Spacing.md}
             style={[
@@ -91,7 +93,7 @@ export function DescriptionSheet({ visible, onClose, description }: DescriptionS
             ]}
           >
             <Ionicons name="close" size={18} color={colors.textSecondary} />
-          </Pressable>
+          </HapticPressable>
         </View>
 
         <BottomSheetScrollView
@@ -105,7 +107,7 @@ export function DescriptionSheet({ visible, onClose, description }: DescriptionS
         </BottomSheetScrollView>
 
         {/* Copy Button */}
-        <Pressable
+        <HapticPressable
           onPress={handleCopy}
           style={[
             styles.copyButton,
@@ -122,7 +124,7 @@ export function DescriptionSheet({ visible, onClose, description }: DescriptionS
           <ButtonText size="medium" style={{ color: copied ? colors.textSecondary : colors.surface }}>
             {copied ? 'Copied' : 'Copy Description'}
           </ButtonText>
-        </Pressable>
+        </HapticPressable>
 
         <View style={{ height: insets.bottom + Spacing.md }} />
       </View>

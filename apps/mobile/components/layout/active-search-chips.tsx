@@ -5,7 +5,8 @@
  */
 
 import React, { useCallback } from 'react';
-import { View, StyleSheet, ScrollView, Pressable, Platform } from 'react-native';
+import { View, StyleSheet, ScrollView, Platform } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 import { X } from 'lucide-react-native';
 import { Body, ButtonText } from '@/components/ui';
@@ -109,7 +110,7 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
             exiting={FadeOut.duration(100)}
             layout={Layout.duration(150)}
           >
-            <Pressable
+            <HapticPressable
               onPress={() => handleRemoveChip(chip)}
               style={[
                 styles.pill,
@@ -137,7 +138,7 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
                   />
                 </View>
               )}
-            </Pressable>
+            </HapticPressable>
           </AnimatedView>
         ))}
 
@@ -147,7 +148,7 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
             entering={FadeIn.duration(150)}
             exiting={FadeOut.duration(100)}
           >
-            <Pressable
+            <HapticPressable
               onPress={handleClearAll}
               style={[
                 styles.clearPill,
@@ -162,7 +163,7 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
                   Clear all
                 </ButtonText>
               )}
-            </Pressable>
+            </HapticPressable>
           </AnimatedView>
         )}
       </ScrollView>

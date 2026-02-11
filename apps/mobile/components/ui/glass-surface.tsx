@@ -7,10 +7,10 @@
  *
  * USAGE — drop inside any Pressable/View as an absolute-fill background:
  *
- *   <Pressable style={[UIKit.bubbleLg, { backgroundColor: GLASS_AVAILABLE ? 'transparent' : colors.surface }]}>
+ *   <HapticPressable style={[UIKit.bubbleLg, { backgroundColor: GLASS_AVAILABLE ? 'transparent' : colors.surface }]}>
  *     <GlassSurface />
  *     <Icon ... />
- *   </Pressable>
+ *   </HapticPressable>
  *
  * The parent still keeps its UIKit shape (borderRadius, border, shadow).
  * GlassSurface just replaces the solid `backgroundColor` with glass.
@@ -26,6 +26,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Platform, type ViewStyle } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 
 // ── Lazy availability check ─────────────────────────────────────────────────
 // Resolved once at runtime (not at import time) so the native module is ready.

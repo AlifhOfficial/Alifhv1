@@ -6,7 +6,8 @@
  */
 
 import React, { memo } from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { MapPin, ExternalLink, Navigation, Globe } from 'lucide-react-native';
 
 import { Spacing, Radius } from '@/constants/theme';
@@ -42,7 +43,7 @@ export const SellerLocation = memo(function SellerLocation({
       <View style={localStyles.actions}>
         {seller.location && (
           <>
-            <Pressable
+            <HapticPressable
               style={[
                 localStyles.pill,
                 { backgroundColor: colors.fill },
@@ -51,8 +52,8 @@ export const SellerLocation = memo(function SellerLocation({
             >
               <ExternalLink size={ICON_SIZE_SM} color={colors.text} />
               <ButtonText size="small">View Map</ButtonText>
-            </Pressable>
-            <Pressable
+            </HapticPressable>
+            <HapticPressable
               style={[
                 localStyles.pill,
                 { backgroundColor: colors.fill },
@@ -61,11 +62,11 @@ export const SellerLocation = memo(function SellerLocation({
             >
               <Navigation size={ICON_SIZE_SM} color={colors.text} />
               <ButtonText size="small">Directions</ButtonText>
-            </Pressable>
+            </HapticPressable>
           </>
         )}
         {seller.website && (
-          <Pressable
+          <HapticPressable
             style={[
               localStyles.pill,
               { backgroundColor: colors.fill },
@@ -74,7 +75,7 @@ export const SellerLocation = memo(function SellerLocation({
           >
             <Globe size={ICON_SIZE_SM} color={colors.text} />
             <ButtonText size="small">Website</ButtonText>
-          </Pressable>
+          </HapticPressable>
         )}
       </View>
     </View>

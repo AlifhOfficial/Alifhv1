@@ -9,6 +9,28 @@ import { carListing } from './schema/listing';
 import { partner } from './schema/partner';
 import { createId } from '@paralleldrive/cuid2';
 
+// Import types from listing constants
+import type {
+  ListingPostedByRole,
+  ListingModerationStatus,
+  ListingLifecycleStatus,
+  SellerType,
+  BodyType,
+  FuelType,
+  TransmissionType,
+  SpecsType,
+  SteeringSide,
+  ExportStatus,
+  EngineSize,
+  EngineType,
+  PowerRange,
+  DoorsOption,
+  SeatingOption,
+  ExteriorColor,
+  InteriorColor,
+  WarrantyType,
+} from './schema/listing-constants';
+
 const makeListingId = () => `listing_${createId()}`;
 
 // ===== LABELED CAR IMAGES =====
@@ -119,18 +141,18 @@ const carImages = [
 
 // ===== ENUMS =====
 const fuelTypes = ['petrol', 'diesel', 'electric', 'hybrid', 'plugin_hybrid'] as const;
-const transmissions = ['automatic', 'manual', 'dct'] as const;
-const specsList = ['gcc', 'american', 'european', 'japanese'] as const;
-const steeringSides = ['left', 'right'] as const;
-const exportStatuses = ['local_only', 'gcc', 'international'] as const;
-const engineSizes = ['2.5L_3.0L', '3.0L_4.0L', '4.0L_5.0L', '5.0L_6.0L', 'over_6.0L'] as const;
-const engineTypes = ['v6', 'v8', 'v10', 'v12', 'inline-4', 'inline-6'] as const;
-const powerRanges = ['300_400', '400_500', '500_600', '600_700', '700_plus'] as const;
-const doors = ['2', '3', '4', '5'] as const;
-const seatingCapacities = ['2', '4', '5', '7'] as const;
-const exteriorColors = ['white', 'black', 'silver', 'grey', 'blue', 'red', 'green', 'yellow'] as const;
-const interiorColors = ['black', 'beige', 'brown', 'tan', 'red'] as const;
-const warrantyTypes = ['manufacturer', 'extended', 'dealer'] as const;
+const transmissions: TransmissionType[] = ['automatic', 'manual', 'dct'];
+const specsList: SpecsType[] = ['gcc', 'american', 'european', 'japanese'];
+const steeringSides: SteeringSide[] = ['left', 'right'];
+const exportStatuses: ExportStatus[] = ['local_only', 'gcc', 'international'];
+const engineSizes: EngineSize[] = ['2.5L_3.0L', '3.0L_4.0L', '4.0L_5.0L', '5.0L_6.0L', 'over_6.0L'];
+const engineTypes: EngineType[] = ['v6', 'v8', 'v10', 'v12', 'inline-4', 'inline-6'];
+const powerRanges: PowerRange[] = ['300_400', '400_500', '500_600', '600_700', '700_plus'];
+const doors: DoorsOption[] = ['2', '3', '4', '5'];
+const seatingCapacities: SeatingOption[] = ['2', '4', '5', '7'];
+const exteriorColors: ExteriorColor[] = ['white', 'black', 'silver', 'grey', 'blue', 'red', 'green'];
+const interiorColors: InteriorColor[] = ['black', 'beige', 'brown', 'tan', 'red'];
+const warrantyTypes: WarrantyType[] = ['manufacturer', 'extended', 'dealer'];
 const badges = ['verified', 'top_rated', 'hot_deal', 'new_arrival', 'featured', 'premium', 'low_mileage'];
 const tags = ['luxury', 'sports', 'performance', 'rare', 'collector'];
 
@@ -349,10 +371,10 @@ function generateListing(
     partnerId,
     userId: null,
     postedByStaffId: null,
-    postedByRole: 'staff',
-    moderationStatus: 'approved',
-    lifecycleStatus: 'active',
-    sellerType: 'dealer',
+    postedByRole: 'staff' as ListingPostedByRole,
+    moderationStatus: 'approved' as ListingModerationStatus,
+    lifecycleStatus: 'active' as ListingLifecycleStatus,
+    sellerType: 'dealer' as SellerType,
     isConsignment: false,
     
     // Basic vehicle info

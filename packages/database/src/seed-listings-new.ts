@@ -13,6 +13,51 @@ import { userProfile } from './schema/profile';
 import { createId } from '@paralleldrive/cuid2';
 import { eq } from 'drizzle-orm';
 
+// Import constants from centralized source of truth
+import {
+  CAR_MAKES,
+  CAR_MODELS,
+  BODY_TYPE_VALUES,
+  FUEL_TYPE_VALUES,
+  TRANSMISSION_TYPE_VALUES,
+  SPECS_TYPE_VALUES,
+  STEERING_SIDE_VALUES,
+  EXPORT_STATUS_VALUES,
+  ENGINE_SIZE_VALUES,
+  ENGINE_TYPE_VALUES,
+  POWER_RANGE_VALUES,
+  DOORS_VALUES,
+  SEATING_CAPACITY_VALUES,
+  EXTERIOR_COLOR_VALUES,
+  INTERIOR_COLOR_VALUES,
+  WARRANTY_TYPE_VALUES,
+  SELLER_TYPES,
+  LISTING_MODERATION_STATUSES,
+  LISTING_LIFECYCLE_STATUSES,
+  LISTING_POSTED_BY_ROLES,
+  VEHICLE_EXTRAS,
+  LISTING_TAGS,
+  UAE_EMIRATES,
+  type BodyType,
+  type FuelType,
+  type TransmissionType,
+  type SpecsType,
+  type SteeringSide,
+  type ExportStatus,
+  type EngineSize,
+  type EngineType,
+  type PowerRange,
+  type DoorsOption,
+  type SeatingOption,
+  type ExteriorColor,
+  type InteriorColor,
+  type WarrantyType,
+  type SellerType,
+  type ListingModerationStatus,
+  type ListingLifecycleStatus,
+  type ListingPostedByRole,
+} from './schema/listing-constants';
+
 const makeListingId = () => `listing_${createId()}`;
 
 // ===== IMAGE PATHS FROM /public/Black_cars/ =====
@@ -39,45 +84,42 @@ const carImages = [
   '/Black_cars/car60.webp',
 ];
 
-// ===== DATA ARRAYS FOR VARIATION =====
-const makesAndModels: Record<string, string[]> = {
-  'Mercedes-Benz': ['S-Class', 'G-Class', 'E-Class', 'C-Class', 'GLE', 'GLS', 'AMG GT', 'Maybach S-Class'],
-  'BMW': ['7 Series', 'X7', 'X5', 'M5', 'M4', 'M3', 'XM', 'i7', 'iX'],
-  'Porsche': ['911', 'Cayenne', 'Panamera', 'Taycan', 'Macan', '718'],
-  'Audi': ['RS Q8', 'RS7', 'RS6', 'e-tron GT', 'Q8', 'A8', 'R8'],
-  'Land Rover': ['Range Rover', 'Range Rover Sport', 'Defender 110', 'Defender 90'],
-  'Lamborghini': ['Urus', 'Huracan', 'Aventador'],
-  'Ferrari': ['F8 Tributo', 'Roma', '296 GTB', 'SF90 Stradale'],
-  'Rolls-Royce': ['Cullinan', 'Ghost', 'Phantom', 'Spectre'],
-  'Bentley': ['Bentayga', 'Continental GT', 'Flying Spur'],
-  'Toyota': ['Land Cruiser', 'Camry', 'Corolla', 'RAV4', 'Prado'],
-  'Nissan': ['Patrol', 'Altima', 'Maxima', 'X-Trail'],
-  'Lexus': ['LX 600', 'LS', 'ES', 'RX', 'NX'],
-  'Chevrolet': ['Tahoe', 'Suburban', 'Silverado', 'Corvette'],
-  'Ford': ['F-150', 'Mustang', 'Explorer', 'Expedition'],
-};
+// ===== DATA ARRAYS FOR VARIATION (derived from constants) =====
+
+// Luxury makes for seeding (subset for better variety)
+const luxuryMakes = ['Mercedes-Benz', 'BMW', 'Porsche', 'Audi', 'Lamborghini', 'Ferrari', 'Rolls-Royce', 'Bentley', 'Lexus'] as const;
+
+// Seed-specific makes subset (popular UAE market)
+const seedMakes = [
+  'Mercedes-Benz', 'BMW', 'Porsche', 'Audi', 'Land Rover', 'Lamborghini', 
+  'Ferrari', 'Rolls-Royce', 'Bentley', 'Toyota', 'Nissan', 'Lexus', 
+  'Chevrolet', 'Ford'
+] as const;
 
 const trims = ['S', 'SE', 'HSE', 'Autobiography', 'AMG', 'M Sport', 'Competition', 'Turbo', 'Turbo S', 'GTS', 'Prestige', 'Platinum', 'Limited', 'VXR'];
 
-// Enum values matching schema
-const bodyTypes = ['sedan', 'suv', 'coupe', 'convertible', 'hatchback', 'wagon', 'pickup', 'van', 'sports', 'luxury', 'other'] as const;
-const fuelTypes = ['petrol', 'diesel', 'electric', 'hybrid', 'plugin_hybrid', 'hydrogen'] as const;
-const transmissions = ['automatic', 'manual', 'cvt', 'dct', 'semi_automatic'] as const;
-const specsList = ['gcc', 'american', 'european', 'japanese', 'canadian', 'other'] as const;
-const steeringSides = ['left', 'right'] as const;
-const exportStatuses = ['local_only', 'gcc', 'international', 'restricted'] as const;
-const engineSizes = ['under_1.5L', '1.5L_2.0L', '2.0L_2.5L', '2.5L_3.0L', '3.0L_4.0L', '4.0L_5.0L', '5.0L_6.0L', 'over_6.0L', 'electric'] as const;
-const engineTypes = ['inline-3', 'inline-4', 'inline-6', 'v6', 'v8', 'v10', 'v12', 'w12', 'electric', 'hybrid', 'other'] as const;
-const powerRanges = ['under_100', '100_200', '200_300', '300_400', '400_500', '500_600', '600_700', '700_plus', 'unknown'] as const;
-const doors = ['2', '3', '4', '5', '6'] as const;
-const seatingCapacities = ['2', '4', '5', '6', '7', '8', '9_plus'] as const;
-const exteriorColors = ['white', 'black', 'silver', 'grey', 'blue', 'red', 'green', 'brown', 'beige', 'gold', 'orange', 'yellow', 'purple', 'other'] as const;
-const interiorColors = ['black', 'beige', 'brown', 'tan', 'grey', 'white', 'red', 'burgundy', 'other'] as const;
-const warrantyTypes = ['none', 'manufacturer', 'extended', 'dealer', 'other'] as const;
-const listingStatuses = ['draft', 'pending', 'published', 'reserved', 'sold', 'archived', 'rejected'] as const;
-const sellerTypes = ['dealer', 'private'] as const;
+// Use constants directly - cast to mutable arrays for random selection
+const bodyTypes = [...BODY_TYPE_VALUES] as BodyType[];
+const fuelTypes = [...FUEL_TYPE_VALUES] as FuelType[];
+const transmissions = [...TRANSMISSION_TYPE_VALUES] as TransmissionType[];
+const specsList = [...SPECS_TYPE_VALUES] as SpecsType[];
+const steeringSides = [...STEERING_SIDE_VALUES] as SteeringSide[];
+const exportStatuses = [...EXPORT_STATUS_VALUES] as ExportStatus[];
+const engineSizes = [...ENGINE_SIZE_VALUES] as EngineSize[];
+const engineTypes = [...ENGINE_TYPE_VALUES] as EngineType[];
+const powerRanges = [...POWER_RANGE_VALUES] as PowerRange[];
+const doors = [...DOORS_VALUES] as DoorsOption[];
+const seatingCapacities = [...SEATING_CAPACITY_VALUES] as SeatingOption[];
+const exteriorColors = [...EXTERIOR_COLOR_VALUES] as ExteriorColor[];
+const interiorColors = [...INTERIOR_COLOR_VALUES] as InteriorColor[];
+const warrantyTypes = [...WARRANTY_TYPE_VALUES] as WarrantyType[];
+const sellerTypes = [...SELLER_TYPES] as SellerType[];
 
-const emirates = ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'Ras Al Khaimah', 'Fujairah', 'Umm Al Quwain'];
+// Extract extras values from constants
+const extrasValues = VEHICLE_EXTRAS.map(e => e.value);
+const tagsValues = LISTING_TAGS.map(t => t.value);
+
+const emirates = UAE_EMIRATES.map(e => e.label);
 const cities: Record<string, string[]> = {
   'Dubai': ['Dubai Marina', 'Downtown', 'Business Bay', 'JBR', 'Al Quoz', 'Jumeirah', 'Deira'],
   'Abu Dhabi': ['Al Reem Island', 'Yas Island', 'Al Raha', 'Corniche', 'Al Ain'],
@@ -89,7 +131,6 @@ const cities: Record<string, string[]> = {
 };
 
 const badges = ['verified', 'top_rated', 'price_reduced', 'hot_deal', 'new_arrival', 'featured', 'premium', 'low_mileage', 'single_owner', 'warranty'];
-const tags = ['luxury', 'family_car', 'low_mileage', 'sports', 'off_road', 'hybrid', 'electric', 'performance', 'economy', 'rare', 'collector', 'modified'];
 const priceChangeReasons = ['market_adjustment', 'quick_sale', 'seasonal', 'competitor_pricing', 'demand_increase', 'price_correction'];
 
 // ===== HELPER FUNCTIONS =====
@@ -224,25 +265,28 @@ function generateListing(
   soldToUserId: string | null,
   reviewerId: string | null
 ) {
-  // Vehicle basics
-  const make = getRandomItem(Object.keys(makesAndModels));
-  const model = getRandomItem(makesAndModels[make]);
+  // Vehicle basics - use constants for make/model
+  const make = getRandomItem(seedMakes);
+  const availableModels = CAR_MODELS[make] || [];
+  const model = availableModels.length > 0 ? getRandomItem([...availableModels]) : 'Unknown';
   const year = randomInt(2016, 2025);
   const trim = getRandomItem(trims);
-  const isLuxury = ['Mercedes-Benz', 'BMW', 'Porsche', 'Audi', 'Lamborghini', 'Ferrari', 'Rolls-Royce', 'Bentley', 'Lexus'].includes(make);
+  const isLuxury = luxuryMakes.includes(make as typeof luxuryMakes[number]);
   
-  // Status distribution - mostly published
-  const statusWeights = [
-    { status: 'published' as const, weight: 0.75 },
-    { status: 'draft' as const, weight: 0.08 },
-    { status: 'reserved' as const, weight: 0.06 },
-    { status: 'sold' as const, weight: 0.06 },
-    { status: 'archived' as const, weight: 0.02 },
-    { status: 'pending' as const, weight: 0.02 },
-    { status: 'rejected' as const, weight: 0.01 },
+  // Status distribution using proper moderation/lifecycle statuses
+  // We'll compute moderation and lifecycle status based on desired "state"
+  type ListingState = 'draft' | 'pending' | 'published' | 'reserved' | 'sold' | 'archived' | 'rejected';
+  const statusWeights: { status: ListingState; weight: number }[] = [
+    { status: 'published', weight: 0.75 },
+    { status: 'draft', weight: 0.08 },
+    { status: 'reserved', weight: 0.06 },
+    { status: 'sold', weight: 0.06 },
+    { status: 'archived', weight: 0.02 },
+    { status: 'pending', weight: 0.02 },
+    { status: 'rejected', weight: 0.01 },
   ];
   
-  let status: typeof listingStatuses[number] = 'published';
+  let status: ListingState = 'published';
   let rand = Math.random();
   let cumulative = 0;
   for (const { status: s, weight } of statusWeights) {
@@ -310,11 +354,8 @@ function generateListing(
   
   // Features
   const technicalFeatures = generateTechnicalFeatures(isLuxury);
-  const extras = getRandomSubarray([
-    'Premium Sound System', 'Panoramic Sunroof', 'Massage Seats', '360 Camera',
-    'Night Vision', 'Air Suspension', 'Heads-Up Display', 'Soft Close Doors',
-    'Ambient Lighting', 'Keyless Entry', 'Remote Start', 'Heated Steering Wheel',
-  ], 3, 8);
+  // Use extras values from constants
+  const extras = getRandomSubarray(extrasValues, 3, 8);
   const specialNotes = generateSpecialNotes(year);
   
   // Quality scores
@@ -329,9 +370,9 @@ function generateListing(
   // Heat score for trending cars
   const heatScore = isPublicish ? randomInt(0, 100) : 0;
   
-  // Badges and tags
+  // Badges and tags - use tags from constants (max 3 per constants rule)
   const listingBadges = getRandomSubarray(badges, 1, 4);
-  const listingTags = getRandomSubarray(tags, 2, 5);
+  const listingTags = getRandomSubarray(tagsValues, 1, 3);
   
   // Timestamps
   const createdAt = new Date(Date.now() - randomInt(1, 120) * 24 * 60 * 60 * 1000);
@@ -360,8 +401,8 @@ function generateListing(
     'Incomplete vehicle information'
   ]) : undefined;
 
-  const postedByRole = (sellerType === 'dealer' || sellerType === 'consignment') ? 'staff' : 'user';
-  const moderationStatus =
+  const postedByRole: ListingPostedByRole = (sellerType === 'dealer') ? 'staff' : 'user';
+  const moderationStatus: ListingModerationStatus =
     status === 'draft'
       ? 'draft'
       : status === 'pending'
@@ -369,7 +410,7 @@ function generateListing(
       : status === 'rejected'
       ? 'rejected'
       : 'approved';
-  const lifecycleStatus =
+  const lifecycleStatus: ListingLifecycleStatus =
     status === 'sold'
       ? 'sold'
       : status === 'archived' || status === 'rejected'
@@ -398,7 +439,7 @@ function generateListing(
     vin: generateVIN(),
     
     // Ownership
-    partnerId: sellerType === 'dealer' || sellerType === 'consignment' ? partnerId : null,
+    partnerId: sellerType === 'dealer' ? partnerId : null,
     userId: sellerType === 'private' ? userId : null,
     postedByStaffId: null,
     postedByRole,
@@ -663,9 +704,9 @@ async function seedListings() {
     console.log('='.repeat(60));
     console.log('\n📊 Summary:\n');
     console.log(`   Total listings: ${listings.length}`);
-    console.log(`   • Public: ${listings.filter(l => l.isPublic).length}`);
+    console.log(`   • Active: ${listings.filter(l => l.lifecycleStatus === 'active' && l.moderationStatus === 'approved').length}`);
     console.log(`   • Draft: ${listings.filter(l => l.moderationStatus === 'draft').length}`);
-    console.log(`   • In Review: ${listings.filter(l => l.moderationStatus === 'submitted' || l.moderationStatus === 'pending_review').length}`);
+    console.log(`   • In Review: ${listings.filter(l => l.moderationStatus === 'pending_review').length}`);
     console.log(`   • Sold: ${listings.filter(l => l.lifecycleStatus === 'sold').length}`);
     console.log(`   • Archived: ${listings.filter(l => l.lifecycleStatus === 'archived').length}`);
     console.log(`   • Rejected: ${listings.filter(l => l.moderationStatus === 'rejected').length}`);

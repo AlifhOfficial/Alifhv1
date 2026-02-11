@@ -5,17 +5,18 @@
  */
 
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
-import { View, StyleSheet, Pressable, Platform, FlatList, TextInput } from 'react-native';
+import { View, StyleSheet, Platform, FlatList, TextInput } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
-import { Check, Search, X } from 'lucide-react-native';
+import { Search, X } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Supporting, ButtonText } from '@/components/ui';
-import { getModelsForMake } from '@/lib/filter-constants';
+import { CAR_MODELS, getModelsForMake } from '@/lib/filter-constants';
 
 interface ModelFilterSheetProps {
   visible: boolean;
@@ -55,7 +56,7 @@ export function ModelFilterSheet({
     }
   }, [visible, selected]);
 
-  const snapPoints = useMemo(() => ['75%'], []);
+  const snapPoints = useMemo(() => ['60%', '94%'], []);
 
   useEffect(() => {
     if (visible) {
@@ -74,25 +75,35 @@ export function ModelFilterSheet({
   // Build models list grouped by make
   const allModels: ModelOption[] = useMemo(() => {
     const result: ModelOption[] = [];
-    for (const make of selectedMakes) {
-      const models = getModelsForMake(make);
-      for (const model of models) {
-        result.push({ model, make });
+    
+    // If no makes selected, show all models from all makes
+    if (selectedMakes.length === 0) {
+      for (const [make, models] of Object.entries(CAR_MODELS)) {
+        for (const model of models) {
+          result.push({ model, make });
+        }
+      }
+    } else {
+      // Show models only from selected makes
+      for (const make of selectedMakes) {
+        const models = getModelsForMake(make);
+        for (const model of models) {
+          result.push({ model, make });
+        }
       }
     }
     return result;
   }, [selectedMakes]);
 
-  // Filter by search query — show first 5 by default, all when searching
+  // Filter by search query — show all models, selected first
   const filteredModels = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) {
-      // Show selected models first, then fill up to 5
+      // Show selected models first, then rest
       const selectedSet = new Set(localSelected);
       const selectedModels = allModels.filter(opt => selectedSet.has(opt.model));
       const rest = allModels.filter(opt => !selectedSet.has(opt.model));
-      const combined = [...selectedModels, ...rest];
-      return combined.slice(0, Math.max(5, selectedModels.length));
+      return [...selectedModels, ...rest];
     }
     return allModels.filter(
       opt => opt.model.toLowerCase().includes(q) || opt.make.toLowerCase().includes(q)
@@ -142,55 +153,39 @@ export function ModelFilterSheet({
   );
 
   const hasValue = localSelected.length > 0;
-  const showMakeLabel = selectedMakes.length > 1;
+  const showMakeLabel = selectedMakes.length !== 1; // Show make label when no makes or multiple makes selected
 
   const renderItem = useCallback(({ item }: { item: ModelOption }) => {
     const isSelected = localSelected.includes(item.model);
 
     return (
-      <Pressable
+      <HapticPressable
         onPress={() => handleToggle(item.model)}
-        style={[
-          styles.listItem,
-          {
-            backgroundColor: isSelected
-              ? colors.surfaceSecondary
-              : 'transparent',
-          },
-        ]}
+        style={styles.listItem}
       >
-        <View style={styles.itemRow}>
-          <View style={styles.labelColumn}>
-            <Body
-              size="large"
-              style={[
-                styles.optionLabel,
-                { color: isSelected ? colors.text : colors.textSecondary },
-                isSelected && styles.optionLabelSelected,
-              ]}
-              numberOfLines={1}
-            >
-              {item.model}
-            </Body>
-            {showMakeLabel && (
-              <Supporting size="small">{item.make}</Supporting>
-            )}
-          </View>
-          <View
-            style={[
-              styles.checkbox,
-              {
-                borderColor: isSelected ? colors.text : colors.textMuted,
-                backgroundColor: isSelected ? colors.text : 'transparent',
-              },
-            ]}
+        <View style={styles.labelColumn}>
+          <Body
+            size="medium"
+            style={{ 
+              color: isSelected ? colors.text : colors.textSecondary,
+              fontFamily: isSelected ? 'Inter_500Medium' : 'Inter_400Regular',
+            }}
           >
-            {isSelected && (
-              <Check size={14} color={colors.surface} strokeWidth={3} />
-            )}
-          </View>
+            {item.model}
+          </Body>
+          {showMakeLabel && (
+            <Supporting size="small" tone="muted">{item.make}</Supporting>
+          )}
         </View>
-      </Pressable>
+        <View style={[
+          styles.radio,
+          { borderColor: isSelected ? colors.text : colors.border },
+        ]}>
+          {isSelected && (
+            <View style={[styles.radioInner, { backgroundColor: colors.text }]} />
+          )}
+        </View>
+      </HapticPressable>
     );
   }, [localSelected, colors, handleToggle, showMakeLabel]);
 
@@ -200,6 +195,7 @@ export function ModelFilterSheet({
     <BottomSheetModal
       ref={bottomSheetRef}
       snapPoints={snapPoints}
+      enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
@@ -213,7 +209,7 @@ export function ModelFilterSheet({
         {/* Header */}
         <View style={styles.header}>
           <Heading size="medium" style={{ color: colors.text }}>Model</Heading>
-          <Pressable
+          <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
             style={[
@@ -222,72 +218,61 @@ export function ModelFilterSheet({
             ]}
           >
             <Ionicons name="close" size={18} color={colors.textSecondary} />
-          </Pressable>
+          </HapticPressable>
         </View>
 
-        {/* No makes selected state */}
-        {selectedMakes.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Body size="large" tone="secondary" style={{ textAlign: 'center' }}>
-              Select a make first to see available models
-            </Body>
-          </View>
-        ) : (
-          <>
-            {/* Search Input */}
-            <View style={[styles.searchContainer, { backgroundColor: colors.fillSecondary, borderColor: colors.border }]}>
-              <Search size={18} color={colors.textMuted} strokeWidth={2} />
-              <TextInput
-                style={[styles.searchInput, { color: colors.text }]}
-                placeholder="Search models..."
-                placeholderTextColor={colors.textMuted}
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                autoCorrect={false}
-                autoCapitalize="none"
-              />
-              {searchQuery.length > 0 && (
-                <Pressable onPress={() => setSearchQuery('')} hitSlop={8}>
-                  <X size={16} color={colors.textMuted} strokeWidth={2} />
-                </Pressable>
-              )}
-            </View>
+        {/* Search Input */}
+        <View style={[styles.searchContainer, { backgroundColor: colors.fillSecondary, borderColor: colors.border }]}>
+          <Search size={18} color={colors.textMuted} strokeWidth={2} />
+          <TextInput
+            style={[styles.searchInput, { color: colors.text }]}
+            placeholder="Search models..."
+            placeholderTextColor={colors.textMuted}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            autoCorrect={false}
+            autoCapitalize="none"
+          />
+          {searchQuery.length > 0 && (
+            <HapticPressable onPress={() => setSearchQuery('')} hitSlop={8}>
+              <X size={16} color={colors.textMuted} strokeWidth={2} />
+            </HapticPressable>
+          )}
+        </View>
 
-            {/* Models List */}
-            <FlatList
-              data={filteredModels}
-              keyExtractor={keyExtractor}
-              renderItem={renderItem}
-              style={styles.listContainer}
-              keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={false}
-              ListEmptyComponent={
-                <View style={styles.emptyState}>
-                  <Body size="large" tone="secondary">No models found</Body>
-                </View>
-              }
-            />
-          </>
-        )}
+        {/* Models List */}
+        <FlatList
+          data={filteredModels}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
+          style={styles.listContainer}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <Body size="large" tone="secondary">No models found</Body>
+            </View>
+          }
+        />
 
         {/* Actions */}
         <View style={styles.actions}>
           {hasValue && (
-            <Pressable
+            <HapticPressable
               onPress={handleClear}
               style={[styles.clearButton, { borderColor: colors.border }]}
             >
               <ButtonText size="medium" tone="secondary">Clear</ButtonText>
-            </Pressable>
+            </HapticPressable>
           )}
-          <Pressable
+          <HapticPressable
             onPress={handleApply}
             style={[styles.applyButton, { backgroundColor: colors.text }]}
           >
             <ButtonText size="medium" style={{ color: colors.background }}>
               {hasValue ? `Apply (${localSelected.length})` : 'Done'}
             </ButtonText>
-          </Pressable>
+          </HapticPressable>
         </View>
       </BottomSheetView>
     </BottomSheetModal>
@@ -307,12 +292,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.lg,
   },
   closeButton: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 32,
+    height: 32,
+    borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -328,7 +313,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: 'Inter_400Regular',
     paddingVertical: 0,
   },
@@ -337,33 +322,28 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   listItem: {
-    paddingVertical: 14,
-    paddingHorizontal: Spacing.md,
-    borderRadius: Radius.md,
-  },
-  itemRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingVertical: 14,
+    paddingHorizontal: Spacing.sm,
   },
   labelColumn: {
     flex: 1,
     gap: 2,
   },
-  optionLabel: {
-    fontFamily: 'Inter_400Regular',
-  },
-  optionLabelSelected: {
-    fontFamily: 'Inter_600SemiBold',
-  },
-  checkbox: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
+  radio: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 12,
+  },
+  radioInner: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
   },
   emptyState: {
     flex: 1,
@@ -375,8 +355,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: Spacing.sm,
     paddingTop: Spacing.md,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(0,0,0,0.1)',
   },
   clearButton: {
     flex: 1,

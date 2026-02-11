@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Pressable, Alert } from 'react-native';
+import { StyleSheet, View, Alert } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
 import { CheckCircle2 } from 'lucide-react-native';
 
@@ -70,7 +71,7 @@ export function SavedListingItem({ listing, colors }: SavedListingItemProps) {
   const sellerName = listing.partnerName || listing.sellerName || 'Private Seller';
 
   return (
-    <Pressable
+    <HapticPressable
       style={({ pressed }) => [
         styles.container,
         {
@@ -136,7 +137,7 @@ export function SavedListingItem({ listing, colors }: SavedListingItemProps) {
           )}
         </View>
       </View>
-    </Pressable>
+    </HapticPressable>
   );
 }
 

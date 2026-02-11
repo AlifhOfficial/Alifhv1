@@ -4,7 +4,8 @@
  */
 
 import React, { memo } from 'react';
-import { StyleSheet, View, Pressable } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { ChevronRight } from 'lucide-react-native';
 
 import { Colors, Spacing } from '@/constants/theme';
@@ -99,7 +100,7 @@ export const ListingSpecs = memo(function ListingSpecs({
       </View>
 
       {hasMore && (
-        <Pressable onPress={onViewAll} style={styles.viewAllButton}>
+        <HapticPressable onPress={onViewAll} style={styles.viewAllButton}>
           {({ pressed }) => (
             <View style={[styles.viewAllContent, { opacity: pressed ? 0.7 : 1 }]}>
               <Data size="medium" tone="primary">
@@ -108,7 +109,7 @@ export const ListingSpecs = memo(function ListingSpecs({
               <ChevronRight size={ICON_SIZE_SM} color={colors.primary} strokeWidth={2} />
             </View>
           )}
-        </Pressable>
+        </HapticPressable>
       )}
     </View>
   );

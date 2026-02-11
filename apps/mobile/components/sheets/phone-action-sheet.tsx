@@ -4,7 +4,8 @@
  */
 
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
-import { View, StyleSheet, Pressable, Platform, Linking, Alert } from 'react-native';
+import { View, StyleSheet, Platform, Linking, Alert } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -28,7 +29,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  const snapPoints = useMemo(() => ['32%'], []);
+  const snapPoints = useMemo(() => ['40%', '60%'], []);
 
   useEffect(() => {
     if (visible) {
@@ -94,6 +95,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
     <BottomSheetModal
       ref={bottomSheetRef}
       snapPoints={snapPoints}
+      enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
@@ -108,21 +110,21 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
         {/* Header with close */}
         <View style={styles.header}>
           <Heading size="medium">{phoneNumber}</Heading>
-          <Pressable 
+          <HapticPressable 
             onPress={onClose} 
             hitSlop={Spacing.md}
-            style={({ pressed }) => [
+            style={[
               styles.closeButton,
-              { backgroundColor: pressed ? colors.surfacePressed : colors.surface }
+              { backgroundColor: colors.fillSecondary }
             ]}
           >
-            <Ionicons name="close" size={18} color={colors.icon} />
-          </Pressable>
+            <Ionicons name="close" size={18} color={colors.textSecondary} />
+          </HapticPressable>
         </View>
 
         {/* Actions */}
         <View style={styles.actions}>
-          <Pressable
+          <HapticPressable
             onPress={handleCall}
             style={({ pressed }) => [
               styles.actionBtn,
@@ -133,9 +135,9 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
               <Phone size={22} color="#FFF" />
             </View>
             <ButtonText size="small">Call</ButtonText>
-          </Pressable>
+          </HapticPressable>
 
-          <Pressable
+          <HapticPressable
             onPress={handleWhatsApp}
             style={({ pressed }) => [
               styles.actionBtn,
@@ -146,9 +148,9 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
               <Ionicons name="logo-whatsapp" size={24} color="#FFF" />
             </View>
             <ButtonText size="small">WhatsApp</ButtonText>
-          </Pressable>
+          </HapticPressable>
 
-          <Pressable
+          <HapticPressable
             onPress={handleCopy}
             style={({ pressed }) => [
               styles.actionBtn,
@@ -159,7 +161,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
               <Copy size={22} color={colors.text} />
             </View>
             <ButtonText size="small">Copy</ButtonText>
-          </Pressable>
+          </HapticPressable>
         </View>
       </BottomSheetView>
     </BottomSheetModal>

@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'lucide-react-native';
@@ -70,7 +71,7 @@ export function ChatHeader({
       ]}
     >
       {/* Back Button */}
-      <Pressable
+      <HapticPressable
         onPress={handleBack}
         style={({ pressed }) => [
           styles.backButton,
@@ -79,7 +80,7 @@ export function ChatHeader({
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
         <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
-      </Pressable>
+      </HapticPressable>
 
       {/* Avatar */}
       <UserAvatar src={avatarUrl} name={name} size="md" />

@@ -9,11 +9,12 @@ import {
   View, 
   Text as RNText,
   TextInput, 
-  Pressable, 
+  
   KeyboardAvoidingView,
   Platform,
   ScrollView,
 } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { ButtonLoader } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
@@ -75,12 +76,12 @@ export function SignInScreen({
         >
           {/* Header */}
           <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
-            <Pressable
+            <HapticPressable
               onPress={onBack}
               style={({ pressed }) => [styles.backButton, { opacity: pressed ? 0.5 : 1 }]}
             >
               <ChevronLeftIcon color={colors.text} />
-            </Pressable>
+            </HapticPressable>
           </Animated.View>
 
           {/* Title */}
@@ -138,24 +139,24 @@ export function SignInScreen({
                   underlineColorAndroid="transparent"
                   editable={!isLoading}
                 />
-                <Pressable
+                <HapticPressable
                   onPress={() => setShowPassword(!showPassword)}
                   style={styles.eyeButton}
                 >
                   <Data size="mini" tone="secondary">
                     {showPassword ? 'Hide' : 'Show'}
                   </Data>
-                </Pressable>
+                </HapticPressable>
               </View>
             </View>
 
             {/* Forgot Password */}
-            <Pressable onPress={onForgotPassword} style={styles.forgotButton}>
+            <HapticPressable onPress={onForgotPassword} style={styles.forgotButton}>
               <Data size="mini" tone="secondary">Forgot password?</Data>
-            </Pressable>
+            </HapticPressable>
 
             {/* Sign In Button */}
-            <Pressable
+            <HapticPressable
               onPress={handleSubmit}
               disabled={!isValid || isLoading}
               style={({ pressed }) => [
@@ -175,7 +176,7 @@ export function SignInScreen({
                   Continue
                 </ButtonText>
               )}
-            </Pressable>
+            </HapticPressable>
           </Animated.View>
 
           {/* Divider */}
@@ -194,7 +195,7 @@ export function SignInScreen({
               <View style={styles.socialRow}>
                 {/* Passkey */}
                 {onPasskeySignIn && (
-                  <Pressable
+                  <HapticPressable
                     onPress={onPasskeySignIn}
                     disabled={isLoading}
                     style={({ pressed }) => [
@@ -203,12 +204,12 @@ export function SignInScreen({
                     ]}
                   >
                     <PasskeyIcon color={colors.text} />
-                  </Pressable>
+                  </HapticPressable>
                 )}
 
                 {/* Apple */}
                 {onAppleSignIn && Platform.OS === 'ios' && (
-                  <Pressable
+                  <HapticPressable
                     onPress={onAppleSignIn}
                     disabled={isLoading}
                     style={({ pressed }) => [
@@ -221,12 +222,12 @@ export function SignInScreen({
                     ]}
                   >
                     <AppleIcon color={isDark ? Colors.dark.background : Colors.light.background} />
-                  </Pressable>
+                  </HapticPressable>
                 )}
 
                 {/* Google */}
                 {onGoogleSignIn && (
-                  <Pressable
+                  <HapticPressable
                     onPress={onGoogleSignIn}
                     disabled={isLoading}
                     style={({ pressed }) => [
@@ -235,7 +236,7 @@ export function SignInScreen({
                     ]}
                   >
                     <GoogleIcon />
-                  </Pressable>
+                  </HapticPressable>
                 )}
               </View>
             </Animated.View>
@@ -246,9 +247,9 @@ export function SignInScreen({
             <Body size="small" tone="secondary">
               Don't have an account?{' '}
             </Body>
-            <Pressable onPress={onSwitchToSignUp}>
+            <HapticPressable onPress={onSwitchToSignUp}>
               <Data tone="primary">Sign up</Data>
-            </Pressable>
+            </HapticPressable>
           </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>

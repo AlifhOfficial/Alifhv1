@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Pressable, Platform } from 'react-native';
+import { StyleSheet, View, Platform } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { ScanFace, Fingerprint, Key, Trash2, Loader2 } from 'lucide-react-native';
 
 import { Supporting, Body, Label } from '@/components/ui';
@@ -36,7 +37,7 @@ export function SecuritySection({
           <Supporting size="medium" tone="muted">Passkeys</Supporting>
           <Body size="medium">Sign in with biometrics</Body>
         </View>
-        <Pressable
+        <HapticPressable
           onPress={onAddPasskey}
           disabled={addingPasskey}
           style={[styles.addButton, { backgroundColor: colors.surfaceSecondary }]}
@@ -48,7 +49,7 @@ export function SecuritySection({
           ) : (
             <Fingerprint size={22} color={colors.text} strokeWidth={1.5} />
           )}
-        </Pressable>
+        </HapticPressable>
       </View>
 
       {/* Passkeys List or Empty State */}
@@ -69,12 +70,12 @@ export function SecuritySection({
                 <Label size="medium" uppercase={false}>{pk.name}</Label>
                 <Supporting size="medium" tone="muted">Added {pk.createdAt}</Supporting>
               </View>
-              <Pressable
+              <HapticPressable
                 onPress={() => onDeletePasskey?.(pk.id)}
                 style={styles.deleteButton}
               >
                 <Trash2 size={16} color={colors.error} strokeWidth={1.5} />
-              </Pressable>
+              </HapticPressable>
             </View>
           ))}
         </View>

@@ -3,7 +3,8 @@
  */
 
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Pressable, Dimensions } from 'react-native';
+import { StyleSheet, View, Dimensions } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { Check } from 'lucide-react-native';
@@ -93,7 +94,7 @@ export function CompleteStep({ data, onComplete }: CompleteStepProps) {
 
         {/* CTA */}
         <View style={styles.actions}>
-          <Pressable
+          <HapticPressable
             onPress={onComplete}
             style={({ pressed }) => [
               styles.primaryButton,
@@ -103,7 +104,7 @@ export function CompleteStep({ data, onComplete }: CompleteStepProps) {
             <ButtonText style={{ color: colors.primaryForeground }}>
               Get Started
             </ButtonText>
-          </Pressable>
+          </HapticPressable>
         </View>
       </View>
     </View>

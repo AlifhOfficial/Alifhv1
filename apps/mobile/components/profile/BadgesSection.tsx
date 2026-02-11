@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Pressable, Platform } from 'react-native';
+import { StyleSheet, View, Platform } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 
 import { Label, Body, Supporting, ButtonText } from '@/components/ui';
@@ -46,7 +47,7 @@ export function BadgesSection({ badges, colors, onLearnMore }: BadgesSectionProp
           <Body size="medium" tone="muted" style={styles.emptySubtitle}>
             Complete activities to earn badges
           </Body>
-          <Pressable
+          <HapticPressable
             onPress={handleLearnMore}
             style={({ pressed }) => [
               styles.learnMoreBtn,
@@ -56,7 +57,7 @@ export function BadgesSection({ badges, colors, onLearnMore }: BadgesSectionProp
             <ButtonText size="small" tone="primary">
               Learn more
             </ButtonText>
-          </Pressable>
+          </HapticPressable>
         </View>
       )}
     </Section>

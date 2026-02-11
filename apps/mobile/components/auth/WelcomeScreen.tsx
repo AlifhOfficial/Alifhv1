@@ -4,7 +4,8 @@
  */
 
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Pressable } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { 
   FadeInUp,
@@ -97,7 +98,7 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
         style={styles.ctaSection}
       >
         {/* Primary CTA */}
-        <Pressable
+        <HapticPressable
           onPress={onGetStarted}
           style={({ pressed }) => [
             styles.ctaButton,
@@ -110,10 +111,10 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
           ]}
         >
           <Heading size="small">Get Started</Heading>
-        </Pressable>
+        </HapticPressable>
 
         {/* Secondary CTA - Same size */}
-        <Pressable
+        <HapticPressable
           onPress={onSignIn}
           style={({ pressed }) => [
             styles.ctaButton,
@@ -126,7 +127,7 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
           ]}
         >
           <Heading size="small">Already a user?</Heading>
-        </Pressable>
+        </HapticPressable>
       </Animated.View>
 
       {/* Skip - Bottom center */}
@@ -135,13 +136,13 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
           entering={FadeInUp.delay(1700).duration(400).easing(Easing.out(Easing.ease))}
           style={[styles.skipSection, { paddingBottom: Math.max(insets.bottom, Spacing.xl) }]}
         >
-          <Pressable
+          <HapticPressable
             onPress={onSkip}
             hitSlop={{ top: 16, bottom: 16, left: 24, right: 24 }}
             style={({ pressed }) => [{ opacity: pressed ? 0.4 : 1 }]}
           >
             <Supporting size="small" tone="muted">Skip</Supporting>
-          </Pressable>
+          </HapticPressable>
         </Animated.View>
       )}
     </View>

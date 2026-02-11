@@ -3,7 +3,8 @@
  */
 
 import React, { memo, useCallback, useMemo } from 'react';
-import { StyleSheet, View, Pressable } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { Heart, Sparkles, CheckCircle2 } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
@@ -97,7 +98,7 @@ export const ListingHeader = memo(function ListingHeader({
             <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>BLK</Label>
           </View>
         )}
-        <Pressable
+        <HapticPressable
           onPress={handleFavoritePress}
           style={[
             styles.actionBtn,
@@ -110,8 +111,8 @@ export const ListingHeader = memo(function ListingHeader({
             fill={isFavorite ? colors.favorite : 'none'}
             strokeWidth={isFavorite ? 2.25 : 1.75}
           />
-        </Pressable>
-        <Pressable
+        </HapticPressable>
+        <HapticPressable
           onPress={handleSuperlikePress}
           style={[
             styles.actionBtn,
@@ -124,7 +125,7 @@ export const ListingHeader = memo(function ListingHeader({
             fill={isSuperliked ? colors.warning : 'none'}
             strokeWidth={1.75}
           />
-        </Pressable>
+        </HapticPressable>
         </View>
       </View>
 

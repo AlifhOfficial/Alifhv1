@@ -3,7 +3,8 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Pressable, Platform } from 'react-native';
+import { StyleSheet, View, Platform } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 
 import { Heading, Body } from '@/components/ui';
@@ -53,7 +54,7 @@ export function SavedHeader({
           const active = activeTab === key;
           const count = getCount(key);
           return (
-            <Pressable
+            <HapticPressable
               key={key}
               onPress={() => handleTab(key)}
               style={[
@@ -73,7 +74,7 @@ export function SavedHeader({
               >
                 {label}{count > 0 ? ` ${count}` : ''}
               </Body>
-            </Pressable>
+            </HapticPressable>
           );
         })}
       </View>

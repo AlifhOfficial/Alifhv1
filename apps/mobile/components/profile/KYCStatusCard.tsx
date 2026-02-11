@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Pressable, Platform } from 'react-native';
+import { StyleSheet, View, Platform } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
@@ -122,7 +123,7 @@ export function KYCStatusCard({ status, colors, onAction }: KYCStatusCardProps) 
         </View>
 
         {display.buttonText && (
-          <Pressable
+          <HapticPressable
             onPress={handlePress}
             style={({ pressed }) => [
               styles.actionButton,
@@ -135,7 +136,7 @@ export function KYCStatusCard({ status, colors, onAction }: KYCStatusCardProps) 
             <ButtonText size="medium">
               {display.buttonText}
             </ButtonText>
-          </Pressable>
+          </HapticPressable>
         )}
       </View>
     </Animated.View>

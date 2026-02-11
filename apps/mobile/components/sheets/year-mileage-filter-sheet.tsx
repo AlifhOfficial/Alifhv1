@@ -4,7 +4,8 @@
  */
 
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
-import { View, StyleSheet, Pressable, TextInput, Platform } from 'react-native';
+import { View, StyleSheet, TextInput, Platform } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -12,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Label, Body, ButtonText } from '@/components/ui';
+import { Heading, Label, Body, Supporting, ButtonText } from '@/components/ui';
 
 const MILEAGE_PRESETS = [
   { label: 'Under 20K', max: 20000 },
@@ -65,7 +66,7 @@ export function YearMileageFilterSheet({
     }
   }, [visible, yearMin, yearMax, mileageMin, mileageMax]);
 
-  const snapPoints = useMemo(() => ['70%'], []);
+  const snapPoints = useMemo(() => ['60%', '94%'], []);
 
   useEffect(() => {
     if (visible) {
@@ -142,6 +143,7 @@ export function YearMileageFilterSheet({
     <BottomSheetModal
       ref={bottomSheetRef}
       snapPoints={snapPoints}
+      enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
@@ -155,22 +157,22 @@ export function YearMileageFilterSheet({
       <BottomSheetScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="large" style={{ color: colors.text }}>Year & Mileage</Heading>
-          <Pressable 
+          <Heading size="medium">Year & Mileage</Heading>
+          <HapticPressable 
             onPress={onClose} 
             hitSlop={Spacing.md}
-            style={({ pressed }) => [
+            style={[
               styles.closeButton,
-              { backgroundColor: pressed ? colors.surfacePressed : colors.surface }
+              { backgroundColor: colors.fillSecondary }
             ]}
           >
-            <Ionicons name="close" size={18} color={colors.icon} />
-          </Pressable>
+            <Ionicons name="close" size={18} color={colors.textSecondary} />
+          </HapticPressable>
         </View>
 
         {/* Year Section */}
         <View style={styles.section}>
-          <Label size="small" style={{ color: colors.textSecondary, marginBottom: Spacing.md }}>
+          <Label size="small" tone="muted" style={{ marginBottom: Spacing.md }}>
             YEAR
           </Label>
           <View style={styles.rangeRow}>
@@ -216,7 +218,7 @@ export function YearMileageFilterSheet({
 
         {/* Mileage Section */}
         <View style={styles.section}>
-          <Label size="small" style={{ color: colors.textSecondary, marginBottom: Spacing.md }}>
+          <Label size="small" tone="muted" style={{ marginBottom: Spacing.md }}>
             MILEAGE
           </Label>
           
@@ -227,7 +229,7 @@ export function YearMileageFilterSheet({
               const isActive = currentMax === preset.max;
 
               return (
-                <Pressable
+                <HapticPressable
                   key={preset.label}
                   onPress={() => handleMileagePresetSelect(preset)}
                   style={[
@@ -238,16 +240,13 @@ export function YearMileageFilterSheet({
                     },
                   ]}
                 >
-                  <Body
+                  <Supporting
                     size="small"
-                    style={[
-                      styles.presetLabel,
-                      { color: isActive ? colors.background : colors.textSecondary },
-                    ]}
+                    style={{ color: isActive ? colors.background : colors.textSecondary }}
                   >
                     {preset.label}
-                  </Body>
-                </Pressable>
+                  </Supporting>
+                </HapticPressable>
               );
             })}
           </View>
@@ -295,19 +294,19 @@ export function YearMileageFilterSheet({
         {/* Actions */}
         <View style={styles.actions}>
           {hasValue && (
-            <Pressable
+            <HapticPressable
               onPress={handleClear}
               style={[styles.clearButton, { borderColor: colors.border }]}
             >
               <ButtonText size="medium" tone="secondary">Clear</ButtonText>
-            </Pressable>
+            </HapticPressable>
           )}
-          <Pressable
+          <HapticPressable
             onPress={handleApply}
             style={[styles.applyButton, { backgroundColor: colors.text }]}
           >
             <ButtonText size="medium" style={{ color: colors.background }}>Apply</ButtonText>
-          </Pressable>
+          </HapticPressable>
         </View>
 
         <View style={{ height: insets.bottom + Spacing['3xl'] }} />
@@ -360,9 +359,6 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     borderRadius: Radius.full,
     borderWidth: 1,
-  },
-  presetLabel: {
-    fontFamily: 'Inter_500Medium',
   },
   rangeRow: {
     flexDirection: 'row',

@@ -3,7 +3,8 @@
  */
 
 import React from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useTheme } from '@/context/theme-context';
 import { Colors } from '@/constants/theme';
@@ -13,7 +14,7 @@ export function ThemeToggle() {
   const colors = Colors[colorScheme];
 
   return (
-    <Pressable
+    <HapticPressable
       onPress={toggleTheme}
       style={({ pressed }) => [
         styles.button,
@@ -30,7 +31,7 @@ export function ThemeToggle() {
         size={22} 
         color={colors.iconMuted} 
       />
-    </Pressable>
+    </HapticPressable>
   );
 }
 

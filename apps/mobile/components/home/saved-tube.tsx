@@ -6,7 +6,8 @@
  */
 
 import React from 'react';
-import { StyleSheet, Pressable, Platform } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 
@@ -27,7 +28,7 @@ export function SavedTube() {
   };
 
   return (
-    <Pressable
+    <HapticPressable
       style={[
         styles.container,
         {
@@ -43,7 +44,7 @@ export function SavedTube() {
           Saved
         </Data>
       )}
-    </Pressable>
+    </HapticPressable>
   );
 }
 

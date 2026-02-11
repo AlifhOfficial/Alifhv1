@@ -4,7 +4,8 @@
  */
 
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
-import { View, StyleSheet, Pressable, Platform } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -40,8 +41,8 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  // Snap points - enough for all options + padding
-  const snapPoints = useMemo(() => ['70%'], []);
+  // Snap points
+  const snapPoints = useMemo(() => ['60%', '94%'], []);
 
   // Handle open/close based on visible prop
   useEffect(() => {
@@ -83,6 +84,7 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
     <BottomSheetModal
       ref={bottomSheetRef}
       snapPoints={snapPoints}
+      enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
@@ -96,7 +98,7 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
         {/* Header */}
         <View style={styles.header}>
           <Heading size="medium" style={{ color: colors.text }}>Sort By</Heading>
-          <Pressable 
+          <HapticPressable 
             onPress={onClose} 
             hitSlop={Spacing.md}
             style={[
@@ -105,52 +107,38 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
             ]}
           >
             <Ionicons name="close" size={18} color={colors.textSecondary} />
-          </Pressable>
+          </HapticPressable>
         </View>
 
         {/* Options List */}
         <View style={styles.listContainer}>
-          {SORT_OPTIONS.map((option, index) => {
+          {SORT_OPTIONS.map((option) => {
             const selected = currentSort === option.value;
 
             return (
-              <Pressable
+              <HapticPressable
                 key={option.value}
                 onPress={() => handleSelect(option.value)}
-                style={[
-                  styles.listItem,
-                  { 
-                    backgroundColor: selected 
-                      ? colors.surfaceSecondary 
-                      : 'transparent',
-                  },
-                ]}
+                style={styles.listItem}
               >
-                <View style={styles.radioRow}>
-                  <Body
-                    size="large"
-                    style={[
-                      styles.optionLabel, 
-                      { color: selected ? colors.text : colors.textSecondary },
-                      selected && styles.optionLabelSelected
-                    ]}
-                    numberOfLines={1}
-                  >
-                    {option.label}
-                  </Body>
-                  {/* Radio button */}
-                  <View style={[
-                    styles.radio,
-                    { 
-                      borderColor: selected ? colors.text : colors.textMuted,
-                    },
-                  ]}>
-                    {selected && (
-                      <View style={[styles.radioInner, { backgroundColor: colors.text }]} />
-                    )}
-                  </View>
+                <Body
+                  size="medium"
+                  style={{ 
+                    color: selected ? colors.text : colors.textSecondary,
+                    fontFamily: selected ? 'Inter_500Medium' : 'Inter_400Regular',
+                  }}
+                >
+                  {option.label}
+                </Body>
+                <View style={[
+                  styles.radio,
+                  { borderColor: selected ? colors.text : colors.border },
+                ]}>
+                  {selected && (
+                    <View style={[styles.radioInner, { backgroundColor: colors.text }]} />
+                  )}
                 </View>
-              </Pressable>
+              </HapticPressable>
             );
           })}
         </View>
@@ -173,7 +161,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.lg,
     paddingHorizontal: Spacing.xs,
   },
   closeButton: {
@@ -184,39 +172,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   listContainer: {
-    gap: Spacing.sm,
+    gap: 4,
   },
   listItem: {
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.lg,
-    borderRadius: Radius.lg,
-  },
-  listItemSpacing: {
-    // kept for compatibility
-  },
-  radioRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingVertical: 14,
+    paddingHorizontal: Spacing.sm,
   },
   radio: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 12,
   },
   radioInner: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  optionLabel: {
-    flex: 1,
-  },
-  optionLabelSelected: {
-    fontFamily: 'Inter_500Medium',
+    width: 10,
+    height: 10,
+    borderRadius: 5,
   },
 });

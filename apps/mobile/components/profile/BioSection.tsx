@@ -11,6 +11,7 @@ import {
   Pressable,
   Platform,
 } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
@@ -69,7 +70,7 @@ export function BioSection({
 
   return (
     <Section title="Bio" colors={colors} delay={250}>
-      <Pressable onPress={handlePress} style={styles.container}>
+      <HapticPressable onPress={handlePress} style={styles.container}>
         {isEditing ? (
           <Animated.View entering={FadeIn.duration(200)} style={styles.editContainer}>
             <TextInput
@@ -96,7 +97,7 @@ export function BioSection({
                 {bio.length}/{MAX_BIO_LENGTH}
               </Supporting>
               <View style={styles.actions}>
-                <Pressable
+                <HapticPressable
                   onPress={onCancel}
                   hitSlop={8}
                   style={({ pressed }) => pressed && { opacity: 0.6 }}
@@ -104,8 +105,8 @@ export function BioSection({
                   <Supporting size="medium" tone="secondary">
                     Cancel
                   </Supporting>
-                </Pressable>
-                <Pressable
+                </HapticPressable>
+                <HapticPressable
                   onPress={onSave}
                   disabled={saving}
                   hitSlop={8}
@@ -114,7 +115,7 @@ export function BioSection({
                   <Data size="medium" tone="primary">
                     {saving ? 'Saving...' : 'Save'}
                   </Data>
-                </Pressable>
+                </HapticPressable>
               </View>
             </View>
           </Animated.View>
@@ -134,7 +135,7 @@ export function BioSection({
             )}
           </View>
         )}
-      </Pressable>
+      </HapticPressable>
     </Section>
   );
 }

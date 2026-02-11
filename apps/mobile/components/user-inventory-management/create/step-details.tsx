@@ -19,6 +19,7 @@ import {
   Platform,
   UIManager,
 } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 import { ChevronDown, ChevronUp } from 'lucide-react-native';
 
@@ -71,14 +72,14 @@ function Section({
 
   return (
     <View style={[styles.section, { borderColor: colors.border }]}>
-      <Pressable onPress={toggle} style={styles.sectionHeader}>
+      <HapticPressable onPress={toggle} style={styles.sectionHeader}>
         <Label size="medium" style={{ flex: 1 }}>{title}</Label>
         {open ? (
           <ChevronUp size={18} color={colors.textMuted} />
         ) : (
           <ChevronDown size={18} color={colors.textMuted} />
         )}
-      </Pressable>
+      </HapticPressable>
       {open && <View style={styles.sectionBody}>{children}</View>}
     </View>
   );
@@ -114,7 +115,7 @@ function ChipRow({
           : selected === opt.value;
 
         return (
-          <Pressable
+          <HapticPressable
             key={opt.value}
             onPress={() => {
               onSelect(opt.value);
@@ -150,7 +151,7 @@ function ChipRow({
             >
               {opt.label}
             </Body>
-          </Pressable>
+          </HapticPressable>
         );
       })}
     </View>

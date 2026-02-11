@@ -16,6 +16,7 @@ import {
   Alert,
   Dimensions,
 } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import {
@@ -59,7 +60,7 @@ function EmirateChips({
       {UAE_EMIRATES.map((e) => {
         const isSelected = selected === e.value;
         return (
-          <Pressable
+          <HapticPressable
             key={e.value}
             onPress={() => {
               onSelect(e.value);
@@ -80,7 +81,7 @@ function EmirateChips({
             >
               {e.label}
             </Body>
-          </Pressable>
+          </HapticPressable>
         );
       })}
     </View>
@@ -200,7 +201,7 @@ export function StepMedia({ form, updateForm, colors }: StepProps) {
       </View>
 
       {/* ── Negotiable toggle ── */}
-      <Pressable
+      <HapticPressable
         onPress={() => {
           updateForm({ isNegotiable: !form.isNegotiable });
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -226,7 +227,7 @@ export function StepMedia({ form, updateForm, colors }: StepProps) {
             ]}
           />
         </View>
-      </Pressable>
+      </HapticPressable>
 
       {/* ══════════ Location ══════════ */}
       <View style={styles.fieldGroup}>
@@ -279,19 +280,19 @@ export function StepMedia({ form, updateForm, colors }: StepProps) {
                 <Supporting size="mini" style={{ color: '#FFF' }}>Cover</Supporting>
               </View>
             )}
-            <Pressable
+            <HapticPressable
               onPress={() => handleDeleteImage(url)}
               style={[styles.imageDeleteBtn, { backgroundColor: colors.error }]}
               hitSlop={6}
             >
               <X size={12} color="#FFF" strokeWidth={3} />
-            </Pressable>
+            </HapticPressable>
           </View>
         ))}
 
         {/* Add button */}
         {form.images.length < MAX_IMAGES && (
-          <Pressable
+          <HapticPressable
             onPress={handlePickImages}
             disabled={uploading}
             style={[
@@ -312,7 +313,7 @@ export function StepMedia({ form, updateForm, colors }: StepProps) {
                 <Supporting size="mini" tone="muted">Add</Supporting>
               </>
             )}
-          </Pressable>
+          </HapticPressable>
         )}
       </View>
 
@@ -358,9 +359,9 @@ export function StepMedia({ form, updateForm, colors }: StepProps) {
             style={[styles.noteItem, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}
           >
             <Body size="small" style={{ flex: 1 }}>{note}</Body>
-            <Pressable onPress={() => removeNote(index)} hitSlop={8}>
+            <HapticPressable onPress={() => removeNote(index)} hitSlop={8}>
               <X size={16} color={colors.textMuted} />
-            </Pressable>
+            </HapticPressable>
           </View>
         ))}
 
@@ -379,7 +380,7 @@ export function StepMedia({ form, updateForm, colors }: StepProps) {
               onSubmitEditing={addNote}
               returnKeyType="done"
             />
-            <Pressable
+            <HapticPressable
               onPress={addNote}
               disabled={!noteInput.trim()}
               style={[
@@ -390,7 +391,7 @@ export function StepMedia({ form, updateForm, colors }: StepProps) {
               ]}
             >
               <Plus size={20} color={noteInput.trim() ? '#FFF' : colors.textMuted} />
-            </Pressable>
+            </HapticPressable>
           </View>
         )}
       </View>

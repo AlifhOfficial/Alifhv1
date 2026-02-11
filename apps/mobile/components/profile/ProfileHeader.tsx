@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Pressable } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { useRouter } from 'expo-router';
 import { Settings } from 'lucide-react-native';
 
@@ -25,7 +26,7 @@ export function ProfileHeader({ colors, topInset }: ProfileHeaderProps) {
       <Heading size="large">Profile</Heading>
 
       {/* Right: Settings */}
-      <Pressable
+      <HapticPressable
         onPress={() => router.push('/settings')}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         style={[
@@ -44,7 +45,7 @@ export function ProfileHeader({ colors, topInset }: ProfileHeaderProps) {
             style={{ opacity: pressed ? 0.7 : 1 }}
           />
         )}
-      </Pressable>
+      </HapticPressable>
     </View>
   );
 }

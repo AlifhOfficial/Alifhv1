@@ -4,12 +4,12 @@
  */
 
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
-import { View, StyleSheet, Pressable, Platform } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
-import { Check } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -46,7 +46,7 @@ export function LocationFilterSheet({
     }
   }, [visible, selected]);
 
-  const snapPoints = useMemo(() => ['70%'], []);
+  const snapPoints = useMemo(() => ['60%', '94%'], []);
 
   useEffect(() => {
     if (visible) {
@@ -110,6 +110,7 @@ export function LocationFilterSheet({
     <BottomSheetModal
       ref={bottomSheetRef}
       snapPoints={snapPoints}
+      enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
@@ -123,7 +124,7 @@ export function LocationFilterSheet({
         {/* Header */}
         <View style={styles.header}>
           <Heading size="medium" style={{ color: colors.text }}>Location</Heading>
-          <Pressable 
+          <HapticPressable 
             onPress={onClose} 
             hitSlop={Spacing.md}
             style={[
@@ -132,7 +133,7 @@ export function LocationFilterSheet({
             ]}
           >
             <Ionicons name="close" size={18} color={colors.textSecondary} />
-          </Pressable>
+          </HapticPressable>
         </View>
 
         {/* Options List */}
@@ -141,49 +142,34 @@ export function LocationFilterSheet({
             const isSelected = localSelected.includes(option.value);
 
             return (
-              <Pressable
+              <HapticPressable
                 key={option.value}
                 onPress={() => handleToggle(option.value)}
-                style={[
-                  styles.listItem,
-                  { 
-                    backgroundColor: isSelected 
-                      ? colors.surfaceSecondary 
-                      : 'transparent',
-                  },
-                ]}
+                style={styles.listItem}
               >
-              <View style={styles.itemRow}>
-                  <View style={styles.labelRow}>
-                    <Body
-                      size="large"
-                      style={[
-                        styles.optionLabel,
-                        { color: isSelected ? colors.text : colors.textSecondary },
-                        isSelected && styles.optionLabelSelected
-                      ]}
-                      numberOfLines={1}
-                    >
-                      {option.label}
-                    </Body>
-                    <Supporting size="small">
-                      {option.count.toLocaleString()}
-                    </Supporting>
-                  </View>
-                  {/* Checkbox */}
-                  <View style={[
-                    styles.checkbox,
-                    { 
-                      borderColor: isSelected ? colors.text : colors.textMuted,
-                      backgroundColor: isSelected ? colors.text : 'transparent',
-                    },
-                  ]}>
-                    {isSelected && (
-                      <Check size={14} color={colors.surface} strokeWidth={3} />
-                    )}
-                  </View>
+                <View style={styles.labelRow}>
+                  <Body
+                    size="medium"
+                    style={{ 
+                      color: isSelected ? colors.text : colors.textSecondary,
+                      fontFamily: isSelected ? 'Inter_500Medium' : 'Inter_400Regular',
+                    }}
+                  >
+                    {option.label}
+                  </Body>
+                  <Supporting size="small" tone="muted">
+                    {option.count.toLocaleString()}
+                  </Supporting>
                 </View>
-              </Pressable>
+                <View style={[
+                  styles.radio,
+                  { borderColor: isSelected ? colors.text : colors.border },
+                ]}>
+                  {isSelected && (
+                    <View style={[styles.radioInner, { backgroundColor: colors.text }]} />
+                  )}
+                </View>
+              </HapticPressable>
             );
           })}
         </View>
@@ -191,21 +177,21 @@ export function LocationFilterSheet({
         {/* Actions */}
         <View style={styles.actions}>
           {hasValue && (
-            <Pressable
+            <HapticPressable
               onPress={handleClear}
               style={[styles.clearButton, { borderColor: colors.border }]}
             >
               <ButtonText size="medium" tone="secondary">Clear</ButtonText>
-            </Pressable>
+            </HapticPressable>
           )}
-          <Pressable
+          <HapticPressable
             onPress={handleApply}
             style={[styles.applyButton, { backgroundColor: colors.text }]}
           >
             <ButtonText size="medium" style={{ color: colors.background }}>
               Apply{localSelected.length > 0 ? ` (${localSelected.length})` : ''}
             </ButtonText>
-          </Pressable>
+          </HapticPressable>
         </View>
 
         <View style={{ height: insets.bottom + Spacing['3xl'] }} />
@@ -226,7 +212,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.lg,
     paddingHorizontal: Spacing.xs,
   },
   closeButton: {
@@ -237,18 +223,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   listContainer: {
-    gap: Spacing.sm,
+    gap: 4,
     marginBottom: Spacing.xl,
   },
   listItem: {
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.lg,
-    borderRadius: Radius.lg,
-  },
-  itemRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingVertical: 14,
+    paddingHorizontal: Spacing.sm,
   },
   labelRow: {
     flexDirection: 'row',
@@ -256,19 +239,18 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
     flex: 1,
   },
-  optionLabel: {
-  },
-  optionLabelSelected: {
-    fontFamily: 'Inter_500Medium',
-  },
-  checkbox: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
+  radio: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: Spacing.md,
+  },
+  radioInner: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
   },
   actions: {
     flexDirection: 'row',

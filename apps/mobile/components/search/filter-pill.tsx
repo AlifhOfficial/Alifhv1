@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Pressable } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Colors, Radius } from '@/constants/theme';
@@ -27,7 +28,7 @@ export function FilterPill({
   const isPrimary = variant === 'primary' || isSelected;
 
   return (
-    <Pressable 
+    <HapticPressable 
       style={[
         styles.container,
         { 
@@ -50,7 +51,7 @@ export function FilterPill({
           color={isPrimary ? colors.primaryForeground : colors.textSecondary} 
         />
       )}
-    </Pressable>
+    </HapticPressable>
   );
 }
 

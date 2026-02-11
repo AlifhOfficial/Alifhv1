@@ -15,6 +15,7 @@ import {
   ActivityIndicator,
   ScrollView,
 } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { Search, X, ChevronDown, Info } from 'lucide-react-native';
@@ -58,7 +59,7 @@ function InlinePicker({
 
   if (!open) {
     return (
-      <Pressable
+      <HapticPressable
         onPress={() => {
           setOpen(true);
           setQuery('');
@@ -74,7 +75,7 @@ function InlinePicker({
           {selected || placeholder}
         </Body>
         <ChevronDown size={18} color={colors.textMuted} />
-      </Pressable>
+      </HapticPressable>
     );
   }
 
@@ -94,9 +95,9 @@ function InlinePicker({
             autoCorrect={false}
           />
           {query.length > 0 && (
-            <Pressable onPress={() => setQuery('')} hitSlop={8}>
+            <HapticPressable onPress={() => setQuery('')} hitSlop={8}>
               <X size={14} color={colors.textMuted} />
-            </Pressable>
+            </HapticPressable>
           )}
         </View>
       )}
@@ -110,7 +111,7 @@ function InlinePicker({
         {filtered.map((item) => {
           const isSelected = item === selected;
           return (
-            <Pressable
+            <HapticPressable
               key={item}
               onPress={() => {
                 onSelect(item);
@@ -128,17 +129,17 @@ function InlinePicker({
               >
                 {item}
               </Body>
-            </Pressable>
+            </HapticPressable>
           );
         })}
       </ScrollView>
       {/* Close */}
-      <Pressable
+      <HapticPressable
         onPress={() => setOpen(false)}
         style={[styles.pickerDone, { backgroundColor: colors.primary }]}
       >
         <ButtonText size="small" style={{ color: '#FFF' }}>Done</ButtonText>
-      </Pressable>
+      </HapticPressable>
     </View>
   );
 }
@@ -329,12 +330,12 @@ export function StepVehicleId({ form, updateForm, colors }: StepProps) {
 
           {/* Retry button if failed */}
           {vinStatus === 'error' && form.vin.length === 17 && (
-            <Pressable
+            <HapticPressable
               onPress={() => decodeVin(form.vin)}
               style={[styles.retryBtn, { backgroundColor: colors.fillSecondary }]}
             >
               <ButtonText size="small" style={{ color: colors.primary }}>Retry Verification</ButtonText>
-            </Pressable>
+            </HapticPressable>
           )}
 
           <View style={[styles.vinNote, { backgroundColor: colors.fillSecondary }]}>
@@ -356,7 +357,7 @@ export function StepVehicleId({ form, updateForm, colors }: StepProps) {
               {VEHICLE_CONDITIONS.map((c) => {
                 const isSelected = form.condition === c.value;
                 return (
-                  <Pressable
+                  <HapticPressable
                     key={c.value}
                     onPress={() => {
                       updateForm({ condition: c.value as 'new' | 'used' });
@@ -373,7 +374,7 @@ export function StepVehicleId({ form, updateForm, colors }: StepProps) {
                     <Body size="small" style={{ color: isSelected ? '#FFF' : colors.text }}>
                       {c.label}
                     </Body>
-                  </Pressable>
+                  </HapticPressable>
                 );
               })}
             </View>

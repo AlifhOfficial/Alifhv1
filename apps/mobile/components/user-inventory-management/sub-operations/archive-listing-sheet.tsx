@@ -6,7 +6,8 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, StyleSheet, Pressable, Image, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -122,7 +123,7 @@ export function ArchiveListingSheet({
         {/* Header */}
         <View style={styles.header}>
           <Heading size="medium">{actionLabel} Listing</Heading>
-          <Pressable
+          <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
             disabled={loading}
@@ -132,7 +133,7 @@ export function ArchiveListingSheet({
             ]}
           >
             <Ionicons name="close" size={18} color={colors.textSecondary} />
-          </Pressable>
+          </HapticPressable>
         </View>
 
         {/* Listing preview */}
@@ -159,7 +160,7 @@ export function ArchiveListingSheet({
 
         {/* Actions */}
         <View style={styles.actions}>
-          <Pressable
+          <HapticPressable
             onPress={onClose}
             disabled={loading}
             style={[
@@ -171,9 +172,9 @@ export function ArchiveListingSheet({
             ]}
           >
             <ButtonText size="medium" tone="secondary">Cancel</ButtonText>
-          </Pressable>
+          </HapticPressable>
 
-          <Pressable
+          <HapticPressable
             onPress={handleConfirm}
             disabled={loading}
             style={[
@@ -194,7 +195,7 @@ export function ArchiveListingSheet({
                 </ButtonText>
               </>
             )}
-          </Pressable>
+          </HapticPressable>
         </View>
 
         <View style={{ height: insets.bottom + Spacing.md }} />

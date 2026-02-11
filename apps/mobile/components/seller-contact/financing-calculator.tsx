@@ -6,7 +6,8 @@
  */
 
 import React, { memo, useMemo } from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 
 import { Spacing, Radius } from '@/constants/theme';
 import { Label, Data, Supporting } from '@/components/ui';
@@ -53,7 +54,7 @@ export const FinancingCalculator = memo(function FinancingCalculator({
           {DOWN_PAYMENT_OPTIONS.map((dp) => {
             const isSelected = downPaymentPercent === dp;
             return (
-              <Pressable
+              <HapticPressable
                 key={dp}
                 style={[
                   localStyles.chip,
@@ -70,7 +71,7 @@ export const FinancingCalculator = memo(function FinancingCalculator({
                 >
                   {dp}%
                 </Data>
-              </Pressable>
+              </HapticPressable>
             );
           })}
         </View>
@@ -83,7 +84,7 @@ export const FinancingCalculator = memo(function FinancingCalculator({
           {TERM_OPTIONS.map((term) => {
             const isSelected = loanTermMonths === term;
             return (
-              <Pressable
+              <HapticPressable
                 key={term}
                 style={[
                   localStyles.chip,
@@ -100,7 +101,7 @@ export const FinancingCalculator = memo(function FinancingCalculator({
                 >
                   {term}mo
                 </Data>
-              </Pressable>
+              </HapticPressable>
             );
           })}
         </View>

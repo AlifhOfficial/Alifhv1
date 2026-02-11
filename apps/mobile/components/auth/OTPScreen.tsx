@@ -8,10 +8,11 @@ import {
   StyleSheet, 
   View, 
   TextInput, 
-  Pressable, 
+  
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { InlineLoader } from '@/components/ui/loaders';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
@@ -92,12 +93,12 @@ export function OTPScreen({
         <View style={[styles.content, { paddingTop: insets.top, paddingBottom: insets.bottom + Spacing['2xl'] }]}>
           {/* Header */}
           <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
-            <Pressable
+            <HapticPressable
               onPress={onBack}
               style={({ pressed }) => [styles.backButton, { opacity: pressed ? 0.5 : 1 }]}
             >
               <ChevronLeftIcon color={colors.text} />
-            </Pressable>
+            </HapticPressable>
           </Animated.View>
 
           {/* Title */}
@@ -117,7 +118,7 @@ export function OTPScreen({
 
           {/* Code Input */}
           <Animated.View entering={FadeInDown.delay(150).duration(400)} style={styles.codeSection}>
-            <Pressable onPress={focusInput} style={styles.codeBoxes}>
+            <HapticPressable onPress={focusInput} style={styles.codeBoxes}>
               {Array.from({ length: CODE_LENGTH }).map((_, index) => {
                 const digit = code[index] || '';
                 const isActive = index === code.length;
@@ -143,7 +144,7 @@ export function OTPScreen({
                   </View>
                 );
               })}
-            </Pressable>
+            </HapticPressable>
 
             {/* Hidden input */}
             <TextInput
@@ -168,9 +169,9 @@ export function OTPScreen({
           {/* Resend */}
           <Animated.View entering={FadeIn.delay(250).duration(300)} style={styles.resendSection}>
             {canResend ? (
-              <Pressable onPress={handleResend} disabled={isLoading}>
+              <HapticPressable onPress={handleResend} disabled={isLoading}>
                 <Data tone="primary">Resend code</Data>
-              </Pressable>
+              </HapticPressable>
             ) : (
               <Supporting size="small" tone="muted">
                 Resend in {resendTimer}s

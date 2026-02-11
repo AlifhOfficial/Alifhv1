@@ -48,19 +48,17 @@ const triggerHaptic = (type: HapticType) => {
 export function HapticPressable({ 
   haptic = 'light', 
   onPress, 
-  onPressIn,
   children, 
   ...props 
 }: HapticPressableProps) {
-  const handlePressIn = useCallback((event: any) => {
+  const handlePress = useCallback((event: any) => {
     triggerHaptic(haptic);
-    onPressIn?.(event);
-  }, [haptic, onPressIn]);
+    onPress?.(event);
+  }, [haptic, onPress]);
 
   return (
     <Pressable 
-      onPressIn={handlePressIn}
-      onPress={onPress}
+      onPress={handlePress}
       {...props}
     >
       {children}

@@ -12,6 +12,7 @@ import {
   Platform,
   Alert,
 } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { PulseLoader } from '@/components/ui';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { CheckCircle2 } from 'lucide-react-native';
@@ -172,7 +173,7 @@ export function PhoneVerificationField({
   // Idle state - Display phone number
   if (step === 'idle') {
     return (
-      <Pressable
+      <HapticPressable
         onPress={handleEditPress}
         style={[styles.fieldContainer, { borderBottomWidth: 0 }]}
       >
@@ -183,17 +184,17 @@ export function PhoneVerificationField({
           {displayVerified ? (
             <CheckCircle2 size={16} color={colors.success} strokeWidth={2} />
           ) : phone ? (
-            <Pressable onPress={handleSendOTP} hitSlop={8}>
+            <HapticPressable onPress={handleSendOTP} hitSlop={8}>
               <ButtonText size="small" tone="primary">
                 Verify
               </ButtonText>
-            </Pressable>
+            </HapticPressable>
           ) : null}
         </View>
         <Body size="large" tone={phone ? 'default' : 'muted'}>
           {phone ? `+971 ${phone}` : 'Tap to add'}
         </Body>
-      </Pressable>
+      </HapticPressable>
     );
   }
 
@@ -232,21 +233,21 @@ export function PhoneVerificationField({
           <Supporting size="medium" tone="error">{error}</Supporting>
         )}
         <View style={styles.actions}>
-          <Pressable onPress={handleCancel} hitSlop={8}>
+          <HapticPressable onPress={handleCancel} hitSlop={8}>
             <Supporting size="medium" tone="secondary">
               Cancel
             </Supporting>
-          </Pressable>
-          <Pressable onPress={handleRemovePhone} hitSlop={8}>
+          </HapticPressable>
+          <HapticPressable onPress={handleRemovePhone} hitSlop={8}>
             <Supporting size="medium" tone="error">
               Remove
             </Supporting>
-          </Pressable>
-          <Pressable onPress={handleSavePhone} hitSlop={8}>
+          </HapticPressable>
+          <HapticPressable onPress={handleSavePhone} hitSlop={8}>
             <Data size="medium" tone="primary">
               Save
             </Data>
-          </Pressable>
+          </HapticPressable>
         </View>
       </Animated.View>
     );
@@ -302,7 +303,7 @@ export function PhoneVerificationField({
       )}
 
       <View style={styles.otpActions}>
-        <Pressable
+        <HapticPressable
           onPress={countdown > 0 ? undefined : handleSendOTP}
           disabled={countdown > 0}
           hitSlop={8}
@@ -310,15 +311,15 @@ export function PhoneVerificationField({
           <Supporting size="medium" tone={countdown > 0 ? 'muted' : 'secondary'}>
             {countdown > 0 ? `Resend in ${countdown}s` : 'Resend code'}
           </Supporting>
-        </Pressable>
+        </HapticPressable>
         
         <View style={styles.otpButtonRow}>
-          <Pressable onPress={handleCancel} hitSlop={8}>
+          <HapticPressable onPress={handleCancel} hitSlop={8}>
             <Supporting size="medium" tone="secondary">
               Cancel
             </Supporting>
-          </Pressable>
-          <Pressable
+          </HapticPressable>
+          <HapticPressable
             onPress={handleVerifyOTP}
             disabled={otp.length !== 6}
             hitSlop={8}
@@ -326,7 +327,7 @@ export function PhoneVerificationField({
             <ButtonText size="medium" tone={otp.length === 6 ? 'primary' : 'muted'}>
               Verify
             </ButtonText>
-          </Pressable>
+          </HapticPressable>
         </View>
       </View>
     </Animated.View>

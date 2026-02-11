@@ -22,6 +22,7 @@ import {
   Platform,
   BackHandler,
 } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -258,7 +259,7 @@ export default function CreateListingScreen() {
         ]}
       >
         {/* Back / Close */}
-        <Pressable
+        <HapticPressable
           onPress={step > 1 ? goBack : confirmDiscard}
           style={styles.headerBtn}
           hitSlop={8}
@@ -268,7 +269,7 @@ export default function CreateListingScreen() {
           ) : (
             <X size={22} color={colors.text} />
           )}
-        </Pressable>
+        </HapticPressable>
 
         {/* Title */}
         <View style={styles.headerCenter}>
@@ -282,7 +283,7 @@ export default function CreateListingScreen() {
 
         {/* Save Draft (step 3 only) */}
         {step === 3 && !submitting ? (
-          <Pressable
+          <HapticPressable
             onPress={() => handleSubmit('draft')}
             style={styles.headerBtn}
             hitSlop={8}
@@ -290,7 +291,7 @@ export default function CreateListingScreen() {
             <Body size="small" style={{ color: colors.primary }}>
               Save Draft
             </Body>
-          </Pressable>
+          </HapticPressable>
         ) : (
           <View style={styles.headerBtn} />
         )}
@@ -329,7 +330,7 @@ export default function CreateListingScreen() {
       >
         {step < 3 ? (
           /* ── Next Step ── */
-          <Pressable
+          <HapticPressable
             onPress={goNext}
             disabled={submitting}
             style={[
@@ -347,10 +348,10 @@ export default function CreateListingScreen() {
             >
               Continue
             </ButtonText>
-          </Pressable>
+          </HapticPressable>
         ) : (
           /* ── Publish ── */
-          <Pressable
+          <HapticPressable
             onPress={() => handleSubmit('published')}
             disabled={submitting}
             style={[
@@ -367,7 +368,7 @@ export default function CreateListingScreen() {
                 Publish Listing
               </ButtonText>
             )}
-          </Pressable>
+          </HapticPressable>
         )}
       </View>
     </KeyboardAvoidingView>

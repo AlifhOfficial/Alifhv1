@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { Alert, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { CheckCircle2 } from 'lucide-react-native';
 
 import { ButtonText } from '@/components/ui';
@@ -90,11 +91,11 @@ export function PersonalInfoSection({
           profile.emailVerified ? (
             <CheckCircle2 size={16} color={colors.success} strokeWidth={2} />
           ) : (
-            <Pressable onPress={() => {}}>
+            <HapticPressable onPress={() => {}}>
               <ButtonText size="small" tone="primary">
                 Verify
               </ButtonText>
-            </Pressable>
+            </HapticPressable>
           )
         }
         isEditing={false}

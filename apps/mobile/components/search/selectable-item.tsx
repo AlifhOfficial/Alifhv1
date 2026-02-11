@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Colors, Radius, Spacing } from '@/constants/theme';
@@ -27,7 +28,7 @@ export function SelectableItem({
   const colors = Colors[colorScheme];
 
   return (
-    <Pressable 
+    <HapticPressable 
       style={({ pressed }) => [
         styles.container,
         { 
@@ -67,7 +68,7 @@ export function SelectableItem({
           <Ionicons name="chevron-forward" size={18} color={colors.textTertiary} />
         )}
       </View>
-    </Pressable>
+    </HapticPressable>
   );
 }
 

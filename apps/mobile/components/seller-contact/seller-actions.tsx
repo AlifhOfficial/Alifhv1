@@ -6,7 +6,8 @@
  */
 
 import React, { memo, useCallback } from 'react';
-import { View, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { MessageCircle, Calendar } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
@@ -46,7 +47,7 @@ export const SellerActions = memo(function SellerActions({
       {/* CTA Row */}
       <View style={styles.ctaRow}>
         {/* Primary CTA - Chat */}
-        <Pressable
+        <HapticPressable
           onPress={handleChat}
           disabled={isChatLoading}
           style={[
@@ -64,11 +65,11 @@ export const SellerActions = memo(function SellerActions({
               </ButtonText>
             </>
           )}
-        </Pressable>
+        </HapticPressable>
 
         {/* Secondary CTA - Book Viewing (dealers only) */}
         {seller.isDealer && (
-          <Pressable
+          <HapticPressable
             onPress={handleBookViewing}
             style={[
               styles.button,
@@ -83,17 +84,17 @@ export const SellerActions = memo(function SellerActions({
             <ButtonText size="medium" style={{ color: colors.text }}>
               Book
             </ButtonText>
-          </Pressable>
+          </HapticPressable>
         )}
       </View>
 
       {/* Phone Number Link */}
       {seller.phone && (
-        <Pressable onPress={handleShowPhone} hitSlop={8}>
+        <HapticPressable onPress={handleShowPhone} hitSlop={8}>
           <Supporting size="small" style={{ textAlign: 'center' }}>
             Show phone number
           </Supporting>
-        </Pressable>
+        </HapticPressable>
       )}
     </View>
   );

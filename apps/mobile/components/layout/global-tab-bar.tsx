@@ -6,6 +6,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { View, Pressable, StyleSheet, Platform } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { useRouter, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -326,7 +327,7 @@ export function GlobalTabBar() {
                   : colors.iconMuted;
 
                 return (
-                  <Pressable
+                  <HapticPressable
                     key={tab.name}
                     onPress={() => handleTabPress(tab)}
                     style={styles.pillTab}
@@ -337,7 +338,7 @@ export function GlobalTabBar() {
                       fill={isActive ? iconColor : colors.surface}
                       strokeWidth={2}
                     />
-                  </Pressable>
+                  </HapticPressable>
                 );
               })}
             </View>

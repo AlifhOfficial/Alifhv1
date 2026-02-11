@@ -12,6 +12,7 @@ import {
   Platform,
   KeyboardTypeOptions,
 } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import Animated, {
   FadeIn,
   FadeOut,
@@ -124,7 +125,7 @@ export function EditableField({
             />
           </View>
           <View style={styles.actions}>
-            <Pressable
+            <HapticPressable
               onPress={onCancel}
               hitSlop={8}
               style={({ pressed }) => [
@@ -135,8 +136,8 @@ export function EditableField({
               <Supporting size="medium" tone="secondary">
                 Cancel
               </Supporting>
-            </Pressable>
-            <Pressable
+            </HapticPressable>
+            <HapticPressable
               onPress={onSave}
               disabled={saving}
               hitSlop={8}
@@ -148,7 +149,7 @@ export function EditableField({
               <Data size="medium" tone="primary">
                 {saving ? 'Saving...' : 'Save'}
               </Data>
-            </Pressable>
+            </HapticPressable>
           </View>
         </View>
       </Animated.View>
@@ -156,7 +157,7 @@ export function EditableField({
   }
 
   return (
-    <Pressable
+    <HapticPressable
       onPress={handlePress}
       onPressIn={!disabled ? handlePressIn : undefined}
       onPressOut={!disabled ? handlePressOut : undefined}
@@ -193,7 +194,7 @@ export function EditableField({
           </View>
         </View>
       </Animated.View>
-    </Pressable>
+    </HapticPressable>
   );
 }
 

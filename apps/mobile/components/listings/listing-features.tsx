@@ -5,7 +5,8 @@
  */
 
 import React, { memo, useState, useCallback, useMemo } from 'react';
-import { StyleSheet, View, Pressable, LayoutChangeEvent } from 'react-native';
+import { StyleSheet, View, LayoutChangeEvent } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -113,14 +114,14 @@ export const ListingFeatures = memo(function ListingFeatures({
           </View>
         ))}
         {hasMore && (
-          <Pressable 
+          <HapticPressable 
             onPress={onViewAll}
             style={[styles.badge, { backgroundColor: colors.primary + '15' }]}
           >
             <Text variant="chip" tone="primary">
               +{remainingCount} more
             </Text>
-          </Pressable>
+          </HapticPressable>
         )}
       </View>
     </View>

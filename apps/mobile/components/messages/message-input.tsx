@@ -14,6 +14,7 @@ import {
   NativeSyntheticEvent,
   TextInputContentSizeChangeEventData,
 } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { Send } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/context/theme-context';
@@ -193,7 +194,7 @@ export function MessageInput({
         />
       </View>
 
-      <Pressable
+      <HapticPressable
         onPress={handleSend}
         disabled={!canSend}
         style={[
@@ -209,7 +210,7 @@ export function MessageInput({
           color={canSend ? colors.primaryForeground : colors.textTertiary}
           strokeWidth={2}
         />
-      </Pressable>
+      </HapticPressable>
     </View>
   );
 }

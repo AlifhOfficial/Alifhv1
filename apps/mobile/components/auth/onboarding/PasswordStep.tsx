@@ -4,7 +4,8 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, View, TextInput, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
+import { StyleSheet, View, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { ArrowRight, ArrowLeft, Eye, EyeOff, Check, X } from 'lucide-react-native';
@@ -70,9 +71,9 @@ export function PasswordStep({ data, onUpdate, onNext, onBack }: StepProps) {
       <View style={[styles.inner, { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 20 }]}>
         {/* Header */}
         <View style={styles.header}>
-          <Pressable onPress={onBack} hitSlop={20} style={styles.backButton}>
+          <HapticPressable onPress={onBack} hitSlop={20} style={styles.backButton}>
             <ArrowLeft size={24} color={colors.text} />
-          </Pressable>
+          </HapticPressable>
           <StepIndicator currentStep="password" />
           <View style={{ width: 24 }} />
         </View>
@@ -119,7 +120,7 @@ export function PasswordStep({ data, onUpdate, onNext, onBack }: StepProps) {
                 onBlur={() => setIsFocused(false)}
                 onSubmitEditing={handleContinue}
               />
-              <Pressable 
+              <HapticPressable 
                 onPress={() => setShowPassword(!showPassword)} 
                 hitSlop={10}
                 style={styles.eyeButton}
@@ -129,7 +130,7 @@ export function PasswordStep({ data, onUpdate, onNext, onBack }: StepProps) {
                 ) : (
                   <Eye size={20} color={colors.textMuted} />
                 )}
-              </Pressable>
+              </HapticPressable>
             </View>
 
             {/* Requirements */}
@@ -157,7 +158,7 @@ export function PasswordStep({ data, onUpdate, onNext, onBack }: StepProps) {
 
         {/* Continue Button */}
         <View style={styles.footer}>
-          <Pressable
+          <HapticPressable
             onPress={handleContinue}
             disabled={!isValid}
             style={({ pressed }) => [
@@ -175,7 +176,7 @@ export function PasswordStep({ data, onUpdate, onNext, onBack }: StepProps) {
               size={20} 
               color={isValid ? colors.primaryForeground : colors.textMuted} 
             />
-          </Pressable>
+          </HapticPressable>
         </View>
       </View>
     </KeyboardAvoidingView>

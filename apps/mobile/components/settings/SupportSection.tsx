@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Pressable } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { HelpCircle, MessageCircle, ChevronRight } from 'lucide-react-native';
 import Animated, {
   useAnimatedStyle,
@@ -51,7 +52,7 @@ function SupportItem({
   }));
 
   return (
-    <Pressable
+    <HapticPressable
       onPress={onPress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
@@ -72,7 +73,7 @@ function SupportItem({
         </View>
         <ChevronRight size={18} color={colors.textTertiary} strokeWidth={2} />
       </Animated.View>
-    </Pressable>
+    </HapticPressable>
   );
 }
 

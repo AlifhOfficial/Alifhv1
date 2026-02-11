@@ -13,6 +13,7 @@ import {
   Dimensions,
   StatusBar,
 } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { X } from 'lucide-react-native';
@@ -74,7 +75,7 @@ export function ImageGridModal({
         // Pattern A: Large left + 2 stacked right
         rows.push(
           <View key={`row-${rowIndex}`} style={styles.row}>
-            <Pressable
+            <HapticPressable
               onPress={() => handleImagePress(baseIndex)}
               style={[styles.largeImage, { width: largeWidth }]}
             >
@@ -87,13 +88,13 @@ export function ImageGridModal({
               <View style={styles.indexBadge}>
                 <Data size="mini" style={styles.indexText}>{baseIndex + 1}</Data>
               </View>
-            </Pressable>
+            </HapticPressable>
             <View style={[styles.stackedColumn, { width: smallWidth }]}>
               {[1, 2].map((offset) => {
                 const imgIdx = baseIndex + offset;
                 if (imgIdx >= totalImages) return null;
                 return (
-                  <Pressable
+                  <HapticPressable
                     key={imgIdx}
                     onPress={() => handleImagePress(imgIdx)}
                     style={styles.smallImage}
@@ -107,7 +108,7 @@ export function ImageGridModal({
                     <View style={styles.indexBadge}>
                       <Data size="mini" style={styles.indexText}>{imgIdx + 1}</Data>
                     </View>
-                  </Pressable>
+                  </HapticPressable>
                 );
               })}
             </View>
@@ -123,7 +124,7 @@ export function ImageGridModal({
               const imgIdx = baseIndex + offset;
               if (imgIdx >= totalImages) return null;
               return (
-                <Pressable
+                <HapticPressable
                   key={imgIdx}
                   onPress={() => handleImagePress(imgIdx)}
                   style={[styles.equalImage, { width: thirdWidth }]}
@@ -137,7 +138,7 @@ export function ImageGridModal({
                   <View style={styles.indexBadge}>
                     <Data size="mini" style={styles.indexText}>{imgIdx + 1}</Data>
                   </View>
-                </Pressable>
+                </HapticPressable>
               );
             })}
           </View>
@@ -152,7 +153,7 @@ export function ImageGridModal({
                 const imgIdx = baseIndex + offset;
                 if (imgIdx >= totalImages) return null;
                 return (
-                  <Pressable
+                  <HapticPressable
                     key={imgIdx}
                     onPress={() => handleImagePress(imgIdx)}
                     style={styles.smallImage}
@@ -166,11 +167,11 @@ export function ImageGridModal({
                     <View style={styles.indexBadge}>
                       <Data size="mini" style={styles.indexText}>{imgIdx + 1}</Data>
                     </View>
-                  </Pressable>
+                  </HapticPressable>
                 );
               })}
             </View>
-            <Pressable
+            <HapticPressable
               onPress={() => handleImagePress(baseIndex + 2)}
               style={[styles.largeImage, { width: largeWidth }]}
             >
@@ -183,7 +184,7 @@ export function ImageGridModal({
               <View style={styles.indexBadge}>
                 <Data size="mini" style={styles.indexText}>{baseIndex + 3}</Data>
               </View>
-            </Pressable>
+            </HapticPressable>
           </View>
         );
         i += 3;
@@ -195,7 +196,7 @@ export function ImageGridModal({
             {[0, 1].map((offset) => {
               const imgIdx = baseIndex + offset;
               return (
-                <Pressable
+                <HapticPressable
                   key={imgIdx}
                   onPress={() => handleImagePress(imgIdx)}
                   style={[styles.halfImage, { width: halfWidth }]}
@@ -209,7 +210,7 @@ export function ImageGridModal({
                   <View style={styles.indexBadge}>
                     <Data size="mini" style={styles.indexText}>{imgIdx + 1}</Data>
                   </View>
-                </Pressable>
+                </HapticPressable>
               );
             })}
           </View>
@@ -219,7 +220,7 @@ export function ImageGridModal({
         // 1 remaining: full width
         rows.push(
           <View key={`row-${rowIndex}`} style={styles.row}>
-            <Pressable
+            <HapticPressable
               onPress={() => handleImagePress(baseIndex)}
               style={[styles.fullImage, { width: contentWidth }]}
             >
@@ -232,7 +233,7 @@ export function ImageGridModal({
               <View style={styles.indexBadge}>
                 <Data size="mini" style={styles.indexText}>{baseIndex + 1}</Data>
               </View>
-            </Pressable>
+            </HapticPressable>
           </View>
         );
         i += 1;
@@ -266,7 +267,7 @@ export function ImageGridModal({
               {totalImages} images
             </Supporting>
           </View>
-          <Pressable
+          <HapticPressable
             onPress={onClose}
             style={[styles.closeButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -274,7 +275,7 @@ export function ImageGridModal({
             {({ pressed }) => (
               <X size={20} color={colors.text} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
             )}
-          </Pressable>
+          </HapticPressable>
         </View>
 
         {/* Image Grid */}

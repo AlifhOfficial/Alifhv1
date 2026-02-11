@@ -15,6 +15,7 @@ import {
   Keyboard,
   TextInput,
 } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import {
   BottomSheetModal,
   BottomSheetBackdrop,
@@ -68,7 +69,7 @@ interface AmnaSheetProps {
 // CONSTANTS
 // ============================================================================
 
-const SNAP_POINTS = ['94%'];
+const SNAP_POINTS = ['60%', '94%'];
 
 const LOADING_MESSAGES = [
   'Amna is judging your taste...',
@@ -216,6 +217,7 @@ export function AmnaSheet({ visible, onClose, onSearch }: AmnaSheetProps) {
     <BottomSheetModal
       ref={bottomSheetRef}
       snapPoints={SNAP_POINTS}
+      enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
@@ -251,12 +253,12 @@ export function AmnaSheet({ visible, onClose, onSearch }: AmnaSheetProps) {
         {/* Header */}
         <View style={[styles.header, { borderBottomColor: colors.border }]}>
           <View style={styles.headerRow}>
-            <Pressable
+            <HapticPressable
               onPress={() => bottomSheetRef.current?.dismiss()}
               hitSlop={Spacing.md}
             >
               <Body size="medium" tone="secondary">Cancel</Body>
-            </Pressable>
+            </HapticPressable>
             <View style={styles.headerTitle}>
               <Ionicons name="sparkles" size={16} color="#8B5CF6" />
               <Heading size="small">Ask Amna</Heading>
@@ -301,7 +303,7 @@ export function AmnaSheet({ visible, onClose, onSearch }: AmnaSheetProps) {
             </View>
 
             {/* Submit button */}
-            <Pressable
+            <HapticPressable
               onPress={handleSubmit}
               disabled={!query.trim()}
               style={[
@@ -326,7 +328,7 @@ export function AmnaSheet({ visible, onClose, onSearch }: AmnaSheetProps) {
                   </ButtonText>
                 </View>
               )}
-            </Pressable>
+            </HapticPressable>
 
             {/* Error message display */}
             {message && !isLoading && (
@@ -349,7 +351,7 @@ export function AmnaSheet({ visible, onClose, onSearch }: AmnaSheetProps) {
                   'Budget friendly',
                   'Something that turns heads',
                 ].map((suggestion) => (
-                  <Pressable
+                  <HapticPressable
                     key={suggestion}
                     onPress={() => {
                       if (Platform.OS === 'ios') {
@@ -368,7 +370,7 @@ export function AmnaSheet({ visible, onClose, onSearch }: AmnaSheetProps) {
                     <Supporting size="small" style={{ color: colors.text }}>
                       {suggestion}
                     </Supporting>
-                  </Pressable>
+                  </HapticPressable>
                 ))}
               </View>
             </View>

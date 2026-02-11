@@ -4,7 +4,8 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Pressable, Dimensions } from 'react-native';
+import { StyleSheet, View, Dimensions } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { 
   FadeIn, 
@@ -109,7 +110,7 @@ export function AuthSuccessScreen({
         {/* Continue Button - Bottom Right */}
         <Animated.View entering={FadeInDown.delay(400).duration(400)} style={styles.buttonSection}>
           <Animated.View style={buttonAnimatedStyle}>
-            <Pressable
+            <HapticPressable
               onPress={handleContinue}
               disabled={isExiting}
               style={({ pressed }) => [
@@ -119,7 +120,7 @@ export function AuthSuccessScreen({
             >
               <ButtonText style={{ color: colors.primaryForeground }}>Time to Revv</ButtonText>
               <ArrowRightIcon color={colors.primaryForeground} />
-            </Pressable>
+            </HapticPressable>
           </Animated.View>
         </Animated.View>
       </View>

@@ -6,7 +6,8 @@
  */
 
 import React, { memo, useState, useCallback } from 'react';
-import { StyleSheet, View, Pressable, Linking, Platform, Clipboard } from 'react-native';
+import { StyleSheet, View, Linking, Platform, Clipboard } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { 
   MessageCircle, 
   Phone, 
@@ -123,7 +124,7 @@ export const ContactSection = memo(function ContactSection({
       {/* Primary Actions Row */}
       <View style={styles.actionsRow}>
         {/* Chat Button - Primary */}
-        <Pressable
+        <HapticPressable
           onPress={onChatPress}
           disabled={isChatLoading || isBlocked}
           style={({ pressed }) => [
@@ -144,11 +145,11 @@ export const ContactSection = memo(function ContactSection({
               </ButtonText>
             </>
           )}
-        </Pressable>
+        </HapticPressable>
 
         {/* Call Button */}
         {phoneNumber && !isBlocked && (
-          <Pressable
+          <HapticPressable
             onPress={handleCallPress}
             style={({ pressed }) => [
               styles.secondaryButton,
@@ -160,12 +161,12 @@ export const ContactSection = memo(function ContactSection({
           >
             <Phone size={20} color={colors.text} />
             <ButtonText size="medium">Call</ButtonText>
-          </Pressable>
+          </HapticPressable>
         )}
 
         {/* Book Test Drive Button */}
         {showBooking && onBookPress && !isBlocked && (
-          <Pressable
+          <HapticPressable
             onPress={onBookPress}
             style={({ pressed }) => [
               styles.bookButton,
@@ -177,17 +178,17 @@ export const ContactSection = memo(function ContactSection({
           >
             <Calendar size={20} color={colors.primaryForeground} />
             <ButtonText size="medium" style={{ color: colors.primaryForeground }}>Book</ButtonText>
-          </Pressable>
+          </HapticPressable>
         )}
       </View>
 
       {/* Phone Toggle */}
       {phoneNumber && !isBlocked && (
-        <Pressable onPress={toggleShowPhone} hitSlop={8}>
+        <HapticPressable onPress={toggleShowPhone} hitSlop={8}>
           <Supporting size="small" style={{ textAlign: 'center' }}>
             {showPhone ? 'Hide phone number' : 'Show phone number'}
           </Supporting>
-        </Pressable>
+        </HapticPressable>
       )}
 
       {/* Phone Number Display */}
@@ -199,13 +200,13 @@ export const ContactSection = memo(function ContactSection({
             </Label>
           )}
           <View style={styles.phoneRow}>
-            <Pressable onPress={handleCallPress}>
+            <HapticPressable onPress={handleCallPress}>
               <Data size="large" style={{ color: textColor }}>
                 {formatPhoneForDisplay(phoneNumber)}
               </Data>
-            </Pressable>
+            </HapticPressable>
             <View style={styles.phoneActions}>
-              <Pressable 
+              <HapticPressable 
                 onPress={handleWhatsAppPress}
                 style={styles.phoneActionButton}
                 hitSlop={8}
@@ -213,8 +214,8 @@ export const ContactSection = memo(function ContactSection({
                 <View style={styles.whatsappIcon}>
                   <Text style={styles.whatsappText}>W</Text>
                 </View>
-              </Pressable>
-              <Pressable 
+              </HapticPressable>
+              <HapticPressable 
                 onPress={handleCopyPhone}
                 style={styles.phoneActionButton}
                 hitSlop={8}
@@ -224,7 +225,7 @@ export const ContactSection = memo(function ContactSection({
                 ) : (
                   <Copy size={18} color={secondaryTextColor} />
                 )}
-              </Pressable>
+              </HapticPressable>
             </View>
           </View>
         </View>

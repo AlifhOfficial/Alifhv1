@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { StyleSheet, Pressable, Platform } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { Trash2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -32,7 +33,7 @@ export function DangerZone({
 
   return (
     <Animated.View entering={FadeInDown.delay(delay).duration(350)}>
-      <Pressable
+      <HapticPressable
         onPress={handlePress}
         style={({ pressed }) => [
           styles.button,
@@ -44,7 +45,7 @@ export function DangerZone({
       >
         <Trash2 size={18} color={colors.error} strokeWidth={2} />
         <ButtonText size="medium" tone="error">Delete Account</ButtonText>
-      </Pressable>
+      </HapticPressable>
     </Animated.View>
   );
 }

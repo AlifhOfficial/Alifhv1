@@ -4,16 +4,16 @@
  */
 
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
-import { View, StyleSheet, Pressable, TextInput, Platform } from 'react-native';
+import { View, StyleSheet, TextInput, Platform } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
-import { Check } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Label, Body, ButtonText } from '@/components/ui';
+import { Heading, Label, Body, Supporting, ButtonText } from '@/components/ui';
 
 const PRICE_PRESETS = [
   { label: 'Under 50K', min: undefined, max: 50000 },
@@ -54,7 +54,7 @@ export function PriceFilterSheet({
     }
   }, [visible, priceMin, priceMax]);
 
-  const snapPoints = useMemo(() => ['55%'], []);
+  const snapPoints = useMemo(() => ['60%', '94%'], []);
 
   useEffect(() => {
     if (visible) {
@@ -127,6 +127,7 @@ export function PriceFilterSheet({
     <BottomSheetModal
       ref={bottomSheetRef}
       snapPoints={snapPoints}
+      enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
@@ -140,17 +141,17 @@ export function PriceFilterSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="large" style={{ color: colors.text }}>Price</Heading>
-          <Pressable 
+          <Heading size="medium">Price</Heading>
+          <HapticPressable 
             onPress={onClose} 
             hitSlop={Spacing.md}
             style={[
               styles.closeButton,
-              { backgroundColor: colors.surface }
+              { backgroundColor: colors.fillSecondary }
             ]}
           >
-            <Ionicons name="close" size={18} color={colors.icon} />
-          </Pressable>
+            <Ionicons name="close" size={18} color={colors.textSecondary} />
+          </HapticPressable>
         </View>
 
         {/* Presets */}
@@ -161,7 +162,7 @@ export function PriceFilterSheet({
               (preset.max === (localMax ? parseInt(localMax) : undefined));
 
             return (
-              <Pressable
+              <HapticPressable
                 key={preset.label}
                 onPress={() => handlePresetSelect(preset)}
                 style={[
@@ -172,16 +173,13 @@ export function PriceFilterSheet({
                   },
                 ]}
               >
-                <Body
+                <Supporting
                   size="small"
-                  style={[
-                    styles.presetLabel,
-                    { color: isActive ? colors.background : colors.textSecondary },
-                  ]}
+                  style={{ color: isActive ? colors.background : colors.textSecondary }}
                 >
                   {preset.label}
-                </Body>
-              </Pressable>
+                </Supporting>
+              </HapticPressable>
             );
           })}
         </View>
@@ -234,19 +232,19 @@ export function PriceFilterSheet({
         {/* Actions */}
         <View style={styles.actions}>
           {hasValue && (
-            <Pressable
+            <HapticPressable
               onPress={handleClear}
               style={[styles.clearButton, { borderColor: colors.border }]}
             >
               <ButtonText size="medium" tone="secondary">Clear</ButtonText>
-            </Pressable>
+            </HapticPressable>
           )}
-          <Pressable
+          <HapticPressable
             onPress={handleApply}
             style={[styles.applyButton, { backgroundColor: colors.text }]}
           >
             <ButtonText size="medium" style={{ color: colors.background }}>Apply</ButtonText>
-          </Pressable>
+          </HapticPressable>
         </View>
 
         <View style={{ height: insets.bottom + Spacing.xl }} />
@@ -296,9 +294,6 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     borderRadius: Radius.full,
     borderWidth: 1,
-  },
-  presetLabel: {
-    fontFamily: 'Inter_500Medium',
   },
   rangeRow: {
     flexDirection: 'row',

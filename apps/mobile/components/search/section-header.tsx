@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 
 import { Data } from '@/components/ui';
 
@@ -14,9 +15,9 @@ export function SectionHeader({ title, onClear, showClear = false }: SectionHead
     <View style={styles.container}>
       <Data size="mini" tone="secondary">{title}</Data>
       {showClear && onClear && (
-        <Pressable onPress={onClear} hitSlop={8}>
+        <HapticPressable onPress={onClear} hitSlop={8}>
           <Data size="mini" tone="primary">Clear</Data>
-        </Pressable>
+        </HapticPressable>
       )}
     </View>
   );

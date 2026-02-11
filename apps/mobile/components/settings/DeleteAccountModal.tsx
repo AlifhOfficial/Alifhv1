@@ -4,7 +4,8 @@
  */
 
 import React, { useState } from 'react';
-import { StyleSheet, View, TextInput, Pressable, Modal, Platform } from 'react-native';
+import { StyleSheet, View, TextInput, Modal, Platform } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { BlurView, BlurTint } from 'expo-blur';
 import { Loader2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
@@ -64,7 +65,7 @@ export function DeleteAccountModal({
           Platform.OS === 'android' && { backgroundColor: colors.overlay }
         ]}
       >
-        <Pressable style={styles.overlayTouch} onPress={handleClose} />
+        <HapticPressable style={styles.overlayTouch} onPress={handleClose} />
         
         <View style={[
           styles.content, 
@@ -104,7 +105,7 @@ export function DeleteAccountModal({
           </View>
 
           <View style={styles.buttons}>
-            <Pressable
+            <HapticPressable
               onPress={handleClose}
               style={({ pressed }) => [
                 styles.button,
@@ -115,8 +116,8 @@ export function DeleteAccountModal({
               ]}
             >
               <ButtonText size="medium">Cancel</ButtonText>
-            </Pressable>
-            <Pressable
+            </HapticPressable>
+            <HapticPressable
               onPress={handleConfirm}
               disabled={deleteText !== 'DELETE' || isDeleting}
               style={({ pressed }) => [
@@ -134,7 +135,7 @@ export function DeleteAccountModal({
                   Delete
                 </ButtonText>
               )}
-            </Pressable>
+            </HapticPressable>
           </View>
         </View>
       </Overlay>

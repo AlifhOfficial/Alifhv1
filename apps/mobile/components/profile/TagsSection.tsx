@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Pressable, Platform, Alert } from 'react-native';
+import { StyleSheet, View, Platform, Alert } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 
 import { Supporting, ButtonText } from '@/components/ui';
@@ -23,7 +24,7 @@ interface TagItemProps {
 
 function TagItem({ tag, isSelected, colors, onPress }: TagItemProps) {
   return (
-    <Pressable
+    <HapticPressable
       onPress={onPress}
       style={[
         styles.tag,
@@ -39,7 +40,7 @@ function TagItem({ tag, isSelected, colors, onPress }: TagItemProps) {
       >
         {tag}
       </ButtonText>
-    </Pressable>
+    </HapticPressable>
   );
 }
 

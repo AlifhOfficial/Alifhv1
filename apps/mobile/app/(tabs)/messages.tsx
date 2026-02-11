@@ -17,6 +17,7 @@ import {
   Pressable,
   Platform,
 } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MessageCircle, LogIn } from 'lucide-react-native';
@@ -188,7 +189,7 @@ export default function MessagesScreen() {
           <Body size="medium" tone="secondary" style={{ textAlign: 'center' }}>
             Connect with buyers and sellers on Revvup
           </Body>
-          <Pressable
+          <HapticPressable
             onPress={() => {
               if (Platform.OS === 'ios') {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -208,7 +209,7 @@ export default function MessagesScreen() {
             <ButtonText size="medium" style={{ color: colors.primaryForeground }}>
               Sign In
             </ButtonText>
-          </Pressable>
+          </HapticPressable>
         </View>
       </View>
     );

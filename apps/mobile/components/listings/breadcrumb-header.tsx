@@ -4,7 +4,8 @@
  */
 
 import React, { memo } from 'react';
-import { StyleSheet, View, Pressable } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { Share2 } from 'lucide-react-native';
 
 import { Colors, Spacing } from '@/constants/theme';
@@ -39,7 +40,7 @@ export const BreadcrumbHeader = memo(function BreadcrumbHeader({
       </Heading>
 
       {/* Right: Share Button */}
-      <Pressable
+      <HapticPressable
         onPress={onShare}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         style={[
@@ -58,7 +59,7 @@ export const BreadcrumbHeader = memo(function BreadcrumbHeader({
             style={{ opacity: pressed ? 0.7 : 1 }}
           />
         )}
-      </Pressable>
+      </HapticPressable>
     </View>
   );
 });

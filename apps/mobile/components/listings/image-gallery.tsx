@@ -14,6 +14,7 @@ import {
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
 import { Grid3x3 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
@@ -115,7 +116,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
             index,
           })}
           renderItem={({ item }) => (
-            <Pressable onPress={onMainImagePress} style={styles.mainImageContainer}>
+            <HapticPressable onPress={onMainImagePress} style={styles.mainImageContainer}>
               <Image
                 source={{ uri: item }}
                 style={styles.mainImage}
@@ -123,7 +124,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
                 transition={200}
                 placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
               />
-            </Pressable>
+            </HapticPressable>
           )}
         />
         
@@ -145,7 +146,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
           contentContainerStyle={styles.thumbnailList}
           keyExtractor={(_, idx) => `thumb-${idx}`}
           renderItem={({ item, index }) => (
-            <Pressable
+            <HapticPressable
               onPress={() => onThumbnailPress(index)}
               style={[
                 styles.thumbnail,
@@ -161,12 +162,12 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
                 contentFit="cover"
                 transition={100}
               />
-            </Pressable>
+            </HapticPressable>
           )}
         />
 
         {/* View All Button */}
-        <Pressable
+        <HapticPressable
           onPress={onViewAllPress}
           style={[styles.viewAllButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
         >
@@ -176,7 +177,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
               <ButtonText size="small">All</ButtonText>
             </View>
           )}
-        </Pressable>
+        </HapticPressable>
       </View>
 
       {/* Lightbox Modal */}

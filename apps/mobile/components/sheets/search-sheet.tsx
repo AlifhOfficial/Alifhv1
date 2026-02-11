@@ -13,11 +13,12 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { 
   View, 
   StyleSheet, 
-  Pressable, 
+  
   Platform, 
   ActivityIndicator,
   Keyboard,
 } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import {
   BottomSheetModal,
   BottomSheetBackdrop,
@@ -97,7 +98,7 @@ const SUGGESTION_CATEGORIES: Record<string, { dot: string; label: string }> = {
 // CONSTANTS
 // ============================================================================
 
-const SNAP_POINTS = ['94%'];
+const SNAP_POINTS = ['60%', '94%'];
 const SEARCH_DEBOUNCE_MS = 300;
 const MAX_VISIBLE_CHIPS = 12;
 
@@ -549,7 +550,7 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
     onPress: () => void,
     key: string,
   ) => (
-    <Pressable
+    <HapticPressable
       key={key}
       style={[
         styles.chip,
@@ -574,7 +575,7 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
       {isSelected && (
         <Ionicons name="close" size={12} color={colors.background} />
       )}
-    </Pressable>
+    </HapticPressable>
   );
 
   // ============================================================================
@@ -585,31 +586,35 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
     <BottomSheetModal
       ref={bottomSheetRef}
       snapPoints={snapPoints}
+      enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
+      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
       handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
       keyboardBehavior="extend"
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
+      detached
+      bottomInset={insets.bottom + 20}
+      style={styles.sheetContainer}
     >
       <BottomSheetView style={styles.container}>
         {/* Fixed Header with Search + Apply */}
         <View style={[styles.header, { borderBottomColor: colors.border }]}>
           {/* Top Row: Title + Apply Button */}
           <View style={styles.headerTopRow}>
-            <Pressable
+            <HapticPressable
               onPress={() => bottomSheetRef.current?.dismiss()}
               hitSlop={Spacing.md}
               style={styles.cancelButton}
             >
               <Body size="medium" tone="secondary">Cancel</Body>
-            </Pressable>
+            </HapticPressable>
             
             <Heading size="small">Search</Heading>
             
-            <Pressable
+            <HapticPressable
               style={[
                 styles.applyButton,
                 { backgroundColor: canApply ? colors.primary : colors.fillSecondary },
@@ -623,7 +628,7 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
               >
                 Apply
               </ButtonText>
-            </Pressable>
+            </HapticPressable>
           </View>
 
           {/* Search Input */}
@@ -644,9 +649,9 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
               blurOnSubmit
             />
             {query.length > 0 && (
-              <Pressable onPress={() => setQuery('')} hitSlop={12}>
+              <HapticPressable onPress={() => setQuery('')} hitSlop={12}>
                 <Ionicons name="close-circle" size={18} color={colors.textMuted} />
-              </Pressable>
+              </HapticPressable>
             )}
           </View>
 
@@ -656,11 +661,11 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
               <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
                 {selectionSummary}
               </Body>
-              <Pressable onPress={clearAllSelections} hitSlop={8}>
+              <HapticPressable onPress={clearAllSelections} hitSlop={8}>
                 <Supporting size="small" style={{ color: colors.error }}>
                   Clear
                 </Supporting>
-              </Pressable>
+              </HapticPressable>
             </View>
           )}
         </View>
@@ -688,7 +693,7 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
                   {suggestions.slice(0, 8).map((suggestion, index) => {
                     const category = SUGGESTION_CATEGORIES[suggestion.type];
                     return (
-                    <Pressable
+                    <HapticPressable
                       key={`${suggestion.type}-${suggestion.text}-${index}`}
                       onPress={() => handleSuggestionSelect(suggestion)}
                       style={[
@@ -712,7 +717,7 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
                         {category?.label ?? 'Search'}
                         {suggestion.count !== undefined && suggestion.count > 0 && ` · ${suggestion.count.toLocaleString()}`}
                       </Supporting>
-                    </Pressable>
+                    </HapticPressable>
                     );
                   })}
                 </View>
@@ -863,6 +868,9 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
 // ============================================================================
 
 const styles = StyleSheet.create({
+  sheetContainer: {
+    marginHorizontal: 16,
+  },
   container: {
     flex: 1,
   },

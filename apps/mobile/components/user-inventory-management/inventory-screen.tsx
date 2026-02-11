@@ -26,6 +26,7 @@ import {
   ActivityIndicator,
   Platform,
 } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -98,12 +99,12 @@ interface StatusTab {
 }
 
 const STATUS_TABS: StatusTab[] = [
-  { key: 'all',       label: 'All',       count: (s) => s?.total ?? 0 },
-  { key: 'active',    label: 'Active',    count: (s) => s?.active ?? 0 },
-  { key: 'draft',     label: 'Drafts',    count: (s) => s?.draft ?? 0 },
+  { key: 'all',      label: 'All',      count: (s) => s?.total ?? 0 },
+  { key: 'active',   label: 'Active',   count: (s) => s?.active ?? 0 },
+  { key: 'draft',    label: 'Drafts',   count: (s) => s?.draft ?? 0 },
   { key: 'in_review', label: 'In Review', count: (s) => s?.pending ?? 0 },
-  { key: 'sold',      label: 'Sold',      count: (s) => s?.sold ?? 0 },
-  { key: 'archived',  label: 'Archived',  count: (s) => s?.archived ?? 0 },
+  { key: 'sold',     label: 'Sold',     count: (s) => s?.sold ?? 0 },
+  { key: 'archived', label: 'Archived', count: (s) => s?.archived ?? 0 },
 ];
 
 const PAGE_SIZE = 20;
@@ -248,7 +249,7 @@ export function InventoryScreen() {
       const displayImage = item.thumbnail || item.images?.[0];
 
       return (
-        <Pressable
+        <HapticPressable
           onPress={() => router.push(`/listing/${item.id}`)}
           style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
         >
@@ -281,13 +282,13 @@ export function InventoryScreen() {
               <Heading size="card" style={{ flex: 1 }} numberOfLines={1}>
                 {title}
               </Heading>
-              <Pressable
+              <HapticPressable
                 onPress={() => openActions(item)}
                 hitSlop={12}
                 style={{ padding: 4 }}
               >
                 <MoreVertical size={18} color={colors.textSecondary} strokeWidth={2} />
-              </Pressable>
+              </HapticPressable>
             </View>
 
             {/* Row 2: Price */}
@@ -325,7 +326,7 @@ export function InventoryScreen() {
               </View>
             )}
           </View>
-        </Pressable>
+        </HapticPressable>
       );
     },
     [colors, router, openActions],
@@ -354,7 +355,7 @@ export function InventoryScreen() {
             : `Listings matching "${tabLabel}" will appear here`}
         </Body>
         {isAll && (
-          <Pressable
+          <HapticPressable
             onPress={() => router.push('/create-listing')}
             style={[styles.emptyBtn, { backgroundColor: colors.primary }]}
           >
@@ -362,7 +363,7 @@ export function InventoryScreen() {
             <ButtonText size="medium" style={{ color: '#FFFFFF' }}>
               Create Listing
             </ButtonText>
-          </Pressable>
+          </HapticPressable>
         )}
       </View>
     );
@@ -400,7 +401,7 @@ export function InventoryScreen() {
           const count = tab.count(stats);
 
           return (
-            <Pressable
+            <HapticPressable
               key={tab.key}
               onPress={() => handleTabChange(tab.key)}
               style={[
@@ -440,7 +441,7 @@ export function InventoryScreen() {
                   )}
                 </View>
               )}
-            </Pressable>
+            </HapticPressable>
           );
         })}
       </ScrollView>
@@ -462,9 +463,9 @@ export function InventoryScreen() {
           >
             {error}
           </Body>
-          <Pressable onPress={handleRefresh} style={{ marginTop: Spacing.lg }}>
+          <HapticPressable onPress={handleRefresh} style={{ marginTop: Spacing.lg }}>
             <Data size="small" tone="primary">Tap to retry</Data>
-          </Pressable>
+          </HapticPressable>
         </View>
       ) : (
         <FlatList
@@ -551,7 +552,7 @@ export function InventoryScreen() {
       )}
 
       {/* ─────────────────────── FAB: Create Listing ─────────────────────── */}
-      <Pressable
+      <HapticPressable
         onPress={() => router.push('/create-listing')}
         style={[
           styles.fab,
@@ -565,7 +566,7 @@ export function InventoryScreen() {
         {({ pressed }) => (
           <Plus size={22} color={colors.text} strokeWidth={2} style={{ opacity: pressed ? 0.6 : 1 }} />
         )}
-      </Pressable>
+      </HapticPressable>
     </View>
   );
 }

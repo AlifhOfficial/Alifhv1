@@ -3,7 +3,8 @@
  */
 
 import React from 'react';
-import { StyleSheet, Pressable } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { useRouter } from 'expo-router';
 import { User } from 'lucide-react-native';
 import { useTheme } from '@/context/theme-context';
@@ -28,7 +29,7 @@ export function ProfileMenu() {
   // Show user avatar if authenticated
   if (isAuthenticated && user) {
     return (
-      <Pressable
+      <HapticPressable
         style={styles.trigger}
         onPress={handlePress}
       >
@@ -38,12 +39,12 @@ export function ProfileMenu() {
           size="md"
           useGeneratedAvatar={user.useGeneratedAvatar ?? true}
         />
-      </Pressable>
+      </HapticPressable>
     );
   }
 
   return (
-    <Pressable
+    <HapticPressable
       style={[
         styles.trigger,
         styles.unauthTrigger,
@@ -62,7 +63,7 @@ export function ProfileMenu() {
           style={{ opacity: pressed ? 0.7 : 1 }}
         />
       )}
-    </Pressable>
+    </HapticPressable>
   );
 }
 

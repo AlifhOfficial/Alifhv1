@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { StyleSheet, Pressable, Platform, Alert } from 'react-native';
+import { StyleSheet, Platform, Alert } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { LogOut } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
@@ -41,7 +42,7 @@ export function SignOutButton({ colors }: SignOutButtonProps) {
   };
 
   return (
-    <Pressable
+    <HapticPressable
       onPress={handleSignOut}
       style={({ pressed }) => [
         styles.button,
@@ -53,7 +54,7 @@ export function SignOutButton({ colors }: SignOutButtonProps) {
     >
       <LogOut size={18} color={colors.error} strokeWidth={2} />
       <ButtonText size="medium" tone="error">Sign Out</ButtonText>
-    </Pressable>
+    </HapticPressable>
   );
 }
 

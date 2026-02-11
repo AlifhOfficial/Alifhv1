@@ -9,11 +9,12 @@ import {
   View, 
   Text as RNText,
   TextInput, 
-  Pressable, 
+  
   KeyboardAvoidingView,
   Platform,
   ScrollView,
 } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { ButtonLoader } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
@@ -79,12 +80,12 @@ export function SignUpScreen({
         >
           {/* Header */}
           <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
-            <Pressable
+            <HapticPressable
               onPress={onBack}
               style={({ pressed }) => [styles.backButton, { opacity: pressed ? 0.5 : 1 }]}
             >
               <ChevronLeftIcon color={colors.text} />
-            </Pressable>
+            </HapticPressable>
           </Animated.View>
 
           {/* Title */}
@@ -164,14 +165,14 @@ export function SignUpScreen({
                   underlineColorAndroid="transparent"
                   editable={!isLoading}
                 />
-                <Pressable
+                <HapticPressable
                   onPress={() => setShowPassword(!showPassword)}
                   style={styles.showButton}
                 >
                   <Data size="mini" tone="secondary">
                     {showPassword ? 'Hide' : 'Show'}
                   </Data>
-                </Pressable>
+                </HapticPressable>
               </View>
 
               {/* Password Requirements */}
@@ -185,7 +186,7 @@ export function SignUpScreen({
             </View>
 
             {/* Sign Up Button */}
-            <Pressable
+            <HapticPressable
               onPress={handleSubmit}
               disabled={!isValid || isLoading}
               style={({ pressed }) => [
@@ -205,7 +206,7 @@ export function SignUpScreen({
                   Continue
                 </ButtonText>
               )}
-            </Pressable>
+            </HapticPressable>
           </Animated.View>
 
           {/* Divider */}
@@ -223,7 +224,7 @@ export function SignUpScreen({
               <View style={styles.socialRow}>
                 {/* Passkey */}
                 {onPasskeySignUp && (
-                  <Pressable
+                  <HapticPressable
                     onPress={onPasskeySignUp}
                     disabled={isLoading}
                     style={({ pressed }) => [
@@ -232,12 +233,12 @@ export function SignUpScreen({
                     ]}
                   >
                     <PasskeyIcon color={colors.text} />
-                  </Pressable>
+                  </HapticPressable>
                 )}
 
                 {/* Apple */}
                 {onAppleSignUp && Platform.OS === 'ios' && (
-                  <Pressable
+                  <HapticPressable
                     onPress={onAppleSignUp}
                     disabled={isLoading}
                     style={({ pressed }) => [
@@ -250,12 +251,12 @@ export function SignUpScreen({
                     ]}
                   >
                     <AppleIcon color={isDark ? Colors.dark.background : Colors.light.background} />
-                  </Pressable>
+                  </HapticPressable>
                 )}
 
                 {/* Google */}
                 {onGoogleSignUp && (
-                  <Pressable
+                  <HapticPressable
                     onPress={onGoogleSignUp}
                     disabled={isLoading}
                     style={({ pressed }) => [
@@ -264,7 +265,7 @@ export function SignUpScreen({
                     ]}
                   >
                     <GoogleIcon />
-                  </Pressable>
+                  </HapticPressable>
                 )}
               </View>
             </Animated.View>
@@ -285,9 +286,9 @@ export function SignUpScreen({
             <Body size="small" tone="secondary">
               Already have an account?{' '}
             </Body>
-            <Pressable onPress={onSwitchToSignIn}>
+            <HapticPressable onPress={onSwitchToSignIn}>
               <Data tone="primary">Sign in</Data>
-            </Pressable>
+            </HapticPressable>
           </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>

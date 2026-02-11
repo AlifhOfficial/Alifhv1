@@ -9,10 +9,11 @@ import {
   View, 
   Text as RNText,
   TextInput, 
-  Pressable, 
+  
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { ButtonLoader } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
@@ -58,12 +59,12 @@ export function ForgotPasswordScreen({
         <View style={[styles.content, { paddingTop: insets.top, paddingBottom: insets.bottom + Spacing['2xl'] }]}>
           {/* Header */}
           <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
-            <Pressable
+            <HapticPressable
               onPress={onBack}
               style={({ pressed }) => [styles.backButton, { opacity: pressed ? 0.5 : 1 }]}
             >
               <ChevronLeftIcon color={colors.text} />
-            </Pressable>
+            </HapticPressable>
           </Animated.View>
 
           {/* Success Content */}
@@ -85,7 +86,7 @@ export function ForgotPasswordScreen({
 
           {/* Back Button */}
           <Animated.View entering={FadeInDown.delay(300).duration(400)} style={styles.buttonSection}>
-            <Pressable
+            <HapticPressable
               onPress={onBack}
               style={({ pressed }) => [
                 styles.submitButton,
@@ -93,7 +94,7 @@ export function ForgotPasswordScreen({
               ]}
             >
               <ButtonText style={{ color: colors.primaryForeground }}>Back to sign in</ButtonText>
-            </Pressable>
+            </HapticPressable>
           </Animated.View>
         </View>
       </View>
@@ -109,12 +110,12 @@ export function ForgotPasswordScreen({
         <View style={[styles.content, { paddingTop: insets.top, paddingBottom: insets.bottom + Spacing['2xl'] }]}>
           {/* Header */}
           <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
-            <Pressable
+            <HapticPressable
               onPress={onBack}
               style={({ pressed }) => [styles.backButton, { opacity: pressed ? 0.5 : 1 }]}
             >
               <ChevronLeftIcon color={colors.text} />
-            </Pressable>
+            </HapticPressable>
           </Animated.View>
 
           {/* Title */}
@@ -159,7 +160,7 @@ export function ForgotPasswordScreen({
             </View>
 
             {/* Submit Button */}
-            <Pressable
+            <HapticPressable
               onPress={handleSubmit}
               disabled={!isValid || isLoading}
               style={({ pressed }) => [
@@ -179,7 +180,7 @@ export function ForgotPasswordScreen({
                   Send reset link
                 </ButtonText>
               )}
-            </Pressable>
+            </HapticPressable>
           </Animated.View>
 
           {/* Footer */}
@@ -187,9 +188,9 @@ export function ForgotPasswordScreen({
             <Body size="small" tone="secondary">
               Remember your password?{' '}
             </Body>
-            <Pressable onPress={onBack}>
+            <HapticPressable onPress={onBack}>
               <Data tone="primary">Sign in</Data>
-            </Pressable>
+            </HapticPressable>
           </Animated.View>
         </View>
       </KeyboardAvoidingView>

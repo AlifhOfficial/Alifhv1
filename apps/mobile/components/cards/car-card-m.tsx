@@ -13,6 +13,7 @@ import {
   Pressable,
   Share,
 } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
 import { Heart, Share2, CheckCircle2 } from 'lucide-react-native';
 
@@ -215,7 +216,7 @@ export const CarCardM = memo(function CarCardM({
   }, [id, carTitle, onSharePress]);
 
   return (
-    <Pressable
+    <HapticPressable
       onPress={handlePress}
       style={[
         styles.container,
@@ -344,7 +345,7 @@ export const CarCardM = memo(function CarCardM({
           {/* Action Buttons */}
           <View style={styles.actions}>
             {/* Favorite */}
-            <Pressable
+            <HapticPressable
               onPress={handleFavoritePress}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               style={styles.actionButton}
@@ -355,10 +356,10 @@ export const CarCardM = memo(function CarCardM({
                 fill={isFavorite ? colors.favorite : 'none'}
                 strokeWidth={isFavorite ? 2.25 : 1.75}
               />
-            </Pressable>
+            </HapticPressable>
 
             {/* Share */}
-            <Pressable
+            <HapticPressable
               onPress={handleSharePress}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               style={styles.actionButton}
@@ -368,11 +369,11 @@ export const CarCardM = memo(function CarCardM({
                 color={actionIconColor}
                 strokeWidth={1.75}
               />
-            </Pressable>
+            </HapticPressable>
           </View>
         </View>
       </View>
-    </Pressable>
+    </HapticPressable>
   );
 });
 
@@ -547,7 +548,7 @@ const styles = StyleSheet.create({
   },
   blkBadge: {
     paddingHorizontal: Spacing.sm - 2, // 6
-    paddingVertical: Spacing.xs - 1,   // 3
+    paddingVertical: Spacing.xs - 1,  // 3
     borderRadius: Radius.none,
   },
 

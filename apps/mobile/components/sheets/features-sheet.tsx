@@ -4,7 +4,8 @@
  */
 
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
@@ -35,7 +36,7 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
 
   const [copied, setCopied] = useState(false);
 
-  const snapPoints = useMemo(() => ['70%', '90%'], []);
+  const snapPoints = useMemo(() => ['60%', '94%'], []);
 
   const handleCopy = useCallback(async () => {
     const text = features.map(f => formatEnumValue(f)).join(', ');
@@ -76,6 +77,7 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
     <BottomSheetModal
       ref={bottomSheetRef}
       snapPoints={snapPoints}
+      enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
@@ -88,7 +90,7 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
       <View style={styles.content}>
         <View style={styles.header}>
           <Heading size="medium">All Features</Heading>
-          <Pressable
+          <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
             style={[
@@ -97,7 +99,7 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
             ]}
           >
             <Ionicons name="close" size={18} color={colors.textSecondary} />
-          </Pressable>
+          </HapticPressable>
         </View>
 
         <BottomSheetScrollView
@@ -123,7 +125,7 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
         </BottomSheetScrollView>
 
         {/* Copy Button */}
-        <Pressable
+        <HapticPressable
           onPress={handleCopy}
           style={[
             styles.copyButton,
@@ -140,7 +142,7 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
           <ButtonText size="medium" style={{ color: copied ? colors.textSecondary : colors.surface }}>
             {copied ? 'Copied' : 'Copy Features'}
           </ButtonText>
-        </Pressable>
+        </HapticPressable>
 
         <View style={{ height: insets.bottom + Spacing.md }} />
       </View>

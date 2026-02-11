@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Pressable, Platform } from 'react-native';
+import { StyleSheet, View, Platform } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { User, LogIn } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
@@ -62,7 +63,7 @@ export function NotAuthenticatedView({
 
         {/* Sign in button */}
         <Animated.View entering={FadeInUp.delay(300).duration(400)}>
-          <Pressable
+          <HapticPressable
             onPress={handleSignIn}
             style={({ pressed }) => [
               styles.signInButton,
@@ -77,7 +78,7 @@ export function NotAuthenticatedView({
             <ButtonText size="medium" style={{ color: colors.primaryForeground }}>
               Sign In
             </ButtonText>
-          </Pressable>
+          </HapticPressable>
         </Animated.View>
       </Animated.View>
     </View>

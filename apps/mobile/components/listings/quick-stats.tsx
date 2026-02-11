@@ -3,7 +3,8 @@
  */
 
 import React, { memo, useCallback, useState } from 'react';
-import { StyleSheet, View, Pressable, Platform, Clipboard } from 'react-native';
+import { StyleSheet, View, Platform, Clipboard } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 import { MapPin, Copy, Check } from 'lucide-react-native';
 
@@ -78,7 +79,7 @@ export const QuickStats = memo(function QuickStats({
 
       {/* VIN - Copyable */}
       {vin && (
-        <Pressable onPress={handleCopyVin} style={styles.vinRow}>
+        <HapticPressable onPress={handleCopyVin} style={styles.vinRow}>
           {({ pressed }) => (
             <>
               <Data size="mini" tone="muted">VIN</Data>
@@ -92,7 +93,7 @@ export const QuickStats = memo(function QuickStats({
               )}
             </>
           )}
-        </Pressable>
+        </HapticPressable>
       )}
     </View>
   );

@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { View, StyleSheet, Pressable, Platform } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Bell, Sun, Moon } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
@@ -39,7 +40,7 @@ export function HomeHeader({ onNotificationPress }: HomeHeaderProps) {
 
       {/* Right: Theme Toggle + Notifications + Profile Menu */}
       <View style={styles.actions}>
-        <Pressable
+        <HapticPressable
           style={[
             styles.iconButton,
             { 
@@ -58,8 +59,8 @@ export function HomeHeader({ onNotificationPress }: HomeHeaderProps) {
               style={{ opacity: pressed ? 0.7 : 1 }}
             />
           )}
-        </Pressable>
-        <Pressable
+        </HapticPressable>
+        <HapticPressable
           style={[
             styles.iconButton,
             { 
@@ -78,7 +79,7 @@ export function HomeHeader({ onNotificationPress }: HomeHeaderProps) {
               style={{ opacity: pressed ? 0.7 : 1 }}
             />
           )}
-        </Pressable>
+        </HapticPressable>
         <ProfileMenu />
       </View>
     </View>

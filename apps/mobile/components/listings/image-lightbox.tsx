@@ -15,6 +15,7 @@ import {
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { X } from 'lucide-react-native';
@@ -126,7 +127,7 @@ export function ImageLightbox({
             </Data>
           </View>
 
-          <Pressable
+          <HapticPressable
             onPress={onClose}
             style={styles.closeButton}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -134,7 +135,7 @@ export function ImageLightbox({
             {({ pressed }) => (
               <X size={22} color="#fff" strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
             )}
-          </Pressable>
+          </HapticPressable>
         </View>
 
         {/* Main Image */}
@@ -179,7 +180,7 @@ export function ImageLightbox({
               index,
             })}
             renderItem={({ item, index }) => (
-              <Pressable
+              <HapticPressable
                 onPress={() => goToIndex(index)}
                 style={[
                   styles.thumbnail,
@@ -195,7 +196,7 @@ export function ImageLightbox({
                   contentFit="cover"
                   transition={100}
                 />
-              </Pressable>
+              </HapticPressable>
             )}
           />
         </View>

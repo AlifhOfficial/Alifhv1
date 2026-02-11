@@ -4,7 +4,8 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius } from '@/constants/theme';
@@ -58,7 +59,7 @@ export function ConversationGroup({
   return (
     <View>
       {/* Header Row: [Avatar] [Name] [Badge?] [Chevron] */}
-      <Pressable
+      <HapticPressable
         onPress={toggleExpanded}
         style={styles.header}
         android_ripple={{ color: colors.surfacePressed }}
@@ -80,7 +81,7 @@ export function ConversationGroup({
             <ChevronIcon size={18} color={colors.textTertiary} strokeWidth={2} />
           </View>
         )}
-      </Pressable>
+      </HapticPressable>
 
       {/* Dropdown: Nested conversations */}
       {isExpanded && (
@@ -89,7 +90,7 @@ export function ConversationGroup({
             const hasUnread = c.unreadCount > 0;
             const isActive = c.id === activeConversationId;
             return (
-              <Pressable
+              <HapticPressable
                 key={c.id}
                 onPress={() => onSelect(c)}
                 style={[
@@ -125,7 +126,7 @@ export function ConversationGroup({
                     <View style={[styles.dot, { backgroundColor: colors.error }]} />
                   )}
                 </View>
-              </Pressable>
+              </HapticPressable>
             );
           })}
         </View>

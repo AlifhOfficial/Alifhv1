@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { StyleSheet, Pressable, Platform } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import Animated from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
@@ -26,7 +27,7 @@ export function Toggle({ enabled, onToggle, disabled, colors }: ToggleProps) {
   };
 
   return (
-    <Pressable
+    <HapticPressable
       onPress={handleToggle}
       disabled={disabled}
       style={[
@@ -38,7 +39,7 @@ export function Toggle({ enabled, onToggle, disabled, colors }: ToggleProps) {
       <Animated.View
         style={[styles.knob, { backgroundColor: colors.surface }, { transform: [{ translateX: enabled ? 20 : 2 }] }]}
       />
-    </Pressable>
+    </HapticPressable>
   );
 }
 

@@ -14,7 +14,8 @@
  */
 
 import React, { memo, useCallback, useState } from 'react';
-import { StyleSheet, View, Pressable } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { ChevronRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
@@ -167,7 +168,7 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
 
         {/* 7. Seller Section — merged profile + contact action */}
         {sellerData && (
-          <Pressable 
+          <HapticPressable 
             onPress={handleTalkToSeller}
           >
             <SellerCard 
@@ -181,7 +182,7 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
                 </View>
               }
             />
-          </Pressable>
+          </HapticPressable>
         )}
       </View>
 

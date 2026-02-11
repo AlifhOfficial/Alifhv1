@@ -6,7 +6,8 @@
  */
 
 import React, { memo } from 'react';
-import { View, Pressable, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet, Dimensions } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
 import { ChevronRight } from 'lucide-react-native';
 
@@ -35,7 +36,7 @@ export const SellerListings = memo(function SellerListings({
       {/* Two-column grid */}
       <View style={localStyles.grid}>
         {listings.slice(0, 4).map((item) => (
-          <Pressable
+          <HapticPressable
             key={item.id}
             onPress={() => onViewListing(item.id)}
             style={localStyles.card}
@@ -54,13 +55,13 @@ export const SellerListings = memo(function SellerListings({
                 {formatMileage(item.mileage)} · {formatPrice(item.price)}
               </Supporting>
             </View>
-          </Pressable>
+          </HapticPressable>
         ))}
       </View>
       
       {/* View All button */}
       {totalCount > 4 && (
-        <Pressable
+        <HapticPressable
           onPress={onViewAll}
           style={localStyles.viewAllRow}
         >
@@ -68,7 +69,7 @@ export const SellerListings = memo(function SellerListings({
             View All {totalCount} Listings
           </Data>
           <ChevronRight size={16} color={colors.primary} />
-        </Pressable>
+        </HapticPressable>
       )}
     </View>
   );

@@ -7,7 +7,8 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { View, StyleSheet, Pressable, Image } from 'react-native';
+import { View, StyleSheet, Image } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -129,7 +130,7 @@ export function ListingStatsSheet({
         {/* Header */}
         <View style={styles.header}>
           <Heading size="medium">Listing Stats</Heading>
-          <Pressable
+          <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
             style={[
@@ -138,7 +139,7 @@ export function ListingStatsSheet({
             ]}
           >
             <Ionicons name="close" size={18} color={colors.textSecondary} />
-          </Pressable>
+          </HapticPressable>
         </View>
 
         {/* Listing preview */}

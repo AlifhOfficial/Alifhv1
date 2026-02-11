@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Settings2 } from 'lucide-react-native';
 
@@ -27,7 +28,7 @@ export function BrowseHeader({ onSettingsPress }: BrowseHeaderProps) {
       <Heading size="large">Browse</Heading>
 
       {/* Right: Settings */}
-      <Pressable
+      <HapticPressable
         style={[
           styles.settingsButton,
           { 
@@ -46,7 +47,7 @@ export function BrowseHeader({ onSettingsPress }: BrowseHeaderProps) {
             style={{ opacity: pressed ? 0.7 : 1 }}
           />
         )}
-      </Pressable>
+      </HapticPressable>
     </View>
   );
 }

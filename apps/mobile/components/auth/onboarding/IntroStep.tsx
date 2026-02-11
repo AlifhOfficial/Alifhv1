@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Pressable } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
@@ -65,7 +66,7 @@ export function IntroStep({ onNext, onSignIn }: IntroStepProps) {
 
       {/* Actions */}
       <Animated.View entering={FadeIn.delay(150).duration(250)} style={styles.actions}>
-        <Pressable
+        <HapticPressable
           onPress={onNext}
           style={({ pressed }) => [
             styles.primaryButton,
@@ -73,13 +74,13 @@ export function IntroStep({ onNext, onSignIn }: IntroStepProps) {
           ]}
         >
           <ButtonText style={{ color: colors.primaryForeground }}>Get Started</ButtonText>
-        </Pressable>
+        </HapticPressable>
 
-        <Pressable onPress={onSignIn} style={styles.secondaryButton}>
+        <HapticPressable onPress={onSignIn} style={styles.secondaryButton}>
           <Body size="medium" tone="secondary">
             Already have an account? <Body size="medium" tone="primary">Sign in</Body>
           </Body>
-        </Pressable>
+        </HapticPressable>
       </Animated.View>
     </View>
   );

@@ -4,7 +4,8 @@
  */
 
 import React, { useCallback, memo } from 'react';
-import { StyleSheet, View, Pressable } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
 import { Heart, Share2 } from 'lucide-react-native';
 
@@ -114,8 +115,8 @@ export const CarCardList = memo(function CarCardList({
   const colors = Colors[colorScheme];
 
   const displayImage = thumbnail || images?.[0];
-  const displayEmirate = EMIRATE_SHORT[emirate?.toLowerCase()] || emirate;
-  const displaySpecs = SPECS_SHORT[specs?.toLowerCase()] || specs;
+  const displayEmirate = emirate ? (EMIRATE_SHORT[emirate.toLowerCase()] || emirate) : '';
+  const displaySpecs = specs ? (SPECS_SHORT[specs.toLowerCase()] || specs) : 'GCC';
   
   // Colors
   const cardBg = isBlkListing ? colors.blkBackground : colors.surface;
@@ -130,7 +131,7 @@ export const CarCardList = memo(function CarCardList({
   const handleSharePress = useCallback(() => onSharePress?.(id), [id, onSharePress]);
 
   return (
-    <Pressable
+    <HapticPressable
       onPress={handlePress}
       style={[styles.container, { backgroundColor: cardBg, borderColor: cardBorder }]}
     >
@@ -163,13 +164,13 @@ export const CarCardList = memo(function CarCardList({
             {make} {model}
           </Data>
           <View style={styles.actions}>
-            <Pressable
+            <HapticPressable
               onPress={handleSharePress}
               hitSlop={8}
             >
               <Share2 size={16} color={iconColor} strokeWidth={1.75} />
-            </Pressable>
-            <Pressable
+            </HapticPressable>
+            <HapticPressable
               onPress={handleFavoritePress}
               hitSlop={8}
             >
@@ -179,7 +180,7 @@ export const CarCardList = memo(function CarCardList({
                 fill={isFavorite ? colors.favorite : 'none'}
                 strokeWidth={1.75}
               />
-            </Pressable>
+            </HapticPressable>
           </View>
         </View>
 
@@ -198,7 +199,7 @@ export const CarCardList = memo(function CarCardList({
           {formatMileage(mileage)} · {displaySpecs} · {displayEmirate}
         </Data>
       </View>
-    </Pressable>
+    </HapticPressable>
   );
 });
 

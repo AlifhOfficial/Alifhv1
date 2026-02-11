@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 
 import { Data } from '@/components/ui';
 import { FilterPill } from './filter-pill';
@@ -20,9 +21,9 @@ export function SelectedPills({ items, onRemove, onClearAll, label }: SelectedPi
         <View style={styles.header}>
           <Data size="mini" tone="secondary">{label}</Data>
           {onClearAll && items.length > 1 && (
-            <Pressable onPress={onClearAll} hitSlop={8}>
+            <HapticPressable onPress={onClearAll} hitSlop={8}>
               <Data size="mini" tone="primary">Clear all</Data>
-            </Pressable>
+            </HapticPressable>
           )}
         </View>
       )}

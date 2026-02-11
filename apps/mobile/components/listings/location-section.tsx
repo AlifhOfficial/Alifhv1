@@ -6,7 +6,8 @@
  */
 
 import React, { memo, useCallback } from 'react';
-import { StyleSheet, View, Pressable, Linking } from 'react-native';
+import { StyleSheet, View, Linking } from 'react-native';
+import { HapticPressable } from '@/components/ui';
 import { MapPin, ExternalLink, Navigation } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
@@ -114,7 +115,7 @@ export const LocationSection = memo(function LocationSection({
 
       {/* Action Buttons */}
       <View style={styles.actionsRow}>
-        <Pressable
+        <HapticPressable
           onPress={handleViewMap}
           style={({ pressed }) => [
             styles.actionButton,
@@ -126,9 +127,9 @@ export const LocationSection = memo(function LocationSection({
         >
           <ExternalLink size={16} color={textColor} />
           <ButtonText size="small">View Map</ButtonText>
-        </Pressable>
+        </HapticPressable>
 
-        <Pressable
+        <HapticPressable
           onPress={handleGetDirections}
           style={({ pressed }) => [
             styles.actionButton,
@@ -140,7 +141,7 @@ export const LocationSection = memo(function LocationSection({
         >
           <Navigation size={16} color={textColor} />
           <ButtonText size="small">Directions</ButtonText>
-        </Pressable>
+        </HapticPressable>
       </View>
     </View>
   );
