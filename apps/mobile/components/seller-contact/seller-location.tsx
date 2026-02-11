@@ -28,7 +28,7 @@ export const SellerLocation = memo(function SellerLocation({
 
   return (
     <View style={localStyles.section}>
-      <Label size="small" tone="muted">LOCATION</Label>
+      <Label size="medium" tone="muted">LOCATION</Label>
       
       {seller.location && (
         <View style={localStyles.locationRow}>

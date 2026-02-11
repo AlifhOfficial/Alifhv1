@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
 import { DisplayArea, ACTIVE_CHIPS_HEIGHT, TopSafeAreaGradient } from '@/components/layout';
-import { FilterPills, type FilterPillType } from '@/components/home';
+import { BrowseHeader, type FilterPillType } from '@/components/home';
 import { 
   MakeFilterSheet,
   ModelFilterSheet,
@@ -25,7 +25,7 @@ import {
   type MoreFiltersState,
 } from '@/components/sheets';
 import { CarCardM, CarCardMSkeleton, CarCardList, CarCardListSkeleton } from '@/components/cards';
-import { LogoLoader, Heading, Body } from '@/components/ui';
+import { LogoLoader, Body } from '@/components/ui';
 import { searchApi, type ListingCard, type SearchParams, type SearchFacets, type SearchSortOption } from '@/lib/search-api';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -38,7 +38,7 @@ import { getModelsForMake } from '@/lib/filter-constants';
 
 // Convert context filter params to API params
 // Note: Mobile uses string[] for filter arrays, cast to database literal types
-const filtersToParams = (f: FilterParams, searchParams: { make?: string[]; model?: string[]; trim?: string[]; tags?: string[]; extras?: string[]; q?: string; partnerId?: string; partnerName?: string } | null): SearchParams => ({
+const filtersToParams = (f: FilterParams, searchParams: { make?: string[]; model?: string[]; trim?: string[]; tags?: string[]; extras?: string[]; q?: string; partnerId?: string; partnerName?: string; sellerId?: string; sellerName?: string } | null): SearchParams => ({
   q: searchParams?.q,
   make: searchParams?.make,
   model: searchParams?.model,
@@ -46,6 +46,7 @@ const filtersToParams = (f: FilterParams, searchParams: { make?: string[]; model
   tags: searchParams?.tags,
   extras: searchParams?.extras,
   partnerId: searchParams?.partnerId,
+  sellerId: searchParams?.sellerId,
   yearMin: f.yearMin,
   yearMax: f.yearMax,
   priceMin: f.priceMin,
@@ -105,6 +106,9 @@ export default function BrowseScreen() {
     const hasFilters = Object.keys(filterParams).length > 0;
     return hasSearch || hasFilters || sortBy !== 'relevance';
   }, [searchParams, filterParams, sortBy]);
+
+  // Build filter context for dynamic facet fetching in sheets
+  const filterContext = useMemo(() => filtersToParams(filterParams, searchParams), [filterParams, searchParams]);
 
   // Results state (not filters - those come from context)
   const [facets, setFacets] = useState<SearchFacets | undefined>(undefined);
@@ -435,25 +439,23 @@ export default function BrowseScreen() {
       {/* Top safe area gradient */}
       <TopSafeAreaGradient />
 
-      {/* Header with Filter Pills below */}
-      <View style={[styles.headerRow, { paddingTop: insets.top + 8, backgroundColor: colors.background }]}>
-        <Heading size="large">Browse</Heading>
-        <FilterPills 
-          pills={filterPillConfigs}
-          onPillPress={handleFilterPillPress}
-          onSettingsPress={handleSettingsPress}
-          settingsCount={moreFiltersCount}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-          onAmnaPress={handleAmnaPress}
-        />
-      </View>
+      {/* Floating Browse Header with Filter Pills */}
+      <BrowseHeader 
+        pills={filterPillConfigs}
+        onPillPress={handleFilterPillPress}
+        onSettingsPress={handleSettingsPress}
+        settingsCount={moreFiltersCount}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        onAmnaPress={handleAmnaPress}
+      />
 
       {/* Make Filter Sheet - reads from searchParams */}
       <MakeFilterSheet
         visible={makeSheetVisible}
         onClose={() => setMakeSheetVisible(false)}
         selected={searchParams?.make ?? []}
+        filterContext={filterContext}
         onApply={handleMakeApply}
       />
 
@@ -463,6 +465,7 @@ export default function BrowseScreen() {
         onClose={() => setModelSheetVisible(false)}
         selectedMakes={searchParams?.make ?? []}
         selected={searchParams?.model ?? []}
+        filterContext={filterContext}
         onApply={handleModelApply}
       />
 
@@ -490,8 +493,8 @@ export default function BrowseScreen() {
       <LocationFilterSheet
         visible={locationSheetVisible}
         onClose={() => setLocationSheetVisible(false)}
-        options={facets?.emirate ?? []}
         selected={filterParams.emirate ?? []}
+        filterContext={filterContext}
         onApply={handleLocationApply}
       />
 
@@ -500,15 +503,7 @@ export default function BrowseScreen() {
         visible={settingsSheetVisible}
         onClose={() => setSettingsSheetVisible(false)}
         filters={moreFiltersState}
-        facets={{
-          specs: facets?.specs,
-          bodyType: facets?.bodyType,
-          fuelType: facets?.fuelType,
-          transmission: facets?.transmission,
-          exteriorColor: facets?.exteriorColor,
-          interiorColor: facets?.interiorColor,
-          engineSize: facets?.engineSize,
-        }}
+        filterContext={filterContext}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         onApply={handleMoreFiltersApply}
@@ -531,6 +526,7 @@ export default function BrowseScreen() {
         horizontalPadding="sm"
         verticalPadding="sm"
         extraBottomPadding={hasActiveChips ? ACTIVE_CHIPS_HEIGHT + 8 : 0}
+        contentContainerStyle={{ paddingTop: 160 }}
       >
         {isLoading && (!listings || listings.length === 0) ? (
           viewMode === 'grid' ? (
@@ -629,13 +625,6 @@ export default function BrowseScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  headerRow: {
-    flexDirection: 'column',
-    alignItems: 'stretch',
-    paddingLeft: Spacing.lg,
-    paddingBottom: Spacing.md,
-    gap: 8,
   },
   empty: {
     alignItems: 'center',

@@ -304,7 +304,7 @@ export async function getSellerListings(
   if (sellerType === 'partner') {
     params.set('partnerId', sellerId);
   } else {
-    params.set('userId', sellerId);
+    params.set('sellerId', sellerId);
   }
   
   if (excludeListingId) {

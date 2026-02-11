@@ -15,7 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Label, ButtonText, Supporting } from '@/components/ui';
-import type { FacetBucket } from '@/lib/search-api';
+import { searchApi, type FacetBucket, type SearchParams, type SearchFacets } from '@/lib/search-api';
 import { 
   BODY_TYPES, 
   FUEL_TYPES, 
@@ -52,15 +52,8 @@ interface MoreFiltersSheetProps {
   visible: boolean;
   onClose: () => void;
   filters: MoreFiltersState;
-  facets?: {
-    specs?: FacetBucket[];
-    bodyType?: FacetBucket[];
-    fuelType?: FacetBucket[];
-    transmission?: FacetBucket[];
-    exteriorColor?: FacetBucket[];
-    interiorColor?: FacetBucket[];
-    engineSize?: FacetBucket[];
-  };
+  /** Current filter context - facets will be fetched dynamically based on this */
+  filterContext?: Omit<SearchParams, 'specs' | 'bodyType' | 'fuelType' | 'transmission' | 'exteriorColor' | 'interiorColor' | 'engineSize' | 'sellerType' | 'condition' | 'limit' | 'page'>;
   viewMode: ViewMode;
   onViewModeChange: (mode: ViewMode) => void;
   onApply: (filters: MoreFiltersState) => void;
@@ -70,7 +63,7 @@ export function MoreFiltersSheet({
   visible, 
   onClose, 
   filters,
-  facets,
+  filterContext = {},
   viewMode,
   onViewModeChange,
   onApply,
@@ -83,6 +76,10 @@ export function MoreFiltersSheet({
   // Local state
   const [localFilters, setLocalFilters] = useState<MoreFiltersState>(filters);
   
+  // Dynamic facets
+  const [facets, setFacets] = useState<SearchFacets | null>(null);
+  const [isLoadingFacets, setIsLoadingFacets] = useState(false);
+  
   // Collapsible sections
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['popular']));
 
@@ -92,6 +89,36 @@ export function MoreFiltersSheet({
       setLocalFilters(filters);
     }
   }, [visible, filters]);
+
+  // Build dynamic filter context from parent context + local selections
+  const dynamicFilterContext = useMemo(() => {
+    const ctx: Record<string, any> = { ...filterContext };
+    if (localFilters.condition) ctx.condition = localFilters.condition;
+    if (localFilters.isBlkListing) ctx.isBlkListing = localFilters.isBlkListing;
+    if (localFilters.isBlackTierPartner) ctx.isBlackTierPartner = localFilters.isBlackTierPartner;
+    if (localFilters.isNegotiable) ctx.isNegotiable = localFilters.isNegotiable;
+    if (localFilters.specs?.length) ctx.specs = localFilters.specs;
+    if (localFilters.bodyType?.length) ctx.bodyType = localFilters.bodyType;
+    if (localFilters.fuelType?.length) ctx.fuelType = localFilters.fuelType;
+    if (localFilters.transmission?.length) ctx.transmission = localFilters.transmission;
+    if (localFilters.exteriorColor?.length) ctx.exteriorColor = localFilters.exteriorColor;
+    if (localFilters.interiorColor?.length) ctx.interiorColor = localFilters.interiorColor;
+    if (localFilters.engineSize?.length) ctx.engineSize = localFilters.engineSize;
+    if (localFilters.sellerType) ctx.sellerType = localFilters.sellerType;
+    return ctx;
+  }, [filterContext, localFilters]);
+
+  // Fetch facets dynamically when sheet opens or selections change
+  useEffect(() => {
+    if (visible) {
+      setIsLoadingFacets(true);
+      searchApi
+        .getFacets(dynamicFilterContext)
+        .then((result) => setFacets(result))
+        .catch(console.error)
+        .finally(() => setIsLoadingFacets(false));
+    }
+  }, [visible, dynamicFilterContext]);
 
   const snapPoints = useMemo(() => ['60%', '94%'], []);
 
@@ -309,10 +336,10 @@ export function MoreFiltersSheet({
       onPress={onToggle}
     >
       <Body 
-        size="medium" 
+        size="large" 
         style={{ 
           color: value ? colors.text : colors.textSecondary,
-          fontFamily: value ? 'Inter_500Medium' : 'Inter_400Regular',
+          fontFamily: value ? 'Inter_600SemiBold' : 'Inter_400Regular',
         }}
       >
         {label}
@@ -337,7 +364,7 @@ export function MoreFiltersSheet({
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
-      handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.textMuted }]}
+      handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
       stackBehavior="push"
       detached
       bottomInset={insets.bottom + 20}
@@ -491,6 +518,8 @@ export function MoreFiltersSheet({
           <View style={styles.chipsRow}>
             {SELLER_TYPE_OPTIONS.map(option => {
               const isSelected = localFilters.sellerType === option.value;
+              const facet = facets?.sellerType?.find(f => f.value === option.value);
+              const count = facet?.count ?? 0;
               return (
                 <HapticPressable
                   key={option.value}
@@ -509,6 +538,14 @@ export function MoreFiltersSheet({
                   >
                     {option.label}
                   </Supporting>
+                  {count > 0 && (
+                    <Supporting
+                      size="mini"
+                      style={{ color: isSelected ? colors.background : colors.textTertiary }}
+                    >
+                      {count}
+                    </Supporting>
+                  )}
                 </HapticPressable>
               );
             })}
@@ -544,10 +581,10 @@ export function MoreFiltersSheet({
 
 const styles = StyleSheet.create({
   sheetContainer: {
-    marginHorizontal: 16,
+    marginHorizontal: Spacing.md,
   },
   background: {
-    borderRadius: 24,
+    borderRadius: Radius['3xl'],
   },
   handleIndicator: {
     width: 36,
@@ -562,7 +599,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xl,
     paddingHorizontal: Spacing.xs,
   },
   closeButton: {
@@ -600,27 +637,27 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.md,
   },
   togglesContainer: {
-    gap: 4,
+    gap: Spacing.xs,
   },
   toggleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 14,
+    paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.sm,
   },
   radio: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 22,
+    height: 22,
+    borderRadius: Radius.full,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 12,
+    height: 12,
+    borderRadius: Radius.full,
   },
   chipsRow: {
     flexDirection: 'row',

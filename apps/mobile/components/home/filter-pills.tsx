@@ -1,15 +1,16 @@
 /**
- * FilterPills - Horizontal row of floating filter pills
+ * FilterPills - Floating filter pills (positioned absolute like GlobalTabBar)
  * Matches GlobalTabBar UI with individual floating bubbles
  */
 
 import React from 'react';
 import { View, StyleSheet, Platform, ScrollView } from 'react-native';
 import { HapticPressable } from '@/components/ui';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Settings2, LayoutGrid, List, Sparkles } from 'lucide-react-native';
 
-import { Colors } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 
 export type ViewMode = 'grid' | 'list';
 import { Body, Label } from '@/components/ui';
@@ -36,6 +37,7 @@ interface FilterPillsProps {
 export const FilterPills = React.memo(function FilterPills({ pills, onPillPress, onSettingsPress, settingsCount = 0, viewMode = 'grid', onViewModeChange, onAmnaPress }: FilterPillsProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
 
   const handlePress = (type: FilterPillType) => {
     if (Platform.OS === 'ios') {
@@ -60,12 +62,13 @@ export const FilterPills = React.memo(function FilterPills({ pills, onPillPress,
   };
 
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      style={[styles.scrollView, { backgroundColor: colors.background }]}
-      contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}
-    >
+    <View style={[styles.container, { paddingTop: insets.top + Spacing.lg + 60, paddingHorizontal: Spacing.lg }]}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+      >
       {/* Amna AI Pill */}
       {onAmnaPress && (
         <HapticPressable
@@ -192,19 +195,27 @@ export const FilterPills = React.memo(function FilterPills({ pills, onPillPress,
         )}
       </HapticPressable>
     </ScrollView>
+    </View>
   );
 });
 
 const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 15,
+    paddingVertical: Spacing.md,
+  },
   scrollView: {
     flexGrow: 0,
   },
-  container: {
+  scrollContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingRight: 16,
-    paddingVertical: 4,
-    gap: 8,
+    gap: Spacing.md,
+    paddingRight: Spacing.lg,
   },
   settingsBubble: {
     width: 36,
@@ -214,11 +225,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
   },
   settingsContent: {
     width: 36,
@@ -238,7 +244,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     zIndex: 2,
-    elevation: 2,
   },
   settingsBadgeText: {
     // Typography handled by <Label size="badge"> component
@@ -249,11 +254,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 16,
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
   },
   pillContent: {
     flexDirection: 'row',
@@ -280,11 +280,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
   },
   viewModeContent: {
     width: 36,
@@ -298,10 +293,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 14,
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
   },
 });

@@ -134,7 +134,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             <View style={[styles.iconCircle, { backgroundColor: colors.primary }]}>
               <Phone size={22} color="#FFF" />
             </View>
-            <ButtonText size="small">Call</ButtonText>
+            <ButtonText size="small" style={styles.actionLabel}>Call</ButtonText>
           </HapticPressable>
 
           <HapticPressable
@@ -147,7 +147,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             <View style={[styles.iconCircle, { backgroundColor: '#25D366' }]}>
               <Ionicons name="logo-whatsapp" size={24} color="#FFF" />
             </View>
-            <ButtonText size="small">WhatsApp</ButtonText>
+            <ButtonText size="small" style={styles.actionLabel}>WhatsApp</ButtonText>
           </HapticPressable>
 
           <HapticPressable
@@ -160,7 +160,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             <View style={[styles.iconCircle, { backgroundColor: colors.surfaceSecondary }]}>
               <Copy size={22} color={colors.text} />
             </View>
-            <ButtonText size="small">Copy</ButtonText>
+            <ButtonText size="small" style={styles.actionLabel}>Copy</ButtonText>
           </HapticPressable>
         </View>
       </BottomSheetView>
@@ -205,6 +205,7 @@ const styles = StyleSheet.create({
   },
   actionBtn: {
     alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.md,
     borderRadius: Radius.lg,
@@ -217,5 +218,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.sm,
+  },
+  actionLabel: {
+    textAlign: 'center',
   },
 });

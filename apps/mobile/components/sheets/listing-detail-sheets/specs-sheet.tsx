@@ -1,5 +1,5 @@
 /**
- * FeaturesSheet - Bottom Sheet for all listing features/extras
+ * SpecsSheet - Bottom Sheet for all listing specifications
  * Uses @gorhom/bottom-sheet modal for proper iOS gesture handling
  */
 
@@ -14,21 +14,32 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Body, ButtonText } from '@/components/ui';
+import { Heading, Supporting, Data } from '@/components/ui';
+import { Copy } from 'lucide-react-native';
 
-interface FeaturesSheetProps {
+interface SpecItem {
+  label: string;
+  value: string | number | null | undefined;
+}
+
+interface SpecsSheetProps {
   visible: boolean;
   onClose: () => void;
-  features: string[];
+  specs: SpecItem[];
 }
 
-function formatEnumValue(value: string): string {
-  return value
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+function SpecRow({ label, value }: SpecItem) {
+  const displayValue = value === null || value === undefined ? '—' : String(value);
+
+  return (
+    <View style={styles.specRow}>
+      <Supporting size="medium">{label}</Supporting>
+      <Data size="medium">{displayValue}</Data>
+    </View>
+  );
 }
 
-export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps) {
+export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
@@ -39,12 +50,14 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
   const snapPoints = useMemo(() => ['60%', '94%'], []);
 
   const handleCopy = useCallback(async () => {
-    const text = features.map(f => formatEnumValue(f)).join(', ');
+    const text = specs
+      .map(s => `${s.label}: ${s.value ?? '—'}`)
+      .join('\n');
     await Clipboard.setStringAsync(text);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }, [features]);
+  }, [specs]);
 
   useEffect(() => {
     if (visible) {
@@ -88,18 +101,35 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
       style={styles.sheetContainer}
     >
       <View style={styles.content}>
+        {/* Header */}
         <View style={styles.header}>
-          <Heading size="medium">All Features</Heading>
-          <HapticPressable
-            onPress={onClose}
-            hitSlop={Spacing.md}
-            style={[
-              styles.closeButton,
-              { backgroundColor: colors.fillSecondary },
-            ]}
-          >
-            <Ionicons name="close" size={18} color={colors.textSecondary} />
-          </HapticPressable>
+          <Heading size="medium">All Specifications</Heading>
+          <View style={styles.headerActions}>
+            <HapticPressable 
+              onPress={handleCopy} 
+              hitSlop={Spacing.md}
+              style={[
+                styles.iconButton,
+                { backgroundColor: colors.fillSecondary }
+              ]}
+            >
+              {copied ? (
+                <Ionicons name="checkmark" size={18} color={colors.primary} />
+              ) : (
+                <Copy size={18} color={colors.textSecondary} />
+              )}
+            </HapticPressable>
+            <HapticPressable
+              onPress={onClose}
+              hitSlop={Spacing.md}
+              style={[
+                styles.iconButton,
+                { backgroundColor: colors.fillSecondary }
+              ]}
+            >
+              <Ionicons name="close" size={18} color={colors.textSecondary} />
+            </HapticPressable>
+          </View>
         </View>
 
         <BottomSheetScrollView
@@ -107,42 +137,17 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.badgesContainer}>
-            {features.map((feature, idx) => (
-              <View 
-                key={idx} 
-                style={[
-                  styles.badge,
-                  { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
-                ]}
-              >
-                <Body size="small" tone="secondary">
-                  {formatEnumValue(feature)}
-                </Body>
-              </View>
+          {/* Specs List */}
+          <View style={styles.listContainer}>
+            {specs.map((spec) => (
+              <SpecRow
+                key={spec.label}
+                label={spec.label}
+                value={spec.value}
+              />
             ))}
           </View>
         </BottomSheetScrollView>
-
-        {/* Copy Button */}
-        <HapticPressable
-          onPress={handleCopy}
-          style={[
-            styles.copyButton,
-            { 
-              backgroundColor: copied ? colors.surfaceSecondary : colors.text,
-            },
-          ]}
-        >
-          <Ionicons 
-            name={copied ? 'checkmark' : 'copy-outline'} 
-            size={18} 
-            color={copied ? colors.textSecondary : colors.surface} 
-          />
-          <ButtonText size="medium" style={{ color: copied ? colors.textSecondary : colors.surface }}>
-            {copied ? 'Copied' : 'Copy Features'}
-          </ButtonText>
-        </HapticPressable>
 
         <View style={{ height: insets.bottom + Spacing.md }} />
       </View>
@@ -165,7 +170,12 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
     paddingHorizontal: Spacing.xs,
   },
-  closeButton: {
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  iconButton: {
     width: 32,
     height: 32,
     borderRadius: Radius.full,
@@ -176,26 +186,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: Spacing.md,
+    paddingHorizontal: Spacing.lg,
   },
-  badgesContainer: {
+  listContainer: {
+    gap: 0,
+  },
+  specRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.sm,
-  },
-  badge: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: Radius.md,
-    borderWidth: 1,
-  },
-  copyButton: {
-    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.sm,
-    paddingVertical: 14,
-    borderRadius: Radius.lg,
-    marginTop: Spacing.sm,
+    paddingVertical: Spacing.md,
   },
 });

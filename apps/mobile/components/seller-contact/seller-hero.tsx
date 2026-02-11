@@ -46,10 +46,10 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
             <Heading size="medium" numberOfLines={1} style={{ flexShrink: 1 }}>
               {seller.name}
             </Heading>
-            {seller.isVerified && (
+            {seller.isVerified && seller.tier?.toLowerCase() !== 'black' && (
               <CheckCircle2 size={ICON_SIZE_SM} color={colors.primary} />
             )}
-            {seller.tier?.toLowerCase() === 'blk' && (
+            {seller.tier?.toLowerCase() === 'black' && (
               <View style={[localStyles.tierBadge, { backgroundColor: colors.blkBadgeBackground }]}>
                 <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>
                   BLK

@@ -53,8 +53,8 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
       resetSort();
       return;
     }
-    // Handle search params (make, model, trim, q, partnerId, tags, extras)
-    if (['make', 'model', 'trim', 'q', 'partnerId', 'tags', 'extras'].includes(chip.key)) {
+    // Handle search params (make, model, trim, q, partnerId, sellerId, tags, extras)
+    if (['make', 'model', 'trim', 'q', 'partnerId', 'sellerId', 'tags', 'extras'].includes(chip.key)) {
       removeSearchParam(chip.key as keyof SearchParams, chip.index);
       return;
     }

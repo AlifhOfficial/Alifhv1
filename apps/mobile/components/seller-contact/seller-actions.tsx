@@ -91,7 +91,7 @@ export const SellerActions = memo(function SellerActions({
       {/* Phone Number Link */}
       {seller.phone && (
         <HapticPressable onPress={handleShowPhone} hitSlop={8}>
-          <Supporting size="small" style={{ textAlign: 'center' }}>
+          <Supporting size="medium" style={{ textAlign: 'center' }}>
             Show phone number
           </Supporting>
         </HapticPressable>

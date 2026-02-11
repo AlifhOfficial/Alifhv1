@@ -118,7 +118,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 
     // Response cache key (includes listing + sellerData)
     // Invalidated via invalidateListingDetail() which clears both query and response caches
-    const responseCacheKey = `listing:${id}:response`;
+    const responseCacheKey = CacheKeys.listingResponse(id);
     
     // Check response cache first (full response with seller data)
     const cached = memoryCache.get(responseCacheKey);

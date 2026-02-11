@@ -46,7 +46,9 @@ export function invalidateListingDetail(listingId: string): void {
   const key = CacheKeys.listingDetail(listingId);
   const legacyDetailedKey = `listing:detailed:${listingId}`;
   const detailedKey = CacheKeys.listingDetailed(listingId);
-  memoryCache.delete(key, legacyDetailedKey, detailedKey);
+  // Also clear the API response cache used by /api/listings/[id]/detailed
+  const responseKey = CacheKeys.listingResponse(listingId);
+  memoryCache.delete(key, legacyDetailedKey, detailedKey, responseKey);
   console.log(`[cache] Invalidated listing detail: ${listingId}`);
 }
 

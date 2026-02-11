@@ -88,8 +88,8 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
+      backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
+      handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
       detached
       bottomInset={insets.bottom + 20}
       style={styles.sheetContainer}
@@ -97,7 +97,7 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="medium" style={{ color: colors.text }}>Sort By</Heading>
+          <Heading size="medium">Sort By</Heading>
           <HapticPressable 
             onPress={onClose} 
             hitSlop={Spacing.md}
@@ -122,10 +122,10 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
                 style={styles.listItem}
               >
                 <Body
-                  size="medium"
+                  size="large"
                   style={{ 
                     color: selected ? colors.text : colors.textSecondary,
-                    fontFamily: selected ? 'Inter_500Medium' : 'Inter_400Regular',
+                    fontFamily: selected ? 'Inter_600SemiBold' : 'Inter_400Regular',
                   }}
                 >
                   {option.label}
@@ -151,7 +151,15 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
 
 const styles = StyleSheet.create({
   sheetContainer: {
-    marginHorizontal: 16,
+    marginHorizontal: Spacing.md,
+  },
+  background: {
+    borderRadius: Radius['3xl'],
+  },
+  handleIndicator: {
+    width: 36,
+    height: 4,
+    borderRadius: Radius.full,
   },
   content: {
     flex: 1,
@@ -161,7 +169,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xl,
     paddingHorizontal: Spacing.xs,
   },
   closeButton: {
@@ -172,26 +180,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   listContainer: {
-    gap: 4,
+    gap: Spacing.xs,
   },
   listItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 14,
+    paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.sm,
   },
   radio: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 22,
+    height: 22,
+    borderRadius: Radius.full,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 12,
+    height: 12,
+    borderRadius: Radius.full,
   },
 });

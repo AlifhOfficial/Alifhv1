@@ -2,23 +2,18 @@
  * Seller Listings Section
  * 
  * Shows other listings from this seller.
- * Two-column grid layout with proper card design.
+ * Uses CarCardList for consistent card design.
  */
 
-import React, { memo } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import React, { memo, useCallback } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { HapticPressable } from '@/components/ui';
-import { Image } from 'expo-image';
 import { ChevronRight } from 'lucide-react-native';
 
-import { Label, Data, Supporting } from '@/components/ui';
-import { Spacing, Radius } from '@/constants/theme';
+import { Label, Data } from '@/components/ui';
+import { Spacing } from '@/constants/theme';
+import { CarCardList } from '@/components/cards/car-card-list';
 import type { SellerListingsProps } from './types';
-import { formatPrice, formatMileage } from './utils';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_GAP = Spacing.sm;
-const CARD_WIDTH = (SCREEN_WIDTH - (Spacing.lg * 2) - CARD_GAP) / 2;
 
 export const SellerListings = memo(function SellerListings({
   listings,
@@ -29,33 +24,30 @@ export const SellerListings = memo(function SellerListings({
 }: SellerListingsProps) {
   if (listings.length === 0) return null;
 
+  const handlePress = useCallback((id: string) => {
+    onViewListing(id);
+  }, [onViewListing]);
+
   return (
     <View style={localStyles.section}>
-      <Label size="small" tone="muted">MORE FROM THIS SELLER</Label>
+      <Label size="medium" tone="muted">MORE FROM THIS SELLER</Label>
       
-      {/* Two-column grid */}
-      <View style={localStyles.grid}>
+      {/* Listings list */}
+      <View style={localStyles.list}>
         {listings.slice(0, 4).map((item) => (
-          <HapticPressable
+          <CarCardList
             key={item.id}
-            onPress={() => onViewListing(item.id)}
-            style={localStyles.card}
-          >
-            <Image 
-              source={{ uri: item.thumbnail ?? undefined }} 
-              style={[localStyles.thumb, { backgroundColor: colors.surfaceSecondary }]}
-              contentFit="cover" 
-            />
-            
-            <View style={localStyles.content}>
-              <Data size="small" numberOfLines={1}>
-                {item.year} {item.make} {item.model}
-              </Data>
-              <Supporting size="mini">
-                {formatMileage(item.mileage)} · {formatPrice(item.price)}
-              </Supporting>
-            </View>
-          </HapticPressable>
+            id={item.id}
+            make={item.make}
+            model={item.model}
+            year={item.year}
+            price={item.price}
+            mileage={item.mileage}
+            emirate=""
+            thumbnail={item.thumbnail}
+            isBlkListing={item.isBlkListing}
+            onPress={handlePress}
+          />
         ))}
       </View>
       
@@ -79,23 +71,8 @@ const localStyles = StyleSheet.create({
   section: {
     gap: Spacing.md,
   },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: CARD_GAP,
-  },
-  card: {
-    width: CARD_WIDTH,
-    overflow: 'hidden',
-  },
-  thumb: {
-    width: '100%',
-    aspectRatio: 16 / 10,
-    borderRadius: Radius.md,
-  },
-  content: {
-    paddingTop: Spacing.sm,
-    gap: 2,
+  list: {
+    gap: Spacing.xs,
   },
   viewAllRow: {
     flexDirection: 'row',

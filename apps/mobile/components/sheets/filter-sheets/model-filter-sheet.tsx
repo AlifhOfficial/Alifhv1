@@ -5,9 +5,9 @@
  */
 
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
-import { View, StyleSheet, Platform, FlatList, TextInput } from 'react-native';
+import { View, StyleSheet, Platform, TextInput } from 'react-native';
 import { HapticPressable } from '@/components/ui';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,6 +17,7 @@ import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Supporting, ButtonText } from '@/components/ui';
 import { CAR_MODELS, getModelsForMake } from '@/lib/filter-constants';
+import { searchApi, type FacetBucket, type SearchParams } from '@/lib/search-api';
 
 interface ModelFilterSheetProps {
   visible: boolean;
@@ -24,6 +25,8 @@ interface ModelFilterSheetProps {
   /** Currently selected makes — models are sourced from these */
   selectedMakes: string[];
   selected: string[];
+  /** Current filter context - facets will be fetched dynamically based on this */
+  filterContext?: Omit<SearchParams, 'make' | 'model' | 'limit' | 'page'>;
   onApply: (selected: string[]) => void;
 }
 
@@ -37,6 +40,7 @@ export function ModelFilterSheet({
   onClose,
   selectedMakes,
   selected,
+  filterContext = {},
   onApply,
 }: ModelFilterSheetProps) {
   const { colorScheme } = useTheme();
@@ -47,6 +51,10 @@ export function ModelFilterSheet({
   // Local state
   const [localSelected, setLocalSelected] = useState<string[]>(selected);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Dynamic facets
+  const [facets, setFacets] = useState<FacetBucket[]>([]);
+  const [isLoadingFacets, setIsLoadingFacets] = useState(false);
 
   // Sync with props when sheet opens
   useEffect(() => {
@@ -55,6 +63,26 @@ export function ModelFilterSheet({
       setSearchQuery('');
     }
   }, [visible, selected]);
+
+  // Fetch model facets dynamically when sheet opens or context changes
+  useEffect(() => {
+    if (visible && selectedMakes.length > 0) {
+      setIsLoadingFacets(true);
+      searchApi
+        .getModelsForMakes(selectedMakes, filterContext)
+        .then((models) => setFacets(models))
+        .catch(console.error)
+        .finally(() => setIsLoadingFacets(false));
+    } else if (visible) {
+      // If no makes selected, fetch all models from facets
+      setIsLoadingFacets(true);
+      searchApi
+        .getFacets(filterContext)
+        .then((result) => setFacets(result?.model ?? []))
+        .catch(console.error)
+        .finally(() => setIsLoadingFacets(false));
+    }
+  }, [visible, selectedMakes, filterContext]);
 
   const snapPoints = useMemo(() => ['60%', '94%'], []);
 
@@ -157,6 +185,8 @@ export function ModelFilterSheet({
 
   const renderItem = useCallback(({ item }: { item: ModelOption }) => {
     const isSelected = localSelected.includes(item.model);
+    const facet = facets.find(f => f.value === item.model);
+    const count = facet?.count ?? 0;
 
     return (
       <HapticPressable
@@ -164,15 +194,22 @@ export function ModelFilterSheet({
         style={styles.listItem}
       >
         <View style={styles.labelColumn}>
-          <Body
-            size="medium"
-            style={{ 
-              color: isSelected ? colors.text : colors.textSecondary,
-              fontFamily: isSelected ? 'Inter_500Medium' : 'Inter_400Regular',
-            }}
-          >
-            {item.model}
-          </Body>
+          <View style={styles.labelRow}>
+            <Body
+              size="large"
+              style={{ 
+                color: isSelected ? colors.text : colors.textSecondary,
+                fontFamily: isSelected ? 'Inter_600SemiBold' : 'Inter_400Regular',
+              }}
+            >
+              {item.model}
+            </Body>
+            {count > 0 && (
+              <Supporting size="small" tone="muted">
+                {count.toLocaleString()}
+              </Supporting>
+            )}
+          </View>
           {showMakeLabel && (
             <Supporting size="small" tone="muted">{item.make}</Supporting>
           )}
@@ -187,7 +224,7 @@ export function ModelFilterSheet({
         </View>
       </HapticPressable>
     );
-  }, [localSelected, colors, handleToggle, showMakeLabel]);
+  }, [localSelected, colors, handleToggle, showMakeLabel, facets]);
 
   const keyExtractor = useCallback((item: ModelOption) => `${item.make}-${item.model}`, []);
 
@@ -199,8 +236,8 @@ export function ModelFilterSheet({
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
+      backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
+      handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
       detached
       bottomInset={insets.bottom + 20}
       style={styles.sheetContainer}
@@ -208,7 +245,7 @@ export function ModelFilterSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="medium" style={{ color: colors.text }}>Model</Heading>
+          <Heading size="medium">Model</Heading>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -241,7 +278,7 @@ export function ModelFilterSheet({
         </View>
 
         {/* Models List */}
-        <FlatList
+        <BottomSheetFlatList
           data={filteredModels}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
@@ -281,7 +318,15 @@ export function ModelFilterSheet({
 
 const styles = StyleSheet.create({
   sheetContainer: {
-    marginHorizontal: 16,
+    marginHorizontal: Spacing.md,
+  },
+  background: {
+    borderRadius: Radius['3xl'],
+  },
+  handleIndicator: {
+    width: 36,
+    height: 4,
+    borderRadius: Radius.full,
   },
   content: {
     paddingHorizontal: Spacing.lg,
@@ -292,7 +337,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xl,
   },
   closeButton: {
     width: 32,
@@ -325,25 +370,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 14,
+    paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.sm,
   },
   labelColumn: {
     flex: 1,
     gap: 2,
   },
+  labelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
   radio: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 22,
+    height: 22,
+    borderRadius: Radius.full,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 12,
+    height: 12,
+    borderRadius: Radius.full,
   },
   emptyState: {
     flex: 1,

@@ -14,7 +14,8 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Body, ButtonText } from '@/components/ui';
+import { Heading, Body } from '@/components/ui';
+import { Copy } from 'lucide-react-native';
 
 interface DescriptionSheetProps {
   visible: boolean;
@@ -84,16 +85,32 @@ export function DescriptionSheet({ visible, onClose, description }: DescriptionS
         {/* Header */}
         <View style={styles.header}>
           <Heading size="medium">Description</Heading>
-          <HapticPressable 
-            onPress={onClose} 
-            hitSlop={Spacing.md}
-            style={[
-              styles.closeButton,
-              { backgroundColor: colors.fillSecondary }
-            ]}
-          >
-            <Ionicons name="close" size={18} color={colors.textSecondary} />
-          </HapticPressable>
+          <View style={styles.headerActions}>
+            <HapticPressable 
+              onPress={handleCopy} 
+              hitSlop={Spacing.md}
+              style={[
+                styles.iconButton,
+                { backgroundColor: colors.fillSecondary }
+              ]}
+            >
+              {copied ? (
+                <Ionicons name="checkmark" size={18} color={colors.primary} />
+              ) : (
+                <Copy size={18} color={colors.textSecondary} />
+              )}
+            </HapticPressable>
+            <HapticPressable 
+              onPress={onClose} 
+              hitSlop={Spacing.md}
+              style={[
+                styles.iconButton,
+                { backgroundColor: colors.fillSecondary }
+              ]}
+            >
+              <Ionicons name="close" size={18} color={colors.textSecondary} />
+            </HapticPressable>
+          </View>
         </View>
 
         <BottomSheetScrollView
@@ -105,26 +122,6 @@ export function DescriptionSheet({ visible, onClose, description }: DescriptionS
             {description}
           </Body>
         </BottomSheetScrollView>
-
-        {/* Copy Button */}
-        <HapticPressable
-          onPress={handleCopy}
-          style={[
-            styles.copyButton,
-            { 
-              backgroundColor: copied ? colors.surfaceSecondary : colors.text,
-            },
-          ]}
-        >
-          <Ionicons 
-            name={copied ? 'checkmark' : 'copy-outline'} 
-            size={18} 
-            color={copied ? colors.textSecondary : colors.surface} 
-          />
-          <ButtonText size="medium" style={{ color: copied ? colors.textSecondary : colors.surface }}>
-            {copied ? 'Copied' : 'Copy Description'}
-          </ButtonText>
-        </HapticPressable>
 
         <View style={{ height: insets.bottom + Spacing.md }} />
       </View>
@@ -147,7 +144,12 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
     paddingHorizontal: Spacing.xs,
   },
-  closeButton: {
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  iconButton: {
     width: 32,
     height: 32,
     borderRadius: Radius.full,
@@ -159,14 +161,5 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: Spacing.md,
-  },
-  copyButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.sm,
-    paddingVertical: 14,
-    borderRadius: Radius.lg,
-    marginTop: Spacing.sm,
   },
 });

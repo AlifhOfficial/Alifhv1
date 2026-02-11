@@ -366,6 +366,8 @@ export const CacheKeys = {
   
   // Listing detailed (full query result)
   listingDetailed: (listingId: string) => `listing:${listingId}:detailed`,
+  // API response cache (listing + seller data combined)
+  listingResponse: (listingId: string) => `listing:${listingId}:response`,
 } as const;
 
 /**

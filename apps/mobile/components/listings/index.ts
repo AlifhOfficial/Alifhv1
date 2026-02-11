@@ -22,6 +22,7 @@ export * from './seller-card';
 // Contact & Actions
 export * from './contact-section';
 export * from './location-section';
+export * from './floating-listing-actions';
 
 // Navigation
 export * from './breadcrumb-header';

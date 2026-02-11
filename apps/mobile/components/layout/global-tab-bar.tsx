@@ -21,6 +21,7 @@ import Animated, {
 
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
+import { useTabBar } from '@/context/tab-bar-context';
 import { Colors } from '@/constants/theme';
 import { SearchSheet, SortSheet } from '@/components/sheets';
 import { ActiveSearchChips, ACTIVE_CHIPS_HEIGHT } from './active-search-chips';
@@ -44,11 +45,19 @@ const TABS: TabRoute[] = [
 // Main tab paths
 const MAIN_TAB_PATHS = ['/', '/messages', '/browse', '/(tabs)', '/(tabs)/index', '/(tabs)/messages', '/(tabs)/browse'];
 
-// Browse tab paths (show search bubble)
-const BROWSE_PATHS = ['/browse', '/(tabs)/browse'];
+// Check if pathname is on browse tab - more robust matching
+const isBrowsePath = (path: string) => {
+  const normalized = path.toLowerCase();
+  return normalized === '/browse' || 
+         normalized === '/(tabs)/browse' || 
+         normalized.endsWith('/browse') ||
+         normalized.includes('/browse');
+};
 
-// Home tab paths (show create bubble)
-const HOME_PATHS = ['/', '/(tabs)', '/(tabs)/index'];
+// Check if pathname is on home tab
+const isHomePath = (path: string) => {
+  return path === '/' || path === '/(tabs)' || path === '/(tabs)/index';
+};
 
 // Back bubble size (matches pill height: 44 + padding 4*2 = 52)
 const BACK_BUBBLE_SIZE = 52;
@@ -69,6 +78,7 @@ const HIDE_TAB_BAR_PATHS = [
 export function GlobalTabBar() {
   const { colorScheme } = useTheme();
   const { applySearch, sortBy, applySort, searchParams, filterParams, updateFilterParams, triggerScrollToTop } = useSearch();
+  const { isTabBarVisible } = useTabBar();
   const insets = useSafeAreaInsets();
   
   // Double-tap detection for browse tab
@@ -77,8 +87,14 @@ export function GlobalTabBar() {
   const router = useRouter();
   const pathname = usePathname();
 
+  // Check if on browse tab first (always show on browse, regardless of context)
+  const onBrowseTab = isBrowsePath(pathname);
+
   // ── Hard hide: never render on blocklisted screens ─────────────────────
   const shouldHide = HIDE_TAB_BAR_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'));
+  
+  // Respect isTabBarVisible from context, but ALWAYS show on browse tab
+  const shouldHideByContext = !isTabBarVisible && !onBrowseTab;
 
   // Sheet states
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -87,11 +103,11 @@ export function GlobalTabBar() {
   // Check if current screen is NOT a main tab (show back button)
   const showBackButton = !MAIN_TAB_PATHS.includes(pathname);
 
-  // Check if on browse tab (show search bubble)
-  const showSearchBubble = BROWSE_PATHS.includes(pathname);
+  // Show search/sort bubbles on browse tab
+  const showSearchBubble = onBrowseTab;
 
-  // Check if on home tab (show create bubble)
-  const showCreateBubble = HOME_PATHS.includes(pathname);
+  // Check if on home tab (show create bubble) - use robust matching
+  const showCreateBubble = isHomePath(pathname);
 
   // Check if we have active search, filters, or non-default sort (show chips)
   const hasActiveFilters = filterParams && Object.keys(filterParams).length > 0;
@@ -272,7 +288,8 @@ export function GlobalTabBar() {
   };
 
   // ── Hard hide: return null AFTER all hooks ─────────────────────
-  if (shouldHide) {
+  // Hide on blocklisted screens OR when context says hidden (except on browse tab)
+  if (shouldHide || shouldHideByContext) {
     return null;
   }
 

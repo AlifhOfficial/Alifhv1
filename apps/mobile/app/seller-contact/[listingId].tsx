@@ -27,12 +27,13 @@ import { Spacing, Colors } from '@/constants/theme';
 import { Label, Body, Supporting } from '@/components/ui/text';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
+import { useSearch } from '@/context/search-context';
 import { getListingDetailed, ListingDetailed } from '@/lib/listing-api';
 import { normalizeSellerData, SellerInfo, getSellerListings, SellerListingCard } from '@/lib/seller-api';
 import { createConversation } from '@/lib/messaging-api';
 import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
 import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
-import { PhoneActionSheet } from '@/components/sheets/phone-action-sheet';
+import { PhoneActionSheet, FinancingSheet } from '@/components/sheets';
 
 // Modular components
 import {
@@ -56,12 +57,14 @@ export default function SellerContactScreen() {
   const router = useRouter();
   const { colors } = useTheme();
   const { isAuthenticated } = useAuth();
+  const { applySearch, clearSearch, clearFilterParams } = useSearch();
   const insets = useSafeAreaInsets();
 
   const [listing, setListing] = useState<ListingDetailed | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [phoneSheetVisible, setPhoneSheetVisible] = useState(false);
+  const [financingSheetVisible, setFinancingSheetVisible] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [otherListings, setOtherListings] = useState<SellerListingCard[]>([]);
   const [otherListingsTotal, setOtherListingsTotal] = useState(0);
@@ -206,7 +209,36 @@ export default function SellerContactScreen() {
   }, [router]);
 
   const handleViewAllListings = useCallback(() => {
-    Alert.alert('Coming Soon', 'Full seller inventory page coming soon!');
+    if (!seller) return;
+    
+    // Clear existing search/filters and apply seller filter
+    clearSearch();
+    clearFilterParams();
+    
+    if (seller.type === 'partner') {
+      // Dealers use partnerId
+      applySearch({
+        partnerId: seller.id,
+        partnerName: seller.name,
+      });
+    } else {
+      // Private sellers use sellerId
+      applySearch({
+        sellerId: seller.id,
+        sellerName: seller.name,
+      });
+    }
+    // Navigate to browse tab
+    router.push('/(tabs)/browse');
+  }, [seller, applySearch, clearSearch, clearFilterParams, router]);
+
+  const handleCustomizeFinancing = useCallback(() => {
+    setFinancingSheetVisible(true);
+  }, []);
+
+  const handleApplyCustomFinancing = useCallback((dp: number, term: number) => {
+    setDownPaymentPercent(dp);
+    setLoanTermMonths(term);
   }, []);
 
   // Handle scroll to show/hide top gradient
@@ -328,6 +360,7 @@ export default function SellerContactScreen() {
           interestRate={interestRate}
           onDownPaymentChange={setDownPaymentPercent}
           onTermChange={setLoanTermMonths}
+          onCustomize={handleCustomizeFinancing}
           colors={colors}
         />
 
@@ -352,6 +385,17 @@ export default function SellerContactScreen() {
           phoneNumber={seller.phone}
         />
       )}
+
+      {/* Financing Sheet */}
+      <FinancingSheet
+        visible={financingSheetVisible}
+        onClose={() => setFinancingSheetVisible(false)}
+        initialDownPayment={downPaymentPercent}
+        initialTerm={loanTermMonths}
+        price={listing.listing.price}
+        interestRate={interestRate}
+        onApply={handleApplyCustomFinancing}
+      />
     </View>
   );
 }

@@ -382,80 +382,84 @@ export function InventoryScreen() {
   // MAIN RENDER
   // ════════════════════════════════════════════════════════════════════════
 
+  // Calculate header height for content offset
+  const headerHeight = insets.top + Spacing.md + 32 + Spacing.md + 36 + Spacing.md; // safe area + title + gap + pills + bottom padding
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* ─────────────────────── Header ────────────────────────────────── */}
-      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+      {/* ─────────────────────── Floating Header (absolute) ────────────────────────────────── */}
+      <View style={[styles.header, { paddingTop: insets.top + Spacing.md, backgroundColor: colors.background, paddingHorizontal: Spacing.lg }]}>
+        {/* Title */}
         <Heading size="large">Inventory</Heading>
-      </View>
 
-      {/* ─────────────────────── Filter Pills (floating tabs) ────────────── */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.pillScroll}
-        contentContainerStyle={styles.pillScrollContent}
-      >
-        {STATUS_TABS.map((tab) => {
-          const isActive = tab.key === activeTab;
-          const count = tab.count(stats);
+        {/* Filter Pills */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.pillScroll}
+          contentContainerStyle={styles.pillScrollContent}
+        >
+          {STATUS_TABS.map((tab) => {
+            const isActive = tab.key === activeTab;
+            const count = tab.count(stats);
 
-          return (
-            <HapticPressable
-              key={tab.key}
-              onPress={() => handleTabChange(tab.key)}
-              style={[
-                styles.pill,
-                {
-                  backgroundColor: isActive ? colors.fill : colors.surface,
-                  borderColor: colors.border,
-                },
-              ]}
-            >
-              {({ pressed }) => (
-                <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
-                  <Body
-                    size="small"
-                    style={{
-                      fontFamily: isActive ? 'Inter_600SemiBold' : 'Inter_500Medium',
-                      color: isActive ? colors.text : colors.textSecondary,
-                    }}
-                  >
-                    {tab.label}
-                  </Body>
-                  {count > 0 && (
-                    <View
-                      style={[
-                        styles.pillBadge,
-                        { backgroundColor: colors.text },
-                      ]}
+            return (
+              <HapticPressable
+                key={tab.key}
+                onPress={() => handleTabChange(tab.key)}
+                style={[
+                  styles.pill,
+                  {
+                    backgroundColor: isActive ? colors.fill : colors.surface,
+                    borderColor: colors.border,
+                  },
+                ]}
+              >
+                {({ pressed }) => (
+                  <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
+                    <Body
+                      size="small"
+                      style={{
+                        fontFamily: isActive ? 'Inter_600SemiBold' : 'Inter_500Medium',
+                        color: isActive ? colors.text : colors.textSecondary,
+                      }}
                     >
-                      <Label
-                        size="badge"
-                        uppercase={false}
-                        style={{ color: colors.background }}
+                      {tab.label}
+                    </Body>
+                    {count > 0 && (
+                      <View
+                        style={[
+                          styles.pillBadge,
+                          { backgroundColor: colors.text },
+                        ]}
                       >
-                        {count > 99 ? '99+' : count}
-                      </Label>
-                    </View>
-                  )}
-                </View>
-              )}
-            </HapticPressable>
-          );
-        })}
-      </ScrollView>
+                        <Label
+                          size="badge"
+                          uppercase={false}
+                          style={{ color: colors.background }}
+                        >
+                          {count > 99 ? '99+' : count}
+                        </Label>
+                      </View>
+                    )}
+                  </View>
+                )}
+              </HapticPressable>
+            );
+          })}
+        </ScrollView>
+      </View>
 
       {/* ─────────────────────── Content ─────────────────────────────────── */}
       {isLoading && listings.length === 0 ? (
-        <View style={styles.centerContainer}>
+        <View style={[styles.centerContainer, { paddingTop: headerHeight }]}>
           <ActivityIndicator size="large" color={colors.primary} />
           <Body size="medium" tone="secondary" style={{ marginTop: Spacing.lg }}>
             Loading your listings…
           </Body>
         </View>
       ) : error && listings.length === 0 ? (
-        <View style={styles.centerContainer}>
+        <View style={[styles.centerContainer, { paddingTop: headerHeight }]}>
           <Ionicons name="alert-circle-outline" size={48} color={colors.error} />
           <Body
             size="medium"
@@ -473,7 +477,7 @@ export function InventoryScreen() {
           data={listings}
           keyExtractor={(item) => item.id}
           renderItem={renderCard}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={[styles.listContent, { paddingTop: headerHeight }]}
           ListEmptyComponent={renderEmptyState}
           ListFooterComponent={renderFooter}
           refreshControl={
@@ -481,6 +485,7 @@ export function InventoryScreen() {
               refreshing={isRefreshing}
               onRefresh={handleRefresh}
               tintColor={colors.primary}
+              progressViewOffset={headerHeight}
             />
           }
           onEndReached={handleLoadMore}
@@ -578,10 +583,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // ── Header ─────────────────────────────────────────────────────────────────
+  // ── Header (absolute floating) ─────────────────────────────────────────────────────────────────
   header: {
-    paddingHorizontal: Spacing.lg,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 20,
     paddingBottom: Spacing.md,
+    flexDirection: 'column',
+    gap: Spacing.md,
   },
 
   // ── Filter Pills (floating tabs) ───────────────────────────────────────
@@ -589,10 +600,10 @@ const styles = StyleSheet.create({
     flexGrow: 0,
   },
   pillScrollContent: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: 4,
-    gap: 8,
+    flexDirection: 'row',
     alignItems: 'center',
+    gap: Spacing.md,
+    paddingRight: Spacing.lg,
   },
   fab: {
     position: 'absolute',
@@ -616,11 +627,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     justifyContent: 'center',
     paddingHorizontal: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
   },
   pillContent: {
     flexDirection: 'row',

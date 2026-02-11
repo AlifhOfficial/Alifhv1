@@ -8,6 +8,7 @@
 import React, { memo, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { HapticPressable } from '@/components/ui';
+import { Settings2 } from 'lucide-react-native';
 
 import { Spacing, Radius } from '@/constants/theme';
 import { Label, Data, Supporting } from '@/components/ui';
@@ -24,8 +25,9 @@ export const FinancingCalculator = memo(function FinancingCalculator({
   interestRate,
   onDownPaymentChange,
   onTermChange,
+  onCustomize,
   colors,
-}: FinancingCalculatorProps) {
+}: FinancingCalculatorProps & { onCustomize?: () => void }) {
   const emi = useMemo(() => {
     const downPayment = price * (downPaymentPercent / 100);
     return calculateEMI(price - downPayment, interestRate, loanTermMonths);
@@ -37,7 +39,15 @@ export const FinancingCalculator = memo(function FinancingCalculator({
 
   return (
     <View style={localStyles.section}>
-      <Label size="small" tone="muted">FINANCING ESTIMATE</Label>
+      <View style={localStyles.headerRow}>
+        <Label size="medium" tone="muted">FINANCING ESTIMATE</Label>
+        {onCustomize && (
+          <HapticPressable onPress={onCustomize} hitSlop={8} style={localStyles.customizeBtn}>
+            <Settings2 size={16} color={colors.textSecondary} />
+            <Supporting size="small">Customize</Supporting>
+          </HapticPressable>
+        )}
+      </View>
       
       {/* Monthly Payment */}
       <View style={localStyles.emiRow}>
@@ -106,6 +116,11 @@ export const FinancingCalculator = memo(function FinancingCalculator({
           })}
         </View>
       </View>
+
+      {/* Disclaimer */}
+      <Supporting size="mini" tone="muted" style={localStyles.disclaimer}>
+        Estimate only. Actual rates may vary based on bank and credit profile.
+      </Supporting>
     </View>
   );
 });
@@ -113,6 +128,16 @@ export const FinancingCalculator = memo(function FinancingCalculator({
 const localStyles = StyleSheet.create({
   section: {
     gap: Spacing.md,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  customizeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
   },
   emiRow: {
     gap: 2,
@@ -135,5 +160,8 @@ const localStyles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     borderRadius: Radius.full,
     borderWidth: 1,
+  },
+  disclaimer: {
+    marginTop: Spacing.xs,
   },
 });

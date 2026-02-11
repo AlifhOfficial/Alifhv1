@@ -60,7 +60,7 @@ export function CarCardMinimal({
       className={cn(
         'group flex flex-col overflow-hidden rounded-lg transition-all',
         isBlkListing 
-          ? 'bg-black border border-zinc-800 hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-900/50' 
+          ? 'bg-white dark:bg-[#0D0D0D] border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-900/50' 
           : 'bg-sidebar border border-sidebar-border hover:border-sidebar-border/80 hover:shadow-sm',
         className
       )}
@@ -86,7 +86,7 @@ export function CarCardMinimal({
           {/* Make/Model */}
           <p className={cn(
             "text-sm font-bold truncate",
-            isBlkListing ? "text-white" : "text-foreground"
+            isBlkListing ? "text-zinc-900 dark:text-white" : "text-foreground"
           )}>
             {make} {model}
           </p>
@@ -95,7 +95,7 @@ export function CarCardMinimal({
           <div className="flex items-center gap-1.5">
             <p className={cn(
               "text-xs font-semibold truncate",
-              isBlkListing ? "text-zinc-500" : "text-muted-foreground"
+              isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground"
             )}>
               {displaySellerName}
             </p>

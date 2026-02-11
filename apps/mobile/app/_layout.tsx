@@ -217,8 +217,8 @@ function RootLayoutNav() {
       {/* Global Safe Area Gradients - hidden when chrome is hidden */}
       {isTabBarVisible && <BottomSafeAreaGradient />}
       
-      {/* Global Tab Bar - visible on all screens unless explicitly hidden */}
-      {isTabBarVisible && <GlobalTabBar />}
+      {/* Global Tab Bar - always render, let component handle visibility */}
+      <GlobalTabBar />
       
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       

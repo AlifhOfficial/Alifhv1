@@ -6,7 +6,7 @@
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { HapticPressable } from '@/components/ui';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,21 +14,22 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Supporting, ButtonText } from '@/components/ui';
-import type { FacetBucket } from '@/lib/search-api';
+import { searchApi, type FacetBucket, type SearchParams } from '@/lib/search-api';
 
 interface LocationFilterSheetProps {
   visible: boolean;
   onClose: () => void;
-  options: FacetBucket[];
   selected: string[];
+  /** Current filter context - facets will be fetched dynamically based on this */
+  filterContext?: Omit<SearchParams, 'emirate' | 'limit' | 'page'>;
   onApply: (selected: string[]) => void;
 }
 
 export function LocationFilterSheet({ 
   visible, 
   onClose, 
-  options,
   selected,
+  filterContext = {},
   onApply,
 }: LocationFilterSheetProps) {
   const { colorScheme } = useTheme();
@@ -38,6 +39,10 @@ export function LocationFilterSheet({
 
   // Local state for selection
   const [localSelected, setLocalSelected] = useState<string[]>(selected);
+  
+  // Dynamic facets
+  const [options, setOptions] = useState<FacetBucket[]>([]);
+  const [isLoadingFacets, setIsLoadingFacets] = useState(false);
 
   // Sync with props when sheet opens
   useEffect(() => {
@@ -45,6 +50,18 @@ export function LocationFilterSheet({
       setLocalSelected(selected);
     }
   }, [visible, selected]);
+
+  // Fetch emirate facets dynamically when sheet opens or filter context changes
+  useEffect(() => {
+    if (visible) {
+      setIsLoadingFacets(true);
+      searchApi
+        .getFacets(filterContext)
+        .then((result) => setOptions(result?.emirate ?? []))
+        .catch(console.error)
+        .finally(() => setIsLoadingFacets(false));
+    }
+  }, [visible, filterContext]);
 
   const snapPoints = useMemo(() => ['60%', '94%'], []);
 
@@ -114,16 +131,16 @@ export function LocationFilterSheet({
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
+      backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
+      handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
       detached
       bottomInset={insets.bottom + 20}
       style={styles.sheetContainer}
     >
-      <BottomSheetView style={styles.content}>
+      <BottomSheetScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="medium" style={{ color: colors.text }}>Location</Heading>
+          <Heading size="medium">Location</Heading>
           <HapticPressable 
             onPress={onClose} 
             hitSlop={Spacing.md}
@@ -149,10 +166,10 @@ export function LocationFilterSheet({
               >
                 <View style={styles.labelRow}>
                   <Body
-                    size="medium"
+                    size="large"
                     style={{ 
                       color: isSelected ? colors.text : colors.textSecondary,
-                      fontFamily: isSelected ? 'Inter_500Medium' : 'Inter_400Regular',
+                      fontFamily: isSelected ? 'Inter_600SemiBold' : 'Inter_400Regular',
                     }}
                   >
                     {option.label}
@@ -195,14 +212,22 @@ export function LocationFilterSheet({
         </View>
 
         <View style={{ height: insets.bottom + Spacing['3xl'] }} />
-      </BottomSheetView>
+      </BottomSheetScrollView>
     </BottomSheetModal>
   );
 }
 
 const styles = StyleSheet.create({
   sheetContainer: {
-    marginHorizontal: 16,
+    marginHorizontal: Spacing.md,
+  },
+  background: {
+    borderRadius: Radius['3xl'],
+  },
+  handleIndicator: {
+    width: 36,
+    height: 4,
+    borderRadius: Radius.full,
   },
   content: {
     flex: 1,
@@ -212,7 +237,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xl,
     paddingHorizontal: Spacing.xs,
   },
   closeButton: {
@@ -223,14 +248,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   listContainer: {
-    gap: 4,
+    gap: Spacing.xs,
     marginBottom: Spacing.xl,
   },
   listItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 14,
+    paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.sm,
   },
   labelRow: {
@@ -240,17 +265,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   radio: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 22,
+    height: 22,
+    borderRadius: Radius.full,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 12,
+    height: 12,
+    borderRadius: Radius.full,
   },
   actions: {
     flexDirection: 'row',

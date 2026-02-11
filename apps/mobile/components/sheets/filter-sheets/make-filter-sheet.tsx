@@ -4,9 +4,9 @@
  */
 
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
-import { View, StyleSheet, Platform, FlatList, TextInput } from 'react-native';
+import { View, StyleSheet, Platform, TextInput } from 'react-native';
 import { HapticPressable } from '@/components/ui';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,13 +14,16 @@ import { Search, X } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Body, ButtonText } from '@/components/ui';
+import { Heading, Body, Supporting, ButtonText } from '@/components/ui';
 import { CAR_MAKES } from '@/lib/filter-constants';
+import { searchApi, type FacetBucket, type SearchParams } from '@/lib/search-api';
 
 interface MakeFilterSheetProps {
   visible: boolean;
   onClose: () => void;
   selected: string[];
+  /** Current filter context - facets will be fetched dynamically based on this */
+  filterContext?: Omit<SearchParams, 'make' | 'limit' | 'page'>;
   onApply: (selected: string[]) => void;
 }
 
@@ -28,6 +31,7 @@ export function MakeFilterSheet({
   visible,
   onClose,
   selected,
+  filterContext = {},
   onApply,
 }: MakeFilterSheetProps) {
   const { colorScheme } = useTheme();
@@ -39,6 +43,10 @@ export function MakeFilterSheet({
   const [localSelected, setLocalSelected] = useState<string[]>(selected);
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<TextInput>(null);
+  
+  // Dynamic facets
+  const [facets, setFacets] = useState<FacetBucket[]>([]);
+  const [isLoadingFacets, setIsLoadingFacets] = useState(false);
 
   // Sync with props when sheet opens
   useEffect(() => {
@@ -47,6 +55,20 @@ export function MakeFilterSheet({
       setSearchQuery('');
     }
   }, [visible, selected]);
+
+  // Fetch facets dynamically when sheet opens or filter context changes
+  useEffect(() => {
+    if (visible) {
+      setIsLoadingFacets(true);
+      searchApi
+        .getFacets(filterContext)
+        .then((result) => {
+          setFacets(result?.make ?? []);
+        })
+        .catch(console.error)
+        .finally(() => setIsLoadingFacets(false));
+    }
+  }, [visible, filterContext]);
 
   const snapPoints = useMemo(() => ['60%', '94%'], []);
 
@@ -123,21 +145,30 @@ export function MakeFilterSheet({
 
   const renderItem = useCallback(({ item: make }: { item: string }) => {
     const isSelected = localSelected.includes(make);
+    const facet = facets.find(f => f.value === make);
+    const count = facet?.count ?? 0;
 
     return (
       <HapticPressable
         onPress={() => handleToggle(make)}
         style={styles.listItem}
       >
-        <Body
-          size="medium"
-          style={{ 
-            color: isSelected ? colors.text : colors.textSecondary,
-            fontFamily: isSelected ? 'Inter_500Medium' : 'Inter_400Regular',
-          }}
-        >
-          {make}
-        </Body>
+        <View style={styles.labelRow}>
+          <Body
+            size="large"
+            style={{ 
+              color: isSelected ? colors.text : colors.textSecondary,
+              fontFamily: isSelected ? 'Inter_600SemiBold' : 'Inter_400Regular',
+            }}
+          >
+            {make}
+          </Body>
+          {count > 0 && (
+            <Supporting size="small" tone="muted">
+              {count.toLocaleString()}
+            </Supporting>
+          )}
+        </View>
         <View style={[
           styles.radio,
           { borderColor: isSelected ? colors.text : colors.border },
@@ -148,7 +179,7 @@ export function MakeFilterSheet({
         </View>
       </HapticPressable>
     );
-  }, [localSelected, colors, handleToggle]);
+  }, [localSelected, colors, handleToggle, facets]);
 
   return (
     <BottomSheetModal
@@ -158,8 +189,8 @@ export function MakeFilterSheet({
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
+      backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
+      handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
       detached
       bottomInset={insets.bottom + 20}
       style={styles.sheetContainer}
@@ -167,7 +198,7 @@ export function MakeFilterSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="medium" style={{ color: colors.text }}>Make</Heading>
+          <Heading size="medium">Make</Heading>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -201,9 +232,9 @@ export function MakeFilterSheet({
         </View>
 
         {/* Makes List */}
-        <FlatList
+        <BottomSheetFlatList
           data={filteredMakes}
-          keyExtractor={(item) => item}
+          keyExtractor={(item: string) => item}
           renderItem={renderItem}
           style={styles.listContainer}
           keyboardShouldPersistTaps="handled"
@@ -236,7 +267,15 @@ export function MakeFilterSheet({
 
 const styles = StyleSheet.create({
   sheetContainer: {
-    marginHorizontal: 16,
+    marginHorizontal: Spacing.md,
+  },
+  background: {
+    borderRadius: Radius['3xl'],
+  },
+  handleIndicator: {
+    width: 36,
+    height: 4,
+    borderRadius: Radius.full,
   },
   content: {
     paddingHorizontal: Spacing.lg,
@@ -247,7 +286,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xl,
   },
   closeButton: {
     width: 32,
@@ -280,21 +319,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 14,
+    paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.sm,
   },
+  labelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    flex: 1,
+  },
   radio: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 22,
+    height: 22,
+    borderRadius: Radius.full,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 12,
+    height: 12,
+    borderRadius: Radius.full,
   },
   actions: {
     flexDirection: 'row',

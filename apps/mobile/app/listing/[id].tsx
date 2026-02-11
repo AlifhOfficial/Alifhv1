@@ -24,6 +24,7 @@ import { useTabBar } from '@/context/tab-bar-context';
 import { CarCardDetailedM, CarCardDetailedMSkeleton } from '@/components/cards';
 import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
+import { FloatingListingActions } from '@/components/listings';
 import { listingApi, ListingDetailed } from '@/lib/listing-api';
 
 export default function ListingDetailScreen() {
@@ -39,6 +40,8 @@ export default function ListingDetailScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showTopGradient, setShowTopGradient] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isSuperliked, setIsSuperliked] = useState(false);
 
   // Handle scroll to show/hide top gradient
   const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -84,13 +87,15 @@ export default function ListingDetailScreen() {
     fetchListing(true);
   }, [fetchListing]);
 
-  const handleShare = useCallback(async () => {
+  const handleShare = useCallback(async (listingId: string) => {
     if (!listing) return;
     try {
       const carTitle = `${listing.listing.year} ${listing.listing.make} ${listing.listing.model}`;
-      const shareUrl = `https://revvup.ae/listing/${id}`;
+      const shareUrl = `https://revvup.ae/listing/${listingId}`;
       if (Platform.OS === 'web') {
-        await navigator.clipboard.writeText(shareUrl);
+        if (navigator?.clipboard) {
+          await navigator.clipboard.writeText(shareUrl);
+        }
       } else {
         await Share.share({
           title: carTitle,
@@ -101,7 +106,17 @@ export default function ListingDetailScreen() {
     } catch (error) {
       console.error('Share failed:', error);
     }
-  }, [listing, id]);
+  }, [listing]);
+
+  const handleFavoritePress = useCallback((listingId: string) => {
+    setIsFavorite(!isFavorite);
+    // TODO: Call API to persist favorite status
+  }, [isFavorite]);
+
+  const handleSuperlikePress = useCallback((listingId: string) => {
+    setIsSuperliked(!isSuperliked);
+    // TODO: Call API to persist superlike status
+  }, [isSuperliked]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -118,7 +133,7 @@ export default function ListingDetailScreen() {
         style={styles.scrollView}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingBottom: insets.bottom + Spacing['3xl'] },
+          { paddingBottom: insets.bottom + Spacing['3xl'] + 80 },
         ]}
         showsVerticalScrollIndicator={false}
         onScroll={handleScroll}
@@ -147,6 +162,18 @@ export default function ListingDetailScreen() {
           />
         ) : null}
       </ScrollView>
+
+      {/* Floating Listing Actions */}
+      {listing && (
+        <FloatingListingActions
+          id={id!}
+          isFavorite={isFavorite}
+          isSuperliked={isSuperliked}
+          onFavoritePress={handleFavoritePress}
+          onSuperlikePress={handleSuperlikePress}
+          onSharePress={handleShare}
+        />
+      )}
 
       {/* Bottom Safe Area Gradient */}
       <BottomSafeAreaGradient />

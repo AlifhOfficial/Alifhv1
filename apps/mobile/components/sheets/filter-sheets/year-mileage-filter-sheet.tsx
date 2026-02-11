@@ -317,10 +317,10 @@ export function YearMileageFilterSheet({
 
 const styles = StyleSheet.create({
   sheetContainer: {
-    marginHorizontal: 16,
+    marginHorizontal: Spacing.md,
   },
   background: {
-    borderRadius: 24,
+    borderRadius: Radius['3xl'],
   },
   handleIndicator: {
     width: 36,

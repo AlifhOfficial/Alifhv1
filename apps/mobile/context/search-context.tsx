@@ -28,6 +28,8 @@ export type SearchParams = {
   extras?: string[];
   partnerId?: string;
   partnerName?: string;
+  sellerId?: string;
+  sellerName?: string;
 };
 
 // Filter params for browse screen
@@ -160,6 +162,13 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
         if (key === 'partnerName') {
           delete newParams.partnerId;
         }
+        // Clear sellerId + sellerName together
+        if (key === 'sellerId') {
+          delete newParams.sellerName;
+        }
+        if (key === 'sellerName') {
+          delete newParams.sellerId;
+        }
       }
       
       // If no params left, return null
@@ -215,6 +224,10 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
       // Partner/dealer chip
       if (searchParams.partnerId && searchParams.partnerName) {
         chips.push({ key: 'partnerId', label: `Dealer: ${searchParams.partnerName}`, value: searchParams.partnerId });
+      }
+      // Private seller chip
+      if (searchParams.sellerId && searchParams.sellerName) {
+        chips.push({ key: 'sellerId', label: `Seller: ${searchParams.sellerName}`, value: searchParams.sellerId });
       }
     }
     

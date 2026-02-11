@@ -269,13 +269,13 @@ export function CarCard({
     <div className={cn(
       "group relative flex flex-col overflow-hidden rounded-lg transition-all duration-300 w-full",
       isBlkListing 
-        ? "bg-black border border-zinc-800 hover:border-zinc-700 hover:shadow-2xl hover:shadow-zinc-900/50" 
+        ? "bg-white dark:bg-[#0D0D0D] border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-2xl hover:shadow-zinc-900/50" 
         : "bg-sidebar border border-sidebar-border hover:border-sidebar-border/80 hover:shadow-md",
       className
     )}>
       {/* Subtle top accent for BLK listings */}
       {isBlkListing && (
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-zinc-700 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-zinc-300 dark:via-zinc-700 to-transparent" />
       )}
 
       {/* Image Section */}
@@ -352,14 +352,14 @@ export function CarCard({
             <h3 className={cn(
               "text-sm sm:text-[15px] font-bold tracking-tight line-clamp-1 transition-colors flex-1 min-w-0",
               isBlkListing 
-                ? "text-white group-hover/title:text-zinc-300" 
+                ? "text-zinc-900 dark:text-white group-hover/title:text-zinc-600 dark:group-hover/title:text-zinc-300" 
                 : "text-foreground group-hover/title:text-primary"
             )}>
               {make} {model}
             </h3>
             <span className={cn(
               "text-[11px] sm:text-xs font-semibold tabular-nums flex-shrink-0",
-              isBlkListing ? "text-zinc-500" : "text-muted-foreground/70"
+              isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
             )}>
               {year}
             </span>
@@ -369,7 +369,7 @@ export function CarCard({
         {/* Price */}
         <p className={cn(
           "text-base sm:text-lg font-bold tracking-tight",
-          isBlkListing ? "text-white" : "text-blue-600"
+          isBlkListing ? "text-zinc-900 dark:text-white" : "text-blue-600"
         )}>
           {formatPrice(price)}
         </p>
@@ -378,12 +378,12 @@ export function CarCard({
         <div className="flex items-center justify-between gap-1.5 sm:hidden">
           <div className={cn(
             "flex items-center gap-1 text-[11px] xs:text-xs min-w-0 overflow-hidden",
-            isBlkListing ? "text-zinc-400" : "text-muted-foreground"
+            isBlkListing ? "text-zinc-500 dark:text-zinc-400" : "text-muted-foreground"
           )}>
             <span className="font-medium whitespace-nowrap">{formatMileage(mileage)} km</span>
-            <span className={isBlkListing ? "text-zinc-600" : "text-muted-foreground/40"}>•</span>
+            <span className={isBlkListing ? "text-zinc-300 dark:text-zinc-600" : "text-muted-foreground/40"}>•</span>
             <span className="font-medium whitespace-nowrap">{displaySpecs}</span>
-            <span className={isBlkListing ? "text-zinc-600" : "text-muted-foreground/40"}>•</span>
+            <span className={isBlkListing ? "text-zinc-300 dark:text-zinc-600" : "text-muted-foreground/40"}>•</span>
             <span className="font-medium truncate">{displayEmirate}</span>
           </div>
           
@@ -393,7 +393,7 @@ export function CarCard({
               className={cn(
                 "rounded-full p-1.5 transition-colors touch-manipulation",
                 isBlkListing 
-                  ? "text-zinc-400 active:bg-zinc-800 active:text-zinc-200" 
+                  ? "text-zinc-400 dark:text-zinc-400 active:bg-zinc-200 dark:active:bg-zinc-800 active:text-zinc-600 dark:active:text-zinc-200" 
                   : "text-muted-foreground active:bg-muted active:text-foreground"
               )}
               aria-label="Share"
@@ -413,7 +413,7 @@ export function CarCard({
                 mounted && favorite.isFavorite
                   ? "text-rose-500 active:bg-rose-500/10"
                   : isBlkListing 
-                    ? "text-zinc-400 active:bg-zinc-800 active:text-zinc-200" 
+                    ? "text-zinc-400 dark:text-zinc-400 active:bg-zinc-200 dark:active:bg-zinc-800 active:text-zinc-600 dark:active:text-zinc-200" 
                     : "text-muted-foreground active:bg-muted active:text-foreground"
               )}
               aria-label={(mounted && favorite.isFavorite) ? "Remove favorite" : "Add to favorites"}
@@ -444,7 +444,7 @@ export function CarCard({
                 mounted && superlike.isSuperliked
                   ? "text-yellow-500 active:bg-yellow-500/10"
                   : isBlkListing 
-                    ? "text-zinc-400 active:bg-zinc-800 active:text-zinc-200" 
+                    ? "text-zinc-400 dark:text-zinc-400 active:bg-zinc-200 dark:active:bg-zinc-800 active:text-zinc-600 dark:active:text-zinc-200" 
                     : "text-muted-foreground active:bg-muted active:text-foreground"
               )}
               aria-label={(mounted && superlike.isSuperliked) ? "Remove superlike" : "Superlike"}
@@ -474,21 +474,21 @@ export function CarCard({
         <div className="hidden sm:flex items-center gap-1.5 text-sm">
           <span className={cn(
             "font-semibold",
-            isBlkListing ? "text-zinc-500" : "text-muted-foreground/70"
+            isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
           )}>
             {formatMileage(mileage)} km
           </span>
-          <span className={isBlkListing ? "text-zinc-700" : "text-muted-foreground/30"}>·</span>
+          <span className={isBlkListing ? "text-zinc-300 dark:text-zinc-700" : "text-muted-foreground/30"}>·</span>
           <span className={cn(
             "font-semibold",
-            isBlkListing ? "text-zinc-500" : "text-muted-foreground/70"
+            isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
           )}>
             {displaySpecs}
           </span>
-          <span className={isBlkListing ? "text-zinc-700" : "text-muted-foreground/30"}>·</span>
+          <span className={isBlkListing ? "text-zinc-300 dark:text-zinc-700" : "text-muted-foreground/30"}>·</span>
           <span className={cn(
             "font-semibold truncate",
-            isBlkListing ? "text-zinc-500" : "text-muted-foreground/70"
+            isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
           )}>
             {displayEmirate}
           </span>
@@ -546,7 +546,7 @@ export function CarCard({
             )}
             <span className={cn(
               "text-[13px] font-medium",
-              isBlkListing ? "text-zinc-200" : "text-foreground"
+              isBlkListing ? "text-zinc-700 dark:text-zinc-200" : "text-foreground"
             )}>
               {displaySellerName}
             </span>
@@ -569,7 +569,7 @@ export function CarCard({
               className={cn(
                 "rounded-full p-1.5 transition-colors touch-manipulation",
                 isBlkListing 
-                  ? "text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/50 active:bg-zinc-700/50" 
+                  ? "text-zinc-400 dark:text-zinc-600 hover:text-zinc-600 dark:hover:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 active:bg-zinc-200 dark:active:bg-zinc-700/50" 
                   : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50 active:bg-muted/70"
               )}
               aria-label="Share"
@@ -589,10 +589,10 @@ export function CarCard({
                 favorite.isUpdating && "opacity-50 cursor-not-allowed",
                 mounted && favorite.isFavorite
                   ? isBlkListing 
-                    ? "text-rose-400 hover:bg-zinc-800/50" 
+                    ? "text-rose-500 dark:text-rose-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50" 
                     : "text-rose-500 hover:bg-muted/50"
                   : isBlkListing 
-                    ? "text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/50 active:bg-zinc-700/50" 
+                    ? "text-zinc-400 dark:text-zinc-600 hover:text-zinc-600 dark:hover:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 active:bg-zinc-200 dark:active:bg-zinc-700/50" 
                     : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50 active:bg-muted/70"
               )}
               aria-label={(mounted && favorite.isFavorite) ? "Remove favorite" : "Add to favorites"}
@@ -624,10 +624,10 @@ export function CarCard({
                 superlike.isUpdating && "opacity-50 cursor-not-allowed",
                 mounted && superlike.isSuperliked
                   ? isBlkListing 
-                    ? "text-yellow-400 hover:bg-zinc-800/50" 
+                    ? "text-yellow-500 dark:text-yellow-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50" 
                     : "text-yellow-500 hover:bg-muted/50"
                   : isBlkListing 
-                    ? "text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/50 active:bg-zinc-700/50" 
+                    ? "text-zinc-400 dark:text-zinc-600 hover:text-zinc-600 dark:hover:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 active:bg-zinc-200 dark:active:bg-zinc-700/50" 
                     : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50 active:bg-muted/70"
               )}
               aria-label={(mounted && superlike.isSuperliked) ? "Remove superlike" : "Superlike"}
