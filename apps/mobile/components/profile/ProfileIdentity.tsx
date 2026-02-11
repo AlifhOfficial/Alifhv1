@@ -9,6 +9,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { CheckCircle2 } from 'lucide-react-native';
 
 import { Heading, Data, Supporting } from '@/components/ui';
+import { Spacing } from '@/constants/theme';
 import { ProfileAvatar } from './ProfileAvatar';
 import type { ThemeColors } from './types';
 
@@ -96,18 +97,18 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
-    marginBottom: 24,
-    marginTop: 8,
+    gap: Spacing.lg,
+    marginBottom: Spacing['2xl'],
+    marginTop: Spacing.sm,
   },
   info: {
     flex: 1,
-    gap: 4,
+    gap: Spacing.xs,
   },
   nameRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.sm,
   },
   name: {
     flexShrink: 1,

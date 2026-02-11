@@ -19,7 +19,7 @@ import { CheckCircle2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Supporting, Body, Data, ButtonText } from '@/components/ui';
-import { Typography } from '@/constants/theme';
+import { Typography, Spacing, Radius } from '@/constants/theme';
 import { sendPhoneOTP, verifyPhoneOTP } from '@/lib/profile-api';
 import type { ThemeColors } from './types';
 
@@ -336,20 +336,20 @@ export function PhoneVerificationField({
 
 const styles = StyleSheet.create({
   fieldContainer: {
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    paddingVertical: Spacing.lg - 2,
+    paddingHorizontal: Spacing.lg,
   },
   labelRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 4,
+    marginBottom: Spacing.xs,
   },
   editRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginTop: 8,
+    gap: Spacing.sm,
+    marginTop: Spacing.sm,
   },
   prefix: {
     // Typography handled by <Body> component
@@ -357,44 +357,44 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     height: 44,
-    borderRadius: 10,
+    borderRadius: Radius.lg,
     borderWidth: 1,
-    paddingHorizontal: 12,
+    paddingHorizontal: Spacing.md,
   },
   actions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    gap: 20,
-    marginTop: 12,
+    gap: Spacing.xl,
+    marginTop: Spacing.md,
   },
   loadingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingVertical: 20,
+    gap: Spacing.md,
+    paddingVertical: Spacing.xl,
   },
   otpHint: {
-    marginTop: 4,
-    marginBottom: 12,
+    marginTop: Spacing.xs,
+    marginBottom: Spacing.md,
   },
   otpInput: {
     height: 52,
-    borderRadius: 12,
+    borderRadius: Radius.lg,
     borderWidth: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing.lg,
     textAlign: 'center',
   },
   errorText: {
-    marginTop: 8,
+    marginTop: Spacing.sm,
   },
   otpActions: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 14,
+    marginTop: Spacing.lg - 2,
   },
   otpButtonRow: {
     flexDirection: 'row',
-    gap: 20,
+    gap: Spacing.xl,
   },
 });

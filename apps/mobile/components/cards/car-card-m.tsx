@@ -22,6 +22,7 @@ import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useListingFavorite } from '@/context/favorites-context';
 import { useAuth } from '@/context/auth-context';
+import { playFavChime, playSuperlikeChime } from '@/lib/chime';
 import { 
   Skeleton, 
   SkeletonCircle,
@@ -30,6 +31,10 @@ import {
   Data,
   Label,
   Supporting,
+  ConfettiBurst,
+  useConfettiBurst,
+  FAVORITE_COLORS,
+  SUPERLIKE_COLORS,
 } from '@/components/ui';
 
 // ============================================================================
@@ -158,6 +163,10 @@ export const CarCardM = memo(function CarCardM({
   const isFavorite = isFavoriteProp ?? favoriteState.isFavorite;
   const isSuperliked = isSuperlikedProp ?? favoriteState.isSuperliked;
 
+  // Confetti effects
+  const favConfetti = useConfettiBurst();
+  const superConfetti = useConfettiBurst();
+
   // Derived display values
   const displayImage = thumbnail || images?.[0];
   const displaySpecs = formatSpecs(specs || 'GCC');
@@ -214,7 +223,12 @@ export const CarCardM = memo(function CarCardM({
         }
       });
     }
-  }, [id, onFavoritePress, favoriteState, isAuthenticated, openAuthFlow]);
+    // Fire confetti + chime when toggling ON
+    if (!isFavorite) {
+      favConfetti.fire({ colors: FAVORITE_COLORS, count: 10 });
+      playFavChime();
+    }
+  }, [id, onFavoritePress, favoriteState, isAuthenticated, openAuthFlow, isFavorite, favConfetti]);
 
   const handleSuperlikePress = useCallback(() => {
     if (onSuperlikePress) {
@@ -263,6 +277,8 @@ export const CarCardM = memo(function CarCardM({
         { 
           text: 'Confirm', 
           onPress: () => {
+            superConfetti.fire({ colors: SUPERLIKE_COLORS, count: 14 });
+            playSuperlikeChime();
             favoriteState.toggleSuperlike().catch((err) => {
               if (err?.message === 'AUTH_REQUIRED') {
                 openAuthFlow();
@@ -274,7 +290,7 @@ export const CarCardM = memo(function CarCardM({
         },
       ]
     );
-  }, [id, onSuperlikePress, favoriteState, isAuthenticated, openAuthFlow, isSuperliked]);
+  }, [id, onSuperlikePress, favoriteState, isAuthenticated, openAuthFlow, isSuperliked, superConfetti]);
 
   const handleSharePress = useCallback(async () => {
     if (onSharePress) {
@@ -422,32 +438,38 @@ export const CarCardM = memo(function CarCardM({
           {/* Action Buttons */}
           <View style={styles.actions}>
             {/* Favorite */}
-            <HapticPressable
-              onPress={handleFavoritePress}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={styles.actionButton}
-            >
-              <Heart
-                size={ICON_SIZE}
-                color={isFavorite ? colors.favorite : actionIconColor}
-                fill={isFavorite ? colors.favorite : 'none'}
-                strokeWidth={isFavorite ? 2.25 : 1.75}
-              />
-            </HapticPressable>
+            <View style={styles.actionWrapper}>
+              <HapticPressable
+                onPress={handleFavoritePress}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                style={styles.actionButton}
+              >
+                <Heart
+                  size={ICON_SIZE}
+                  color={isFavorite ? colors.favorite : actionIconColor}
+                  fill={isFavorite ? colors.favorite : 'none'}
+                  strokeWidth={isFavorite ? 2.25 : 1.75}
+                />
+              </HapticPressable>
+              <ConfettiBurst ref={favConfetti.ref} />
+            </View>
 
             {/* Superlike */}
-            <HapticPressable
-              onPress={handleSuperlikePress}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={styles.actionButton}
-            >
-              <Sparkles
-                size={ICON_SIZE}
-                color={isSuperliked ? colors.warning : actionIconColor}
-                fill={isSuperliked ? colors.warning : 'none'}
-                strokeWidth={isSuperliked ? 2.25 : 1.75}
-              />
-            </HapticPressable>
+            <View style={styles.actionWrapper}>
+              <HapticPressable
+                onPress={handleSuperlikePress}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                style={styles.actionButton}
+              >
+                <Sparkles
+                  size={ICON_SIZE}
+                  color={isSuperliked ? colors.warning : actionIconColor}
+                  fill={isSuperliked ? colors.warning : 'none'}
+                  strokeWidth={isSuperliked ? 2.25 : 1.75}
+                />
+              </HapticPressable>
+              <ConfettiBurst ref={superConfetti.ref} />
+            </View>
 
             {/* Share */}
             <HapticPressable
@@ -648,6 +670,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
+  },
+  actionWrapper: {
+    overflow: 'visible',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   actionButton: {
     width: ACTION_BUTTON_SIZE_SM,

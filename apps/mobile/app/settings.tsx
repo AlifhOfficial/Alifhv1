@@ -8,13 +8,12 @@ import {
   StyleSheet,
   View,
   ScrollView,
-  Text,
   Alert,
 } from 'react-native';
-import { LogoPulse } from '@/components/ui';
+import { LogoPulse, Body } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Layout } from '@/constants/theme';
+import { Layout, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import {
@@ -112,9 +111,9 @@ export default function SettingsScreen() {
         <SettingsHeader colors={colors} topInset={insets.top} />
         <View style={styles.loadingContainer}>
           <LogoPulse size={56} />
-          <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+          <Body size="medium" tone="secondary">
             Loading settings...
-          </Text>
+          </Body>
         </View>
       </View>
     );
@@ -221,15 +220,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: Layout.screenPadding,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 12,
-  },
-  loadingText: {
-    fontSize: 16,
+    gap: Spacing.md,
   },
 });

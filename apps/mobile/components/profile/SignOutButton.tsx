@@ -10,6 +10,7 @@ import { LogOut } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { ButtonText } from '@/components/ui';
+import { Spacing, Radius } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 import type { ThemeColors } from './types';
 
@@ -63,9 +64,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
-    paddingVertical: 16,
-    borderRadius: 14,
-    marginTop: 12,
+    gap: Spacing.sm + 2,
+    paddingVertical: Spacing.lg,
+    borderRadius: Radius.xl,
+    marginTop: Spacing.md,
   },
 });

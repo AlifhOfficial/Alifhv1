@@ -10,6 +10,7 @@ import { useRouter } from 'expo-router';
 import { Settings } from 'lucide-react-native';
 
 import { Heading } from '@/components/ui';
+import { Spacing, Radius, Layout } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 interface ProfileHeaderProps {
@@ -21,7 +22,7 @@ export function ProfileHeader({ colors, topInset }: ProfileHeaderProps) {
   const router = useRouter();
 
   return (
-    <View style={[styles.container, { paddingTop: topInset + 8 }]}>
+    <View style={[styles.container, { paddingTop: topInset + Layout.headerPadding }]}>
       {/* Left: Title */}
       <Heading size="large">Profile</Heading>
 
@@ -52,18 +53,18 @@ export function ProfileHeader({ colors, topInset }: ProfileHeaderProps) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 12,
-    paddingHorizontal: 16,
+    paddingBottom: Spacing.md,
+    paddingHorizontal: Layout.screenPadding,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   iconButton: {
-    padding: 4,
+    padding: Spacing.xs,
     borderWidth: 1,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: Spacing['4xl'],
+    height: Spacing['4xl'],
+    borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
   },

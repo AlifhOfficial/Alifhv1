@@ -24,7 +24,7 @@ import { ChevronRight } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Supporting, Body, Data } from '@/components/ui';
-import { Typography } from '@/constants/theme';
+import { Typography, Spacing, Radius } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 interface EditableFieldProps {
@@ -200,8 +200,8 @@ export function EditableField({
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    paddingVertical: Spacing.lg - 2,
+    paddingHorizontal: Spacing.lg,
   },
   row: {
     flexDirection: 'row',
@@ -210,24 +210,24 @@ const styles = StyleSheet.create({
   },
   labelValueContainer: {
     flex: 1,
-    gap: 4,
+    gap: Spacing.xs,
   },
   rightContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.sm,
   },
   chevron: {
-    marginLeft: 4,
+    marginLeft: Spacing.xs,
   },
   editContainer: {
-    marginTop: 8,
-    gap: 12,
+    marginTop: Spacing.sm,
+    gap: Spacing.md,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.sm,
   },
   prefix: {
     // Typography handled by <Body> component
@@ -235,15 +235,15 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     height: 44,
-    borderRadius: 10,
-    paddingHorizontal: 12,
+    borderRadius: Radius.lg,
+    paddingHorizontal: Spacing.md,
   },
   actions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    gap: 20,
+    gap: Spacing.xl,
   },
   actionBtn: {
-    paddingVertical: 4,
+    paddingVertical: Spacing.xs,
   },
 });

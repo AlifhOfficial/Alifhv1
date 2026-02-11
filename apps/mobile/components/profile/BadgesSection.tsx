@@ -9,6 +9,7 @@ import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 
 import { Label, Body, Supporting, ButtonText } from '@/components/ui';
+import { Spacing, Radius } from '@/constants/theme';
 import { Section } from './Section';
 import type { ThemeColors } from './types';
 
@@ -68,22 +69,22 @@ const styles = StyleSheet.create({
   badgesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    padding: 16,
-    gap: 10,
+    padding: Spacing.lg,
+    gap: Spacing.sm + 2,
   },
   badge: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 10,
+    paddingHorizontal: Spacing.lg - 2,
+    paddingVertical: Spacing.sm + 2,
+    borderRadius: Radius.lg,
   },
   badgeText: {
     // Typography handled by <Label> component
   },
   emptyState: {
     alignItems: 'center',
-    paddingVertical: 32,
-    paddingHorizontal: 24,
-    gap: 8,
+    paddingVertical: Spacing['3xl'],
+    paddingHorizontal: Spacing['2xl'],
+    gap: Spacing.sm,
   },
   emptyTitle: {
     // Typography handled by <Body> component
@@ -92,8 +93,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   learnMoreBtn: {
-    marginTop: 12,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
+    marginTop: Spacing.md,
+    paddingVertical: Spacing.sm - 2,
+    paddingHorizontal: Spacing.md,
   },
 });

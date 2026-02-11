@@ -16,7 +16,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
 import { Body, Supporting, Data } from '@/components/ui';
-import { Typography } from '@/constants/theme';
+import { Typography, Spacing, Radius } from '@/constants/theme';
 import { Section } from './Section';
 import type { ThemeColors, EditingField, ProfileFormData } from './types';
 
@@ -142,16 +142,16 @@ export function BioSection({
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    padding: Spacing.lg,
   },
   editContainer: {
-    gap: 14,
+    gap: Spacing.lg - 2,
   },
   input: {
     minHeight: 100,
-    borderRadius: 12,
+    borderRadius: Radius.lg,
     borderWidth: 1,
-    padding: 14,
+    padding: Spacing.lg - 2,
   },
   footer: {
     flexDirection: 'row',
@@ -160,10 +160,10 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: 'row',
-    gap: 24,
+    gap: Spacing['2xl'],
   },
   displayContainer: {
-    gap: 10,
+    gap: Spacing.sm + 2,
   },
   bioText: {
     // lineHeight handled by <Body size="large"> component

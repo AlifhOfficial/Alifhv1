@@ -7,6 +7,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Supporting, Body } from '@/components/ui';
+import { Spacing } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 interface SettingRowProps {
@@ -47,12 +48,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    paddingVertical: Spacing.lg - 2,
+    paddingHorizontal: Spacing.lg,
   },
   content: {
     flex: 1,
-    marginRight: 12,
-    gap: 4,
+    marginRight: Spacing.md,
+    gap: Spacing.xs,
   },
 });

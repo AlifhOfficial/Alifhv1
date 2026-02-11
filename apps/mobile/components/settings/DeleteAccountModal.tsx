@@ -11,7 +11,7 @@ import { Loader2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Heading, Body, Supporting, ButtonText } from '@/components/ui';
-import { Typography } from '@/constants/theme';
+import { Typography, Spacing, Radius } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 interface DeleteAccountModalProps {
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    padding: Spacing['2xl'],
   },
   overlayTouch: {
     ...StyleSheet.absoluteFillObject,
@@ -156,9 +156,9 @@ const styles = StyleSheet.create({
   content: {
     width: '100%',
     maxWidth: 340,
-    borderRadius: 16,
+    borderRadius: Radius.xl,
     borderWidth: 1,
-    padding: 24,
+    padding: Spacing['2xl'],
     ...Platform.select({
       ios: {
         shadowColor: '#000',
@@ -172,31 +172,31 @@ const styles = StyleSheet.create({
     }),
   },
   title: {
-    marginBottom: 8,
+    marginBottom: Spacing.sm,
   },
   description: {
-    marginBottom: 24,
+    marginBottom: Spacing['2xl'],
   },
   inputContainer: {
-    marginBottom: 24,
+    marginBottom: Spacing['2xl'],
   },
   inputLabel: {
-    marginBottom: 8,
+    marginBottom: Spacing.sm,
   },
   input: {
-    height: 48,
-    borderRadius: 12,
+    height: Spacing['5xl'],
+    borderRadius: Radius.lg,
     borderWidth: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing.lg,
   },
   buttons: {
     flexDirection: 'row',
-    gap: 12,
+    gap: Spacing.md,
   },
   button: {
     flex: 1,
-    height: 48,
-    borderRadius: 12,
+    height: Spacing['5xl'],
+    borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
   },

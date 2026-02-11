@@ -12,12 +12,11 @@ import {
   Platform,
   Alert,
   RefreshControl,
-  Text,
 } from 'react-native';
-import { LogoPulse } from '@/components/ui';
+import { LogoPulse, Body, Supporting } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Layout, Typography } from '@/constants/theme';
+import { Layout, Spacing, Radius } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 import {
   useProfileColors,
@@ -136,9 +135,9 @@ export default function ProfileScreen() {
         <ProfileHeader colors={colors} topInset={insets.top} />
         <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
           <LogoPulse size={56} />
-          <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+          <Body size="medium" tone="secondary">
             Loading profile...
-          </Text>
+          </Body>
         </View>
       </View>
     );
@@ -150,15 +149,12 @@ export default function ProfileScreen() {
       <View style={[styles.container, styles.centered]}>
         <ProfileHeader colors={colors} topInset={insets.top} />
         <View style={[styles.errorContainer, { backgroundColor: colors.background }]}>
-          <Text style={[styles.errorText, { color: colors.error }]}>
+          <Body size="medium" tone="error" style={styles.errorText}>
             {error}
-          </Text>
-          <Text
-            style={[styles.retryText, { color: colors.primary }]}
-            onPress={refresh}
-          >
+          </Body>
+          <Body size="medium" tone="primary" onPress={refresh}>
             Tap to retry
-          </Text>
+          </Body>
         </View>
       </View>
     );
@@ -275,27 +271,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: Layout.screenPadding,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 12,
-  },
-  loadingText: {
-    fontSize: 16,
+    gap: Spacing.md,
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 40,
+    gap: Spacing.md,
+    paddingHorizontal: Spacing['4xl'],
   },
   errorText: {
-    fontSize: 16,
     textAlign: 'center',
   },
-  retryText: {},
 });

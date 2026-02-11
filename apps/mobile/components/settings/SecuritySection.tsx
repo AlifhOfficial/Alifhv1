@@ -9,6 +9,7 @@ import { HapticPressable } from '@/components/ui';
 import { ScanFace, Fingerprint, Key, Trash2, Loader2 } from 'lucide-react-native';
 
 import { Supporting, Body, Label } from '@/components/ui';
+import { Spacing, Radius } from '@/constants/theme';
 import { Section } from './Section';
 import type { ThemeColors, Passkey } from './types';
 
@@ -89,42 +90,42 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    paddingVertical: Spacing.lg - 2,
+    paddingHorizontal: Spacing.lg,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   info: {
     flex: 1,
-    gap: 4,
+    gap: Spacing.xs,
   },
   addButton: {
     width: 36,
     height: 36,
-    borderRadius: 10,
+    borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   empty: {
-    padding: 20,
+    padding: Spacing.xl,
     alignItems: 'center',
-    gap: 6,
+    gap: Spacing.sm - 2,
   },
   list: {
-    padding: 12,
-    gap: 8,
+    padding: Spacing.md,
+    gap: Spacing.sm,
   },
   item: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
-    borderRadius: 10,
-    gap: 10,
+    padding: Spacing.md,
+    borderRadius: Radius.lg,
+    gap: Spacing.sm + 2,
   },
   itemInfo: {
     flex: 1,
-    gap: 4,
+    gap: Spacing.xs,
   },
   deleteButton: {
-    padding: 8,
+    padding: Spacing.sm,
   },
 });

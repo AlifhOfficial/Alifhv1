@@ -10,6 +10,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
 import { Label, Data, Supporting, ButtonText } from '@/components/ui';
+import { Spacing, Radius } from '@/constants/theme';
 import type { ThemeColors, ProfileStatus } from './types';
 
 interface KYCStatusCardProps {
@@ -145,14 +146,14 @@ export function KYCStatusCard({ status, colors, onAction }: KYCStatusCardProps) 
 
 const styles = StyleSheet.create({
   wrapper: {
-    marginBottom: 24,
+    marginBottom: Spacing['2xl'],
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 4,
-    marginBottom: 10,
+    paddingHorizontal: Spacing.xs,
+    marginBottom: Spacing.sm + 2,
   },
   sectionTitle: {
     // textTransform and letterSpacing handled by <Label> component
@@ -160,17 +161,17 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    borderRadius: 14,
-    gap: 12,
+    padding: Spacing.lg,
+    borderRadius: Radius.xl,
+    gap: Spacing.md,
   },
   content: {
     flex: 1,
     gap: 2,
   },
   actionButton: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingHorizontal: Spacing.lg - 2,
+    paddingVertical: Spacing.sm,
+    borderRadius: Radius.md,
   },
 });

@@ -8,6 +8,7 @@ import { StyleSheet, View, Platform } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { Label } from '@/components/ui';
+import { Spacing, Radius } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 interface SectionProps {
@@ -51,20 +52,20 @@ export function Section({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 24,
+    marginBottom: Spacing['2xl'],
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 4,
-    marginBottom: 10,
+    paddingHorizontal: Spacing.xs,
+    marginBottom: Spacing.sm + 2,
   },
   title: {
     // textTransform and letterSpacing handled by <Label> component
   },
   content: {
-    borderRadius: 14,
+    borderRadius: Radius.xl,
     overflow: 'hidden',
   },
   noPadding: {

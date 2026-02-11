@@ -9,6 +9,7 @@ import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 
 import { Supporting, ButtonText } from '@/components/ui';
+import { Spacing, Radius } from '@/constants/theme';
 import { Section } from './Section';
 import { PROFILE_TAGS } from './types';
 import type { ThemeColors } from './types';
@@ -98,13 +99,13 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    padding: 16,
-    gap: 10,
+    padding: Spacing.lg,
+    gap: Spacing.sm + 2,
   },
   tag: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 9999,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.sm + 2,
+    borderRadius: Radius.full,
     borderWidth: StyleSheet.hairlineWidth,
   },
 });

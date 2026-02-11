@@ -9,6 +9,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Star } from 'lucide-react-native';
 
 import { Label, Heading } from '@/components/ui';
+import { Spacing, Radius } from '@/constants/theme';
 import type { ThemeColors, ProfileStats } from './types';
 
 interface StatItemProps {
@@ -146,8 +147,8 @@ export function StatsGrid({ stats, platformRating, colors }: StatsGridProps) {
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 14,
-    marginBottom: 28,
+    borderRadius: Radius.xl,
+    marginBottom: Spacing['3xl'],
     overflow: 'hidden',
   },
   row: {
@@ -162,8 +163,8 @@ const styles = StyleSheet.create({
   statItem: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 18,
-    gap: 6,
+    paddingVertical: Spacing.xl,
+    gap: Spacing.sm,
   },
   statLabel: {
     // textTransform handled by <Label> component
@@ -173,7 +174,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   starIcon: {
-    marginRight: 4,
+    marginRight: Spacing.xs,
   },
   statValue: {
     // Typography handled by <Heading> component

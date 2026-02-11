@@ -18,7 +18,7 @@ import { HapticPressable } from '@/components/ui';
 import { Send } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
 
 interface MessageInputProps {
   onSend: (text: string) => Promise<void>;
@@ -233,7 +233,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   input: {
+    ...Typography.bodyLarge,
     paddingVertical: Platform.OS === 'ios' ? Spacing.sm : Spacing.sm,
+    textAlignVertical: 'center',
   },
   sendWrapper: {
     width: 44,

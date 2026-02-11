@@ -29,6 +29,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { Supporting } from '@/components/ui';
+import { Spacing, Radius } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -252,26 +253,25 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    borderRadius: 32,
+    borderRadius: Spacing['3xl'],
     backgroundColor: 'rgba(0,0,0,0.6)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   loadingText: {
-    // White text on overlay - hardcoded
+    // White text on overlay - hardcoded for contrast
     color: '#FFFFFF',
   },
   cameraBadge: {
     position: 'absolute',
     bottom: 0,
     right: 0,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: Spacing['2xl'],
+    height: Spacing['2xl'],
+    borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(0,0,0,0.5)',
-    backdropFilter: 'blur(8px)',
     ...Platform.select({
       ios: {
         shadowColor: '#000',

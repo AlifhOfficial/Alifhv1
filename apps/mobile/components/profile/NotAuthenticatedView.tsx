@@ -11,6 +11,7 @@ import { User, LogIn } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Heading, Data, ButtonText } from '@/components/ui';
+import { Spacing, Radius } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 interface NotAuthenticatedViewProps {
@@ -88,16 +89,16 @@ export function NotAuthenticatedView({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 32,
+    paddingHorizontal: Spacing['3xl'],
   },
   content: {
     alignItems: 'center',
-    gap: 24,
+    gap: Spacing['2xl'],
   },
   avatarPlaceholder: {
     width: 100,
     height: 100,
-    borderRadius: 50,
+    borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
     ...Platform.select({
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.sm,
   },
   subtitle: {
     textAlign: 'center',
@@ -123,11 +124,11 @@ const styles = StyleSheet.create({
   signInButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 32,
-    paddingVertical: 14,
-    borderRadius: 12,
-    marginTop: 8,
+    gap: Spacing.sm,
+    paddingHorizontal: Spacing['3xl'],
+    paddingVertical: Spacing.lg - 2,
+    borderRadius: Radius.lg,
+    marginTop: Spacing.sm,
     ...Platform.select({
       ios: {
         shadowColor: '#000',

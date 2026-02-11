@@ -5,7 +5,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { View, StyleSheet, Platform, Alert } from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import { HapticPressable, ConfettiBurst, useConfettiBurst, FAVORITE_COLORS, SUPERLIKE_COLORS } from '@/components/ui';
 import { Heart, Sparkles, Share2 } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -20,6 +20,7 @@ import Animated, {
 import { useTheme } from '@/context/theme-context';
 import { useListingFavorite } from '@/context/favorites-context';
 import { Colors, Spacing } from '@/constants/theme';
+import { playFavChime, playSuperlikeChime } from '@/lib/chime';
 
 const AnimatedView = Animated.View;
 
@@ -47,6 +48,10 @@ export function FloatingListingActions({
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const [isVisible, setIsVisible] = useState(true);
+
+  // Confetti effects
+  const favConfetti = useConfettiBurst();
+  const superConfetti = useConfettiBurst();
   
   // Use context for favorites state (with prop overrides)
   const favoriteState = useListingFavorite(id);
@@ -122,7 +127,12 @@ export function FloatingListingActions({
     } else {
       favoriteState.toggleFavorite().catch(() => {});
     }
-  }, [id, onFavoritePress, favoriteState]);
+    // Fire confetti + chime when toggling ON
+    if (!isFavorite) {
+      favConfetti.fire({ colors: FAVORITE_COLORS, count: 10 });
+      playFavChime();
+    }
+  }, [id, onFavoritePress, favoriteState, isFavorite, favConfetti]);
 
   const handleSuperlikePress = useCallback(() => {
     if (Platform.OS === 'ios') {
@@ -130,6 +140,10 @@ export function FloatingListingActions({
     }
     if (onSuperlikePress) {
       onSuperlikePress(id);
+      if (!isSuperliked) {
+        superConfetti.fire({ colors: SUPERLIKE_COLORS, count: 14 });
+        playSuperlikeChime();
+      }
       return;
     }
     
@@ -165,6 +179,8 @@ export function FloatingListingActions({
         { 
           text: 'Confirm', 
           onPress: () => {
+            superConfetti.fire({ colors: SUPERLIKE_COLORS, count: 14 });
+            playSuperlikeChime();
             favoriteState.toggleSuperlike().catch((err) => {
               if (err?.message === 'QUOTA_EXCEEDED') {
                 Alert.alert('No Superlikes Left', 'You\'ve used all your superlikes for this month.');
@@ -174,7 +190,7 @@ export function FloatingListingActions({
         },
       ]
     );
-  }, [id, onSuperlikePress, favoriteState, isSuperliked]);
+  }, [id, onSuperlikePress, favoriteState, isSuperliked, superConfetti]);
 
   const handleSharePress = useCallback(() => {
     if (Platform.OS === 'ios') {
@@ -191,7 +207,7 @@ export function FloatingListingActions({
     <View style={[styles.container, { paddingBottom: insets.bottom + 12 }]}>
       <View style={styles.actionGroup}>
         {/* Like Bubble */}
-        <Animated.View style={[favoriteBubbleStyle]}>
+        <Animated.View style={[favoriteBubbleStyle, styles.bubbleWrapper]}>
           <HapticPressable
             onPress={handleFavoritePress}
             style={[
@@ -209,10 +225,11 @@ export function FloatingListingActions({
               strokeWidth={isFavorite ? 2.25 : 1.75}
             />
           </HapticPressable>
+          <ConfettiBurst ref={favConfetti.ref} />
         </Animated.View>
 
         {/* Superlike Bubble */}
-        <Animated.View style={[superlikeBubbleStyle]}>
+        <Animated.View style={[superlikeBubbleStyle, styles.bubbleWrapper]}>
           <HapticPressable
             onPress={handleSuperlikePress}
             style={[
@@ -230,6 +247,7 @@ export function FloatingListingActions({
               strokeWidth={1.75}
             />
           </HapticPressable>
+          <ConfettiBurst ref={superConfetti.ref} />
         </Animated.View>
 
         {/* Share Bubble */}
@@ -273,6 +291,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: GAP,
+  },
+  bubbleWrapper: {
+    overflow: 'visible',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   bubble: {
     width: BUBBLE_SIZE,

@@ -14,6 +14,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { Supporting, Body } from '@/components/ui';
+import { Spacing } from '@/constants/theme';
 import { Section } from './Section';
 import type { ThemeColors } from './types';
 
@@ -107,15 +108,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    paddingVertical: Spacing.lg - 2,
+    paddingHorizontal: Spacing.lg,
   },
   itemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: Spacing.md,
   },
   itemContent: {
-    gap: 4,
+    gap: Spacing.xs,
   },
 });

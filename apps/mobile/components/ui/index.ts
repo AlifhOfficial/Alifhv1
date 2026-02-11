@@ -49,6 +49,16 @@ export {
   type AccentPalette,
 } from './premium-background';
 
+// Confetti burst effect
+export {
+  ConfettiBurst,
+  useConfettiBurst,
+  FAVORITE_COLORS,
+  SUPERLIKE_COLORS,
+  type ConfettiBurstRef,
+  type ConfettiBurstOptions,
+} from './confetti-burst';
+
 // Typography components (with font scaling disabled)
 export {
   Text,

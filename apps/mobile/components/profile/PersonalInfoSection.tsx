@@ -9,6 +9,7 @@ import { HapticPressable } from '@/components/ui';
 import { CheckCircle2 } from 'lucide-react-native';
 
 import { ButtonText } from '@/components/ui';
+import { Spacing } from '@/constants/theme';
 import { Section } from './Section';
 import { EditableField } from './EditableField';
 import { PhoneVerificationField } from './PhoneVerificationField';
@@ -126,6 +127,6 @@ export function PersonalInfoSection({
 const styles = StyleSheet.create({
   divider: {
     height: StyleSheet.hairlineWidth,
-    marginHorizontal: 16,
+    marginHorizontal: Spacing.lg,
   },
 });

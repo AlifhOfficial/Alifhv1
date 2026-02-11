@@ -9,6 +9,7 @@ import { HapticPressable } from '@/components/ui';
 import Animated from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
+import { Radius } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 interface ToggleProps {
@@ -47,13 +48,13 @@ const styles = StyleSheet.create({
   toggle: {
     width: 44,
     height: 24,
-    borderRadius: 12,
+    borderRadius: Radius.lg,
     justifyContent: 'center',
   },
   knob: {
     width: 20,
     height: 20,
-    borderRadius: 10,
+    borderRadius: Radius.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
