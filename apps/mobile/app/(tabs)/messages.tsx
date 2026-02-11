@@ -48,7 +48,7 @@ export default function MessagesScreen() {
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { isAuthenticated, openAuthFlow } = useAuth();
+  const { isAuthenticated, user, openAuthFlow } = useAuth();
 
   const {
     conversations,
@@ -60,6 +60,7 @@ export default function MessagesScreen() {
     markAsRead,
   } = useConversations({
     isAuthenticated,
+    userId: user?.id,
     scope: 'personal',
   });
 

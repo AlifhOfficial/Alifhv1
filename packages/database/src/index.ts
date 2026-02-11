@@ -75,3 +75,7 @@ export * from './queries/message';
 
 // Explicit consignment query exports (required for proper bundling)
 export * from './queries/consignment/funnel-queries';
+
+// Explicit notification exports (required for proper bundling)
+export * from './queries/notifications';
+export * from './services/push-notification';

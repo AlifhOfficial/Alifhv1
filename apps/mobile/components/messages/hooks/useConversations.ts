@@ -2,6 +2,7 @@
  * useConversations Hook
  * 
  * Manages conversations state and API interactions.
+ * Real-time updates via WebSocket.
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -9,12 +10,14 @@ import {
   fetchConversations,
   markConversationAsRead,
   type Conversation,
+  type Message,
 } from '@/lib/messaging-api';
 import { getAvatarUrl } from '@/lib/config';
 import { useWebSocket } from '@/context/websocket-context';
 
 interface UseConversationsOptions {
   isAuthenticated: boolean;
+  userId?: string | null;
   scope?: 'personal' | 'staff';
 }
 
@@ -30,6 +33,7 @@ interface UseConversationsReturn {
 
 export function useConversations({
   isAuthenticated,
+  userId,
   scope,
 }: UseConversationsOptions): UseConversationsReturn {
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -39,32 +43,72 @@ export function useConversations({
   const [error, setError] = useState<string | null>(null);
   const { subscribe, watchUser, unwatchUser } = useWebSocket();
   const watchedUsersRef = useRef<Set<string>>(new Set());
+  
+  // Keep userId in a ref for WebSocket handler
+  const userIdRef = useRef(userId);
+  useEffect(() => {
+    userIdRef.current = userId;
+  }, [userId]);
 
   // Subscribe to real-time updates
   useEffect(() => {
     const unsubscribe = subscribe((msg) => {
-      // Handle new messages - update lastMessage and unreadCount
+      // Handle new messages - update lastMessagePreview, lastMessageAt, and unreadCount
       if (msg.type === 'new_message' && msg.conversationId) {
-        setConversations(prev => prev.map(conv => {
-          if (conv.id === msg.conversationId) {
-            return {
-              ...conv,
-              lastMessage: msg.message as any,
-              unreadCount: conv.unreadCount + 1,
-              updatedAt: new Date().toISOString(),
-            };
+        const newMsg = msg.message as Message | undefined;
+        // Check if this is the user's own message using msg.userId (broadcast wrapper)
+        // or newMsg.senderId (message content)
+        const senderId = msg.userId || newMsg?.senderId;
+        const isOwnMessage = senderId === userIdRef.current;
+
+        console.log(`📬 [useConversations] New message:`, {
+          convId: msg.conversationId,
+          senderId,
+          isOwnMessage,
+        });
+
+        setConversations(prev => {
+          const exists = prev.some(c => c.id === msg.conversationId);
+          if (!exists) {
+            // Conversation not in list - might be a new conversation, trigger refresh
+            console.log(`📬 [useConversations] Conversation not in cache, will need refresh`);
+            return prev;
           }
-          return conv;
-        }));
+
+          return prev
+            .map(conv => {
+              if (conv.id !== msg.conversationId) return conv;
+              return {
+                ...conv,
+                lastMessageAt: new Date().toISOString(),
+                lastMessagePreview: newMsg?.text?.substring(0, 100) || 'New message',
+                messageCount: (conv.messageCount || 0) + 1,
+                // Only increment unread if NOT own message
+                unreadCount: isOwnMessage ? conv.unreadCount : (conv.unreadCount || 0) + 1,
+              };
+            })
+            // Re-sort by lastMessageAt (most recent first)
+            .sort((a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime());
+        });
+
+        // Update totalUnread only if not own message
+        if (!isOwnMessage) {
+          setTotalUnread(prev => prev + 1);
+        }
       }
 
-      // Handle read receipts - reset unread count
-      if (msg.type === 'read_receipt' && msg.conversationId) {
+      // Handle read receipts - only update otherParticipant's lastReadAt (not self)
+      if (msg.type === 'read_receipt' && msg.conversationId && msg.userId !== userIdRef.current) {
+        console.log(`✓✓ [useConversations] Read receipt from other user:`, msg.userId);
         setConversations(prev => prev.map(conv => {
-          if (conv.id === msg.conversationId) {
-            return { ...conv, unreadCount: 0 };
-          }
-          return conv;
+          if (conv.id !== msg.conversationId) return conv;
+          return {
+            ...conv,
+            otherParticipant: conv.otherParticipant ? {
+              ...conv.otherParticipant,
+              lastReadAt: msg.lastReadAt || conv.otherParticipant.lastReadAt,
+            } : null,
+          };
         }));
       }
 

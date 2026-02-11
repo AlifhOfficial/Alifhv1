@@ -122,6 +122,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Prevent messaging yourself
+    if (otherUserId === user.id) {
+      return NextResponse.json(
+        { error: 'You cannot message yourself' },
+        { status: 400 }
+      );
+    }
+
     // Create or get existing conversation
     const conversationId = await createOrGetConversation({
       initiatedBy: user.id,

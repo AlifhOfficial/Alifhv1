@@ -10,6 +10,7 @@ import {
   getMessages,
   sendMessage,
   getConversationParticipants,
+  sendNewMessageNotification,
 } from '@alifh/database';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_MESSAGING } from '@/lib/rate-limit';
 
@@ -164,6 +165,22 @@ export async function POST(
           }).catch(() => {})
         )
       ).catch(() => {}); // Fire and forget, don't block response
+
+      // Send push notifications to other participants (fire and forget)
+      const otherParticipants = participants.filter(p => p.userId !== user.id);
+      const senderName = user.firstName && user.lastName 
+        ? `${user.firstName} ${user.lastName}` 
+        : (user.firstName || 'Someone');
+      const messagePreview = text || (mediaType ? `Sent a ${mediaType}` : 'Sent a message');
+
+      for (const recipient of otherParticipants) {
+        sendNewMessageNotification(
+          recipient.userId,
+          senderName,
+          messagePreview,
+          conversationId
+        ).catch(() => {}); // Non-blocking
+      }
 
       return NextResponse.json({ message });
     } catch (error) {

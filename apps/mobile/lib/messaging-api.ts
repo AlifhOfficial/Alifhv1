@@ -146,6 +146,21 @@ export async function fetchConversations(options?: {
 }
 
 /**
+ * Fetch a single conversation by ID (for newly created convos not yet in list)
+ */
+export async function fetchConversation(conversationId: string): Promise<Conversation> {
+  const endpoint = `/api/conversations/${conversationId}`;
+  const response = await messagingFetch(endpoint);
+  
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: 'Failed to fetch conversation' }));
+    throw new Error(error.error || 'Failed to fetch conversation');
+  }
+
+  return response.json();
+}
+
+/**
  * Fetch messages for a conversation
  */
 export async function fetchMessages(

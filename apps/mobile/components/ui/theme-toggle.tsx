@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import { HapticPressable } from './haptic-pressable';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useTheme } from '@/context/theme-context';
 import { Colors } from '@/constants/theme';

@@ -3,7 +3,7 @@
  * Full conversation view with messages list, input, and real-time updates
  */
 
-import React, { useMemo, useRef, useCallback, useState } from 'react';
+import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react';
 import {
   View,
   FlatList,
@@ -29,7 +29,7 @@ import { MessageBubble } from './message-bubble';
 import { MessageInput } from './message-input';
 import { useMessages } from './hooks/useMessages';
 import { Body, Supporting } from '@/components/ui';
-import type { Message, Conversation } from '@/lib/messaging-api';
+import { markConversationAsRead, type Message, type Conversation } from '@/lib/messaging-api';
 
 const PANEL_WIDTH = 80;
 
@@ -95,13 +95,16 @@ export function ChatWindow({
     isFetchingMore,
     hasMore,
     otherLastReadAt,
+    isOtherTyping,
     error,
     sendMessage,
     fetchMore,
     refresh,
+    sendTyping,
   } = useMessages({
     conversationId,
     userId,
+    otherUserId: conversation?.otherParticipant?.id,
     isAuthenticated,
     enabled: true,
   });
@@ -118,6 +121,11 @@ export function ChatWindow({
   const listingTitle = conversation?.listing?.title;
   const otherUserAvatar = avatarUrl;
   const otherUserName = displayName;
+  const myLastReadAt = conversation?.myLastReadAt;
+  const myLastReadAtDate = myLastReadAt ? new Date(myLastReadAt) : null;
+  
+  // Track last marked message to prevent duplicate API calls
+  const lastMarkedMsgIdRef = useRef<string | null>(null);
 
   // Find the newest message that was read by other user (for "seen" indicator)
   const lastReadMsgId = useMemo(() => {
@@ -132,6 +140,29 @@ export function ChatWindow({
     }
     return null;
   }, [messages, otherLastReadAt, userId]);
+
+  // Mark conversation as read when viewing messages from other user
+  useEffect(() => {
+    if (isLoading || messages.length === 0) return;
+
+    // Find newest message from OTHER user
+    const newestFromOther = messages.find(m => m.senderId !== userId);
+    if (!newestFromOther) return;
+
+    // Already marked this message?
+    if (lastMarkedMsgIdRef.current === newestFromOther.id) return;
+
+    // Check if we already read this message
+    const messageTime = new Date(newestFromOther.createdAt).getTime();
+    const alreadyRead = myLastReadAtDate && messageTime <= myLastReadAtDate.getTime();
+    
+    if (!alreadyRead) {
+      lastMarkedMsgIdRef.current = newestFromOther.id;
+      markConversationAsRead(conversationId).catch(() => {
+        // Silent fail - mark as read is non-critical
+      });
+    }
+  }, [isLoading, messages, userId, conversationId, myLastReadAtDate]);
 
   // Handle sending message
   const handleSend = useCallback(
@@ -270,6 +301,22 @@ export function ChatWindow({
     );
   }, [isLoading, colors]);
 
+  // Typing indicator (Instagram-style bubble at bottom of messages)
+  const ListHeaderComponent = useMemo(() => {
+    if (!isOtherTyping) return null;
+    return (
+      <View style={styles.typingContainer}>
+        <View style={[styles.typingBubble, { backgroundColor: colors.surfaceSecondary }]}>
+          <View style={styles.typingDots}>
+            <Animated.View style={[styles.typingDot, { backgroundColor: colors.textTertiary }]} />
+            <Animated.View style={[styles.typingDot, { backgroundColor: colors.textTertiary, opacity: 0.7 }]} />
+            <Animated.View style={[styles.typingDot, { backgroundColor: colors.textTertiary, opacity: 0.4 }]} />
+          </View>
+        </View>
+      </View>
+    );
+  }, [isOtherTyping, colors.surfaceSecondary, colors.textTertiary]);
+
   return (
     <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: colors.background }]}
@@ -281,6 +328,7 @@ export function ChatWindow({
         name={displayName}
         avatarUrl={avatarUrl}
         isOnline={isOnline}
+        isTyping={false}
         lastSeenAt={lastSeenAt}
         listingTitle={listingTitle}
         onBack={onBack}
@@ -298,6 +346,7 @@ export function ChatWindow({
               inverted
               contentContainerStyle={styles.messagesContent}
               ListEmptyComponent={ListEmptyComponent}
+              ListHeaderComponent={ListHeaderComponent}
               ListFooterComponent={ListFooterComponent}
               onEndReached={handleEndReached}
               onEndReachedThreshold={0.3}
@@ -334,6 +383,7 @@ export function ChatWindow({
       {/* Input */}
       <MessageInput
         onSend={handleSend}
+        onTyping={sendTyping}
         disabled={false}
         resetKey={conversationId}
       />
@@ -389,5 +439,26 @@ const styles = StyleSheet.create({
   loadingMore: {
     paddingVertical: Spacing.lg,
     alignItems: 'center',
+  },
+  typingContainer: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    alignItems: 'flex-start',
+  },
+  typingBubble: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 18,
+    borderBottomLeftRadius: 4,
+  },
+  typingDots: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  typingDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
   },
 });

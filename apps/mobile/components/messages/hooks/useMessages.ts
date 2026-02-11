@@ -2,6 +2,7 @@
  * useMessages Hook
  * 
  * Manages messages state for a specific conversation.
+ * Includes real-time updates, typing indicators, and read receipts.
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -16,6 +17,7 @@ import { useWebSocket } from '@/context/websocket-context';
 interface UseMessagesOptions {
   conversationId: string;
   userId?: string;
+  otherUserId?: string | null;
   isAuthenticated: boolean;
   enabled?: boolean;
 }
@@ -27,15 +29,18 @@ interface UseMessagesReturn {
   isFetchingMore: boolean;
   hasMore: boolean;
   otherLastReadAt: string | null;
+  isOtherTyping: boolean;
   error: string | null;
   sendMessage: (text: string) => Promise<void>;
   fetchMore: () => Promise<void>;
   refresh: () => Promise<void>;
+  sendTyping: (isTyping: boolean) => void;
 }
 
 export function useMessages({
   conversationId,
   userId,
+  otherUserId,
   isAuthenticated,
   enabled = true,
 }: UseMessagesOptions): UseMessagesReturn {
@@ -45,13 +50,18 @@ export function useMessages({
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [otherLastReadAt, setOtherLastReadAt] = useState<string | null>(null);
+  const [isOtherTyping, setIsOtherTyping] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
-  const { subscribe } = useWebSocket();
+  const { subscribe, sendTyping: wsSendTyping } = useWebSocket();
   
   const isInitialLoad = useRef(true);
   const conversationIdRef = useRef(conversationId);
   const userIdRef = useRef(userId);
+  const otherUserIdRef = useRef(otherUserId);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastTypingSentRef = useRef(0);
+
 
   // Update refs when params change
   useEffect(() => {
@@ -60,6 +70,9 @@ export function useMessages({
   useEffect(() => {
     userIdRef.current = userId;
   }, [userId]);
+  useEffect(() => {
+    otherUserIdRef.current = otherUserId;
+  }, [otherUserId]);
 
   // Subscribe to real-time messages
   useEffect(() => {
@@ -87,6 +100,28 @@ export function useMessages({
         });
       }
 
+      // Handle typing indicator — only from OTHER user
+      if (
+        msg.type === 'typing' &&
+        msg.conversationId === conversationIdRef.current &&
+        msg.userId !== userIdRef.current
+      ) {
+        // Clear existing timeout
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+          typingTimeoutRef.current = null;
+        }
+
+        setIsOtherTyping(!!msg.isTyping);
+
+        // Auto-clear typing indicator after 4 seconds
+        if (msg.isTyping) {
+          typingTimeoutRef.current = setTimeout(() => {
+            setIsOtherTyping(false);
+          }, 4000);
+        }
+      }
+
       // Handle read receipts — only from the OTHER user (not self)
       if (
         msg.type === 'read_receipt' &&
@@ -98,7 +133,12 @@ export function useMessages({
       }
     });
 
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
   }, [subscribe]);
 
   // Fetch messages
@@ -227,6 +267,22 @@ export function useMessages({
     [conversationId]
   );
 
+  // Throttled typing indicator sender
+  const sendTyping = useCallback(
+    (isTyping: boolean) => {
+      const targetUserId = otherUserIdRef.current;
+      if (!targetUserId) return;
+
+      const now = Date.now();
+      // Throttle: only send typing=true every 1 second
+      if (isTyping && now - lastTypingSentRef.current < 1000) return;
+      lastTypingSentRef.current = now;
+
+      wsSendTyping(conversationId, targetUserId, isTyping);
+    },
+    [conversationId, wsSendTyping]
+  );
+
   return {
     messages,
     isLoading,
@@ -234,9 +290,11 @@ export function useMessages({
     isFetchingMore,
     hasMore,
     otherLastReadAt,
+    isOtherTyping,
     error,
     sendMessage,
     fetchMore,
     refresh,
+    sendTyping,
   };
 }

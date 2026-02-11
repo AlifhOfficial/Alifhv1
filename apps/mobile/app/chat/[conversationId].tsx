@@ -2,7 +2,7 @@
  * Chat Screen - Full conversation view
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,6 +13,7 @@ import { Supporting, ButtonText } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { useTabBar } from '@/context/tab-bar-context';
+import { fetchConversation } from '@/lib/messaging-api';
 
 export default function ChatScreen() {
   const { colorScheme } = useTheme();
@@ -29,12 +30,38 @@ export default function ChatScreen() {
     return () => showChrome();
   }, [hideChrome, showChrome]);
 
-  const { conversations, isLoading } = useConversations({
+  const { conversations, isLoading: convListLoading, markAsRead } = useConversations({
     isAuthenticated,
+    userId: user?.id,
     scope: 'personal',
   });
 
-  const conversation = conversations.find((c) => c.id === conversationId);
+  // Try to find conversation in the loaded list first
+  const cachedConversation = conversations.find((c) => c.id === conversationId);
+
+  // For newly created conversations (0 messages), fetch directly from API
+  const [directConversation, setDirectConversation] = useState<any>(null);
+  const [isDirectLoading, setIsDirectLoading] = useState(false);
+
+  useEffect(() => {
+    if (!cachedConversation && !convListLoading && conversationId && isAuthenticated) {
+      setIsDirectLoading(true);
+      fetchConversation(conversationId)
+        .then(setDirectConversation)
+        .catch((err) => console.error('[Chat] Direct fetch failed:', err))
+        .finally(() => setIsDirectLoading(false));
+    }
+  }, [cachedConversation, convListLoading, conversationId, isAuthenticated]);
+
+  const conversation = cachedConversation || directConversation;
+  const isLoading = convListLoading || isDirectLoading;
+
+  // Mark as read when entering the chat
+  useEffect(() => {
+    if (conversation && conversationId && conversation.unreadCount > 0) {
+      markAsRead(conversationId);
+    }
+  }, [conversation?.id, conversationId]);
 
   const handleBack = () => {
     router.back();

@@ -56,7 +56,7 @@ export default function SellerContactScreen() {
   const { listingId } = useLocalSearchParams<{ listingId: string }>();
   const router = useRouter();
   const { colors } = useTheme();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { applySearch, clearSearch, clearFilterParams } = useSearch();
   const insets = useSafeAreaInsets();
 
@@ -118,6 +118,9 @@ export default function SellerContactScreen() {
     return normalizeSellerData(listing.sellerData);
   }, [listing]);
 
+  // Check if this is the user's own listing
+  const isOwnListing = !!(user?.id && listing?.sellerData?.userId === user.id);
+
   // Handlers
   const handleBack = useCallback(() => {
     router.back();
@@ -142,6 +145,12 @@ export default function SellerContactScreen() {
     const otherUserId = listing.sellerData.userId;
     if (!otherUserId) {
       Alert.alert('Error', 'Unable to contact seller at this time.');
+      return;
+    }
+
+    // Prevent messaging yourself (own listing)
+    if (otherUserId === user?.id) {
+      Alert.alert('Your Listing', 'You cannot message yourself on your own listing.');
       return;
     }
 
@@ -311,14 +320,16 @@ export default function SellerContactScreen() {
           </View>
         )}
 
-        {/* Actions: Chat, Book, Phone */}
-        <SellerActions
-          seller={seller}
-          isChatLoading={isChatLoading}
-          onChat={handleChat}
-          onBookViewing={handleBookViewing}
-          onShowPhone={handleShowPhoneSheet}
-        />
+        {/* Actions: Chat, Book, Phone — hidden for own listings */}
+        {!isOwnListing && (
+          <SellerActions
+            seller={seller}
+            isChatLoading={isChatLoading}
+            onChat={handleChat}
+            onBookViewing={handleBookViewing}
+            onShowPhone={handleShowPhoneSheet}
+          />
+        )}
 
         {/* Stats Grid (private sellers only) */}
         <SellerStatsGrid

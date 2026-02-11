@@ -6,6 +6,7 @@
 
 import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import * as AuthAPI from '@/lib/auth-api';
+import { unregisterPushTokenOnLogout } from '@/lib/push-token-store';
 
 export interface AuthUser {
   id: string;
@@ -139,6 +140,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const signOut = useCallback(async () => {
     try {
+      // Unregister push token before signing out
+      await unregisterPushTokenOnLogout().catch(() => {});
       await AuthAPI.signOut();
     } catch (error) {
       console.error('[AuthContext] Sign out error:', error);

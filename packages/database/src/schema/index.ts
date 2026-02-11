@@ -16,5 +16,6 @@ export * from './consignment';
 export * from './admin';
 export * from './feedback';
 export * from './communications';
+export * from './notifications';
 
 export * from './relations';

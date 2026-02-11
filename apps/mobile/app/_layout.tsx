@@ -22,6 +22,7 @@ import { FavoritesProvider } from '@/context/favorites-context';
 import { TabBarProvider, useTabBar } from '@/context/tab-bar-context';
 import { SearchProvider } from '@/context/search-context';
 import { WebSocketProvider } from '@/context/websocket-context';
+import { NotificationProvider } from '@/context/notification-context';
 import { Loader } from '@/components/ui/loader';
 import { GlobalTabBar } from '@/components/layout/global-tab-bar';
 import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
@@ -211,6 +212,7 @@ function RootLayoutNav() {
         <Stack.Screen name="settings" options={{ presentation: 'card' }} />
         <Stack.Screen name="saved" options={{ presentation: 'card' }} />
         <Stack.Screen name="chat/[conversationId]" options={{ presentation: 'card' }} />
+        <Stack.Screen name="notifications" options={{ presentation: 'card' }} />
         <Stack.Screen name="create-listing" options={{ presentation: 'card' }} />
         <Stack.Screen name="inventory" options={{ presentation: 'card' }} />
       </Stack>
@@ -285,7 +287,9 @@ export default function RootLayout() {
                 <AuthProvider>
                   <FavoritesProvider>
                     <WebSocketWrapper>
-                      <RootLayoutNav />
+                      <NotificationWrapper>
+                        <RootLayoutNav />
+                      </NotificationWrapper>
                     </WebSocketWrapper>
                   </FavoritesProvider>
                 </AuthProvider>
@@ -305,5 +309,14 @@ function WebSocketWrapper({ children }: { children: React.ReactNode }) {
     <WebSocketProvider userId={user?.id}>
       {children}
     </WebSocketProvider>
+  );
+}
+
+// Notification wrapper that uses auth context
+function NotificationWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <NotificationProvider>
+      {children}
+    </NotificationProvider>
   );
 }

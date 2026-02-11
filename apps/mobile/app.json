@@ -42,11 +42,23 @@
             "backgroundColor": "#0D0D0D"
           }
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#000000",
+          "defaultChannel": "messages"
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "cd8cffff-33b0-46d9-b584-08eb6448e6dc"
+      }
     }
   }
 }

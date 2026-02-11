@@ -18,3 +18,4 @@ export * from './consignment';
 export * from './audit';
 export * from './conversation';
 export * from './message';
+export * from './notifications';

@@ -19,6 +19,7 @@ interface ChatHeaderProps {
   name: string;
   avatarUrl?: string | null;
   isOnline?: boolean;
+  isTyping?: boolean;
   lastSeenAt?: Date | string | null;
   listingTitle?: string;
   onBack?: () => void;
@@ -28,6 +29,7 @@ export function ChatHeader({
   name,
   avatarUrl,
   isOnline = false,
+  isTyping = false,
   lastSeenAt,
   listingTitle,
   onBack,
@@ -47,6 +49,7 @@ export function ChatHeader({
 
   // Format last seen
   const getStatusText = () => {
+    if (isTyping) return 'typing...';
     if (isOnline) return 'Online';
     if (lastSeenAt) {
       const date = lastSeenAt instanceof Date ? lastSeenAt : new Date(lastSeenAt);
@@ -58,6 +61,7 @@ export function ChatHeader({
   };
 
   const statusText = getStatusText();
+  const statusTone = isTyping ? 'primary' : (isOnline ? 'success' : 'muted');
 
   return (
     <View
@@ -95,7 +99,7 @@ export function ChatHeader({
         ) : statusText ? (
           <Supporting 
             size="medium" 
-            tone={isOnline ? 'success' : 'muted'}
+            tone={statusTone as 'primary' | 'success' | 'muted'}
             style={{ marginTop: 2 }}
           >
             {statusText}
