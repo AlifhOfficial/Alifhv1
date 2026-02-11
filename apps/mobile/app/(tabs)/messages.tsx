@@ -18,7 +18,7 @@ import {
   Platform,
 } from 'react-native';
 import { HapticPressable } from '@/components/ui';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MessageCircle, LogIn } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
@@ -63,6 +63,15 @@ export default function MessagesScreen() {
     userId: user?.id,
     scope: 'personal',
   });
+
+  // Re-fetch conversations when this tab gains focus
+  useFocusEffect(
+    useCallback(() => {
+      if (isAuthenticated) {
+        refresh();
+      }
+    }, [isAuthenticated, refresh])
+  );
 
   // ── Build grouped list (matching web app logic) ─────────
   const listItems = useMemo<ListItem[]>(() => {

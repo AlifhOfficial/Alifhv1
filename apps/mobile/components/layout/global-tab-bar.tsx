@@ -4,7 +4,7 @@
  * Includes search bubble and sort bubble on browse tab
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { View, Pressable, StyleSheet, Platform } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { useRouter, usePathname } from 'expo-router';
@@ -22,9 +22,11 @@ import Animated, {
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { useTabBar } from '@/context/tab-bar-context';
+import { useAuth } from '@/context/auth-context';
 import { Colors } from '@/constants/theme';
 import { SearchSheet, SortSheet } from '@/components/sheets';
 import { ActiveSearchChips, ACTIVE_CHIPS_HEIGHT } from './active-search-chips';
+import { getUnreadCount } from '@/lib/messaging-api';
 import type { SearchSortOption } from '@/lib/search-api';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -79,8 +81,21 @@ export function GlobalTabBar() {
   const { colorScheme } = useTheme();
   const { applySearch, sortBy, applySort, searchParams, filterParams, updateFilterParams, triggerScrollToTop } = useSearch();
   const { isTabBarVisible } = useTabBar();
+  const { isAuthenticated } = useAuth();
   const insets = useSafeAreaInsets();
   
+  // Messages unread badge - fetched when messages tab is tapped
+  const [messagesUnread, setMessagesUnread] = useState(0);
+
+  // Fetch unread count on mount and when auth changes
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setMessagesUnread(0);
+      return;
+    }
+    getUnreadCount().then(setMessagesUnread).catch(() => {});
+  }, [isAuthenticated]);
+
   // Double-tap detection for browse tab
   const lastBrowseTapRef = React.useRef<number>(0);
   const colors = Colors[colorScheme];
@@ -217,6 +232,11 @@ export function GlobalTabBar() {
     }
     
     router.push(tab.path as any);
+
+    // Refresh unread count when navigating to messages
+    if (tab.name === 'messages' && isAuthenticated) {
+      getUnreadCount().then(setMessagesUnread).catch(() => {});
+    }
   };
 
   const handleBack = () => {
@@ -349,12 +369,17 @@ export function GlobalTabBar() {
                     onPress={() => handleTabPress(tab)}
                     style={styles.pillTab}
                   >
-                    <Icon
-                      size={22}
-                      color={iconColor}
-                      fill={isActive ? iconColor : colors.surface}
-                      strokeWidth={2}
-                    />
+                    <View>
+                      <Icon
+                        size={22}
+                        color={iconColor}
+                        fill={isActive ? iconColor : colors.surface}
+                        strokeWidth={2}
+                      />
+                      {tab.name === 'messages' && messagesUnread > 0 && (
+                        <View style={[styles.unreadDot, { backgroundColor: '#3B82F6' }]} />
+                      )}
+                    </View>
                   </HapticPressable>
                 );
               })}
@@ -546,5 +571,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 12,
     elevation: 4,
+  },
+  unreadDot: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
 });
