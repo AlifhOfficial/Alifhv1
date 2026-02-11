@@ -4,6 +4,12 @@ export { ThemeToggle } from './theme-toggle';
 export { UserAvatar } from './user-avatar';
 export { Skeleton, SkeletonText, SkeletonCircle, SkeletonImage } from './skeleton';
 
+// Button component
+export { Button, type ButtonProps, type ButtonVariant, type ButtonSize } from './button';
+
+// HapticPressable - Pressable with haptic feedback
+export { HapticPressable, type HapticPressableProps, type HapticType } from './haptic-pressable';
+
 // Legacy loader exports (for backwards compatibility)
 export { Loader, SpinnerLoader, LogoLoader, RefreshLoader } from './loader';
 

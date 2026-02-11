@@ -9,7 +9,7 @@ import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import { Spacing, Radius } from '@/constants/theme';
-import { Label, Body } from '@/components/ui';
+import { Label, Text } from '@/components/ui';
 import type { SellerTagsProps } from './types';
 
 export const SellerTags = memo(function SellerTags({ tags, label, colors }: SellerTagsProps) {
@@ -20,8 +20,8 @@ export const SellerTags = memo(function SellerTags({ tags, label, colors }: Sell
       <Label size="medium" tone="muted">{label}</Label>
       <View style={localStyles.tagsRow}>
         {tags.map((tag, i) => (
-          <View key={`tag-${i}`} style={[localStyles.tag, { backgroundColor: colors.surfaceSecondary }]}>
-            <Body size="small">{tag}</Body>
+          <View key={`tag-${i}`} style={[localStyles.tag, { backgroundColor: colors.backgroundSecondary }]}>
+            <Text variant="chip">{tag}</Text>
           </View>
         ))}
       </View>
@@ -31,7 +31,7 @@ export const SellerTags = memo(function SellerTags({ tags, label, colors }: Sell
 
 const localStyles = StyleSheet.create({
   section: {
-    gap: Spacing.md,
+    gap: Spacing.sm,
   },
   tagsRow: {
     flexDirection: 'row',
@@ -39,8 +39,8 @@ const localStyles = StyleSheet.create({
     gap: Spacing.sm,
   },
   tag: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm + 2,
-    borderRadius: Radius.xl,
+    paddingHorizontal: Spacing.md + 2,
+    paddingVertical: Spacing.sm,
+    borderRadius: Radius.md,
   },
 });

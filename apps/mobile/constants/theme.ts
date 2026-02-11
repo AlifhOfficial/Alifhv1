@@ -85,6 +85,10 @@ export const Colors = {
     primaryForeground: '#FFFFFF',
     primaryMuted: '#E6F0FF',
     
+    // SECONDARY (Buttons)
+    secondary: '#F5F5F7',
+    secondaryForeground: '#0A0A0A',
+    
     // SEMANTIC
     success: '#22C55E',
     successMuted: '#DCFCE7',
@@ -145,6 +149,10 @@ export const Colors = {
     primary: '#0066FF',
     primaryForeground: '#FAFAFA',
     primaryMuted: '#0D2847',
+    
+    // SECONDARY (Buttons)
+    secondary: '#262626',
+    secondaryForeground: '#FAFAFA',
     
     // SEMANTIC
     success: '#22C55E',
@@ -402,7 +410,7 @@ const SemanticTypography = {
   headingLarge: { 
     ...base, 
     fontSize: fontScale(22), 
-    lineHeight: fontScale(26), 
+    lineHeight: fontScale(24), 
     fontFamily: 'Inter_700Bold' 
   },
   headingMedium: { 
@@ -638,35 +646,6 @@ const SemanticTypography = {
     fontFamily: 'Inter_700Bold' 
   },
 } as const;
-
-// ═══════════════════════════════════════════════════
-// LEGACY ALIASES → NEW SEMANTIC TOKENS
-// ═══════════════════════════════════════════════════
-// Maps old token names to new semantic system.
-// All existing components continue to work unchanged.
-//
-// Migration map (for reference when writing new code):
-//   titleLarge   → displayLarge
-//   titlePrice   → priceTag
-//   title        → headingLarge
-//   titleSmall   → headingSmall
-//   titleCard    → headingCard
-//   body         → bodyLarge
-//   bodySmall    → bodyMedium (note: renamed for consistency)
-//   bodyMini     → bodySmall
-//   value        → dataMedium
-//   stat         → dataMedium
-//   valueSmall   → dataMini
-//   initial      → avatarInitial
-//   label        → labelMedium
-//   button       → buttonMedium
-//   buttonSmall  → buttonSmall
-//   tab          → tabLabel
-//   labelText    → supportingMedium
-//   helper       → supportingSmall
-//   secondary    → supportingSmall
-//   heroNumber   → displayNumber
-// ═══════════════════════════════════════════════════
 
 export const Typography = {
   ...SemanticTypography,

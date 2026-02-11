@@ -266,7 +266,7 @@ export const CarCardM = memo(function CarCardM({
         </View>
 
         {/* Price */}
-        <Text variant="priceMini" style={{ color: priceColor }}>
+        <Text variant="priceTag" style={{ color: priceColor }}>
           {formatPrice(price)}
         </Text>
 
@@ -347,10 +347,7 @@ export const CarCardM = memo(function CarCardM({
             <Pressable
               onPress={handleFavoritePress}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={({ pressed }) => [
-                styles.actionButton,
-                { opacity: pressed ? 0.6 : 1 },
-              ]}
+              style={styles.actionButton}
             >
               <Heart
                 size={ICON_SIZE}
@@ -364,10 +361,7 @@ export const CarCardM = memo(function CarCardM({
             <Pressable
               onPress={handleSharePress}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={({ pressed }) => [
-                styles.actionButton,
-                { opacity: pressed ? 0.6 : 1 },
-              ]}
+              style={styles.actionButton}
             >
               <Share2 
                 size={ICON_SIZE} 

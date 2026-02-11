@@ -166,14 +166,12 @@ export const CarCardList = memo(function CarCardList({
             <Pressable
               onPress={handleSharePress}
               hitSlop={8}
-              style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
             >
               <Share2 size={16} color={iconColor} strokeWidth={1.75} />
             </Pressable>
             <Pressable
               onPress={handleFavoritePress}
               hitSlop={8}
-              style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
             >
               <Heart
                 size={16}

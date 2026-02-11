@@ -10,13 +10,13 @@ import { View, Pressable, StyleSheet, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { ChevronRight } from 'lucide-react-native';
 
-import { Label, Heading, Data, Supporting, ButtonText } from '@/components/ui';
+import { Label, Data, Supporting } from '@/components/ui';
 import { Spacing, Radius } from '@/constants/theme';
 import type { SellerListingsProps } from './types';
 import { formatPrice, formatMileage } from './utils';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_GAP = Spacing.md;
+const CARD_GAP = Spacing.sm;
 const CARD_WIDTH = (SCREEN_WIDTH - (Spacing.lg * 2) - CARD_GAP) / 2;
 
 export const SellerListings = memo(function SellerListings({
@@ -30,7 +30,7 @@ export const SellerListings = memo(function SellerListings({
 
   return (
     <View style={localStyles.section}>
-      <Label size="medium" tone="muted">MORE FROM THIS SELLER</Label>
+      <Label size="small" tone="muted">MORE FROM THIS SELLER</Label>
       
       {/* Two-column grid */}
       <View style={localStyles.grid}>
@@ -38,14 +38,7 @@ export const SellerListings = memo(function SellerListings({
           <Pressable
             key={item.id}
             onPress={() => onViewListing(item.id)}
-            style={({ pressed }) => [
-              localStyles.card,
-              { 
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-                opacity: pressed ? 0.7 : 1,
-              }
-            ]}
+            style={localStyles.card}
           >
             <Image 
               source={{ uri: item.thumbnail ?? undefined }} 
@@ -54,15 +47,12 @@ export const SellerListings = memo(function SellerListings({
             />
             
             <View style={localStyles.content}>
-              <Heading size="mini" numberOfLines={1}>
+              <Data size="small" numberOfLines={1}>
                 {item.year} {item.make} {item.model}
-              </Heading>
-              <Supporting size="small">
-                {formatMileage(item.mileage)}
-              </Supporting>
-              <Data size="medium" tone="primary">
-                {formatPrice(item.price)}
               </Data>
+              <Supporting size="mini">
+                {formatMileage(item.mileage)} · {formatPrice(item.price)}
+              </Supporting>
             </View>
           </Pressable>
         ))}
@@ -72,18 +62,12 @@ export const SellerListings = memo(function SellerListings({
       {totalCount > 4 && (
         <Pressable
           onPress={onViewAll}
-          style={({ pressed }) => [
-            localStyles.viewAllBtn,
-            { 
-              borderColor: colors.border,
-              opacity: pressed ? 0.7 : 1,
-            }
-          ]}
+          style={localStyles.viewAllRow}
         >
-          <ButtonText size="medium">
+          <Data size="medium" tone="primary">
             View All {totalCount} Listings
-          </ButtonText>
-          <ChevronRight size={18} color={colors.text} />
+          </Data>
+          <ChevronRight size={16} color={colors.primary} />
         </Pressable>
       )}
     </View>
@@ -92,7 +76,7 @@ export const SellerListings = memo(function SellerListings({
 
 const localStyles = StyleSheet.create({
   section: {
-    gap: Spacing.lg,
+    gap: Spacing.md,
   },
   grid: {
     flexDirection: 'row',
@@ -101,25 +85,20 @@ const localStyles = StyleSheet.create({
   },
   card: {
     width: CARD_WIDTH,
-    borderRadius: Radius.lg,
-    borderWidth: 1,
     overflow: 'hidden',
   },
   thumb: {
     width: '100%',
     aspectRatio: 16 / 10,
+    borderRadius: Radius.md,
   },
   content: {
-    padding: Spacing.md,
+    paddingTop: Spacing.sm,
     gap: 2,
   },
-  viewAllBtn: {
+  viewAllRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.sm,
-    paddingVertical: Spacing.lg,
-    borderRadius: Radius.xl,
-    borderWidth: 1.5,
+    gap: Spacing.xs,
   },
 });

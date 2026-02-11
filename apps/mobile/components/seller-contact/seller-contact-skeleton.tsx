@@ -56,7 +56,7 @@ const skeletonStyles = StyleSheet.create({
   },
   heroInfo: {
     flex: 1,
-    gap: 8,
+    gap: Spacing.sm,
   },
   contactGrid: {
     flexDirection: 'row',

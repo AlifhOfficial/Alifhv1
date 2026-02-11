@@ -169,7 +169,6 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
         {sellerData && (
           <Pressable 
             onPress={handleTalkToSeller}
-            style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
           >
             <SellerCard 
               sellerData={sellerData}

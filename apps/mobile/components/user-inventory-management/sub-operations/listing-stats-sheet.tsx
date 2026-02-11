@@ -132,9 +132,9 @@ export function ListingStatsSheet({
           <Pressable
             onPress={onClose}
             hitSlop={Spacing.md}
-            style={({ pressed }) => [
+            style={[
               styles.closeButton,
-              { backgroundColor: pressed ? colors.fill : colors.fillSecondary },
+              { backgroundColor: colors.fillSecondary },
             ]}
           >
             <Ionicons name="close" size={18} color={colors.textSecondary} />

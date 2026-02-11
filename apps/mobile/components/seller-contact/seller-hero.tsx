@@ -11,7 +11,7 @@ import { Image } from 'expo-image';
 import { CheckCircle2, Star, Clock } from 'lucide-react-native';
 
 import { Spacing, Radius } from '@/constants/theme';
-import { Label, Heading, Supporting, Data } from '@/components/ui';
+import { Label, Heading, Supporting, Data, Text } from '@/components/ui';
 import type { SellerHeroProps } from './types';
 import { formatMemberSince } from './utils';
 
@@ -128,7 +128,7 @@ const localStyles = StyleSheet.create({
   },
   heroInfo: {
     flex: 1,
-    gap: 4,
+    gap: Spacing.xs,
   },
   nameRow: {
     flexDirection: 'row',
@@ -137,21 +137,21 @@ const localStyles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   tierBadge: {
-    paddingHorizontal: Spacing.sm - 2,
-    paddingVertical: 2,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
     borderRadius: Radius.none,
   },
   metaRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
-    marginTop: 2,
+    marginTop: Spacing.xs,
   },
   ratingRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    marginTop: 4,
+    gap: Spacing.xs,
+    marginTop: Spacing.xs,
   },
   avatar: {
     width: AVATAR_SIZE,

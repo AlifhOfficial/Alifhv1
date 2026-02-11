@@ -99,9 +99,9 @@ export const ListingHeader = memo(function ListingHeader({
         )}
         <Pressable
           onPress={handleFavoritePress}
-          style={({ pressed }) => [
+          style={[
             styles.actionBtn,
-            { backgroundColor: colors.backgroundSecondary, opacity: pressed ? 0.7 : 1 },
+            { backgroundColor: colors.backgroundSecondary },
           ]}
         >
           <Heart
@@ -113,9 +113,9 @@ export const ListingHeader = memo(function ListingHeader({
         </Pressable>
         <Pressable
           onPress={handleSuperlikePress}
-          style={({ pressed }) => [
+          style={[
             styles.actionBtn,
-            { backgroundColor: colors.backgroundSecondary, opacity: pressed ? 0.7 : 1 },
+            { backgroundColor: colors.backgroundSecondary },
           ]}
         >
           <Sparkles

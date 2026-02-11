@@ -28,12 +28,11 @@ export function FilterPill({
 
   return (
     <Pressable 
-      style={({ pressed }) => [
+      style={[
         styles.container,
         { 
           backgroundColor: isPrimary ? colors.primary : colors.backgroundTertiary,
           borderColor: isPrimary ? colors.primary : colors.border,
-          opacity: pressed ? 0.8 : 1,
         }
       ]}
       onPress={onPress}

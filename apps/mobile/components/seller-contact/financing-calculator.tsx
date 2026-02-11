@@ -36,12 +36,14 @@ export const FinancingCalculator = memo(function FinancingCalculator({
 
   return (
     <View style={localStyles.section}>
-      <Label size="medium" tone="muted">FINANCING ESTIMATE</Label>
+      <Label size="small" tone="muted">FINANCING ESTIMATE</Label>
       
-      {/* Monthly Payment Display */}
-      <View style={localStyles.emiDisplay}>
-        <Supporting size="small">Est. Monthly</Supporting>
+      {/* Monthly Payment */}
+      <View style={localStyles.emiRow}>
         <Data size="large">{formatPrice(emi)}/mo</Data>
+        <Supporting size="small">
+          {downPaymentPercent}% down · {loanTermMonths}mo · {interestRate}% APR
+        </Supporting>
       </View>
       
       {/* Down Payment Options */}
@@ -56,15 +58,15 @@ export const FinancingCalculator = memo(function FinancingCalculator({
                 style={[
                   localStyles.chip,
                   { 
-                    borderColor: isSelected ? colors.text : colors.border,
-                    backgroundColor: isSelected ? colors.text : 'transparent',
+                    borderColor: isSelected ? colors.primary : colors.border,
+                    backgroundColor: isSelected ? colors.primary : colors.surface,
                   },
                 ]}
                 onPress={() => onDownPaymentChange(dp)}
               >
                 <Data 
                   size="small" 
-                  style={{ color: isSelected ? colors.background : colors.textSecondary }}
+                  style={{ color: isSelected ? colors.primaryForeground : colors.textSecondary }}
                 >
                   {dp}%
                 </Data>
@@ -86,15 +88,15 @@ export const FinancingCalculator = memo(function FinancingCalculator({
                 style={[
                   localStyles.chip,
                   { 
-                    borderColor: isSelected ? colors.text : colors.border,
-                    backgroundColor: isSelected ? colors.text : 'transparent',
+                    borderColor: isSelected ? colors.primary : colors.border,
+                    backgroundColor: isSelected ? colors.primary : colors.surface,
                   },
                 ]}
                 onPress={() => onTermChange(term)}
               >
                 <Data 
                   size="small" 
-                  style={{ color: isSelected ? colors.background : colors.textSecondary }}
+                  style={{ color: isSelected ? colors.primaryForeground : colors.textSecondary }}
                 >
                   {term}mo
                 </Data>
@@ -103,10 +105,6 @@ export const FinancingCalculator = memo(function FinancingCalculator({
           })}
         </View>
       </View>
-      
-      <Supporting size="mini" tone="muted">
-        @ {interestRate}% APR · {formatPrice(loanAmount)} financed
-      </Supporting>
     </View>
   );
 });
@@ -115,10 +113,8 @@ const localStyles = StyleSheet.create({
   section: {
     gap: Spacing.md,
   },
-  emiDisplay: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  emiRow: {
+    gap: 2,
   },
   row: {
     flexDirection: 'row',
@@ -126,16 +122,16 @@ const localStyles = StyleSheet.create({
     gap: Spacing.md,
   },
   label: {
-    width: 44,
+    width: 52,
   },
   options: {
     flexDirection: 'row',
-    gap: Spacing.xs,
+    gap: Spacing.sm,
     flex: 1,
   },
   chip: {
-    paddingVertical: 6,
-    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
     borderRadius: Radius.full,
     borderWidth: 1,
   },

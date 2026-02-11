@@ -5,15 +5,17 @@
  * Follows listings component patterns for consistency.
  */
 
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { View, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
 import { MessageCircle, Calendar } from 'lucide-react-native';
+import * as Haptics from 'expo-haptics';
 
-import { Spacing, Radius } from '@/constants/theme';
-import { ButtonText } from '@/components/ui';
+import { Spacing, Radius, Colors } from '@/constants/theme';
+import { useTheme } from '@/context/theme-context';
+import { ButtonText, Supporting } from '@/components/ui';
 import type { SellerActionsProps } from './types';
 
-const ICON_SIZE = 22;
+const ICON_SIZE = 18;
 
 export const SellerActions = memo(function SellerActions({
   seller,
@@ -21,54 +23,76 @@ export const SellerActions = memo(function SellerActions({
   onChat,
   onBookViewing,
   onShowPhone,
-  colors,
-}: SellerActionsProps) {
+}: Omit<SellerActionsProps, 'colors'>) {
+  const { colors } = useTheme();
+
+  const handleChat = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onChat();
+  }, [onChat]);
+
+  const handleBookViewing = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onBookViewing();
+  }, [onBookViewing]);
+
+  const handleShowPhone = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onShowPhone();
+  }, [onShowPhone]);
+  
   return (
     <View style={styles.container}>
-      {/* CTA Row - Chat and Book together */}
+      {/* CTA Row */}
       <View style={styles.ctaRow}>
         {/* Primary CTA - Chat */}
         <Pressable
-          style={({ pressed }) => [
-            styles.primaryBtn,
-            { backgroundColor: colors.primary, opacity: pressed ? 0.8 : 1 }
-          ]}
-          onPress={onChat}
+          onPress={handleChat}
           disabled={isChatLoading}
+          style={[
+            styles.button,
+            { backgroundColor: colors.primary },
+          ]}
         >
           {isChatLoading ? (
             <ActivityIndicator size="small" color={colors.primaryForeground} />
           ) : (
             <>
               <MessageCircle size={ICON_SIZE} color={colors.primaryForeground} />
-              <ButtonText size="large" style={{ color: colors.primaryForeground }}>
-                Chat with Seller
+              <ButtonText size="medium" style={{ color: colors.primaryForeground }}>
+                Chat
               </ButtonText>
             </>
           )}
         </Pressable>
-        
-        {/* Secondary CTA - Book (dealers only) */}
+
+        {/* Secondary CTA - Book Viewing (dealers only) */}
         {seller.isDealer && (
           <Pressable
-            style={({ pressed }) => [
-              styles.secondaryBtn,
-              { borderColor: colors.border, opacity: pressed ? 0.8 : 1 }
+            onPress={handleBookViewing}
+            style={[
+              styles.button,
+              {
+                backgroundColor: colors.surfaceSecondary,
+                borderWidth: 1,
+                borderColor: colors.border,
+              },
             ]}
-            onPress={onBookViewing}
           >
             <Calendar size={ICON_SIZE} color={colors.text} />
-            <ButtonText size="large">Book Viewing</ButtonText>
+            <ButtonText size="medium" style={{ color: colors.text }}>
+              Book
+            </ButtonText>
           </Pressable>
         )}
       </View>
 
       {/* Phone Number Link */}
       {seller.phone && (
-        <Pressable onPress={onShowPhone} style={styles.phoneLink} hitSlop={8}>
-          <ButtonText size="medium" tone="primary">
+        <Pressable onPress={handleShowPhone} hitSlop={8}>
+          <Supporting size="small" style={{ textAlign: 'center' }}>
             Show phone number
-          </ButtonText>
+          </Supporting>
         </Pressable>
       )}
     </View>
@@ -77,34 +101,19 @@ export const SellerActions = memo(function SellerActions({
 
 const styles = StyleSheet.create({
   container: {
-    gap: Spacing.lg,
+    gap: Spacing.md,
   },
   ctaRow: {
     flexDirection: 'row',
-    gap: Spacing.md,
+    gap: Spacing.sm,
   },
-  primaryBtn: {
+  button: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-    paddingVertical: Spacing.lg,
-    borderRadius: Radius.full,
-  },
-  secondaryBtn: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.sm,
-    paddingVertical: Spacing.lg,
-    borderRadius: Radius.full,
-    borderWidth: 1,
-    backgroundColor: 'transparent',
-  },
-  phoneLink: {
-    alignItems: 'center',
-    paddingVertical: Spacing.sm,
+    height: 48,
+    borderRadius: Radius.lg,
   },
 });

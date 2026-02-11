@@ -284,7 +284,7 @@ export function InventoryScreen() {
               <Pressable
                 onPress={() => openActions(item)}
                 hitSlop={12}
-                style={({ pressed }) => ({ opacity: pressed ? 0.4 : 1, padding: 4 })}
+                style={{ padding: 4 }}
               >
                 <MoreVertical size={18} color={colors.textSecondary} strokeWidth={2} />
               </Pressable>

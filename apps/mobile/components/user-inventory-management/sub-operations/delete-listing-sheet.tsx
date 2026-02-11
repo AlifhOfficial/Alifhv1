@@ -137,9 +137,9 @@ export function DeleteListingSheet({
             onPress={onClose}
             hitSlop={Spacing.md}
             disabled={loading}
-            style={({ pressed }) => [
+            style={[
               styles.closeButton,
-              { backgroundColor: pressed ? colors.fill : colors.fillSecondary },
+              { backgroundColor: colors.fillSecondary },
             ]}
           >
             <Ionicons name="close" size={18} color={colors.textSecondary} />
@@ -183,10 +183,10 @@ export function DeleteListingSheet({
           <Pressable
             onPress={onClose}
             disabled={loading}
-            style={({ pressed }) => [
+            style={[
               styles.secondaryBtn,
               {
-                backgroundColor: pressed ? colors.fill : 'transparent',
+                backgroundColor: 'transparent',
                 borderColor: colors.border,
               },
             ]}
@@ -197,10 +197,10 @@ export function DeleteListingSheet({
           <Pressable
             onPress={handleConfirm}
             disabled={loading}
-            style={({ pressed }) => [
+            style={[
               styles.primaryBtn,
               {
-                backgroundColor: pressed ? colors.error + 'CC' : colors.error,
+                backgroundColor: colors.error,
                 opacity: loading ? 0.7 : 1,
               },
             ]}

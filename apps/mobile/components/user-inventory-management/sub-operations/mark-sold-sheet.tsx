@@ -120,9 +120,9 @@ export function MarkSoldSheet({
             onPress={onClose}
             hitSlop={Spacing.md}
             disabled={loading}
-            style={({ pressed }) => [
+            style={[
               styles.closeButton,
-              { backgroundColor: pressed ? colors.fill : colors.fillSecondary },
+              { backgroundColor: colors.fillSecondary },
             ]}
           >
             <Ionicons name="close" size={18} color={colors.textSecondary} />
@@ -158,10 +158,10 @@ export function MarkSoldSheet({
           <Pressable
             onPress={onClose}
             disabled={loading}
-            style={({ pressed }) => [
+            style={[
               styles.secondaryBtn,
               {
-                backgroundColor: pressed ? colors.fill : 'transparent',
+                backgroundColor: 'transparent',
                 borderColor: colors.border,
               },
             ]}
@@ -172,10 +172,10 @@ export function MarkSoldSheet({
           <Pressable
             onPress={handleConfirm}
             disabled={loading}
-            style={({ pressed }) => [
+            style={[
               styles.primaryBtn,
               {
-                backgroundColor: pressed ? colors.success + 'DD' : colors.success,
+                backgroundColor: colors.success,
                 opacity: loading ? 0.7 : 1,
               },
             ]}

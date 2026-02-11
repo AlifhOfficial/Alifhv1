@@ -25,12 +25,11 @@ function TagItem({ tag, isSelected, colors, onPress }: TagItemProps) {
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [
+      style={[
         styles.tag,
         {
           backgroundColor: isSelected ? colors.surfaceSecondary : colors.surface,
           borderColor: isSelected ? colors.textSecondary : colors.border,
-          opacity: pressed ? 0.7 : 1,
         },
       ]}
     >

@@ -506,19 +506,15 @@ export const auth = betterAuth({
   },
 
   trustedOrigins: [
-    process.env.NEXTAUTH_URL || "http://localhost:3000",
+    // Production/Dev URL from env
+    process.env.BETTER_AUTH_URL || "http://localhost:3000",
+    // Network URL for mobile dev
     process.env.NEXT_PUBLIC_NETWORK_URL || "",
-    "http://192.168.1.103:3000",
+    // Additional trusted origins from env (comma-separated)
+    ...(process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",") || []),
+    // Local dev defaults
     "http://localhost:3000",
     "http://localhost:3001",
-    "http://192.168.1.103:8081",
-    "exp://192.168.1.103:8081",
-    "http://192.168.1.14:3000",
-    "http://192.168.1.14:8081",
-    "exp://192.168.1.14:8081",
-    "http://192.168.1.109:3000",
-    "http://192.168.1.109:8081",
-    "https://claims-son-sixth-classification.trycloudflare.com",
   ].filter(Boolean),
 
   advanced: {

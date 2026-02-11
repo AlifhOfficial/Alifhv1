@@ -22,7 +22,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChevronLeft } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing, Colors } from '@/constants/theme';
 import { Label, Body, Supporting } from '@/components/ui/text';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
@@ -53,10 +53,9 @@ import {
 export default function SellerContactScreen() {
   const { listingId } = useLocalSearchParams<{ listingId: string }>();
   const router = useRouter();
-  const { colorScheme } = useTheme();
+  const { colors } = useTheme();
   const { isAuthenticated } = useAuth();
   const insets = useSafeAreaInsets();
-  const colors = Colors[colorScheme];
 
   const [listing, setListing] = useState<ListingDetailed | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -275,7 +274,7 @@ export default function SellerContactScreen() {
         {seller.description && (
           <View style={styles.section}>
             <Label size="medium" tone="muted">ABOUT</Label>
-            <Body size="medium">{seller.description}</Body>
+            <Body size="medium" tone="secondary">{seller.description}</Body>
           </View>
         )}
 
@@ -286,7 +285,6 @@ export default function SellerContactScreen() {
           onChat={handleChat}
           onBookViewing={handleBookViewing}
           onShowPhone={handleShowPhoneSheet}
-          colors={colors}
         />
 
         {/* Stats Grid (private sellers only) */}

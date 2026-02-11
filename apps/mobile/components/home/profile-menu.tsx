@@ -29,10 +29,7 @@ export function ProfileMenu() {
   if (isAuthenticated && user) {
     return (
       <Pressable
-        style={({ pressed }) => [
-          styles.trigger,
-          { opacity: pressed ? 0.7 : 1 }
-        ]}
+        style={styles.trigger}
         onPress={handlePress}
       >
         <UserAvatar

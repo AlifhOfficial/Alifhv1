@@ -150,14 +150,12 @@ export function ModelFilterSheet({
     return (
       <Pressable
         onPress={() => handleToggle(item.model)}
-        style={({ pressed }) => [
+        style={[
           styles.listItem,
           {
             backgroundColor: isSelected
               ? colors.surfaceSecondary
-              : pressed
-                ? colors.fill
-                : 'transparent',
+              : 'transparent',
           },
         ]}
       >
@@ -218,9 +216,9 @@ export function ModelFilterSheet({
           <Pressable
             onPress={onClose}
             hitSlop={Spacing.md}
-            style={({ pressed }) => [
+            style={[
               styles.closeButton,
-              { backgroundColor: pressed ? colors.fill : colors.fillSecondary },
+              { backgroundColor: colors.fillSecondary },
             ]}
           >
             <Ionicons name="close" size={18} color={colors.textSecondary} />

@@ -246,9 +246,9 @@ export function EditStatusSheet({
           <Pressable
             onPress={onClose}
             hitSlop={Spacing.md}
-            style={({ pressed }) => [
+            style={[
               styles.closeButton,
-              { backgroundColor: pressed ? colors.fill : colors.fillSecondary },
+              { backgroundColor: colors.fillSecondary },
             ]}
           >
             <Ionicons name="close" size={18} color={colors.textSecondary} />
@@ -286,10 +286,10 @@ export function EditStatusSheet({
               <Pressable
                 key={action.key}
                 onPress={() => handleAction(action.key)}
-                style={({ pressed }) => [
+                style={[
                   styles.actionRow,
                   {
-                    backgroundColor: pressed ? colors.fill : 'transparent',
+                    backgroundColor: 'transparent',
                     borderBottomWidth: index < visibleActions.length - 1 ? StyleSheet.hairlineWidth : 0,
                     borderBottomColor: colors.border,
                   },

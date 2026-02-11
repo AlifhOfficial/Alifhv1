@@ -104,9 +104,9 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
           <Pressable
             onPress={onClose}
             hitSlop={Spacing.md}
-            style={({ pressed }) => [
+            style={[
               styles.closeButton,
-              { backgroundColor: pressed ? colors.fill : colors.fillSecondary }
+              { backgroundColor: colors.fillSecondary }
             ]}
           >
             <Ionicons name="close" size={18} color={colors.textSecondary} />
@@ -133,11 +133,10 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
         {/* Copy Button */}
         <Pressable
           onPress={handleCopy}
-          style={({ pressed }) => [
+          style={[
             styles.copyButton,
             { 
               backgroundColor: copied ? colors.surfaceSecondary : colors.text,
-              opacity: pressed ? 0.85 : 1,
             },
           ]}
         >

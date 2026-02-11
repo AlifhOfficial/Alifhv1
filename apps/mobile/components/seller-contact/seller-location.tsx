@@ -10,11 +10,11 @@ import { View, Pressable, StyleSheet } from 'react-native';
 import { MapPin, ExternalLink, Navigation, Globe } from 'lucide-react-native';
 
 import { Spacing, Radius } from '@/constants/theme';
-import { Label, Body, ButtonText } from '@/components/ui';
+import { Label, Data, ButtonText } from '@/components/ui';
 import type { SellerLocationProps } from './types';
 
-const ICON_SIZE = 22;
-const ICON_SIZE_SM = 18;
+const ICON_SIZE = 20;
+const ICON_SIZE_SM = 16;
 
 export const SellerLocation = memo(function SellerLocation({
   seller,
@@ -27,62 +27,53 @@ export const SellerLocation = memo(function SellerLocation({
 
   return (
     <View style={localStyles.section}>
-      <Label size="medium" tone="muted">LOCATION & LINKS</Label>
+      <Label size="small" tone="muted">LOCATION</Label>
       
       {seller.location && (
         <View style={localStyles.locationRow}>
-          <MapPin size={ICON_SIZE} color={colors.icon} style={{ marginTop: 2 }} />
+          <MapPin size={ICON_SIZE} color={colors.textSecondary} style={localStyles.mapIcon} />
           <View style={localStyles.locationText}>
-            <Body size="medium">{seller.location}</Body>
+            <Data size="medium">{seller.location}</Data>
           </View>
         </View>
       )}
       
-      {/* Action Buttons */}
+      {/* Action Pills */}
       <View style={localStyles.actions}>
         {seller.location && (
           <>
             <Pressable
-              style={({ pressed }) => [
-                localStyles.button,
-                { 
-                  borderColor: colors.border,
-                  opacity: pressed ? 0.7 : 1,
-                },
+              style={[
+                localStyles.pill,
+                { backgroundColor: colors.fill },
               ]}
               onPress={onViewMap}
             >
               <ExternalLink size={ICON_SIZE_SM} color={colors.text} />
-              <ButtonText size="medium">View Map</ButtonText>
+              <ButtonText size="small">View Map</ButtonText>
             </Pressable>
             <Pressable
-              style={({ pressed }) => [
-                localStyles.button,
-                { 
-                  borderColor: colors.border,
-                  opacity: pressed ? 0.7 : 1,
-                },
+              style={[
+                localStyles.pill,
+                { backgroundColor: colors.fill },
               ]}
               onPress={onGetDirections}
             >
               <Navigation size={ICON_SIZE_SM} color={colors.text} />
-              <ButtonText size="medium">Directions</ButtonText>
+              <ButtonText size="small">Directions</ButtonText>
             </Pressable>
           </>
         )}
         {seller.website && (
           <Pressable
-            style={({ pressed }) => [
-              localStyles.button,
-              { 
-                borderColor: colors.border,
-                opacity: pressed ? 0.7 : 1,
-              },
+            style={[
+              localStyles.pill,
+              { backgroundColor: colors.fill },
             ]}
             onPress={onWebsite}
           >
             <Globe size={ICON_SIZE_SM} color={colors.text} />
-            <ButtonText size="medium">Website</ButtonText>
+            <ButtonText size="small">Website</ButtonText>
           </Pressable>
         )}
       </View>
@@ -92,12 +83,15 @@ export const SellerLocation = memo(function SellerLocation({
 
 const localStyles = StyleSheet.create({
   section: {
-    gap: Spacing.lg,
+    gap: Spacing.md,
   },
   locationRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: Spacing.sm,
+  },
+  mapIcon: {
+    marginTop: 2,
   },
   locationText: {
     flex: 1,
@@ -108,13 +102,12 @@ const localStyles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: Spacing.sm,
   },
-  button: {
+  pill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.lg,
-    borderRadius: Radius.xl,
-    borderWidth: 1.5,
+    gap: 6,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    borderRadius: Radius.full,
   },
 });

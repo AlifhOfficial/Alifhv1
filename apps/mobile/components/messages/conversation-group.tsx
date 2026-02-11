@@ -92,9 +92,9 @@ export function ConversationGroup({
               <Pressable
                 key={c.id}
                 onPress={() => onSelect(c)}
-                style={({ pressed }) => [
+                style={[
                   styles.chatItem,
-                  { backgroundColor: pressed || isActive ? colors.surface : 'transparent' },
+                  { backgroundColor: isActive ? colors.surface : 'transparent' },
                 ]}
               >
                 {/* Title + Time */}

@@ -99,9 +99,9 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
           <Pressable 
             onPress={onClose} 
             hitSlop={Spacing.md}
-            style={({ pressed }) => [
+            style={[
               styles.closeButton,
-              { backgroundColor: pressed ? colors.fill : colors.fillSecondary }
+              { backgroundColor: colors.fillSecondary }
             ]}
           >
             <Ionicons name="close" size={18} color={colors.textSecondary} />
@@ -117,14 +117,12 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
               <Pressable
                 key={option.value}
                 onPress={() => handleSelect(option.value)}
-                style={({ pressed }) => [
+                style={[
                   styles.listItem,
                   { 
                     backgroundColor: selected 
                       ? colors.surfaceSecondary 
-                      : pressed 
-                        ? colors.fill 
-                        : 'transparent',
+                      : 'transparent',
                   },
                 ]}
               >

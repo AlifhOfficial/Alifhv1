@@ -144,9 +144,9 @@ export function PriceFilterSheet({
           <Pressable 
             onPress={onClose} 
             hitSlop={Spacing.md}
-            style={({ pressed }) => [
+            style={[
               styles.closeButton,
-              { backgroundColor: pressed ? colors.surfacePressed : colors.surface }
+              { backgroundColor: colors.surface }
             ]}
           >
             <Ionicons name="close" size={18} color={colors.icon} />
