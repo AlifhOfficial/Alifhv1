@@ -46,9 +46,6 @@ export interface CarCardDetailedMProps {
   listing: ListingDetailedData;
   sellerData: SellerData;
   listingId: string;
-  isFavorite?: boolean;
-  onFavoritePress?: (id: string) => void;
-  onSharePress?: (id: string) => void;
 }
 
 // ============================================================================
@@ -59,9 +56,6 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
   listing,
   sellerData,
   listingId,
-  isFavorite = false,
-  onFavoritePress,
-  onSharePress,
 }: CarCardDetailedMProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
@@ -116,8 +110,6 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
           price={listing.price}
           isNegotiable={listing.isNegotiable}
           isBlk={isBlk}
-          isFavorite={isFavorite}
-          onFavoritePress={onFavoritePress}
         />
 
         {/* 2. Quick Stats: Mileage · Specs · Location · VIN */}

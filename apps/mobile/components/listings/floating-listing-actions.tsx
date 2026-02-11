@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet, Platform, Alert } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { Heart, Sparkles, Share2 } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,6 +18,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useTheme } from '@/context/theme-context';
+import { useListingFavorite } from '@/context/favorites-context';
 import { Colors, Spacing } from '@/constants/theme';
 
 const AnimatedView = Animated.View;
@@ -36,8 +37,8 @@ const GAP = 8;
 
 export function FloatingListingActions({
   id,
-  isFavorite = false,
-  isSuperliked = false,
+  isFavorite: isFavoriteProp,
+  isSuperliked: isSuperlikedProp,
   onFavoritePress,
   onSuperlikePress,
   onSharePress,
@@ -46,6 +47,11 @@ export function FloatingListingActions({
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const [isVisible, setIsVisible] = useState(true);
+  
+  // Use context for favorites state (with prop overrides)
+  const favoriteState = useListingFavorite(id);
+  const isFavorite = isFavoriteProp ?? favoriteState.isFavorite;
+  const isSuperliked = isSuperlikedProp ?? favoriteState.isSuperliked;
 
   // Animation values for each bubble
   const favoriteProgress = useSharedValue(1);
@@ -111,15 +117,64 @@ export function FloatingListingActions({
     if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
-    onFavoritePress?.(id);
-  }, [id, onFavoritePress]);
+    if (onFavoritePress) {
+      onFavoritePress(id);
+    } else {
+      favoriteState.toggleFavorite().catch(() => {});
+    }
+  }, [id, onFavoritePress, favoriteState]);
 
   const handleSuperlikePress = useCallback(() => {
     if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
-    onSuperlikePress?.(id);
-  }, [id, onSuperlikePress]);
+    if (onSuperlikePress) {
+      onSuperlikePress(id);
+      return;
+    }
+    
+    // If already superliked, just toggle off
+    if (isSuperliked) {
+      favoriteState.toggleSuperlike().catch(() => {});
+      return;
+    }
+    
+    // Check quota before showing confirmation
+    const quota = favoriteState.quota;
+    const remaining = quota?.remaining ?? 0;
+    const total = (quota?.maxSuperlikesPerMonth ?? 0) + (quota?.premiumSuperlikesBonus ?? 0);
+    
+    if (remaining <= 0) {
+      const resetDate = quota?.periodEndDate 
+        ? new Date(quota.periodEndDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        : null;
+      Alert.alert(
+        'No Superlikes Left',
+        `You've used all your superlikes for this month.${resetDate ? ` They'll reset on ${resetDate}.` : ''}`,
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+    
+    // Show confirmation
+    Alert.alert(
+      'Superlike this listing?',
+      `You have ${remaining}/${total} superlikes remaining this month.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Confirm', 
+          onPress: () => {
+            favoriteState.toggleSuperlike().catch((err) => {
+              if (err?.message === 'QUOTA_EXCEEDED') {
+                Alert.alert('No Superlikes Left', 'You\'ve used all your superlikes for this month.');
+              }
+            });
+          }
+        },
+      ]
+    );
+  }, [id, onSuperlikePress, favoriteState, isSuperliked]);
 
   const handleSharePress = useCallback(() => {
     if (Platform.OS === 'ios') {

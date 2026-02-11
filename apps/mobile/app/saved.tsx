@@ -61,7 +61,7 @@ export default function SavedScreen() {
   // Loading state
   if (isLoading && currentListings.length === 0) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={styles.container}>
         <SavedHeader
           colors={colors}
           topInset={insets.top}
@@ -70,7 +70,7 @@ export default function SavedScreen() {
           favoritesCount={favorites.length}
           superlikesCount={superlikes.length}
         />
-        <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
+        <View style={styles.loadingContainer}>
           <LogoPulse size={56} />
           <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
             Loading saved listings...
@@ -83,7 +83,7 @@ export default function SavedScreen() {
   // Error state
   if (error && currentListings.length === 0) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={styles.container}>
         <SavedHeader
           colors={colors}
           topInset={insets.top}
@@ -92,7 +92,7 @@ export default function SavedScreen() {
           favoritesCount={favorites.length}
           superlikesCount={superlikes.length}
         />
-        <View style={[styles.errorContainer, { backgroundColor: colors.background }]}>
+        <View style={styles.errorContainer}>
           <Text style={[styles.errorText, { color: colors.error }]}>
             {error}
           </Text>
@@ -108,7 +108,7 @@ export default function SavedScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={styles.container}>
       {/* Header */}
       <SavedHeader
         colors={colors}

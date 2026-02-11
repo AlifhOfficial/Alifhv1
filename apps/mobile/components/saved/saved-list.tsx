@@ -2,15 +2,16 @@
  * Saved List - Displays saved listings (favorites or superlikes)
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { Heart, Sparkles } from 'lucide-react-native';
 
 import { Layout } from '@/constants/theme';
 import { Heading, Supporting } from '@/components/ui';
-import { CarCardM } from '@/components/cards/car-card-m';
+import { CarCardList } from '@/components/cards/car-card-list';
 import { SavedListingCard } from '@/lib/saved-api';
 import type { ThemeColors, SavedTab } from './types';
 
@@ -74,7 +75,12 @@ export function SavedList({
   quota,
 }: SavedListProps) {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const bottomPadding = insets.bottom + Layout.tabBarHeight;
+
+  const handleCardPress = useCallback((id: string) => {
+    router.push(`/listing/${id}`);
+  }, [router]);
 
   // Empty state
   if (listings.length === 0) {
@@ -87,7 +93,7 @@ export function SavedList({
       data={listings}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
-        <CarCardM
+        <CarCardList
           id={item.id}
           make={item.make || ''}
           model={item.model || ''}
@@ -105,8 +111,7 @@ export function SavedList({
           sellerName={item.sellerName}
           sellerAvatarUrl={item.sellerAvatarUrl}
           kycVerified={item.sellerKycVerified || false}
-          isFavorite={activeTab === 'favorites'}
-          isSuperliked={activeTab === 'superlikes'}
+          onPress={handleCardPress}
         />
       )}
       contentContainerStyle={[styles.listContent, { paddingBottom: bottomPadding }]}

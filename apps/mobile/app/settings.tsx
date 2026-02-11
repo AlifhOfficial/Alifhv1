@@ -108,7 +108,7 @@ export default function SettingsScreen() {
   // Loading state
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={styles.container}>
         <SettingsHeader colors={colors} topInset={insets.top} />
         <View style={styles.loadingContainer}>
           <LogoPulse size={56} />
@@ -121,7 +121,7 @@ export default function SettingsScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={styles.container}>
       {/* Header */}
       <SettingsHeader 
         colors={colors} 

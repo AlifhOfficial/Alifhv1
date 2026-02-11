@@ -17,7 +17,7 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={styles.container}>
       <HomeHeader />
       <ScrollView 
         style={styles.content} 

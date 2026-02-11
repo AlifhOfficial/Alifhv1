@@ -16,7 +16,7 @@ export default function TabLayout() {
   const colors = Colors[colorScheme];
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={styles.container}>
       <Tabs
         tabBar={() => null}
         screenOptions={{

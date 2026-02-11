@@ -18,6 +18,7 @@ import 'react-native-reanimated';
 import { Colors } from '@/constants/theme';
 import { ThemeProvider, useTheme } from '@/context/theme-context';
 import { AuthProvider, useAuth } from '@/context/auth-context';
+import { FavoritesProvider } from '@/context/favorites-context';
 import { TabBarProvider, useTabBar } from '@/context/tab-bar-context';
 import { SearchProvider } from '@/context/search-context';
 import { WebSocketProvider } from '@/context/websocket-context';
@@ -282,9 +283,11 @@ export default function RootLayout() {
             <TabBarProvider>
               <SearchProvider>
                 <AuthProvider>
-                  <WebSocketWrapper>
-                    <RootLayoutNav />
-                  </WebSocketWrapper>
+                  <FavoritesProvider>
+                    <WebSocketWrapper>
+                      <RootLayoutNav />
+                    </WebSocketWrapper>
+                  </FavoritesProvider>
                 </AuthProvider>
               </SearchProvider>
             </TabBarProvider>

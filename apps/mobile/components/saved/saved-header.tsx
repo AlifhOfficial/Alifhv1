@@ -1,5 +1,6 @@
 /**
  * Saved Header - Title + pill tabs for Favourites / Superlikes
+ * Matches InventoryScreen filter pills styling
  */
 
 import React from 'react';
@@ -7,7 +8,7 @@ import { StyleSheet, View, Platform } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 
-import { Heading, Body } from '@/components/ui';
+import { Heading, Body, Label } from '@/components/ui';
 import { Spacing, Radius } from '@/constants/theme';
 import type { ThemeColors, SavedTab } from './types';
 
@@ -48,7 +49,7 @@ export function SavedHeader({
       {/* Title */}
       <Heading size="large">Saved</Heading>
 
-      {/* Pill tabs */}
+      {/* Pill tabs — matches InventoryScreen filter pills */}
       <View style={styles.pillRow}>
         {TABS.map(({ key, label }) => {
           const active = activeTab === key;
@@ -60,20 +61,35 @@ export function SavedHeader({
               style={[
                 styles.pill,
                 {
-                  backgroundColor: active ? colors.text : 'transparent',
-                  borderColor: active ? colors.text : colors.border,
+                  backgroundColor: active ? colors.fill : colors.surface,
+                  borderColor: colors.border,
                 },
               ]}
             >
-              <Body
-                size="small"
-                style={{
-                  color: active ? colors.surface : colors.textSecondary,
-                  fontFamily: active ? 'Inter_600SemiBold' : 'Inter_500Medium',
-                }}
-              >
-                {label}{count > 0 ? ` ${count}` : ''}
-              </Body>
+              {({ pressed }) => (
+                <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
+                  <Body
+                    size="small"
+                    style={{
+                      color: active ? colors.text : colors.textSecondary,
+                      fontFamily: active ? 'Inter_600SemiBold' : 'Inter_500Medium',
+                    }}
+                  >
+                    {label}
+                  </Body>
+                  {count > 0 && (
+                    <View style={[styles.pillBadge, { backgroundColor: colors.text }]}>
+                      <Label
+                        size="badge"
+                        uppercase={false}
+                        style={{ color: colors.background }}
+                      >
+                        {count > 99 ? '99+' : count}
+                      </Label>
+                    </View>
+                  )}
+                </View>
+              )}
             </HapticPressable>
           );
         })}
@@ -95,9 +111,22 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   pill: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 20,
+    height: 36,
+    borderRadius: 18,
     borderWidth: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+  },
+  pillContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  pillBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 10,
+    minWidth: 18,
+    alignItems: 'center',
   },
 });

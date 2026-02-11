@@ -12,13 +12,16 @@ import {
   View,
   Pressable,
   Share,
+  Alert,
 } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
-import { Heart, Share2, CheckCircle2 } from 'lucide-react-native';
+import { Heart, Share2, CheckCircle2, Sparkles } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { useListingFavorite } from '@/context/favorites-context';
+import { useAuth } from '@/context/auth-context';
 import { 
   Skeleton, 
   SkeletonCircle,
@@ -139,8 +142,8 @@ export const CarCardM = memo(function CarCardM({
   sellerName,
   sellerAvatarUrl,
   kycVerified = false,
-  isFavorite = false,
-  isSuperliked = false,
+  isFavorite: isFavoriteProp,
+  isSuperliked: isSuperlikedProp,
   onPress,
   onFavoritePress,
   onSuperlikePress,
@@ -148,6 +151,12 @@ export const CarCardM = memo(function CarCardM({
 }: CarCardMProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const { openAuthFlow, isAuthenticated } = useAuth();
+  
+  // Use context for favorites state (with prop overrides for flexibility)
+  const favoriteState = useListingFavorite(id);
+  const isFavorite = isFavoriteProp ?? favoriteState.isFavorite;
+  const isSuperliked = isSuperlikedProp ?? favoriteState.isSuperliked;
 
   // Derived display values
   const displayImage = thumbnail || images?.[0];
@@ -192,12 +201,80 @@ export const CarCardM = memo(function CarCardM({
   }, [id, onPress]);
 
   const handleFavoritePress = useCallback(() => {
-    onFavoritePress?.(id);
-  }, [id, onFavoritePress]);
+    if (onFavoritePress) {
+      onFavoritePress(id);
+    } else {
+      if (!isAuthenticated) {
+        openAuthFlow();
+        return;
+      }
+      favoriteState.toggleFavorite().catch((err) => {
+        if (err?.message === 'AUTH_REQUIRED') {
+          openAuthFlow();
+        }
+      });
+    }
+  }, [id, onFavoritePress, favoriteState, isAuthenticated, openAuthFlow]);
 
   const handleSuperlikePress = useCallback(() => {
-    onSuperlikePress?.(id);
-  }, [id, onSuperlikePress]);
+    if (onSuperlikePress) {
+      onSuperlikePress(id);
+      return;
+    }
+    
+    if (!isAuthenticated) {
+      openAuthFlow();
+      return;
+    }
+    
+    // If already superliked, just toggle off
+    if (isSuperliked) {
+      favoriteState.toggleSuperlike().catch((err) => {
+        if (err?.message === 'AUTH_REQUIRED') {
+          openAuthFlow();
+        }
+      });
+      return;
+    }
+    
+    // Check quota before showing confirmation
+    const quota = favoriteState.quota;
+    const remaining = quota?.remaining ?? 0;
+    const total = (quota?.maxSuperlikesPerMonth ?? 0) + (quota?.premiumSuperlikesBonus ?? 0);
+    
+    if (remaining <= 0) {
+      const resetDate = quota?.periodEndDate 
+        ? new Date(quota.periodEndDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        : null;
+      Alert.alert(
+        'No Superlikes Left',
+        `You've used all your superlikes for this month.${resetDate ? ` They'll reset on ${resetDate}.` : ''}`,
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+    
+    // Show confirmation
+    Alert.alert(
+      'Superlike this listing?',
+      `You have ${remaining}/${total} superlikes remaining this month.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Confirm', 
+          onPress: () => {
+            favoriteState.toggleSuperlike().catch((err) => {
+              if (err?.message === 'AUTH_REQUIRED') {
+                openAuthFlow();
+              } else if (err?.message === 'QUOTA_EXCEEDED') {
+                Alert.alert('No Superlikes Left', 'You\'ve used all your superlikes for this month.');
+              }
+            });
+          }
+        },
+      ]
+    );
+  }, [id, onSuperlikePress, favoriteState, isAuthenticated, openAuthFlow, isSuperliked]);
 
   const handleSharePress = useCallback(async () => {
     if (onSharePress) {
@@ -355,6 +432,20 @@ export const CarCardM = memo(function CarCardM({
                 color={isFavorite ? colors.favorite : actionIconColor}
                 fill={isFavorite ? colors.favorite : 'none'}
                 strokeWidth={isFavorite ? 2.25 : 1.75}
+              />
+            </HapticPressable>
+
+            {/* Superlike */}
+            <HapticPressable
+              onPress={handleSuperlikePress}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={styles.actionButton}
+            >
+              <Sparkles
+                size={ICON_SIZE}
+                color={isSuperliked ? colors.warning : actionIconColor}
+                fill={isSuperliked ? colors.warning : 'none'}
+                strokeWidth={isSuperliked ? 2.25 : 1.75}
               />
             </HapticPressable>
 

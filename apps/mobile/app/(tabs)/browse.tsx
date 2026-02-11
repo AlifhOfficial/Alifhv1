@@ -241,10 +241,7 @@ export default function BrowseScreen() {
     router.push(`/listing/${id}`);
   }, [router]);
 
-  const handleFavoritePress = useCallback((id: string) => {
-    // TODO: Wire up to favorites hook
-    console.log('Favorite:', id);
-  }, []);
+
 
   // Handle filter pill press
   const handleFilterPillPress = useCallback((type: FilterPillType) => {
@@ -435,7 +432,7 @@ export default function BrowseScreen() {
   // ──────────────────────────────────────────────────────────────────────────
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={styles.container}>
       {/* Top safe area gradient */}
       <TopSafeAreaGradient />
 
@@ -574,7 +571,6 @@ export default function BrowseScreen() {
                   sellerAvatarUrl={listing.sellerAvatarUrl}
                   kycVerified={listing.sellerKycVerified}
                   onPress={handleCardPress}
-                  onFavoritePress={handleFavoritePress}
                 />
               ))
             ) : (
@@ -601,7 +597,6 @@ export default function BrowseScreen() {
                   sellerAvatarUrl={listing.sellerAvatarUrl}
                   kycVerified={listing.sellerKycVerified}
                   onPress={handleCardPress}
-                  onFavoritePress={handleFavoritePress}
                 />
               ))
             )}

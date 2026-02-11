@@ -386,7 +386,7 @@ export function InventoryScreen() {
   const headerHeight = insets.top + Spacing.md + 32 + Spacing.md + 36 + Spacing.md; // safe area + title + gap + pills + bottom padding
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={styles.container}>
       {/* ─────────────────────── Floating Header (absolute) ────────────────────────────────── */}
       <View style={[styles.header, { paddingTop: insets.top + Spacing.md, backgroundColor: colors.background, paddingHorizontal: Spacing.lg }]}>
         {/* Title */}

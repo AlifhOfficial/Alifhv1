@@ -230,7 +230,7 @@ export default function MessagesScreen() {
   // ── Error ─────────────────────────────────────
   if (error) {
     return (
-      <View style={[styles.screen, { backgroundColor: colors.background }]}>
+      <View style={styles.screen}>
         <MessagesHeader />
         <View style={styles.emptyState}>
           <Body size="medium" tone="secondary" style={{ textAlign: 'center' }}>{error}</Body>
@@ -242,7 +242,7 @@ export default function MessagesScreen() {
   // ── Empty ─────────────────────────────────────
   if (listItems.length === 0) {
     return (
-      <View style={[styles.screen, { backgroundColor: colors.background }]}>
+      <View style={styles.screen}>
         <MessagesHeader />
         <View style={styles.emptyState}>
           <View style={[styles.iconCircle, { backgroundColor: colors.fillSecondary }]}>
@@ -261,7 +261,7 @@ export default function MessagesScreen() {
 
   // ── Conversation list ─────────────────────────
   return (
-    <View style={[styles.screen, { backgroundColor: colors.background }]}>
+    <View style={styles.screen}>
       <MessagesHeader />
       <FlatList
         data={listItems}
