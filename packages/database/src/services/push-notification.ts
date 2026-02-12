@@ -54,27 +54,34 @@ type NotificationType =
 // ============================================================================
 
 const EXPO_PUSH_URL = 'https://exp.host/--/api/v2/push/send';
+const EXPO_PROJECT_ID = process.env.EXPO_PROJECT_ID || 'cd8cffff-33b0-46d9-b584-08eb6448e6dc';
 
 /**
  * Send push notifications to Expo Push API
- * Requires EXPO_ACCESS_TOKEN env var for authenticated push delivery
+ * Uses project ID header for EAS push token authentication
  */
 async function sendToExpoPush(messages: PushMessage[]): Promise<PushTicket[]> {
   if (messages.length === 0) return [];
-
-  const accessToken = process.env.EXPO_ACCESS_TOKEN;
-  if (!accessToken) {
-    console.error('[Push] EXPO_ACCESS_TOKEN is not set — push notifications will not be delivered. Generate one at https://expo.dev/accounts/[account]/settings/access-tokens');
-    return [];
-  }
 
   try {
     const headers: Record<string, string> = {
       'Accept': 'application/json',
       'Accept-Encoding': 'gzip, deflate',
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`,
     };
+
+    // Access token auth (preferred) or project ID header (required for EAS tokens)
+    const accessToken = process.env.EXPO_ACCESS_TOKEN;
+    if (accessToken) {
+      headers['Authorization'] = `Bearer ${accessToken}`;
+    }
+
+    // Always include project ID for EAS push tokens
+    if (EXPO_PROJECT_ID) {
+      headers['expo-project-id'] = EXPO_PROJECT_ID;
+    }
+
+    console.log(`[Push] Sending ${messages.length} push notification(s) to Expo API`);
 
     const response = await fetch(EXPO_PUSH_URL, {
       method: 'POST',
@@ -89,7 +96,19 @@ async function sendToExpoPush(messages: PushMessage[]): Promise<PushTicket[]> {
     }
 
     const result = await response.json();
-    return result.data || [];
+    const tickets = result.data || [];
+    
+    const okCount = tickets.filter((t: PushTicket) => t.status === 'ok').length;
+    const errCount = tickets.filter((t: PushTicket) => t.status === 'error').length;
+    console.log(`[Push] Expo API response: ${okCount} ok, ${errCount} errors`);
+    
+    if (errCount > 0) {
+      tickets.filter((t: PushTicket) => t.status === 'error').forEach((t: PushTicket) => {
+        console.error(`[Push] Ticket error: ${t.details?.error || t.message}`);
+      });
+    }
+
+    return tickets;
   } catch (error) {
     console.error('[Push] Failed to send to Expo:', error);
     return [];
