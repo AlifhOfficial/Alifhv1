@@ -40,8 +40,17 @@ export async function GET(req: NextRequest) {
       getUnreadNotificationCount(user.id),
     ]);
 
+    // Resolve any raw storage keys in actorAvatarUrl to full public URLs
+    const r2PublicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+    const notifications = result.notifications.map((n: any) => {
+      if (n.actorAvatarUrl && !n.actorAvatarUrl.startsWith('http') && r2PublicUrl) {
+        return { ...n, actorAvatarUrl: `${r2PublicUrl.replace(/\/$/, '')}/${n.actorAvatarUrl}` };
+      }
+      return n;
+    });
+
     return NextResponse.json({
-      notifications: result.notifications,
+      notifications,
       nextCursor: result.nextCursor,
       hasMore: result.hasMore,
       unreadCount,

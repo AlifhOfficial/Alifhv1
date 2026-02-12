@@ -21,15 +21,14 @@ import {
   useSettings,
   SettingsHeader,
   PrivacySection,
-  NotificationsSection,
   SellingSection,
+  IdentitySection,
   SecuritySection,
   SupportSection,
   DangerZone,
   DeleteAccountModal,
+  type KYCStatus,
 } from '@/components/settings';
-
-import { KYCStatusCard, type ProfileStatus } from '@/components/profile';
 
 // ============================================================================
 // MAIN COMPONENT
@@ -63,14 +62,10 @@ export default function SettingsScreen() {
     setIsDeleting,
   } = useSettings({ isAuthenticated });
 
-  const profileStatus: ProfileStatus = {
+  const kycStatus: KYCStatus = {
     kycVerified: profile?.kycVerified ?? false,
     kycStatus: profile?.kycStatus ?? 'none',
     kycExpiryDate: profile?.kycExpiresAt ? new Date(profile.kycExpiresAt) : null,
-    emailVerified: user?.emailVerified ?? false,
-    phoneNumberVerified: profile?.phoneNumberVerified ?? false,
-    badges: profile?.badges ?? [],
-    platformRating: null,
   };
 
   // Local UI state
@@ -142,15 +137,6 @@ export default function SettingsScreen() {
           }
         />
 
-        {/* Notifications */}
-        <NotificationsSection
-          pushEnabled={pushNotifications}
-          emailEnabled={emailNotifications}
-          colors={colors}
-          onTogglePush={() => setPushNotifications(!pushNotifications)}
-          onToggleEmail={() => setEmailNotifications(!emailNotifications)}
-        />
-
         {/* Selling */}
         <SellingSection
           consignmentMode={consignmentMode}
@@ -160,8 +146,8 @@ export default function SettingsScreen() {
         />
 
         {/* Identity Verification */}
-        <KYCStatusCard
-          status={profileStatus}
+        <IdentitySection
+          status={kycStatus}
           colors={colors}
           onAction={() => {
             // TODO: Navigate to KYC flow

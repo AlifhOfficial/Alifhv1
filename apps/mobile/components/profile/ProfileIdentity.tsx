@@ -58,7 +58,7 @@ export function ProfileIdentity({
       <View style={styles.info}>
         <View style={styles.nameRow}>
           <Heading
-            size="large"
+            size="medium"
             style={styles.name}
             numberOfLines={1}
           >

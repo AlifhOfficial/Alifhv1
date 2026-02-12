@@ -20,7 +20,7 @@ export interface SettingsProfile {
 
 export interface Passkey {
   id: string;
-  name: string;
+  name: string | null;
   createdAt: string;
 }
 

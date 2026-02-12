@@ -1,6 +1,6 @@
 /**
  * Settings Header Component
- * Simple title header
+ * Title header matching HomeHeader icon styling
  */
 
 import React from 'react';
@@ -15,8 +15,9 @@ interface SettingsHeaderProps {
   topInset: number;
 }
 
-export function SettingsHeader({ 
-  topInset, 
+export function SettingsHeader({
+  colors,
+  topInset,
 }: SettingsHeaderProps) {
   return (
     <View style={[styles.container, { paddingTop: topInset + Layout.headerPadding }]}>

@@ -12,8 +12,15 @@ import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_7
 import * as SplashScreen from 'expo-splash-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
-import { Modal, View } from 'react-native';
+import { Modal, View, LogBox } from 'react-native';
 import 'react-native-reanimated';
+
+// Suppress warnings from third-party dependencies that can't be fixed in user code
+LogBox.ignoreLogs([
+  'SafeAreaView has been deprecated',
+  'expo-notifications: Android Push notifications',
+  '`expo-notifications` functionality is not fully supported in Expo Go',
+]);
 
 import { Colors } from '@/constants/theme';
 import { ThemeProvider, useTheme } from '@/context/theme-context';
@@ -213,7 +220,7 @@ function RootLayoutNav() {
         <Stack.Screen name="seller-contact/[listingId]" options={{ presentation: 'card' }} />
         <Stack.Screen name="profile" options={{ presentation: 'card' }} />
         <Stack.Screen name="settings" options={{ presentation: 'card' }} />
-        <Stack.Screen name="saved" options={{ presentation: 'card' }} />
+
         <Stack.Screen name="chat/[conversationId]" options={{ presentation: 'card' }} />
         <Stack.Screen name="notifications" options={{ presentation: 'card' }} />
         <Stack.Screen name="create-listing" options={{ presentation: 'card' }} />

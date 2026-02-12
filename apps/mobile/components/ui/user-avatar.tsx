@@ -60,7 +60,7 @@ const fontSizes = {
 /** Generate DiceBear avatar URL */
 function getGeneratedAvatarUrl(seed: string, size: number): string {
   const encodedSeed = encodeURIComponent(seed.trim() || 'user');
-  return `https://api.dicebear.com/9.x/${DICEBEAR_STYLE}/svg?seed=${encodedSeed}&size=${size}&backgroundColor=transparent`;
+  return `https://api.dicebear.com/9.x/${DICEBEAR_STYLE}/png?seed=${encodedSeed}&size=${size}&backgroundColor=transparent`;
 }
 
 /** Generate initials from a name */

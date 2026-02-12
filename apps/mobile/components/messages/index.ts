@@ -3,7 +3,7 @@
  */
 
 // UI Components
-export { MessagesHeader } from './header';
+export { MessagesHeader } from './messages-header';
 export { ConversationGroup } from './conversation-group';
 export { MessageBubble } from './message-bubble';
 export { MessageInput } from './message-input';

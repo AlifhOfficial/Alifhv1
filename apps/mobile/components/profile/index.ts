@@ -14,7 +14,6 @@ export { useProfile } from './hooks/useProfile';
 export { ProfileHeader } from './ProfileHeader';
 export { ProfileAvatar } from './ProfileAvatar';
 export { ProfileIdentity } from './ProfileIdentity';
-export { KYCStatusCard } from './KYCStatusCard';
 export { StatsGrid } from './StatsGrid';
 export { Section } from './Section';
 export { EditableField } from './EditableField';

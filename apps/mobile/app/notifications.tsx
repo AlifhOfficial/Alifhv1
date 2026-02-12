@@ -20,6 +20,7 @@ import { Colors, Layout, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { Body, Heading, Skeleton, SkeletonCircle } from '@/components/ui';
+import { SpinLoader } from '@/components/ui/loaders/spinners';
 import {
   fetchNotifications,
   markNotificationRead,
@@ -214,7 +215,7 @@ export default function NotificationsScreen() {
     if (!isFetchingMore) return null;
     return (
       <View style={styles.footer}>
-        <ActivityIndicator size="small" color={colors.primary} />
+        <SpinLoader size="sm" />
       </View>
     );
   };

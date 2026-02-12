@@ -172,7 +172,16 @@ export async function POST(
       // Get sender's profile from participants list
       const senderProfile = participants.find(p => p.userId === user.id);
       const senderName = senderProfile?.name || user.firstName || 'Someone';
-      const senderAvatarUrl = senderProfile?.avatarUrl || undefined;
+      // Resolve avatar storage key to full public URL
+      const rawAvatar = senderProfile?.avatarUrl;
+      const r2PublicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+      const senderAvatarUrl = rawAvatar
+        ? rawAvatar.startsWith('http')
+          ? rawAvatar
+          : r2PublicUrl
+            ? `${r2PublicUrl.replace(/\/$/, '')}/${rawAvatar}`
+            : undefined
+        : undefined;
       const messagePreview = text || (mediaType ? `Sent a ${mediaType}` : 'Sent a message');
 
       for (const recipient of otherParticipants) {

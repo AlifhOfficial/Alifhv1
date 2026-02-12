@@ -24,7 +24,7 @@ export function ProfileHeader({ colors, topInset }: ProfileHeaderProps) {
   return (
     <View style={[styles.container, { paddingTop: topInset + Layout.headerPadding }]}>
       {/* Left: Title */}
-      <Heading size="large">Profile</Heading>
+      <Heading size="medium">Profile</Heading>
 
       {/* Right: Settings */}
       <HapticPressable
@@ -34,7 +34,7 @@ export function ProfileHeader({ colors, topInset }: ProfileHeaderProps) {
           styles.iconButton,
           {
             borderColor: colors.border,
-            backgroundColor: colors.surface,
+            backgroundColor: colors.background,
           },
         ]}
       >

@@ -68,7 +68,7 @@ export function SecuritySection({
             >
               <Key size={16} color={colors.textSecondary} strokeWidth={1.5} />
               <View style={styles.itemInfo}>
-                <Body size="small">{pk.name}</Body>
+                <Body size="small">{pk.name || 'Passkey'}</Body>
                 <Supporting size="small" tone="muted">Added {pk.createdAt}</Supporting>
               </View>
               <HapticPressable
