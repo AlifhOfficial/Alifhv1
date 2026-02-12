@@ -112,7 +112,7 @@ const articleSchema = {
     name: 'Revvup',
     logo: {
       '@type': 'ImageObject',
-      url: 'https://revvup.ae/web-app-manifest-512x512.png',
+      url: 'https://revvup.ae/icons/icon-512x512.png',
     },
   },
   datePublished: '2026-01-15',
