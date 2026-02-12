@@ -57,23 +57,34 @@ const EXPO_PUSH_URL = 'https://exp.host/--/api/v2/push/send';
 
 /**
  * Send push notifications to Expo Push API
+ * Requires EXPO_ACCESS_TOKEN env var for authenticated push delivery
  */
 async function sendToExpoPush(messages: PushMessage[]): Promise<PushTicket[]> {
   if (messages.length === 0) return [];
 
+  const accessToken = process.env.EXPO_ACCESS_TOKEN;
+  if (!accessToken) {
+    console.error('[Push] EXPO_ACCESS_TOKEN is not set — push notifications will not be delivered. Generate one at https://expo.dev/accounts/[account]/settings/access-tokens');
+    return [];
+  }
+
   try {
+    const headers: Record<string, string> = {
+      'Accept': 'application/json',
+      'Accept-Encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    };
+
     const response = await fetch(EXPO_PUSH_URL, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Accept-Encoding': 'gzip, deflate',
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify(messages),
     });
 
     if (!response.ok) {
-      console.error(`[Push] Expo API error: ${response.status}`);
+      const errorBody = await response.text().catch(() => 'unable to read body');
+      console.error(`[Push] Expo API error: ${response.status} — ${errorBody}`);
       return [];
     }
 

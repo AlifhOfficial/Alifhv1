@@ -145,7 +145,7 @@ export async function deactivateFailedTokens(maxAttempts: number = 5): Promise<n
     .set({ isActive: false, updatedAt: new Date() })
     .where(and(
       eq(pushDeviceToken.isActive, true),
-      // This is a simplified check - in production you'd want a proper numeric comparison
+      sql`CAST(${pushDeviceToken.failedAttempts} AS INTEGER) >= ${maxAttempts}`
     ));
 
   return result.rowCount ?? 0;
