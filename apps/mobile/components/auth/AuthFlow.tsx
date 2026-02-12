@@ -22,13 +22,11 @@ import { SignUpScreen } from './SignUpScreen';
 import { OTPScreen } from './OTPScreen';
 import { AuthSuccessScreen } from './AuthSuccessScreen';
 import { ForgotPasswordScreen } from './ForgotPasswordScreen';
-import { OnboardingFlow } from './onboarding';
 
 type AuthScreen = 
   | 'welcome' 
   | 'signin' 
   | 'signup' 
-  | 'onboarding'
   | 'otp' 
   | 'forgot-password' 
   | 'success';
@@ -37,20 +35,16 @@ interface AuthFlowProps {
   onComplete: (user?: { id: string; name: string; email: string }) => void;
   onSkip: () => void;
   initialScreen?: AuthScreen;
-  useConversationalSignup?: boolean;
 }
 
 export function AuthFlow({ 
   onComplete, 
   onSkip,
-  initialScreen,
-  useConversationalSignup = true,
+  initialScreen = 'welcome' 
 }: AuthFlowProps) {
   const { colors } = useTheme();
 
-  // Default to onboarding flow if conversational signup is enabled
-  const defaultScreen = useConversationalSignup ? 'onboarding' : 'welcome';
-  const [currentScreen, setCurrentScreen] = useState<AuthScreen>(initialScreen ?? defaultScreen);
+  const [currentScreen, setCurrentScreen] = useState<AuthScreen>(initialScreen);
   const [direction, setDirection] = useState<'forward' | 'back'>('forward');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -70,20 +64,16 @@ export function AuthFlow({
 
   const goBack = useCallback(() => {
     setError(null);
-    if (currentScreen === 'signin' || currentScreen === 'signup' || currentScreen === 'onboarding') {
+    if (currentScreen === 'signin' || currentScreen === 'signup') {
       navigateTo('welcome', 'back');
     } else if (currentScreen === 'otp') {
       // Go back to the screen they came from
-      if (useConversationalSignup && authMode === 'signup') {
-        navigateTo('onboarding', 'back');
-      } else {
-        navigateTo(authMode === 'signup' ? 'signup' : 'signin', 'back');
-      }
+      navigateTo(authMode === 'signup' ? 'signup' : 'signin', 'back');
     } else if (currentScreen === 'forgot-password') {
       setForgotPasswordSuccess(false);
       navigateTo('signin', 'back');
     }
-  }, [currentScreen, navigateTo, authMode, useConversationalSignup]);
+  }, [currentScreen, navigateTo, authMode]);
 
   // Auth handlers - Connected to real API
   const handleSignIn = async (emailInput: string, passwordInput: string) => {
@@ -251,31 +241,6 @@ export function AuthFlow({
     onComplete({ id: userId, name: userName, email });
   }, [onComplete, userId, userName, email]);
 
-  // Handler for when onboarding needs OTP verification
-  const handleOnboardingVerifyOTP = useCallback((
-    emailInput: string, 
-    passwordInput: string, 
-    name: string,
-    id?: string
-  ) => {
-    setEmail(emailInput);
-    setPassword(passwordInput);
-    setUserName(name);
-    if (id) setUserId(id);
-    setAuthMode('signup');
-    navigateTo('otp');
-  }, [navigateTo]);
-
-  // Handler for onboarding completion (when OTP is not required)
-  const handleOnboardingComplete = useCallback((user?: { id: string; name: string; email: string }) => {
-    if (user) {
-      setUserName(user.name);
-      setEmail(user.email);
-      setUserId(user.id);
-    }
-    onComplete(user);
-  }, [onComplete]);
-
   // Animation config based on direction
   const entering = direction === 'forward' ? SlideInRight.duration(300) : SlideInLeft.duration(300);
   const exiting = direction === 'forward' ? SlideOutLeft.duration(300) : SlideOutRight.duration(300);
@@ -291,25 +256,9 @@ export function AuthFlow({
             style={styles.screenContainer}
           >
             <WelcomeScreen
-              onGetStarted={() => navigateTo(useConversationalSignup ? 'onboarding' : 'signup')}
+              onGetStarted={() => navigateTo('signup')}
               onSignIn={() => navigateTo('signin')}
               onSkip={onSkip}
-            />
-          </Animated.View>
-        );
-
-      case 'onboarding':
-        return (
-          <Animated.View 
-            key="onboarding" 
-            entering={entering} 
-            exiting={exiting}
-            style={styles.screenContainer}
-          >
-            <OnboardingFlow
-              onComplete={handleOnboardingComplete}
-              onSignIn={() => navigateTo('signin', 'back')}
-              onVerifyOTP={handleOnboardingVerifyOTP}
             />
           </Animated.View>
         );
