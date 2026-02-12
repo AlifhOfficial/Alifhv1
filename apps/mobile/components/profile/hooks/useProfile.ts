@@ -48,6 +48,7 @@ interface UseProfileReturn {
   toggleTag: (tag: string) => void;
   uploadPhoto: (uri: string) => Promise<void>;
   removePhoto: () => Promise<void>;
+  removePhone: () => Promise<void>;
   onPhoneVerified: () => void;
   
   // Error
@@ -305,6 +306,36 @@ export function useProfile({ isAuthenticated }: UseProfileOptions): UseProfileRe
     }
   }, []);
 
+  // Remove phone number
+  const removePhone = useCallback(async () => {
+    setIsSaving(true);
+    try {
+      const result = await updateProfile({ phone: null });
+      if (result.success && result.profile) {
+        setProfileData((prev) =>
+          prev ? { ...prev, profile: result.profile! } : null
+        );
+        setForm((f: ProfileFormData) => ({ ...f, phone: '' }));
+        originalFormRef.current = { ...originalFormRef.current, phone: '' };
+        if (Platform.OS === 'ios') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
+      } else {
+        if (Platform.OS === 'ios') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        }
+        Alert.alert('Error', result.error || 'Failed to remove phone number.');
+      }
+    } catch {
+      if (Platform.OS === 'ios') {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
+      Alert.alert('Error', 'Failed to remove phone number. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  }, []);
+
   // Called when phone is verified via OTP
   const onPhoneVerified = useCallback(() => {
     // Refresh profile to get updated verification status
@@ -328,6 +359,7 @@ export function useProfile({ isAuthenticated }: UseProfileOptions): UseProfileRe
     toggleTag,
     uploadPhoto,
     removePhoto,
+    removePhone,
     onPhoneVerified,
     error,
   };

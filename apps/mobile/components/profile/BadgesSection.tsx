@@ -8,7 +8,7 @@ import { StyleSheet, View, Platform } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 
-import { Label, Body, Supporting, ButtonText } from '@/components/ui';
+import { Data, Body, Supporting, ButtonText } from '@/components/ui';
 import { Spacing, Radius } from '@/constants/theme';
 import { Section } from './Section';
 import type { ThemeColors } from './types';
@@ -36,13 +36,13 @@ export function BadgesSection({ badges, colors, onLearnMore }: BadgesSectionProp
               key={index}
               style={[styles.badge, { backgroundColor: colors.surfaceSecondary }]}
             >
-              <Label size="medium" style={styles.badgeText}>{badge}</Label>
+              <Data size="small" style={styles.badgeText}>{badge}</Data>
             </View>
           ))}
         </View>
       ) : (
         <View style={styles.emptyState}>
-          <Body size="large" tone="secondary" style={styles.emptyTitle}>
+          <Body size="medium" tone="secondary" style={styles.emptyTitle}>
             No badges yet
           </Body>
           <Body size="medium" tone="muted" style={styles.emptySubtitle}>

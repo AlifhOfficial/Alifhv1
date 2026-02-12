@@ -31,6 +31,7 @@ interface PhoneVerificationFieldProps {
   colors: ThemeColors;
   onPhoneChange: (phone: string) => void;
   onPhoneSave: () => Promise<void>;
+  onPhoneRemove: () => Promise<void>;
   onVerified: () => void;
 }
 
@@ -40,6 +41,7 @@ export function PhoneVerificationField({
   colors,
   onPhoneChange,
   onPhoneSave,
+  onPhoneRemove,
   onVerified,
 }: PhoneVerificationFieldProps) {
   const [step, setStep] = useState<VerifyStep>('idle');
@@ -93,13 +95,8 @@ export function PhoneVerificationField({
   };
 
   const handleRemovePhone = async () => {
-    // Clear the phone and save
-    onPhoneChange('');
-    await onPhoneSave();
+    await onPhoneRemove();
     setStep('idle');
-    if (Platform.OS === 'ios') {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    }
   };
 
   const handleSendOTP = async () => {

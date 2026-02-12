@@ -10,7 +10,7 @@ import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { User, LogIn } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Heading, Data, ButtonText } from '@/components/ui';
+import { Heading, Body, ButtonText } from '@/components/ui';
 import { Spacing, Radius } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
@@ -56,10 +56,10 @@ export function NotAuthenticatedView({
           <Heading size="large">
             Welcome to RevvUp
           </Heading>
-          <Data size="medium" tone="secondary" style={styles.subtitle}>
+          <Body size="medium" tone="secondary" style={styles.subtitle}>
             Sign in to access your profile, manage listings, and connect with
             buyers
-          </Data>
+          </Body>
         </Animated.View>
 
         {/* Sign in button */}

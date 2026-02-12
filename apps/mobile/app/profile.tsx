@@ -61,6 +61,7 @@ export default function ProfileScreen() {
     toggleTag,
     uploadPhoto,
     removePhoto,
+    removePhone,
     onPhoneVerified,
     error,
   } = useProfile({ isAuthenticated });
@@ -212,6 +213,7 @@ export default function ProfileScreen() {
             onSave={saveField}
             onCancel={cancelEdit}
             onUpdateField={updateField}
+            onPhoneRemove={removePhone}
             onPhoneVerified={onPhoneVerified}
           />
 

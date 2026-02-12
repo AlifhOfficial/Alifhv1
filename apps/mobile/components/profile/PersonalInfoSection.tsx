@@ -28,6 +28,7 @@ interface PersonalInfoSectionProps {
   onSave: (field: EditingField) => void;
   onCancel: () => void;
   onUpdateField: (field: keyof ProfileFormData, value: string) => void;
+  onPhoneRemove?: () => Promise<void>;
   onPhoneVerified?: () => void;
 }
 
@@ -42,6 +43,7 @@ export function PersonalInfoSection({
   onSave,
   onCancel,
   onUpdateField,
+  onPhoneRemove,
   onPhoneVerified,
 }: PersonalInfoSectionProps) {
   const handleEmailPress = () => {
@@ -118,6 +120,7 @@ export function PersonalInfoSection({
         colors={colors}
         onPhoneChange={(text) => onUpdateField('phone', text)}
         onPhoneSave={handlePhoneSave}
+        onPhoneRemove={onPhoneRemove || (async () => {})}
         onVerified={onPhoneVerified || (() => {})}
       />
     </Section>
