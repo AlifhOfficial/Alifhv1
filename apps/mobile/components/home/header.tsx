@@ -1,50 +1,41 @@
 /**
- * Home Header - Custom header with profile menu
+ * Home Header - Profile, Notifications, Saved & Inventory
  * Revvup Design System + Inter font
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Bell, Sun, Moon } from 'lucide-react-native';
+import { Bell, Sun, Moon, Bookmark, Package } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 
 import { ProfileMenu } from './profile-menu';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
-import { Colors, Spacing, Radius } from '@/constants/theme';
-import { Heading, Body } from '@/components/ui';
+import { Colors, Spacing, Radius, Layout } from '@/constants/theme';
+import { Body, Data } from '@/components/ui';
 import { fetchUnreadCount } from '@/lib/notifications-api';
 
 export function HomeHeader() {
   const { colorScheme, toggleTheme } = useTheme();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, openAuthFlow } = useAuth();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [unreadCount, setUnreadCount] = useState(0);
 
-  // Poll unread count every 30s when authenticated
-  const refreshUnread = useCallback(async () => {
+  // Fetch unread count once when authenticated
+  useEffect(() => {
     if (!isAuthenticated) {
       setUnreadCount(0);
       return;
     }
-    try {
-      const count = await fetchUnreadCount();
-      setUnreadCount(count);
-    } catch {
-      // ignore
-    }
+    fetchUnreadCount()
+      .then(setUnreadCount)
+      .catch(() => {});
   }, [isAuthenticated]);
-
-  useEffect(() => {
-    refreshUnread();
-    const interval = setInterval(refreshUnread, 30000);
-    return () => clearInterval(interval);
-  }, [refreshUnread]);
 
   const handleToggleTheme = () => {
     if (Platform.OS === 'ios') {
@@ -57,41 +48,37 @@ export function HomeHeader() {
     router.push('/notifications' as any);
   };
 
+  const handleSavedPress = () => {
+    if (Platform.OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    router.push('/saved');
+  };
+
+  const handleInventoryPress = () => {
+    if (Platform.OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    if (!isAuthenticated) {
+      openAuthFlow();
+      return;
+    }
+    router.push('/inventory');
+  };
+
   const ThemeIcon = colorScheme === 'dark' ? Moon : Sun;
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + 8 }]}>
-      {/* Left: Title */}
-      <Heading size="large">Home</Heading>
-
-      {/* Right: Theme Toggle + Notifications + Profile Menu */}
-      <View style={styles.actions}>
+    <View style={[styles.container, { paddingTop: insets.top + Layout.headerPadding }]}>
+      {/* Left: Profile + Notifications + Saved + Inventory */}
+      <View style={styles.leftGroup}>
+        <ProfileMenu />
         <HapticPressable
           style={[
             styles.iconButton,
             { 
               borderColor: colors.border,
-              backgroundColor: colors.surface,
-            }
-          ]}
-          onPress={handleToggleTheme}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          {({ pressed }) => (
-            <ThemeIcon 
-              size={20} 
-              color={colors.icon}
-              strokeWidth={2}
-              style={{ opacity: pressed ? 0.7 : 1 }}
-            />
-          )}
-        </HapticPressable>
-        <HapticPressable
-          style={[
-            styles.iconButton,
-            { 
-              borderColor: colors.border,
-              backgroundColor: colors.surface,
+              backgroundColor: colors.background,
             }
           ]}
           onPress={handleNotificationPress}
@@ -115,33 +102,113 @@ export function HomeHeader() {
             </View>
           )}
         </HapticPressable>
-        <ProfileMenu />
+        <HapticPressable
+          style={[
+            styles.pillButton,
+            {
+              borderColor: colors.border,
+              backgroundColor: colors.background,
+            },
+          ]}
+          onPress={handleSavedPress}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          {({ pressed }) => (
+            <View style={styles.pillContent}>
+              <Bookmark size={16} color={colors.icon} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
+              <Data size="small" tone="secondary" style={{ opacity: pressed ? 0.7 : 1 }}>
+                Saved
+              </Data>
+            </View>
+          )}
+        </HapticPressable>
+        <HapticPressable
+          style={[
+            styles.pillButton,
+            {
+              borderColor: colors.border,
+              backgroundColor: colors.background,
+            },
+          ]}
+          onPress={handleInventoryPress}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          {({ pressed }) => (
+            <View style={styles.pillContent}>
+              <Package size={16} color={colors.icon} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
+              <Data size="small" tone="secondary" style={{ opacity: pressed ? 0.7 : 1 }}>
+                Inventory
+              </Data>
+            </View>
+          )}
+        </HapticPressable>
       </View>
+
+      {/* Right: Theme Toggle */}
+      <HapticPressable
+        style={[
+          styles.iconButton,
+          { 
+            borderColor: colors.border,
+            backgroundColor: colors.background,
+          }
+        ]}
+        onPress={handleToggleTheme}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      >
+        {({ pressed }) => (
+          <ThemeIcon 
+            size={20} 
+            color={colors.icon}
+            strokeWidth={2}
+            style={{ opacity: pressed ? 0.7 : 1 }}
+          />
+        )}
+      </HapticPressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 20,
     paddingBottom: Spacing.md,
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Layout.screenPadding,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  actions: {
+  leftGroup: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Layout.headerGap,
+    flex: 1,
   },
   iconButton: {
     padding: 4,
     borderRadius: Radius.full,
     borderWidth: 1,
-    width: 40,
-    height: 40,
+    width: Layout.hitTarget,
+    height: Layout.hitTarget,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  pillButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pillContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
   },
   badge: {
     position: 'absolute',

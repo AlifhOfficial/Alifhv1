@@ -10,7 +10,6 @@
 
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { Platform } from 'react-native';
-import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
@@ -18,6 +17,18 @@ import { useAuth } from './auth-context';
 import { API_BASE } from '@/lib/config';
 import { getSession } from '@/lib/auth-api';
 import { setCurrentPushToken } from '@/lib/push-token-store';
+
+// Conditionally import expo-notifications (not available in Expo Go SDK 53+)
+let Notifications: typeof import('expo-notifications') | null = null;
+const isExpoGo = Constants.executionEnvironment === 'storeClient';
+
+if (!isExpoGo) {
+  try {
+    Notifications = require('expo-notifications');
+  } catch (e) {
+    console.warn('[Notifications] expo-notifications not available:', e);
+  }
+}
 
 // ============================================================================
 // TYPES
@@ -45,14 +56,16 @@ const NotificationContext = createContext<NotificationContextType | null>(null);
 // ============================================================================
 
 // When app is in foreground, suppress push banners — user is already in the app
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldPlaySound: false,
-    shouldSetBadge: true,
-    shouldShowBanner: false,
-    shouldShowList: false,
-  }),
-});
+if (Notifications) {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldPlaySound: false,
+      shouldSetBadge: true,
+      shouldShowBanner: false,
+      shouldShowList: false,
+    }),
+  });
+}
 
 // ============================================================================
 // PROVIDER
@@ -63,14 +76,19 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   const [hasPermission, setHasPermission] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   
-  const notificationListener = useRef<Notifications.EventSubscription | null>(null);
-  const responseListener = useRef<Notifications.EventSubscription | null>(null);
+  const notificationListener = useRef<any>(null);
+  const responseListener = useRef<any>(null);
   
   const router = useRouter();
   const { user, isAuthenticated } = useAuth();
 
   // Register for push notifications
   const registerForPushNotifications = async (): Promise<string | null> => {
+    if (!Notifications) {
+      console.log('[Notifications] expo-notifications not available (Expo Go?), skipping');
+      return null;
+    }
+
     if (!Device.isDevice) {
       console.log('[Notifications] Must use physical device for push notifications');
       return null;
@@ -188,7 +206,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   };
 
   // Handle notification tap
-  const handleNotificationResponse = (response: Notifications.NotificationResponse) => {
+  const handleNotificationResponse = (response: any) => {
     const data = response.notification.request.content.data;
     
     console.log('[Notifications] Notification tapped:', data);
@@ -203,7 +221,12 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
   // Initialize on mount
   useEffect(() => {
-    // Check if notifications are available
+    // Check if notifications module is available (not in Expo Go)
+    if (!Notifications) {
+      console.log('[Notifications] Not available in Expo Go, skipping setup');
+      return;
+    }
+
     if (!Device.isDevice) {
       console.log('[Notifications] Not a physical device, skipping setup');
       return;
@@ -222,7 +245,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
     // Listen for incoming notifications (foreground)
     notificationListener.current = Notifications.addNotificationReceivedListener(
-      (notification: Notifications.Notification) => {
+      (notification) => {
         console.log('[Notifications] Received in foreground:', notification);
       }
     );

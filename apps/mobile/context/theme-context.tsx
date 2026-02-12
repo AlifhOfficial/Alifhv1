@@ -88,9 +88,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     // Status bar icon style (light/dark) - supported in edge-to-edge
     setStatusBarStyle(isDark ? 'light' : 'dark', true);
     
-    // Navigation bar button style (light/dark) - Android only
+    // Android navigation bar (back/home/recent buttons)
     if (Platform.OS === 'android') {
       NavigationBar.setButtonStyleAsync(isDark ? 'light' : 'dark');
+      // Set nav bar background to match theme (transparent for edge-to-edge)
+      NavigationBar.setBackgroundColorAsync(colors.background + 'CC'); // slight opacity so buttons stay visible
     }
     
     // Root background color for the window behind the app

@@ -7,7 +7,7 @@
  * - Multiple conversations with same partner/user render as collapsible groups
  */
 
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -64,9 +64,14 @@ export default function MessagesScreen() {
     scope: 'personal',
   });
 
-  // Re-fetch conversations when this tab gains focus
+  // Re-fetch conversations when this tab regains focus (not initial mount)
+  const isFirstFocus = useRef(true);
   useFocusEffect(
     useCallback(() => {
+      if (isFirstFocus.current) {
+        isFirstFocus.current = false;
+        return; // Skip — initial useEffect in hook already loads
+      }
       if (isAuthenticated) {
         refresh();
       }
@@ -184,11 +189,11 @@ export default function MessagesScreen() {
     [handleSelect]
   );
 
-  // ── Not authenticated ─────────────────────────
-  if (!isAuthenticated) {
-    return (
-      <View style={[styles.screen, { backgroundColor: colors.background }]}>
-        <MessagesHeader />
+  // ── Single layout — header is always mounted once ──────────
+  const renderContent = () => {
+    // Not authenticated
+    if (!isAuthenticated) {
+      return (
         <View style={styles.emptyState}>
           <View style={[styles.iconCircle, { backgroundColor: colors.fillSecondary }]}>
             <MessageCircle size={32} color={colors.textTertiary} strokeWidth={1.5} />
@@ -221,39 +226,30 @@ export default function MessagesScreen() {
             </ButtonText>
           </HapticPressable>
         </View>
-      </View>
-    );
-  }
+      );
+    }
 
-  // ── Loading ───────────────────────────────────
-  if (isLoading && conversations.length === 0) {
-    return (
-      <View style={[styles.screen, { backgroundColor: colors.background }]}>
-        <MessagesHeader />
+    // Loading (initial only — no data yet)
+    if (isLoading && conversations.length === 0) {
+      return (
         <View style={styles.centered}>
           <ActivityIndicator size="small" color={colors.primary} />
         </View>
-      </View>
-    );
-  }
+      );
+    }
 
-  // ── Error ─────────────────────────────────────
-  if (error) {
-    return (
-      <View style={styles.screen}>
-        <MessagesHeader />
+    // Error
+    if (error && conversations.length === 0) {
+      return (
         <View style={styles.emptyState}>
           <Data size="medium" style={{ textAlign: 'center', color: colors.textSecondary }}>{error}</Data>
         </View>
-      </View>
-    );
-  }
+      );
+    }
 
-  // ── Empty ─────────────────────────────────────
-  if (listItems.length === 0) {
-    return (
-      <View style={styles.screen}>
-        <MessagesHeader />
+    // Empty
+    if (listItems.length === 0 && !isLoading) {
+      return (
         <View style={styles.emptyState}>
           <View style={[styles.iconCircle, { backgroundColor: colors.fillSecondary }]}>
             <MessageCircle size={32} color={colors.textTertiary} strokeWidth={1.5} />
@@ -265,14 +261,11 @@ export default function MessagesScreen() {
             Your conversations will appear here
           </Body>
         </View>
-      </View>
-    );
-  }
+      );
+    }
 
-  // ── Conversation list ─────────────────────────
-  return (
-    <View style={styles.screen}>
-      <MessagesHeader />
+    // Conversation list
+    return (
       <FlatList
         data={listItems}
         renderItem={renderItem}
@@ -290,6 +283,13 @@ export default function MessagesScreen() {
         }
         showsVerticalScrollIndicator={false}
       />
+    );
+  };
+
+  return (
+    <View style={[styles.screen, { backgroundColor: colors.background }]}>
+      <MessagesHeader />
+      {renderContent()}
     </View>
   );
 }

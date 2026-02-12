@@ -43,6 +43,8 @@ export function useConversations({
   const [error, setError] = useState<string | null>(null);
   const { subscribe, watchUser, unwatchUser } = useWebSocket();
   const watchedUsersRef = useRef<Set<string>>(new Set());
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const loadingRef = useRef(false);
   
   // Keep userId in a ref for WebSocket handler
   const userIdRef = useRef(userId);
@@ -162,16 +164,32 @@ export function useConversations({
   }, [conversations, watchUser, unwatchUser]);
 
   // Fetch conversations
-  const loadConversations = useCallback(async () => {
+  const loadConversations = useCallback(async (isRefresh = false) => {
     if (!isAuthenticated) {
       setIsLoading(false);
       return;
     }
 
+    // Prevent concurrent loads — abort previous if still in-flight
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    // 15s timeout so we never hang forever
+    const timeout = setTimeout(() => controller.abort(), 15000);
+
+    if (isRefresh) {
+      setIsRefreshing(true);
+    }
     setError(null);
     
     try {
       const data = await fetchConversations({ scope, limit: 50 });
+
+      // If this call was aborted (superseded), skip state updates
+      if (controller.signal.aborted) return;
       
       // Filter out conversations with no messages and convert avatar URLs
       const filteredConversations = data.conversations
@@ -191,23 +209,38 @@ export function useConversations({
       setConversations(filteredConversations);
       setTotalUnread(data.totalUnread);
     } catch (err) {
+      // Don't set error for aborted requests
+      if (controller.signal.aborted) return;
       console.error('[useConversations] Load error:', err);
       setError(err instanceof Error ? err.message : 'Failed to load conversations');
     } finally {
-      setIsLoading(false);
+      clearTimeout(timeout);
+      if (!controller.signal.aborted) {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      }
     }
   }, [isAuthenticated, scope]);
 
+  // Cleanup abort controller on unmount
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, []);
+
   // Initial load
   useEffect(() => {
-    loadConversations();
-  }, [loadConversations]);
+    if (isAuthenticated) {
+      loadConversations();
+    } else {
+      setIsLoading(false);
+    }
+  }, [loadConversations, isAuthenticated]);
 
-  // Refresh handler
+  // Refresh handler (used by pull-to-refresh and useFocusEffect)
   const refresh = useCallback(async () => {
-    setIsRefreshing(true);
-    await loadConversations();
-    setIsRefreshing(false);
+    await loadConversations(true);
   }, [loadConversations]);
 
   // Mark as read

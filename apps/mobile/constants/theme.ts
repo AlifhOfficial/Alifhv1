@@ -23,11 +23,11 @@
  *   3. Font scaling is DISABLED for UI consistency across devices
  *   4. Do NOT override fontSize/lineHeight unless absolutely necessary
  * 
- * CROSS-PLATFORM CONSISTENCY:
- *   • Fixed font sizes (no responsive scaling) for pixel-perfect UI
- *   • allowFontScaling: false prevents accessibility font scaling
- *   • includeFontPadding: false removes Android extra padding
- *   • textAlignVertical: 'center' ensures vertical alignment on Android
+ * RESPONSIVE SCALING:
+ *   • Layout/spacing scales with screen width via scale() (factor 0.5)
+ *   • Font sizes scale gently via fontScale() (factor 0.3)
+ *   • Base design width: 393px (iPhone 15 Pro)
+ *   • All sizes adapt proportionally to smaller/larger screens
  * 
  * ═══════════════════════════════════════════════════════════════════════════════
  */
@@ -35,28 +35,28 @@
 import { Dimensions, PixelRatio, TextStyle } from 'react-native';
 
 // ═══════════════════════════════════════════════════
-// SCREEN METRICS (for layout, NOT for fonts)
+// SCREEN METRICS
 // ═══════════════════════════════════════════════════
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const BASE_WIDTH = 393;
 
 /**
- * Scales a LAYOUT size value based on screen width
- * Use ONLY for spacing/layout, NOT for fonts
- * @param size - Base size in design pixels
- * @param factor - How aggressively to scale (0 = none, 1 = full). Default 0.15
+ * Scales a size value proportionally to screen width.
+ * @param size - Base size designed at 393px width
+ * @param factor - How aggressively to scale (0 = none, 1 = full proportional). Default 0.5
  */
-const scale = (size: number, factor = 0.15): number => {
+const scale = (size: number, factor = 0.5): number => {
   const scaleRatio = SCREEN_WIDTH / BASE_WIDTH;
   const newSize = size + (size * (scaleRatio - 1) * factor);
   return Math.round(PixelRatio.roundToNearestPixel(newSize));
 };
 
 /**
- * FIXED font sizes - NO scaling for consistency
- * Fonts are designed at base size and stay fixed across all devices
+ * Scales font sizes gently with screen width.
+ * Uses a conservative factor (0.3) so text stays readable on all sizes
+ * but still adapts to small/large screens.
  */
-const fontScale = (size: number): number => size;
+const fontScale = (size: number): number => scale(size, 0.3);
 
 export const Colors = {
   light: {
@@ -194,15 +194,15 @@ export const Colors = {
 // SPACING SCALE (8pt grid)
 // ═══════════════════════════════════════════════════
 export const Spacing = {
-  xs: 4,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 20,
-  '2xl': 24,
-  '3xl': 32,
-  '4xl': 40,
-  '5xl': 48,
+  xs: scale(4),
+  sm: scale(8),
+  md: scale(12),
+  lg: scale(16),
+  xl: scale(20),
+  '2xl': scale(24),
+  '3xl': scale(32),
+  '4xl': scale(40),
+  '5xl': scale(48),
 } as const;
 
 // ═══════════════════════════════════════════════════
@@ -210,8 +210,14 @@ export const Spacing = {
 // ═══════════════════════════════════════════════════
 export const Layout = {
   tabBarHeight: 85,
-  screenPadding: 16,
-  headerPadding: 8,
+  screenPadding: scale(16),
+  headerPadding: scale(8),
+  /** Standard icon button / bubble hit target */
+  hitTarget: scale(36),
+  /** Tab bar bubble size (slightly larger) */
+  tabBubble: scale(40),
+  /** Gap between header items */
+  headerGap: scale(6),
 } as const;
 
 // ═══════════════════════════════════════════════════

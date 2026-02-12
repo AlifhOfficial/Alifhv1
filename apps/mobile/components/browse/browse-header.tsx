@@ -12,8 +12,8 @@ import * as Haptics from 'expo-haptics';
 import { Settings2, LayoutGrid, List, Sparkles } from 'lucide-react-native';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing } from '@/constants/theme';
-import { Heading, Body, Label } from '@/components/ui';
+import { Colors, Spacing, Layout, Radius } from '@/constants/theme';
+import { Data, Label } from '@/components/ui';
 
 export type ViewMode = 'grid' | 'list';
 export type FilterPillType = 'make' | 'model' | 'price' | 'yearMileage' | 'location';
@@ -70,18 +70,14 @@ export function BrowseHeader({
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + Spacing.md, backgroundColor: colors.background, paddingHorizontal: Spacing.lg }]}>
-      {/* Title */}
-      <Heading size="large">Browse</Heading>
-
-      {/* Filter Pills */}
+    <View style={[styles.container, { paddingTop: insets.top + Layout.headerPadding, paddingHorizontal: Layout.screenPadding }]}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Amna AI Pill */}
+        {/* Amna AI Bubble */}
         {onAmnaPress && (
           <HapticPressable
             onPress={() => {
@@ -91,7 +87,7 @@ export function BrowseHeader({
               onAmnaPress();
             }}
             style={[
-              styles.amnaPill,
+              styles.iconBubble,
               {
                 backgroundColor: colors.background,
                 borderColor: 'rgba(139, 92, 246, 0.30)',
@@ -99,33 +95,46 @@ export function BrowseHeader({
             ]}
           >
             {({ pressed }) => (
-              <View style={[styles.pillContent, { opacity: pressed ? 0.8 : 1 }]}>
-                <Sparkles size={14} color="#8B5CF6" strokeWidth={2.5} />
-                <Body
-                  size="small"
-                  style={[styles.pillLabel, { color: '#8B5CF6', fontFamily: 'Inter_600SemiBold' }]}
-                  numberOfLines={1}
-                >
-                  Amna
-                </Body>
-              </View>
+              <Sparkles size={20} color="#8B5CF6" strokeWidth={2.5} style={{ opacity: pressed ? 0.8 : 1 }} />
             )}
           </HapticPressable>
         )}
 
-        {/* Settings bubble */}
+        {/* View Mode Toggle */}
         <HapticPressable
-          onPress={handleSettingsPress}
+          onPress={handleViewModeToggle}
           style={[
-            styles.settingsBubble,
+            styles.iconBubble,
             { 
-              backgroundColor: colors.surface,
+              backgroundColor: colors.background,
               borderColor: colors.border,
             },
           ]}
         >
           {({ pressed }) => (
-            <View style={[styles.settingsContent, { opacity: pressed ? 0.7 : 1 }]}>
+            <View style={{ opacity: pressed ? 0.7 : 1 }}>
+              {viewMode === 'grid' ? (
+                <LayoutGrid size={18} color={colors.text} strokeWidth={2} />
+              ) : (
+                <List size={18} color={colors.text} strokeWidth={2} />
+              )}
+            </View>
+          )}
+        </HapticPressable>
+
+        {/* Settings bubble */}
+        <HapticPressable
+          onPress={handleSettingsPress}
+          style={[
+            styles.iconBubble,
+            { 
+              backgroundColor: colors.background,
+              borderColor: colors.border,
+            },
+          ]}
+        >
+          {({ pressed }) => (
+            <View style={[styles.iconBubbleInner, { opacity: pressed ? 0.7 : 1 }]}>
               <Settings2 
                 size={20} 
                 color={colors.text} 
@@ -149,8 +158,6 @@ export function BrowseHeader({
 
         {/* Individual floating pills */}
         {pills.map((pill) => {
-          const isActive = pill.activeCount > 0;
-          
           return (
             <HapticPressable
               key={pill.type}
@@ -158,20 +165,20 @@ export function BrowseHeader({
               style={[
                 styles.pill,
                 { 
-                  backgroundColor: colors.surface,
+                  backgroundColor: colors.background,
                   borderColor: colors.border,
                 },
               ]}
             >
               {({ pressed }) => (
                 <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
-                  <Body
+                  <Data
                     size="small"
-                    style={styles.pillLabel}
+                    tone="secondary"
                     numberOfLines={1}
                   >
                     {pill.label}
-                  </Body>
+                  </Data>
                   {pill.activeCount > 0 && (
                     <View style={[styles.badge, { backgroundColor: colors.text }]}>
                       <Label size="badge" uppercase={false} style={[styles.badgeText, { color: colors.background }]}>
@@ -184,28 +191,6 @@ export function BrowseHeader({
             </HapticPressable>
           );
         })}
-
-        {/* View Mode Toggle */}
-        <HapticPressable
-          onPress={handleViewModeToggle}
-          style={[
-            styles.viewModeBubble,
-            { 
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-            },
-          ]}
-        >
-          {({ pressed }) => (
-            <View style={[styles.viewModeContent, { opacity: pressed ? 0.7 : 1 }]}>
-              {viewMode === 'grid' ? (
-                <LayoutGrid size={18} color={colors.text} strokeWidth={2} />
-              ) : (
-                <List size={18} color={colors.text} strokeWidth={2} />
-              )}
-            </View>
-          )}
-        </HapticPressable>
       </ScrollView>
     </View>
   );
@@ -213,14 +198,9 @@ export function BrowseHeader({
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
     zIndex: 20,
-    paddingBottom: Spacing.md,
+    paddingBottom: Spacing.sm,
     flexDirection: 'column',
-    gap: Spacing.md,
   },
   scrollView: {
     flexGrow: 0,
@@ -228,24 +208,25 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.md,
-    paddingRight: Spacing.lg,
+    gap: Layout.headerGap,
+    paddingRight: Layout.screenPadding,
   },
-  settingsBubble: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+  iconBubble: {
+    padding: 4,
+    width: Layout.hitTarget,
+    height: Layout.hitTarget,
+    borderRadius: Radius.full,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'relative',
   },
-  settingsContent: {
-    width: 36,
-    height: 36,
+  iconBubbleInner: {
+    width: Layout.hitTarget,
+    height: Layout.hitTarget,
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   settingsBadge: {
     position: 'absolute',
     top: 2,
@@ -263,19 +244,17 @@ const styles = StyleSheet.create({
     // Typography handled by <Label size="badge"> component
   },
   pill: {
-    height: 36,
-    borderRadius: 18,
+    borderRadius: Radius.full,
     borderWidth: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    alignItems: 'center',
     justifyContent: 'center',
   },
   pillContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-  },
-  pillLabel: {
-    // Typography handled by <Body size="small"> component
+    gap: 5,
   },
   badge: {
     paddingHorizontal: 6,
@@ -286,26 +265,5 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     // Typography handled by <Label size="badge"> component
-  },
-  viewModeBubble: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  viewModeContent: {
-    width: 36,
-    height: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  amnaPill: {
-    height: 36,
-    borderRadius: 18,
-    borderWidth: 1,
-    paddingHorizontal: 14,
-    justifyContent: 'center',
   },
 });

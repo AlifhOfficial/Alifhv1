@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
 import { DisplayArea, ACTIVE_CHIPS_HEIGHT, TopSafeAreaGradient } from '@/components/layout';
-import { BrowseHeader, type FilterPillType } from '@/components/home';
+import { BrowseHeader, type FilterPillType } from '@/components/browse';
 import { 
   MakeFilterSheet,
   ModelFilterSheet,
@@ -27,7 +27,7 @@ import {
 import { CarCardM, CarCardMSkeleton, CarCardList, CarCardListSkeleton } from '@/components/cards';
 import { LogoLoader, Body } from '@/components/ui';
 import { searchApi, type ListingCard, type SearchParams, type SearchFacets, type SearchSortOption } from '@/lib/search-api';
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Colors, Spacing, Layout, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch, type FilterParams } from '@/context/search-context';
 import { getModelsForMake } from '@/lib/filter-constants';
@@ -433,10 +433,10 @@ export default function BrowseScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Top safe area gradient */}
+      {/* Top safe area gradient behind pills */}
       <TopSafeAreaGradient />
 
-      {/* Floating Browse Header with Filter Pills */}
+      {/* Browse Header with Filter Pills */}
       <BrowseHeader 
         pills={filterPillConfigs}
         onPillPress={handleFilterPillPress}
@@ -523,7 +523,6 @@ export default function BrowseScreen() {
         horizontalPadding="sm"
         verticalPadding="sm"
         extraBottomPadding={hasActiveChips ? ACTIVE_CHIPS_HEIGHT + 8 : 0}
-        contentContainerStyle={{ paddingTop: 160 }}
       >
         {isLoading && (!listings || listings.length === 0) ? (
           viewMode === 'grid' ? (

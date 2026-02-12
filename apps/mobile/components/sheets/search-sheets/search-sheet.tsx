@@ -633,10 +633,10 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
 
           {/* Search Input */}
           <View style={[styles.searchInputContainer, { backgroundColor: colors.input, borderColor: colors.border }]}>
-            <Ionicons name="search" size={20} color={colors.textMuted} style={{ marginTop: 4 }} />
+            <Ionicons name="search" size={20} color={colors.textMuted} style={{ marginTop: 2 }} />
             <BottomSheetTextInput
               style={[styles.searchInput, { color: colors.text }]}
-              placeholder={"Search by keyword, make, model, dealer...\ne.g. \"Audi RS5\", \"accident free\", \"sunroof\""}
+              placeholder={'Search by keyword, make, model, dealer...\ne.g. "Audi RS5", "accident free", "sunroof"'}
               placeholderTextColor={colorScheme === 'dark' ? 'rgba(255,255,255,0.28)' : 'rgba(0,0,0,0.25)'}
               value={query}
               onChangeText={setQuery}
@@ -645,7 +645,8 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
               autoCapitalize="none"
               autoCorrect={false}
               multiline
-              numberOfLines={2}
+              scrollEnabled={false}
+              textAlignVertical="top"
               blurOnSubmit
             />
             {query.length > 0 && (
@@ -898,19 +899,23 @@ const styles = StyleSheet.create({
   searchInputContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    minHeight: 110,
-    borderRadius: 22,
+    minHeight: 100,
+    borderRadius: 20,
     borderWidth: 1,
     paddingHorizontal: Spacing.md,
-    paddingVertical: 20,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.md,
     gap: Spacing.sm,
   },
   searchInput: {
     flex: 1,
-    paddingVertical: 4,
     fontSize: 15,
     lineHeight: 22,
     fontFamily: 'Inter_500Medium',
+    paddingTop: 0,
+    paddingBottom: 0,
+    minHeight: 66,
+    textAlignVertical: 'top',
   },
   selectionSummary: {
     flexDirection: 'row',

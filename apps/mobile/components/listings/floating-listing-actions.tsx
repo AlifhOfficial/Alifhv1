@@ -19,7 +19,7 @@ import Animated, {
 
 import { useTheme } from '@/context/theme-context';
 import { useListingFavorite } from '@/context/favorites-context';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Layout, Shadows } from '@/constants/theme';
 import { playFavChime, playSuperlikeChime } from '@/lib/chime';
 
 const AnimatedView = Animated.View;
@@ -33,8 +33,8 @@ interface FloatingListingActionsProps {
   onSharePress?: (id: string) => void;
 }
 
-const BUBBLE_SIZE = 52;
-const GAP = 8;
+const BUBBLE_SIZE = Layout.tabBubble;
+const GAP = Layout.headerGap;
 
 export function FloatingListingActions({
   id,
@@ -213,7 +213,7 @@ export function FloatingListingActions({
             style={[
               styles.bubble,
               {
-                backgroundColor: colors.surface,
+                backgroundColor: colors.background,
                 borderColor: colors.border,
               },
             ]}
@@ -235,7 +235,7 @@ export function FloatingListingActions({
             style={[
               styles.bubble,
               {
-                backgroundColor: colors.surface,
+                backgroundColor: colors.background,
                 borderColor: colors.border,
               },
             ]}
@@ -257,7 +257,7 @@ export function FloatingListingActions({
             style={[
               styles.bubble,
               {
-                backgroundColor: colors.surface,
+                backgroundColor: colors.background,
                 borderColor: colors.border,
               },
             ]}
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'flex-end',
-    paddingHorizontal: 16,
+    paddingHorizontal: Layout.screenPadding,
     pointerEvents: 'box-none',
   },
   actionGroup: {
@@ -305,10 +305,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
+    ...Shadows.lg,
   },
 });

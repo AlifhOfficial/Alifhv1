@@ -33,7 +33,7 @@ import { normalizeSellerData, SellerInfo, getSellerListings, SellerListingCard }
 import { createConversation } from '@/lib/messaging-api';
 import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
 import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
-import { PhoneActionSheet, FinancingSheet } from '@/components/sheets';
+import { PhoneActionSheet, FinancingSheet, BookingSheet, SellerDescriptionSheet } from '@/components/sheets';
 
 // Modular components
 import {
@@ -65,6 +65,8 @@ export default function SellerContactScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [phoneSheetVisible, setPhoneSheetVisible] = useState(false);
   const [financingSheetVisible, setFinancingSheetVisible] = useState(false);
+  const [bookingSheetVisible, setBookingSheetVisible] = useState(false);
+  const [descriptionSheetVisible, setDescriptionSheetVisible] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [otherListings, setOtherListings] = useState<SellerListingCard[]>([]);
   const [otherListingsTotal, setOtherListingsTotal] = useState(0);
@@ -174,15 +176,17 @@ export default function SellerContactScreen() {
   }, [listing, listingId, isAuthenticated, router]);
 
   const handleBookViewing = useCallback(() => {
-    if (!isAuthenticated) {
-      Alert.alert('Sign In Required', 'Please sign in to book a viewing', [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Sign In', onPress: () => router.push('/profile') },
-      ]);
-      return;
-    }
-    Alert.alert('Coming Soon', 'Viewing appointments will be available soon!');
-  }, [isAuthenticated, router]);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setBookingSheetVisible(true);
+  }, []);
+
+  const handleBookingLoginRequired = useCallback(() => {
+    setBookingSheetVisible(false);
+    Alert.alert('Sign In Required', 'Please sign in to book a test drive', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Sign In', onPress: () => router.push('/profile') },
+    ]);
+  }, [router]);
 
   const handleViewOnMap = useCallback(async () => {
     if (!seller) return;
@@ -312,12 +316,20 @@ export default function SellerContactScreen() {
         {/* Seller Hero */}
         <SellerHero seller={seller} colors={colors} topInset={insets.top} />
 
-        {/* About Section */}
+        {/* About Section — truncated, tap to expand in sheet */}
         {seller.description && (
-          <View style={styles.section}>
+          <Pressable
+            style={styles.section}
+            onPress={() => setDescriptionSheetVisible(true)}
+          >
             <Label size="medium" tone="muted">ABOUT</Label>
-            <Body size="medium" tone="secondary">{seller.description}</Body>
-          </View>
+            <Body size="medium" tone="secondary" numberOfLines={3}>
+              {seller.description}
+            </Body>
+            {seller.description.length > 120 && (
+              <Body size="small" tone="primary">Read more</Body>
+            )}
+          </Pressable>
         )}
 
         {/* Actions: Chat, Book, Phone — hidden for own listings */}
@@ -397,6 +409,18 @@ export default function SellerContactScreen() {
         />
       )}
 
+      {/* Booking Sheet */}
+      {listing && (
+        <BookingSheet
+          visible={bookingSheetVisible}
+          onClose={() => setBookingSheetVisible(false)}
+          listingId={listingId!}
+          listingTitle={`${listing.listing.year} ${listing.listing.make} ${listing.listing.model}`}
+          isAuthenticated={isAuthenticated}
+          onLoginRequired={handleBookingLoginRequired}
+        />
+      )}
+
       {/* Financing Sheet */}
       <FinancingSheet
         visible={financingSheetVisible}
@@ -407,6 +431,16 @@ export default function SellerContactScreen() {
         interestRate={interestRate}
         onApply={handleApplyCustomFinancing}
       />
+
+      {/* Seller Description Sheet */}
+      {seller.description && (
+        <SellerDescriptionSheet
+          visible={descriptionSheetVisible}
+          onClose={() => setDescriptionSheetVisible(false)}
+          description={seller.description}
+          sellerName={seller.name}
+        />
+      )}
     </View>
   );
 }

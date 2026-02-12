@@ -56,10 +56,19 @@ export function WebSocketProvider({ children, userId }: WebSocketProviderProps) 
   const heartbeatIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const attemptsRef = useRef(0);
   const appStateRef = useRef(AppState.currentState);
+  const intentionalCloseRef = useRef(false);
+  const mountedRef = useRef(true);
+
+  const stopHeartbeat = useCallback(() => {
+    if (heartbeatIntervalRef.current) {
+      clearInterval(heartbeatIntervalRef.current);
+      heartbeatIntervalRef.current = null;
+    }
+  }, []);
 
   // Connect to WebSocket
   const connect = useCallback(() => {
-    if (!userId) return;
+    if (!userId || !mountedRef.current) return;
 
     // Already connected
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
@@ -67,100 +76,110 @@ export function WebSocketProvider({ children, userId }: WebSocketProviderProps) 
     // Already connecting
     if (wsRef.current?.readyState === WebSocket.CONNECTING) return;
 
+    intentionalCloseRef.current = false;
+
     const url = `${WS_URL}/ws?userId=${userId}`;
     console.log(`🔌 [WS] Connecting: ${url}`);
 
-    const ws = new WebSocket(url);
-    wsRef.current = ws;
+    try {
+      const ws = new WebSocket(url);
+      wsRef.current = ws;
 
-    ws.onopen = () => {
-      console.log(`✅ [WS] Connected for user: ${userId}`);
-      setIsConnected(true);
-      attemptsRef.current = 0;
+      ws.onopen = () => {
+        if (!mountedRef.current) return;
+        console.log(`✅ [WS] Connected for user: ${userId}`);
+        setIsConnected(true);
+        attemptsRef.current = 0;
 
-      // Start heartbeat
-      if (heartbeatIntervalRef.current) {
-        clearInterval(heartbeatIntervalRef.current);
-      }
-      heartbeatIntervalRef.current = setInterval(() => {
-        if (ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({ type: 'ping' }));
-        }
-      }, 30000); // Every 30 seconds
-    };
-
-    ws.onmessage = (event) => {
-      try {
-        const msg = JSON.parse(event.data) as WSMessage;
-        
-        if (msg.type !== 'pong') {
-          console.log(`📨 [WS] Received:`, msg.type, msg);
-        }
-
-        // Notify all subscribers
-        handlersRef.current.forEach(handler => {
-          try {
-            handler(msg);
-          } catch (error) {
-            console.error('[WS] Handler error:', error);
+        // Start heartbeat
+        stopHeartbeat();
+        heartbeatIntervalRef.current = setInterval(() => {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'ping' }));
           }
-        });
-      } catch (error) {
-        console.error('[WS] Parse error:', error);
-      }
-    };
+        }, 30000); // Every 30 seconds
+      };
 
-    ws.onerror = (error) => {
-      console.error('❌ [WS] Error:', error);
-    };
+      ws.onmessage = (event) => {
+        if (!mountedRef.current) return;
+        try {
+          const msg = JSON.parse(event.data) as WSMessage;
+          
+          if (msg.type !== 'pong') {
+            console.log(`📨 [WS] Received:`, msg.type, msg);
+          }
 
-    ws.onclose = () => {
-      console.log('🔌 [WS] Disconnected');
-      setIsConnected(false);
-
-      // Stop heartbeat
-      if (heartbeatIntervalRef.current) {
-        clearInterval(heartbeatIntervalRef.current);
-        heartbeatIntervalRef.current = null;
-      }
-
-      // Reconnect with exponential backoff (only if app is active)
-      if (appStateRef.current === 'active') {
-        const delay = Math.min(1000 * Math.pow(2, attemptsRef.current), 30000);
-        attemptsRef.current++;
-        
-        console.log(`🔄 [WS] Reconnecting in ${delay}ms (attempt ${attemptsRef.current})`);
-        
-        if (reconnectTimeoutRef.current) {
-          clearTimeout(reconnectTimeoutRef.current);
+          // Notify all subscribers
+          handlersRef.current.forEach(handler => {
+            try {
+              handler(msg);
+            } catch (error) {
+              console.error('[WS] Handler error:', error);
+            }
+          });
+        } catch (error) {
+          console.error('[WS] Parse error:', error);
         }
-        
-        reconnectTimeoutRef.current = setTimeout(() => {
-          connect();
-        }, delay);
-      }
-    };
-  }, [userId]);
+      };
+
+      ws.onerror = () => {
+        // Errors are followed by onclose — no action needed here
+        console.warn('⚠️ [WS] Connection error');
+      };
+
+      ws.onclose = () => {
+        if (!mountedRef.current) return;
+
+        console.log('🔌 [WS] Disconnected');
+        setIsConnected(false);
+        stopHeartbeat();
+
+        // Don't reconnect if close was intentional or unmounted
+        if (intentionalCloseRef.current) return;
+
+        // Reconnect with exponential backoff (only if app is active)
+        if (appStateRef.current === 'active' && attemptsRef.current < 10) {
+          const delay = Math.min(1000 * Math.pow(2, attemptsRef.current), 30000);
+          attemptsRef.current++;
+          
+          console.log(`🔄 [WS] Reconnecting in ${delay}ms (attempt ${attemptsRef.current})`);
+          
+          if (reconnectTimeoutRef.current) {
+            clearTimeout(reconnectTimeoutRef.current);
+          }
+          
+          reconnectTimeoutRef.current = setTimeout(() => {
+            connect();
+          }, delay);
+        }
+      };
+    } catch (error) {
+      console.warn('⚠️ [WS] Failed to create WebSocket:', error);
+    }
+  }, [userId, stopHeartbeat]);
 
   // Disconnect
   const disconnect = useCallback(() => {
+    intentionalCloseRef.current = true;
+
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
       reconnectTimeoutRef.current = null;
     }
     
-    if (heartbeatIntervalRef.current) {
-      clearInterval(heartbeatIntervalRef.current);
-      heartbeatIntervalRef.current = null;
-    }
+    stopHeartbeat();
 
     if (wsRef.current) {
+      wsRef.current.onclose = null; // Prevent onclose from firing
+      wsRef.current.onerror = null;
+      wsRef.current.onmessage = null;
+      wsRef.current.onopen = null;
       wsRef.current.close();
       wsRef.current = null;
     }
     
     setIsConnected(false);
-  }, []);
+  }, [stopHeartbeat]);
 
   // Handle app state changes
   useEffect(() => {
@@ -185,11 +204,14 @@ export function WebSocketProvider({ children, userId }: WebSocketProviderProps) 
 
   // Connect on mount if userId is available
   useEffect(() => {
+    mountedRef.current = true;
+
     if (userId && appStateRef.current === 'active') {
       connect();
     }
 
     return () => {
+      mountedRef.current = false;
       disconnect();
     };
   }, [userId, connect, disconnect]);

@@ -23,7 +23,7 @@ import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { useTabBar } from '@/context/tab-bar-context';
 import { useAuth } from '@/context/auth-context';
-import { Colors } from '@/constants/theme';
+import { Colors, Layout } from '@/constants/theme';
 import { SearchSheet, SortSheet } from '@/components/sheets';
 import { ActiveSearchChips, ACTIVE_CHIPS_HEIGHT } from './active-search-chips';
 import { getUnreadCount } from '@/lib/messaging-api';
@@ -61,12 +61,12 @@ const isHomePath = (path: string) => {
   return path === '/' || path === '/(tabs)' || path === '/(tabs)/index';
 };
 
-// Back bubble size (matches pill height: 44 + padding 4*2 = 52)
-const BACK_BUBBLE_SIZE = 52;
-const SEARCH_BUBBLE_SIZE = 52;
-const SORT_BUBBLE_SIZE = 52;
-const CREATE_BUBBLE_SIZE = 52;
-const GAP = 8;
+// Bubble sizes and gap read from Layout (responsive to screen width)
+const BACK_BUBBLE_SIZE = Layout.tabBubble;
+const SEARCH_BUBBLE_SIZE = Layout.tabBubble;
+const SORT_BUBBLE_SIZE = Layout.tabBubble;
+const CREATE_BUBBLE_SIZE = Layout.tabBubble;
+const GAP = Layout.headerGap;
 
 /**
  * Screens that must NEVER show the tab bar.
@@ -318,7 +318,7 @@ export function GlobalTabBar() {
       {/* Active Search Chips - positioned above tab bar */}
       <View style={[
         styles.chipsWrapper,
-        { bottom: 52 + insets.bottom + 6 + 12 } // Tab bar height + padding + gap
+        { bottom: 44 + insets.bottom + 6 + 12 } // Tab bar height + padding + gap
       ]}>
         <ActiveSearchChips visible={showSearchBubble && hasActiveSearch} />
       </View>
@@ -331,7 +331,7 @@ export function GlobalTabBar() {
             style={[
               styles.backBubble,
               { 
-                backgroundColor: colors.surface,
+                backgroundColor: colors.background,
                 borderColor: colors.border,
               },
               backBubbleStyle,
@@ -349,7 +349,7 @@ export function GlobalTabBar() {
           <AnimatedView style={[
             styles.pillWrapper, 
             { 
-              backgroundColor: colors.surface,
+              backgroundColor: colors.background,
               borderColor: colors.border,
             }, 
             pillStyle
@@ -373,7 +373,7 @@ export function GlobalTabBar() {
                       <Icon
                         size={22}
                         color={iconColor}
-                        fill={isActive ? iconColor : colors.surface}
+                        fill={isActive ? iconColor : colors.background}
                         strokeWidth={2}
                       />
                       {tab.name === 'messages' && messagesUnread > 0 && (
@@ -392,7 +392,7 @@ export function GlobalTabBar() {
             style={[
               styles.searchBubble,
               { 
-                backgroundColor: colors.surface,
+                backgroundColor: colors.background,
                 borderColor: colors.border,
               },
               searchBubbleStyle,
@@ -412,7 +412,7 @@ export function GlobalTabBar() {
             style={[
               styles.sortBubble,
               { 
-                backgroundColor: colors.surface,
+                backgroundColor: colors.background,
                 borderColor: colors.border,
               },
               sortBubbleStyle,
@@ -432,7 +432,7 @@ export function GlobalTabBar() {
             style={[
               styles.createBubble,
               { 
-                backgroundColor: colors.surface,
+                backgroundColor: colors.background,
                 borderColor: colors.border,
               },
               createBubbleStyle,
@@ -485,8 +485,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 8,
+    paddingHorizontal: Layout.screenPadding,
+    paddingTop: Layout.headerPadding,
     paddingBottom: 12,
   },
   navGroup: {
@@ -494,9 +494,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backBubble: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: Layout.tabBubble,
+    height: Layout.tabBubble,
+    borderRadius: Layout.tabBubble / 2,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -508,7 +508,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   pillWrapper: {
-    borderRadius: 20,
+    borderRadius: 18,
     borderWidth: 1,
     overflow: 'visible',
     shadowColor: '#000',
@@ -524,16 +524,16 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   pillTab: {
-    width: 52,
-    height: 44,
+    width: Layout.tabBubble,
+    height: Layout.tabBubble - 8,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 20,
+    borderRadius: 18,
   },
   searchBubble: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: Layout.tabBubble,
+    height: Layout.tabBubble,
+    borderRadius: Layout.tabBubble / 2,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -545,9 +545,9 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   sortBubble: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: Layout.tabBubble,
+    height: Layout.tabBubble,
+    borderRadius: Layout.tabBubble / 2,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -559,9 +559,9 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   createBubble: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: Layout.tabBubble,
+    height: Layout.tabBubble,
+    borderRadius: Layout.tabBubble / 2,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',

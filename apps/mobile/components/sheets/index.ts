@@ -5,7 +5,7 @@ export { SearchSheet, type SearchSheetProps, AmnaSheet, type AmnaSearchParams } 
 export { DescriptionSheet, FeaturesSheet, SpecsSheet } from './listing-detail-sheets';
 
 // Seller info sheets
-export { FinancingSheet, PhoneActionSheet } from './seller-info-sheets';
+export { FinancingSheet, PhoneActionSheet, BookingSheet, SellerDescriptionSheet } from './seller-info-sheets';
 
 // Filter sheets
 export {

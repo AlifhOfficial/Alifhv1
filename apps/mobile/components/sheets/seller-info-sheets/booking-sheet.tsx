@@ -1,0 +1,1084 @@
+/**
+ * BookingSheet - Native Bottom Sheet for test drive bookings
+ *
+ * Multi-step flow: Date → Time → Confirm → Success
+ * Uses @gorhom/bottom-sheet, follows existing sheet patterns (FinancingSheet, PhoneActionSheet).
+ * Connects to /api/bookings/slots and /api/bookings via booking-api.ts.
+ * Includes confetti + chime on success, matching CarCardM interaction patterns.
+ */
+
+import React, { useCallback, useMemo, useRef, useEffect, useState, memo } from 'react';
+import { View, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import { HapticPressable } from '@/components/ui';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, BottomSheetTextInput, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { ChevronLeft, ChevronRight, CheckCircle2, Calendar, Clock, Users, FileText } from 'lucide-react-native';
+import * as Haptics from 'expo-haptics';
+
+import { Colors, Spacing, Radius } from '@/constants/theme';
+import { useTheme } from '@/context/theme-context';
+import {
+  Heading,
+  Body,
+  Supporting,
+  Label,
+  Data,
+  ButtonText,
+  ConfettiBurst,
+  useConfettiBurst,
+} from '@/components/ui';
+import { playFavChime } from '@/lib/chime';
+import {
+  getAvailableDates,
+  getTimeSlots,
+  createBooking,
+  type TimeSlot,
+  type AvailableDate,
+  type BookingSettings,
+} from '@/lib/booking-api';
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+interface BookingSheetProps {
+  visible: boolean;
+  onClose: () => void;
+  listingId: string;
+  listingTitle: string;
+  isAuthenticated: boolean;
+  onLoginRequired: () => void;
+}
+
+type BookingStep = 'date' | 'time' | 'confirm' | 'success';
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const DAY_NAMES = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+const BOOKING_TIME_ZONE = 'Asia/Dubai';
+
+const BOOKING_CONFETTI_COLORS = [
+  '#0066FF', // primary blue
+  '#22C55E', // success green
+  '#3B82F6', // blue-500
+  '#10B981', // emerald-500
+  '#06B6D4', // cyan-500
+  '#8B5CF6', // violet-500
+];
+
+// ============================================================================
+// HELPERS
+// ============================================================================
+
+function toUtcDateKey(date: Date): string {
+  const y = date.getUTCFullYear();
+  const m = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const d = String(date.getUTCDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function formatTime(isoString: string): string {
+  const date = new Date(isoString);
+  return date.toLocaleTimeString('en-AE', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: BOOKING_TIME_ZONE,
+  });
+}
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-AE', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    timeZone: BOOKING_TIME_ZONE,
+  });
+}
+
+function formatDateShort(date: Date): string {
+  return date.toLocaleDateString('en-AE', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    timeZone: BOOKING_TIME_ZONE,
+  });
+}
+
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
+
+export const BookingSheet = memo(function BookingSheet({
+  visible,
+  onClose,
+  listingId,
+  listingTitle,
+  isAuthenticated,
+  onLoginRequired,
+}: BookingSheetProps) {
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
+
+  // Confetti
+  const successConfetti = useConfettiBurst();
+
+  // Flow state
+  const [step, setStep] = useState<BookingStep>('date');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Calendar state
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [availableDates, setAvailableDates] = useState<AvailableDate[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+  // Time slots
+  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
+  const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
+
+  // Settings
+  const [settings, setSettings] = useState<BookingSettings | null>(null);
+
+  // Form
+  const [notes, setNotes] = useState('');
+  const [attendees, setAttendees] = useState(1);
+
+  // Result
+  const [bookingResult, setBookingResult] = useState<{
+    bookingId: string;
+    confirmationToken: string;
+  } | null>(null);
+
+  const snapPoints = useMemo(() => ['50%', '93%'], []);
+
+  // ── Sheet lifecycle ──────────────────────────────────────────────────
+
+  useEffect(() => {
+    if (visible) {
+      setStep('date');
+      setSelectedDate(null);
+      setSelectedSlot(null);
+      setNotes('');
+      setAttendees(1);
+      setBookingResult(null);
+      setError(null);
+      setCurrentMonth(new Date());
+      bottomSheetRef.current?.present();
+      fetchAvailableDates();
+    } else {
+      bottomSheetRef.current?.dismiss();
+    }
+  }, [visible, listingId]);
+
+  const handleSheetChanges = useCallback((index: number) => {
+    if (index === -1) onClose();
+  }, [onClose]);
+
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+        opacity={0.5}
+        pressBehavior="close"
+      />
+    ),
+    [],
+  );
+
+  // ── Data fetching ────────────────────────────────────────────────────
+
+  const fetchAvailableDates = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await getAvailableDates(listingId);
+      if (!data.available) {
+        setError(data.reason || 'Bookings are not available for this listing');
+        return;
+      }
+      setAvailableDates(data.dates || []);
+      setSettings(data.settings || null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load availability');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [listingId]);
+
+  const fetchTimeSlots = useCallback(async (date: Date) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const dateStr = toUtcDateKey(date);
+      const data = await getTimeSlots(listingId, dateStr);
+      setTimeSlots(data.slots || []);
+      setStep('time');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load time slots');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [listingId]);
+
+  // ── Booking submission ───────────────────────────────────────────────
+
+  const handleBooking = useCallback(async () => {
+    if (!isAuthenticated) {
+      onLoginRequired();
+      return;
+    }
+    if (!selectedDate || !selectedSlot) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const result = await createBooking({
+        listingId,
+        scheduledDate: toUtcDateKey(selectedDate),
+        scheduledStartTime: selectedSlot.startTime,
+        scheduledEndTime: selectedSlot.endTime,
+        notes: notes || undefined,
+        numberOfAttendees: attendees,
+      });
+
+      // Fire confetti + chime + haptic on success
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      successConfetti.fire({ colors: BOOKING_CONFETTI_COLORS, count: 16 });
+      playFavChime();
+
+      setBookingResult({
+        bookingId: result.bookingId,
+        confirmationToken: result.confirmationToken,
+      });
+      setStep('success');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to create booking';
+      setError(message);
+
+      if (
+        message.toLowerCase().includes('no longer available') ||
+        message.toLowerCase().includes('already booked')
+      ) {
+        setSelectedSlot(null);
+        await fetchTimeSlots(selectedDate);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isAuthenticated, onLoginRequired, selectedDate, selectedSlot, listingId, notes, attendees, fetchTimeSlots, successConfetti]);
+
+  // ── Calendar helpers ─────────────────────────────────────────────────
+
+  const goToPreviousMonth = useCallback(() => {
+    setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+  }, []);
+
+  const goToNextMonth = useCallback(() => {
+    setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+  }, []);
+
+  const calendarDays = useMemo(() => {
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth();
+    const firstDay = new Date(Date.UTC(year, month, 1));
+    const lastDay = new Date(Date.UTC(year, month + 1, 0));
+    const daysInMonth = lastDay.getUTCDate();
+    const startingDay = firstDay.getUTCDay();
+
+    const days: (Date | null)[] = [];
+    for (let i = 0; i < startingDay; i++) days.push(null);
+    for (let i = 1; i <= daysInMonth; i++) days.push(new Date(Date.UTC(year, month, i)));
+    return days;
+  }, [currentMonth]);
+
+  const isDateAvailable = useCallback(
+    (date: Date) => {
+      const dateStr = toUtcDateKey(date);
+      return availableDates.some(d => d.date === dateStr && d.hasSlots);
+    },
+    [availableDates],
+  );
+
+  const isDatePast = useCallback((date: Date) => {
+    const todayUtc = new Date();
+    todayUtc.setUTCHours(0, 0, 0, 0);
+    return date.getTime() < todayUtc.getTime();
+  }, []);
+
+  const canGoPreviousMonth = useMemo(() => {
+    const now = new Date();
+    return (
+      currentMonth.getFullYear() > now.getFullYear() ||
+      (currentMonth.getFullYear() === now.getFullYear() && currentMonth.getMonth() > now.getMonth())
+    );
+  }, [currentMonth]);
+
+  // ── Handlers ─────────────────────────────────────────────────────────
+
+  const handleDateSelect = useCallback(
+    (date: Date) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      setSelectedDate(date);
+      setSelectedSlot(null);
+      fetchTimeSlots(date);
+    },
+    [fetchTimeSlots],
+  );
+
+  const handleSlotSelect = useCallback((slot: TimeSlot) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setSelectedSlot(slot);
+  }, []);
+
+  const handleContinueToConfirm = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setStep('confirm');
+  }, []);
+
+  const handleBackToDate = useCallback(() => {
+    setStep('date');
+    setSelectedSlot(null);
+    setError(null);
+  }, []);
+
+  const handleBackToTime = useCallback(() => {
+    setStep('time');
+    setError(null);
+  }, []);
+
+  const incrementAttendees = useCallback(() => {
+    setAttendees(prev => Math.min(prev + 1, 5));
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }, []);
+
+  const decrementAttendees = useCallback(() => {
+    setAttendees(prev => Math.max(prev - 1, 1));
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }, []);
+
+  const availableSlots = useMemo(() => timeSlots.filter(s => s.isAvailable), [timeSlots]);
+
+  // Step indicator text
+  const stepLabel = step === 'date' ? 'Select Date' : step === 'time' ? 'Select Time' : step === 'confirm' ? 'Review' : '';
+
+  // ════════════════════════════════════════════════════════════════════
+  // RENDER
+  // ════════════════════════════════════════════════════════════════════
+
+  return (
+    <BottomSheetModal
+      ref={bottomSheetRef}
+      snapPoints={snapPoints}
+      enableDynamicSizing={false}
+      enablePanDownToClose
+      onChange={handleSheetChanges}
+      backdropComponent={renderBackdrop}
+      backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
+      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
+      keyboardBehavior="interactive"
+      keyboardBlurBehavior="restore"
+      detached
+      bottomInset={insets.bottom + 20}
+      style={styles.sheetContainer}
+    >
+      <BottomSheetView style={styles.content}>
+        {/* Confetti overlay */}
+        <View style={styles.confettiAnchor}>
+          <ConfettiBurst ref={successConfetti.ref} />
+        </View>
+
+        {/* ── SUCCESS ─────────────────────────────────────────────── */}
+        {step === 'success' && bookingResult ? (
+          <View style={styles.successContainer}>
+            <CheckCircle2 size={48} color={colors.success} strokeWidth={1.5} />
+
+            <Heading size="medium" style={styles.centerText}>
+              You're all set!
+            </Heading>
+            <Body size="medium" tone="secondary" style={styles.centerText}>
+              Your test drive request has been sent
+            </Body>
+
+            {/* Booking summary */}
+            <View style={[styles.successCard, { backgroundColor: colors.fillSecondary }]}>
+              <Data size="small" style={{ color: colors.text }}>{listingTitle}</Data>
+              {selectedDate && selectedSlot && (
+                <View style={styles.successCardRow}>
+                  <Calendar size={13} color={colors.textSecondary} />
+                  <Supporting size="medium">
+                    {formatDateShort(selectedDate)} at {formatTime(selectedSlot.startTime)}
+                  </Supporting>
+                </View>
+              )}
+              <View style={[styles.tokenContainer, { borderColor: colors.border + '40' }]}>
+                <Supporting size="small" tone="muted">Confirmation</Supporting>
+                <Data size="medium" style={styles.tokenText}>
+                  {bookingResult.confirmationToken}
+                </Data>
+              </View>
+            </View>
+
+            <Supporting size="small" tone="muted" style={styles.centerText}>
+              Check your Bookings to track your request
+            </Supporting>
+
+            <HapticPressable
+              onPress={onClose}
+              style={[styles.primaryButton, styles.doneButton, { backgroundColor: colors.text }]}
+            >
+              <ButtonText size="medium" style={{ color: colors.background }}>
+                Done
+              </ButtonText>
+            </HapticPressable>
+          </View>
+        ) : (
+          <>
+            {/* ── HEADER ──────────────────────────────────────────── */}
+            <View style={styles.header}>
+              <View style={styles.headerLeft}>
+                {(step === 'time' || step === 'confirm') && (
+                  <HapticPressable
+                    onPress={step === 'confirm' ? handleBackToTime : handleBackToDate}
+                    hitSlop={12}
+                    style={[styles.backButton, { backgroundColor: colors.fillSecondary }]}
+                  >
+                    <ChevronLeft size={18} color={colors.text} />
+                  </HapticPressable>
+                )}
+                <View>
+                  <Heading size="medium">Schedule Test Drive</Heading>
+                  <Supporting size="small" tone="muted">{listingTitle}</Supporting>
+                </View>
+              </View>
+              <HapticPressable
+                onPress={onClose}
+                hitSlop={Spacing.md}
+                style={[styles.closeButton, { backgroundColor: colors.fillSecondary }]}
+              >
+                <Ionicons name="close" size={16} color={colors.textSecondary} />
+              </HapticPressable>
+            </View>
+
+            {/* Step indicator */}
+            <View style={styles.stepIndicator}>
+              {(['date', 'time', 'confirm'] as const).map((s, i) => (
+                <View
+                  key={s}
+                  style={[
+                    styles.stepDot,
+                    {
+                      backgroundColor:
+                        step === s ? colors.text :
+                        (['date', 'time', 'confirm'].indexOf(step) > i) ? colors.text :
+                        colors.fillSecondary,
+                    },
+                  ]}
+                />
+              ))}
+            </View>
+
+            {/* ── ERROR ───────────────────────────────────────────── */}
+            {error && (
+              <View style={[styles.errorBanner, { backgroundColor: colors.error + '10' }]}>
+                <Ionicons name="alert-circle" size={15} color={colors.error} />
+                <Supporting size="small" style={{ color: colors.error, flex: 1 }}>
+                  {error}
+                </Supporting>
+              </View>
+            )}
+
+            {/* ── LOADING ─────────────────────────────────────────── */}
+            {isLoading && (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="small" color={colors.textMuted} />
+              </View>
+            )}
+
+            {/* ── STEP: DATE ──────────────────────────────────────── */}
+            {step === 'date' && !isLoading && !error && (
+              <View style={styles.stepContainer}>
+                {/* Month navigation */}
+                <View style={styles.monthNav}>
+                  <HapticPressable
+                    onPress={goToPreviousMonth}
+                    disabled={!canGoPreviousMonth}
+                    hitSlop={12}
+                    style={[
+                      styles.monthNavBtn,
+                      { backgroundColor: colors.fillSecondary },
+                      !canGoPreviousMonth && styles.monthNavBtnDisabled,
+                    ]}
+                  >
+                    <ChevronLeft size={16} color={canGoPreviousMonth ? colors.text : colors.textMuted} />
+                  </HapticPressable>
+                  <Data size="medium">
+                    {MONTH_NAMES[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+                  </Data>
+                  <HapticPressable
+                    onPress={goToNextMonth}
+                    hitSlop={12}
+                    style={[styles.monthNavBtn, { backgroundColor: colors.fillSecondary }]}
+                  >
+                    <ChevronRight size={16} color={colors.text} />
+                  </HapticPressable>
+                </View>
+
+                {/* Day headers */}
+                <View style={styles.dayHeaders}>
+                  {DAY_NAMES.map((day, i) => (
+                    <View key={`${day}-${i}`} style={styles.dayHeaderCell}>
+                      <Supporting size="small" tone="muted" style={styles.dayHeaderText}>{day}</Supporting>
+                    </View>
+                  ))}
+                </View>
+
+                {/* Calendar grid */}
+                <View style={styles.calendarGrid}>
+                  {calendarDays.map((date, index) => {
+                    if (!date) {
+                      return <View key={`empty-${index}`} style={styles.calendarCell} />;
+                    }
+
+                    const past = isDatePast(date);
+                    const available = !past && isDateAvailable(date);
+                    const isSelected = selectedDate && toUtcDateKey(selectedDate) === toUtcDateKey(date);
+                    const isToday = toUtcDateKey(date) === toUtcDateKey(new Date());
+
+                    return (
+                      <View key={date.toISOString()} style={styles.calendarCell}>
+                        <HapticPressable
+                          onPress={() => available && handleDateSelect(date)}
+                          disabled={!available}
+                          style={[
+                            styles.calendarDayInner,
+                            isSelected && { backgroundColor: colors.text },
+                            isToday && !isSelected && { backgroundColor: colors.fillSecondary },
+                          ]}
+                        >
+                          <Data
+                            size="small"
+                            style={[
+                              isSelected && { color: colors.background },
+                              !isSelected && available && { color: colors.text },
+                              !isSelected && !available && { color: colors.textMuted + '30' },
+                              isToday && !isSelected && { color: colors.text },
+                            ]}
+                          >
+                            {date.getUTCDate()}
+                          </Data>
+                        </HapticPressable>
+                        {available && !isSelected && (
+                          <View style={[styles.availableDot, { backgroundColor: colors.success }]} />
+                        )}
+                      </View>
+                    );
+                  })}
+                </View>
+              </View>
+            )}
+
+            {/* ── STEP: TIME ──────────────────────────────────────── */}
+            {step === 'time' && !isLoading && selectedDate && (
+              <View style={styles.stepContainer}>
+                {/* Selected date display */}
+                <View style={[styles.selectedDateBar, { backgroundColor: colors.fillSecondary }]}>
+                  <Calendar size={14} color={colors.textSecondary} />
+                  <Data size="small" style={{ color: colors.text }}>
+                    {formatDate(selectedDate)}
+                  </Data>
+                </View>
+
+                {availableSlots.length === 0 ? (
+                  <View style={styles.emptySlots}>
+                    <Clock size={24} color={colors.textMuted} />
+                    <Supporting size="medium" tone="muted" style={{ marginTop: Spacing.sm }}>
+                      No times available for this date
+                    </Supporting>
+                  </View>
+                ) : (
+                  <>
+                    <Label size="small" tone="muted" style={styles.sectionLabel}>AVAILABLE TIMES</Label>
+                    <View style={styles.slotsGrid}>
+                      {timeSlots.map(slot => {
+                        const isSelected = selectedSlot?.id === slot.id;
+                        return (
+                          <HapticPressable
+                            key={slot.id}
+                            onPress={() => slot.isAvailable && handleSlotSelect(slot)}
+                            disabled={!slot.isAvailable}
+                            style={[
+                              styles.slotButton,
+                              {
+                                backgroundColor: isSelected ? colors.text : colors.fillSecondary,
+                                borderColor: isSelected ? colors.text : 'transparent',
+                              },
+                              !slot.isAvailable && styles.slotDisabled,
+                            ]}
+                          >
+                            <Data
+                              size="small"
+                              style={[
+                                isSelected && { color: colors.background },
+                                !isSelected && slot.isAvailable && { color: colors.text },
+                                !slot.isAvailable && { color: colors.textMuted },
+                              ]}
+                            >
+                              {formatTime(slot.startTime)}
+                            </Data>
+                            {slot.isAvailable && (
+                              <Supporting size="small" style={isSelected ? { color: colors.background + 'AA' } : undefined} tone={isSelected ? undefined : 'muted'}>{slot.duration}m</Supporting>
+                            )}
+                          </HapticPressable>
+                        );
+                      })}
+                    </View>
+                  </>
+                )}
+
+                {/* Continue button */}
+                {selectedSlot && (
+                  <HapticPressable
+                    onPress={handleContinueToConfirm}
+                    style={[styles.primaryButton, { backgroundColor: colors.text }]}
+                  >
+                    <ButtonText size="medium" style={{ color: colors.background }}>
+                      Continue
+                    </ButtonText>
+                  </HapticPressable>
+                )}
+              </View>
+            )}
+
+            {/* ── STEP: CONFIRM ───────────────────────────────────── */}
+            {step === 'confirm' && selectedDate && selectedSlot && (
+              <View style={styles.stepContainer}>
+                {/* Booking summary */}
+                <View style={[styles.confirmCard, { backgroundColor: colors.fillSecondary }]}>
+                  <View style={styles.confirmRow}>
+                    <View style={[styles.confirmIconBox, { backgroundColor: colors.fillSecondary }]}>
+                      <Calendar size={16} color={colors.textSecondary} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Supporting size="small" tone="muted">Date</Supporting>
+                      <Data size="small">{formatDate(selectedDate)}</Data>
+                    </View>
+                  </View>
+                  <View style={[styles.confirmDivider, { backgroundColor: colors.border + '30' }]} />
+                  <View style={styles.confirmRow}>
+                    <View style={[styles.confirmIconBox, { backgroundColor: colors.fillSecondary }]}>
+                      <Clock size={16} color={colors.textSecondary} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Supporting size="small" tone="muted">Time</Supporting>
+                      <Data size="small">
+                        {formatTime(selectedSlot.startTime)} – {formatTime(selectedSlot.endTime)}
+                      </Data>
+                    </View>
+                    <View style={[styles.durationBadge, { backgroundColor: colors.fillSecondary }]}>
+                      <Supporting size="small" style={{ color: colors.textSecondary }}>{selectedSlot.duration}m</Supporting>
+                    </View>
+                  </View>
+                </View>
+
+                {/* Attendees */}
+                <View style={styles.fieldGroup}>
+                  <View style={styles.fieldHeader}>
+                    <Users size={14} color={colors.textSecondary} />
+                    <Label size="small" tone="muted">ATTENDEES</Label>
+                  </View>
+                  <View style={[styles.attendeePicker, { backgroundColor: colors.fillSecondary }]}>
+                    <HapticPressable
+                      onPress={decrementAttendees}
+                      disabled={attendees <= 1}
+                      style={[
+                        styles.attendeeBtn,
+                        { backgroundColor: colors.surface },
+                        attendees <= 1 && styles.attendeeBtnDisabled,
+                      ]}
+                    >
+                      <Ionicons name="remove" size={16} color={attendees <= 1 ? colors.textMuted : colors.text} />
+                    </HapticPressable>
+                    <Data size="medium" style={{ minWidth: 24, textAlign: 'center' }}>{attendees}</Data>
+                    <HapticPressable
+                      onPress={incrementAttendees}
+                      disabled={attendees >= 5}
+                      style={[
+                        styles.attendeeBtn,
+                        { backgroundColor: colors.surface },
+                        attendees >= 5 && styles.attendeeBtnDisabled,
+                      ]}
+                    >
+                      <Ionicons name="add" size={16} color={attendees >= 5 ? colors.textMuted : colors.text} />
+                    </HapticPressable>
+                  </View>
+                </View>
+
+                {/* Notes */}
+                <View style={styles.fieldGroup}>
+                  <View style={styles.fieldHeader}>
+                    <FileText size={14} color={colors.textSecondary} />
+                    <Label size="small" tone="muted">NOTES</Label>
+                    <Supporting size="small" tone="muted">(optional)</Supporting>
+                  </View>
+                  <BottomSheetTextInput
+                    value={notes}
+                    onChangeText={setNotes}
+                    placeholder="Any questions or special requests..."
+                    placeholderTextColor={colors.textMuted}
+                    multiline
+                    numberOfLines={2}
+                    style={[
+                      styles.notesInput,
+                      {
+                        color: colors.text,
+                        backgroundColor: colors.fillSecondary,
+                        borderColor: colors.border + '30',
+                      },
+                    ]}
+                  />
+                </View>
+
+                {/* Submit */}
+                {!isAuthenticated ? (
+                  <HapticPressable
+                    onPress={onLoginRequired}
+                    style={[styles.primaryButton, { backgroundColor: colors.text }]}
+                  >
+                    <ButtonText size="medium" style={{ color: colors.background }}>
+                      Sign in to Book
+                    </ButtonText>
+                  </HapticPressable>
+                ) : (
+                  <HapticPressable
+                    onPress={handleBooking}
+                    disabled={isLoading}
+                    style={[
+                      styles.primaryButton,
+                      { backgroundColor: colors.text },
+                      isLoading && styles.buttonDisabled,
+                    ]}
+                  >
+                    {isLoading ? (
+                      <ActivityIndicator size="small" color={colors.background} />
+                    ) : (
+                      <ButtonText size="medium" style={{ color: colors.background }}>
+                        Confirm Booking
+                      </ButtonText>
+                    )}
+                  </HapticPressable>
+                )}
+              </View>
+            )}
+
+            <View style={{ height: insets.bottom + Spacing.md }} />
+          </>
+        )}
+      </BottomSheetView>
+    </BottomSheetModal>
+  );
+});
+
+// ============================================================================
+// STYLES
+// ============================================================================
+
+const styles = StyleSheet.create({
+  sheetContainer: {
+    marginHorizontal: Spacing.md,
+  },
+  background: {
+    borderRadius: Radius['3xl'],
+  },
+
+  content: {
+    flex: 1,
+    paddingHorizontal: Spacing.lg,
+  },
+  confettiAnchor: {
+    position: 'absolute',
+    top: '40%',
+    left: '50%',
+    zIndex: 100,
+  },
+
+  // Header
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: Spacing.md,
+    gap: Spacing.sm,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    flex: 1,
+  },
+  backButton: {
+    width: 30,
+    height: 30,
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closeButton: {
+    width: 30,
+    height: 30,
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  // Step indicator
+  stepIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginBottom: Spacing.lg,
+  },
+  stepDot: {
+    width: 24,
+    height: 3,
+    borderRadius: 2,
+  },
+
+  // Error
+  errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    padding: Spacing.md,
+    borderRadius: Radius.lg,
+    marginBottom: Spacing.md,
+  },
+
+  // Loading
+  loadingContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing['5xl'],
+  },
+
+  // Step container
+  stepContainer: {
+    gap: Spacing.lg,
+  },
+
+  // ── Calendar ─────────────────────────────────────────────────────────
+  monthNav: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  monthNavBtn: {
+    width: 30,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: Radius.full,
+  },
+  monthNavBtnDisabled: {
+    opacity: 0.25,
+  },
+  dayHeaders: {
+    flexDirection: 'row',
+  },
+  dayHeaderCell: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: Spacing.xs,
+  },
+  dayHeaderText: {
+    letterSpacing: 0.3,
+  },
+  calendarGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  calendarCell: {
+    width: '14.28%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 2,
+  },
+  calendarDayInner: {
+    width: 36,
+    height: 36,
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  availableDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    marginTop: 1,
+  },
+
+  // ── Time slots ───────────────────────────────────────────────────────
+  selectedDateBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+    borderRadius: Radius.lg,
+  },
+  sectionLabel: {
+    paddingHorizontal: Spacing.xs,
+  },
+  slotsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+  },
+  slotButton: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+    borderRadius: Radius.lg,
+    borderWidth: 1,
+    minWidth: '30%',
+    alignItems: 'center',
+    gap: 2,
+  },
+  slotDisabled: {
+    opacity: 0.25,
+  },
+  emptySlots: {
+    alignItems: 'center',
+    paddingVertical: Spacing['4xl'],
+  },
+
+  // ── Confirm ──────────────────────────────────────────────────────────
+  confirmCard: {
+    padding: Spacing.lg,
+    borderRadius: Radius.xl,
+    gap: Spacing.md,
+  },
+  confirmRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  confirmIconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: Radius.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  confirmDivider: {
+    height: 1,
+    marginHorizontal: Spacing.xs,
+  },
+  durationBadge: {
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 3,
+    borderRadius: Radius.md,
+  },
+  fieldGroup: {
+    gap: Spacing.sm,
+  },
+  fieldHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  attendeePicker: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xl,
+    paddingVertical: Spacing.md,
+    borderRadius: Radius.lg,
+  },
+  attendeeBtn: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: Radius.full,
+  },
+  attendeeBtnDisabled: {
+    opacity: 0.3,
+  },
+  notesInput: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+    borderRadius: Radius.lg,
+    borderWidth: 1,
+    fontSize: 14,
+    minHeight: 56,
+    textAlignVertical: 'top',
+  },
+
+  // ── CTA Button ───────────────────────────────────────────────────────
+  primaryButton: {
+    height: 48,
+    borderRadius: Radius.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: Spacing.xs,
+  },
+  doneButton: {
+    width: '100%',
+    marginTop: Spacing.md,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+
+  // ── Success ──────────────────────────────────────────────────────────
+  successContainer: {
+    alignItems: 'center',
+    paddingVertical: Spacing['2xl'],
+    paddingHorizontal: Spacing.lg,
+    gap: Spacing.sm,
+  },
+  successCheckIcon: {
+    marginBottom: Spacing.sm,
+  },
+  centerText: {
+    textAlign: 'center',
+  },
+  successCard: {
+    width: '100%',
+    padding: Spacing.lg,
+    borderRadius: Radius.xl,
+    gap: Spacing.sm,
+    marginTop: Spacing.md,
+    marginBottom: Spacing.sm,
+    alignItems: 'center',
+  },
+  successCardRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  tokenContainer: {
+    alignItems: 'center',
+    gap: 2,
+    marginTop: Spacing.sm,
+    paddingTop: Spacing.sm,
+    borderTopWidth: 1,
+    width: '100%',
+  },
+  tokenText: {
+    letterSpacing: 3,
+  },
+});

@@ -30,7 +30,14 @@ export function ProfileMenu() {
   if (isAuthenticated && user) {
     return (
       <HapticPressable
-        style={styles.trigger}
+        style={[
+          styles.trigger,
+          styles.authTrigger,
+          {
+            borderColor: colors.border,
+            backgroundColor: colors.background,
+          },
+        ]}
         onPress={handlePress}
       >
         <UserAvatar
@@ -50,7 +57,7 @@ export function ProfileMenu() {
         styles.unauthTrigger,
         { 
           borderColor: colors.border,
-          backgroundColor: colors.surface,
+          backgroundColor: colors.background,
         }
       ]}
       onPress={handlePress}
@@ -70,6 +77,14 @@ export function ProfileMenu() {
 const styles = StyleSheet.create({
   trigger: {
     borderRadius: 24,
+  },
+  authTrigger: {
+    borderWidth: 1,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
   },
   unauthTrigger: {
     padding: 4,
