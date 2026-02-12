@@ -9,7 +9,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { 
-  Sparkles, 
+  Zap, 
   Heart, 
   Flame, 
   MoreHorizontal, 
@@ -252,12 +252,12 @@ export function ListingCard({
                 {onToggleBlk && listing.lifecycleStatus === 'active' && (
                   listing.isBlkListing ? (
                     <DropdownMenuItem onClick={() => onToggleBlk(listing.id, true)} disabled={isTogglingBlk} className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4" />
+                      <Zap className="w-4 h-4" />
                       {isTogglingBlk ? 'Updating...' : 'Remove BLK'}
                     </DropdownMenuItem>
                   ) : canPromoteToBlk ? (
                     <DropdownMenuItem onClick={() => onToggleBlk(listing.id, false)} disabled={isTogglingBlk} className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4" />
+                      <Zap className="w-4 h-4" />
                       {isTogglingBlk ? 'Updating...' : 'Promote to BLK'}
                     </DropdownMenuItem>
                   ) : null
@@ -333,7 +333,7 @@ export function ListingCard({
               </span>
               {superlikes > 0 && (
                 <span className="flex items-center gap-0.5 sm:gap-1 text-amber-500">
-                  <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                  <Zap className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                   <span className="font-semibold tabular-nums">{superlikes}</span>
                 </span>
               )}

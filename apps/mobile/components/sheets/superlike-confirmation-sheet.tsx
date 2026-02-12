@@ -6,7 +6,7 @@
 import React, { useRef, useCallback, useEffect } from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
-import { Sparkles } from 'lucide-react-native';
+import { Zap } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -87,7 +87,7 @@ export function SuperlikeConfirmationSheet({
         {/* Header */}
         <View style={styles.header}>
           <View style={[styles.iconContainer, { backgroundColor: colors.warning + '20' }]}>
-            <Sparkles size={24} color={colors.warning} fill={colors.warning} />
+            <Zap size={24} color={colors.warning} fill={colors.warning} />
           </View>
           <View style={styles.headerText}>
             <Heading size="small">Superlike this listing?</Heading>
@@ -123,7 +123,7 @@ export function SuperlikeConfirmationSheet({
             onPress={handleConfirm}
             style={[styles.button, styles.confirmButton, { backgroundColor: colors.primary }]}
           >
-            <Sparkles size={16} color="#fff" />
+            <Zap size={16} color="#fff" />
             <Data size="medium" style={{ color: '#fff' }}>Confirm</Data>
           </Pressable>
         </View>
@@ -190,7 +190,7 @@ export function SuperlikeQuotaExhaustedSheet({
         {/* Header */}
         <View style={styles.exhaustedHeader}>
           <View style={[styles.iconContainer, { backgroundColor: colors.warning + '20' }]}>
-            <Sparkles size={28} color={colors.warning} />
+            <Zap size={28} color={colors.warning} />
           </View>
           <Heading size="medium" style={{ marginTop: Spacing.md }}>
             No Superlikes Left

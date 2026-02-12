@@ -8,7 +8,7 @@
  */
 
 import { useMemo, useState, useCallback } from 'react';
-import { X, CheckCircle2, Sparkles, RefreshCw, Loader2 } from 'lucide-react';
+import { X, CheckCircle2, Zap, RefreshCw, Loader2 } from 'lucide-react';
 import { cn } from '@/utils';
 import { Combobox } from '../combobox';
 import { UAE_EMIRATES } from '../constants';
@@ -309,7 +309,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
                     </>
                   ) : (
                     <>
-                      <Sparkles className="w-4 h-4" />
+                      <Zap className="w-4 h-4" />
                       AI Generate
                     </>
                   )}

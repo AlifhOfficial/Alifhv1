@@ -73,7 +73,7 @@ function Section({
   return (
     <View style={[styles.section, { borderColor: colors.border }]}>
       <HapticPressable onPress={toggle} style={styles.sectionHeader}>
-        <Label size="medium" style={{ flex: 1 }}>{title}</Label>
+        <Label size="small" style={{ flex: 1 }}>{title}</Label>
         {open ? (
           <ChevronUp size={18} color={colors.textMuted} />
         ) : (
@@ -188,7 +188,7 @@ export function StepDetails({ form, updateForm, colors }: StepProps) {
     <View style={styles.container}>
       {/* ── Required: Mileage ── */}
       <View style={styles.fieldGroup}>
-        <Label size="medium">Mileage (km) *</Label>
+        <Label size="small">Mileage (km) *</Label>
         <TextInput
           style={[styles.textInput, { backgroundColor: colors.input, color: colors.text, borderColor: colors.border }]}
           placeholder="e.g. 45000"
@@ -201,7 +201,7 @@ export function StepDetails({ form, updateForm, colors }: StepProps) {
 
       {/* ── Required: Regional Specs ── */}
       <View style={styles.fieldGroup}>
-        <Label size="medium">Regional Specs *</Label>
+        <Label size="small">Regional Specs *</Label>
         <ChipRow
           options={SPECS_TYPES}
           selected={form.specs}
@@ -212,7 +212,7 @@ export function StepDetails({ form, updateForm, colors }: StepProps) {
 
       {/* ── Steering Side ── */}
       <View style={styles.fieldGroup}>
-        <Label size="medium">Steering Side</Label>
+        <Label size="small">Steering Side</Label>
         <ChipRow
           options={STEERING_SIDES}
           selected={form.steeringSide}
@@ -226,7 +226,7 @@ export function StepDetails({ form, updateForm, colors }: StepProps) {
       {/* ── Appearance ── */}
       <Section title="Appearance" colors={colors}>
         <View style={styles.fieldGroup}>
-          <Label size="medium">Body Type</Label>
+          <Label size="small">Body Type</Label>
           <ChipRow
             options={BODY_TYPES}
             selected={form.bodyType}
@@ -236,7 +236,7 @@ export function StepDetails({ form, updateForm, colors }: StepProps) {
         </View>
 
         <View style={styles.fieldGroup}>
-          <Label size="medium">Exterior Color</Label>
+          <Label size="small">Exterior Color</Label>
           <ChipRow
             options={EXTERIOR_COLORS as unknown as ChipOption[]}
             selected={form.exteriorColor}
@@ -246,7 +246,7 @@ export function StepDetails({ form, updateForm, colors }: StepProps) {
         </View>
 
         <View style={styles.fieldGroup}>
-          <Label size="medium">Interior Color</Label>
+          <Label size="small">Interior Color</Label>
           <ChipRow
             options={INTERIOR_COLORS as unknown as ChipOption[]}
             selected={form.interiorColor}
@@ -256,7 +256,7 @@ export function StepDetails({ form, updateForm, colors }: StepProps) {
         </View>
 
         <View style={styles.fieldGroup}>
-          <Label size="medium">Doors</Label>
+          <Label size="small">Doors</Label>
           <ChipRow
             options={DOORS_OPTIONS}
             selected={form.doors}
@@ -266,7 +266,7 @@ export function StepDetails({ form, updateForm, colors }: StepProps) {
         </View>
 
         <View style={styles.fieldGroup}>
-          <Label size="medium">Seating Capacity</Label>
+          <Label size="small">Seating Capacity</Label>
           <ChipRow
             options={SEATING_OPTIONS}
             selected={form.seatingCapacity}
@@ -279,7 +279,7 @@ export function StepDetails({ form, updateForm, colors }: StepProps) {
       {/* ── Powertrain ── */}
       <Section title="Powertrain" colors={colors}>
         <View style={styles.fieldGroup}>
-          <Label size="medium">Fuel Type</Label>
+          <Label size="small">Fuel Type</Label>
           <ChipRow
             options={FUEL_TYPES}
             selected={form.fuelType}
@@ -289,7 +289,7 @@ export function StepDetails({ form, updateForm, colors }: StepProps) {
         </View>
 
         <View style={styles.fieldGroup}>
-          <Label size="medium">Transmission</Label>
+          <Label size="small">Transmission</Label>
           <ChipRow
             options={TRANSMISSION_TYPES}
             selected={form.transmission}
@@ -299,7 +299,7 @@ export function StepDetails({ form, updateForm, colors }: StepProps) {
         </View>
 
         <View style={styles.fieldGroup}>
-          <Label size="medium">Engine Size</Label>
+          <Label size="small">Engine Size</Label>
           <ChipRow
             options={ENGINE_SIZES}
             selected={form.engineSize}
@@ -309,7 +309,7 @@ export function StepDetails({ form, updateForm, colors }: StepProps) {
         </View>
 
         <View style={styles.fieldGroup}>
-          <Label size="medium">Engine Type</Label>
+          <Label size="small">Engine Type</Label>
           <ChipRow
             options={ENGINE_TYPES}
             selected={form.engineType}
@@ -319,7 +319,7 @@ export function StepDetails({ form, updateForm, colors }: StepProps) {
         </View>
 
         <View style={styles.fieldGroup}>
-          <Label size="medium">Cylinders</Label>
+          <Label size="small">Cylinders</Label>
           <TextInput
             style={[styles.textInput, { backgroundColor: colors.input, color: colors.text, borderColor: colors.border }]}
             placeholder="e.g. 4, 6, 8"
@@ -331,7 +331,7 @@ export function StepDetails({ form, updateForm, colors }: StepProps) {
         </View>
 
         <View style={styles.fieldGroup}>
-          <Label size="medium">Power Range</Label>
+          <Label size="small">Power Range</Label>
           <ChipRow
             options={POWER_RANGES}
             selected={form.powerRange}
@@ -341,7 +341,7 @@ export function StepDetails({ form, updateForm, colors }: StepProps) {
         </View>
 
         <View style={styles.fieldGroup}>
-          <Label size="medium">Fuel Economy</Label>
+          <Label size="small">Fuel Economy</Label>
           <TextInput
             style={[styles.textInput, { backgroundColor: colors.input, color: colors.text, borderColor: colors.border }]}
             placeholder="e.g. 8.5 L/100km"
@@ -352,7 +352,7 @@ export function StepDetails({ form, updateForm, colors }: StepProps) {
         </View>
 
         <View style={styles.fieldGroup}>
-          <Label size="medium">Torque</Label>
+          <Label size="small">Torque</Label>
           <TextInput
             style={[styles.textInput, { backgroundColor: colors.input, color: colors.text, borderColor: colors.border }]}
             placeholder="e.g. 350 Nm"
@@ -366,7 +366,7 @@ export function StepDetails({ form, updateForm, colors }: StepProps) {
       {/* ── Status & Warranty ── */}
       <Section title="Status & Warranty" colors={colors}>
         <View style={styles.fieldGroup}>
-          <Label size="medium">Warranty</Label>
+          <Label size="small">Warranty</Label>
           <ChipRow
             options={WARRANTY_TYPES}
             selected={form.warrantyType}
@@ -376,7 +376,7 @@ export function StepDetails({ form, updateForm, colors }: StepProps) {
         </View>
 
         <View style={styles.fieldGroup}>
-          <Label size="medium">Export Status</Label>
+          <Label size="small">Export Status</Label>
           <ChipRow
             options={EXPORT_STATUSES}
             selected={form.exportStatus}

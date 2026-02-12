@@ -18,7 +18,7 @@
 
 import React, { useCallback, memo } from 'react';
 import { View, StyleSheet, Alert, Platform } from 'react-native';
-import { Heart, Sparkles } from 'lucide-react-native';
+import { Heart, Zap } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { useTheme } from '@/context/theme-context';
@@ -316,7 +316,7 @@ export const SuperlikeButton = memo(function SuperlikeButton({
   return (
     <View style={styles.wrapper}>
       <HapticPressable onPress={toggleSuperlike} hitSlop={hitSlop}>
-        <Sparkles
+        <Zap
           size={size}
           color={iconColor}
           fill={isSuperliked ? colors.warning : 'none'}

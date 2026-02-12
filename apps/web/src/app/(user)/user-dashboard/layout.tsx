@@ -23,7 +23,7 @@ const navSections = [
   {
     items: [
       { label: "Favorites", href: "/user-dashboard/favorites", icon: "heart" },
-      { label: "Superlikes", href: "/user-dashboard/superlikes", icon: "sparkles" },
+      { label: "Superlikes", href: "/user-dashboard/superlikes", icon: "zap" },
     ]
   },
   {

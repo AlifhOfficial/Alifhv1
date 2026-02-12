@@ -10,7 +10,7 @@ import { HapticPressable } from '@/components/ui';
 import { useRouter, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { Home, MessageCircle, LayoutGrid, ChevronLeft, Search, ArrowUpDown, Plus, Sparkles } from 'lucide-react-native';
+import { Home, MessageCircle, LayoutGrid, ChevronLeft, Search, ArrowUpDown, Plus, Zap } from 'lucide-react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -494,7 +494,7 @@ export function GlobalTabBar() {
             ]}
             pointerEvents={showSearchBubble ? 'auto' : 'none'}
           >
-            <Sparkles
+            <Zap
               size={20}
               color="#8B5CF6"
               strokeWidth={2.5}

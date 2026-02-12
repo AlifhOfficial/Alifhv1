@@ -234,7 +234,7 @@ export function AmnaSheet({ visible, onClose, onSearch }: AmnaSheetProps) {
         {isLoading && (
           <View style={[styles.overlay, { backgroundColor: colors.surface }]}>
             <View style={styles.overlayContent}>
-              <Ionicons name="sparkles" size={40} color="#8B5CF6" />
+              <Ionicons name="flash" size={40} color="#8B5CF6" />
               <View style={{ alignItems: 'center', gap: 6, marginTop: 16, width: '100%', paddingHorizontal: Spacing.md }}>
                 {message ? (
                   <Heading size="small" style={{ textAlign: 'center', flexShrink: 1 }}>
@@ -262,7 +262,7 @@ export function AmnaSheet({ visible, onClose, onSearch }: AmnaSheetProps) {
               <Body size="medium" tone="secondary">Cancel</Body>
             </HapticPressable>
             <View style={styles.headerTitle}>
-              <Ionicons name="sparkles" size={16} color="#8B5CF6" />
+              <Ionicons name="flash" size={16} color="#8B5CF6" />
               <Heading size="small">Ask Amna</Heading>
             </View>
             <View style={{ width: 50 }} />
@@ -318,7 +318,7 @@ export function AmnaSheet({ visible, onClose, onSearch }: AmnaSheetProps) {
               {({ pressed }) => (
                 <View style={[styles.submitContent, { opacity: pressed ? 0.8 : 1 }]}>
                   <Ionicons
-                    name="sparkles"
+                    name="flash"
                     size={16}
                     color={query.trim() ? '#fff' : colors.textMuted}
                   />

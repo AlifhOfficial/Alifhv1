@@ -13,7 +13,7 @@ import Image from 'next/image';
 import { 
   Share2, 
   Heart, 
-  Sparkles,
+  Zap,
   CheckCircle2, 
   ChevronLeft, 
   ChevronRight, 
@@ -425,7 +425,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
               className="p-1.5 rounded-full hover:bg-muted/50 transition-colors"
               aria-label={superlike.isSuperliked ? "Remove superlike" : "Superlike"}
             >
-              <Sparkles 
+              <Zap 
                 className={cn(
                   "w-4 h-4",
                   superlike.isSuperliked ? "text-yellow-500" : "text-muted-foreground"

@@ -40,7 +40,7 @@ const serviceSchema = {
     '@type': 'Organization',
     name: 'Revvup',
     url: 'https://revvup.ae',
-    logo: 'https://revvup.ae/icons/icon-512x512.png',
+    logo: 'https://revvup.ae/web-app-manifest-512x512.png',
     address: {
       '@type': 'PostalAddress',
       addressCountry: 'AE',

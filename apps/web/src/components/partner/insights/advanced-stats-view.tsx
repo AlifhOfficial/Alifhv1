@@ -29,7 +29,7 @@ import {
   Clock,
   Calendar,
   AlertCircle,
-  Sparkles,
+  Zap,
   Info,
   Layers,
 } from 'lucide-react';
@@ -1286,7 +1286,7 @@ export function AdvancedStatsView() {
             {/* Engagement Metrics */}
             <div className="col-span-12 lg:col-span-8 rounded-xl border border-border/40 bg-sidebar p-5">
               <div className="flex items-center gap-2 mb-5">
-                <Sparkles className="w-4 h-4 text-violet-500" />
+                <Zap className="w-4 h-4 text-violet-500" />
                 <span className="text-sm font-semibold text-muted-foreground/70">Engagement Metrics</span>
               </div>
               <div className="grid grid-cols-4 gap-4">

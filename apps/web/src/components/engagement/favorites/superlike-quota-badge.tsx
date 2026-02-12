@@ -1,6 +1,6 @@
 'use client';
 
-import { Sparkles } from 'lucide-react';
+import { Zap } from 'lucide-react';
 import { type FavoritesStatusData } from '@/hooks/engagement';
 import { cn } from '@/lib/utils';
 
@@ -25,7 +25,7 @@ export function SuperlikeQuotaBadge({ quota, className }: SuperlikeQuotaBadgePro
         className
       )}
     >
-      <Sparkles className="h-3.5 w-3.5" strokeWidth={2.5} />
+      <Zap className="h-3.5 w-3.5" strokeWidth={2.5} />
       <span className="font-semibold tabular-nums">
         {remaining}<span className="opacity-60">/{total}</span>
       </span>

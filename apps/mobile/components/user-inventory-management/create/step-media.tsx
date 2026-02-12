@@ -180,7 +180,7 @@ export function StepMedia({ form, updateForm, colors }: StepProps) {
     <View style={styles.container}>
       {/* ══════════ Price ══════════ */}
       <View style={styles.fieldGroup}>
-        <Label size="medium">Price (AED) *</Label>
+        <Label size="small">Price (AED) *</Label>
         <TextInput
           style={[
             styles.textInput,
@@ -235,7 +235,7 @@ export function StepMedia({ form, updateForm, colors }: StepProps) {
       </View>
 
       <View style={styles.fieldGroup}>
-        <Label size="medium">Emirate *</Label>
+        <Label size="small">Emirate *</Label>
         <EmirateChips
           selected={form.emirate}
           onSelect={(v) => updateForm({ emirate: v })}
@@ -245,7 +245,7 @@ export function StepMedia({ form, updateForm, colors }: StepProps) {
 
       <View style={styles.fieldGroup}>
         <View style={styles.labelRow}>
-          <Label size="medium">City / Area</Label>
+          <Label size="small">City / Area</Label>
           <Supporting size="mini" tone="muted">Optional</Supporting>
         </View>
         <TextInput

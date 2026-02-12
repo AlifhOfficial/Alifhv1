@@ -23,7 +23,10 @@ import { TabBarProvider, useTabBar } from '@/context/tab-bar-context';
 import { SearchProvider } from '@/context/search-context';
 import { WebSocketProvider } from '@/context/websocket-context';
 import { NotificationProvider } from '@/context/notification-context';
+import { NetworkProvider } from '@/context/network-context';
 import { Loader } from '@/components/ui/loader';
+import { ErrorBoundary } from '@/components/ui/error-boundary';
+import { OfflineBanner } from '@/components/ui/offline-banner';
 import { GlobalTabBar } from '@/components/layout/global-tab-bar';
 import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
 import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
@@ -278,27 +281,32 @@ export default function RootLayout() {
 
   // Always render with full provider stack - onboarding is handled inside RootLayoutNav
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.dark.background }}>
-      <SafeAreaProvider>
-        <ThemeProvider>
-          <BottomSheetModalProvider>
-            <TabBarProvider>
-              <SearchProvider>
-                <AuthProvider>
-                  <FavoritesProvider>
-                    <WebSocketWrapper>
-                      <NotificationWrapper>
-                        <RootLayoutNav />
-                      </NotificationWrapper>
-                    </WebSocketWrapper>
-                  </FavoritesProvider>
-                </AuthProvider>
-              </SearchProvider>
-            </TabBarProvider>
-          </BottomSheetModalProvider>
-        </ThemeProvider>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+    <ErrorBoundary>
+      <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.dark.background }}>
+        <SafeAreaProvider>
+          <ThemeProvider>
+            <NetworkProvider>
+              <BottomSheetModalProvider>
+                <TabBarProvider>
+                  <SearchProvider>
+                    <AuthProvider>
+                      <FavoritesProvider>
+                        <WebSocketWrapper>
+                          <NotificationWrapper>
+                            <RootLayoutNav />
+                            <OfflineBanner />
+                          </NotificationWrapper>
+                        </WebSocketWrapper>
+                      </FavoritesProvider>
+                    </AuthProvider>
+                  </SearchProvider>
+                </TabBarProvider>
+              </BottomSheetModalProvider>
+            </NetworkProvider>
+          </ThemeProvider>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    </ErrorBoundary>
   );
 }
 

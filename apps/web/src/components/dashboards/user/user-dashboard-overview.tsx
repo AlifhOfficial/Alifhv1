@@ -23,7 +23,6 @@ import {
   Shield,
   Zap,
   Database,
-  Sparkles,
 } from 'lucide-react';
 import { UserBanNotice } from '@/components/dashboards/user';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';

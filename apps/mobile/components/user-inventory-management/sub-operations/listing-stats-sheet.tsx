@@ -12,7 +12,7 @@ import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { Eye, Heart, Sparkles } from 'lucide-react-native';
+import { Eye, Heart, Zap } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -106,7 +106,7 @@ export function ListingStatsSheet({
     {
       label: 'Superlikes',
       value: superlikeCount,
-      icon: Sparkles,
+      icon: Zap,
       color: colors.warning,
       bgColor: colors.warningMuted ?? colors.warning + '1A',
       description: 'People who superliked your listing',

@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { Loader2, RefreshCw, Sparkles } from 'lucide-react';
+import { Loader2, RefreshCw, Zap } from 'lucide-react';
 import { CarListItem } from '@/components/inventory';
 import { SuperlikeQuotaBadge } from '@/components/engagement';
 import { useSuperlikesListings, useFavoritesStatus } from '@/hooks/engagement';
@@ -77,7 +77,7 @@ export default function SuperlikesPage() {
           {validSuperlikeIds.length === 0 ? (
             <div className="flex items-center justify-center min-h-[40vh]">
               <div className="text-center max-w-xs">
-                <Sparkles className="w-8 h-8 mx-auto text-muted-foreground/20 mb-4" strokeWidth={1.5} />
+                <Zap className="w-8 h-8 mx-auto text-muted-foreground/20 mb-4" strokeWidth={1.5} />
                 <h3 className="text-sm font-semibold text-foreground mb-1">No superlikes yet</h3>
                 <p className="text-xs text-muted-foreground/60 leading-relaxed">
                   Use superlikes to show extra interest in listings you love

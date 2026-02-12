@@ -90,3 +90,9 @@ export {
   type ButtonTextProps,
   type PriceProps,
 } from './text';
+
+// Error handling
+export { ErrorBoundary } from './error-boundary';
+
+// Network status
+export { OfflineBanner } from './offline-banner';

@@ -9,7 +9,7 @@ import {
   Users,
   Award,
   MessageSquareQuote,
-  Sparkles,
+  Zap,
   Globe,
   Settings,
 } from 'lucide-react';
@@ -26,7 +26,7 @@ export const SECTIONS: { id: SectionId; label: string; icon: React.ComponentType
   { id: 'team', label: 'Team', icon: Users },
   { id: 'achievements', label: 'Achievements', icon: Award },
   { id: 'testimonials', label: 'Testimonials', icon: MessageSquareQuote },
-  { id: 'services', label: 'Services', icon: Sparkles },
+  { id: 'services', label: 'Services', icon: Zap },
   { id: 'social', label: 'Social & Press', icon: Globe },
   { id: 'seo', label: 'SEO & Settings', icon: Settings },
 ];

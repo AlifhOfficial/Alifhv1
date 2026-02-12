@@ -23,7 +23,7 @@ import { Search, X, ChevronDown, Info } from 'lucide-react-native';
 import { Spacing, Radius, Colors } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Supporting, ButtonText, Label } from '@/components/ui';
-import { CAR_MAKES, getModelsForMake, VEHICLE_CONDITIONS } from '@/lib/filter-constants';
+import { CAR_MAKES, getModelsForMake } from '@/lib/filter-constants';
 import { checkVin } from '@/lib/sell-car-user-api';
 import type { StepProps } from './types';
 
@@ -350,39 +350,9 @@ export function StepVehicleId({ form, updateForm, colors }: StepProps) {
         <View style={styles.section}>
           <Heading size="small">Vehicle Details</Heading>
 
-          {/* Condition */}
-          <View style={styles.fieldGroup}>
-            <Label size="medium">Condition</Label>
-            <View style={styles.conditionRow}>
-              {VEHICLE_CONDITIONS.map((c) => {
-                const isSelected = form.condition === c.value;
-                return (
-                  <HapticPressable
-                    key={c.value}
-                    onPress={() => {
-                      updateForm({ condition: c.value as 'new' | 'used' });
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    }}
-                    style={[
-                      styles.conditionChip,
-                      {
-                        backgroundColor: isSelected ? colors.primary : colors.surfaceSecondary,
-                        borderColor: isSelected ? colors.primary : colors.border,
-                      },
-                    ]}
-                  >
-                    <Body size="small" style={{ color: isSelected ? '#FFF' : colors.text }}>
-                      {c.label}
-                    </Body>
-                  </HapticPressable>
-                );
-              })}
-            </View>
-          </View>
-
           {/* Make */}
           <View style={styles.fieldGroup}>
-            <Label size="medium">Make *</Label>
+            <Label size="small">Make *</Label>
             <InlinePicker
               title="Make"
               options={[...CAR_MAKES]}
@@ -396,7 +366,7 @@ export function StepVehicleId({ form, updateForm, colors }: StepProps) {
 
           {/* Model */}
           <View style={styles.fieldGroup}>
-            <Label size="medium">Model *</Label>
+            <Label size="small">Model *</Label>
             <InlinePicker
               title="Model"
               options={models}
@@ -410,7 +380,7 @@ export function StepVehicleId({ form, updateForm, colors }: StepProps) {
 
           {/* Year */}
           <View style={styles.fieldGroup}>
-            <Label size="medium">Year *</Label>
+            <Label size="small">Year *</Label>
             <InlinePicker
               title="Year"
               options={years}
@@ -425,7 +395,7 @@ export function StepVehicleId({ form, updateForm, colors }: StepProps) {
           {/* Trim */}
           <View style={styles.fieldGroup}>
             <View style={styles.labelRow}>
-              <Label size="medium">Trim</Label>
+              <Label size="small">Trim</Label>
               <Supporting size="mini" tone="muted">Optional</Supporting>
             </View>
             <TextInput
@@ -500,17 +470,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: Radius.md,
-  },
-  conditionRow: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-  },
-  conditionChip: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: Spacing.md,
-    borderRadius: Radius.lg,
-    borderWidth: 1,
   },
   // Inline picker
   selectButton: {

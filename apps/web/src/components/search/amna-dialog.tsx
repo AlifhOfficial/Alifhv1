@@ -9,7 +9,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { Zap, ArrowRight } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -105,7 +105,7 @@ export function AmnaDialog({ open, onOpenChange }: AmnaDialogProps) {
         {loading && (
           <div className="absolute inset-0 z-20 bg-background/90 backdrop-blur-sm flex items-center justify-center animate-in fade-in-0 duration-200 rounded-2xl">
             <div className="flex flex-col items-center gap-4 px-6">
-              <Sparkles className="h-8 w-8 text-violet-500 animate-pulse" />
+              <Zap className="h-8 w-8 text-violet-500 animate-pulse" />
               <p className="text-sm font-semibold text-foreground text-center">
                 {message || 'Finding cars for you...'}
               </p>
@@ -115,7 +115,7 @@ export function AmnaDialog({ open, onOpenChange }: AmnaDialogProps) {
 
         {/* ── Header ── */}
         <div className="flex items-center gap-2.5 px-5 pt-4 pb-2">
-          <Sparkles className="h-4 w-4 text-violet-500 shrink-0" />
+          <Zap className="h-4 w-4 text-violet-500 shrink-0" />
           <div>
             <h3 className="text-sm font-bold text-foreground leading-tight">Ask Amna</h3>
             <p className="text-[11px] text-muted-foreground/60">Describe what you're looking for</p>

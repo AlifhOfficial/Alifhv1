@@ -6,7 +6,7 @@
 'use client';
 
 import React from 'react';
-import { Plus, Sparkles } from 'lucide-react';
+import { Plus, Zap } from 'lucide-react';
 import type { PartnerShowroom } from '@/hooks/partner/car-dealer/use-partner-showroom';
 import type { ShowroomService } from '@alifh/database';
 import { EditableField, ServiceCard } from '../components';
@@ -81,7 +81,7 @@ export function ServicesSection({
         </div>
         {(form.signatureServices?.length || 0) === 0 && (
           <div className="rounded-xl border border-dashed border-border/40 p-8 text-center">
-            <Sparkles className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
+            <Zap className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
             <p className="text-sm text-muted-foreground">No services added</p>
           </div>
         )}

@@ -7,7 +7,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Share2, Heart, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Share2, Heart, Zap, CheckCircle2 } from 'lucide-react';
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -439,7 +439,7 @@ export function CarListItem({
                 handleSuperlikeClick();
               }}
             >
-              <Sparkles
+              <Zap
                 className={cn(
                   "h-4 w-4 transition-transform duration-200",
                   showSparkles && "scale-[1.3]"

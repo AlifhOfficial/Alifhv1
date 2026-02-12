@@ -6,7 +6,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Sparkles, Trash2 } from 'lucide-react';
+import { Zap, Trash2 } from 'lucide-react';
 import type { ServiceCardProps } from '../types';
 
 export function ServiceCard({ service, onUpdate, onRemove }: ServiceCardProps) {
@@ -56,7 +56,7 @@ export function ServiceCard({ service, onUpdate, onRemove }: ServiceCardProps) {
         <div className="flex items-start justify-between gap-2">
           <div onClick={() => setIsEditing(true)} className="cursor-pointer flex-1">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-primary" />
+              <Zap className="w-4 h-4 text-primary" />
               <p className="text-sm font-semibold text-foreground">{service.title}</p>
             </div>
             {service.description && (

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Sparkles } from 'lucide-react';
+import { Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { type FavoritesStatusData } from '@/hooks/engagement';
 
@@ -66,7 +66,7 @@ export function SuperlikeConfirmationDialog({
       >
         {/* Header */}
         <div className="flex items-center gap-3 mb-4">
-          <Sparkles className="w-5 h-5 text-yellow-500 flex-shrink-0" fill="currentColor" />
+          <Zap className="w-5 h-5 text-yellow-500 flex-shrink-0" fill="currentColor" />
           <div className="flex-1 min-w-0">
             <h2 className="text-[15px] font-semibold text-foreground">Superlike this listing?</h2>
             {listingTitle && (

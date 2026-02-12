@@ -26,7 +26,6 @@ import {
   Info, 
   Package,
   Shield, 
-  Sparkles,
   TrendingUp,
   Zap,
 } from 'lucide-react';

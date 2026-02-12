@@ -8,7 +8,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Share2, Heart, CheckCircle2, Sparkles } from 'lucide-react';
+import { Share2, Heart, CheckCircle2, Zap } from 'lucide-react';
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
 import { cn } from '@/utils';
@@ -458,7 +458,7 @@ export function CarCard({
               {showSparkles && (
                 <span className="absolute inset-0 rounded-full bg-yellow-500/20 animate-ripple" />
               )}
-              <Sparkles
+              <Zap
                 className={cn(
                   "h-[18px] w-[18px] transition-transform duration-200",
                   showSparkles && "scale-125"
@@ -642,7 +642,7 @@ export function CarCard({
               {showSparkles && (
                 <span className="absolute inset-0 rounded-full bg-yellow-500/20 animate-ripple" />
               )}
-              <Sparkles
+              <Zap
                 className={cn(
                   "h-4 w-4 transition-transform duration-200",
                   showSparkles && "scale-[1.3]"

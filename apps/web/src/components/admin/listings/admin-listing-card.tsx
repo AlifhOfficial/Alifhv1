@@ -5,7 +5,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Eye, Heart, User, Building2, Clock, Calendar, AlertTriangle, Sparkles, Bot } from 'lucide-react';
+import { Eye, Heart, User, Building2, Clock, Calendar, AlertTriangle, Zap, Bot } from 'lucide-react';
 
 interface Listing {
   id: string;
@@ -168,7 +168,7 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
                 )}
                 {isAIModerated && !isAutoApproved && !isAutoRejected && (
                   <span className="px-3 py-1 rounded-md text-xs font-medium bg-purple-500/10 text-purple-500 flex items-center gap-1.5">
-                    <Sparkles className="w-3 h-3" />
+                    <Zap className="w-3 h-3" />
                     AI Reviewed
                   </span>
                 )}

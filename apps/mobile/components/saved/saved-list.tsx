@@ -7,7 +7,7 @@ import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Heart, Sparkles } from 'lucide-react-native';
+import { Heart, Zap } from 'lucide-react-native';
 
 import { Layout } from '@/constants/theme';
 import { Heading, Supporting } from '@/components/ui';
@@ -46,7 +46,7 @@ function EmptyState({
         {isFavorites ? (
           <Heart size={48} color={colors.favorite} strokeWidth={1.5} />
         ) : (
-          <Sparkles size={48} color={colors.warning} strokeWidth={1.5} />
+          <Zap size={48} color={colors.warning} strokeWidth={1.5} />
         )}
 
         {/* Title */}
@@ -126,7 +126,7 @@ export function SavedList({
       ListHeaderComponent={
         activeTab === 'superlikes' && quota ? (
           <View style={[styles.quotaBadge, { backgroundColor: colors.surface }]}>
-            <Sparkles size={14} color={colors.primary} strokeWidth={2} />
+            <Zap size={14} color={colors.primary} strokeWidth={2} />
             <Supporting size="mini" tone="secondary">
               {quota.remaining}/{quota.maxSuperlikesPerMonth} remaining this month
             </Supporting>

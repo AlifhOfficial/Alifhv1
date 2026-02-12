@@ -6,7 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { HapticPressable, ConfettiBurst, useFavoriteActions } from '@/components/ui';
-import { Heart, Sparkles, Share2 } from 'lucide-react-native';
+import { Heart, Zap, Share2 } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import Animated, {
@@ -170,7 +170,7 @@ export function FloatingListingActions({
               },
             ]}
           >
-            <Sparkles
+            <Zap
               size={22}
               color={isSuperliked ? colors.warning : colors.text}
               fill={isSuperliked ? colors.warning : 'none'}

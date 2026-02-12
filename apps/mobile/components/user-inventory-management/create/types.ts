@@ -163,20 +163,29 @@ export function isStepValid(step: 1 | 2 | 3, form: CreateListingFormData): boole
 
 // ─── Transform to API Payload ────────────────────────────────────────────────
 
-/** Convert form data → API payload for createListing() */
+/** 
+ * Convert form data → API payload for createListing() 
+ * 
+ * Condition is auto-detected based on mileage:
+ * - < 5,000 km = "new" (brand new / nearly new)
+ * - >= 5,000 km = "used"
+ */
 export function formToPayload(
   form: CreateListingFormData,
   status: 'draft' | 'published' = 'published',
 ): ListingFormPayload {
+  const mileage = parseInt(form.mileage, 10) || 0;
+  const condition: 'new' | 'used' = mileage < 5000 ? 'new' : 'used';
+
   return {
     vin: form.vin,
     make: form.make,
     model: form.model,
     year: parseInt(form.year, 10),
     trim: form.trim || undefined,
-    condition: form.condition,
+    condition,
 
-    mileage: parseInt(form.mileage, 10),
+    mileage,
     specs: form.specs,
     steeringSide: form.steeringSide,
     bodyType: form.bodyType || undefined,
