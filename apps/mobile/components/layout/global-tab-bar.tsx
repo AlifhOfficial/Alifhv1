@@ -169,9 +169,8 @@ export function GlobalTabBar() {
   // Back bubble animates in from left
   const backBubbleStyle = useAnimatedStyle(() => {
     return {
-      opacity: progress.value,
       transform: [
-        { scale: interpolate(progress.value, [0, 1], [0.9, 1]) },
+        { scale: interpolate(progress.value, [0, 1], [0, 1]) },
       ],
       width: interpolate(progress.value, [0, 1], [0, BACK_BUBBLE_SIZE]),
       marginRight: interpolate(progress.value, [0, 1], [0, GAP]),
@@ -181,9 +180,8 @@ export function GlobalTabBar() {
   // Search bubble animates in from right
   const searchBubbleStyle = useAnimatedStyle(() => {
     return {
-      opacity: searchProgress.value,
       transform: [
-        { scale: interpolate(searchProgress.value, [0, 1], [0.8, 1]) },
+        { scale: interpolate(searchProgress.value, [0, 1], [0, 1]) },
       ],
       width: interpolate(searchProgress.value, [0, 1], [0, SEARCH_BUBBLE_SIZE]),
       marginLeft: interpolate(searchProgress.value, [0, 1], [0, GAP]),
@@ -193,9 +191,8 @@ export function GlobalTabBar() {
   // Amna bubble animates in from right (after search bubble)
   const amnaBubbleStyle = useAnimatedStyle(() => {
     return {
-      opacity: amnaProgress.value,
       transform: [
-        { scale: interpolate(amnaProgress.value, [0, 1], [0.8, 1]) },
+        { scale: interpolate(amnaProgress.value, [0, 1], [0, 1]) },
       ],
       width: interpolate(amnaProgress.value, [0, 1], [0, AMNA_BUBBLE_SIZE]),
       marginLeft: interpolate(amnaProgress.value, [0, 1], [0, GAP]),
@@ -205,9 +202,8 @@ export function GlobalTabBar() {
   // Sort bubble animates in from right (after amna bubble)
   const sortBubbleStyle = useAnimatedStyle(() => {
     return {
-      opacity: sortProgress.value,
       transform: [
-        { scale: interpolate(sortProgress.value, [0, 1], [0.8, 1]) },
+        { scale: interpolate(sortProgress.value, [0, 1], [0, 1]) },
       ],
       width: interpolate(sortProgress.value, [0, 1], [0, SORT_BUBBLE_SIZE]),
       marginLeft: interpolate(sortProgress.value, [0, 1], [0, GAP]),
@@ -217,9 +213,8 @@ export function GlobalTabBar() {
   // Create bubble animates in from right (on home tab)
   const createBubbleStyle = useAnimatedStyle(() => {
     return {
-      opacity: createProgress.value,
       transform: [
-        { scale: interpolate(createProgress.value, [0, 1], [0.8, 1]) },
+        { scale: interpolate(createProgress.value, [0, 1], [0, 1]) },
       ],
       width: interpolate(createProgress.value, [0, 1], [0, CREATE_BUBBLE_SIZE]),
       marginLeft: interpolate(createProgress.value, [0, 1], [0, GAP]),
@@ -452,7 +447,7 @@ export function GlobalTabBar() {
                       <Icon
                         size={22}
                         color={iconColor}
-                        fill={isActive ? iconColor : colors.background}
+                        fill={isActive ? iconColor : 'none'}
                         strokeWidth={2}
                       />
                       {tab.name === 'messages' && messagesUnread > 0 && (
@@ -609,7 +604,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
+    overflow: 'visible',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
@@ -646,7 +641,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
+    overflow: 'visible',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
@@ -660,7 +655,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
+    overflow: 'visible',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
@@ -674,7 +669,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
+    overflow: 'visible',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
@@ -688,7 +683,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
+    overflow: 'visible',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,

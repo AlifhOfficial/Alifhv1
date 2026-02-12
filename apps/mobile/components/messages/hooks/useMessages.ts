@@ -31,7 +31,7 @@ interface UseMessagesReturn {
   otherLastReadAt: string | null;
   isOtherTyping: boolean;
   isOtherOnline: boolean | null;
-  otherLastSeenAt: string | null;
+  otherLastSeenAt: string | null | undefined;
   error: string | null;
   sendMessage: (text: string) => Promise<void>;
   fetchMore: () => Promise<void>;
@@ -54,7 +54,10 @@ export function useMessages({
   const [otherLastReadAt, setOtherLastReadAt] = useState<string | null>(null);
   const [isOtherTyping, setIsOtherTyping] = useState(false);
   const [isOtherOnline, setIsOtherOnline] = useState<boolean | null>(null);
-  const [otherLastSeenAt, setOtherLastSeenAt] = useState<string | null>(null);
+  // undefined = no WS data yet (fall back to conversation snapshot)
+  // null = WS confirmed no lastSeenAt
+  // string = WS-provided lastSeenAt
+  const [otherLastSeenAt, setOtherLastSeenAt] = useState<string | null | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const { subscribe, send, isConnected } = useWebSocket();
@@ -88,7 +91,7 @@ export function useMessages({
     setOtherLastReadAt(null);
     setIsOtherTyping(false);
     setIsOtherOnline(null);
-    setOtherLastSeenAt(null);
+    setOtherLastSeenAt(undefined);
     watchingRef.current = false;
     conversationIdRef.current = conversationId;
   }, [conversationId]);
@@ -119,8 +122,7 @@ export function useMessages({
           if (prev.some(m => m.id === newMessage.id)) {
             return prev;
           }
-          // Also skip if this is our own optimistic message already replaced
-          // (temp- messages get replaced by real ones from API response)
+
           const messageWithAvatar = {
             ...newMessage,
             sender: {
@@ -128,6 +130,21 @@ export function useMessages({
               avatarUrl: getAvatarUrl(newMessage.sender.avatarUrl),
             },
           };
+
+          // If this is our own message echoed back via WS, replace the
+          // optimistic temp- message instead of adding a duplicate.
+          // This fixes the race where WS arrives before the API response.
+          if (newMessage.senderId === userIdRef.current) {
+            const tempIndex = prev.findIndex(
+              m => m.id.startsWith('temp-') && m.senderId === newMessage.senderId
+            );
+            if (tempIndex !== -1) {
+              const updated = [...prev];
+              updated[tempIndex] = messageWithAvatar;
+              return updated;
+            }
+          }
+
           return [messageWithAvatar, ...prev];
         });
       }
@@ -171,9 +188,9 @@ export function useMessages({
         msg.userId === otherUserIdRef.current
       ) {
         setIsOtherOnline(!!msg.isOnline);
-        if (msg.lastSeenAt) {
-          setOtherLastSeenAt(msg.lastSeenAt);
-        }
+        // Always update — use null (not undefined) so the client knows
+        // WS has responded and stops falling back to stale conversation data
+        setOtherLastSeenAt(msg.lastSeenAt ?? null);
       }
     });
 

@@ -27,7 +27,6 @@ import {
   SupportSection,
   DangerZone,
   DeleteAccountModal,
-  type Passkey,
 } from '@/components/settings';
 
 import { KYCStatusCard, type ProfileStatus } from '@/components/profile';
@@ -53,8 +52,12 @@ export default function SettingsScreen() {
     consignmentMode,
     pushNotifications,
     emailNotifications,
+    passkeys,
+    addingPasskey,
     saveToggle,
     deleteAccount,
+    handleAddPasskey,
+    handleDeletePasskey,
     setPushNotifications,
     setEmailNotifications,
     setIsDeleting,
@@ -72,18 +75,6 @@ export default function SettingsScreen() {
 
   // Local UI state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [addingPasskey, setAddingPasskey] = useState(false);
-
-  // Passkeys (placeholder - will come from API)
-  const passkeys: Passkey[] = [];
-
-  // Handlers
-  const handleAddPasskey = useCallback(async () => {
-    setAddingPasskey(true);
-    // TODO: Implement passkey addition via Better Auth
-    Alert.alert('Coming Soon', 'Passkey support will be available soon.');
-    setAddingPasskey(false);
-  }, []);
 
   const handleDeleteAccount = useCallback(() => {
     deleteAccount(() => {
@@ -180,6 +171,7 @@ export default function SettingsScreen() {
           addingPasskey={addingPasskey}
           colors={colors}
           onAddPasskey={handleAddPasskey}
+          onDeletePasskey={handleDeletePasskey}
         />
 
         {/* Support */}

@@ -37,6 +37,35 @@ function getPresence(userId: string) {
   };
 }
 
+/**
+ * Get presence with DB fallback for lastSeenAt.
+ * Used on watch_user so the client always gets an accurate last-active time
+ * even after a WS server restart (when in-memory state is lost).
+ */
+async function getPresenceWithDbFallback(userId: string) {
+  const state = presence.get(userId);
+  const isOnline = state ? state.connections > 0 : false;
+  let lastSeenAt = state?.lastSeenAt ?? null;
+
+  // If no in-memory lastSeenAt and user is offline, query DB
+  if (!lastSeenAt && !isOnline) {
+    try {
+      const [row] = await db
+        .select({ lastActiveAt: userProfile.lastActiveAt })
+        .from(userProfile)
+        .where(eq(userProfile.userId, userId))
+        .limit(1);
+      if (row?.lastActiveAt) {
+        lastSeenAt = row.lastActiveAt.toISOString();
+      }
+    } catch {
+      // Silent fail — return null
+    }
+  }
+
+  return { isOnline, lastSeenAt };
+}
+
 function setOnline(server: { publish(topic: string, data: string): void }, userId: string) {
   const state = presence.get(userId) ?? { connections: 0, lastSeenAt: null };
   state.connections++;
@@ -184,12 +213,23 @@ const server = Bun.serve<WSData>({
               }
               // Always send current presence back (even if already subscribed)
               // This lets multiple hooks/screens get initial presence state
-              ws.send(JSON.stringify({
-                type: "presence",
-                userId: data.targetUserId,
-                ...getPresence(data.targetUserId),
-                timestamp: new Date().toISOString(),
-              }));
+              // Uses DB fallback so lastSeenAt is accurate after server restarts
+              getPresenceWithDbFallback(data.targetUserId).then((p) => {
+                ws.send(JSON.stringify({
+                  type: "presence",
+                  userId: data.targetUserId,
+                  ...p,
+                  timestamp: new Date().toISOString(),
+                }));
+              }).catch(() => {
+                // Fallback to in-memory only
+                ws.send(JSON.stringify({
+                  type: "presence",
+                  userId: data.targetUserId,
+                  ...getPresence(data.targetUserId),
+                  timestamp: new Date().toISOString(),
+                }));
+              });
             }
             break;
 

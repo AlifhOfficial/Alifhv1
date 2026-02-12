@@ -198,6 +198,7 @@ export function MessageInput({
       </View>
 
       <HapticPressable
+        haptic="medium"
         onPress={handleSend}
         disabled={!canSend}
         style={[

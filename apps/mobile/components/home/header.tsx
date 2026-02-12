@@ -85,21 +85,23 @@ export function HomeHeader() {
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           {({ pressed }) => (
-            <View>
-              <Bell 
-                size={20} 
-                color={colors.icon}
-                strokeWidth={2}
-                style={{ opacity: pressed ? 0.7 : 1 }}
-              />
-              {unreadCount > 0 && (
-                <View style={[styles.badge, { backgroundColor: colors.primary }]}>
-                  <Body size="small" style={styles.badgeText}>
-                    {unreadCount > 9 ? '9+' : unreadCount}
-                  </Body>
-                </View>
-              )}
-            </View>
+            <>
+              <View>
+                <Bell 
+                  size={20} 
+                  color={colors.icon}
+                  strokeWidth={2}
+                  style={{ opacity: pressed ? 0.7 : 1 }}
+                />
+                {unreadCount > 0 && (
+                  <View style={[styles.badge, { backgroundColor: colors.primary }]}>
+                    <Body size="small" style={styles.badgeText}>
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </Body>
+                  </View>
+                )}
+              </View>
+            </>
           )}
         </HapticPressable>
         <HapticPressable
@@ -114,12 +116,14 @@ export function HomeHeader() {
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           {({ pressed }) => (
-            <View style={styles.pillContent}>
-              <Bookmark size={16} color={colors.icon} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
-              <Data size="small" tone="secondary" style={{ opacity: pressed ? 0.7 : 1 }}>
-                Saved
-              </Data>
-            </View>
+            <>
+              <View style={styles.pillContent}>
+                <Bookmark size={16} color={colors.icon} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
+                <Data size="small" tone="secondary" style={{ opacity: pressed ? 0.7 : 1 }}>
+                  Saved
+                </Data>
+              </View>
+            </>
           )}
         </HapticPressable>
         <HapticPressable
@@ -134,12 +138,14 @@ export function HomeHeader() {
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           {({ pressed }) => (
-            <View style={styles.pillContent}>
-              <Package size={16} color={colors.icon} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
-              <Data size="small" tone="secondary" style={{ opacity: pressed ? 0.7 : 1 }}>
-                Inventory
-              </Data>
-            </View>
+            <>
+              <View style={styles.pillContent}>
+                <Package size={16} color={colors.icon} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
+                <Data size="small" tone="secondary" style={{ opacity: pressed ? 0.7 : 1 }}>
+                  Inventory
+                </Data>
+              </View>
+            </>
           )}
         </HapticPressable>
       </View>
@@ -157,12 +163,14 @@ export function HomeHeader() {
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
         {({ pressed }) => (
-          <ThemeIcon 
-            size={20} 
-            color={colors.icon}
-            strokeWidth={2}
-            style={{ opacity: pressed ? 0.7 : 1 }}
-          />
+          <>
+            <ThemeIcon 
+              size={20} 
+              color={colors.icon}
+              strokeWidth={2}
+              style={{ opacity: pressed ? 0.7 : 1 }}
+            />
+          </>
         )}
       </HapticPressable>
     </View>
@@ -196,6 +204,12 @@ const styles = StyleSheet.create({
     height: Layout.hitTarget,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'visible',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
   },
   pillButton: {
     paddingHorizontal: 12,
@@ -204,6 +218,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'visible',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
   },
   pillContent: {
     flexDirection: 'row',

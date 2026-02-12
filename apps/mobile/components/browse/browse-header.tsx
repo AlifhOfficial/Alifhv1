@@ -87,13 +87,15 @@ export function BrowseHeader({
           ]}
         >
           {({ pressed }) => (
-            <View style={{ opacity: pressed ? 0.7 : 1 }}>
-              {viewMode === 'grid' ? (
-                <LayoutGrid size={18} color={colors.text} strokeWidth={2} />
-              ) : (
-                <List size={18} color={colors.text} strokeWidth={2} />
-              )}
-            </View>
+            <>
+              <View style={{ opacity: pressed ? 0.7 : 1 }}>
+                {viewMode === 'grid' ? (
+                  <LayoutGrid size={18} color={colors.text} strokeWidth={2} />
+                ) : (
+                  <List size={18} color={colors.text} strokeWidth={2} />
+                )}
+              </View>
+            </>
           )}
         </HapticPressable>
 
@@ -109,6 +111,7 @@ export function BrowseHeader({
           ]}
         >
           {({ pressed }) => (
+            <>
             <View style={[styles.iconBubbleInner, { opacity: pressed ? 0.7 : 1 }]}>
               <Settings2 
                 size={20} 
@@ -128,6 +131,7 @@ export function BrowseHeader({
                 </View>
               )}
             </View>
+            </>
           )}
         </HapticPressable>
 
@@ -146,6 +150,7 @@ export function BrowseHeader({
               ]}
             >
               {({ pressed }) => (
+                <>
                 <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
                   <Data
                     size="small"
@@ -162,6 +167,7 @@ export function BrowseHeader({
                     </View>
                   )}
                 </View>
+                </>
               )}
             </HapticPressable>
           );
@@ -194,6 +200,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'visible',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
   },
   iconBubbleInner: {
     width: Layout.hitTarget,
@@ -225,6 +237,12 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'visible',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
   },
   pillContent: {
     flexDirection: 'row',

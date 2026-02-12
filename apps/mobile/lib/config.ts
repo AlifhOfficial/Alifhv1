@@ -71,6 +71,11 @@ export const AUTH_ENDPOINTS = {
   // Phone verification
   PHONE_SEND_OTP: '/api/auth/phone-number/send-otp',
   PHONE_VERIFY: '/api/auth/phone-number/verify',
+  // Passkey (Better Auth passkey plugin — WebAuthn flow)
+  PASSKEY_REGISTER_OPTIONS: '/api/auth/passkey/generate-register-options',
+  PASSKEY_VERIFY_REGISTRATION: '/api/auth/passkey/verify-registration',
+  PASSKEY_DELETE: '/api/auth/passkey/delete-passkey',
+  PASSKEY_LIST: '/api/auth/passkey/list-user-passkeys',
 } as const;
 
 // Profile endpoints

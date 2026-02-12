@@ -39,12 +39,14 @@ export function ProfileHeader({ colors, topInset }: ProfileHeaderProps) {
         ]}
       >
         {({ pressed }) => (
-          <Settings
-            size={20}
-            color={colors.iconMuted}
-            strokeWidth={2}
-            style={{ opacity: pressed ? 0.7 : 1 }}
-          />
+          <>
+            <Settings
+              size={20}
+              color={colors.iconMuted}
+              strokeWidth={2}
+              style={{ opacity: pressed ? 0.7 : 1 }}
+            />
+          </>
         )}
       </HapticPressable>
     </View>
@@ -67,5 +69,11 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'visible',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
   },
 });

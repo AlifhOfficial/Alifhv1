@@ -122,21 +122,23 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
               hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
             >
               {({ pressed }) => (
-                <View style={[styles.pillInner, { opacity: pressed ? 0.7 : 1 }]}>
-                  <Body 
-                    size="small"
-                    tone="secondary"
-                    style={styles.pillText}
-                    numberOfLines={1}
-                  >
-                    {chip.label}
-                  </Body>
-                  <X 
-                    size={12} 
-                    color={colors.textTertiary} 
-                    strokeWidth={2.5} 
-                  />
-                </View>
+                <>
+                  <View style={[styles.pillInner, { opacity: pressed ? 0.7 : 1 }]}>
+                    <Body 
+                      size="small"
+                      tone="secondary"
+                      style={styles.pillText}
+                      numberOfLines={1}
+                    >
+                      {chip.label}
+                    </Body>
+                    <X 
+                      size={12} 
+                      color={colors.textTertiary} 
+                      strokeWidth={2.5} 
+                    />
+                  </View>
+                </>
               )}
             </HapticPressable>
           </AnimatedView>
@@ -159,9 +161,11 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
               hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
             >
               {({ pressed }) => (
-                <ButtonText size="small" style={[styles.clearText, { color: colors.primaryForeground, opacity: pressed ? 0.7 : 1 }]}>
-                  Clear all
-                </ButtonText>
+                <>
+                  <ButtonText size="small" style={[styles.clearText, { color: colors.primaryForeground, opacity: pressed ? 0.7 : 1 }]}>
+                    Clear all
+                  </ButtonText>
+                </>
               )}
             </HapticPressable>
           </AnimatedView>
@@ -198,6 +202,12 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 14,
     borderWidth: 1,
+    overflow: 'visible',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
   },
   pillInner: {
     flexDirection: 'row',
@@ -213,6 +223,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 14,
+    overflow: 'visible',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
   },
   clearText: {
     fontSize: 12,

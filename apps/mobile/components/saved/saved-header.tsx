@@ -61,13 +61,14 @@ export function SavedHeader({
               style={[
                 styles.pill,
                 {
-                  backgroundColor: active ? colors.fill : colors.surface,
+                  backgroundColor: colors.surface,
                   borderColor: colors.border,
                 },
               ]}
             >
               {({ pressed }) => (
-                <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
+                <>
+                  <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
                   <Body
                     size="small"
                     style={{
@@ -89,6 +90,7 @@ export function SavedHeader({
                     </View>
                   )}
                 </View>
+                </>
               )}
             </HapticPressable>
           );
@@ -116,6 +118,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     justifyContent: 'center',
     paddingHorizontal: 16,
+    overflow: 'visible',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
   },
   pillContent: {
     flexDirection: 'row',

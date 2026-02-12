@@ -116,7 +116,11 @@ export function ChatWindow({
     : conversation?.otherParticipant?.avatarUrl;
   // Use live presence from useMessages (real-time via WS), fallback to conversation snapshot
   const isOnline = isOtherOnline ?? conversation?.otherParticipant?.isOnline ?? false;
-  const lastSeenAt = liveLastSeenAt ?? conversation?.otherParticipant?.lastSeenAt;
+  // liveLastSeenAt: undefined = no WS data yet → use conversation snapshot
+  //                 null/string = WS has responded → use live value (even if null)
+  const lastSeenAt = liveLastSeenAt !== undefined
+    ? liveLastSeenAt
+    : conversation?.otherParticipant?.lastSeenAt;
   const listingTitle = conversation?.listing?.title;
   const otherUserAvatar = avatarUrl;
   const otherUserName = displayName;

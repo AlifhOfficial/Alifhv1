@@ -571,3 +571,187 @@ export async function refreshSession(): Promise<AuthResult> {
     return { success: false };
   }
 }
+
+// ============================================================================
+// PASSKEY OPERATIONS
+// ============================================================================
+
+import { Passkey as NativePasskey } from 'react-native-passkey';
+
+export interface PasskeyResult {
+  success: boolean;
+  error?: string;
+}
+
+/**
+ * Safely parse a JSON response, returning null for empty/non-JSON bodies
+ */
+async function safeParseJson(response: Response): Promise<any> {
+  const text = await response.text();
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Add a new passkey for the authenticated user
+ * 
+ * Full WebAuthn registration flow:
+ * 1. GET /passkey/generate-register-options — get challenge from server
+ * 2. Native Passkey.create() — device biometric credential creation
+ * 3. POST /passkey/verify-registration — send attestation to server
+ */
+export async function addPasskey(name: string): Promise<PasskeyResult> {
+  try {
+    // Check if passkeys are supported on this device
+    if (!NativePasskey.isSupported()) {
+      return {
+        success: false,
+        error: 'Passkeys are not supported on this device.',
+      };
+    }
+
+    // Step 1: Get registration options from server
+    console.log('[Auth] Requesting passkey registration options...');
+    const optionsResponse = await authFetch(
+      `${AUTH_ENDPOINTS.PASSKEY_REGISTER_OPTIONS}?name=${encodeURIComponent(name)}`,
+      { method: 'GET' }
+    );
+
+    const options = await safeParseJson(optionsResponse);
+
+    if (!optionsResponse.ok || !options) {
+      console.error('[Auth] Generate register options failed:', options);
+      return {
+        success: false,
+        error: options?.message || options?.error || 'Failed to get registration options',
+      };
+    }
+
+    console.log('[Auth] Got registration options, starting native passkey creation...');
+
+    // Step 2: Create credential using native passkey API
+    // The server returns SimpleWebAuthn-format options which are WebAuthn-compatible
+    const registrationResult = await NativePasskey.create({
+      challenge: options.challenge,
+      rp: options.rp,
+      user: options.user,
+      pubKeyCredParams: options.pubKeyCredParams,
+      timeout: options.timeout,
+      excludeCredentials: options.excludeCredentials,
+      authenticatorSelection: options.authenticatorSelection,
+      attestation: options.attestation || 'none',
+    });
+
+    console.log('[Auth] Native passkey created, verifying with server...');
+
+    // Step 3: Send attestation to server for verification
+    const verifyResponse = await authFetch(AUTH_ENDPOINTS.PASSKEY_VERIFY_REGISTRATION, {
+      method: 'POST',
+      body: JSON.stringify({
+        response: registrationResult,
+        name,
+      }),
+    });
+
+    const verifyData = await safeParseJson(verifyResponse);
+
+    if (!verifyResponse.ok) {
+      console.error('[Auth] Verify registration failed:', verifyData);
+      return {
+        success: false,
+        error: verifyData?.message || verifyData?.error || 'Failed to verify passkey registration',
+      };
+    }
+
+    console.log('[Auth] Passkey registered successfully!');
+    return { success: true };
+  } catch (error: any) {
+    console.error('[Auth] Add passkey error:', error);
+
+    // Handle user cancellation gracefully
+    const msg = error?.message?.toLowerCase() || '';
+    if (msg.includes('cancel') || msg.includes('abort') || msg.includes('dismissed')) {
+      return {
+        success: false,
+        error: 'Passkey registration was cancelled.',
+      };
+    }
+
+    return {
+      success: false,
+      error: error?.message || 'Failed to add passkey. Please try again.',
+    };
+  }
+}
+
+/**
+ * Delete a passkey by ID
+ * Uses Better Auth passkey plugin endpoint: POST /api/auth/passkey/delete-passkey
+ */
+export async function deletePasskey(id: string): Promise<PasskeyResult> {
+  try {
+    const response = await authFetch(AUTH_ENDPOINTS.PASSKEY_DELETE, {
+      method: 'POST',
+      body: JSON.stringify({ id }),
+    });
+
+    const data = await safeParseJson(response);
+
+    if (!response.ok) {
+      console.error('[Auth] Delete passkey failed:', data);
+      return {
+        success: false,
+        error: data?.message || data?.error || 'Failed to delete passkey',
+      };
+    }
+
+    console.log('[Auth] Passkey deleted successfully');
+    return { success: true };
+  } catch (error) {
+    console.error('[Auth] Delete passkey error:', error);
+    return {
+      success: false,
+      error: 'Network error. Please check your connection.',
+    };
+  }
+}
+
+/**
+ * List all passkeys for the authenticated user
+ * Uses Better Auth passkey plugin endpoint: GET /api/auth/passkey/list-user-passkeys
+ */
+export async function listPasskeys(): Promise<{ success: boolean; passkeys: Array<{ id: string; name: string | null; createdAt: string }>; error?: string }> {
+  try {
+    const response = await authFetch(AUTH_ENDPOINTS.PASSKEY_LIST, {
+      method: 'GET',
+    });
+
+    const data = await safeParseJson(response);
+
+    if (!response.ok) {
+      console.error('[Auth] List passkeys failed:', data);
+      return {
+        success: false,
+        passkeys: [],
+        error: data?.message || data?.error || 'Failed to list passkeys',
+      };
+    }
+
+    console.log('[Auth] Passkeys listed:', data?.length ?? 0);
+    return {
+      success: true,
+      passkeys: Array.isArray(data) ? data : (data?.passkeys || []),
+    };
+  } catch (error) {
+    console.error('[Auth] List passkeys error:', error);
+    return {
+      success: false,
+      passkeys: [],
+      error: 'Network error. Please check your connection.',
+    };
+  }
+}

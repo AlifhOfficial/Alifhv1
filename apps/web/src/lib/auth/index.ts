@@ -359,7 +359,13 @@ export const auth = betterAuth({
         session,
       };
     }),
-    passkey(),
+    passkey({
+      rpID: process.env.NODE_ENV === 'production' ? 'revvup.ae' : 'localhost',
+      rpName: 'Revvup',
+      origin: process.env.NODE_ENV === 'production'
+        ? 'https://revvup.ae'
+        : null, // Falls back to request Origin header in dev
+    }),
     // Stripe integration for partner subscriptions (only if configured)
     ...(isStripeConfigured ? [stripe({
       stripeClient: getStripeClient(),

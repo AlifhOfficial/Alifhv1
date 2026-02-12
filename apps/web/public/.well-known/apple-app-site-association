@@ -1,0 +1,23 @@
+{
+  "webcredentials": {
+    "apps": [
+      "TEAM_ID.ae.revvup.mobile"
+    ]
+  },
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": [
+          "TEAM_ID.ae.revvup.mobile"
+        ],
+        "components": [
+          {
+            "/": "/listing/*",
+            "comment": "Deep link to listings"
+          }
+        ]
+      }
+    ]
+  }
+}

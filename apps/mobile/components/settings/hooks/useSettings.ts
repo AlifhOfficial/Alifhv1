@@ -12,7 +12,12 @@ import {
   requestAccountDeletion,
   type UserProfile,
   type ProfileUpdatePayload,
+  type Passkey,
 } from '@/lib/profile-api';
+import {
+  addPasskey as apiAddPasskey,
+  deletePasskey as apiDeletePasskey,
+} from '@/lib/auth-api';
 
 interface UseSettingsOptions {
   isAuthenticated: boolean;
@@ -23,6 +28,11 @@ export function useSettings({ isAuthenticated }: UseSettingsOptions) {
   const [isLoading, setIsLoading] = useState(true);
   const [savingField, setSavingField] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Passkey state
+  const [passkeys, setPasskeys] = useState<Passkey[]>([]);
+  const [addingPasskey, setAddingPasskey] = useState(false);
+  const [deletingPasskeyId, setDeletingPasskeyId] = useState<string | null>(null);
 
   // Notification settings (local state - not in API yet)
   const [pushNotifications, setPushNotifications] = useState(true);
@@ -47,6 +57,12 @@ export function useSettings({ isAuthenticated }: UseSettingsOptions) {
     const result = await fetchProfile();
     if (result.success && result.data) {
       setProfile(result.data.profile);
+      setPasskeys(
+        (result.data.passkeys || []).map((pk) => ({
+          ...pk,
+          name: pk.name || 'Passkey',
+        }))
+      );
     }
     setIsLoading(false);
   }, []);
@@ -109,12 +125,61 @@ export function useSettings({ isAuthenticated }: UseSettingsOptions) {
     }
   }, []);
 
+  const handleAddPasskey = useCallback(async () => {
+    setAddingPasskey(true);
+    try {
+      const name = `Passkey ${new Date().toLocaleDateString()}`;
+      const result = await apiAddPasskey(name);
+
+      if (result.success) {
+        if (Platform.OS === 'ios') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
+        Alert.alert('Passkey Added', 'You can now sign in with this device.');
+        // Refresh profile to get updated passkeys list
+        await loadProfile();
+      } else {
+        Alert.alert('Error', result.error || 'Failed to add passkey');
+      }
+    } catch {
+      Alert.alert('Error', 'Failed to add passkey. Please try again.');
+    } finally {
+      setAddingPasskey(false);
+    }
+  }, [loadProfile]);
+
+  const handleDeletePasskey = useCallback(async (id: string) => {
+    setDeletingPasskeyId(id);
+    try {
+      const result = await apiDeletePasskey(id);
+
+      if (result.success) {
+        if (Platform.OS === 'ios') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
+        // Optimistically remove from local state
+        setPasskeys((prev) => prev.filter((pk) => pk.id !== id));
+      } else {
+        Alert.alert('Error', result.error || 'Failed to delete passkey');
+      }
+    } catch {
+      Alert.alert('Error', 'Failed to delete passkey. Please try again.');
+    } finally {
+      setDeletingPasskeyId(null);
+    }
+  }, []);
+
   return {
     // State
     profile,
     isLoading,
     savingField,
     isDeleting,
+
+    // Passkey state
+    passkeys,
+    addingPasskey,
+    deletingPasskeyId,
 
     // Settings values
     showPhone,
@@ -127,6 +192,8 @@ export function useSettings({ isAuthenticated }: UseSettingsOptions) {
     loadProfile,
     saveToggle,
     deleteAccount,
+    handleAddPasskey,
+    handleDeletePasskey,
     setPushNotifications,
     setEmailNotifications,
     setIsDeleting,
