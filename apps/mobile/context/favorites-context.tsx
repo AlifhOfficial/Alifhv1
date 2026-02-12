@@ -10,6 +10,7 @@
  */
 
 import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode, useMemo, useRef } from 'react';
+import { Alert } from 'react-native';
 import { savedApi, FavoritesStatusData } from '@/lib/saved-api';
 import { useAuth } from '@/context/auth-context';
 
@@ -27,6 +28,7 @@ interface FavoritesContextType {
   // Helpers
   isFavorite: (listingId: string) => boolean;
   isSuperliked: (listingId: string) => boolean;
+  isPending: (listingId: string) => boolean;
   
   // Actions
   toggleFavorite: (listingId: string) => Promise<void>;
@@ -35,6 +37,12 @@ interface FavoritesContextType {
 }
 
 const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const DEBOUNCE_MS = 500; // Minimum time between toggles for same listing
 
 // ============================================================================
 // PROVIDER
@@ -53,8 +61,18 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
   const [quota, setQuota] = useState<FavoritesStatusData['quota'] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   
+  // Track pending requests to prevent duplicates and rate limiting
+  const pendingFavoritesRef = useRef<Set<string>>(new Set());
+  const pendingSuperlikesRef = useRef<Set<string>>(new Set());
+  const lastToggleTimeRef = useRef<Map<string, number>>(new Map());
+  
   // Track current user to detect changes
   const prevUserIdRef = useRef<string | undefined>(undefined);
+
+  // Helper: Check if a listing has a pending operation
+  const isPending = useCallback((listingId: string): boolean => {
+    return pendingFavoritesRef.current.has(listingId) || pendingSuperlikesRef.current.has(listingId);
+  }, []);
 
   // Fetch favorites status from API
   const fetchStatus = useCallback(async () => {
@@ -130,6 +148,24 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
       throw new Error('AUTH_REQUIRED');
     }
 
+    // Debounce: check if we toggled this listing recently
+    const now = Date.now();
+    const lastToggle = lastToggleTimeRef.current.get(`fav:${listingId}`);
+    if (lastToggle && now - lastToggle < DEBOUNCE_MS) {
+      console.log('[FavoritesContext] Debounced - too soon since last toggle');
+      return;
+    }
+
+    // Check if already pending
+    if (pendingFavoritesRef.current.has(listingId)) {
+      console.log('[FavoritesContext] Skipping - request already pending');
+      return;
+    }
+
+    // Mark as pending and record time
+    pendingFavoritesRef.current.add(listingId);
+    lastToggleTimeRef.current.set(`fav:${listingId}`, now);
+
     const wasActive = favoriteIds.includes(listingId);
 
     // Optimistic update
@@ -150,7 +186,20 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
           ? [...prev, listingId]
           : prev.filter(id => id !== listingId)
       );
+      
+      // Handle rate limit error gracefully
+      if (err instanceof Error && err.message === 'RATE_LIMITED') {
+        Alert.alert(
+          'Please slow down',
+          'You\'re saving too fast. Please wait a moment and try again.',
+          [{ text: 'OK' }]
+        );
+        return; // Don't rethrow for rate limit
+      }
+      
       throw err;
+    } finally {
+      pendingFavoritesRef.current.delete(listingId);
     }
   }, [isAuthenticated, favoriteIds]);
 
@@ -162,6 +211,24 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
       throw new Error('AUTH_REQUIRED');
     }
 
+    // Debounce: check if we toggled this listing recently
+    const now = Date.now();
+    const lastToggle = lastToggleTimeRef.current.get(`superlike:${listingId}`);
+    if (lastToggle && now - lastToggle < DEBOUNCE_MS) {
+      console.log('[FavoritesContext] Debounced - too soon since last toggle');
+      return;
+    }
+
+    // Check if already pending
+    if (pendingSuperlikesRef.current.has(listingId)) {
+      console.log('[FavoritesContext] Skipping - request already pending');
+      return;
+    }
+
+    // Mark as pending and record time
+    pendingSuperlikesRef.current.add(listingId);
+    lastToggleTimeRef.current.set(`superlike:${listingId}`, now);
+
     const wasActive = superlikeIds.includes(listingId);
 
     // Optimistic update
@@ -171,7 +238,7 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
         : [...prev, listingId]
     );
 
-    // Update quota optimistically
+    // Update quota optimistically (only when adding - no refunds on removal)
     if (quota && !wasActive) {
       setQuota(prev => prev ? {
         ...prev,
@@ -195,7 +262,30 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
       );
       // Refresh to get correct quota
       fetchStatus();
+      
+      // Handle quota exceeded gracefully
+      if (err instanceof Error && err.message === 'QUOTA_EXCEEDED') {
+        Alert.alert(
+          'Superlike limit reached',
+          'You\'ve used all your superlikes for this month. Upgrade to Premium for more!',
+          [{ text: 'OK' }]
+        );
+        return; // Don't rethrow for quota exceeded
+      }
+      
+      // Handle rate limit error gracefully
+      if (err instanceof Error && err.message === 'RATE_LIMITED') {
+        Alert.alert(
+          'Please slow down',
+          'You\'re acting too fast. Please wait a moment and try again.',
+          [{ text: 'OK' }]
+        );
+        return; // Don't rethrow for rate limit
+      }
+      
       throw err;
+    } finally {
+      pendingSuperlikesRef.current.delete(listingId);
     }
   }, [isAuthenticated, superlikeIds, quota, fetchStatus]);
 
@@ -207,6 +297,7 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
     isLoading,
     isFavorite,
     isSuperliked,
+    isPending,
     toggleFavorite,
     toggleSuperlike,
     refresh: fetchStatus,
@@ -217,6 +308,7 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
     isLoading,
     isFavorite,
     isSuperliked,
+    isPending,
     toggleFavorite,
     toggleSuperlike,
     fetchStatus,
@@ -246,13 +338,14 @@ export function useFavorites(): FavoritesContextType {
  * Reduces re-renders by only returning state for one listing
  */
 export function useListingFavorite(listingId: string) {
-  const { isFavorite, isSuperliked, toggleFavorite, toggleSuperlike, quota } = useFavorites();
+  const { isFavorite, isSuperliked, isPending, toggleFavorite, toggleSuperlike, quota } = useFavorites();
   
   return useMemo(() => ({
     isFavorite: isFavorite(listingId),
     isSuperliked: isSuperliked(listingId),
+    isPending: isPending(listingId),
     toggleFavorite: () => toggleFavorite(listingId),
     toggleSuperlike: () => toggleSuperlike(listingId),
     quota,
-  }), [listingId, isFavorite, isSuperliked, toggleFavorite, toggleSuperlike, quota]);
+  }), [listingId, isFavorite, isSuperliked, isPending, toggleFavorite, toggleSuperlike, quota]);
 }

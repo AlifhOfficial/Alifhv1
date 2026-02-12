@@ -12,17 +12,13 @@ import {
   View,
   Pressable,
   Share,
-  Alert,
 } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
-import { Heart, Share2, CheckCircle2, Sparkles } from 'lucide-react-native';
+import { Share2, CheckCircle2 } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { useListingFavorite } from '@/context/favorites-context';
-import { useAuth } from '@/context/auth-context';
-import { playFavChime, playSuperlikeChime } from '@/lib/chime';
 import { 
   Skeleton, 
   SkeletonCircle,
@@ -31,10 +27,8 @@ import {
   Data,
   Label,
   Supporting,
-  ConfettiBurst,
-  useConfettiBurst,
-  FAVORITE_COLORS,
-  SUPERLIKE_COLORS,
+  FavoriteButton,
+  SuperlikeButton,
 } from '@/components/ui';
 
 // ============================================================================
@@ -156,16 +150,6 @@ export const CarCardM = memo(function CarCardM({
 }: CarCardMProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const { openAuthFlow, isAuthenticated } = useAuth();
-  
-  // Use context for favorites state (with prop overrides for flexibility)
-  const favoriteState = useListingFavorite(id);
-  const isFavorite = isFavoriteProp ?? favoriteState.isFavorite;
-  const isSuperliked = isSuperlikedProp ?? favoriteState.isSuperliked;
-
-  // Confetti effects
-  const favConfetti = useConfettiBurst();
-  const superConfetti = useConfettiBurst();
 
   // Derived display values
   const displayImage = thumbnail || images?.[0];
@@ -208,89 +192,6 @@ export const CarCardM = memo(function CarCardM({
   const handlePress = useCallback(() => {
     onPress?.(id);
   }, [id, onPress]);
-
-  const handleFavoritePress = useCallback(() => {
-    if (onFavoritePress) {
-      onFavoritePress(id);
-    } else {
-      if (!isAuthenticated) {
-        openAuthFlow();
-        return;
-      }
-      favoriteState.toggleFavorite().catch((err) => {
-        if (err?.message === 'AUTH_REQUIRED') {
-          openAuthFlow();
-        }
-      });
-    }
-    // Fire confetti + chime when toggling ON
-    if (!isFavorite) {
-      favConfetti.fire({ colors: FAVORITE_COLORS, count: 10 });
-      playFavChime();
-    }
-  }, [id, onFavoritePress, favoriteState, isAuthenticated, openAuthFlow, isFavorite, favConfetti]);
-
-  const handleSuperlikePress = useCallback(() => {
-    if (onSuperlikePress) {
-      onSuperlikePress(id);
-      return;
-    }
-    
-    if (!isAuthenticated) {
-      openAuthFlow();
-      return;
-    }
-    
-    // If already superliked, just toggle off
-    if (isSuperliked) {
-      favoriteState.toggleSuperlike().catch((err) => {
-        if (err?.message === 'AUTH_REQUIRED') {
-          openAuthFlow();
-        }
-      });
-      return;
-    }
-    
-    // Check quota before showing confirmation
-    const quota = favoriteState.quota;
-    const remaining = quota?.remaining ?? 0;
-    const total = (quota?.maxSuperlikesPerMonth ?? 0) + (quota?.premiumSuperlikesBonus ?? 0);
-    
-    if (remaining <= 0) {
-      const resetDate = quota?.periodEndDate 
-        ? new Date(quota.periodEndDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-        : null;
-      Alert.alert(
-        'No Superlikes Left',
-        `You've used all your superlikes for this month.${resetDate ? ` They'll reset on ${resetDate}.` : ''}`,
-        [{ text: 'OK' }]
-      );
-      return;
-    }
-    
-    // Show confirmation
-    Alert.alert(
-      'Superlike this listing?',
-      `You have ${remaining}/${total} superlikes remaining this month.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Confirm', 
-          onPress: () => {
-            superConfetti.fire({ colors: SUPERLIKE_COLORS, count: 14 });
-            playSuperlikeChime();
-            favoriteState.toggleSuperlike().catch((err) => {
-              if (err?.message === 'AUTH_REQUIRED') {
-                openAuthFlow();
-              } else if (err?.message === 'QUOTA_EXCEEDED') {
-                Alert.alert('No Superlikes Left', 'You\'ve used all your superlikes for this month.');
-              }
-            });
-          }
-        },
-      ]
-    );
-  }, [id, onSuperlikePress, favoriteState, isAuthenticated, openAuthFlow, isSuperliked, superConfetti]);
 
   const handleSharePress = useCallback(async () => {
     if (onSharePress) {
@@ -438,38 +339,24 @@ export const CarCardM = memo(function CarCardM({
           {/* Action Buttons */}
           <View style={styles.actions}>
             {/* Favorite */}
-            <View style={styles.actionWrapper}>
-              <HapticPressable
-                onPress={handleFavoritePress}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                style={styles.actionButton}
-              >
-                <Heart
-                  size={ICON_SIZE}
-                  color={isFavorite ? colors.favorite : actionIconColor}
-                  fill={isFavorite ? colors.favorite : 'none'}
-                  strokeWidth={isFavorite ? 2.25 : 1.75}
-                />
-              </HapticPressable>
-              <ConfettiBurst ref={favConfetti.ref} />
-            </View>
+            <FavoriteButton
+              listingId={id}
+              size={ICON_SIZE}
+              onPress={onFavoritePress}
+              isFavorite={isFavoriteProp}
+              isBlkListing={isBlkListing}
+              hitSlop={10}
+            />
 
             {/* Superlike */}
-            <View style={styles.actionWrapper}>
-              <HapticPressable
-                onPress={handleSuperlikePress}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                style={styles.actionButton}
-              >
-                <Sparkles
-                  size={ICON_SIZE}
-                  color={isSuperliked ? colors.warning : actionIconColor}
-                  fill={isSuperliked ? colors.warning : 'none'}
-                  strokeWidth={isSuperliked ? 2.25 : 1.75}
-                />
-              </HapticPressable>
-              <ConfettiBurst ref={superConfetti.ref} />
-            </View>
+            <SuperlikeButton
+              listingId={id}
+              size={ICON_SIZE}
+              onPress={onSuperlikePress}
+              isSuperliked={isSuperlikedProp}
+              isBlkListing={isBlkListing}
+              hitSlop={10}
+            />
 
             {/* Share */}
             <HapticPressable
@@ -669,12 +556,7 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
-  },
-  actionWrapper: {
-    overflow: 'visible',
-    alignItems: 'center',
-    justifyContent: 'center',
+    gap: Spacing.md,
   },
   actionButton: {
     width: ACTION_BUTTON_SIZE_SM,

@@ -58,12 +58,23 @@ export async function POST(req: NextRequest) {
     // Invalidate user's favorites cache (superlikes are part of it)
     invalidateFavoritesCache(user.id);
 
+    // Calculate remaining superlikes
+    const remaining = (result.quota.maxSuperlikesPerMonth + (result.quota.premiumSuperlikesBonus || 0)) 
+      - result.quota.currentMonthSuperlikesUsed;
+
     return NextResponse.json({ 
       status: {
         isFavorite: result.isFavorite,
         isSuperliked: result.isSuperliked
       },
-      quota: result.quota 
+      quota: {
+        currentMonthSuperlikesUsed: result.quota.currentMonthSuperlikesUsed,
+        maxSuperlikesPerMonth: result.quota.maxSuperlikesPerMonth,
+        premiumSuperlikesBonus: result.quota.premiumSuperlikesBonus || 0,
+        remaining,
+        periodEndDate: result.quota.periodEndDate,
+        periodStartDate: result.quota.periodStartDate,
+      }
     });
   } catch (error) {
     console.error('[superlikes] POST failed', error);

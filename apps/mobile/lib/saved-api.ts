@@ -8,6 +8,54 @@ import { getStoredSession } from './auth-api';
 import { API_BASE, CDN_BASE } from './config';
 
 // ============================================================================
+// RATE LIMIT HANDLING
+// ============================================================================
+
+const RETRY_DELAYS = [1000, 2000, 4000]; // Exponential backoff delays in ms
+const MAX_RETRIES = 3;
+
+/**
+ * Sleep for a given duration
+ */
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+/**
+ * Execute a fetch with retry logic for rate limits
+ */
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit,
+  retries = MAX_RETRIES
+): Promise<Response> {
+  let lastError: Error | null = null;
+  
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const response = await fetch(url, options);
+    
+    if (response.status === 429) {
+      // Rate limited
+      if (attempt < retries) {
+        // Get retry delay from header or use exponential backoff
+        const retryAfter = response.headers.get('Retry-After');
+        const delay = retryAfter 
+          ? parseInt(retryAfter, 10) * 1000 
+          : RETRY_DELAYS[Math.min(attempt, RETRY_DELAYS.length - 1)];
+        
+        console.log(`[SavedAPI] Rate limited, retrying in ${delay}ms (attempt ${attempt + 1}/${retries})`);
+        await sleep(delay);
+        continue;
+      }
+      // Max retries exceeded
+      throw new Error('RATE_LIMITED');
+    }
+    
+    return response;
+  }
+  
+  throw lastError || new Error('RATE_LIMITED');
+}
+
+// ============================================================================
 // TYPES
 // ============================================================================
 
@@ -143,7 +191,7 @@ export const savedApi = {
     
     const url = `${API_BASE}/api/engagement/favorites`;
     
-    const response = await fetch(url, {
+    const response = await fetchWithRetry(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

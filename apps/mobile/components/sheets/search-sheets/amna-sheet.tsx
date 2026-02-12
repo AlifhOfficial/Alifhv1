@@ -275,7 +275,7 @@ export function AmnaSheet({ visible, onClose, onSearch }: AmnaSheetProps) {
             {/* Amna intro */}
             <View style={styles.intro}>
               <Body size="small" tone="muted" style={{ textAlign: 'center' }}>
-                Tell me what you're looking for in your own words — I'll find the right cars for you ✨
+                Describe what you're looking for
               </Body>
             </View>
 
@@ -292,7 +292,7 @@ export function AmnaSheet({ visible, onClose, onSearch }: AmnaSheetProps) {
                 value={query}
                 onChangeText={setQuery}
                 onSubmitEditing={handleSubmit}
-                placeholder={'e.g. "Red BMW SUV under 200K"\n"Surprise me with something fun"\n"Best family car for a dad with 4 kids"'}
+                placeholder="Red SUV under 200K..."
                 placeholderTextColor={colorScheme === 'dark' ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.22)'}
                 style={[styles.textInput, { color: colors.text }]}
                 multiline

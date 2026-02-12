@@ -10,6 +10,7 @@ import {
   getMessages,
   sendMessage,
   getConversationParticipants,
+  getConversationParticipantsWithProfiles,
   sendNewMessageNotification,
 } from '@alifh/database';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_MESSAGING } from '@/lib/rate-limit';
@@ -144,8 +145,8 @@ export async function POST(
       // Broadcast to each participant's user channel
       const wsBroadcastUrl = process.env.WS_BROADCAST_URL || 'http://localhost:3001/broadcast';
       
-      // Get participants to broadcast to their user channels
-      const participants = await getConversationParticipants(conversationId);
+      // Get participants with profiles to get avatar URLs
+      const participants = await getConversationParticipantsWithProfiles(conversationId);
       
       // Broadcast to ALL participants in PARALLEL (non-blocking)
       Promise.all(
@@ -168,9 +169,10 @@ export async function POST(
 
       // Send push notifications to other participants (fire and forget)
       const otherParticipants = participants.filter(p => p.userId !== user.id);
-      const senderName = user.firstName && user.lastName 
-        ? `${user.firstName} ${user.lastName}` 
-        : (user.firstName || 'Someone');
+      // Get sender's profile from participants list
+      const senderProfile = participants.find(p => p.userId === user.id);
+      const senderName = senderProfile?.name || user.firstName || 'Someone';
+      const senderAvatarUrl = senderProfile?.avatarUrl || undefined;
       const messagePreview = text || (mediaType ? `Sent a ${mediaType}` : 'Sent a message');
 
       for (const recipient of otherParticipants) {
@@ -178,7 +180,9 @@ export async function POST(
           recipient.userId,
           senderName,
           messagePreview,
-          conversationId
+          conversationId,
+          undefined, // listingTitle
+          senderAvatarUrl
         ).catch(() => {}); // Non-blocking
       }
 

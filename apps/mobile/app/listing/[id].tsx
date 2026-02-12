@@ -21,8 +21,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useTabBar } from '@/context/tab-bar-context';
-import { useListingFavorite } from '@/context/favorites-context';
-import { useAuth } from '@/context/auth-context';
 import { CarCardDetailedM, CarCardDetailedMSkeleton } from '@/components/cards';
 import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
@@ -42,10 +40,6 @@ export default function ListingDetailScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showTopGradient, setShowTopGradient] = useState(false);
-  
-  // Auth and favorites
-  const { openAuthFlow, isAuthenticated } = useAuth();
-  const { isFavorite, isSuperliked, toggleFavorite, toggleSuperlike } = useListingFavorite(id || '');
 
   // Handle scroll to show/hide top gradient
   const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -112,30 +106,6 @@ export default function ListingDetailScreen() {
     }
   }, [listing]);
 
-  const handleFavoritePress = useCallback(() => {
-    if (!isAuthenticated) {
-      openAuthFlow();
-      return;
-    }
-    toggleFavorite().catch((err) => {
-      if (err?.message === 'AUTH_REQUIRED') {
-        openAuthFlow();
-      }
-    });
-  }, [toggleFavorite, isAuthenticated, openAuthFlow]);
-
-  const handleSuperlikePress = useCallback(() => {
-    if (!isAuthenticated) {
-      openAuthFlow();
-      return;
-    }
-    toggleSuperlike().catch((err) => {
-      if (err?.message === 'AUTH_REQUIRED') {
-        openAuthFlow();
-      }
-    });
-  }, [toggleSuperlike, isAuthenticated, openAuthFlow]);
-
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
@@ -181,14 +151,10 @@ export default function ListingDetailScreen() {
         ) : null}
       </ScrollView>
 
-      {/* Floating Listing Actions */}
+      {/* Floating Listing Actions - uses useFavoriteActions internally */}
       {listing && (
         <FloatingListingActions
           id={id!}
-          isFavorite={isFavorite}
-          isSuperliked={isSuperliked}
-          onFavoritePress={handleFavoritePress}
-          onSuperlikePress={handleSuperlikePress}
           onSharePress={handleShare}
         />
       )}

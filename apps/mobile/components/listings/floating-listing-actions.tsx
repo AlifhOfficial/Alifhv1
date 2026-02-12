@@ -3,9 +3,9 @@
  * Positioned at bottom of screen like bubbles (inspired by global-tab-bar)
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
-import { View, StyleSheet, Platform, Alert } from 'react-native';
-import { HapticPressable, ConfettiBurst, useConfettiBurst, FAVORITE_COLORS, SUPERLIKE_COLORS } from '@/components/ui';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Platform } from 'react-native';
+import { HapticPressable, ConfettiBurst, useFavoriteActions } from '@/components/ui';
 import { Heart, Sparkles, Share2 } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -18,9 +18,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useTheme } from '@/context/theme-context';
-import { useListingFavorite } from '@/context/favorites-context';
 import { Colors, Layout, Shadows } from '@/constants/theme';
-import { playFavChime, playSuperlikeChime } from '@/lib/chime';
 
 const AnimatedView = Animated.View;
 
@@ -49,14 +47,20 @@ export function FloatingListingActions({
   const insets = useSafeAreaInsets();
   const [isVisible, setIsVisible] = useState(true);
 
-  // Confetti effects
-  const favConfetti = useConfettiBurst();
-  const superConfetti = useConfettiBurst();
-  
-  // Use context for favorites state (with prop overrides)
-  const favoriteState = useListingFavorite(id);
-  const isFavorite = isFavoriteProp ?? favoriteState.isFavorite;
-  const isSuperliked = isSuperlikedProp ?? favoriteState.isSuperliked;
+  // Use the unified favorite actions hook
+  const {
+    isFavorite,
+    isSuperliked,
+    toggleFavorite,
+    toggleSuperlike,
+    favConfettiRef,
+    superConfettiRef,
+  } = useFavoriteActions(id, {
+    onFavoritePress: onFavoritePress,
+    onSuperlikePress: onSuperlikePress,
+    isFavorite: isFavoriteProp,
+    isSuperliked: isSuperlikedProp,
+  });
 
   // Animation values for each bubble
   const favoriteProgress = useSharedValue(1);
@@ -118,86 +122,12 @@ export function FloatingListingActions({
     };
   });
 
-  const handleFavoritePress = useCallback(() => {
-    if (Platform.OS === 'ios') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    }
-    if (onFavoritePress) {
-      onFavoritePress(id);
-    } else {
-      favoriteState.toggleFavorite().catch(() => {});
-    }
-    // Fire confetti + chime when toggling ON
-    if (!isFavorite) {
-      favConfetti.fire({ colors: FAVORITE_COLORS, count: 10 });
-      playFavChime();
-    }
-  }, [id, onFavoritePress, favoriteState, isFavorite, favConfetti]);
-
-  const handleSuperlikePress = useCallback(() => {
-    if (Platform.OS === 'ios') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    }
-    if (onSuperlikePress) {
-      onSuperlikePress(id);
-      if (!isSuperliked) {
-        superConfetti.fire({ colors: SUPERLIKE_COLORS, count: 14 });
-        playSuperlikeChime();
-      }
-      return;
-    }
-    
-    // If already superliked, just toggle off
-    if (isSuperliked) {
-      favoriteState.toggleSuperlike().catch(() => {});
-      return;
-    }
-    
-    // Check quota before showing confirmation
-    const quota = favoriteState.quota;
-    const remaining = quota?.remaining ?? 0;
-    const total = (quota?.maxSuperlikesPerMonth ?? 0) + (quota?.premiumSuperlikesBonus ?? 0);
-    
-    if (remaining <= 0) {
-      const resetDate = quota?.periodEndDate 
-        ? new Date(quota.periodEndDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-        : null;
-      Alert.alert(
-        'No Superlikes Left',
-        `You've used all your superlikes for this month.${resetDate ? ` They'll reset on ${resetDate}.` : ''}`,
-        [{ text: 'OK' }]
-      );
-      return;
-    }
-    
-    // Show confirmation
-    Alert.alert(
-      'Superlike this listing?',
-      `You have ${remaining}/${total} superlikes remaining this month.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Confirm', 
-          onPress: () => {
-            superConfetti.fire({ colors: SUPERLIKE_COLORS, count: 14 });
-            playSuperlikeChime();
-            favoriteState.toggleSuperlike().catch((err) => {
-              if (err?.message === 'QUOTA_EXCEEDED') {
-                Alert.alert('No Superlikes Left', 'You\'ve used all your superlikes for this month.');
-              }
-            });
-          }
-        },
-      ]
-    );
-  }, [id, onSuperlikePress, favoriteState, isSuperliked, superConfetti]);
-
-  const handleSharePress = useCallback(() => {
+  const handleSharePress = () => {
     if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
     onSharePress?.(id);
-  }, [id, onSharePress]);
+  };
 
   if (!isVisible) {
     return null;
@@ -209,7 +139,7 @@ export function FloatingListingActions({
         {/* Like Bubble */}
         <Animated.View style={[favoriteBubbleStyle, styles.bubbleWrapper]}>
           <HapticPressable
-            onPress={handleFavoritePress}
+            onPress={toggleFavorite}
             style={[
               styles.bubble,
               {
@@ -225,13 +155,13 @@ export function FloatingListingActions({
               strokeWidth={isFavorite ? 2.25 : 1.75}
             />
           </HapticPressable>
-          <ConfettiBurst ref={favConfetti.ref} />
+          <ConfettiBurst ref={favConfettiRef} />
         </Animated.View>
 
         {/* Superlike Bubble */}
         <Animated.View style={[superlikeBubbleStyle, styles.bubbleWrapper]}>
           <HapticPressable
-            onPress={handleSuperlikePress}
+            onPress={toggleSuperlike}
             style={[
               styles.bubble,
               {
@@ -247,7 +177,7 @@ export function FloatingListingActions({
               strokeWidth={1.75}
             />
           </HapticPressable>
-          <ConfettiBurst ref={superConfetti.ref} />
+          <ConfettiBurst ref={superConfettiRef} />
         </Animated.View>
 
         {/* Share Bubble */}

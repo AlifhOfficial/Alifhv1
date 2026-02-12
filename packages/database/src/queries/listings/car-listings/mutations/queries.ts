@@ -69,7 +69,11 @@ function buildStatusConditions(
           eq(carListing.lifecycleStatus, 'deleted')
         )
       );
-    } else if (['archived', 'sold', 'expired', 'deleted', 'active'].includes(status)) {
+    } else if (status === 'active') {
+      // Active filter: lifecycle is active AND not a draft (drafts have their own tab)
+      conditions.push(eq(carListing.lifecycleStatus, 'active'));
+      conditions.push(sql<boolean>`${carListing.moderationStatus} <> 'draft'`);
+    } else if (['archived', 'sold', 'expired', 'deleted'].includes(status)) {
       conditions.push(eq(carListing.lifecycleStatus, status as any));
     }
   }
@@ -292,7 +296,7 @@ export async function getListingsByPartnerId(
 function buildStatsSelectFields(now: Date) {
   return {
     all: sql<number>`count(*)`,
-    active: sql<number>`count(*) filter (where ${carListing.lifecycleStatus} = 'active')`,
+    active: sql<number>`count(*) filter (where ${carListing.lifecycleStatus} = 'active' and ${carListing.moderationStatus} <> 'draft')`,
     public: sql<number>`
       count(*) filter (
         where ${carListing.moderationStatus} = 'approved'

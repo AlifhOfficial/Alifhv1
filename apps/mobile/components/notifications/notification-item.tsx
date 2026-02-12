@@ -5,9 +5,9 @@
 
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { HapticPressable } from '@/components/ui';
-import { UserAvatar } from '@/components/ui/user-avatar';
-import { Body, Label } from '@/components/ui/text';
+import { Body } from '@/components/ui/text';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import {
@@ -93,7 +93,7 @@ export function NotificationItem({ notification, onPress, onLongPress }: Notific
 
   const Icon = getNotificationIcon(notification.type);
   const iconColor = getNotificationIconColor(notification.type, colors);
-  const hasActor = notification.actorName || notification.actorAvatarUrl;
+  const avatarSrc = notification.imageUrl || notification.actorAvatarUrl;
   const isRead = notification.isRead;
 
   return (
@@ -104,20 +104,14 @@ export function NotificationItem({ notification, onPress, onLongPress }: Notific
     >
       {({ pressed }) => (
         <View style={[styles.inner, { opacity: pressed ? 0.6 : isRead ? 0.55 : 1 }]}>
-          {/* Unread dot */}
-          <View style={styles.dotColumn}>
-            {!isRead && (
-              <View style={[styles.unreadDot, { backgroundColor: colors.primary }]} />
-            )}
-          </View>
-
           {/* Avatar or Icon */}
-          <View style={styles.iconWrapper}>
-            {hasActor ? (
-              <UserAvatar
-                src={notification.actorAvatarUrl}
-                name={notification.actorName}
-                size="md"
+          <View style={[styles.avatar, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            {avatarSrc ? (
+              <Image
+                source={{ uri: avatarSrc }}
+                style={styles.avatarImage}
+                contentFit="cover"
+                transition={150}
               />
             ) : (
               <View style={[styles.iconCircle, { backgroundColor: colors.surface }]}>
@@ -157,7 +151,7 @@ export function NotificationItem({ notification, onPress, onLongPress }: Notific
 
 const styles = StyleSheet.create({
   container: {
-    paddingRight: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
     paddingVertical: 14,
   },
   inner: {
@@ -165,16 +159,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.md,
   },
-  dotColumn: {
-    width: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconWrapper: {
+  avatar: {
     width: 40,
     height: 40,
+    borderRadius: Radius.full,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
   },
   iconCircle: {
     width: 40,
@@ -197,10 +193,5 @@ const styles = StyleSheet.create({
   },
   time: {
     fontSize: 11,
-  },
-  unreadDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
   },
 });

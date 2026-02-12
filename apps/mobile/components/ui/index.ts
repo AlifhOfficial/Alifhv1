@@ -59,6 +59,16 @@ export {
   type ConfettiBurstOptions,
 } from './confetti-burst';
 
+// Favorite/Superlike action components
+export {
+  useFavoriteActions,
+  FavoriteButton,
+  SuperlikeButton,
+  type UseFavoriteActionsOptions,
+  type FavoriteButtonProps,
+  type SuperlikeButtonProps,
+} from './favorite-actions';
+
 // Typography components (with font scaling disabled)
 export {
   Text,

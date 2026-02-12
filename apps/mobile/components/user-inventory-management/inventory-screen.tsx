@@ -68,6 +68,7 @@ import {
 import { MarkSoldSheet } from './sub-operations/mark-sold-sheet';
 import { ExtendListingSheet } from './sub-operations/extend-listing-sheet';
 import { ArchiveListingSheet } from './sub-operations/archive-listing-sheet';
+import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { DeleteListingSheet } from './sub-operations/delete-listing-sheet';
 import { ListingStatsSheet } from './sub-operations/listing-stats-sheet';
 
@@ -382,13 +383,13 @@ export function InventoryScreen() {
   // MAIN RENDER
   // ════════════════════════════════════════════════════════════════════════
 
-  // Calculate header height for content offset
-  const headerHeight = insets.top + Spacing.md + 32 + Spacing.md + 36 + Spacing.md; // safe area + title + gap + pills + bottom padding
+  // Calculate header height for content offset (matches browse-header pattern)
+  const headerHeight = insets.top + Layout.headerPadding + 32 + Spacing.sm + 36 + Spacing.sm; // safe area + title + gap + pills + bottom padding
 
   return (
     <View style={styles.container}>
       {/* ─────────────────────── Floating Header (absolute) ────────────────────────────────── */}
-      <View style={[styles.header, { paddingTop: insets.top + Spacing.md, backgroundColor: colors.background, paddingHorizontal: Spacing.lg }]}>
+      <View style={[styles.header, { paddingTop: insets.top + Layout.headerPadding, backgroundColor: colors.background, paddingHorizontal: Layout.screenPadding }]}>
         {/* Title */}
         <Heading size="large">Inventory</Heading>
 
@@ -410,22 +411,20 @@ export function InventoryScreen() {
                 style={[
                   styles.pill,
                   {
-                    backgroundColor: isActive ? colors.fill : colors.surface,
+                    backgroundColor: colors.background,
                     borderColor: colors.border,
                   },
                 ]}
               >
                 {({ pressed }) => (
                   <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
-                    <Body
+                    <Data
                       size="small"
-                      style={{
-                        fontFamily: isActive ? 'Inter_600SemiBold' : 'Inter_500Medium',
-                        color: isActive ? colors.text : colors.textSecondary,
-                      }}
+                      tone={isActive ? 'default' : 'secondary'}
+                      numberOfLines={1}
                     >
                       {tab.label}
-                    </Body>
+                    </Data>
                     {count > 0 && (
                       <View
                         style={[
@@ -556,6 +555,9 @@ export function InventoryScreen() {
         </>
       )}
 
+      {/* ─────────────────────── Bottom Safe Area ────────────────────────── */}
+      <BottomSafeAreaGradient />
+
       {/* ─────────────────────── FAB: Create Listing ─────────────────────── */}
       <HapticPressable
         onPress={() => router.push('/create-listing')}
@@ -590,9 +592,9 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 20,
-    paddingBottom: Spacing.md,
+    paddingBottom: Spacing.sm,
     flexDirection: 'column',
-    gap: Spacing.md,
+    gap: Spacing.sm,
   },
 
   // ── Filter Pills (floating tabs) ───────────────────────────────────────
@@ -602,12 +604,12 @@ const styles = StyleSheet.create({
   pillScrollContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.md,
-    paddingRight: Spacing.lg,
+    gap: Layout.headerGap,
+    paddingRight: Layout.screenPadding,
   },
   fab: {
     position: 'absolute',
-    right: Spacing.lg,
+    right: Layout.screenPadding,
     width: 52,
     height: 52,
     borderRadius: 26,
@@ -622,16 +624,17 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   pill: {
-    height: 36,
-    borderRadius: 18,
+    borderRadius: Radius.full,
     borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 16,
   },
   pillContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 5,
   },
   pillBadge: {
     paddingHorizontal: 6,
@@ -643,7 +646,7 @@ const styles = StyleSheet.create({
 
   // ── List ───────────────────────────────────────────────────────────────
   listContent: {
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Layout.screenPadding,
     paddingTop: Spacing.md,
     gap: Spacing.lg,
   },
