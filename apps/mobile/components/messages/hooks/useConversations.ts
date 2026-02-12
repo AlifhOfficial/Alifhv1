@@ -44,8 +44,9 @@ export function useConversations({
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { subscribe } = useWebSocket();
+  const { subscribe, send, isConnected } = useWebSocket();
   const abortControllerRef = useRef<AbortController | null>(null);
+  const watchedUsersRef = useRef<Set<string>>(new Set());
   const loadingRef = useRef(false);
   const markedConversationsRef = useRef<Set<string>>(new Set());
   const loadConversationsRef = useRef<(() => Promise<void>) | null>(null);
@@ -139,6 +140,42 @@ export function useConversations({
 
     return unsubscribe;
   }, [subscribe]);
+
+  // Watch presence for all unique other participants so the list shows live online/lastSeenAt
+  useEffect(() => {
+    if (!isConnected || conversations.length === 0) return;
+
+    const currentOtherIds = new Set<string>();
+    for (const c of conversations) {
+      if (c.otherParticipant?.id) currentOtherIds.add(c.otherParticipant.id);
+    }
+
+    // Subscribe to new users
+    for (const uid of currentOtherIds) {
+      if (!watchedUsersRef.current.has(uid)) {
+        send({ type: 'watch_user', targetUserId: uid });
+        watchedUsersRef.current.add(uid);
+      }
+    }
+
+    // Unsubscribe from users no longer in the list
+    for (const uid of watchedUsersRef.current) {
+      if (!currentOtherIds.has(uid)) {
+        send({ type: 'unwatch_user', targetUserId: uid });
+        watchedUsersRef.current.delete(uid);
+      }
+    }
+  }, [isConnected, conversations, send]);
+
+  // Cleanup all watched users on unmount
+  useEffect(() => {
+    return () => {
+      for (const uid of watchedUsersRef.current) {
+        send({ type: 'unwatch_user', targetUserId: uid });
+      }
+      watchedUsersRef.current.clear();
+    };
+  }, [send]);
 
   // Fetch conversations
   const loadConversations = useCallback(async () => {
