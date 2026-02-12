@@ -54,11 +54,9 @@ type NotificationType =
 // ============================================================================
 
 const EXPO_PUSH_URL = 'https://exp.host/--/api/v2/push/send';
-const EXPO_PROJECT_ID = process.env.EXPO_PROJECT_ID || 'cd8cffff-33b0-46d9-b584-08eb6448e6dc';
 
 /**
  * Send push notifications to Expo Push API
- * Uses project ID header for EAS push token authentication
  */
 async function sendToExpoPush(messages: PushMessage[]): Promise<PushTicket[]> {
   if (messages.length === 0) return [];
@@ -70,15 +68,10 @@ async function sendToExpoPush(messages: PushMessage[]): Promise<PushTicket[]> {
       'Content-Type': 'application/json',
     };
 
-    // Access token auth (preferred) or project ID header (required for EAS tokens)
+    // Access token for enhanced push security (optional but recommended)
     const accessToken = process.env.EXPO_ACCESS_TOKEN;
     if (accessToken) {
       headers['Authorization'] = `Bearer ${accessToken}`;
-    }
-
-    // Always include project ID for EAS push tokens
-    if (EXPO_PROJECT_ID) {
-      headers['expo-project-id'] = EXPO_PROJECT_ID;
     }
 
     console.log(`[Push] Sending ${messages.length} push notification(s) to Expo API`);
