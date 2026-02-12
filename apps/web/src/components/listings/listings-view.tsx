@@ -10,6 +10,7 @@ import { ListingsHeader } from './listings-header';
 import { ListingsSidebar } from './listings-sidebar';
 import { ListingsContent } from './listings-content';
 import { ListingsPagination } from './listings-pagination';
+import { AmnaFloatingButton } from './amna-floating-button';
 import { useSearch } from '@/hooks/use-search';
 import { useUser } from '@/hooks/auth/use-auth';
 import { useFavoritesStatus } from '@/hooks/engagement';
@@ -215,6 +216,8 @@ export function ListingsView({
           </div>
         </div>
       </div>
+      {/* Floating Amna AI Button */}
+      <AmnaFloatingButton />
     </TooltipProvider>
   );
 }

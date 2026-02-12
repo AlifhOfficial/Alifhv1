@@ -57,6 +57,7 @@ export default function MessagesScreen() {
     isRefreshing,
     error,
     refresh,
+    pullToRefresh,
     markAsRead,
   } = useConversations({
     isAuthenticated,
@@ -229,8 +230,8 @@ export default function MessagesScreen() {
       );
     }
 
-    // Loading (initial only — no data yet)
-    if (isLoading && conversations.length === 0) {
+    // Still loading for the first time (no data yet, not a refresh)
+    if ((isLoading || isRefreshing) && conversations.length === 0) {
       return (
         <View style={styles.centered}>
           <ActivityIndicator size="small" color={colors.primary} />
@@ -238,7 +239,7 @@ export default function MessagesScreen() {
       );
     }
 
-    // Error
+    // Error (only if we have nothing to show)
     if (error && conversations.length === 0) {
       return (
         <View style={styles.emptyState}>
@@ -247,37 +248,40 @@ export default function MessagesScreen() {
       );
     }
 
-    // Empty
-    if (listItems.length === 0 && !isLoading) {
-      return (
-        <View style={styles.emptyState}>
-          <View style={[styles.iconCircle, { backgroundColor: colors.fillSecondary }]}>
-            <MessageCircle size={32} color={colors.textTertiary} strokeWidth={1.5} />
-          </View>
-          <Heading size="medium">
-            No Messages Yet
-          </Heading>
-          <Body size="medium" tone="secondary" style={{ textAlign: 'center' }}>
-            Your conversations will appear here
-          </Body>
-        </View>
-      );
-    }
-
-    // Conversation list
+    // Always render the FlatList — it handles empty + populated states.
+    // This avoids swapping between FlatList and empty-state Views which
+    // causes the layout flash. ListEmptyComponent fills the gap when there
+    // are no conversations yet.
     return (
       <FlatList
         data={listItems}
         renderItem={renderItem}
         keyExtractor={(item) => item.key}
-        contentContainerStyle={{
-          paddingTop: Spacing.lg,
-          paddingBottom: insets.bottom + Layout.tabBarHeight,
-        }}
+        contentContainerStyle={[
+          {
+            paddingTop: Spacing.xs,
+            paddingBottom: insets.bottom + Layout.tabBarHeight,
+          },
+          // When list is empty, fill the screen so the empty component centres
+          listItems.length === 0 && { flexGrow: 1 },
+        ]}
+        ListEmptyComponent={
+          !isLoading && !isRefreshing ? (
+            <View style={styles.emptyState}>
+              <View style={[styles.iconCircle, { backgroundColor: colors.fillSecondary }]}>
+                <MessageCircle size={32} color={colors.textTertiary} strokeWidth={1.5} />
+              </View>
+              <Heading size="medium">No Messages Yet</Heading>
+              <Body size="medium" tone="secondary" style={{ textAlign: 'center' }}>
+                Your conversations will appear here
+              </Body>
+            </View>
+          ) : null
+        }
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
-            onRefresh={refresh}
+            onRefresh={pullToRefresh}
             tintColor={colors.primary}
           />
         }

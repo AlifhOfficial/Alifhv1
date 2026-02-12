@@ -60,10 +60,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   iconButton: {
-    padding: Spacing.xs,
+    padding: 4,
     borderWidth: 1,
-    width: Spacing['4xl'],
-    height: Spacing['4xl'],
+    width: Layout.hitTarget,
+    height: Layout.hitTarget,
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',

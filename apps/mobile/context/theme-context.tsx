@@ -7,8 +7,6 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { useColorScheme as useDeviceColorScheme, Appearance, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setStatusBarStyle } from 'expo-status-bar';
-import * as NavigationBar from 'expo-navigation-bar';
-import * as SystemUI from 'expo-system-ui';
 
 import { Colors, type ColorScheme, type ThemeColors } from '@/constants/theme';
 
@@ -74,30 +72,18 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const isDark = colorScheme === 'dark';
   const colors = Colors[colorScheme];
 
-  // Sync theme with native system (keyboard, status bar, navigation bar)
-  // With edge-to-edge on Android, only style (light/dark icons) is supported.
-  // Background colors are handled by the app content drawing behind system bars.
+  // Sync theme with native system UI
+  // With edge-to-edge on Android 15+, background colors are handled by app content.
   useEffect(() => {
-    // Appearance API - controls keyboard theme, alerts, etc. on both platforms
-    if (themeMode === 'system') {
-      Appearance.setColorScheme(null);
-    } else {
-      Appearance.setColorScheme(themeMode);
-    }
-    
-    // Status bar icon style (light/dark) - supported in edge-to-edge
+    // Status bar icon style (light/dark) - works on both platforms
     setStatusBarStyle(isDark ? 'light' : 'dark', true);
     
-    // Android navigation bar (back/home/recent buttons)
-    if (Platform.OS === 'android') {
-      NavigationBar.setButtonStyleAsync(isDark ? 'light' : 'dark');
-      // Set nav bar background to match theme (transparent for edge-to-edge)
-      NavigationBar.setBackgroundColorAsync(colors.background + 'CC'); // slight opacity so buttons stay visible
+    // Appearance API - controls keyboard theme, alerts, action sheets
+    // Only call on iOS; on Android it can interfere with edge-to-edge nav bar
+    if (Platform.OS === 'ios') {
+      Appearance.setColorScheme(themeMode === 'system' ? null : themeMode);
     }
-    
-    // Root background color for the window behind the app
-    SystemUI.setBackgroundColorAsync(colors.background);
-  }, [themeMode, colorScheme, isDark, colors.background]);
+  }, [themeMode, isDark]);
 
   const toggleTheme = () => {
     // Toggle between light and dark (explicit choice, not system)

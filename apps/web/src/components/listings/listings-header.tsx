@@ -8,11 +8,10 @@
 import { useMemo, useCallback, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { SearchBar } from '@/components/search/search-bar';
-import { AmnaDialog } from '@/components/search/amna-dialog';
 import { FilterSidebar } from '@/components/search/filter-sidebar';
 import { AdvancedFilters } from '@/components/search/advanced-filters';
 import { Skeleton } from '@/components/ui/skeleton';
-import { LayoutGrid, List, SlidersHorizontal, X, ChevronDown, PanelLeft, ChevronRight, Search, Sparkles } from 'lucide-react';
+import { LayoutGrid, List, SlidersHorizontal, X, ChevronDown, PanelLeft, ChevronRight, Search } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -107,9 +106,6 @@ export function ListingsHeader({
   
   // Mobile search bar expanded state
   const [mobileSearchExpanded, setMobileSearchExpanded] = useState(false);
-
-  // Amna AI search dialog state
-  const [amnaOpen, setAmnaOpen] = useState(false);
 
   // Number of items to show before "View all" - kept small for fixed-height dynamic island
   const VISIBLE_COUNT = 4;
@@ -570,18 +566,6 @@ export function ListingsHeader({
               />
             </div>
 
-            {/* Amna AI Pill - hidden when search expanded */}
-            <button
-              onClick={() => setAmnaOpen(true)}
-              className={cn(
-                "flex items-center gap-1.5 h-10 px-3 text-sm font-semibold bg-violet-500/10 border border-violet-500/20 rounded-full text-violet-600 dark:text-violet-400 active:scale-[0.97] shadow-sm transition-all touch-manipulation shrink-0 hover:bg-violet-500/15 hover:border-violet-500/30",
-                mobileSearchExpanded && "hidden"
-              )}
-            >
-              <Sparkles className="size-3.5" />
-              <span>Amna</span>
-            </button>
-
             {/* Sort Dropdown - hidden when search expanded */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -809,16 +793,6 @@ export function ListingsHeader({
                 onSearch={setFilters}
               />
             </div>
-
-            {/* Amna AI Pill - Desktop */}
-            <button
-              onClick={() => setAmnaOpen(true)}
-              className="flex items-center gap-1.5 h-9 px-3.5 text-sm font-semibold bg-violet-500/10 border border-violet-500/20 rounded-full text-violet-600 dark:text-violet-400 hover:bg-violet-500/15 hover:border-violet-500/30 active:scale-[0.97] shadow-sm transition-all shrink-0"
-            >
-              <Sparkles className="size-3.5" />
-              <span className="hidden sm:inline">Talk to Amna</span>
-              <span className="sm:hidden">Amna</span>
-            </button>
 
             {/* Right Controls Group */}
             <div className="flex items-center gap-1.5 sm:gap-2">
@@ -1397,9 +1371,6 @@ export function ListingsHeader({
         </div>
         </div>
       </header>
-
-      {/* Amna AI Search Dialog */}
-      <AmnaDialog open={amnaOpen} onOpenChange={setAmnaOpen} />
     </>
   );
 }

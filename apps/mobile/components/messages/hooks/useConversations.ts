@@ -27,7 +27,10 @@ interface UseConversationsReturn {
   isLoading: boolean;
   isRefreshing: boolean;
   error: string | null;
+  /** Silent background refresh (no RefreshControl spinner) */
   refresh: () => Promise<void>;
+  /** User-initiated pull-to-refresh (shows RefreshControl spinner) */
+  pullToRefresh: () => Promise<void>;
   markAsRead: (conversationId: string) => Promise<void>;
 }
 
@@ -164,7 +167,7 @@ export function useConversations({
   }, [conversations, watchUser, unwatchUser]);
 
   // Fetch conversations
-  const loadConversations = useCallback(async (isRefresh = false) => {
+  const loadConversations = useCallback(async () => {
     if (!isAuthenticated) {
       setIsLoading(false);
       return;
@@ -180,9 +183,6 @@ export function useConversations({
     // 15s timeout so we never hang forever
     const timeout = setTimeout(() => controller.abort(), 15000);
 
-    if (isRefresh) {
-      setIsRefreshing(true);
-    }
     setError(null);
     
     try {
@@ -238,9 +238,16 @@ export function useConversations({
     }
   }, [loadConversations, isAuthenticated]);
 
-  // Refresh handler (used by pull-to-refresh and useFocusEffect)
+  // Silent background refresh — no RefreshControl spinner
+  // Used by useFocusEffect when returning to the tab
   const refresh = useCallback(async () => {
-    await loadConversations(true);
+    await loadConversations();
+  }, [loadConversations]);
+
+  // User-initiated pull-to-refresh — shows the RefreshControl spinner
+  const pullToRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    await loadConversations();
   }, [loadConversations]);
 
   // Mark as read
@@ -274,6 +281,7 @@ export function useConversations({
     isRefreshing,
     error,
     refresh,
+    pullToRefresh,
     markAsRead,
   };
 }
