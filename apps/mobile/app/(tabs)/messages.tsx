@@ -40,6 +40,7 @@ type ListItem = {
   name: string;
   avatarUrl: string | null;
   isOnline: boolean;
+  lastSeenAt: string | null;
   conversations: Conversation[];
 };
 
@@ -125,17 +126,32 @@ export default function MessagesScreen() {
     // Build list items - always as groups
     const items: ListItem[] = [];
 
+    // Derive live presence from conversations — WS updates flow into otherParticipant
+    const derivePresence = (convs: Conversation[]) => {
+      // Any conversation's otherParticipant being online means this person is online
+      let isOnline = false;
+      let latestSeenAt: string | null = null;
+      for (const c of convs) {
+        if (c.otherParticipant?.isOnline) isOnline = true;
+        const seen = c.otherParticipant?.lastSeenAt;
+        if (seen && (!latestSeenAt || seen > latestSeenAt)) latestSeenAt = seen;
+      }
+      return { isOnline, lastSeenAt: latestSeenAt };
+    };
+
     // Process partner groups
     for (const [partnerId, { partner, conversations: convs }] of partnerMap) {
       convs.sort(
         (a, b) =>
           new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
       );
+      const presence = derivePresence(convs);
       items.push({
         key: `partner-${partnerId}`,
         name: partner.name,
         avatarUrl: partner.logo,
-        isOnline: false,
+        isOnline: presence.isOnline,
+        lastSeenAt: presence.lastSeenAt,
         conversations: convs,
       });
     }
@@ -146,11 +162,13 @@ export default function MessagesScreen() {
         (a, b) =>
           new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
       );
+      const presence = derivePresence(convs);
       items.push({
         key: `user-${userId}`,
         name: user.name || 'User',
         avatarUrl: user.avatarUrl,
-        isOnline: user.isOnline || false,
+        isOnline: presence.isOnline,
+        lastSeenAt: presence.lastSeenAt,
         conversations: convs,
       });
     }
@@ -183,6 +201,7 @@ export default function MessagesScreen() {
         name={item.name}
         avatarUrl={item.avatarUrl}
         isOnline={item.isOnline}
+        lastSeenAt={item.lastSeenAt}
         conversations={item.conversations}
         onSelect={handleSelect}
       />

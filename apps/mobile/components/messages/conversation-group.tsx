@@ -11,12 +11,14 @@ import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { Data, Supporting, Label } from '@/components/ui';
+import { formatDistanceToNow } from 'date-fns';
 import type { Conversation } from '@/lib/messaging-api';
 
 interface ConversationGroupProps {
   name: string;
   avatarUrl?: string | null;
   isOnline?: boolean;
+  lastSeenAt?: string | null;
   conversations: Conversation[];
   activeConversationId?: string;
   onSelect: (conversation: Conversation) => void;
@@ -41,6 +43,7 @@ export function ConversationGroup({
   name,
   avatarUrl,
   isOnline = false,
+  lastSeenAt,
   conversations,
   activeConversationId,
   onSelect,
@@ -72,9 +75,18 @@ export function ConversationGroup({
                 <View style={[styles.onlineDot, { backgroundColor: colors.success, borderColor: colors.background }]} />
               )}
             </View>
-            <Data size="large" style={{ flex: 1, color: colors.text, fontWeight: '600' }} numberOfLines={1}>
-              {name}
-            </Data>
+            <View style={{ flex: 1, minWidth: 0 }}>
+              <Data size="large" style={{ color: colors.text, fontWeight: '600' }} numberOfLines={1}>
+                {name}
+              </Data>
+              {isOnline ? (
+                <Data size="mini" style={{ color: colors.success, marginTop: 1 }}>Active now</Data>
+              ) : lastSeenAt ? (
+                <Data size="mini" style={{ color: colors.textTertiary, marginTop: 1 }}>
+                  {formatDistanceToNow(new Date(lastSeenAt), { addSuffix: false })} ago
+                </Data>
+              ) : null}
+            </View>
             {totalUnread > 0 && (
               <View style={[styles.unreadBadge, { backgroundColor: colors.primary }]}>
                 <Label size="badge" uppercase={false} style={{ color: '#FFFFFF', fontWeight: '600' }}>

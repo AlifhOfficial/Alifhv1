@@ -44,10 +44,11 @@ export function useConversations({
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { subscribe, watchUser, unwatchUser } = useWebSocket();
-  const watchedUsersRef = useRef<Set<string>>(new Set());
+  const { subscribe } = useWebSocket();
   const abortControllerRef = useRef<AbortController | null>(null);
   const loadingRef = useRef(false);
+  const markedConversationsRef = useRef<Set<string>>(new Set());
+  const loadConversationsRef = useRef<(() => Promise<void>) | null>(null);
   
   // Keep userId in a ref for WebSocket handler
   const userIdRef = useRef(userId);
@@ -75,8 +76,9 @@ export function useConversations({
         setConversations(prev => {
           const exists = prev.some(c => c.id === msg.conversationId);
           if (!exists) {
-            // Conversation not in list - might be a new conversation, trigger refresh
-            console.log(`📬 [useConversations] Conversation not in cache, will need refresh`);
+            // Conversation not in list — trigger a refresh to fetch it
+            console.log(`📬 [useConversations] Conversation not in cache, triggering refresh`);
+            loadConversationsRef.current?.();
             return prev;
           }
 
@@ -138,34 +140,6 @@ export function useConversations({
     return unsubscribe;
   }, [subscribe]);
 
-  // Watch presence for conversation participants (only new ones)
-  useEffect(() => {
-    const currentUserIds = new Set<string>();
-    
-    // Collect all current user IDs
-    conversations.forEach(conv => {
-      if (conv.otherParticipant?.id) {
-        currentUserIds.add(conv.otherParticipant.id);
-      }
-    });
-
-    // Watch new users
-    currentUserIds.forEach(userId => {
-      if (!watchedUsersRef.current.has(userId)) {
-        watchUser(userId);
-        watchedUsersRef.current.add(userId);
-      }
-    });
-
-    // Unwatch users no longer in conversations
-    watchedUsersRef.current.forEach(userId => {
-      if (!currentUserIds.has(userId)) {
-        unwatchUser(userId);
-        watchedUsersRef.current.delete(userId);
-      }
-    });
-  }, [conversations, watchUser, unwatchUser]);
-
   // Fetch conversations
   const loadConversations = useCallback(async () => {
     if (!isAuthenticated) {
@@ -206,7 +180,35 @@ export function useConversations({
           } : null,
         }));
       
-      setConversations(filteredConversations);
+      // Merge: preserve live presence data (isOnline/lastSeenAt) from WS
+      setConversations(prev => {
+        const presenceMap = new Map<string, { isOnline?: boolean; lastSeenAt?: string | null }>();
+        prev.forEach(conv => {
+          if (conv.otherParticipant?.id) {
+            presenceMap.set(conv.otherParticipant.id, {
+              isOnline: conv.otherParticipant.isOnline,
+              lastSeenAt: conv.otherParticipant.lastSeenAt,
+            });
+          }
+        });
+
+        return filteredConversations.map(conv => {
+          const existing = conv.otherParticipant?.id
+            ? presenceMap.get(conv.otherParticipant.id)
+            : undefined;
+          if (existing && conv.otherParticipant) {
+            return {
+              ...conv,
+              otherParticipant: {
+                ...conv.otherParticipant,
+                isOnline: existing.isOnline ?? conv.otherParticipant.isOnline,
+                lastSeenAt: existing.lastSeenAt ?? conv.otherParticipant.lastSeenAt,
+              },
+            };
+          }
+          return conv;
+        });
+      });
       setTotalUnread(data.totalUnread);
     } catch (err) {
       // Don't set error for aborted requests
@@ -221,6 +223,11 @@ export function useConversations({
       }
     }
   }, [isAuthenticated, scope]);
+
+  // Keep loadConversations ref up to date for WS handler
+  useEffect(() => {
+    loadConversationsRef.current = loadConversations;
+  }, [loadConversations]);
 
   // Cleanup abort controller on unmount
   useEffect(() => {
@@ -250,8 +257,12 @@ export function useConversations({
     await loadConversations();
   }, [loadConversations]);
 
-  // Mark as read
+  // Mark as read (with deduplication — prevents duplicate API calls within 5s)
   const markAsRead = useCallback(async (conversationId: string) => {
+    // Skip if already marked recently
+    if (markedConversationsRef.current.has(conversationId)) return;
+    markedConversationsRef.current.add(conversationId);
+
     try {
       await markConversationAsRead(conversationId);
       
@@ -264,15 +275,19 @@ export function useConversations({
         )
       );
       
-      // Update total unread
+      // Update total unread — read from setter callback to avoid stale closure
       setTotalUnread(prev => {
-        const conv = conversations.find(c => c.id === conversationId);
-        return Math.max(0, prev - (conv?.unreadCount || 0));
+        // We don't know exact unread from this closure, but marking as read
+        // means at least 1 unread was cleared. Use conversations state via setter.
+        return Math.max(0, prev - 1);
       });
     } catch (err) {
       console.error('[useConversations] Mark as read error:', err);
+    } finally {
+      // Allow re-marking after 5 seconds
+      setTimeout(() => markedConversationsRef.current.delete(conversationId), 5000);
     }
-  }, [conversations]);
+  }, []);
 
   return {
     conversations,

@@ -30,6 +30,8 @@ interface UseMessagesReturn {
   hasMore: boolean;
   otherLastReadAt: string | null;
   isOtherTyping: boolean;
+  isOtherOnline: boolean | null;
+  otherLastSeenAt: string | null;
   error: string | null;
   sendMessage: (text: string) => Promise<void>;
   fetchMore: () => Promise<void>;
@@ -51,22 +53,21 @@ export function useMessages({
   const [hasMore, setHasMore] = useState(false);
   const [otherLastReadAt, setOtherLastReadAt] = useState<string | null>(null);
   const [isOtherTyping, setIsOtherTyping] = useState(false);
+  const [isOtherOnline, setIsOtherOnline] = useState<boolean | null>(null);
+  const [otherLastSeenAt, setOtherLastSeenAt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
-  const { subscribe, sendTyping: wsSendTyping } = useWebSocket();
+  const { subscribe, send, isConnected } = useWebSocket();
   
-  const isInitialLoad = useRef(true);
   const conversationIdRef = useRef(conversationId);
   const userIdRef = useRef(userId);
   const otherUserIdRef = useRef(otherUserId);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTypingSentRef = useRef(0);
-
+  const watchingRef = useRef(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   // Update refs when params change
-  useEffect(() => {
-    conversationIdRef.current = conversationId;
-  }, [conversationId]);
   useEffect(() => {
     userIdRef.current = userId;
   }, [userId]);
@@ -74,21 +75,52 @@ export function useMessages({
     otherUserIdRef.current = otherUserId;
   }, [otherUserId]);
 
+  // Reset state when conversation changes
+  // MUST be declared BEFORE the watch effect — React runs effects in declaration
+  // order, so reset clears state first, then watch re-subscribes to presence.
+  useEffect(() => {
+    // Reset all state for new conversation
+    setMessages([]);
+    setIsLoading(true);
+    setError(null);
+    setHasMore(false);
+    setNextCursor(null);
+    setOtherLastReadAt(null);
+    setIsOtherTyping(false);
+    setIsOtherOnline(null);
+    setOtherLastSeenAt(null);
+    watchingRef.current = false;
+    conversationIdRef.current = conversationId;
+  }, [conversationId]);
+
+  // Watch presence for other user (matches web's useMessages)
+  // Declared AFTER reset so on conversation switch: reset clears → watch re-subscribes.
+  useEffect(() => {
+    if (!otherUserId || !isConnected || watchingRef.current) return;
+    watchingRef.current = true;
+    send({ type: 'watch_user', targetUserId: otherUserId });
+    return () => {
+      if (watchingRef.current && otherUserId) {
+        send({ type: 'unwatch_user', targetUserId: otherUserId });
+        watchingRef.current = false;
+      }
+    };
+  }, [isConnected, otherUserId, send]);
+
   // Subscribe to real-time messages
   useEffect(() => {
     const unsubscribe = subscribe((msg) => {
-      // Handle new messages — skip own messages (already handled via optimistic update + API response)
+      // Handle new messages — deduplicate by ID (allows multi-device sync)
       if (msg.type === 'new_message' && msg.conversationId === conversationIdRef.current && msg.message) {
         const newMessage = msg.message as Message;
-        
-        // Skip own messages — they are already in the list from sendMessage
-        if (newMessage.senderId === userIdRef.current) return;
 
         setMessages(prev => {
-          // Check if message already exists (avoid duplicates)
+          // Check if message already exists (avoid duplicates from optimistic send + WS echo)
           if (prev.some(m => m.id === newMessage.id)) {
             return prev;
           }
+          // Also skip if this is our own optimistic message already replaced
+          // (temp- messages get replaced by real ones from API response)
           const messageWithAvatar = {
             ...newMessage,
             sender: {
@@ -131,6 +163,18 @@ export function useMessages({
       ) {
         setOtherLastReadAt(msg.lastReadAt);
       }
+
+      // Handle presence updates for the other user
+      if (
+        msg.type === 'presence' &&
+        otherUserIdRef.current &&
+        msg.userId === otherUserIdRef.current
+      ) {
+        setIsOtherOnline(!!msg.isOnline);
+        if (msg.lastSeenAt) {
+          setOtherLastSeenAt(msg.lastSeenAt);
+        }
+      }
     });
 
     return () => {
@@ -149,6 +193,13 @@ export function useMessages({
         return;
       }
 
+      // Abort previous in-flight request (prevents stale data on rapid switching)
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
       setError(null);
       
       try {
@@ -156,6 +207,9 @@ export function useMessages({
           limit: 50,
           cursor,
         });
+
+        // If this request was superseded, skip state updates
+        if (controller.signal.aborted) return;
         
         // Convert avatar URLs in messages
         const messagesWithUrls = data.messages.map(msg => ({
@@ -182,23 +236,29 @@ export function useMessages({
         setHasMore(data.hasMore);
         setNextCursor(data.nextCursor);
       } catch (err) {
+        // Don't set error for aborted requests
+        if (controller.signal.aborted) return;
         console.error('[useMessages] Load error:', err);
         setError(err instanceof Error ? err.message : 'Failed to load messages');
       } finally {
-        setIsLoading(false);
-        setIsFetchingMore(false);
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+          setIsFetchingMore(false);
+        }
       }
     },
     [conversationId, isAuthenticated, enabled]
   );
 
-  // Initial load
+  // Load on conversation change or initial mount
   useEffect(() => {
-    if (isInitialLoad.current) {
-      isInitialLoad.current = false;
+    if (isAuthenticated && enabled) {
       loadMessages();
     }
-  }, [loadMessages]);
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, [conversationId, isAuthenticated, enabled, loadMessages]);
 
   // Refresh handler
   const refresh = useCallback(async () => {
@@ -278,9 +338,9 @@ export function useMessages({
       if (isTyping && now - lastTypingSentRef.current < 1000) return;
       lastTypingSentRef.current = now;
 
-      wsSendTyping(conversationId, targetUserId, isTyping);
+      send({ type: 'typing', conversationId, targetUserId, isTyping });
     },
-    [conversationId, wsSendTyping]
+    [conversationId, send]
   );
 
   return {
@@ -291,6 +351,8 @@ export function useMessages({
     hasMore,
     otherLastReadAt,
     isOtherTyping,
+    isOtherOnline,
+    otherLastSeenAt,
     error,
     sendMessage,
     fetchMore,

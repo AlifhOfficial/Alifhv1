@@ -68,7 +68,7 @@ interface AmnaSheetProps {
 // CONSTANTS
 // ============================================================================
 
-const SNAP_POINTS = ['60%', '94%'];
+const SNAP_POINTS = ['70%', '93%'];
 
 const LOADING_MESSAGES = [
   'Amna is judging your taste...',

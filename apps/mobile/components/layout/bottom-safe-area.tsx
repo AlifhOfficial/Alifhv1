@@ -8,6 +8,7 @@ import React, { useMemo } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import type { ColorValue } from 'react-native';
 
 import { useTheme } from '@/context/theme-context';
 import { Colors } from '@/constants/theme';
@@ -27,7 +28,7 @@ export function BottomSafeAreaGradient() {
   const colors = Colors[colorScheme];
 
   // Android doesn't interpolate hex alpha correctly — use rgba with multiple stops
-  const gradientColors = useMemo(() => {
+  const gradientColors = useMemo((): readonly [ColorValue, ColorValue, ...ColorValue[]] => {
     const bg = colors.background;
     if (Platform.OS === 'android') {
       return [
@@ -44,7 +45,7 @@ export function BottomSafeAreaGradient() {
   return (
     <View style={styles.container} pointerEvents="none">
       <LinearGradient
-        colors={gradientColors as unknown as string[]}
+        colors={gradientColors}
         {...(Platform.OS === 'android' && { locations: [0, 0.15, 0.4, 0.7, 1] })}
         style={[styles.gradient, { height: insets.bottom + 70 }]}
       />

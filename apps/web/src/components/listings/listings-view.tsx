@@ -165,9 +165,8 @@ export function ListingsView({
 
             {/* RIGHT: Search Header + Content - scrollable */}
             <div className="flex-1 min-w-0 h-full overflow-y-auto scrollbar-hide">
-              {/* TOP: Sticky Search Header */}
-              <div className="sticky top-0 z-10 bg-background">
-                <ListingsHeader
+              {/* TOP: Sticky Search Header - stickiness handled by the header itself */}
+              <ListingsHeader
                 params={params}
                 facets={facets}
                 meta={meta}
@@ -185,7 +184,6 @@ export function ListingsView({
                 clearFilters={clearFilters}
                 setSort={setSort}
               />
-              </div>
 
               {/* BOTTOM: Content */}
               <main className="py-4 sm:py-6">

@@ -1,9 +1,9 @@
+/// <reference types="bun-types" />
 /**
  * Revvup WebSocket Server - Lean Implementation
  * Real-time messaging with presence, typing, and broadcasts
  */
 
-import type { Server } from "bun";
 import { db, userProfile, eq } from "@alifh/database";
 
 const PORT = parseInt(process.env.WS_PORT || "3001");
@@ -37,7 +37,7 @@ function getPresence(userId: string) {
   };
 }
 
-function setOnline(server: Server, userId: string) {
+function setOnline(server: { publish(topic: string, data: string): void }, userId: string) {
   const state = presence.get(userId) ?? { connections: 0, lastSeenAt: null };
   state.connections++;
   presence.set(userId, state);
@@ -59,7 +59,7 @@ function setOnline(server: Server, userId: string) {
   }
 }
 
-function setOffline(server: Server, userId: string) {
+function setOffline(server: { publish(topic: string, data: string): void }, userId: string) {
   const state = presence.get(userId);
   if (!state) return;
 
@@ -100,7 +100,7 @@ const server = Bun.serve<WSData>({
       const userId = url.searchParams.get("userId");
       if (!userId) return new Response("Unauthorized", { status: 401 });
 
-      const ok = server.upgrade<WSData>(req, {
+      const ok = server.upgrade(req, {
         data: { userId, connectedAt: Date.now(), watchedUsers: new Set() },
       });
       return ok ? new Response(undefined, { status: 101 }) : new Response("Upgrade failed", { status: 400 });
@@ -125,7 +125,7 @@ const server = Bun.serve<WSData>({
 
     // Broadcast endpoint (for API -> WS)
     if (url.pathname === "/broadcast" && req.method === "POST") {
-      return req.json().then(({ channel, message }) => {
+      return req.json().then(({ channel, message }: { channel: string; message: unknown }) => {
         if (!channel || !message) {
           return Response.json({ error: "channel and message required" }, { status: 400 });
         }
@@ -177,17 +177,19 @@ const server = Bun.serve<WSData>({
 
           case "watch_user":
             if (data.targetUserId) {
-              // Only subscribe if not already watching
+              // Subscribe to presence channel if not already watching
               if (!ws.data.watchedUsers.has(data.targetUserId)) {
                 ws.subscribe(`presence:${data.targetUserId}`);
                 ws.data.watchedUsers.add(data.targetUserId);
-                ws.send(JSON.stringify({
-                  type: "presence",
-                  userId: data.targetUserId,
-                  ...getPresence(data.targetUserId),
-                  timestamp: new Date().toISOString(),
-                }));
               }
+              // Always send current presence back (even if already subscribed)
+              // This lets multiple hooks/screens get initial presence state
+              ws.send(JSON.stringify({
+                type: "presence",
+                userId: data.targetUserId,
+                ...getPresence(data.targetUserId),
+                timestamp: new Date().toISOString(),
+              }));
             }
             break;
 

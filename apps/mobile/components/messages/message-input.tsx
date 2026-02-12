@@ -181,7 +181,10 @@ export function MessageInput({
       >
         <TextInput
           ref={inputRef}
-          style={[styles.input, { color: colors.text, height: inputHeight }]}
+          style={[
+            styles.input,
+            { color: colors.text, minHeight: MIN_HEIGHT, maxHeight: MAX_HEIGHT },
+          ]}
           value={text}
           onChangeText={handleChangeText}
           onContentSizeChange={handleContentSizeChange}
@@ -234,7 +237,9 @@ const styles = StyleSheet.create({
   },
   input: {
     ...Typography.bodyLarge,
-    paddingVertical: Platform.OS === 'ios' ? Spacing.sm : Spacing.sm,
+    lineHeight: undefined,
+    paddingTop: Platform.OS === 'ios' ? 10 : 8,
+    paddingBottom: Platform.OS === 'ios' ? 10 : 8,
     textAlignVertical: 'center',
   },
   sendWrapper: {

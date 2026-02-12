@@ -1,7 +1,7 @@
 /**
  * ListingStatsSheet — Engagement statistics view
  *
- * Read-only bottom sheet showing views, saves, and superlikes
+ * Clean bottom sheet showing views, saves, and superlikes
  * for a single listing. Opened via the "View Stats" action in
  * EditStatusSheet.
  */
@@ -54,7 +54,7 @@ export function ListingStatsSheet({
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  const snapPoints = useMemo(() => ['48%'], []);
+  const snapPoints = useMemo(() => ['38%'], []);
 
   useEffect(() => {
     if (visible) {
@@ -84,32 +84,24 @@ export function ListingStatsSheet({
     [],
   );
 
-  const totalEngagement = viewCount + favouriteCount + superlikeCount;
-
   const stats = [
     {
       label: 'Views',
       value: viewCount,
       icon: Eye,
-      color: colors.primary,
-      bgColor: colors.primaryMuted ?? colors.primary + '1A',
-      description: 'Total times your listing was viewed',
+      color: colors.textSecondary,
     },
     {
       label: 'Saves',
       value: favouriteCount,
       icon: Heart,
-      color: colors.error,
-      bgColor: colors.errorMuted ?? colors.error + '1A',
-      description: 'People who saved your listing',
+      color: colors.favorite,
     },
     {
       label: 'Superlikes',
       value: superlikeCount,
       icon: Zap,
       color: colors.warning,
-      bgColor: colors.warningMuted ?? colors.warning + '1A',
-      description: 'People who superliked your listing',
     },
   ];
 
@@ -129,7 +121,7 @@ export function ListingStatsSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="medium">Listing Stats</Heading>
+          <Heading size="medium">Stats</Heading>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -143,43 +135,46 @@ export function ListingStatsSheet({
         </View>
 
         {/* Listing preview */}
-        <View style={[styles.previewCard, { backgroundColor: colors.surfaceSecondary }]}>
+        <View style={[styles.previewRow, { borderBottomColor: colors.border }]}>
           {listingThumbnail ? (
             <Image source={{ uri: listingThumbnail }} style={styles.thumbnail} />
           ) : (
             <View style={[styles.thumbnail, { backgroundColor: colors.fill }]}>
-              <Ionicons name="image-outline" size={24} color={colors.textMuted} />
+              <Ionicons name="image-outline" size={18} color={colors.textMuted} />
             </View>
           )}
-          <View style={styles.previewInfo}>
-            <Body size="medium" numberOfLines={1}>{listingTitle}</Body>
-            <Supporting size="small" tone="secondary">
-              {totalEngagement} total engagements
-            </Supporting>
-          </View>
+          <Data size="small" style={{ color: colors.text, flex: 1 }} numberOfLines={1}>
+            {listingTitle}
+          </Data>
         </View>
 
-        {/* Stats grid */}
-        <View style={styles.statsGrid}>
-          {stats.map((stat) => {
+        {/* Stat rows */}
+        <View style={styles.statsList}>
+          {stats.map((stat, index) => {
             const IconComponent = stat.icon;
+            const isLast = index === stats.length - 1;
             return (
               <View
                 key={stat.label}
-                style={[styles.statCard, { backgroundColor: colors.surfaceSecondary }]}
+                style={[
+                  styles.statRow,
+                  !isLast && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
+                ]}
               >
-                <View style={[styles.statIconWrap, { backgroundColor: stat.bgColor }]}>
-                  <IconComponent size={20} color={stat.color} />
+                <View style={styles.statLeft}>
+                  <IconComponent
+                    size={18}
+                    color={stat.color}
+                    fill={stat.label === 'Saves' ? stat.color : 'none'}
+                    strokeWidth={1.75}
+                  />
+                  <Data size="small" style={{ color: colors.textSecondary }}>
+                    {stat.label}
+                  </Data>
                 </View>
-                <Data size="large" style={{ color: colors.text, fontWeight: '700', marginTop: Spacing.sm }}>
+                <Data size="small" style={{ color: colors.text, fontWeight: '600' }}>
                   {formatCount(stat.value)}
                 </Data>
-                <Body size="small" style={{ color: colors.text, fontFamily: 'Inter_600SemiBold' }}>
-                  {stat.label}
-                </Body>
-                <Supporting size="small" tone="secondary" style={{ textAlign: 'center' }}>
-                  {stat.description}
-                </Supporting>
               </View>
             );
           })}
@@ -214,42 +209,33 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  previewCard: {
+  previewRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
-    padding: Spacing.md,
-    borderRadius: Radius.lg,
-    marginBottom: Spacing.lg,
+    paddingBottom: Spacing.lg,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    marginBottom: Spacing.sm,
   },
   thumbnail: {
-    width: 48,
-    height: 48,
+    width: 40,
+    height: 40,
     borderRadius: Radius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  previewInfo: {
-    flex: 1,
-    gap: 4,
+  statsList: {
+    gap: 0,
   },
-  statsGrid: {
+  statRow: {
     flexDirection: 'row',
-    gap: Spacing.sm,
-  },
-  statCard: {
-    flex: 1,
     alignItems: 'center',
-    paddingVertical: Spacing.lg,
-    paddingHorizontal: Spacing.sm,
-    borderRadius: Radius.lg,
-    gap: 2,
+    justifyContent: 'space-between',
+    paddingVertical: Spacing.md,
   },
-  statIconWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: Radius.full,
+  statLeft: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: Spacing.md,
   },
 });

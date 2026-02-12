@@ -6,7 +6,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { View, Pressable, StyleSheet, Platform } from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import { HapticPressable, ConfettiBurst, useConfettiBurst } from '@/components/ui';
 import { useRouter, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -303,12 +303,16 @@ export function GlobalTabBar() {
     }
   }, [applySearch, updateFilterParams]);
 
+  // Confetti for Amna AI bubble
+  const amnaConfetti = useConfettiBurst();
+
   const handleAmnaPress = useCallback(() => {
     if (Platform.OS === 'ios') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
+    amnaConfetti.fire({ colors: ['#8B5CF6', '#A78BFA', '#C4B5FD', '#7C3AED', '#6D28D9', '#DDD6FE'], count: 12 });
     setIsAmnaOpen(true);
-  }, []);
+  }, [amnaConfetti]);
 
   const handleAmnaClose = useCallback(() => {
     setIsAmnaOpen(false);
@@ -482,24 +486,27 @@ export function GlobalTabBar() {
           </AnimatedPressable>
 
           {/* Amna AI bubble (appears on browse tab) */}
-          <AnimatedPressable
-            onPress={handleAmnaPress}
-            style={[
-              styles.amnaBubble,
-              { 
-                backgroundColor: colors.background,
-                borderColor: 'rgba(139, 92, 246, 0.30)',
-              },
-              amnaBubbleStyle,
-            ]}
-            pointerEvents={showSearchBubble ? 'auto' : 'none'}
-          >
-            <Zap
-              size={20}
-              color="#8B5CF6"
-              strokeWidth={2.5}
-            />
-          </AnimatedPressable>
+          <View style={{ overflow: 'visible' }}>
+            <AnimatedPressable
+              onPress={handleAmnaPress}
+              style={[
+                styles.amnaBubble,
+                { 
+                  backgroundColor: colors.background,
+                  borderColor: colors.border,
+                },
+                amnaBubbleStyle,
+              ]}
+              pointerEvents={showSearchBubble ? 'auto' : 'none'}
+            >
+              <Zap
+                size={22}
+                color="#8B5CF6"
+                strokeWidth={2}
+              />
+            </AnimatedPressable>
+            <ConfettiBurst ref={amnaConfetti.ref} />
+          </View>
 
           {/* Sort bubble (appears on browse tab) */}
           <AnimatedPressable

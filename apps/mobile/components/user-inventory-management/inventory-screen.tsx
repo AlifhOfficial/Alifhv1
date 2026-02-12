@@ -280,9 +280,9 @@ export function InventoryScreen() {
           <View style={styles.content}>
             {/* Row 1: Title + action */}
             <View style={styles.titleRow}>
-              <Heading size="card" style={{ flex: 1 }} numberOfLines={1}>
+              <Data size="small" style={{ color: colors.text, fontWeight: '600', flex: 1 }} numberOfLines={1}>
                 {title}
-              </Heading>
+              </Data>
               <HapticPressable
                 onPress={() => openActions(item)}
                 hitSlop={12}
@@ -293,14 +293,14 @@ export function InventoryScreen() {
             </View>
 
             {/* Row 2: Price */}
-            <Data size="large" style={{ color: colors.primary, fontFamily: 'Inter_700Bold' }}>
+            <Data size="small" style={{ color: colors.primary, fontWeight: '700' }}>
               {price}
             </Data>
 
             {/* Row 3: Meta line — specs · emirate */}
-            <Body size="small" tone="secondary">
+            <Data size="mini" style={{ color: colors.textSecondary }}>
               {displaySpecs} · {displayEmirate}
-            </Body>
+            </Data>
 
             {/* Row 4: Expiry (if applicable) */}
             {expiry && (
@@ -311,7 +311,7 @@ export function InventoryScreen() {
                     expiry.isExpired ? colors.error : expiry.isUrgent ? colors.warning : colors.textMuted
                   }
                 />
-                <Body
+                <Data
                   size="mini"
                   style={{
                     color: expiry.isExpired
@@ -319,11 +319,11 @@ export function InventoryScreen() {
                       : expiry.isUrgent
                         ? colors.warning
                         : colors.textSecondary,
-                    fontFamily: expiry.isUrgent || expiry.isExpired ? 'Inter_600SemiBold' : 'Inter_500Medium',
+                    fontWeight: expiry.isUrgent || expiry.isExpired ? '700' : '500',
                   }}
                 >
                   {expiry.text}
-                </Body>
+                </Data>
               </View>
             )}
           </View>

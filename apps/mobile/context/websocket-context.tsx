@@ -1,6 +1,8 @@
 /**
  * WebSocket Provider - Mobile
- * Real-time messaging with presence and typing indicators
+ * Matches web's singleton pattern — single source of truth.
+ * Clean API: { isConnected, send, subscribe }
+ * Hooks use send() directly for watch_user, unwatch_user, typing.
  */
 
 import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
@@ -11,8 +13,8 @@ import { WS_URL } from '@/lib/config';
 // Types
 // ============================================================================
 
-export type WSMessageType = 
-  | 'connected' | 'ping' | 'pong' 
+export type WSMessageType =
+  | 'connected' | 'ping' | 'pong'
   | 'new_message' | 'read_receipt' | 'typing' | 'presence';
 
 export interface WSMessage {
@@ -32,10 +34,175 @@ export interface WebSocketContextValue {
   isConnected: boolean;
   send: (data: Record<string, unknown>) => void;
   subscribe: (handler: MessageHandler) => () => void;
-  watchUser: (userId: string) => void;
-  unwatchUser: (userId: string) => void;
-  sendTyping: (conversationId: string, targetUserId: string, isTyping: boolean) => void;
 }
+
+// ============================================================================
+// Singleton WebSocket Manager (matches web's WebSocketManager)
+// ============================================================================
+
+class WebSocketManager {
+  private static instance: WebSocketManager | null = null;
+  private ws: WebSocket | null = null;
+  private handlers = new Set<MessageHandler>();
+  private reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
+  private heartbeatInterval: ReturnType<typeof setInterval> | null = null;
+  private attempts = 0;
+  private currentUserId: string | null = null;
+  private connectionListeners = new Set<(connected: boolean) => void>();
+
+  static getInstance(): WebSocketManager {
+    if (!WebSocketManager.instance) {
+      WebSocketManager.instance = new WebSocketManager();
+    }
+    return WebSocketManager.instance;
+  }
+
+  get isConnected(): boolean {
+    return this.ws?.readyState === WebSocket.OPEN;
+  }
+
+  connect(userId: string): void {
+    // Already connected for this user
+    if (this.currentUserId === userId && this.ws?.readyState === WebSocket.OPEN) {
+      return;
+    }
+
+    // Different user — disconnect first
+    if (this.currentUserId && this.currentUserId !== userId) {
+      this.disconnect();
+    }
+
+    // Already connecting
+    if (this.ws?.readyState === WebSocket.CONNECTING) {
+      return;
+    }
+
+    this.currentUserId = userId;
+
+    const url = `${WS_URL}/ws?userId=${userId}`;
+    console.log(`🔌 [WS] Connecting: ${url}`);
+
+    try {
+      const ws = new WebSocket(url);
+      this.ws = ws;
+
+      ws.onopen = () => {
+        console.log(`✅ [WS] Connected for user: ${userId}`);
+        this.attempts = 0;
+        this.notifyConnectionChange(true);
+        this.startHeartbeat();
+      };
+
+      ws.onmessage = (e) => {
+        try {
+          const msg = JSON.parse(typeof e.data === 'string' ? e.data : '') as WSMessage;
+          if (msg.type !== 'pong') {
+            console.log(`📨 [WS] Received:`, msg.type, msg.conversationId ? `conv:${msg.conversationId}` : '');
+          }
+          this.handlers.forEach((h) => {
+            try { h(msg); } catch (err) { console.error('[WS] Handler error:', err); }
+          });
+        } catch { /* ignore parse errors */ }
+      };
+
+      ws.onerror = () => {
+        console.warn('⚠️ [WS] Connection error');
+        ws.close();
+      };
+
+      ws.onclose = () => {
+        console.log(`❌ [WS] Disconnected`);
+        this.ws = null;
+        this.notifyConnectionChange(false);
+        this.stopHeartbeat();
+
+        // Reconnect with exponential backoff (max 30s, 10 attempts)
+        if (this.currentUserId === userId && this.attempts < 10) {
+          const delay = Math.min(1000 * Math.pow(2, this.attempts), 30000);
+          console.log(`🔄 [WS] Reconnecting in ${delay}ms (attempt ${this.attempts + 1})`);
+          this.attempts++;
+          this.reconnectTimeout = setTimeout(() => this.connect(userId), delay);
+        }
+      };
+    } catch (error) {
+      console.warn('⚠️ [WS] Failed to create WebSocket:', error);
+    }
+  }
+
+  disconnect(): void {
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
+      this.reconnectTimeout = null;
+    }
+    this.stopHeartbeat();
+    this.ws?.close(1000);
+    this.ws = null;
+    this.currentUserId = null;
+    this.attempts = 0;
+    this.notifyConnectionChange(false);
+  }
+
+  /** Pause connection (app backgrounded) — close but keep userId for resume */
+  pause(): void {
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
+      this.reconnectTimeout = null;
+    }
+    this.stopHeartbeat();
+    this.attempts = 0;
+    if (this.ws) {
+      this.ws.onclose = null; // Prevent auto-reconnect loop
+      this.ws.close(1000);
+      this.ws = null;
+    }
+    this.notifyConnectionChange(false);
+  }
+
+  /** Resume connection (app foregrounded) — reconnect with same userId */
+  resume(): void {
+    if (this.currentUserId && !this.ws) {
+      this.connect(this.currentUserId);
+    }
+  }
+
+  send(data: Record<string, unknown>): void {
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify(data));
+    }
+  }
+
+  subscribe(handler: MessageHandler): () => void {
+    this.handlers.add(handler);
+    return () => this.handlers.delete(handler);
+  }
+
+  onConnectionChange(listener: (connected: boolean) => void): () => void {
+    this.connectionListeners.add(listener);
+    // Immediately notify current state
+    listener(this.isConnected);
+    return () => this.connectionListeners.delete(listener);
+  }
+
+  private notifyConnectionChange(connected: boolean): void {
+    this.connectionListeners.forEach((l) => l(connected));
+  }
+
+  private startHeartbeat(): void {
+    this.stopHeartbeat();
+    this.heartbeatInterval = setInterval(() => this.send({ type: 'ping' }), 30000);
+  }
+
+  private stopHeartbeat(): void {
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+      this.heartbeatInterval = null;
+    }
+  }
+}
+
+// ============================================================================
+// Context
+// ============================================================================
 
 const WebSocketContext = createContext<WebSocketContextValue | undefined>(undefined);
 
@@ -50,213 +217,53 @@ interface WebSocketProviderProps {
 
 export function WebSocketProvider({ children, userId }: WebSocketProviderProps) {
   const [isConnected, setIsConnected] = useState(false);
-  const wsRef = useRef<WebSocket | null>(null);
-  const handlersRef = useRef(new Set<MessageHandler>());
-  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const heartbeatIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const attemptsRef = useRef(0);
-  const appStateRef = useRef(AppState.currentState);
-  const intentionalCloseRef = useRef(false);
-  const mountedRef = useRef(true);
+  const managerRef = useRef<WebSocketManager | null>(null);
 
-  const stopHeartbeat = useCallback(() => {
-    if (heartbeatIntervalRef.current) {
-      clearInterval(heartbeatIntervalRef.current);
-      heartbeatIntervalRef.current = null;
-    }
-  }, []);
+  // Get singleton
+  if (!managerRef.current) {
+    managerRef.current = WebSocketManager.getInstance();
+  }
+  const manager = managerRef.current;
 
-  // Connect to WebSocket
-  const connect = useCallback(() => {
-    if (!userId || !mountedRef.current) return;
+  // Connect/disconnect based on userId
+  useEffect(() => {
+    if (!userId) return;
 
-    // Already connected
-    if (wsRef.current?.readyState === WebSocket.OPEN) return;
-    
-    // Already connecting
-    if (wsRef.current?.readyState === WebSocket.CONNECTING) return;
+    manager.connect(userId);
+    const unsubscribe = manager.onConnectionChange(setIsConnected);
 
-    intentionalCloseRef.current = false;
+    return () => {
+      unsubscribe();
+      // Don't disconnect on unmount — let the singleton persist
+    };
+  }, [userId, manager]);
 
-    const url = `${WS_URL}/ws?userId=${userId}`;
-    console.log(`🔌 [WS] Connecting: ${url}`);
-
-    try {
-      const ws = new WebSocket(url);
-      wsRef.current = ws;
-
-      ws.onopen = () => {
-        if (!mountedRef.current) return;
-        console.log(`✅ [WS] Connected for user: ${userId}`);
-        setIsConnected(true);
-        attemptsRef.current = 0;
-
-        // Start heartbeat
-        stopHeartbeat();
-        heartbeatIntervalRef.current = setInterval(() => {
-          if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ type: 'ping' }));
-          }
-        }, 30000); // Every 30 seconds
-      };
-
-      ws.onmessage = (event) => {
-        if (!mountedRef.current) return;
-        try {
-          const msg = JSON.parse(event.data) as WSMessage;
-          
-          if (msg.type !== 'pong') {
-            console.log(`📨 [WS] Received:`, msg.type, msg);
-          }
-
-          // Notify all subscribers
-          handlersRef.current.forEach(handler => {
-            try {
-              handler(msg);
-            } catch (error) {
-              console.error('[WS] Handler error:', error);
-            }
-          });
-        } catch (error) {
-          console.error('[WS] Parse error:', error);
-        }
-      };
-
-      ws.onerror = () => {
-        // Errors are followed by onclose — no action needed here
-        console.warn('⚠️ [WS] Connection error');
-      };
-
-      ws.onclose = () => {
-        if (!mountedRef.current) return;
-
-        console.log('🔌 [WS] Disconnected');
-        setIsConnected(false);
-        stopHeartbeat();
-
-        // Don't reconnect if close was intentional or unmounted
-        if (intentionalCloseRef.current) return;
-
-        // Reconnect with exponential backoff (only if app is active)
-        if (appStateRef.current === 'active' && attemptsRef.current < 10) {
-          const delay = Math.min(1000 * Math.pow(2, attemptsRef.current), 30000);
-          attemptsRef.current++;
-          
-          console.log(`🔄 [WS] Reconnecting in ${delay}ms (attempt ${attemptsRef.current})`);
-          
-          if (reconnectTimeoutRef.current) {
-            clearTimeout(reconnectTimeoutRef.current);
-          }
-          
-          reconnectTimeoutRef.current = setTimeout(() => {
-            connect();
-          }, delay);
-        }
-      };
-    } catch (error) {
-      console.warn('⚠️ [WS] Failed to create WebSocket:', error);
-    }
-  }, [userId, stopHeartbeat]);
-
-  // Disconnect
-  const disconnect = useCallback(() => {
-    intentionalCloseRef.current = true;
-
-    if (reconnectTimeoutRef.current) {
-      clearTimeout(reconnectTimeoutRef.current);
-      reconnectTimeoutRef.current = null;
-    }
-    
-    stopHeartbeat();
-
-    if (wsRef.current) {
-      wsRef.current.onclose = null; // Prevent onclose from firing
-      wsRef.current.onerror = null;
-      wsRef.current.onmessage = null;
-      wsRef.current.onopen = null;
-      wsRef.current.close();
-      wsRef.current = null;
-    }
-    
-    setIsConnected(false);
-  }, [stopHeartbeat]);
-
-  // Handle app state changes
+  // Handle app state changes (mobile-specific pause/resume)
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
-      appStateRef.current = nextAppState;
-      
-      if (nextAppState === 'active' && userId) {
-        // App came to foreground - reconnect if needed
-        if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
-          connect();
-        }
+      if (nextAppState === 'active') {
+        manager.resume();
       } else if (nextAppState.match(/inactive|background/)) {
-        // App went to background - disconnect to save battery
-        disconnect();
+        manager.pause();
       }
     });
 
-    return () => {
-      subscription.remove();
-    };
-  }, [userId, connect, disconnect]);
+    return () => subscription.remove();
+  }, [manager]);
 
-  // Connect on mount if userId is available
-  useEffect(() => {
-    mountedRef.current = true;
+  // Memoized callbacks
+  const send = useCallback(
+    (data: Record<string, unknown>) => manager.send(data),
+    [manager]
+  );
 
-    if (userId && appStateRef.current === 'active') {
-      connect();
-    }
-
-    return () => {
-      mountedRef.current = false;
-      disconnect();
-    };
-  }, [userId, connect, disconnect]);
-
-  // Send message
-  const send = useCallback((data: Record<string, unknown>) => {
-    if (wsRef.current?.readyState === WebSocket.OPEN) {
-      wsRef.current.send(JSON.stringify(data));
-    }
-  }, []);
-
-  // Subscribe to messages
-  const subscribe = useCallback((handler: MessageHandler) => {
-    handlersRef.current.add(handler);
-    return () => {
-      handlersRef.current.delete(handler);
-    };
-  }, []);
-
-  // Watch user presence
-  const watchUser = useCallback((targetUserId: string) => {
-    send({ type: 'watch_user', targetUserId });
-  }, [send]);
-
-  // Unwatch user presence
-  const unwatchUser = useCallback((targetUserId: string) => {
-    send({ type: 'unwatch_user', targetUserId });
-  }, [send]);
-
-  // Send typing indicator
-  const sendTyping = useCallback((conversationId: string, targetUserId: string, isTyping: boolean) => {
-    send({ type: 'typing', conversationId, targetUserId, isTyping });
-  }, [send]);
-
-  const value: WebSocketContextValue = {
-    isConnected,
-    send,
-    subscribe,
-    watchUser,
-    unwatchUser,
-    sendTyping,
-  };
+  const subscribe = useCallback(
+    (handler: MessageHandler) => manager.subscribe(handler),
+    [manager]
+  );
 
   return (
-    <WebSocketContext.Provider value={value}>
+    <WebSocketContext.Provider value={{ isConnected, send, subscribe }}>
       {children}
     </WebSocketContext.Provider>
   );

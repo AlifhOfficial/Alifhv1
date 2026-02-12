@@ -210,10 +210,10 @@ export function ListingsHeader({
     <>
       {/* ===== MOBILE HEADER ===== */}
       <div className={cn(
-        "sm:hidden sticky z-30 bg-background",
+        "sm:hidden sticky z-30 bg-background border-b border-border/40",
         embedded ? "top-0" : "top-14"
       )}>
-        <div className="py-2 px-2 space-y-2">
+        <div className="pt-2 pb-3 px-2 space-y-2">
           {/* Row 1: Search bar + controls */}
           <div className="flex items-center gap-2">
             {/* Filters trigger - pill style */}
@@ -687,10 +687,11 @@ export function ListingsHeader({
 
       {/* ===== DESKTOP HEADER ===== */}
       <header className={cn(
-        "hidden sm:block sticky z-30 bg-background",
-        embedded ? "top-0" : "top-16"
+        "hidden sm:block sticky z-30 bg-background border-b border-transparent",
+        "[&:not(:first-child)]:border-border/40",
+        embedded ? "top-0" : "top-16 lg:top-0"
       )}>
-        <div className="pt-4 pb-1 relative">
+        <div className="pt-4 pb-4 relative">
           <div className="flex flex-wrap items-center gap-2">
             {/* Sidebar Toggle (Desktop) */}
             <button

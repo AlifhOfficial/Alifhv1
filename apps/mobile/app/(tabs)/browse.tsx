@@ -32,6 +32,11 @@ import { useSearch, type FilterParams } from '@/context/search-context';
 import { getModelsForMake } from '@/lib/filter-constants';
 
 // ============================================================================
+// MODULE-LEVEL PERSISTENCE (survives tab switches, no async/race conditions)
+// ============================================================================
+let persistedViewMode: ViewMode = 'grid';
+
+// ============================================================================
 // HELPERS
 // ============================================================================
 
@@ -119,8 +124,12 @@ export default function BrowseScreen() {
   const [page, setPage] = useState(1);
   const requestIdRef = useRef(0);
 
-  // View mode
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  // View mode (persisted across tab switches via module-level variable)
+  const [viewMode, setViewModeState] = useState<ViewMode>(persistedViewMode);
+  const setViewMode = useCallback((mode: ViewMode) => {
+    persistedViewMode = mode;
+    setViewModeState(mode);
+  }, []);
 
   // Filter sheets visibility
   const [makeSheetVisible, setMakeSheetVisible] = useState(false);

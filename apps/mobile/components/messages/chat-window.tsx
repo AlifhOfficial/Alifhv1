@@ -32,6 +32,7 @@ import { Body, Data, Supporting } from '@/components/ui';
 import { markConversationAsRead, type Message, type Conversation } from '@/lib/messaging-api';
 
 const PANEL_WIDTH = 80;
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 interface ChatWindowProps {
   conversationId: string;
@@ -52,7 +53,6 @@ export function ChatWindow({
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlatList<Message>>(null);
-  const timestampListRef = useRef<FlatList<Message>>(null);
 
   // Timestamp panel state
   const panelTranslateX = useSharedValue(PANEL_WIDTH);
@@ -79,13 +79,9 @@ export function ChatWindow({
       runOnJS(closePanel)();
     });
 
-  // Animated styles for panel
-  const panelAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: panelTranslateX.value }],
-  }));
-
+  // Slide the wider-than-screen list left to reveal timestamps
   const messagesAnimatedStyle = useAnimatedStyle(() => ({
-    marginRight: PANEL_WIDTH - panelTranslateX.value,
+    transform: [{ translateX: -(PANEL_WIDTH - panelTranslateX.value) }],
   }));
 
   const {
@@ -96,6 +92,8 @@ export function ChatWindow({
     hasMore,
     otherLastReadAt,
     isOtherTyping,
+    isOtherOnline,
+    otherLastSeenAt: liveLastSeenAt,
     error,
     sendMessage,
     fetchMore,
@@ -116,8 +114,9 @@ export function ChatWindow({
   const avatarUrl = conversation?.partner
     ? conversation.partner.logo
     : conversation?.otherParticipant?.avatarUrl;
-  const isOnline = conversation?.otherParticipant?.isOnline ?? false;
-  const lastSeenAt = conversation?.otherParticipant?.lastSeenAt;
+  // Use live presence from useMessages (real-time via WS), fallback to conversation snapshot
+  const isOnline = isOtherOnline ?? conversation?.otherParticipant?.isOnline ?? false;
+  const lastSeenAt = liveLastSeenAt ?? conversation?.otherParticipant?.lastSeenAt;
   const listingTitle = conversation?.listing?.title;
   const otherUserAvatar = avatarUrl;
   const otherUserName = displayName;
@@ -178,15 +177,7 @@ export function ChatWindow({
     [sendMessage, messages.length]
   );
 
-  // Sync scroll between messages and timestamps
-  const handleScroll = useCallback((event: any) => {
-    if (timestampListRef.current) {
-      timestampListRef.current.scrollToOffset({
-        offset: event.nativeEvent.contentOffset.y,
-        animated: false,
-      });
-    }
-  }, []);
+
 
   // Handle infinite scroll
   const handleEndReached = useCallback(() => {
@@ -224,17 +215,33 @@ export function ChatWindow({
       const nextMessage = messages[index + 1];
       const showDateSeparator = !nextMessage || !isSameDay(messageDate, new Date(nextMessage.createdAt));
 
+      // Determine if this bubble gets a timestamp
+      const hasTextBubble = !!item.text && !item.isSystemMessage;
+      const showTimestamp = hasTextBubble && !(showSeen && isOwn);
+      const timestamp = showTimestamp ? format(new Date(item.createdAt), 'h:mm a') : null;
+
       return (
         <>
-          <MessageBubble
-            message={item}
-            isOwn={isOwn}
-            showAvatar={showAvatar}
-            showSeen={showSeen}
-            otherUserAvatar={otherUserAvatar}
-            otherUserName={otherUserName}
-            listing={showListing && conversation?.listing ? conversation.listing : undefined}
-          />
+          <View style={styles.messageRow}>
+            <View style={styles.messageSide}>
+              <MessageBubble
+                message={item}
+                isOwn={isOwn}
+                showAvatar={showAvatar}
+                showSeen={showSeen}
+                otherUserAvatar={otherUserAvatar}
+                otherUserName={otherUserName}
+                listing={showListing && conversation?.listing ? conversation.listing : undefined}
+              />
+            </View>
+            <View style={styles.timestampSide}>
+              {timestamp && (
+                <Supporting size="mini" style={{ color: colors.textTertiary, opacity: 0.5 }}>
+                  {timestamp}
+                </Supporting>
+              )}
+            </View>
+          </View>
           {showDateSeparator && (
             <View style={styles.dateSeparator}>
               <Data size="mini" style={{ color: colors.textTertiary }}>
@@ -258,20 +265,7 @@ export function ChatWindow({
     ]
   );
 
-  // Render timestamp row (for the panel)
-  const renderTimestamp = useCallback(
-    ({ item }: { item: Message }) => {
-      const timestamp = format(new Date(item.createdAt), 'h:mm a');
-      return (
-        <View style={styles.timestampRow}>
-          <Data size="mini" style={{ color: colors.textTertiary, opacity: 0.6 }}>
-            {timestamp}
-          </Data>
-        </View>
-      );
-    },
-    []
-  );
+
 
   // List header (bottom of messages - newest)
   const ListFooterComponent = useMemo(() => {
@@ -328,7 +322,7 @@ export function ChatWindow({
         name={displayName}
         avatarUrl={avatarUrl}
         isOnline={isOnline}
-        isTyping={false}
+        isTyping={isOtherTyping}
         lastSeenAt={lastSeenAt}
         listingTitle={listingTitle}
         onBack={onBack}
@@ -351,30 +345,8 @@ export function ChatWindow({
               onEndReached={handleEndReached}
               onEndReachedThreshold={0.3}
               showsVerticalScrollIndicator={false}
-              keyboardDismissMode="none"
-              keyboardShouldPersistTaps="always"
-              onScroll={handleScroll}
-              scrollEventThrottle={16}
-            />
-          </Animated.View>
-
-          {/* Timestamp Panel - slides in from right */}
-          <Animated.View 
-            style={[
-              styles.timestampPanel, 
-              { backgroundColor: colors.background },
-              panelAnimatedStyle
-            ]}
-          >
-            <FlatList
-              ref={timestampListRef}
-              data={messages}
-              renderItem={renderTimestamp}
-              keyExtractor={(item) => `ts-${item.id}`}
-              inverted
-              contentContainerStyle={styles.timestampContent}
-              showsVerticalScrollIndicator={false}
-              scrollEnabled={false}
+              keyboardDismissMode="interactive"
+              keyboardShouldPersistTaps="handled"
             />
           </Animated.View>
         </View>
@@ -401,34 +373,28 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   messagesWrapper: {
-    flex: 1,
+    width: SCREEN_WIDTH + PANEL_WIDTH,
   },
   messagesContent: {
     flexGrow: 1,
     paddingBottom: Spacing.md,
     paddingTop: 12,
   },
-  timestampPanel: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    bottom: 0,
-    width: PANEL_WIDTH,
-  },
-  timestampContent: {
-    paddingBottom: Spacing.md,
-    paddingTop: 12,
-  },
-  timestampRow: {
-    height: 36,
-    justifyContent: 'center',
+  messageRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 2,
-    paddingHorizontal: Spacing.xs,
+  },
+  messageSide: {
+    width: SCREEN_WIDTH,
+  },
+  timestampSide: {
+    width: PANEL_WIDTH,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   dateSeparator: {
     alignItems: 'center',
-    paddingVertical: Spacing.md,
+    paddingVertical: Spacing.sm,
   },
   emptyContainer: {
     flex: 1,

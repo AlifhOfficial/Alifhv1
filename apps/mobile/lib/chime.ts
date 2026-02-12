@@ -15,9 +15,11 @@ import { Platform } from 'react-native';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const FAV_SOUND = require('@/assets/sounds/chime-fav.wav');
 const SUPERLIKE_SOUND = require('@/assets/sounds/chime-superlike.wav');
+const ZAP_SOUND = require('@/assets/sounds/chime-zap.wav');
 
 let favPlayer: AudioPlayer | null = null;
 let superlikePlayer: AudioPlayer | null = null;
+let zapPlayer: AudioPlayer | null = null;
 let initialized = false;
 
 /** Configure audio session — call once at app boot or lazily */
@@ -65,11 +67,29 @@ export async function playSuperlikeChime() {
   }
 }
 
+/** Play the zap (Amna AI) chime */
+export async function playZapChime() {
+  if (Platform.OS === 'web') return;
+  await ensureInit();
+  try {
+    if (!zapPlayer) {
+      zapPlayer = createAudioPlayer(ZAP_SOUND);
+      zapPlayer.volume = 0.5;
+    }
+    await zapPlayer.seekTo(0);
+    zapPlayer.play();
+  } catch {
+    // Ignore playback errors
+  }
+}
+
 /** Unload sounds — call on cleanup if needed */
 export async function unloadChimes() {
   try { favPlayer?.remove(); } catch {}
   try { superlikePlayer?.remove(); } catch {}
+  try { zapPlayer?.remove(); } catch {}
   favPlayer = null;
   superlikePlayer = null;
+  zapPlayer = null;
   initialized = false;
 }
