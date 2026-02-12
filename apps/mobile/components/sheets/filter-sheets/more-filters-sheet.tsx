@@ -336,7 +336,7 @@ export function MoreFiltersSheet({
       onPress={onToggle}
     >
       <Body 
-        size="large" 
+        size="medium" 
         style={{ 
           color: value ? colors.text : colors.textSecondary,
           fontFamily: value ? 'Inter_600SemiBold' : 'Inter_400Regular',
@@ -372,18 +372,47 @@ export function MoreFiltersSheet({
     >
       <BottomSheetScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View style={styles.header}>
-          <Heading size="medium">Filters</Heading>
-          <HapticPressable 
-            onPress={onClose} 
-            hitSlop={Spacing.md}
-            style={[
-              styles.closeButton,
-              { backgroundColor: colors.fillSecondary }
-            ]}
-          >
-            <Ionicons name="close" size={18} color={colors.textSecondary} />
-          </HapticPressable>
+        <View style={[styles.header, { borderBottomColor: colors.border }]}>
+          <View style={styles.headerTopRow}>
+            <HapticPressable
+              onPress={onClose}
+              hitSlop={Spacing.md}
+              style={styles.cancelButton}
+            >
+              <Body size="medium" tone="secondary">Cancel</Body>
+            </HapticPressable>
+            
+            <Heading size="small">Filters</Heading>
+            
+            <HapticPressable
+              style={[
+                styles.applyButton,
+                { backgroundColor: hasValue ? colors.primary : colors.fillSecondary },
+              ]}
+              onPress={handleApply}
+            >
+              <ButtonText
+                size="small"
+                style={{ color: hasValue ? colors.primaryForeground : colors.textMuted }}
+              >
+                Apply
+              </ButtonText>
+            </HapticPressable>
+          </View>
+
+          {/* Selection Summary */}
+          {hasValue && (
+            <View style={styles.selectionSummary}>
+              <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
+                {activeCount} filter{activeCount !== 1 ? 's' : ''} selected
+              </Body>
+              <HapticPressable onPress={handleClear} hitSlop={8}>
+                <Supporting size="small" style={{ color: colors.error }}>
+                  Clear
+                </Supporting>
+              </HapticPressable>
+            </View>
+          )}
         </View>
 
         {/* Popular Section */}
@@ -553,26 +582,6 @@ export function MoreFiltersSheet({
           localFilters.sellerType ? 1 : 0
         )}
 
-        {/* Actions */}
-        <View style={styles.actions}>
-          {hasValue && (
-            <HapticPressable
-              onPress={handleClear}
-              style={[styles.clearButton, { borderColor: colors.textMuted }]}
-            >
-              <ButtonText size="medium" tone="secondary">Clear</ButtonText>
-            </HapticPressable>
-          )}
-          <HapticPressable
-            onPress={handleApply}
-            style={[styles.applyButton, { backgroundColor: colors.text }]}
-          >
-            <ButtonText size="medium" style={{ color: colors.background }}>
-              Apply{activeCount > 0 ? ` (${activeCount})` : ''}
-            </ButtonText>
-          </HapticPressable>
-        </View>
-
         <View style={{ height: insets.bottom + Spacing['3xl'] }} />
       </BottomSheetScrollView>
     </BottomSheetModal>
@@ -596,18 +605,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
   },
   header: {
+    flexShrink: 0,
+    paddingBottom: Spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    marginBottom: Spacing.md,
+  },
+  headerTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.sm,
+  },
+  cancelButton: {
+    paddingVertical: Spacing.xs,
     paddingHorizontal: Spacing.xs,
   },
-  closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: Radius.full,
+  selectionSummary: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.xs,
   },
   section: {
     marginBottom: Spacing.sm,
@@ -673,24 +690,9 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
     borderWidth: 1,
   },
-  actions: {
-    flexDirection: 'row',
-    gap: Spacing.md,
-    marginTop: Spacing.lg,
-  },
-  clearButton: {
-    flex: 1,
-    height: 48,
-    borderRadius: Radius.lg,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   applyButton: {
-    flex: 2,
-    height: 48,
-    borderRadius: Radius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: Radius.full,
   },
 });

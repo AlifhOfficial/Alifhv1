@@ -7,10 +7,9 @@
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { View, StyleSheet, Platform, TextInput } from 'react-native';
 import { HapticPressable } from '@/components/ui';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, BottomSheetFlatList } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { Ionicons } from '@expo/vector-icons';
 import { Search, X } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
@@ -196,7 +195,7 @@ export function ModelFilterSheet({
         <View style={styles.labelColumn}>
           <View style={styles.labelRow}>
             <Body
-              size="large"
+              size="medium"
               style={{ 
                 color: isSelected ? colors.text : colors.textSecondary,
                 fontFamily: isSelected ? 'Inter_600SemiBold' : 'Inter_400Regular',
@@ -242,20 +241,50 @@ export function ModelFilterSheet({
       bottomInset={insets.bottom + 20}
       style={styles.sheetContainer}
     >
-      <BottomSheetView style={styles.content}>
+      <View style={styles.content}>
         {/* Header */}
-        <View style={styles.header}>
-          <Heading size="medium">Model</Heading>
-          <HapticPressable
-            onPress={onClose}
-            hitSlop={Spacing.md}
-            style={[
-              styles.closeButton,
-              { backgroundColor: colors.fillSecondary },
-            ]}
-          >
-            <Ionicons name="close" size={18} color={colors.textSecondary} />
-          </HapticPressable>
+        <View style={[styles.header, { borderBottomColor: colors.border }]}>
+          <View style={styles.headerTopRow}>
+            <HapticPressable
+              onPress={onClose}
+              hitSlop={Spacing.md}
+              style={styles.cancelButton}
+            >
+              <Body size="medium" tone="secondary">Cancel</Body>
+            </HapticPressable>
+            
+            <Heading size="small">Model</Heading>
+            
+            <HapticPressable
+              style={[
+                styles.applyButton,
+                { backgroundColor: hasValue ? colors.primary : colors.fillSecondary },
+              ]}
+              onPress={handleApply}
+              disabled={!hasValue}
+            >
+              <ButtonText
+                size="small"
+                style={{ color: hasValue ? colors.primaryForeground : colors.textMuted }}
+              >
+                Apply
+              </ButtonText>
+            </HapticPressable>
+          </View>
+
+          {/* Selection Summary */}
+          {hasValue && (
+            <View style={styles.selectionSummary}>
+              <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
+                {localSelected.join(', ')}
+              </Body>
+              <HapticPressable onPress={handleClear} hitSlop={8}>
+                <Supporting size="small" style={{ color: colors.error }}>
+                  Clear
+                </Supporting>
+              </HapticPressable>
+            </View>
+          )}
         </View>
 
         {/* Search Input */}
@@ -291,27 +320,7 @@ export function ModelFilterSheet({
             </View>
           }
         />
-
-        {/* Actions */}
-        <View style={styles.actions}>
-          {hasValue && (
-            <HapticPressable
-              onPress={handleClear}
-              style={[styles.clearButton, { borderColor: colors.border }]}
-            >
-              <ButtonText size="medium" tone="secondary">Clear</ButtonText>
-            </HapticPressable>
-          )}
-          <HapticPressable
-            onPress={handleApply}
-            style={[styles.applyButton, { backgroundColor: colors.text }]}
-          >
-            <ButtonText size="medium" style={{ color: colors.background }}>
-              {hasValue ? `Apply (${localSelected.length})` : 'Done'}
-            </ButtonText>
-          </HapticPressable>
-        </View>
-      </BottomSheetView>
+      </View>
     </BottomSheetModal>
   );
 }
@@ -329,22 +338,31 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
   },
   content: {
+    flex: 1,
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.xl,
-    flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Spacing.xl,
+    flexShrink: 0,
+    paddingBottom: Spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    marginBottom: Spacing.md,
   },
-  closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: Radius.full,
+  headerTopRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    marginBottom: Spacing.sm,
+  },
+  cancelButton: {
+    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.xs,
+  },
+  selectionSummary: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.xs,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -364,7 +382,6 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     flex: 1,
-    marginBottom: Spacing.md,
   },
   listItem: {
     flexDirection: 'row',
@@ -401,24 +418,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: Spacing['3xl'],
   },
-  actions: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-    paddingTop: Spacing.md,
-  },
-  clearButton: {
-    flex: 1,
-    height: 48,
-    borderRadius: Radius.lg,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   applyButton: {
-    flex: 2,
-    height: 48,
-    borderRadius: Radius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: Radius.full,
   },
 });

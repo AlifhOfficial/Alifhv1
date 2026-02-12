@@ -19,7 +19,6 @@ import { HapticPressable } from '@/components/ui';
 import {
   BottomSheetModal,
   BottomSheetBackdrop,
-  BottomSheetView,
 } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -221,13 +220,16 @@ export function AmnaSheet({ visible, onClose, onSearch }: AmnaSheetProps) {
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
+      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
       handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
       keyboardBehavior="extend"
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
+      detached
+      bottomInset={insets.bottom + 20}
+      style={styles.sheetContainer}
     >
-      <BottomSheetView style={styles.container}>
+      <View style={styles.container}>
         {/* Loading / Message Overlay */}
         {isLoading && (
           <View style={[styles.overlay, { backgroundColor: colors.surface }]}>
@@ -379,7 +381,7 @@ export function AmnaSheet({ visible, onClose, onSearch }: AmnaSheetProps) {
 
         {/* Bottom padding */}
         <View style={{ height: insets.bottom + Spacing.lg }} />
-      </BottomSheetView>
+      </View>
     </BottomSheetModal>
   );
 }
@@ -389,6 +391,9 @@ export function AmnaSheet({ visible, onClose, onSearch }: AmnaSheetProps) {
 // ============================================================================
 
 const styles = StyleSheet.create({
+  sheetContainer: {
+    marginHorizontal: 16,
+  },
   container: {
     flex: 1,
     overflow: 'hidden',

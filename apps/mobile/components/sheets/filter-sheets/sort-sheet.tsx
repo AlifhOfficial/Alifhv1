@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Body } from '@/components/ui';
+import { Heading, Body, ButtonText } from '@/components/ui';
 import type { SearchSortOption } from '@/lib/search-api';
 
 const SORT_OPTIONS: { value: SearchSortOption; label: string }[] = [
@@ -96,18 +96,20 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
-        <View style={styles.header}>
-          <Heading size="medium">Sort By</Heading>
-          <HapticPressable 
-            onPress={onClose} 
-            hitSlop={Spacing.md}
-            style={[
-              styles.closeButton,
-              { backgroundColor: colors.fillSecondary }
-            ]}
-          >
-            <Ionicons name="close" size={18} color={colors.textSecondary} />
-          </HapticPressable>
+        <View style={[styles.header, { borderBottomColor: colors.border }]}>
+          <View style={styles.headerTopRow}>
+            <HapticPressable
+              onPress={onClose}
+              hitSlop={Spacing.md}
+              style={styles.cancelButton}
+            >
+              <Body size="medium" tone="secondary">Cancel</Body>
+            </HapticPressable>
+            
+            <Heading size="small">Sort By</Heading>
+            
+            <View style={styles.placeholder} />
+          </View>
         </View>
 
         {/* Options List */}
@@ -122,7 +124,7 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
                 style={styles.listItem}
               >
                 <Body
-                  size="large"
+                  size="medium"
                   style={{ 
                     color: selected ? colors.text : colors.textSecondary,
                     fontFamily: selected ? 'Inter_600SemiBold' : 'Inter_400Regular',
@@ -166,18 +168,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
   },
   header: {
+    flexShrink: 0,
+    paddingBottom: Spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    marginBottom: Spacing.md,
+  },
+  headerTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: Spacing.xl,
+  },
+  cancelButton: {
+    paddingVertical: Spacing.xs,
     paddingHorizontal: Spacing.xs,
   },
-  closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: Radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
+  placeholder: {
+    width: 60,
   },
   listContainer: {
     gap: Spacing.xs,

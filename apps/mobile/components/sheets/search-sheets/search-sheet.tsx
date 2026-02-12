@@ -22,7 +22,6 @@ import { HapticPressable } from '@/components/ui';
 import {
   BottomSheetModal,
   BottomSheetBackdrop,
-  BottomSheetView,
   BottomSheetTextInput,
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
@@ -599,7 +598,7 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
       bottomInset={insets.bottom + 20}
       style={styles.sheetContainer}
     >
-      <BottomSheetView style={styles.container}>
+      <View style={styles.container}>
         {/* Fixed Header with Search + Apply */}
         <View style={[styles.header, { borderBottomColor: colors.border }]}>
           {/* Top Row: Title + Apply Button */}
@@ -859,7 +858,7 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
           {/* Bottom padding */}
           <View style={{ height: insets.bottom + Spacing['3xl'] }} />
         </BottomSheetScrollView>
-      </BottomSheetView>
+      </View>
     </BottomSheetModal>
   );
 }
@@ -874,8 +873,10 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    overflow: 'hidden',
   },
   header: {
+    flexShrink: 0,
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.xs,
     paddingBottom: Spacing.md,

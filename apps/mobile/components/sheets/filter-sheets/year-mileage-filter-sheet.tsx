@@ -156,18 +156,47 @@ export function YearMileageFilterSheet({
     >
       <BottomSheetScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View style={styles.header}>
-          <Heading size="medium">Year & Mileage</Heading>
-          <HapticPressable 
-            onPress={onClose} 
-            hitSlop={Spacing.md}
-            style={[
-              styles.closeButton,
-              { backgroundColor: colors.fillSecondary }
-            ]}
-          >
-            <Ionicons name="close" size={18} color={colors.textSecondary} />
-          </HapticPressable>
+        <View style={[styles.header, { borderBottomColor: colors.border }]}>
+          <View style={styles.headerTopRow}>
+            <HapticPressable
+              onPress={onClose}
+              hitSlop={Spacing.md}
+              style={styles.cancelButton}
+            >
+              <Body size="medium" tone="secondary">Cancel</Body>
+            </HapticPressable>
+            
+            <Heading size="small">Year & Mileage</Heading>
+            
+            <HapticPressable
+              style={[
+                styles.applyButton,
+                { backgroundColor: hasValue ? colors.primary : colors.fillSecondary },
+              ]}
+              onPress={handleApply}
+            >
+              <ButtonText
+                size="small"
+                style={{ color: hasValue ? colors.primaryForeground : colors.textMuted }}
+              >
+                Apply
+              </ButtonText>
+            </HapticPressable>
+          </View>
+
+          {/* Selection Summary */}
+          {hasValue && (
+            <View style={styles.selectionSummary}>
+              <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
+                {[localYearMin && `From ${localYearMin}`, localYearMax && `To ${localYearMax}`, localMileageMax && `Under ${parseInt(localMileageMax).toLocaleString()} km`].filter(Boolean).join(' · ')}
+              </Body>
+              <HapticPressable onPress={handleClear} hitSlop={8}>
+                <Supporting size="small" style={{ color: colors.error }}>
+                  Clear
+                </Supporting>
+              </HapticPressable>
+            </View>
+          )}
         </View>
 
         {/* Year Section */}
@@ -291,24 +320,6 @@ export function YearMileageFilterSheet({
           </View>
         </View>
 
-        {/* Actions */}
-        <View style={styles.actions}>
-          {hasValue && (
-            <HapticPressable
-              onPress={handleClear}
-              style={[styles.clearButton, { borderColor: colors.border }]}
-            >
-              <ButtonText size="medium" tone="secondary">Clear</ButtonText>
-            </HapticPressable>
-          )}
-          <HapticPressable
-            onPress={handleApply}
-            style={[styles.applyButton, { backgroundColor: colors.text }]}
-          >
-            <ButtonText size="medium" style={{ color: colors.background }}>Apply</ButtonText>
-          </HapticPressable>
-        </View>
-
         <View style={{ height: insets.bottom + Spacing['3xl'] }} />
       </BottomSheetScrollView>
     </BottomSheetModal>
@@ -332,18 +343,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
   },
   header: {
+    flexShrink: 0,
+    paddingBottom: Spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    marginBottom: Spacing.md,
+  },
+  headerTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.sm,
+  },
+  cancelButton: {
+    paddingVertical: Spacing.xs,
     paddingHorizontal: Spacing.xs,
   },
-  closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: Radius.full,
+  selectionSummary: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.xs,
   },
   section: {
     marginBottom: Spacing.xl,
@@ -377,23 +396,9 @@ const styles = StyleSheet.create({
   },
   rangeDash: {
   },
-  actions: {
-    flexDirection: 'row',
-    gap: Spacing.md,
-  },
-  clearButton: {
-    flex: 1,
-    height: 48,
-    borderRadius: Radius.lg,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   applyButton: {
-    flex: 2,
-    height: 48,
-    borderRadius: Radius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: Radius.full,
   },
 });

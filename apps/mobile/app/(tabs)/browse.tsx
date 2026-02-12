@@ -20,7 +20,6 @@ import {
   YearMileageFilterSheet, 
   LocationFilterSheet, 
   MoreFiltersSheet,
-  AmnaSheet,
   type ViewMode,
   type MoreFiltersState,
 } from '@/components/sheets';
@@ -130,7 +129,6 @@ export default function BrowseScreen() {
   const [yearMileageSheetVisible, setYearMileageSheetVisible] = useState(false);
   const [locationSheetVisible, setLocationSheetVisible] = useState(false);
   const [settingsSheetVisible, setSettingsSheetVisible] = useState(false);
-  const [amnaSheetVisible, setAmnaSheetVisible] = useState(false);
 
   // ──────────────────────────────────────────────────────────────────────────
   // API CALLS
@@ -266,7 +264,6 @@ export default function BrowseScreen() {
 
   // Stable callbacks for FilterPills (prevents ScrollView scroll-reset)
   const handleSettingsPress = useCallback(() => setSettingsSheetVisible(true), []);
-  const handleAmnaPress = useCallback(() => setAmnaSheetVisible(true), []);
 
   // Handle make filter apply — updates searchParams in context
   const handleMakeApply = useCallback((makes: string[]) => {
@@ -328,52 +325,6 @@ export default function BrowseScreen() {
   const handleMoreFiltersApply = useCallback((moreFilters: MoreFiltersState) => {
     updateFilterParams(moreFilters);
   }, [updateFilterParams]);
-
-  // Handle Amna AI search — routes parsed filters through context
-  const handleAmnaSearch = useCallback((params: Record<string, any>) => {
-    // Split into search-level vs filter-level params
-    const { make, model, trim, tags, extras, q, ...filterLevel } = params;
-    
-    // Apply search-level params
-    const searchLevel: Record<string, any> = {};
-    if (make?.length) searchLevel.make = make;
-    if (model?.length) searchLevel.model = model;
-    if (trim?.length) searchLevel.trim = trim;
-    if (tags?.length) searchLevel.tags = tags;
-    if (extras?.length) searchLevel.extras = extras;
-    if (q) searchLevel.q = q;
-    
-    if (Object.keys(searchLevel).length > 0) {
-      applySearch(searchLevel);
-    }
-    
-    // Apply filter-level params
-    const filterUpdates: Record<string, any> = {};
-    if (filterLevel.bodyType?.length) filterUpdates.bodyType = filterLevel.bodyType;
-    if (filterLevel.fuelType?.length) filterUpdates.fuelType = filterLevel.fuelType;
-    if (filterLevel.transmission?.length) filterUpdates.transmission = filterLevel.transmission;
-    if (filterLevel.specs?.length) filterUpdates.specs = filterLevel.specs;
-    if (filterLevel.exteriorColor?.length) filterUpdates.exteriorColor = filterLevel.exteriorColor;
-    if (filterLevel.interiorColor?.length) filterUpdates.interiorColor = filterLevel.interiorColor;
-    if (filterLevel.engineSize?.length) filterUpdates.engineSize = filterLevel.engineSize;
-    if (filterLevel.emirate?.length) filterUpdates.emirate = filterLevel.emirate;
-    if (filterLevel.priceMin) filterUpdates.priceMin = filterLevel.priceMin;
-    if (filterLevel.priceMax) filterUpdates.priceMax = filterLevel.priceMax;
-    if (filterLevel.yearMin) filterUpdates.yearMin = filterLevel.yearMin;
-    if (filterLevel.yearMax) filterUpdates.yearMax = filterLevel.yearMax;
-    if (filterLevel.mileageMax) filterUpdates.mileageMax = filterLevel.mileageMax;
-    if (filterLevel.condition) filterUpdates.condition = filterLevel.condition;
-    if (filterLevel.sellerType) filterUpdates.sellerType = filterLevel.sellerType;
-    
-    if (Object.keys(filterUpdates).length > 0) {
-      updateFilterParams(filterUpdates);
-    }
-    
-    // Handle sort
-    if (filterLevel.sortBy) {
-      applySort(filterLevel.sortBy);
-    }
-  }, [applySearch, updateFilterParams, applySort]);
 
   // Calculate filter counts for pills (read from context)
   const filterPillConfigs = useMemo(() => {
@@ -444,7 +395,6 @@ export default function BrowseScreen() {
         settingsCount={moreFiltersCount}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
-        onAmnaPress={handleAmnaPress}
       />
 
       {/* Make Filter Sheet - reads from searchParams */}
@@ -504,13 +454,6 @@ export default function BrowseScreen() {
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         onApply={handleMoreFiltersApply}
-      />
-
-      {/* Amna AI Sheet */}
-      <AmnaSheet
-        visible={amnaSheetVisible}
-        onClose={() => setAmnaSheetVisible(false)}
-        onSearch={handleAmnaSearch}
       />
 
       {/* Listings */}

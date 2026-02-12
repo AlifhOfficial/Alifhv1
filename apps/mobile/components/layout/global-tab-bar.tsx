@@ -10,7 +10,7 @@ import { HapticPressable } from '@/components/ui';
 import { useRouter, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { Home, MessageCircle, LayoutGrid, ChevronLeft, Search, ArrowUpDown, Plus } from 'lucide-react-native';
+import { Home, MessageCircle, LayoutGrid, ChevronLeft, Search, ArrowUpDown, Plus, Sparkles } from 'lucide-react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -24,7 +24,7 @@ import { useSearch } from '@/context/search-context';
 import { useTabBar } from '@/context/tab-bar-context';
 import { useAuth } from '@/context/auth-context';
 import { Colors, Layout } from '@/constants/theme';
-import { SearchSheet, SortSheet } from '@/components/sheets';
+import { SearchSheet, SortSheet, AmnaSheet } from '@/components/sheets';
 import { ActiveSearchChips, ACTIVE_CHIPS_HEIGHT } from './active-search-chips';
 import { getUnreadCount } from '@/lib/messaging-api';
 import type { SearchSortOption } from '@/lib/search-api';
@@ -64,6 +64,7 @@ const isHomePath = (path: string) => {
 // Bubble sizes and gap read from Layout (responsive to screen width)
 const BACK_BUBBLE_SIZE = Layout.tabBubble;
 const SEARCH_BUBBLE_SIZE = Layout.tabBubble;
+const AMNA_BUBBLE_SIZE = Layout.tabBubble;
 const SORT_BUBBLE_SIZE = Layout.tabBubble;
 const CREATE_BUBBLE_SIZE = Layout.tabBubble;
 const GAP = Layout.headerGap;
@@ -114,6 +115,7 @@ export function GlobalTabBar() {
   // Sheet states
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
+  const [isAmnaOpen, setIsAmnaOpen] = useState(false);
 
   // Check if current screen is NOT a main tab (show back button)
   const showBackButton = !MAIN_TAB_PATHS.includes(pathname);
@@ -131,6 +133,7 @@ export function GlobalTabBar() {
   // Animation values
   const progress = useSharedValue(showBackButton ? 1 : 0);
   const searchProgress = useSharedValue(showSearchBubble ? 1 : 0);
+  const amnaProgress = useSharedValue(showSearchBubble ? 1 : 0);
   const sortProgress = useSharedValue(showSearchBubble ? 1 : 0);
   const createProgress = useSharedValue(showCreateBubble ? 1 : 0);
 
@@ -143,6 +146,10 @@ export function GlobalTabBar() {
 
   React.useEffect(() => {
     searchProgress.value = withTiming(showSearchBubble ? 1 : 0, {
+      duration: 200,
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+    });
+    amnaProgress.value = withTiming(showSearchBubble ? 1 : 0, {
       duration: 200,
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
     });
@@ -183,7 +190,19 @@ export function GlobalTabBar() {
     };
   });
 
-  // Sort bubble animates in from right (after search bubble)
+  // Amna bubble animates in from right (after search bubble)
+  const amnaBubbleStyle = useAnimatedStyle(() => {
+    return {
+      opacity: amnaProgress.value,
+      transform: [
+        { scale: interpolate(amnaProgress.value, [0, 1], [0.8, 1]) },
+      ],
+      width: interpolate(amnaProgress.value, [0, 1], [0, AMNA_BUBBLE_SIZE]),
+      marginLeft: interpolate(amnaProgress.value, [0, 1], [0, GAP]),
+    };
+  });
+
+  // Sort bubble animates in from right (after amna bubble)
   const sortBubbleStyle = useAnimatedStyle(() => {
     return {
       opacity: sortProgress.value,
@@ -283,6 +302,62 @@ export function GlobalTabBar() {
       updateFilterParams(filterUpdates);
     }
   }, [applySearch, updateFilterParams]);
+
+  const handleAmnaPress = useCallback(() => {
+    if (Platform.OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    setIsAmnaOpen(true);
+  }, []);
+
+  const handleAmnaClose = useCallback(() => {
+    setIsAmnaOpen(false);
+  }, []);
+
+  const handleAmnaSearch = useCallback((params: Record<string, any>) => {
+    // Split into search-level vs filter-level params
+    const { make, model, trim, tags, extras, q, ...filterLevel } = params;
+    
+    // Apply search-level params
+    const searchLevel: Record<string, any> = {};
+    if (make?.length) searchLevel.make = make;
+    if (model?.length) searchLevel.model = model;
+    if (trim?.length) searchLevel.trim = trim;
+    if (tags?.length) searchLevel.tags = tags;
+    if (extras?.length) searchLevel.extras = extras;
+    if (q) searchLevel.q = q;
+    
+    if (Object.keys(searchLevel).length > 0) {
+      applySearch(searchLevel);
+    }
+    
+    // Apply filter-level params
+    const filterUpdates: Record<string, any> = {};
+    if (filterLevel.bodyType?.length) filterUpdates.bodyType = filterLevel.bodyType;
+    if (filterLevel.fuelType?.length) filterUpdates.fuelType = filterLevel.fuelType;
+    if (filterLevel.transmission?.length) filterUpdates.transmission = filterLevel.transmission;
+    if (filterLevel.specs?.length) filterUpdates.specs = filterLevel.specs;
+    if (filterLevel.exteriorColor?.length) filterUpdates.exteriorColor = filterLevel.exteriorColor;
+    if (filterLevel.interiorColor?.length) filterUpdates.interiorColor = filterLevel.interiorColor;
+    if (filterLevel.engineSize?.length) filterUpdates.engineSize = filterLevel.engineSize;
+    if (filterLevel.emirate?.length) filterUpdates.emirate = filterLevel.emirate;
+    if (filterLevel.priceMin) filterUpdates.priceMin = filterLevel.priceMin;
+    if (filterLevel.priceMax) filterUpdates.priceMax = filterLevel.priceMax;
+    if (filterLevel.yearMin) filterUpdates.yearMin = filterLevel.yearMin;
+    if (filterLevel.yearMax) filterUpdates.yearMax = filterLevel.yearMax;
+    if (filterLevel.mileageMax) filterUpdates.mileageMax = filterLevel.mileageMax;
+    if (filterLevel.condition) filterUpdates.condition = filterLevel.condition;
+    if (filterLevel.sellerType) filterUpdates.sellerType = filterLevel.sellerType;
+    
+    if (Object.keys(filterUpdates).length > 0) {
+      updateFilterParams(filterUpdates);
+    }
+    
+    // Handle sort
+    if (filterLevel.sortBy) {
+      applySort(filterLevel.sortBy);
+    }
+  }, [applySearch, updateFilterParams, applySort]);
 
   const handleSortPress = useCallback(() => {
     if (Platform.OS === 'ios') {
@@ -406,6 +481,26 @@ export function GlobalTabBar() {
             />
           </AnimatedPressable>
 
+          {/* Amna AI bubble (appears on browse tab) */}
+          <AnimatedPressable
+            onPress={handleAmnaPress}
+            style={[
+              styles.amnaBubble,
+              { 
+                backgroundColor: colors.background,
+                borderColor: 'rgba(139, 92, 246, 0.30)',
+              },
+              amnaBubbleStyle,
+            ]}
+            pointerEvents={showSearchBubble ? 'auto' : 'none'}
+          >
+            <Sparkles
+              size={20}
+              color="#8B5CF6"
+              strokeWidth={2.5}
+            />
+          </AnimatedPressable>
+
           {/* Sort bubble (appears on browse tab) */}
           <AnimatedPressable
             onPress={handleSortPress}
@@ -461,6 +556,13 @@ export function GlobalTabBar() {
         onClose={handleSortClose}
         currentSort={sortBy}
         onSortChange={handleSortChange}
+      />
+
+      {/* Amna AI Sheet */}
+      <AmnaSheet
+        visible={isAmnaOpen}
+        onClose={handleAmnaClose}
+        onSearch={handleAmnaSearch}
       />
 
     </View>
@@ -531,6 +633,20 @@ const styles = StyleSheet.create({
     borderRadius: 18,
   },
   searchBubble: {
+    width: Layout.tabBubble,
+    height: Layout.tabBubble,
+    borderRadius: Layout.tabBubble / 2,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  amnaBubble: {
     width: Layout.tabBubble,
     height: Layout.tabBubble,
     borderRadius: Layout.tabBubble / 2,

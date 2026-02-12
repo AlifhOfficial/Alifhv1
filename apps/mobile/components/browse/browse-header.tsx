@@ -9,7 +9,7 @@ import { View, StyleSheet, ScrollView, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
-import { Settings2, LayoutGrid, List, Sparkles } from 'lucide-react-native';
+import { Settings2, LayoutGrid, List } from 'lucide-react-native';
 
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Layout, Radius } from '@/constants/theme';
@@ -31,7 +31,6 @@ interface BrowseHeaderProps {
   settingsCount?: number;
   viewMode?: ViewMode;
   onViewModeChange?: (mode: ViewMode) => void;
-  onAmnaPress?: () => void;
 }
 
 export function BrowseHeader({ 
@@ -41,7 +40,6 @@ export function BrowseHeader({
   settingsCount = 0,
   viewMode = 'grid',
   onViewModeChange,
-  onAmnaPress,
 }: BrowseHeaderProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
@@ -77,29 +75,6 @@ export function BrowseHeader({
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Amna AI Bubble */}
-        {onAmnaPress && (
-          <HapticPressable
-            onPress={() => {
-              if (Platform.OS === 'ios') {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              }
-              onAmnaPress();
-            }}
-            style={[
-              styles.iconBubble,
-              {
-                backgroundColor: colors.background,
-                borderColor: 'rgba(139, 92, 246, 0.30)',
-              },
-            ]}
-          >
-            {({ pressed }) => (
-              <Sparkles size={20} color="#8B5CF6" strokeWidth={2.5} style={{ opacity: pressed ? 0.8 : 1 }} />
-            )}
-          </HapticPressable>
-        )}
-
         {/* View Mode Toggle */}
         <HapticPressable
           onPress={handleViewModeToggle}
