@@ -37,8 +37,8 @@ export function Section({
     >
       <View style={styles.header}>
         <Label 
-          size="medium" 
-          tone={danger ? 'error' : 'secondary'} 
+          size="small" 
+          tone={danger ? 'error' : 'muted'} 
           style={styles.title}
         >
           {title}

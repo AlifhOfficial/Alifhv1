@@ -10,10 +10,10 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import { LogoPulse, Body } from '@/components/ui';
+import { Body, Skeleton } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Layout, Spacing } from '@/constants/theme';
+import { Layout, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import {
@@ -95,16 +95,20 @@ export default function SettingsScreen() {
     // TODO: Navigate to feedback
   }, []);
 
-  // Loading state
+  // Loading state — skeleton
   if (isLoading) {
     return (
       <View style={styles.container}>
         <SettingsHeader colors={colors} topInset={insets.top} />
-        <View style={styles.loadingContainer}>
-          <LogoPulse size={56} />
-          <Body size="medium" tone="secondary">
-            Loading settings...
-          </Body>
+        <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding }]}>
+          {/* Section skeletons */}
+          {Array.from({ length: 4 }).map((_, i) => (
+            <View key={i} style={styles.skeletonSection}>
+              <Skeleton width={120} height={14} />
+              <Skeleton width="100%" height={48} borderRadius={Radius.md} />
+              <Skeleton width="100%" height={48} borderRadius={Radius.md} />
+            </View>
+          ))}
         </View>
       </View>
     );
@@ -214,10 +218,12 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: Layout.screenPadding,
   },
-  loadingContainer: {
+  skeletonContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingTop: Spacing['2xl'],
+    gap: Spacing.xl,
+  },
+  skeletonSection: {
     gap: Spacing.md,
   },
 });

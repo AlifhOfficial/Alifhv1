@@ -43,6 +43,7 @@ import {
   Supporting,
   ButtonText,
   Label,
+  Skeleton,
 } from '@/components/ui';
 import {
   getUserBookings,
@@ -392,11 +393,22 @@ export function BookingsScreen() {
 
       {/* ─────────────────────── Content ────────────────────────────────── */}
       {isLoading && bookings.length === 0 ? (
-        <View style={[styles.centerContainer, { paddingTop: headerHeight }]}>
-          <ActivityIndicator size="large" color={colors.primary} />
-          <Body size="medium" tone="secondary" style={{ marginTop: Spacing.lg }}>
-            Loading your bookings…
-          </Body>
+        <View style={[styles.listContent, { paddingTop: headerHeight }]}>
+          {Array.from({ length: 5 }).map((_, i) => (
+            <View
+              key={i}
+              style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
+            >
+              <Skeleton width={IMAGE_WIDTH} height={IMAGE_HEIGHT} borderRadius={Radius.md} />
+              <View style={styles.content}>
+                <Skeleton width={130} height={14} />
+                <Skeleton width={90} height={12} />
+                <Skeleton width={110} height={12} />
+                <Skeleton width={100} height={12} />
+                <Skeleton width={70} height={20} borderRadius={Radius.sm} />
+              </View>
+            </View>
+          ))}
         </View>
       ) : error && bookings.length === 0 ? (
         <View style={[styles.centerContainer, { paddingTop: headerHeight }]}>

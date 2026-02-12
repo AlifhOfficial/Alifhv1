@@ -8,7 +8,6 @@ import {
   StyleSheet,
   View,
   FlatList,
-  ActivityIndicator,
   RefreshControl,
   Alert,
 } from 'react-native';
@@ -20,7 +19,7 @@ import { NotificationsHeader, NotificationItem } from '@/components/notification
 import { Colors, Layout, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
-import { Body, Heading } from '@/components/ui';
+import { Body, Heading, Skeleton, SkeletonCircle } from '@/components/ui';
 import {
   fetchNotifications,
   markNotificationRead,
@@ -229,8 +228,19 @@ export default function NotificationsScreen() {
       />
 
       {isLoading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
+        <View style={styles.skeletonList}>
+          {Array.from({ length: 8 }).map((_, i) => (
+            <View key={i} style={styles.skeletonRow}>
+              <SkeletonCircle size={40} />
+              <View style={styles.skeletonRowContent}>
+                <View style={styles.skeletonRowTop}>
+                  <Skeleton width={140} height={14} />
+                  <Skeleton width={28} height={12} />
+                </View>
+                <Skeleton width={220} height={12} />
+              </View>
+            </View>
+          ))}
         </View>
       ) : (
         <FlatList
@@ -263,10 +273,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  loadingContainer: {
+  skeletonList: {
     flex: 1,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.md,
+    gap: Spacing.xl,
+  },
+  skeletonRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: Spacing.md,
+  },
+  skeletonRowContent: {
+    flex: 1,
+    gap: 6,
+  },
+  skeletonRowTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   emptyContainer: {
     flex: 1,

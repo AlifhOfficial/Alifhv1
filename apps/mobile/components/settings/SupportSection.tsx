@@ -13,7 +13,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { Supporting, Body } from '@/components/ui';
+import { Body } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
 import { Section } from './Section';
 import type { ThemeColors } from './types';
@@ -68,8 +68,8 @@ function SupportItem({
         <View style={styles.itemLeft}>
           <Icon size={18} color={colors.textSecondary} strokeWidth={1.5} />
           <View style={styles.itemContent}>
-            <Supporting size="medium" tone="muted">Navigate</Supporting>
-            <Body size="large">{label}</Body>
+            <Body size="small" tone="muted">Navigate</Body>
+            <Body size="medium">{label}</Body>
           </View>
         </View>
         <ChevronRight size={18} color={colors.textTertiary} strokeWidth={2} />

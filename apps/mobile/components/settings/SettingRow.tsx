@@ -6,7 +6,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Supporting, Body } from '@/components/ui';
+import { Body } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
@@ -33,9 +33,9 @@ export function SettingRow({
       ]}
     >
       <View style={styles.content}>
-        <Supporting size="medium" tone="muted">{title}</Supporting>
+        <Body size="small" tone="muted">{title}</Body>
         {description && (
-          <Body size="large">{description}</Body>
+          <Body size="medium">{description}</Body>
         )}
       </View>
       {children}

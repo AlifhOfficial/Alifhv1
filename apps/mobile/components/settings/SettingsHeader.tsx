@@ -20,7 +20,7 @@ export function SettingsHeader({
 }: SettingsHeaderProps) {
   return (
     <View style={[styles.container, { paddingTop: topInset + Layout.headerPadding }]}>
-      <Heading size="large">Settings</Heading>
+      <Heading size="medium">Settings</Heading>
     </View>
   );
 }

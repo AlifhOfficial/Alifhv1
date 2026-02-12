@@ -12,7 +12,6 @@ import {
   StyleSheet,
   View,
   FlatList,
-  ActivityIndicator,
   RefreshControl,
   Pressable,
   Platform,
@@ -31,7 +30,7 @@ import {
 import { Colors, Layout, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
-import { Heading, Body, Data, ButtonText } from '@/components/ui';
+import { Heading, Body, Data, ButtonText, Skeleton, SkeletonCircle } from '@/components/ui';
 import type { Conversation } from '@/lib/messaging-api';
 
 // ── List Item Type - Always grouped ─────────────────────────────
@@ -252,8 +251,19 @@ export default function MessagesScreen() {
     // Still loading for the first time (no data yet, not a refresh)
     if ((isLoading || isRefreshing) && conversations.length === 0) {
       return (
-        <View style={styles.centered}>
-          <ActivityIndicator size="small" color={colors.primary} />
+        <View style={styles.skeletonList}>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <View key={i} style={styles.skeletonRow}>
+              <SkeletonCircle size={48} />
+              <View style={styles.skeletonRowContent}>
+                <View style={styles.skeletonRowTop}>
+                  <Skeleton width={120} height={14} />
+                  <Skeleton width={40} height={12} />
+                </View>
+                <Skeleton width={200} height={12} />
+              </View>
+            </View>
+          ))}
         </View>
       );
     }
@@ -325,6 +335,26 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  skeletonList: {
+    flex: 1,
+    paddingHorizontal: Layout.screenPadding,
+    paddingTop: Spacing.md,
+    gap: Spacing.lg,
+  },
+  skeletonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  skeletonRowContent: {
+    flex: 1,
+    gap: 6,
+  },
+  skeletonRowTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   emptyState: {
     flex: 1,

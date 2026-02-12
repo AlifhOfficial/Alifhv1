@@ -47,6 +47,7 @@ import {
   Supporting,
   ButtonText,
   Label,
+  Skeleton,
 } from '@/components/ui';
 import {
   getMyListings,
@@ -453,11 +454,23 @@ export function InventoryScreen() {
 
       {/* ─────────────────────── Content ─────────────────────────────────── */}
       {isLoading && listings.length === 0 ? (
-        <View style={[styles.centerContainer, { paddingTop: headerHeight }]}>
-          <ActivityIndicator size="large" color={colors.primary} />
-          <Body size="medium" tone="secondary" style={{ marginTop: Spacing.lg }}>
-            Loading your listings…
-          </Body>
+        <View style={[styles.listContent, { paddingTop: headerHeight }]}>
+          {Array.from({ length: 5 }).map((_, i) => (
+            <View
+              key={i}
+              style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
+            >
+              <View style={styles.imageContainer}>
+                <Skeleton width={IMAGE_WIDTH - Spacing.sm * 2} height={IMAGE_HEIGHT - Spacing.sm * 2} borderRadius={Radius.md} />
+              </View>
+              <View style={styles.content}>
+                <Skeleton width={130} height={14} />
+                <Skeleton width={90} height={14} />
+                <Skeleton width={100} height={12} />
+                <Skeleton width={80} height={12} />
+              </View>
+            </View>
+          ))}
         </View>
       ) : error && listings.length === 0 ? (
         <View style={[styles.centerContainer, { paddingTop: headerHeight }]}>

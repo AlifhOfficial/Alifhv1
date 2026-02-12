@@ -9,7 +9,7 @@ import {
   View,
   Text,
 } from 'react-native';
-import { LogoPulse } from '@/components/ui';
+import { Skeleton } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Colors, Typography } from '@/constants/theme';
@@ -70,11 +70,21 @@ export default function SavedScreen() {
           favoritesCount={favorites.length}
           superlikesCount={superlikes.length}
         />
-        <View style={styles.loadingContainer}>
-          <LogoPulse size={56} />
-          <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
-            Loading saved listings...
-          </Text>
+        <View style={styles.skeletonContainer}>
+          {Array.from({ length: 5 }).map((_, i) => (
+            <View
+              key={i}
+              style={[styles.skeletonCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+            >
+              <Skeleton width={120} height={100} borderRadius={8} />
+              <View style={styles.skeletonCardContent}>
+                <Skeleton width={140} height={14} />
+                <Skeleton width={100} height={12} />
+                <Skeleton width={80} height={16} />
+                <Skeleton width={110} height={12} />
+              </View>
+            </View>
+          ))}
         </View>
       </View>
     );
@@ -140,15 +150,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  loadingContainer: {
+  skeletonContainer: {
     flex: 1,
-    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    gap: 10,
+  },
+  skeletonCard: {
+    flexDirection: 'row',
     alignItems: 'center',
+    borderRadius: 12,
+    borderWidth: 1,
+    padding: 12,
     gap: 12,
   },
-  loadingText: {
-    fontSize: 16,
-    fontFamily: 'Inter_400Regular',
+  skeletonCardContent: {
+    flex: 1,
+    gap: 6,
   },
   errorContainer: {
     flex: 1,

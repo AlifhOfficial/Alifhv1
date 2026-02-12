@@ -83,7 +83,7 @@ export function DeleteAccountModal({
           </Body>
 
           <View style={styles.inputContainer}>
-            <Supporting size="medium" tone="muted" style={styles.inputLabel}>
+            <Supporting size="small" tone="muted" style={styles.inputLabel}>
               Type "DELETE" to confirm
             </Supporting>
             <TextInput

@@ -13,7 +13,7 @@ import {
   Alert,
   RefreshControl,
 } from 'react-native';
-import { LogoPulse, Body, Supporting } from '@/components/ui';
+import { Body, Supporting, Skeleton, SkeletonCircle } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Layout, Spacing, Radius } from '@/constants/theme';
@@ -129,16 +129,58 @@ export default function ProfileScreen() {
     );
   }
 
-  // Loading state
+  // Loading state — skeleton
   if (isLoading) {
     return (
       <View style={[styles.container, styles.centered]}>
         <ProfileHeader colors={colors} topInset={insets.top} />
-        <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
-          <LogoPulse size={56} />
-          <Body size="medium" tone="secondary">
-            Loading profile...
-          </Body>
+        <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding }]}>
+          {/* Avatar */}
+          <View style={styles.skeletonIdentity}>
+            <SkeletonCircle size={88} />
+            <View style={styles.skeletonIdentityText}>
+              <Skeleton width={160} height={18} />
+              <Skeleton width={120} height={14} />
+              <Skeleton width={90} height={12} />
+            </View>
+          </View>
+
+          {/* Personal Info Section */}
+          <View style={styles.skeletonSection}>
+            <Skeleton width={140} height={16} />
+            <Skeleton width="100%" height={44} borderRadius={Radius.md} />
+            <Skeleton width="100%" height={44} borderRadius={Radius.md} />
+            <Skeleton width="100%" height={44} borderRadius={Radius.md} />
+          </View>
+
+          {/* Bio Section */}
+          <View style={styles.skeletonSection}>
+            <Skeleton width={50} height={16} />
+            <Skeleton width="100%" height={80} borderRadius={Radius.md} />
+          </View>
+
+          {/* Tags Section */}
+          <View style={styles.skeletonSection}>
+            <Skeleton width={80} height={16} />
+            <View style={styles.skeletonTagsRow}>
+              <Skeleton width={70} height={32} borderRadius={Radius.full} />
+              <Skeleton width={90} height={32} borderRadius={Radius.full} />
+              <Skeleton width={60} height={32} borderRadius={Radius.full} />
+              <Skeleton width={80} height={32} borderRadius={Radius.full} />
+            </View>
+          </View>
+
+          {/* Stats Grid */}
+          <View style={styles.skeletonSection}>
+            <View style={styles.skeletonStatsRow}>
+              <Skeleton width="48%" height={70} borderRadius={Radius.md} />
+              <Skeleton width="48%" height={70} borderRadius={Radius.md} />
+            </View>
+            <View style={styles.skeletonStatsRow}>
+              <Skeleton width="48%" height={70} borderRadius={Radius.md} />
+              <Skeleton width="48%" height={70} borderRadius={Radius.md} />
+            </View>
+          </View>
         </View>
       </View>
     );
@@ -275,11 +317,31 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: Layout.screenPadding,
   },
-  loadingContainer: {
+  skeletonContainer: {
     flex: 1,
-    justifyContent: 'center',
+    paddingTop: Spacing['2xl'],
+    gap: Spacing.xl,
+  },
+  skeletonIdentity: {
+    flexDirection: 'row',
     alignItems: 'center',
+    gap: Spacing.lg,
+  },
+  skeletonIdentityText: {
+    flex: 1,
+    gap: Spacing.sm,
+  },
+  skeletonSection: {
     gap: Spacing.md,
+  },
+  skeletonTagsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+  },
+  skeletonStatsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   errorContainer: {
     flex: 1,

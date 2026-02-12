@@ -5,9 +5,9 @@
 
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
 import { HapticPressable } from '@/components/ui';
 import { Body } from '@/components/ui/text';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import {
@@ -94,6 +94,7 @@ export function NotificationItem({ notification, onPress, onLongPress }: Notific
   const Icon = getNotificationIcon(notification.type);
   const iconColor = getNotificationIconColor(notification.type, colors);
   const avatarSrc = notification.imageUrl || notification.actorAvatarUrl;
+  const hasActor = !!notification.actorName;
   const isRead = notification.isRead;
 
   return (
@@ -105,20 +106,18 @@ export function NotificationItem({ notification, onPress, onLongPress }: Notific
       {({ pressed }) => (
         <View style={[styles.inner, { opacity: pressed ? 0.6 : isRead ? 0.55 : 1 }]}>
           {/* Avatar or Icon */}
-          <View style={[styles.avatar, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            {avatarSrc ? (
-              <Image
-                source={{ uri: avatarSrc }}
-                style={styles.avatarImage}
-                contentFit="cover"
-                transition={150}
-              />
-            ) : (
-              <View style={[styles.iconCircle, { backgroundColor: colors.surface }]}>
-                <Icon size={20} color={iconColor} strokeWidth={2} />
-              </View>
-            )}
-          </View>
+          {hasActor ? (
+            <UserAvatar
+              src={avatarSrc}
+              name={notification.actorName}
+              size="md"
+              useGeneratedAvatar={true}
+            />
+          ) : (
+            <View style={[styles.avatar, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <Icon size={20} color={iconColor} strokeWidth={2} />
+            </View>
+          )}
 
           {/* Content */}
           <View style={styles.content}>
@@ -167,17 +166,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
-  },
-  avatarImage: {
-    width: '100%',
-    height: '100%',
-  },
-  iconCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: Radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   content: {
     flex: 1,
