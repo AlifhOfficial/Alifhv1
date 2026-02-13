@@ -280,7 +280,7 @@ export function CarCard({
 
       {/* Image Section */}
       <Link href={`/listings/${id}`} className={cn(
-        "relative aspect-[16/9] w-full overflow-hidden block",
+        "relative aspect-[16/9] w-full overflow-hidden rounded-lg block",
         isBlkListing ? "bg-zinc-900" : "bg-muted/20"
       )}>
         <Image

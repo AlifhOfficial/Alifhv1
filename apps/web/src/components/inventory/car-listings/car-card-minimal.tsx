@@ -66,7 +66,7 @@ export function CarCardMinimal({
       )}
     >      {/* Image - Compact */}
       <div className={cn(
-        "relative aspect-[16/9] w-full overflow-hidden",
+        "relative aspect-[16/9] w-full overflow-hidden rounded-lg",
         isBlkListing ? "bg-zinc-900" : "bg-muted/20"
       )}>
         <Image

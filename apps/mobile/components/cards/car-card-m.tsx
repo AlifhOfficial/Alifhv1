@@ -476,6 +476,9 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: '100%',
     aspectRatio: 16 / 9,
+    borderBottomLeftRadius: Radius.md,
+    borderBottomRightRadius: Radius.md,
+    overflow: 'hidden',
   },
   image: {
     width: '100%',
