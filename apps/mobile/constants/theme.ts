@@ -659,6 +659,18 @@ const SemanticTypography = {
     lineHeight: fontScale(24), 
     fontFamily: 'Inter_700Bold' 
   },
+
+  // ─────────────────────────────────────────────────────
+  // SPLASH SCREEN - Boot-up branded text (Revolut-style)
+  // ─────────────────────────────────────────────────────
+  splashBrand: { 
+    ...base, 
+    ...centered,
+    fontSize: 42, 
+    lineHeight: 48, 
+    fontFamily: 'Inter_800ExtraBold',
+    letterSpacing: -1,
+  },
 } as const;
 
 export const Typography = {

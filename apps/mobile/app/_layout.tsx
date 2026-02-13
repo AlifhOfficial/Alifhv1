@@ -31,7 +31,7 @@ import { SearchProvider } from '@/context/search-context';
 import { WebSocketProvider } from '@/context/websocket-context';
 import { NotificationProvider } from '@/context/notification-context';
 import { NetworkProvider } from '@/context/network-context';
-import { Loader } from '@/components/ui/loader';
+import { BootScreen } from '@/components/layout/boot-screen';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { OfflineBanner } from '@/components/ui/offline-banner';
 import { GlobalTabBar } from '@/components/layout/global-tab-bar';
@@ -203,11 +203,7 @@ function RootLayoutNav() {
 
   // Show loading while checking onboarding status
   if (hasCompletedOnboarding === null) {
-    return (
-      <View style={{ flex: 1, backgroundColor: colors.background }}>
-        <Loader />
-      </View>
-    );
+    return <BootScreen />;
   }
 
   return (
@@ -281,15 +277,11 @@ export default function RootLayout() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Show branded loader until fonts are loaded AND minimum time has passed
+  // Show branded boot screen until fonts are loaded AND minimum time has passed
   if (!fontsLoaded || !minTimeElapsed) {
     return (
-      <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.dark.background }}>
-        <SafeAreaProvider>
-          <ThemeProvider>
-            <Loader />
-          </ThemeProvider>
-        </SafeAreaProvider>
+      <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#000000' }}>
+        <BootScreen />
       </GestureHandlerRootView>
     );
   }
