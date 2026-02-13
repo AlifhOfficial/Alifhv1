@@ -11,7 +11,7 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, Inter_800ExtraBold } from '@expo-google-fonts/inter';
 import * as SplashScreen from 'expo-splash-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Modal, View, LogBox } from 'react-native';
 import 'react-native-reanimated';
 
@@ -136,6 +136,12 @@ function RootLayoutNav() {
   const { isTabBarVisible, isHeaderVisible } = useTabBar();
   const router = useRouter();
   const colors = Colors[colorScheme];
+  
+  // Memoize navigation theme to prevent full re-renders
+  const navTheme = useMemo(
+    () => colorScheme === 'dark' ? CustomDarkTheme : LightTheme,
+    [colorScheme]
+  );
 
   // Track if user has completed onboarding
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean | null>(null);
@@ -205,7 +211,7 @@ function RootLayoutNav() {
   }
 
   return (
-    <NavigationThemeProvider value={colorScheme === 'dark' ? CustomDarkTheme : LightTheme}>
+    <NavigationThemeProvider value={navTheme}>
       <Stack
         screenOptions={{
           headerShown: false,

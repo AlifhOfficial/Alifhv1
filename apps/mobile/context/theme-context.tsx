@@ -3,7 +3,7 @@
  * Integrates with device preferences and persists user choice
  */
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
 import { useColorScheme as useDeviceColorScheme, Appearance, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setStatusBarStyle } from 'expo-status-bar';
@@ -53,15 +53,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     loadThemePreference();
   }, []);
 
-  // Persist theme preference when changed
-  const setThemeMode = async (mode: ThemeMode) => {
+  // Persist theme preference when changed (non-blocking)
+  const setThemeMode = useCallback((mode: ThemeMode) => {
     setThemeModeState(mode);
-    try {
-      await AsyncStorage.setItem(THEME_STORAGE_KEY, mode);
-    } catch {
-      // Silently fail - preference just won't persist
-    }
-  };
+    // Fire-and-forget storage update - don't block UI
+    AsyncStorage.setItem(THEME_STORAGE_KEY, mode).catch(() => {});
+  }, []);
 
   // Resolve the actual color scheme based on mode
   const colorScheme: ColorScheme = 
@@ -85,20 +82,29 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
   }, [themeMode, isDark]);
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     // Toggle between light and dark (explicit choice, not system)
-    setThemeMode(colorScheme === 'light' ? 'dark' : 'light');
-  };
+    setThemeModeState(prev => {
+      const current = prev === 'system' ? (deviceColorScheme ?? 'dark') : prev;
+      const next = current === 'light' ? 'dark' : 'light';
+      // Fire-and-forget storage update
+      AsyncStorage.setItem(THEME_STORAGE_KEY, next).catch(() => {});
+      return next;
+    });
+  }, [deviceColorScheme]);
+
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue = useMemo(() => ({
+    colorScheme,
+    themeMode,
+    setThemeMode,
+    toggleTheme,
+    isDark,
+    colors,
+  }), [colorScheme, themeMode, setThemeMode, toggleTheme, isDark, colors]);
 
   return (
-    <ThemeContext.Provider value={{ 
-      colorScheme, 
-      themeMode,
-      setThemeMode, 
-      toggleTheme, 
-      isDark,
-      colors,
-    }}>
+    <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>
   );
