@@ -7,7 +7,6 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BlurView } from 'expo-blur';
 import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 import { Settings2, LayoutGrid, List } from 'lucide-react-native';
@@ -45,7 +44,6 @@ export function BrowseHeader({
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
-  const blurTint = colorScheme === 'dark' ? 'dark' : 'light' as const;
 
   const handlePress = (type: FilterPillType) => {
     if (Platform.OS === 'ios') {
@@ -77,9 +75,7 @@ export function BrowseHeader({
         contentContainerStyle={styles.scrollContent}
       >
         {/* View Mode Toggle */}
-        <BlurView
-          intensity={60}
-          tint={blurTint}
+        <View
           style={[
             styles.iconButton,
             styles.glass,
@@ -100,13 +96,11 @@ export function BrowseHeader({
               </View>
             )}
           </HapticPressable>
-        </BlurView>
+        </View>
 
         {/* Settings bubble */}
         <View>
-          <BlurView
-            intensity={60}
-            tint={blurTint}
+          <View
             style={[
               styles.iconButton,
               styles.glass,
@@ -127,7 +121,7 @@ export function BrowseHeader({
                 </View>
               )}
             </HapticPressable>
-          </BlurView>
+          </View>
           {settingsCount > 0 && (
             <View
               style={[
@@ -144,10 +138,8 @@ export function BrowseHeader({
 
         {/* Filter pills */}
         {pills.map((pill) => (
-          <BlurView
+          <View
             key={pill.type}
-            intensity={60}
-            tint={blurTint}
             style={[
               styles.pill,
               styles.glass,
@@ -176,7 +168,7 @@ export function BrowseHeader({
                 </View>
               )}
             </HapticPressable>
-          </BlurView>
+          </View>
         ))}
       </ScrollView>
     </View>

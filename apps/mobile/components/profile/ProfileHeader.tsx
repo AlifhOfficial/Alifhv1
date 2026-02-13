@@ -42,7 +42,7 @@ export function ProfileHeader({ colors, topInset }: ProfileHeaderProps) {
           <>
             <Settings
               size={20}
-              color={colors.iconMuted}
+              color={colors.text}
               strokeWidth={2}
               style={{ opacity: pressed ? 0.7 : 1 }}
             />

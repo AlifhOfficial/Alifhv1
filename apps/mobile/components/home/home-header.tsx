@@ -6,7 +6,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { HapticPressable } from '@/components/ui';
-import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Bell, Sun, Moon, Bookmark, Package } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
@@ -67,8 +66,6 @@ export function HomeHeader() {
     router.push('/inventory');
   };
 
-  const blurTint = colorScheme === 'dark' ? 'dark' : 'light' as const;
-
   const ThemeIcon = colorScheme === 'dark' ? Moon : Sun;
 
   return (
@@ -76,9 +73,7 @@ export function HomeHeader() {
       {/* Left: Profile + Notifications + Saved + Inventory */}
       <View style={styles.leftGroup}>
         <ProfileMenu />
-        <BlurView
-          intensity={60}
-          tint={blurTint}
+        <View
           style={[
             styles.iconButton,
             styles.glass,
@@ -111,10 +106,8 @@ export function HomeHeader() {
               </View>
             )}
           </HapticPressable>
-        </BlurView>
-        <BlurView
-          intensity={60}
-          tint={blurTint}
+        </View>
+        <View
           style={[
             styles.pillButton,
             styles.glass,
@@ -138,10 +131,8 @@ export function HomeHeader() {
               </View>
             )}
           </HapticPressable>
-        </BlurView>
-        <BlurView
-          intensity={60}
-          tint={blurTint}
+        </View>
+        <View
           style={[
             styles.pillButton,
             styles.glass,
@@ -165,13 +156,11 @@ export function HomeHeader() {
               </View>
             )}
           </HapticPressable>
-        </BlurView>
+        </View>
       </View>
 
       {/* Right: Theme Toggle */}
-      <BlurView
-        intensity={60}
-        tint={blurTint}
+      <View
         style={[
           styles.iconButton,
           styles.glass,
@@ -195,7 +184,7 @@ export function HomeHeader() {
             />
           )}
         </HapticPressable>
-      </BlurView>
+      </View>
     </View>
   );
 }

@@ -105,7 +105,7 @@ export const Colors = {
     icon: '#333333',
     iconMuted: '#A3A3A3',
     
-    // GLASS (Blur elements - header pills, tab bar bubbles)
+    // GLASS (Pills, bubbles - solid backgrounds)
     glassBorder: 'rgba(0,0,0,0.08)',
     glassBackground: '#FFFFFF',
     
@@ -174,9 +174,9 @@ export const Colors = {
     icon: '#D4D4D4',
     iconMuted: '#525252',
     
-    // GLASS (Blur elements - header pills, tab bar bubbles)
+    // GLASS (Pills, bubbles - solid backgrounds)
     glassBorder: 'rgba(255,255,255,0.14)',
-    glassBackground: 'rgba(13,13,13,0.35)',
+    glassBackground: '#0D0D0D',
     
     // INTERACTIVE
     fill: 'rgba(115, 115, 115, 0.24)',

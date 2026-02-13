@@ -26,7 +26,7 @@ import {
   SecuritySection,
   SupportSection,
   DangerZone,
-  DeleteAccountModal,
+  DeleteAccountSheet,
   type KYCStatus,
 } from '@/components/settings';
 
@@ -178,11 +178,10 @@ export default function SettingsScreen() {
         />
       </ScrollView>
 
-      {/* Delete Account Modal */}
-      <DeleteAccountModal
+      {/* Delete Account Sheet */}
+      <DeleteAccountSheet
         visible={showDeleteModal}
         isDeleting={isDeleting}
-        colors={colors}
         onClose={() => {
           setShowDeleteModal(false);
           setIsDeleting(false);

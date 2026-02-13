@@ -22,4 +22,4 @@ export type { KYCStatus } from './IdentitySection';
 export { SecuritySection } from './SecuritySection';
 export { SupportSection } from './SupportSection';
 export { DangerZone } from './DangerZone';
-export { DeleteAccountModal } from './DeleteAccountModal';
+export { DeleteAccountSheet } from './DeleteAccountSheet';

@@ -28,7 +28,6 @@ import {
 } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
-import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -119,7 +118,6 @@ export function InventoryScreen() {
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const blurTint = colorScheme === 'dark' ? 'dark' : 'light' as const;
 
   // ── Data State ───────────────────────────────────────────────────────────
   const [activeTab, setActiveTab] = useState<MyListingsFilter>('all');
@@ -408,10 +406,8 @@ export function InventoryScreen() {
             const count = tab.count(stats);
 
             return (
-              <BlurView
+              <View
                 key={tab.key}
-                intensity={60}
-                tint={blurTint}
                 style={[
                   styles.pill,
                   styles.glass,
@@ -453,7 +449,7 @@ export function InventoryScreen() {
                     </View>
                   )}
                 </HapticPressable>
-              </BlurView>
+              </View>
             );
           })}
         </ScrollView>

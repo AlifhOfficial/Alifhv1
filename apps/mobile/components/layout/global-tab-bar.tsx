@@ -7,7 +7,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { View, Pressable, StyleSheet, Platform } from 'react-native';
 import { HapticPressable, ConfettiBurst, useConfettiBurst } from '@/components/ui';
-import { BlurView } from 'expo-blur';
 import { useRouter, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -100,7 +99,6 @@ export function GlobalTabBar() {
   // Double-tap detection for browse tab
   const lastBrowseTapRef = React.useRef<number>(0);
   const colors = Colors[colorScheme];
-  const blurTint = colorScheme === 'dark' ? 'dark' : 'light' as const;
   const router = useRouter();
   const pathname = usePathname();
 
@@ -413,7 +411,7 @@ export function GlobalTabBar() {
             ]}
             pointerEvents={showBackButton ? 'auto' : 'none'}
           >
-            <BlurView intensity={60} tint={blurTint} style={[StyleSheet.absoluteFill, { borderRadius: Layout.tabBubble / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
+            <View style={[StyleSheet.absoluteFill, { borderRadius: Layout.tabBubble / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
             <ChevronLeft
               size={22}
               color={colors.text}
@@ -430,7 +428,7 @@ export function GlobalTabBar() {
             }, 
             pillStyle
           ]}>
-            <BlurView intensity={60} tint={blurTint} style={[StyleSheet.absoluteFill, { borderRadius: 18, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
+            <View style={[StyleSheet.absoluteFill, { borderRadius: 18, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
             <View style={styles.pillContent}>
               {TABS.map((tab) => {
                 const isActive = getIsActive(tab);
@@ -476,7 +474,7 @@ export function GlobalTabBar() {
             ]}
             pointerEvents={showSearchBubble ? 'auto' : 'none'}
           >
-            <BlurView intensity={60} tint={blurTint} style={[StyleSheet.absoluteFill, { borderRadius: Layout.tabBubble / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
+            <View style={[StyleSheet.absoluteFill, { borderRadius: Layout.tabBubble / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
             <Search
               size={22}
               color={colors.text}
@@ -498,7 +496,7 @@ export function GlobalTabBar() {
               ]}
               pointerEvents={showSearchBubble ? 'auto' : 'none'}
             >
-              <BlurView intensity={60} tint={blurTint} style={[StyleSheet.absoluteFill, { borderRadius: Layout.tabBubble / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
+              <View style={[StyleSheet.absoluteFill, { borderRadius: Layout.tabBubble / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
               <Zap
                 size={22}
                 color="#8B5CF6"
@@ -521,7 +519,7 @@ export function GlobalTabBar() {
             ]}
             pointerEvents={showSearchBubble ? 'auto' : 'none'}
           >
-            <BlurView intensity={60} tint={blurTint} style={[StyleSheet.absoluteFill, { borderRadius: Layout.tabBubble / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
+            <View style={[StyleSheet.absoluteFill, { borderRadius: Layout.tabBubble / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
             <ArrowUpDown
               size={20}
               color={colors.text}
@@ -542,7 +540,7 @@ export function GlobalTabBar() {
             ]}
             pointerEvents={showCreateBubble ? 'auto' : 'none'}
           >
-            <BlurView intensity={60} tint={blurTint} style={[StyleSheet.absoluteFill, { borderRadius: Layout.tabBubble / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
+            <View style={[StyleSheet.absoluteFill, { borderRadius: Layout.tabBubble / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
             <Plus
               size={22}
               color={colors.text}

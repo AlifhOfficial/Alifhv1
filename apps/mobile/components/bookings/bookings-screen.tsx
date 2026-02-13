@@ -25,7 +25,6 @@ import {
 } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
-import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -92,7 +91,6 @@ export function BookingsScreen() {
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const blurTint = colorScheme === 'dark' ? 'dark' : 'light' as const;
 
   // ── Data State ───────────────────────────────────────────────────────────
   const [activeTab, setActiveTab] = useState<BookingFilter>('all');
@@ -363,10 +361,8 @@ export function BookingsScreen() {
           {STATUS_TABS.map((tab) => {
             const isActive = activeTab === tab.key;
             return (
-              <BlurView
+              <View
                 key={tab.key}
-                intensity={60}
-                tint={blurTint}
                 style={[
                   styles.pill,
                   styles.glass,
@@ -392,7 +388,7 @@ export function BookingsScreen() {
                     </View>
                   )}
                 </HapticPressable>
-              </BlurView>
+              </View>
             );
           })}
         </ScrollView>
