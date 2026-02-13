@@ -10,7 +10,7 @@ import { useRouter } from 'expo-router';
 import { Settings } from 'lucide-react-native';
 
 import { Heading } from '@/components/ui';
-import { Spacing, Radius, Layout } from '@/constants/theme';
+import { Spacing, Layout, Sizes } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 interface ProfileHeaderProps {
@@ -64,9 +64,9 @@ const styles = StyleSheet.create({
   iconButton: {
     padding: 4,
     borderWidth: 1,
-    width: Layout.hitTarget,
-    height: Layout.hitTarget,
-    borderRadius: Radius.full,
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Sizes.bubble / 2,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'visible',

@@ -3,27 +3,36 @@
  * Clean, minimal horizontal list item
  */
 
-import React, { useCallback, memo } from 'react';
+import React, { useCallback, memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
 import { Share2 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Skeleton, Data, Label, FavoriteButton, SuperlikeButton } from '@/components/ui';
+import { 
+  HapticPressable, 
+  Skeleton, 
+  Data, 
+  Heading,
+  Label, 
+  FavoriteButton, 
+  SuperlikeButton 
+} from '@/components/ui';
 
 // ============================================================================
 // UTILITIES
 // ============================================================================
 
+const priceFormatter = new Intl.NumberFormat('en-AE', {
+  style: 'currency',
+  currency: 'AED',
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
 function formatPrice(amount: number): string {
-  return new Intl.NumberFormat('en-AE', {
-    style: 'currency',
-    currency: 'AED',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
+  return priceFormatter.format(amount);
 }
 
 function formatMileage(km: number): string {
@@ -61,6 +70,16 @@ const SPECS_SHORT: Record<string, string> = {
 // TYPES
 // ============================================================================
 
+interface CardTheme {
+  background: string;
+  border: string;
+  text: string;
+  price: string;
+  meta: string;
+  icon: string;
+  imageBg: string;
+}
+
 export interface CarCardListProps {
   id: string;
   make: string;
@@ -93,8 +112,31 @@ export interface CarCardListProps {
 // COMPONENT
 // ============================================================================
 
-const IMAGE_WIDTH = 160;
-const IMAGE_HEIGHT = 140;
+/** Derives card theme colors based on listing type */
+function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean): CardTheme {
+  return useMemo(() => {
+    if (isBlkListing) {
+      return {
+        background: colors.blkBackground,
+        border: colors.blkBorder,
+        text: colors.blkText,
+        price: colors.blkText,
+        meta: colors.blkTextSecondary,
+        icon: colors.blkTextSecondary,
+        imageBg: colors.blkBackground,
+      };
+    }
+    return {
+      background: colors.surface,
+      border: colors.border,
+      text: colors.text,
+      price: colors.primary,
+      meta: colors.textSecondary,
+      icon: colors.icon,
+      imageBg: colors.backgroundSecondary,
+    };
+  }, [colors, isBlkListing]);
+}
 
 export const CarCardList = memo(function CarCardList({
   id,
@@ -117,92 +159,141 @@ export const CarCardList = memo(function CarCardList({
 }: CarCardListProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const theme = useCardTheme(colors, isBlkListing);
 
+  // Derived values
   const displayImage = thumbnail || images?.[0];
   const displayEmirate = emirate ? (EMIRATE_SHORT[emirate.toLowerCase()] || emirate) : '';
   const displaySpecs = specs ? (SPECS_SHORT[specs.toLowerCase()] || specs) : 'GCC';
-  
-  // Colors
-  const cardBg = isBlkListing ? colors.blkBackground : colors.surface;
-  const cardBorder = isBlkListing ? colors.blkBorder : colors.border;
-  const textColor = isBlkListing ? colors.blkText : colors.text;
-  const priceColor = isBlkListing ? colors.blkText : colors.primary;
-  const metaColor = isBlkListing ? colors.blkTextSecondary : colors.textSecondary;
-  const iconColor = isBlkListing ? colors.blkTextSecondary : colors.icon;
 
+  // Handlers
   const handlePress = useCallback(() => onPress?.(id), [id, onPress]);
   const handleSharePress = useCallback(() => onSharePress?.(id), [id, onSharePress]);
 
   return (
     <HapticPressable
       onPress={handlePress}
-      style={[styles.container, { backgroundColor: cardBg, borderColor: cardBorder }]}
+      style={[styles.container, { backgroundColor: theme.background, borderColor: theme.border }]}
     >
-      {/* Image */}
-      <View style={[styles.imageContainer, { backgroundColor: colors.backgroundSecondary }]}>
-        {displayImage ? (
-          <Image
-            source={{ uri: displayImage }}
-            style={styles.image}
-            contentFit="cover"
-            transition={150}
-          />
-        ) : (
-          <View style={[styles.image, { backgroundColor: colors.skeleton }]} />
-        )}
-        {isBlkListing && (
-          <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBackground }]}>
-            <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>
-              BLK
-            </Label>
-          </View>
-        )}
-      </View>
+      {/* === IMAGE SECTION === */}
+      <ListImage
+        uri={displayImage}
+        backgroundColor={theme.imageBg}
+        skeletonColor={colors.skeleton}
+        isBlkListing={isBlkListing}
+        blkBadgeBackground={colors.blkBadgeBackground}
+        blkBadgeText={colors.blkBadgeText}
+      />
 
-      {/* Content */}
+      {/* === CONTENT SECTION === */}
       <View style={styles.content}>
-        {/* Name */}
-        <Data size="small" style={{ color: textColor, fontWeight: '600' }} numberOfLines={1}>
+        <Heading size="mini" style={{ color: theme.text }} numberOfLines={1}>
           {make} {model}
-        </Data>
-
-        {/* Year */}
-        <Data size="mini" style={{ color: metaColor }}>
+        </Heading>
+        <Data size="mini" style={{ color: theme.meta }}>
           {year}
         </Data>
-
-        {/* Row 3: Price */}
-        <Data size="medium" style={{ color: priceColor, fontWeight: '700' }}>
+        <Data size="medium" style={{ color: theme.price }}>
           {formatPrice(price)}
         </Data>
-
-        {/* Row 4: Meta */}
-        <Data size="mini" style={{ color: metaColor }}>
+        <Data size="mini" style={{ color: theme.meta }}>
           {formatMileage(mileage)} · {displaySpecs} · {displayEmirate}
         </Data>
       </View>
 
-      {/* Vertical Actions */}
-      <View style={styles.actionsVertical}>
-        <HapticPressable onPress={handleSharePress} hitSlop={8}>
-          <Share2 size={18} color={iconColor} strokeWidth={1.75} />
-        </HapticPressable>
-        <FavoriteButton
-          listingId={id}
-          size={18}
-          onPress={onFavoritePress}
-          isFavorite={isFavoriteProp}
-          isBlkListing={isBlkListing}
-        />
-        <SuperlikeButton
-          listingId={id}
-          size={18}
-          onPress={onSuperlikePress}
-          isSuperliked={isSuperlikedProp}
-          isBlkListing={isBlkListing}
-        />
-      </View>
+      {/* === ACTIONS SECTION === */}
+      <CardActions
+        listingId={id}
+        isFavorite={isFavoriteProp}
+        isSuperliked={isSuperlikedProp}
+        isBlkListing={isBlkListing}
+        iconColor={theme.icon}
+        onFavoritePress={onFavoritePress}
+        onSuperlikePress={onSuperlikePress}
+        onSharePress={handleSharePress}
+      />
     </HapticPressable>
+  );
+});
+
+// ============================================================================
+// SUB-COMPONENTS
+// ============================================================================
+
+interface ListImageProps {
+  uri?: string | null;
+  backgroundColor: string;
+  skeletonColor: string;
+  isBlkListing: boolean;
+  blkBadgeBackground: string;
+  blkBadgeText: string;
+}
+
+const ListImage = memo(function ListImage({
+  uri,
+  backgroundColor,
+  skeletonColor,
+  isBlkListing,
+  blkBadgeBackground,
+  blkBadgeText,
+}: ListImageProps) {
+  return (
+    <View style={[styles.imageContainer, { backgroundColor }]}>
+      {uri ? (
+        <Image source={{ uri }} style={styles.image} contentFit="cover" transition={150} />
+      ) : (
+        <View style={[styles.image, { backgroundColor: skeletonColor }]} />
+      )}
+      {isBlkListing && (
+        <View style={[styles.blkBadge, { backgroundColor: blkBadgeBackground }]}>
+          <Label size="badge" uppercase={false} style={{ color: blkBadgeText }}>BLK</Label>
+        </View>
+      )}
+    </View>
+  );
+});
+
+interface CardActionsProps {
+  listingId: string;
+  isFavorite?: boolean;
+  isSuperliked?: boolean;
+  isBlkListing: boolean;
+  iconColor: string;
+  onFavoritePress?: (id: string) => void;
+  onSuperlikePress?: (id: string) => void;
+  onSharePress: () => void;
+}
+
+const CardActions = memo(function CardActions({
+  listingId,
+  isFavorite,
+  isSuperliked,
+  isBlkListing,
+  iconColor,
+  onFavoritePress,
+  onSuperlikePress,
+  onSharePress,
+}: CardActionsProps) {
+  return (
+    <View style={styles.actions}>
+      <HapticPressable onPress={onSharePress} hitSlop={Layout.hitSlopSmall}>
+        <Share2 size={Sizes.iconSm} color={iconColor} strokeWidth={1.75} />
+      </HapticPressable>
+      <FavoriteButton
+        listingId={listingId}
+        size={Sizes.iconSm}
+        onPress={onFavoritePress}
+        isFavorite={isFavorite}
+        isBlkListing={isBlkListing}
+      />
+      <SuperlikeButton
+        listingId={listingId}
+        size={Sizes.iconSm}
+        onPress={onSuperlikePress}
+        isSuperliked={isSuperliked}
+        isBlkListing={isBlkListing}
+      />
+    </View>
   );
 });
 
@@ -216,11 +307,11 @@ export function CarCardListSkeleton() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-      <Skeleton width={IMAGE_WIDTH} height={IMAGE_HEIGHT} borderRadius={Radius.md} />
+      <Skeleton width={Sizes.cardThumbnailWidth} height={Sizes.cardThumbnailHeight} borderRadius={Radius.md} />
       <View style={styles.content}>
-        <Skeleton width={130} height={14} />
-        <Skeleton width={90} height={15} />
-        <Skeleton width={110} height={12} />
+        <Skeleton width="80%" height={Spacing.lg} />
+        <Skeleton width="50%" height={Spacing.md} />
+        <Skeleton width="60%" height={Spacing.md} />
       </View>
     </View>
   );
@@ -241,8 +332,8 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   imageContainer: {
-    width: IMAGE_WIDTH,
-    height: IMAGE_HEIGHT,
+    width: Sizes.cardThumbnailWidth,
+    height: Sizes.cardThumbnailHeight,
     borderRadius: Radius.md,
     overflow: 'hidden',
     position: 'relative',
@@ -253,9 +344,9 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    gap: 2,
+    gap: Spacing.xs,
   },
-  actionsVertical: {
+  actions: {
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'space-evenly',
@@ -266,8 +357,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: Spacing.sm,
     left: Spacing.sm,
-    paddingHorizontal: Spacing.sm - 2,
-    paddingVertical: 2,
+    paddingHorizontal: Sizes.badgePaddingH,
+    paddingVertical: Sizes.badgePaddingV,
     borderRadius: Radius.none,
   },
 });

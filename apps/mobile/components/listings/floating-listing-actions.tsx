@@ -18,7 +18,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Layout, Shadows } from '@/constants/theme';
+import { Colors, Layout, Shadows, Sizes, Spacing } from '@/constants/theme';
 
 const AnimatedView = Animated.View;
 
@@ -31,8 +31,8 @@ interface FloatingListingActionsProps {
   onSharePress?: (id: string) => void;
 }
 
-const BUBBLE_SIZE = Layout.tabBubble;
-const GAP = Layout.headerGap;
+const BUBBLE_SIZE = Sizes.bubble;
+const GAP = Spacing.sm;
 
 export function FloatingListingActions({
   id,

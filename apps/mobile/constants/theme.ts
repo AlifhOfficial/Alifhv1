@@ -26,7 +26,7 @@
  * RESPONSIVE SCALING:
  *   • Layout/spacing scales with screen width via scale() (factor 0.5)
  *   • Font sizes scale gently via fontScale() (factor 0.3)
- *   • Base design width: 393px (iPhone 15 Pro)
+ *   • Base design width: 430px (iPhone 15 Pro Max)
  *   • All sizes adapt proportionally to smaller/larger screens
  * 
  * ═══════════════════════════════════════════════════════════════════════════════
@@ -38,11 +38,11 @@ import { Dimensions, PixelRatio, TextStyle } from 'react-native';
 // SCREEN METRICS
 // ═══════════════════════════════════════════════════
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const BASE_WIDTH = 393;
+const BASE_WIDTH = 430; // iPhone 15 Pro Max - scales down gracefully on smaller devices
 
 /**
  * Scales a size value proportionally to screen width.
- * @param size - Base size designed at 393px width
+ * @param size - Base size designed at 430px width (iPhone 15 Pro Max)
  * @param factor - How aggressively to scale (0 = none, 1 = full proportional). Default 0.5
  */
 const scale = (size: number, factor = 0.5): number => {
@@ -217,15 +217,54 @@ export const Spacing = {
 // LAYOUT CONSTANTS
 // ═══════════════════════════════════════════════════
 export const Layout = {
-  tabBarHeight: 85,
+  // Screen
   screenPadding: scale(16),
+  tabBarHeight: 85,
+  
+  // Header
   headerPadding: scale(8),
-  /** Standard icon button / bubble hit target */
-  hitTarget: scale(36),
-  /** Tab bar bubble size (slightly larger) */
-  tabBubble: scale(40),
-  /** Gap between header items */
-  headerGap: scale(6),
+  headerGap: scale(8),
+  
+  // Hit targets (Apple HIG: 44pt minimum)
+  hitTarget: scale(44),
+  hitTargetSmall: scale(36),
+  hitSlop: scale(10),
+  hitSlopSmall: scale(8),
+} as const;
+
+// ═══════════════════════════════════════════════════
+// COMPONENT SIZES
+// ═══════════════════════════════════════════════════
+export const Sizes = {
+  // Icons
+  iconXs: scale(14),
+  iconSm: scale(18),
+  iconMd: scale(22),
+  iconLg: scale(24),
+  iconXl: scale(28),
+  
+  // Avatars
+  avatarSm: scale(32),
+  avatarMd: scale(40),
+  avatarLg: scale(48),
+  
+  // Bubbles & Pills (universal action containers)
+  bubble: scale(36),        // Standard action bubble (back, search, sort, create, etc.)
+  pillHeight: scale(36),    // Inner pill height for tab bars
+  pillRadius: 18,           // Pill border radius
+  
+  // Action buttons (icon containers)
+  actionButtonSm: scale(36),
+  actionButtonMd: scale(40),
+  actionButtonLg: scale(48),
+  
+  // Card thumbnails
+  cardThumbnailWidth: scale(160),
+  cardThumbnailHeight: scale(140),
+  
+  // Badge padding
+  badgePaddingH: scale(6),
+  badgePaddingV: scale(3),
 } as const;
 
 // ═══════════════════════════════════════════════════

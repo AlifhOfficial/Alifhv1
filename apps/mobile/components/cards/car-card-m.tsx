@@ -6,21 +6,16 @@
  * Uses semantic Text components for cross-platform consistency
  */
 
-import React, { useCallback, memo } from 'react';
-import {
-  StyleSheet,
-  View,
-  Pressable,
-  Share,
-} from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import React, { useCallback, memo, useMemo } from 'react';
+import { StyleSheet, View, Share } from 'react-native';
 import { Image } from 'expo-image';
 import { Share2, CheckCircle2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { 
+  HapticPressable,
   Skeleton, 
   SkeletonCircle,
   Text,
@@ -31,6 +26,13 @@ import {
   FavoriteButton,
   SuperlikeButton,
 } from '@/components/ui';
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const IMAGE_ASPECT_RATIO = 16 / 9;
+const IMAGE_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0o#DgR4';
 
 // ============================================================================
 // FORMAT UTILITIES
@@ -85,6 +87,21 @@ function formatSpecs(specs: string): string {
 // TYPES
 // ============================================================================
 
+interface CardTheme {
+  background: string;
+  border: string;
+  title: string;
+  price: string;
+  stats: string;
+  meta: string;
+  separator: string;
+  sellerText: string;
+  actionIcon: string;
+  imageBg: string;
+  avatarBg: string;
+  avatarBorder: string;
+}
+
 export interface CarCardMProps {
   id: string;
   make: string;
@@ -123,6 +140,42 @@ export interface CarCardMProps {
 // COMPONENT
 // ============================================================================
 
+/** Derives card theme colors based on listing type */
+function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean, isBlackTierPartner: boolean): CardTheme {
+  return useMemo(() => {
+    if (isBlkListing) {
+      return {
+        background: colors.blkBackground,
+        border: colors.blkBorder,
+        title: colors.blkText,
+        price: colors.blkText,
+        stats: colors.blkTextSecondary,
+        meta: colors.blkTextSecondary,
+        separator: colors.blkBorder,
+        sellerText: colors.blkTextSecondary,
+        actionIcon: colors.blkTextSecondary,
+        imageBg: colors.blkBackground,
+        avatarBg: colors.blkBackground,
+        avatarBorder: isBlackTierPartner ? colors.blkBackground : colors.blkBorder,
+      };
+    }
+    return {
+      background: colors.surface,
+      border: colors.border,
+      title: colors.text,
+      price: colors.primary,
+      stats: colors.textSecondary,
+      meta: colors.textSecondary,
+      separator: colors.textTertiary,
+      sellerText: colors.text,
+      actionIcon: colors.icon,
+      imageBg: colors.backgroundSecondary,
+      avatarBg: colors.backgroundSecondary,
+      avatarBorder: colors.border,
+    };
+  }, [colors, isBlkListing, isBlackTierPartner]);
+}
+
 export const CarCardM = memo(function CarCardM({
   id,
   make,
@@ -153,6 +206,7 @@ export const CarCardM = memo(function CarCardM({
 }: CarCardMProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const theme = useCardTheme(colors, isBlkListing, isBlackTierPartner);
 
   // Derived display values
   const displayImage = thumbnail || images?.[0];
@@ -161,35 +215,7 @@ export const CarCardM = memo(function CarCardM({
   const displaySellerName = partnerName || sellerName || 'Private Seller';
   const isVerified = partnerVerified || kycVerified;
   const carTitle = `${year} ${make} ${model}${trim ? ` ${trim}` : ''}`;
-
-  // BLK listing specific colors
-  const cardBg = isBlkListing 
-    ? colors.blkBackground 
-    : colors.surface;
-  const cardBorder = isBlkListing 
-    ? colors.blkBorder 
-    : colors.border;
-  const titleColor = isBlkListing 
-    ? colors.blkText 
-    : colors.text;
-  const priceColor = isBlkListing 
-    ? colors.blkText 
-    : colors.primary;
-  const statsColor = isBlkListing 
-    ? colors.blkTextSecondary 
-    : colors.textSecondary;
-  const metaColor = isBlkListing 
-    ? colors.blkTextSecondary 
-    : colors.textSecondary;
-  const separatorColor = isBlkListing 
-    ? colors.blkBorder 
-    : colors.textTertiary;
-  const sellerTextColor = isBlkListing 
-    ? colors.blkTextSecondary 
-    : colors.text;
-  const actionIconColor = isBlkListing 
-    ? colors.blkTextSecondary 
-    : colors.icon;
+  const sellerAvatar = partnerLogo || sellerAvatarUrl;
 
   // Handlers
   const handlePress = useCallback(() => {
@@ -206,12 +232,8 @@ export const CarCardM = memo(function CarCardM({
       onSharePress(id);
       return;
     }
-    // Default share behavior
     try {
-      await Share.share({
-        message: `Check out this ${carTitle}`,
-        title: carTitle,
-      });
+      await Share.share({ message: `Check out this ${carTitle}`, title: carTitle });
     } catch {
       // Share cancelled or failed
     }
@@ -222,168 +244,234 @@ export const CarCardM = memo(function CarCardM({
       onPress={handlePress}
       onLongPress={onLongPress ? handleLongPress : undefined}
       delayLongPress={400}
-      style={[
-        styles.container,
-        {
-          backgroundColor: cardBg,
-          borderColor: cardBorder,
-        },
-      ]}
+      style={[styles.container, { backgroundColor: theme.background, borderColor: theme.border }]}
     >
-      {/* BLK Listing Top Accent */}
-      {isBlkListing && (
-        <View style={[styles.blkAccent, { backgroundColor: colors.blkBorder }]} />
-      )}
+      {/* BLK Accent Line */}
+      {isBlkListing && <View style={[styles.blkAccent, { backgroundColor: theme.border }]} />}
 
-      {/* Image Section */}
-      <View style={[styles.imageContainer, { backgroundColor: isBlkListing ? colors.blkBackground : colors.backgroundSecondary }]}>
-        {displayImage ? (
-          <Image
-            source={{ uri: displayImage }}
-            style={styles.image}
-            contentFit="cover"
-            transition={200}
-            placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
-          />
-        ) : (
-          <View style={[styles.imagePlaceholder, { backgroundColor: colors.skeleton }]}>
-            <Supporting size="small" style={{ color: colors.textTertiary }}>
-              No Image
-            </Supporting>
-          </View>
-        )}
-      </View>
+      {/* === IMAGE SECTION === */}
+      <CardImage 
+        uri={displayImage} 
+        backgroundColor={theme.imageBg}
+        placeholderColor={colors.textTertiary}
+        skeletonColor={colors.skeleton}
+      />
 
-      {/* Content Section */}
+      {/* === CONTENT SECTION === */}
       <View style={styles.content}>
-        {/* Title Row */}
-        <View style={styles.titleRow}>
-          <Heading 
-            size="mini"
-            style={[styles.title, { color: titleColor }]} 
-            numberOfLines={1}
-          >
-            {make} {model}
-          </Heading>
-          <Data size="medium" style={{ color: metaColor }}>
-            {year}
-          </Data>
-        </View>
+        {/* Header: Title + Year */}
+        <CardHeader 
+          make={make} 
+          model={model} 
+          year={year} 
+          titleColor={theme.title}
+          metaColor={theme.meta}
+        />
 
         {/* Price */}
-        <Text variant="priceTag" style={{ color: priceColor }}>
+        <Data size="large" style={{ color: theme.price }}>
           {formatPrice(price)}
-        </Text>
+        </Data>
 
-        {/* Stats Row */}
-        <View style={styles.statsRow}>
-          <Data size="medium" style={{ color: statsColor }}>
-            {formatMileage(mileage)} km
-          </Data>
-          <Data size="medium" style={[styles.separator, { color: separatorColor }]}>·</Data>
-          <Data size="medium" style={{ color: statsColor }}>
-            {displaySpecs}
-          </Data>
-          <Data size="medium" style={[styles.separator, { color: separatorColor }]}>·</Data>
-          <Data size="medium" style={{ color: statsColor }} numberOfLines={1}>
-            {displayEmirate}
-          </Data>
-        </View>
+        {/* Stats: Mileage · Specs · Location */}
+        <CardStats
+          mileage={mileage}
+          specs={displaySpecs}
+          emirate={displayEmirate}
+          statsColor={theme.stats}
+          separatorColor={theme.separator}
+        />
 
-        {/* Bottom Section: Seller + Actions */}
-        <View style={styles.bottomRow}>
-          {/* Seller Info */}
-          <View style={styles.sellerInfo}>
-            {/* Avatar */}
-            <View style={[
-              styles.avatar,
-              { 
-                backgroundColor: isBlkListing ? colors.blkBackground : colors.backgroundSecondary,
-                borderColor: isBlackTierPartner ? colors.blkBackground : (isBlkListing ? colors.blkBorder : colors.border),
-              },
-              isBlackTierPartner && styles.avatarBlackTier,
-            ]}>
-              {(partnerLogo || sellerAvatarUrl) ? (
-                <Image
-                  source={{ uri: partnerLogo || sellerAvatarUrl || '' }}
-                  style={styles.avatarImage}
-                  contentFit="cover"
-                  transition={150}
-                />
-              ) : (
-                <Text variant="avatarSmall" style={{ color: metaColor }}>
-                  {displaySellerName.charAt(0).toUpperCase()}
-                </Text>
-              )}
-            </View>
-            
-            {/* Seller Name + Badge Container */}
-            <View style={styles.sellerNameContainer}>
-              <Data 
-                size="small"
-                style={[styles.sellerName, { color: sellerTextColor }]} 
-                numberOfLines={1}
-              >
-                {displaySellerName}
-              </Data>
-
-              {/* Verification Badge */}
-              {!isBlackTierPartner && isVerified && (
-                <CheckCircle2 
-                  size={ICON_SIZE_SM} 
-                  color={colors.primary}
-                />
-              )}
-
-              {/* BLK Badge */}
-              {isBlackTierPartner && (
-                <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBackground }]}>
-                  <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>
-                    BLK
-                  </Label>
-                </View>
-              )}
-            </View>
-          </View>
-
-          {/* Action Buttons */}
-          <View style={styles.actions}>
-            {/* Favorite */}
-            <FavoriteButton
-              listingId={id}
-              size={ICON_SIZE}
-              onPress={onFavoritePress}
-              isFavorite={isFavoriteProp}
-              isBlkListing={isBlkListing}
-              hitSlop={10}
-            />
-
-            {/* Superlike */}
-            <SuperlikeButton
-              listingId={id}
-              size={ICON_SIZE}
-              onPress={onSuperlikePress}
-              isSuperliked={isSuperlikedProp}
-              isBlkListing={isBlkListing}
-              hitSlop={10}
-            />
-
-            {/* Share */}
-            <HapticPressable
-              onPress={handleSharePress}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={styles.actionButton}
-            >
-              <Share2 
-                size={ICON_SIZE} 
-                color={actionIconColor}
-                strokeWidth={1.75}
-              />
-            </HapticPressable>
-          </View>
+        {/* Footer: Seller + Actions */}
+        <View style={styles.footer}>
+          <SellerInfo
+            name={displaySellerName}
+            avatarUri={sellerAvatar}
+            isVerified={isVerified}
+            isBlackTierPartner={isBlackTierPartner}
+            theme={theme}
+            colors={colors}
+          />
+          <CardActions
+            listingId={id}
+            isFavorite={isFavoriteProp}
+            isSuperliked={isSuperlikedProp}
+            isBlkListing={isBlkListing}
+            actionIconColor={theme.actionIcon}
+            onFavoritePress={onFavoritePress}
+            onSuperlikePress={onSuperlikePress}
+            onSharePress={handleSharePress}
+          />
         </View>
       </View>
     </HapticPressable>
+  );
+});
+
+// ============================================================================
+// SUB-COMPONENTS
+// ============================================================================
+
+interface CardImageProps {
+  uri?: string | null;
+  backgroundColor: string;
+  placeholderColor: string;
+  skeletonColor: string;
+}
+
+const CardImage = memo(function CardImage({ uri, backgroundColor, placeholderColor, skeletonColor }: CardImageProps) {
+  return (
+    <View style={[styles.imageContainer, { backgroundColor }]}>
+      {uri ? (
+        <Image
+          source={{ uri }}
+          style={styles.image}
+          contentFit="cover"
+          transition={200}
+          placeholder={{ blurhash: IMAGE_BLURHASH }}
+        />
+      ) : (
+        <View style={[styles.imagePlaceholder, { backgroundColor: skeletonColor }]}>
+          <Supporting size="small" style={{ color: placeholderColor }}>No Image</Supporting>
+        </View>
+      )}
+    </View>
+  );
+});
+
+interface CardHeaderProps {
+  make: string;
+  model: string;
+  year: number;
+  titleColor: string;
+  metaColor: string;
+}
+
+const CardHeader = memo(function CardHeader({ make, model, year, titleColor, metaColor }: CardHeaderProps) {
+  return (
+    <View style={styles.header}>
+      <Heading size="mini" style={[styles.title, { color: titleColor }]} numberOfLines={1}>
+        {make} {model}
+      </Heading>
+      <Data size="medium" style={{ color: metaColor }}>{year}</Data>
+    </View>
+  );
+});
+
+interface CardStatsProps {
+  mileage: number;
+  specs: string;
+  emirate: string;
+  statsColor: string;
+  separatorColor: string;
+}
+
+const CardStats = memo(function CardStats({ mileage, specs, emirate, statsColor, separatorColor }: CardStatsProps) {
+  const StatSeparator = <Data size="medium" style={[styles.separator, { color: separatorColor }]}>·</Data>;
+  
+  return (
+    <View style={styles.statsRow}>
+      <Data size="medium" style={{ color: statsColor }}>{formatMileage(mileage)} km</Data>
+      {StatSeparator}
+      <Data size="medium" style={{ color: statsColor }}>{specs}</Data>
+      {StatSeparator}
+      <Data size="medium" style={{ color: statsColor }} numberOfLines={1}>{emirate}</Data>
+    </View>
+  );
+});
+
+interface SellerInfoProps {
+  name: string;
+  avatarUri?: string | null;
+  isVerified: boolean;
+  isBlackTierPartner: boolean;
+  theme: CardTheme;
+  colors: typeof Colors.light;
+}
+
+const SellerInfo = memo(function SellerInfo({ name, avatarUri, isVerified, isBlackTierPartner, theme, colors }: SellerInfoProps) {
+  return (
+    <View style={styles.sellerInfo}>
+      {/* Avatar */}
+      <View style={[
+        styles.avatar,
+        { backgroundColor: theme.avatarBg, borderColor: theme.avatarBorder },
+        isBlackTierPartner && styles.avatarBlackTier,
+      ]}>
+        {avatarUri ? (
+          <Image source={{ uri: avatarUri }} style={styles.avatarImage} contentFit="cover" transition={150} />
+        ) : (
+          <Text variant="avatarSmall" style={{ color: theme.meta }}>
+            {name.charAt(0).toUpperCase()}
+          </Text>
+        )}
+      </View>
+      
+      {/* Name + Badges */}
+      <View style={styles.sellerMeta}>
+        <Data size="small" style={[styles.sellerName, { color: theme.sellerText }]} numberOfLines={1}>
+          {name}
+        </Data>
+        {!isBlackTierPartner && isVerified && (
+          <CheckCircle2 size={Sizes.iconSm} color={colors.primary} />
+        )}
+        {isBlackTierPartner && (
+          <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBackground }]}>
+            <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>BLK</Label>
+          </View>
+        )}
+      </View>
+    </View>
+  );
+});
+
+interface CardActionsProps {
+  listingId: string;
+  isFavorite?: boolean;
+  isSuperliked?: boolean;
+  isBlkListing: boolean;
+  actionIconColor: string;
+  onFavoritePress?: (id: string) => void;
+  onSuperlikePress?: (id: string) => void;
+  onSharePress: () => void;
+}
+
+const CardActions = memo(function CardActions({
+  listingId,
+  isFavorite,
+  isSuperliked,
+  isBlkListing,
+  actionIconColor,
+  onFavoritePress,
+  onSuperlikePress,
+  onSharePress,
+}: CardActionsProps) {
+  return (
+    <View style={styles.actions}>
+      <FavoriteButton
+        listingId={listingId}
+        size={Sizes.iconMd}
+        onPress={onFavoritePress}
+        isFavorite={isFavorite}
+        isBlkListing={isBlkListing}
+        hitSlop={Layout.hitSlop}
+      />
+      <SuperlikeButton
+        listingId={listingId}
+        size={Sizes.iconMd}
+        onPress={onSuperlikePress}
+        isSuperliked={isSuperliked}
+        isBlkListing={isBlkListing}
+        hitSlop={Layout.hitSlop}
+      />
+      <HapticPressable
+        onPress={onSharePress}
+        hitSlop={Layout.hitSlop}
+        style={styles.actionButton}
+      >
+        <Share2 size={Sizes.iconMd} color={actionIconColor} strokeWidth={1.75} />
+      </HapticPressable>
+    </View>
   );
 });
 
@@ -396,42 +484,32 @@ export function CarCardMSkeleton() {
   const colors = Colors[colorScheme];
 
   return (
-    <View style={[
-      styles.container,
-      { backgroundColor: colors.surface, borderColor: colors.border },
-    ]}>
-      {/* Image Skeleton */}
+    <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+      {/* Image */}
       <View style={styles.imageContainer}>
-        <Skeleton width="100%" height={200} borderRadius={0} />
+        <Skeleton width="100%" height={Spacing['5xl'] * 4} borderRadius={0} />
       </View>
 
-      {/* Content Skeleton */}
+      {/* Content */}
       <View style={styles.content}>
-        {/* Title Row */}
-        <View style={styles.titleRow}>
-          <Skeleton width="60%" height={17} />
-          <Skeleton width={AVATAR_SIZE_SM} height={13} />
+        <View style={styles.header}>
+          <Skeleton width="60%" height={Spacing.lg} />
+          <Skeleton width={Sizes.avatarSm} height={Spacing.md} />
         </View>
-
-        {/* Price */}
-        <Skeleton width={100} height={20} style={{ marginVertical: Spacing.xs }} />
-
-        {/* Stats */}
+        <Skeleton width="40%" height={Spacing.xl} style={{ marginVertical: Spacing.xs }} />
         <View style={styles.statsRow}>
-          <Skeleton width={50} height={14} />
-          <Skeleton width={30} height={14} />
-          <Skeleton width={45} height={14} />
+          <Skeleton width="20%" height={Spacing.md} />
+          <Skeleton width="15%" height={Spacing.md} />
+          <Skeleton width="18%" height={Spacing.md} />
         </View>
-
-        {/* Bottom */}
-        <View style={styles.bottomRow}>
+        <View style={styles.footer}>
           <View style={styles.sellerInfo}>
-            <SkeletonCircle size={AVATAR_SIZE_SM} />
-            <Skeleton width={90} height={15} />
+            <SkeletonCircle size={Sizes.avatarSm} />
+            <Skeleton width="40%" height={Spacing.lg} />
           </View>
           <View style={styles.actions}>
-            <SkeletonCircle size={ACTION_BUTTON_SIZE_SM} />
-            <SkeletonCircle size={ACTION_BUTTON_SIZE_SM} />
+            <SkeletonCircle size={Sizes.actionButtonMd} />
+            <SkeletonCircle size={Sizes.actionButtonMd} />
           </View>
         </View>
       </View>
@@ -440,23 +518,11 @@ export function CarCardMSkeleton() {
 }
 
 // ============================================================================
-// CONSTANTS
-// ============================================================================
-
-const CARD_PADDING = Spacing.md;
-const AVATAR_SIZE = Spacing['4xl']; // 40 → using 32 (Spacing['3xl'] + 8)
-const AVATAR_SIZE_SM = 32;
-const ACTION_BUTTON_SIZE = Spacing['5xl']; // 48 → close to 40
-const ACTION_BUTTON_SIZE_SM = 40;
-const ICON_SIZE = 22;
-const ICON_SIZE_SM = 18;
-const SEPARATOR_OPACITY = 0.4;
-
-// ============================================================================
 // STYLES
 // ============================================================================
 
 const styles = StyleSheet.create({
+  // Layout
   container: {
     width: '100%',
     borderRadius: Radius.lg,
@@ -470,12 +536,17 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 1,
+    zIndex: 1,
   },
-  
-  // Image
+  content: {
+    padding: Spacing.md,
+    gap: Spacing.sm,
+  },
+
+  // Image Section
   imageContainer: {
     width: '100%',
-    aspectRatio: 16 / 9,
+    aspectRatio: IMAGE_ASPECT_RATIO,
     borderBottomLeftRadius: Radius.md,
     borderBottomRightRadius: Radius.md,
     overflow: 'hidden',
@@ -490,14 +561,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  // Content
-  content: {
-    padding: CARD_PADDING,
-    gap: Spacing.sm,
-  },
-
-  // Title Row
-  titleRow: {
+  // Header Section
+  header: {
     flexDirection: 'row',
     alignItems: 'baseline',
     justifyContent: 'space-between',
@@ -507,18 +572,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // Stats
+  // Stats Section
   statsRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
   },
   separator: {
-    opacity: SEPARATOR_OPACITY,
+    opacity: 0.4,
   },
 
-  // Bottom Row
-  bottomRow: {
+  // Footer Section
+  footer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -533,8 +598,8 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   avatar: {
-    width: AVATAR_SIZE_SM,
-    height: AVATAR_SIZE_SM,
+    width: Sizes.avatarSm,
+    height: Sizes.avatarSm,
     borderRadius: Radius.full,
     borderWidth: 1,
     alignItems: 'center',
@@ -548,7 +613,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  sellerNameContainer: {
+  sellerMeta: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
@@ -559,8 +624,8 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   blkBadge: {
-    paddingHorizontal: Spacing.sm - 2, // 6
-    paddingVertical: Spacing.xs - 1,  // 3
+    paddingHorizontal: Sizes.badgePaddingH,
+    paddingVertical: Sizes.badgePaddingV,
     borderRadius: Radius.none,
   },
 
@@ -571,8 +636,8 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   actionButton: {
-    width: ACTION_BUTTON_SIZE_SM,
-    height: ACTION_BUTTON_SIZE_SM,
+    width: Sizes.actionButtonMd,
+    height: Sizes.actionButtonMd,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Radius.full,

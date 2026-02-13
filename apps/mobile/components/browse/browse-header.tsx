@@ -12,7 +12,7 @@ import * as Haptics from 'expo-haptics';
 import { Settings2, LayoutGrid, List } from 'lucide-react-native';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Layout, Radius } from '@/constants/theme';
+import { Colors, Spacing, Layout, Radius, Sizes } from '@/constants/theme';
 import { Data, Label } from '@/components/ui';
 
 export type ViewMode = 'grid' | 'list';
@@ -195,9 +195,9 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   iconButton: {
-    width: Layout.hitTarget,
-    height: Layout.hitTarget,
-    borderRadius: Radius.full,
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Sizes.bubble / 2,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -222,12 +222,12 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   pill: {
-    borderRadius: Radius.full,
+    borderRadius: Sizes.pillRadius,
     overflow: 'hidden',
   },
   pillInner: {
-    paddingHorizontal: 12,
-    height: Layout.hitTarget,
+    paddingHorizontal: Spacing.md,
+    height: Sizes.pillHeight,
     alignItems: 'center',
     justifyContent: 'center',
   },

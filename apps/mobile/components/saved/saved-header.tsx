@@ -9,7 +9,7 @@ import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 
 import { Heading, Body, Label } from '@/components/ui';
-import { Spacing, Radius } from '@/constants/theme';
+import { Spacing, Radius, Sizes } from '@/constants/theme';
 import type { ThemeColors, SavedTab } from './types';
 
 interface SavedHeaderProps {
@@ -113,11 +113,11 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   pill: {
-    height: 36,
-    borderRadius: 18,
+    height: Sizes.pillHeight,
+    borderRadius: Sizes.pillRadius,
     borderWidth: 1,
     justifyContent: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing.lg,
     overflow: 'visible',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   pillContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.sm,
   },
   pillBadge: {
     paddingHorizontal: 6,

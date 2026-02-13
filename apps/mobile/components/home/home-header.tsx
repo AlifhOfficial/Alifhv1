@@ -14,7 +14,7 @@ import { useRouter } from 'expo-router';
 import { ProfileMenu } from './profile-menu';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
-import { Colors, Spacing, Radius, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
 import { Body, Data } from '@/components/ui';
 import { fetchUnreadCount } from '@/lib/notifications-api';
 
@@ -217,10 +217,9 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   iconButton: {
-    padding: 4,
-    borderRadius: Radius.full,
-    width: Layout.hitTarget,
-    height: Layout.hitTarget,
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Sizes.bubble / 2,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -232,9 +231,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   pillButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: Radius.full,
+    height: Sizes.pillHeight,
+    paddingHorizontal: Spacing.md,
+    borderRadius: Sizes.pillRadius,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -248,7 +247,7 @@ const styles = StyleSheet.create({
   pillContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    gap: Spacing.xs,
   },
   badge: {
     position: 'absolute',
