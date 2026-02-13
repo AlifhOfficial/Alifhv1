@@ -47,6 +47,7 @@ export * from './queries/auth/user-auth-queries';
 // Explicit partner query exports (required for proper bundling)
 export * from './queries/partner/car-dealer/partner-profile-comprehensive';
 export * from './queries/partner/car-dealer/partner-stats';
+export * from './queries/partner/car-dealer/get-partners-list';
 export * from './queries/partner/staff-profile-query';
 export * from './queries/partner/showroom';
 

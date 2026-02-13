@@ -30,6 +30,10 @@
     "./search": {
       "import": "./src/search/index.ts",
       "types": "./src/search/index.ts"
+    },
+    "./summary": {
+      "import": "./src/summary/index.ts",
+      "types": "./src/summary/index.ts"
     }
   },
   "scripts": {

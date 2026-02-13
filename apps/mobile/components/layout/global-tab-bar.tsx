@@ -7,6 +7,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { View, Pressable, StyleSheet, Platform } from 'react-native';
 import { HapticPressable, ConfettiBurst, useConfettiBurst } from '@/components/ui';
+import { BlurView } from 'expo-blur';
 import { useRouter, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -45,13 +46,12 @@ const TABS: TabRoute[] = [
 ];
 
 // Main tab paths
-const MAIN_TAB_PATHS = ['/', '/messages', '/browse', '/(tabs)', '/(tabs)/index', '/(tabs)/messages', '/(tabs)/browse'];
+const MAIN_TAB_PATHS = ['/', '/messages', '/browse', '/(tabs)', '/(tabs)/index'];
 
 // Check if pathname is on browse tab - more robust matching
 const isBrowsePath = (path: string) => {
   const normalized = path.toLowerCase();
   return normalized === '/browse' || 
-         normalized === '/(tabs)/browse' || 
          normalized.endsWith('/browse') ||
          normalized.includes('/browse');
 };
@@ -100,6 +100,7 @@ export function GlobalTabBar() {
   // Double-tap detection for browse tab
   const lastBrowseTapRef = React.useRef<number>(0);
   const colors = Colors[colorScheme];
+  const blurTint = colorScheme === 'dark' ? 'dark' : 'light' as const;
   const router = useRouter();
   const pathname = usePathname();
 
@@ -378,7 +379,7 @@ export function GlobalTabBar() {
     if (tab.name === 'index') {
       return pathname === '/' || pathname === '/(tabs)' || pathname === '/(tabs)/index';
     }
-    return pathname === tab.path || pathname === `/(tabs)/${tab.name}`;
+    return pathname === tab.path;
   };
 
   // ── Hard hide: return null AFTER all hooks ─────────────────────
@@ -404,14 +405,15 @@ export function GlobalTabBar() {
             onPress={handleBack}
             style={[
               styles.backBubble,
-              { 
-                backgroundColor: colors.background,
-                borderColor: colors.border,
+              styles.glass,
+              {
+                borderColor: colors.glassBorder,
               },
               backBubbleStyle,
             ]}
             pointerEvents={showBackButton ? 'auto' : 'none'}
           >
+            <BlurView intensity={60} tint={blurTint} style={[StyleSheet.absoluteFill, { borderRadius: Layout.tabBubble / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
             <ChevronLeft
               size={22}
               color={colors.text}
@@ -422,12 +424,13 @@ export function GlobalTabBar() {
           {/* Pill Group */}
           <AnimatedView style={[
             styles.pillWrapper, 
-            { 
-              backgroundColor: colors.background,
-              borderColor: colors.border,
+            styles.glass,
+            {
+              borderColor: colors.glassBorder,
             }, 
             pillStyle
           ]}>
+            <BlurView intensity={60} tint={blurTint} style={[StyleSheet.absoluteFill, { borderRadius: 18, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
             <View style={styles.pillContent}>
               {TABS.map((tab) => {
                 const isActive = getIsActive(tab);
@@ -465,14 +468,15 @@ export function GlobalTabBar() {
             onPress={handleSearchPress}
             style={[
               styles.searchBubble,
-              { 
-                backgroundColor: colors.background,
-                borderColor: colors.border,
+              styles.glass,
+              {
+                borderColor: colors.glassBorder,
               },
               searchBubbleStyle,
             ]}
             pointerEvents={showSearchBubble ? 'auto' : 'none'}
           >
+            <BlurView intensity={60} tint={blurTint} style={[StyleSheet.absoluteFill, { borderRadius: Layout.tabBubble / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
             <Search
               size={22}
               color={colors.text}
@@ -486,14 +490,15 @@ export function GlobalTabBar() {
               onPress={handleAmnaPress}
               style={[
                 styles.amnaBubble,
-                { 
-                  backgroundColor: colors.background,
-                  borderColor: colors.border,
+                styles.glass,
+                {
+                  borderColor: colors.glassBorder,
                 },
                 amnaBubbleStyle,
               ]}
               pointerEvents={showSearchBubble ? 'auto' : 'none'}
             >
+              <BlurView intensity={60} tint={blurTint} style={[StyleSheet.absoluteFill, { borderRadius: Layout.tabBubble / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
               <Zap
                 size={22}
                 color="#8B5CF6"
@@ -508,14 +513,15 @@ export function GlobalTabBar() {
             onPress={handleSortPress}
             style={[
               styles.sortBubble,
-              { 
-                backgroundColor: colors.background,
-                borderColor: colors.border,
+              styles.glass,
+              {
+                borderColor: colors.glassBorder,
               },
               sortBubbleStyle,
             ]}
             pointerEvents={showSearchBubble ? 'auto' : 'none'}
           >
+            <BlurView intensity={60} tint={blurTint} style={[StyleSheet.absoluteFill, { borderRadius: Layout.tabBubble / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
             <ArrowUpDown
               size={20}
               color={colors.text}
@@ -528,14 +534,15 @@ export function GlobalTabBar() {
             onPress={handleCreatePress}
             style={[
               styles.createBubble,
-              { 
-                backgroundColor: colors.background,
-                borderColor: colors.border,
+              styles.glass,
+              {
+                borderColor: colors.glassBorder,
               },
               createBubbleStyle,
             ]}
             pointerEvents={showCreateBubble ? 'auto' : 'none'}
           >
+            <BlurView intensity={60} tint={blurTint} style={[StyleSheet.absoluteFill, { borderRadius: Layout.tabBubble / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
             <Plus
               size={22}
               color={colors.text}
@@ -597,29 +604,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  glass: {
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.18,
+    shadowRadius: 20,
+    elevation: 8,
+  },
   backBubble: {
     width: Layout.tabBubble,
     height: Layout.tabBubble,
     borderRadius: Layout.tabBubble / 2,
-    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'visible',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
+    overflow: 'hidden',
   },
   pillWrapper: {
     borderRadius: 18,
-    borderWidth: 1,
-    overflow: 'visible',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
+    overflow: 'hidden',
   },
   pillContent: {
     flexDirection: 'row',
@@ -638,57 +641,33 @@ const styles = StyleSheet.create({
     width: Layout.tabBubble,
     height: Layout.tabBubble,
     borderRadius: Layout.tabBubble / 2,
-    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'visible',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
+    overflow: 'hidden',
   },
   amnaBubble: {
     width: Layout.tabBubble,
     height: Layout.tabBubble,
     borderRadius: Layout.tabBubble / 2,
-    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'visible',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
+    overflow: 'hidden',
   },
   sortBubble: {
     width: Layout.tabBubble,
     height: Layout.tabBubble,
     borderRadius: Layout.tabBubble / 2,
-    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'visible',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
+    overflow: 'hidden',
   },
   createBubble: {
     width: Layout.tabBubble,
     height: Layout.tabBubble,
     borderRadius: Layout.tabBubble / 2,
-    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'visible',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
+    overflow: 'hidden',
   },
   unreadDot: {
     position: 'absolute',

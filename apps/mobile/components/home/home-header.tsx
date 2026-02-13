@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { HapticPressable } from '@/components/ui';
+import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Bell, Sun, Moon, Bookmark, Package } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
@@ -66,6 +67,8 @@ export function HomeHeader() {
     router.push('/inventory');
   };
 
+  const blurTint = colorScheme === 'dark' ? 'dark' : 'light' as const;
+
   const ThemeIcon = colorScheme === 'dark' ? Moon : Sun;
 
   return (
@@ -73,19 +76,24 @@ export function HomeHeader() {
       {/* Left: Profile + Notifications + Saved + Inventory */}
       <View style={styles.leftGroup}>
         <ProfileMenu />
-        <HapticPressable
+        <BlurView
+          intensity={60}
+          tint={blurTint}
           style={[
             styles.iconButton,
-            { 
-              borderColor: colors.border,
-              backgroundColor: colors.background,
-            }
+            styles.glass,
+            {
+              borderColor: colors.glassBorder,
+              backgroundColor: colors.glassBackground,
+            },
           ]}
-          onPress={handleNotificationPress}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          {({ pressed }) => (
-            <>
+          <HapticPressable
+            style={styles.iconButtonInner}
+            onPress={handleNotificationPress}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            {({ pressed }) => (
               <View>
                 <Bell 
                   size={20} 
@@ -101,78 +109,93 @@ export function HomeHeader() {
                   </View>
                 )}
               </View>
-            </>
-          )}
-        </HapticPressable>
-        <HapticPressable
+            )}
+          </HapticPressable>
+        </BlurView>
+        <BlurView
+          intensity={60}
+          tint={blurTint}
           style={[
             styles.pillButton,
+            styles.glass,
             {
-              borderColor: colors.border,
-              backgroundColor: colors.background,
+              borderColor: colors.glassBorder,
+              backgroundColor: colors.glassBackground,
             },
           ]}
-          onPress={handleSavedPress}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          {({ pressed }) => (
-            <>
+          <HapticPressable
+            style={styles.pillButtonInner}
+            onPress={handleSavedPress}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            {({ pressed }) => (
               <View style={styles.pillContent}>
                 <Bookmark size={16} color={colors.icon} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
-                <Data size="small" tone="secondary" style={{ opacity: pressed ? 0.7 : 1 }}>
+                <Data size="small" style={{ opacity: pressed ? 0.7 : 1 }}>
                   Saved
                 </Data>
               </View>
-            </>
-          )}
-        </HapticPressable>
-        <HapticPressable
+            )}
+          </HapticPressable>
+        </BlurView>
+        <BlurView
+          intensity={60}
+          tint={blurTint}
           style={[
             styles.pillButton,
+            styles.glass,
             {
-              borderColor: colors.border,
-              backgroundColor: colors.background,
+              borderColor: colors.glassBorder,
+              backgroundColor: colors.glassBackground,
             },
           ]}
-          onPress={handleInventoryPress}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          {({ pressed }) => (
-            <>
+          <HapticPressable
+            style={styles.pillButtonInner}
+            onPress={handleInventoryPress}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            {({ pressed }) => (
               <View style={styles.pillContent}>
                 <Package size={16} color={colors.icon} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
-                <Data size="small" tone="secondary" style={{ opacity: pressed ? 0.7 : 1 }}>
+                <Data size="small" style={{ opacity: pressed ? 0.7 : 1 }}>
                   Inventory
                 </Data>
               </View>
-            </>
-          )}
-        </HapticPressable>
+            )}
+          </HapticPressable>
+        </BlurView>
       </View>
 
       {/* Right: Theme Toggle */}
-      <HapticPressable
+      <BlurView
+        intensity={60}
+        tint={blurTint}
         style={[
           styles.iconButton,
+          styles.glass,
           { 
-            borderColor: colors.border,
-            backgroundColor: colors.background,
+            borderColor: colors.glassBorder,
+            backgroundColor: colors.glassBackground,
           }
         ]}
-        onPress={handleToggleTheme}
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
-        {({ pressed }) => (
-          <>
+        <HapticPressable
+          style={styles.iconButtonInner}
+          onPress={handleToggleTheme}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          {({ pressed }) => (
             <ThemeIcon 
               size={20} 
               color={colors.icon}
               strokeWidth={2}
               style={{ opacity: pressed ? 0.7 : 1 }}
             />
-          </>
-        )}
-      </HapticPressable>
+          )}
+        </HapticPressable>
+      </BlurView>
     </View>
   );
 }
@@ -196,34 +219,42 @@ const styles = StyleSheet.create({
     gap: Layout.headerGap,
     flex: 1,
   },
+  glass: {
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.18,
+    shadowRadius: 20,
+    elevation: 8,
+  },
   iconButton: {
     padding: 4,
     borderRadius: Radius.full,
-    borderWidth: 1,
     width: Layout.hitTarget,
     height: Layout.hitTarget,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'visible',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
+    overflow: 'hidden',
+  },
+  iconButtonInner: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   pillButton: {
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: Radius.full,
-    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'visible',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
+    overflow: 'hidden',
+  },
+  pillButtonInner: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   pillContent: {
     flexDirection: 'row',

@@ -28,6 +28,7 @@ import {
 } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
+import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -118,6 +119,7 @@ export function InventoryScreen() {
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const blurTint = colorScheme === 'dark' ? 'dark' : 'light' as const;
 
   // ── Data State ───────────────────────────────────────────────────────────
   const [activeTab, setActiveTab] = useState<MyListingsFilter>('all');
@@ -406,47 +408,52 @@ export function InventoryScreen() {
             const count = tab.count(stats);
 
             return (
-              <HapticPressable
+              <BlurView
                 key={tab.key}
-                onPress={() => handleTabChange(tab.key)}
+                intensity={60}
+                tint={blurTint}
                 style={[
                   styles.pill,
+                  styles.glass,
                   {
-                    backgroundColor: colors.background,
-                    borderColor: colors.border,
+                    borderColor: colors.glassBorder,
+                    backgroundColor: colors.glassBackground,
                   },
                 ]}
               >
-                {({ pressed }) => (
-                  <>
-                  <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
-                    <Data
-                      size="small"
-                      tone={isActive ? 'default' : 'secondary'}
-                      numberOfLines={1}
-                    >
-                      {tab.label}
-                    </Data>
-                    {count > 0 && (
-                      <View
-                        style={[
-                          styles.pillBadge,
-                          { backgroundColor: colors.text },
-                        ]}
+                <HapticPressable
+                  onPress={() => handleTabChange(tab.key)}
+                  style={styles.pillInner}
+                >
+                  {({ pressed }) => (
+                    <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
+                      <Data
+                        size="small"
+                        tone={isActive ? 'default' : 'secondary'}
+                        numberOfLines={1}
                       >
-                        <Label
-                          size="badge"
-                          uppercase={false}
-                          style={{ color: colors.background }}
+                        {tab.label}
+                      </Data>
+                      {count > 0 && (
+                        <View
+                          style={[
+                            styles.pillBadge,
+                            { backgroundColor: colors.text },
+                          ]}
                         >
-                          {count > 99 ? '99+' : count}
-                        </Label>
-                      </View>
-                    )}
-                  </View>
-                  </>
-                )}
-              </HapticPressable>
+                          <Label
+                            size="badge"
+                            uppercase={false}
+                            style={{ color: colors.background }}
+                          >
+                            {count > 99 ? '99+' : count}
+                          </Label>
+                        </View>
+                      )}
+                    </View>
+                  )}
+                </HapticPressable>
+              </BlurView>
             );
           })}
         </ScrollView>
@@ -640,9 +647,19 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 6,
   },
+  glass: {
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.18,
+    shadowRadius: 20,
+    elevation: 8,
+  },
   pill: {
     borderRadius: Radius.full,
-    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  pillInner: {
     paddingHorizontal: 12,
     paddingVertical: 8,
     alignItems: 'center',

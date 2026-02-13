@@ -76,7 +76,7 @@ export const Colors = {
     
     // TEXT
     text: '#0A0A0A',
-    textSecondary: '#525252',
+    textSecondary: '#333333',
     textTertiary: '#737373',
     textMuted: '#A3A3A3',
     
@@ -102,8 +102,12 @@ export const Colors = {
     borderSecondary: '#C8C8CC',
     
     // ICONS
-    icon: '#525252',
+    icon: '#333333',
     iconMuted: '#A3A3A3',
+    
+    // GLASS (Blur elements - header pills, tab bar bubbles)
+    glassBorder: 'rgba(0,0,0,0.08)',
+    glassBackground: '#FFFFFF',
     
     // INTERACTIVE
     fill: 'rgba(115, 115, 115, 0.16)',
@@ -141,7 +145,7 @@ export const Colors = {
     
     // TEXT
     text: '#FAFAFA',
-    textSecondary: '#A3A3A3',
+    textSecondary: '#D4D4D4',
     textTertiary: '#737373',
     textMuted: '#525252',
     
@@ -167,8 +171,12 @@ export const Colors = {
     borderSecondary: '#333333',
     
     // ICONS
-    icon: '#A3A3A3',
+    icon: '#D4D4D4',
     iconMuted: '#525252',
+    
+    // GLASS (Blur elements - header pills, tab bar bubbles)
+    glassBorder: 'rgba(255,255,255,0.14)',
+    glassBackground: 'rgba(13,13,13,0.35)',
     
     // INTERACTIVE
     fill: 'rgba(115, 115, 115, 0.24)',

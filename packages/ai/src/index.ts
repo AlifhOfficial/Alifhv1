@@ -4,3 +4,4 @@ export * from './moderation';
 export * from './description';
 export * from './fuel';
 export * from './search';
+export * from './summary';

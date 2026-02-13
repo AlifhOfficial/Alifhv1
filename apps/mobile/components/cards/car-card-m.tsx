@@ -16,6 +16,7 @@ import {
 import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
 import { Share2, CheckCircle2 } from 'lucide-react-native';
+import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -112,6 +113,7 @@ export interface CarCardMProps {
   isSuperliked?: boolean;
   // Callbacks
   onPress?: (id: string) => void;
+  onLongPress?: (id: string) => void;
   onFavoritePress?: (id: string) => void;
   onSuperlikePress?: (id: string) => void;
   onSharePress?: (id: string) => void;
@@ -144,6 +146,7 @@ export const CarCardM = memo(function CarCardM({
   isFavorite: isFavoriteProp,
   isSuperliked: isSuperlikedProp,
   onPress,
+  onLongPress,
   onFavoritePress,
   onSuperlikePress,
   onSharePress,
@@ -193,6 +196,11 @@ export const CarCardM = memo(function CarCardM({
     onPress?.(id);
   }, [id, onPress]);
 
+  const handleLongPress = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    onLongPress?.(id);
+  }, [id, onLongPress]);
+
   const handleSharePress = useCallback(async () => {
     if (onSharePress) {
       onSharePress(id);
@@ -212,6 +220,8 @@ export const CarCardM = memo(function CarCardM({
   return (
     <HapticPressable
       onPress={handlePress}
+      onLongPress={onLongPress ? handleLongPress : undefined}
+      delayLongPress={400}
       style={[
         styles.container,
         {

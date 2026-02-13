@@ -242,7 +242,7 @@ export default function SellerContactScreen() {
       });
     }
     // Navigate to browse tab
-    router.push('/(tabs)/browse');
+    router.push('/browse');
   }, [seller, applySearch, clearSearch, clearFilterParams, router]);
 
   const handleCustomizeFinancing = useCallback(() => {

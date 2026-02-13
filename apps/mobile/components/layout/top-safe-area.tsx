@@ -34,21 +34,23 @@ export function TopSafeAreaGradient() {
     if (Platform.OS === 'android') {
       return [
         hexToRgba(bg, 1),
+        hexToRgba(bg, 0.95),
         hexToRgba(bg, 0.8),
         hexToRgba(bg, 0.5),
         hexToRgba(bg, 0.2),
         hexToRgba(bg, 0),
       ] as const;
     }
-    return [bg, `${bg}00`] as const;
+    return [bg, hexToRgba(bg, 0.6), `${bg}00`] as const;
   }, [colors.background]);
 
   return (
     <View style={styles.container} pointerEvents="none">
       <LinearGradient
         colors={gradientColors as unknown as string[]}
-        {...(Platform.OS === 'android' && { locations: [0, 0.3, 0.6, 0.85, 1] })}
-        style={[styles.gradient, { height: insets.top + 16 }]}
+        {...(Platform.OS === 'android' && { locations: [0, 0.2, 0.4, 0.6, 0.8, 1] })}
+        {...(Platform.OS === 'ios' && { locations: [0, 0.5, 1] })}
+        style={[styles.gradient, { height: insets.top + 40 }]}
       />
     </View>
   );

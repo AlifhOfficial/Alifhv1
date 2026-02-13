@@ -179,7 +179,7 @@ function RootLayoutNav() {
       signIn(user);
     }
     closeAuthFlow();
-    router.replace('/(tabs)/browse');
+    router.replace('/browse');
   };
 
   // Show onboarding auth flow if not completed
@@ -216,6 +216,8 @@ function RootLayoutNav() {
         }}
       >
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="browse" options={{ animation: 'none' }} />
+        <Stack.Screen name="messages" options={{ animation: 'none' }} />
         <Stack.Screen name="listing/[id]" options={{ presentation: 'card' }} />
         <Stack.Screen name="seller-contact/[listingId]" options={{ presentation: 'card' }} />
         <Stack.Screen name="profile" options={{ presentation: 'card' }} />

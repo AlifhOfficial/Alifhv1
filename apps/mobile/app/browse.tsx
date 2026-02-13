@@ -23,6 +23,7 @@ import {
   type ViewMode,
   type MoreFiltersState,
 } from '@/components/sheets';
+import { CarInfoSheet } from '@/components/sheets';
 import { CarCardM, CarCardMSkeleton, CarCardList, CarCardListSkeleton } from '@/components/cards';
 import { LogoLoader, Body } from '@/components/ui';
 import { searchApi, type ListingCard, type SearchParams, type SearchFacets, type SearchSortOption } from '@/lib/search-api';
@@ -139,6 +140,11 @@ export default function BrowseScreen() {
   const [locationSheetVisible, setLocationSheetVisible] = useState(false);
   const [settingsSheetVisible, setSettingsSheetVisible] = useState(false);
 
+  // Car info sheet state (AI summary on long-press)
+  const [infoSheetVisible, setInfoSheetVisible] = useState(false);
+  const [infoSheetListingId, setInfoSheetListingId] = useState<string | null>(null);
+  const [infoSheetMeta, setInfoSheetMeta] = useState<{ make?: string; model?: string; year?: number; price?: number; sellerName?: string }>({});
+
   // ──────────────────────────────────────────────────────────────────────────
   // API CALLS
   // ──────────────────────────────────────────────────────────────────────────
@@ -248,7 +254,19 @@ export default function BrowseScreen() {
     router.push(`/listing/${id}`);
   }, [router]);
 
-
+  // Handle long-press on card — show AI info sheet
+  const handleCardLongPress = useCallback((id: string) => {
+    const listing = listings.find(l => l.id === id);
+    setInfoSheetListingId(id);
+    setInfoSheetMeta({
+      make: listing?.make,
+      model: listing?.model,
+      year: listing?.year,
+      price: listing?.price,
+      sellerName: listing?.partnerName || listing?.sellerName || undefined,
+    });
+    setInfoSheetVisible(true);
+  }, [listings]);
 
   // Handle filter pill press
   const handleFilterPillPress = useCallback((type: FilterPillType) => {
@@ -465,6 +483,18 @@ export default function BrowseScreen() {
         onApply={handleMoreFiltersApply}
       />
 
+      {/* Car Info Sheet - AI summary on long-press */}
+      <CarInfoSheet
+        visible={infoSheetVisible}
+        onClose={() => setInfoSheetVisible(false)}
+        listingId={infoSheetListingId}
+        make={infoSheetMeta.make}
+        model={infoSheetMeta.model}
+        year={infoSheetMeta.year}
+        price={infoSheetMeta.price}
+        sellerName={infoSheetMeta.sellerName}
+      />
+
       {/* Listings */}
       <DisplayArea
         ref={scrollRef}
@@ -522,6 +552,7 @@ export default function BrowseScreen() {
                   sellerAvatarUrl={listing.sellerAvatarUrl}
                   kycVerified={listing.sellerKycVerified}
                   onPress={handleCardPress}
+                  onLongPress={handleCardLongPress}
                 />
               ))
             ) : (

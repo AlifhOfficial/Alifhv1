@@ -25,6 +25,7 @@ import {
 } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
+import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -91,6 +92,7 @@ export function BookingsScreen() {
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const blurTint = colorScheme === 'dark' ? 'dark' : 'light' as const;
 
   // ── Data State ───────────────────────────────────────────────────────────
   const [activeTab, setActiveTab] = useState<BookingFilter>('all');
@@ -361,31 +363,36 @@ export function BookingsScreen() {
           {STATUS_TABS.map((tab) => {
             const isActive = activeTab === tab.key;
             return (
-              <HapticPressable
+              <BlurView
                 key={tab.key}
-                onPress={() => handleTabChange(tab.key)}
+                intensity={60}
+                tint={blurTint}
                 style={[
                   styles.pill,
+                  styles.glass,
                   {
-                    backgroundColor: colors.background,
-                    borderColor: colors.border,
+                    borderColor: colors.glassBorder,
+                    backgroundColor: colors.glassBackground,
                   },
                 ]}
               >
-                {({ pressed }) => (
-                  <>
-                  <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
-                    <Data
-                      size="small"
-                      tone={isActive ? 'default' : 'secondary'}
-                      numberOfLines={1}
-                    >
-                      {tab.label}
-                    </Data>
-                  </View>
-                  </>
-                )}
-              </HapticPressable>
+                <HapticPressable
+                  onPress={() => handleTabChange(tab.key)}
+                  style={styles.pillInner}
+                >
+                  {({ pressed }) => (
+                    <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
+                      <Data
+                        size="small"
+                        tone={isActive ? 'default' : 'secondary'}
+                        numberOfLines={1}
+                      >
+                        {tab.label}
+                      </Data>
+                    </View>
+                  )}
+                </HapticPressable>
+              </BlurView>
             );
           })}
         </ScrollView>
@@ -505,9 +512,19 @@ const styles = StyleSheet.create({
     gap: Layout.headerGap,
     paddingRight: Layout.screenPadding,
   },
+  glass: {
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.18,
+    shadowRadius: 20,
+    elevation: 8,
+  },
   pill: {
     borderRadius: Radius.full,
-    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  pillInner: {
     paddingHorizontal: 12,
     paddingVertical: 8,
     alignItems: 'center',

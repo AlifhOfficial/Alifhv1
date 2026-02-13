@@ -7,6 +7,9 @@ export { DescriptionSheet, FeaturesSheet, SpecsSheet } from './listing-detail-sh
 // Seller info sheets
 export { FinancingSheet, PhoneActionSheet, BookingSheet, SellerDescriptionSheet } from './seller-info-sheets';
 
+// Car info sheet (AI summary on long-press)
+export { CarInfoSheet } from './car-info-sheet';
+
 // Filter sheets
 export {
   MakeFilterSheet,

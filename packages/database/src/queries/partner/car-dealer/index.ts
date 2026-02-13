@@ -7,6 +7,7 @@
 
 export { getDealerBaseProfile } from './get-dealer-base-profile';
 export { updateDealerBaseProfile, type UpdateDealerBaseProfileData } from './update-dealer-base-profile';
+export { getPartnersList, type PartnerListItem } from './get-partners-list';
 
 // Partner Profile (for dashboard & showroom page)
 export {

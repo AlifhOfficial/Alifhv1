@@ -3,7 +3,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -54,7 +54,6 @@ export default function ChatScreen() {
   }, [cachedConversation, convListLoading, conversationId, isAuthenticated]);
 
   const conversation = cachedConversation || directConversation;
-  const isLoading = convListLoading || isDirectLoading;
 
   // Mark as read when entering the chat
   useEffect(() => {
@@ -67,19 +66,8 @@ export default function ChatScreen() {
     router.back();
   };
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <View style={[styles.screen, { backgroundColor: colors.background, paddingTop: insets.top }]}>
-        <View style={styles.centered}>
-          <ActivityIndicator size="large" color={colors.primary} />
-        </View>
-      </View>
-    );
-  }
-
-  // Error / Not found
-  if (!conversation || !conversationId) {
+  // Error / Not found - only show if loading is done and still no conversation
+  if (!conversationId) {
     return (
       <View style={[styles.screen, { backgroundColor: colors.background, paddingTop: insets.top }]}>
         <View style={styles.centered}>

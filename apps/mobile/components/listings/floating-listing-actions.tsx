@@ -143,8 +143,8 @@ export function FloatingListingActions({
             style={[
               styles.bubble,
               {
-                backgroundColor: colors.background,
-                borderColor: colors.border,
+                backgroundColor: colors.glassBackground,
+                borderColor: colors.glassBorder,
               },
             ]}
           >
@@ -165,8 +165,8 @@ export function FloatingListingActions({
             style={[
               styles.bubble,
               {
-                backgroundColor: colors.background,
-                borderColor: colors.border,
+                backgroundColor: colors.glassBackground,
+                borderColor: colors.glassBorder,
               },
             ]}
           >
@@ -187,8 +187,8 @@ export function FloatingListingActions({
             style={[
               styles.bubble,
               {
-                backgroundColor: colors.background,
-                borderColor: colors.border,
+                backgroundColor: colors.glassBackground,
+                borderColor: colors.glassBorder,
               },
             ]}
           >

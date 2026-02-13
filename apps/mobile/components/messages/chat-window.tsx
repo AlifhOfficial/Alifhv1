@@ -28,7 +28,7 @@ import { ChatHeader } from './chat-header';
 import { MessageBubble } from './message-bubble';
 import { MessageInput } from './message-input';
 import { useMessages } from './hooks/useMessages';
-import { Body, Data, Supporting } from '@/components/ui';
+import { Body, Data, Supporting, Skeleton } from '@/components/ui';
 import { markConversationAsRead, type Message, type Conversation } from '@/lib/messaging-api';
 
 const PANEL_WIDTH = 80;
@@ -273,7 +273,8 @@ export function ChatWindow({
 
   // List header (bottom of messages - newest)
   const ListFooterComponent = useMemo(() => {
-    if (isFetchingMore) {
+    // Only show spinner when fetching more (not initial load)
+    if (isFetchingMore && messages.length > 0) {
       return (
         <View style={styles.loadingMore}>
           <ActivityIndicator size="small" color={colors.textTertiary} />
@@ -281,14 +282,37 @@ export function ChatWindow({
       );
     }
     return null;
-  }, [isFetchingMore, colors.textTertiary]);
+  }, [isFetchingMore, messages.length, colors.textTertiary]);
 
   // Empty state
   const ListEmptyComponent = useMemo(() => {
     if (isLoading) {
       return (
-        <View style={styles.emptyContainer}>
-          <ActivityIndicator size="small" color={colors.primary} />
+        <View style={styles.skeletonContainer}>
+          {/* Simulate a chat thread with alternating left/right skeleton bubbles */}
+          {[...Array(8)].map((_, i) => {
+            const isRight = i % 3 !== 0;
+            return (
+              <View
+                key={i}
+                style={[
+                  styles.skeletonRow,
+                  isRight ? styles.skeletonRowRight : styles.skeletonRowLeft,
+                ]}
+              >
+                {!isRight && (
+                  <Skeleton circle width={28} height={28} style={{ marginRight: 8 }} />
+                )}
+                <View style={{ gap: 6, alignItems: isRight ? 'flex-end' : 'flex-start' }}>
+                  <Skeleton
+                    width={isRight ? 180 : 200}
+                    height={i % 4 === 2 ? 52 : 36}
+                    borderRadius={16}
+                  />
+                </View>
+              </View>
+            );
+          })}
         </View>
       );
     }
@@ -405,6 +429,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: Spacing['5xl'],
+  },
+  skeletonContainer: {
+    flex: 1,
+    width: SCREEN_WIDTH,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+    gap: 16,
+  },
+  skeletonRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+  },
+  skeletonRowLeft: {
+    justifyContent: 'flex-start',
+  },
+  skeletonRowRight: {
+    justifyContent: 'flex-end',
   },
   loadingMore: {
     paddingVertical: Spacing.lg,
