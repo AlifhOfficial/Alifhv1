@@ -29,7 +29,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Label, ButtonText, Supporting } from '@/components/ui';
 import {
@@ -572,7 +572,7 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
         </Supporting>
       )}
       {isSelected && (
-        <Ionicons name="close" size={12} color={colors.background} />
+        <Ionicons name="close" size={Spacing.md} color={colors.background} />
       )}
     </HapticPressable>
   );
@@ -589,13 +589,13 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
+      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
+      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
       keyboardBehavior="extend"
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
       detached
-      bottomInset={insets.bottom + 20}
+      bottomInset={insets.bottom + Spacing.xl}
       style={styles.sheetContainer}
     >
       <View style={styles.container}>
@@ -632,7 +632,7 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
 
           {/* Search Input */}
           <View style={[styles.searchInputContainer, { backgroundColor: colors.input, borderColor: colors.border }]}>
-            <Ionicons name="search" size={20} color={colors.textMuted} style={{ marginTop: 2 }} />
+            <Ionicons name="search" size={Spacing.xl} color={colors.textMuted} style={{ marginTop: 2 }} />
             <BottomSheetTextInput
               style={[styles.searchInput, { color: colors.text }]}
               placeholder={'Search by keyword, make, model, dealer...\ne.g. "Audi RS5", "accident free", "sunroof"'}
@@ -649,8 +649,8 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
               blurOnSubmit
             />
             {query.length > 0 && (
-              <HapticPressable onPress={() => setQuery('')} hitSlop={12}>
-                <Ionicons name="close-circle" size={18} color={colors.textMuted} />
+              <HapticPressable onPress={() => setQuery('')} hitSlop={Spacing.md}>
+                <Ionicons name="close-circle" size={Sizes.iconSm} color={colors.textMuted} />
               </HapticPressable>
             )}
           </View>
@@ -661,7 +661,7 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
               <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
                 {selectionSummary}
               </Body>
-              <HapticPressable onPress={clearAllSelections} hitSlop={8}>
+              <HapticPressable onPress={clearAllSelections} hitSlop={Layout.hitSlopSmall}>
                 <Supporting size="small" style={{ color: colors.error }}>
                   Clear
                 </Supporting>
@@ -869,7 +869,7 @@ export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
 
 const styles = StyleSheet.create({
   sheetContainer: {
-    marginHorizontal: 16,
+    marginHorizontal: Spacing.lg,
   },
   container: {
     flex: 1,
@@ -900,8 +900,8 @@ const styles = StyleSheet.create({
   searchInputContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    minHeight: 100,
-    borderRadius: 20,
+    minHeight: Spacing['5xl'] * 2,
+    borderRadius: Radius.xl,
     borderWidth: 1,
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.md,
@@ -952,20 +952,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
   },
   suggestionLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
-    gap: 10,
-    marginRight: 8,
+    gap: Spacing.sm,
+    marginRight: Spacing.sm,
   },
   categoryDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: Spacing.sm,
+    height: Spacing.sm,
+    borderRadius: Spacing.xs,
   },
   emptyText: {
     textAlign: 'center',
@@ -991,8 +991,8 @@ const styles = StyleSheet.create({
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingVertical: 6,
+    gap: Spacing.xs,
+    paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.sm,
     borderRadius: Radius.full,
     borderWidth: 1,

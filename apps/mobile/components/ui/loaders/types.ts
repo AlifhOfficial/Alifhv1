@@ -2,6 +2,8 @@
  * Loader Types
  */
 
+import { Spacing, Sizes } from '@/constants/theme';
+
 export type LoaderSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export type LoaderVariant = 'primary' | 'secondary' | 'white' | 'dark' | 'muted';
 
@@ -12,11 +14,11 @@ export interface LoaderProps {
 }
 
 export const LOADER_SIZES: Record<LoaderSize, number> = {
-  xs: 16,
-  sm: 24,
-  md: 36,
-  lg: 48,
-  xl: 64,
+  xs: Spacing.lg,
+  sm: Spacing['2xl'],
+  md: Sizes.bubble,
+  lg: Sizes.avatarLg,
+  xl: Sizes.avatarLg + Spacing.lg,
 };
 
 export const LOADER_COLORS = {

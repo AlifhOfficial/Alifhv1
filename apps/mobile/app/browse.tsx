@@ -11,8 +11,8 @@ import { StyleSheet, View, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
-import { DisplayArea, ACTIVE_CHIPS_HEIGHT, TopSafeAreaGradient } from '@/components/layout';
-import { BrowseHeader, type FilterPillType } from '@/components/browse';
+import { ScreenContainer, TopSafeAreaGradient } from '@/components/layout';
+import { BrowseHeader, type FilterPillType, ACTIVE_CHIPS_HEIGHT } from '@/components/browse';
 import { 
   MakeFilterSheet,
   ModelFilterSheet,
@@ -410,7 +410,7 @@ export default function BrowseScreen() {
   // ──────────────────────────────────────────────────────────────────────────
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Top safe area gradient behind pills */}
       <TopSafeAreaGradient />
 
@@ -496,7 +496,7 @@ export default function BrowseScreen() {
       />
 
       {/* Listings */}
-      <DisplayArea
+      <ScreenContainer
         ref={scrollRef}
         refreshing={isRefreshing}
         onRefresh={handleRefresh}
@@ -504,7 +504,8 @@ export default function BrowseScreen() {
         onEndReachedThreshold={0.3}
         horizontalPadding="sm"
         verticalPadding="sm"
-        extraBottomPadding={hasActiveChips ? ACTIVE_CHIPS_HEIGHT + 8 : 0}
+        extraBottomPadding={hasActiveChips ? ACTIVE_CHIPS_HEIGHT + Spacing.sm : 0}
+        keyboardAvoiding={false}
       >
         {isLoading && (!listings || listings.length === 0) ? (
           viewMode === 'grid' ? (
@@ -590,7 +591,7 @@ export default function BrowseScreen() {
             )}
           </>
         )}
-      </DisplayArea>
+      </ScreenContainer>
     </View>
   );
 }

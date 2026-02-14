@@ -11,7 +11,7 @@ import { HapticPressable } from '@/components/ui';
 import { ChevronRight } from 'lucide-react-native';
 
 import { Label, Data } from '@/components/ui';
-import { Spacing } from '@/constants/theme';
+import { Spacing, Sizes } from '@/constants/theme';
 import { CarCardList } from '@/components/cards/car-card-list';
 import type { SellerListingsProps } from './types';
 
@@ -60,7 +60,7 @@ export const SellerListings = memo(function SellerListings({
           <Data size="medium" tone="primary">
             View All {totalCount} Listings
           </Data>
-          <ChevronRight size={16} color={colors.primary} />
+          <ChevronRight size={Sizes.iconXs} color={colors.primary} />
         </HapticPressable>
       )}
     </View>

@@ -15,8 +15,8 @@ import { HapticPressable } from '@/components/ui';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
-import { Body, Supporting, Data } from '@/components/ui';
-import { Typography, Spacing, Radius } from '@/constants/theme';
+import { Body, Data } from '@/components/ui';
+import { Typography, Spacing, Radius, Layout } from '@/constants/theme';
 import { Section } from './Section';
 import type { ThemeColors, EditingField, ProfileFormData } from './types';
 
@@ -93,23 +93,23 @@ export function BioSection({
               textAlignVertical="top"
             />
             <View style={styles.footer}>
-              <Supporting size="medium" style={{ color: charCountColor }}>
+              <Body size="small" style={{ color: charCountColor }}>
                 {bio.length}/{MAX_BIO_LENGTH}
-              </Supporting>
+              </Body>
               <View style={styles.actions}>
                 <HapticPressable
                   onPress={onCancel}
-                  hitSlop={8}
+                  hitSlop={Layout.hitSlopSmall}
                   style={({ pressed }) => pressed && { opacity: 0.6 }}
                 >
-                  <Supporting size="medium" tone="secondary">
+                  <Body size="small" tone="secondary">
                     Cancel
-                  </Supporting>
+                  </Body>
                 </HapticPressable>
                 <HapticPressable
                   onPress={onSave}
                   disabled={saving}
-                  hitSlop={8}
+                  hitSlop={Layout.hitSlopSmall}
                   style={({ pressed }) => pressed && { opacity: 0.6 }}
                 >
                   <Data size="medium" tone="primary">
@@ -122,16 +122,16 @@ export function BioSection({
         ) : (
           <View style={styles.displayContainer}>
             <Body
-              size="large"
+              size="medium"
               tone={bio ? 'default' : 'muted'}
               style={styles.bioText}
             >
               {bio || 'Tap to add bio'}
             </Body>
             {bio && (
-              <Supporting size="medium" tone="muted">
+              <Body size="small" tone="muted">
                 {bio.length}/{MAX_BIO_LENGTH}
-              </Supporting>
+              </Body>
             )}
           </View>
         )}
@@ -145,13 +145,13 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
   },
   editContainer: {
-    gap: Spacing.lg - 2,
+    gap: Spacing.md,
   },
   input: {
-    minHeight: 100,
+    minHeight: Layout.hitTarget * 2 + Spacing.md,
     borderRadius: Radius.lg,
     borderWidth: 1,
-    padding: Spacing.lg - 2,
+    padding: Spacing.md,
   },
   footer: {
     flexDirection: 'row',
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     gap: Spacing['2xl'],
   },
   displayContainer: {
-    gap: Spacing.sm + 2,
+    gap: Spacing.md,
   },
   bioText: {
     // lineHeight handled by <Body size="large"> component

@@ -14,7 +14,7 @@ import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { Archive, ArchiveRestore } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, ButtonText, Supporting } from '@/components/ui';
 import { toggleArchiveListing, type UpdateListingResponse } from '@/lib/sell-car-user-api';
@@ -132,7 +132,7 @@ export function ArchiveListingSheet({
               { backgroundColor: colors.fillSecondary },
             ]}
           >
-            <Ionicons name="close" size={18} color={colors.textSecondary} />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.textSecondary} />
           </HapticPressable>
         </View>
 
@@ -142,7 +142,7 @@ export function ArchiveListingSheet({
             <Image source={{ uri: listingThumbnail }} style={styles.thumbnail} />
           ) : (
             <View style={[styles.thumbnail, { backgroundColor: colors.fill }]}>
-              <Ionicons name="image-outline" size={24} color={colors.textMuted} />
+              <Ionicons name="image-outline" size={Sizes.iconLg} color={colors.textMuted} />
             </View>
           )}
           <View style={styles.previewInfo}>
@@ -189,7 +189,7 @@ export function ArchiveListingSheet({
               <ActivityIndicator size="small" color="#FFF" />
             ) : (
               <>
-                <Icon size={18} color="#FFF" />
+                <Icon size={Sizes.iconSm} color="#FFF" />
                 <ButtonText size="medium" style={{ color: '#FFF' }}>
                   {actionLabel}
                 </ButtonText>
@@ -208,7 +208,7 @@ export function ArchiveListingSheet({
 
 const styles = StyleSheet.create({
   sheetContainer: {
-    marginHorizontal: 16,
+    marginHorizontal: Layout.screenPadding,
   },
   content: {
     paddingHorizontal: Spacing.lg,
@@ -221,8 +221,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xs,
   },
   closeButton: {
-    width: 32,
-    height: 32,
+    width: Sizes.avatarSm,
+    height: Sizes.avatarSm,
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
@@ -236,15 +236,15 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   thumbnail: {
-    width: 56,
-    height: 56,
+    width: Sizes.avatarLg + Spacing.sm,
+    height: Sizes.avatarLg + Spacing.sm,
     borderRadius: Radius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
   previewInfo: {
     flex: 1,
-    gap: 4,
+    gap: Spacing.xs,
   },
   errorBanner: {
     paddingHorizontal: Spacing.md,
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
+    paddingVertical: Spacing.md,
     borderRadius: Radius.lg,
     borderWidth: 1,
   },
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-    paddingVertical: 14,
+    paddingVertical: Spacing.md,
     borderRadius: Radius.lg,
   },
 });

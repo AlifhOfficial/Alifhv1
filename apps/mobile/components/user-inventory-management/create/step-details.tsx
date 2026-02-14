@@ -23,7 +23,7 @@ import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 import { ChevronDown, ChevronUp } from 'lucide-react-native';
 
-import { Spacing, Radius } from '@/constants/theme';
+import { Spacing, Radius, Sizes, Layout, Typography } from '@/constants/theme';
 import { Heading, Body, Supporting, ButtonText, Label } from '@/components/ui';
 import {
   SPECS_TYPES,
@@ -75,9 +75,9 @@ function Section({
       <HapticPressable onPress={toggle} style={styles.sectionHeader}>
         <Label size="small" style={{ flex: 1 }}>{title}</Label>
         {open ? (
-          <ChevronUp size={18} color={colors.textMuted} />
+          <ChevronUp size={Sizes.iconSm} color={colors.textMuted} />
         ) : (
-          <ChevronDown size={18} color={colors.textMuted} />
+          <ChevronDown size={Sizes.iconSm} color={colors.textMuted} />
         )}
       </HapticPressable>
       {open && <View style={styles.sectionBody}>{children}</View>}
@@ -443,12 +443,11 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   textInput: {
-    height: 48,
+    height: Sizes.actionButtonLg,
     borderRadius: Radius.lg,
     borderWidth: 1,
     paddingHorizontal: Spacing.lg,
-    fontFamily: 'Inter_500Medium',
-    fontSize: 15,
+    ...Typography.bodyMedium,
   },
   chipWrap: {
     flexDirection: 'row',
@@ -458,16 +457,16 @@ const styles = StyleSheet.create({
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: Spacing.xs, // was 6
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: Radius.full,
     borderWidth: 1,
   },
   colorSwatch: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
+    width: Sizes.iconXs,
+    height: Sizes.iconXs,
+    borderRadius: Sizes.iconXs / 2,
     borderWidth: 1,
   },
 });

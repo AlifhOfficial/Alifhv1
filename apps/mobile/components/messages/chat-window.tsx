@@ -23,7 +23,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { format, isToday, isYesterday, isThisWeek, isSameDay } from 'date-fns';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { ChatHeader } from './chat-header';
 import { MessageBubble } from './message-bubble';
 import { MessageInput } from './message-input';
@@ -31,7 +31,7 @@ import { useMessages } from './hooks/useMessages';
 import { Body, Data, Supporting, Skeleton } from '@/components/ui';
 import { markConversationAsRead, type Message, type Conversation } from '@/lib/messaging-api';
 
-const PANEL_WIDTH = 80;
+const PANEL_WIDTH = Spacing['5xl'] + Spacing['3xl']; // ~80
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 interface ChatWindowProps {
@@ -286,42 +286,12 @@ export function ChatWindow({
 
   // Empty state
   const ListEmptyComponent = useMemo(() => {
-    if (isLoading) {
-      return (
-        <View style={styles.skeletonContainer}>
-          {/* Simulate a chat thread with alternating left/right skeleton bubbles */}
-          {[...Array(8)].map((_, i) => {
-            const isRight = i % 3 !== 0;
-            return (
-              <View
-                key={i}
-                style={[
-                  styles.skeletonRow,
-                  isRight ? styles.skeletonRowRight : styles.skeletonRowLeft,
-                ]}
-              >
-                {!isRight && (
-                  <Skeleton circle width={28} height={28} style={{ marginRight: 8 }} />
-                )}
-                <View style={{ gap: 6, alignItems: isRight ? 'flex-end' : 'flex-start' }}>
-                  <Skeleton
-                    width={isRight ? 180 : 200}
-                    height={i % 4 === 2 ? 52 : 36}
-                    borderRadius={16}
-                  />
-                </View>
-              </View>
-            );
-          })}
-        </View>
-      );
-    }
     return (
       <View style={styles.emptyContainer}>
         <Data size="medium" style={{ color: colors.textTertiary }}>No messages yet. Say hi! 👋</Data>
       </View>
     );
-  }, [isLoading, colors]);
+  }, [colors]);
 
   // Typing indicator (Instagram-style bubble at bottom of messages)
   const ListHeaderComponent = useMemo(() => {
@@ -359,24 +329,63 @@ export function ChatWindow({
       {/* Messages List with horizontal swipe for timestamps */}
       <GestureDetector gesture={swipeGesture}>
         <View style={styles.messagesArea}>
-          <Animated.View style={[styles.messagesWrapper, messagesAnimatedStyle]}>
-            <FlatList
-              ref={listRef}
-              data={messages}
-              renderItem={renderMessage}
-              keyExtractor={(item) => item.id}
-              inverted
-              contentContainerStyle={styles.messagesContent}
-              ListEmptyComponent={ListEmptyComponent}
-              ListHeaderComponent={ListHeaderComponent}
-              ListFooterComponent={ListFooterComponent}
-              onEndReached={handleEndReached}
-              onEndReachedThreshold={0.3}
-              showsVerticalScrollIndicator={false}
-              keyboardDismissMode="interactive"
-              keyboardShouldPersistTaps="handled"
-            />
-          </Animated.View>
+          {isLoading ? (
+            <View style={styles.skeletonContainer}>
+              {/* Simulate a chat thread with alternating left/right skeleton bubbles */}
+              {[...Array(8)].map((_, i) => {
+                const isRight = i % 3 !== 0;
+                // Vary widths using token combinations
+                const widths = [
+                  Spacing['5xl'] * 3,      // 144
+                  Spacing['5xl'] * 4,      // 192
+                  Spacing['4xl'] * 3,      // 120
+                  Spacing['5xl'] * 4.5,    // 216
+                  Spacing['4xl'] * 4,      // 160
+                  Spacing['3xl'] * 3,      // 96
+                  Spacing['5xl'] * 3.5,    // 168
+                  Spacing['4xl'] * 3.5,    // 140
+                ];
+                const bubbleWidth = widths[i % widths.length];
+                return (
+                  <View
+                    key={i}
+                    style={[
+                      styles.skeletonRow,
+                      isRight ? styles.skeletonRowRight : styles.skeletonRowLeft,
+                    ]}
+                  >
+                    {!isRight && (
+                      <Skeleton circle width={Sizes.iconXl} height={Sizes.iconXl} style={{ marginRight: Spacing.sm }} />
+                    )}
+                    <Skeleton
+                      width={bubbleWidth}
+                      height={Sizes.bubble}
+                      borderRadius={Radius.xl}
+                    />
+                  </View>
+                );
+              })}
+            </View>
+          ) : (
+            <Animated.View style={[styles.messagesWrapper, messagesAnimatedStyle]}>
+              <FlatList
+                ref={listRef}
+                data={messages}
+                renderItem={renderMessage}
+                keyExtractor={(item) => item.id}
+                inverted
+                contentContainerStyle={styles.messagesContent}
+                ListEmptyComponent={ListEmptyComponent}
+                ListHeaderComponent={ListHeaderComponent}
+                ListFooterComponent={ListFooterComponent}
+                onEndReached={handleEndReached}
+                onEndReachedThreshold={0.3}
+                showsVerticalScrollIndicator={false}
+                keyboardDismissMode="interactive"
+                keyboardShouldPersistTaps="handled"
+              />
+            </Animated.View>
+          )}
         </View>
       </GestureDetector>
 
@@ -406,7 +415,7 @@ const styles = StyleSheet.create({
   messagesContent: {
     flexGrow: 1,
     paddingBottom: Spacing.md,
-    paddingTop: 12,
+    paddingTop: Spacing.md,
   },
   messageRow: {
     flexDirection: 'row',
@@ -432,10 +441,10 @@ const styles = StyleSheet.create({
   },
   skeletonContainer: {
     flex: 1,
-    width: SCREEN_WIDTH,
+    width: '100%',
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
-    gap: 16,
+    gap: Spacing.lg,
   },
   skeletonRow: {
     flexDirection: 'row',
@@ -457,19 +466,19 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   typingBubble: {
-    paddingHorizontal: 14,
-    paddingVertical: 9,
-    borderRadius: 18,
-    borderBottomLeftRadius: 4,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: Radius.xl,
+    borderBottomLeftRadius: Radius.sm,
   },
   typingDots: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: Spacing.xs,
   },
   typingDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 3.5,
+    width: Spacing.sm,
+    height: Spacing.sm,
+    borderRadius: Spacing.sm / 2,
   },
 });

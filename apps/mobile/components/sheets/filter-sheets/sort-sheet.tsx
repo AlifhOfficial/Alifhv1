@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, ButtonText } from '@/components/ui';
 import type { SearchSortOption } from '@/lib/search-api';
@@ -91,7 +91,7 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
       backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
       handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
       detached
-      bottomInset={insets.bottom + 20}
+      bottomInset={insets.bottom + Spacing.xl}
       style={styles.sheetContainer}
     >
       <BottomSheetView style={styles.content}>
@@ -134,10 +134,10 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortS
                 </Body>
                 <View style={[
                   styles.radio,
-                  { borderColor: selected ? colors.text : colors.border },
+                  { borderColor: selected ? colors.textMuted : colors.border },
                 ]}>
                   {selected && (
-                    <View style={[styles.radioInner, { backgroundColor: colors.text }]} />
+                    <View style={[styles.radioInner, { backgroundColor: colors.textMuted }]} />
                   )}
                 </View>
               </HapticPressable>
@@ -159,8 +159,8 @@ const styles = StyleSheet.create({
     borderRadius: Radius['3xl'],
   },
   handleIndicator: {
-    width: 36,
-    height: 4,
+    width: Sizes.bubble,
+    height: Spacing.xs,
     borderRadius: Radius.full,
   },
   content: {
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xs,
   },
   placeholder: {
-    width: 60,
+    width: Spacing.xl * 3,
   },
   listContainer: {
     gap: Spacing.xs,
@@ -196,16 +196,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.sm,
   },
   radio: {
-    width: 22,
-    height: 22,
+    width: Sizes.iconMd,
+    height: Sizes.iconMd,
     borderRadius: Radius.full,
-    borderWidth: 2,
+    borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioInner: {
-    width: 12,
-    height: 12,
+    width: Spacing.sm + 2,
+    height: Spacing.sm + 2,
     borderRadius: Radius.full,
   },
 });

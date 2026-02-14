@@ -23,7 +23,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChevronLeft } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Spacing, Colors } from '@/constants/theme';
+import { Spacing, Colors, Sizes, Layout } from '@/constants/theme';
 import { Label, Body, Supporting } from '@/components/ui/text';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
@@ -102,8 +102,13 @@ export default function SellerContactScreen() {
           console.log('[SellerScreen] Failed to fetch other listings:', err);
         }
       }
-    } catch (err) {
-      console.error('[SellerScreen] Failed to fetch listing:', err);
+    } catch (err: any) {
+      if (err?.message?.includes('not found')) {
+        console.log('[SellerScreen] Listing not found or expired:', listingId);
+      } else {
+        console.error('[SellerScreen] Failed to fetch listing:', err);
+      }
+      // Error is handled by showing error state when listing is null
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -279,7 +284,7 @@ export default function SellerContactScreen() {
         <Header colors={colors} insets={insets} onBack={handleBack} />
         <View style={styles.errorContainer}>
           <Supporting size="medium">
-            Unable to load seller information
+            This listing is no longer available or may have expired
           </Supporting>
         </View>
       </View>
@@ -300,7 +305,7 @@ export default function SellerContactScreen() {
         style={styles.scroll}
         contentContainerStyle={[
           styles.content, 
-          { paddingTop: insets.top + Spacing.lg, paddingBottom: insets.bottom + 32 }
+          { paddingTop: insets.top + Spacing.lg, paddingBottom: insets.bottom + Spacing['3xl'] }
         ]}
         showsVerticalScrollIndicator={false}
         onScroll={handleScroll}
@@ -459,9 +464,9 @@ function Header({
   onBack: () => void;
 }) {
   return (
-    <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-      <HapticPressable style={styles.backBtn} onPress={onBack} hitSlop={12}>
-        <ChevronLeft size={24} color={colors.text} />
+    <View style={[styles.header, { paddingTop: insets.top + Spacing.sm }]}>
+      <HapticPressable style={styles.backBtn} onPress={onBack} hitSlop={Layout.hitSlop}>
+        <ChevronLeft size={Sizes.iconLg} color={colors.text} />
       </HapticPressable>
     </View>
   );
@@ -482,8 +487,8 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.md,
   },
   backBtn: {
-    width: 44,
-    height: 44,
+    width: Layout.hitTarget,
+    height: Layout.hitTarget,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -10,7 +10,7 @@ import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Supporting, Data, Label } from '@/components/ui';
 import { formatPrice, calculateEMI } from '@/components/seller-contact/utils';
@@ -104,7 +104,7 @@ export function FinancingSheet({
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
       detached
-      bottomInset={insets.bottom + 20}
+      bottomInset={insets.bottom + Spacing.xl}
       style={styles.sheetContainer}
     >
       <BottomSheetView style={styles.content}>
@@ -116,7 +116,7 @@ export function FinancingSheet({
             hitSlop={Spacing.md}
             style={[styles.closeButton, { backgroundColor: colors.fillSecondary }]}
           >
-            <Ionicons name="close" size={18} color={colors.textSecondary} />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.textSecondary} />
           </HapticPressable>
         </View>
 
@@ -179,7 +179,7 @@ export function FinancingSheet({
 
         {/* Disclaimer */}
         <View style={[styles.disclaimer, { backgroundColor: colors.fillSecondary }]}>
-          <Ionicons name="information-circle-outline" size={18} color={colors.textSecondary} />
+          <Ionicons name="information-circle-outline" size={Sizes.iconSm} color={colors.textSecondary} />
           <Supporting size="small" style={styles.disclaimerText}>
             This is an estimate only. Actual rates and terms may vary based on your bank, credit profile, and other factors.
           </Supporting>
@@ -199,8 +199,8 @@ const styles = StyleSheet.create({
     borderRadius: Radius['3xl'],
   },
   handleIndicator: {
-    width: 36,
-    height: 4,
+    width: Sizes.bubble,
+    height: Spacing.xs,
     borderRadius: Radius.full,
   },
   content: {
@@ -215,8 +215,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xs,
   },
   closeButton: {
-    width: 32,
-    height: 32,
+    width: Spacing['3xl'],
+    height: Spacing['3xl'],
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
@@ -273,6 +273,6 @@ const styles = StyleSheet.create({
   },
   outputItem: {
     alignItems: 'center',
-    gap: 2,
+    gap: Spacing.xs,
   },
 });

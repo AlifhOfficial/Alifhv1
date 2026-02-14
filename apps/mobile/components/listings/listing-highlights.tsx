@@ -7,7 +7,7 @@ import React, { memo, useMemo } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
 import { CheckCircle2 } from 'lucide-react-native';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Data } from '@/components/ui';
 import { SpecialNotes } from '@/lib/listing-api';
@@ -50,7 +50,7 @@ export const ListingHighlights = memo(function ListingHighlights({
       >
         {highlights.map((highlight, idx) => (
           <View key={idx} style={styles.highlightItem}>
-            <CheckCircle2 size={ICON_SIZE_SM} color={colors.success} />
+            <CheckCircle2 size={Sizes.iconXs} color={colors.success} />
             <Data size="mini" style={{ color: textColor }}>
               {highlight}
             </Data>
@@ -60,12 +60,6 @@ export const ListingHighlights = memo(function ListingHighlights({
     </View>
   );
 });
-
-// ============================================================================
-// CONSTANTS
-// ============================================================================
-
-const ICON_SIZE_SM = 14;
 
 // ============================================================================
 // STYLES

@@ -6,7 +6,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, ViewStyle } from 'react-native';
 
-import { Colors, Radius } from '@/constants/theme';
+import { Colors, Radius, Spacing, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 interface SkeletonProps {
@@ -19,7 +19,7 @@ interface SkeletonProps {
 
 export function Skeleton({ 
   width = '100%', 
-  height = 16, 
+  height = Spacing.lg, 
   borderRadius = Radius.sm,
   style,
   circle = false,
@@ -70,7 +70,7 @@ export function Skeleton({
 export function SkeletonText({ 
   width = '100%', 
   lines = 1, 
-  gap = 8,
+  gap = Spacing.sm,
 }: { 
   width?: number | `${number}%`; 
   lines?: number;
@@ -82,7 +82,7 @@ export function SkeletonText({
         <Skeleton 
           key={i} 
           width={i === lines - 1 && lines > 1 ? '60%' : width} 
-          height={14} 
+          height={Spacing.md + 2} 
           style={i > 0 ? { marginTop: gap } : undefined}
         />
       ))}
@@ -90,7 +90,7 @@ export function SkeletonText({
   );
 }
 
-export function SkeletonCircle({ size = 40 }: { size?: number }) {
+export function SkeletonCircle({ size = Sizes.avatarMd }: { size?: number }) {
   return <Skeleton width={size} height={size} circle />;
 }
 

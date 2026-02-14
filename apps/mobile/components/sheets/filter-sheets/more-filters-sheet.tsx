@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Label, ButtonText, Supporting } from '@/components/ui';
 import { searchApi, type FacetBucket, type SearchParams, type SearchFacets } from '@/lib/search-api';
@@ -271,7 +271,7 @@ export function MoreFiltersSheet({
           </View>
           <Ionicons 
             name={isExpanded ? 'chevron-up' : 'chevron-down'} 
-            size={20} 
+            size={Spacing.xl} 
             color={colors.textSecondary} 
           />
         </HapticPressable>
@@ -346,10 +346,10 @@ export function MoreFiltersSheet({
       </Body>
       <View style={[
         styles.radio,
-        { borderColor: value ? colors.text : colors.border },
+        { borderColor: value ? colors.textMuted : colors.border },
       ]}>
         {value && (
-          <View style={[styles.radioInner, { backgroundColor: colors.text }]} />
+          <View style={[styles.radioInner, { backgroundColor: colors.textMuted }]} />
         )}
       </View>
     </HapticPressable>
@@ -367,7 +367,7 @@ export function MoreFiltersSheet({
       handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
       stackBehavior="push"
       detached
-      bottomInset={insets.bottom + 20}
+      bottomInset={insets.bottom + Spacing.xl}
       style={styles.sheetContainer}
     >
       <BottomSheetScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -406,7 +406,7 @@ export function MoreFiltersSheet({
               <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
                 {activeCount} filter{activeCount !== 1 ? 's' : ''} selected
               </Body>
-              <HapticPressable onPress={handleClear} hitSlop={8}>
+              <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
                 <Supporting size="small" style={{ color: colors.error }}>
                   Clear
                 </Supporting>
@@ -596,8 +596,8 @@ const styles = StyleSheet.create({
     borderRadius: Radius['3xl'],
   },
   handleIndicator: {
-    width: 36,
-    height: 4,
+    width: Sizes.bubble,
+    height: Spacing.xs,
     borderRadius: Radius.full,
   },
   content: {
@@ -644,10 +644,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_600SemiBold',
   },
   badge: {
-    paddingHorizontal: 8,
+    paddingHorizontal: Spacing.sm,
     paddingVertical: 2,
     borderRadius: Radius.full,
-    minWidth: 24,
+    minWidth: Spacing['2xl'],
     alignItems: 'center',
   },
   sectionContent: {
@@ -664,16 +664,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.sm,
   },
   radio: {
-    width: 22,
-    height: 22,
+    width: Sizes.iconMd,
+    height: Sizes.iconMd,
     borderRadius: Radius.full,
-    borderWidth: 2,
+    borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioInner: {
-    width: 12,
-    height: 12,
+    width: Spacing.sm + 2,
+    height: Spacing.sm + 2,
     borderRadius: Radius.full,
   },
   chipsRow: {

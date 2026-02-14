@@ -320,7 +320,7 @@ export default function MessagesScreen() {
   };
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, { backgroundColor: colors.background }]}>
       <MessagesHeader />
       {renderContent()}
     </View>

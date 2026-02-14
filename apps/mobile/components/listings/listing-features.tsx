@@ -8,14 +8,14 @@ import React, { memo, useState, useCallback, useMemo } from 'react';
 import { StyleSheet, View, LayoutChangeEvent } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Label, Text } from '@/components/ui';
 import { formatEnumValue } from './types';
 
 const MAX_VISIBLE_FEATURES = 8;
-const BADGE_H_PADDING = 28; // 14 * 2
-const BADGE_GAP = 8; // Spacing.sm
+const BADGE_H_PADDING = Spacing.md * 2; // horizontal padding both sides
+const BADGE_GAP = Spacing.sm;
 const CHAR_WIDTH = 7.5;
 
 interface ListingFeaturesProps {
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   badge: {
-    paddingHorizontal: Spacing.md + 2, // 14
+    paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: Radius.md,
   },

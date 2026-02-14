@@ -11,7 +11,7 @@ import * as Haptics from 'expo-haptics';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { ButtonText } from '@/components/ui';
-import { Spacing, Radius } from '@/constants/theme';
+import { Layout, Sizes, Spacing, Radius } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 interface DangerZoneProps {
@@ -44,7 +44,7 @@ export function DangerZone({
           },
         ]}
       >
-        <Trash2 size={18} color={colors.error} strokeWidth={2} />
+        <Trash2 size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
         <ButtonText size="medium" tone="error">Delete Account</ButtonText>
       </HapticPressable>
     </Animated.View>
@@ -56,10 +56,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: Spacing.sm + 2,
+    gap: Spacing.md,
     paddingVertical: Spacing.lg,
     borderRadius: Radius.xl,
     marginTop: Spacing.md,
-    marginBottom: 120,
+    marginBottom: Layout.tabBarHeight + Spacing['3xl'],
   },
 });

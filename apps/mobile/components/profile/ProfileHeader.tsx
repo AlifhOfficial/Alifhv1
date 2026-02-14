@@ -29,7 +29,7 @@ export function ProfileHeader({ colors, topInset }: ProfileHeaderProps) {
       {/* Right: Settings */}
       <HapticPressable
         onPress={() => router.push('/settings')}
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        hitSlop={Layout.hitSlop}
         style={[
           styles.iconButton,
           {
@@ -41,7 +41,7 @@ export function ProfileHeader({ colors, topInset }: ProfileHeaderProps) {
         {({ pressed }) => (
           <>
             <Settings
-              size={20}
+              size={Sizes.iconSm}
               color={colors.text}
               strokeWidth={2}
               style={{ opacity: pressed ? 0.7 : 1 }}
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   iconButton: {
-    padding: 4,
+    padding: Spacing.xs,
     borderWidth: 1,
     width: Sizes.bubble,
     height: Sizes.bubble,
@@ -70,10 +70,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'visible',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
   },
 });

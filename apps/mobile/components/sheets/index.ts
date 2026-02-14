@@ -19,9 +19,13 @@ export {
   LocationFilterSheet,
   MoreFiltersSheet,
   SortSheet,
+  ActiveFiltersSheet,
   type MoreFiltersState,
   type ViewMode,
 } from './filter-sheets';
 
 // Engagement sheets
 export { SuperlikeConfirmationSheet, SuperlikeQuotaExhaustedSheet } from './superlike-confirmation-sheet';
+
+// Auth sheet
+export { AuthSheet, type AuthSheetProps } from './auth-sheet';

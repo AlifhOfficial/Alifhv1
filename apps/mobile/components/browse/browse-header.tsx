@@ -89,9 +89,9 @@ export function BrowseHeader({
             {({ pressed }) => (
               <View style={{ opacity: pressed ? 0.7 : 1 }}>
                 {viewMode === 'grid' ? (
-                  <LayoutGrid size={18} color={colors.text} strokeWidth={2} />
+                  <LayoutGrid size={Sizes.iconSm} color={colors.text} strokeWidth={2} />
                 ) : (
-                  <List size={18} color={colors.text} strokeWidth={2} />
+                  <List size={Sizes.iconSm} color={colors.text} strokeWidth={2} />
                 )}
               </View>
             )}
@@ -114,7 +114,7 @@ export function BrowseHeader({
               {({ pressed }) => (
                 <View style={{ opacity: pressed ? 0.7 : 1 }}>
                   <Settings2 
-                    size={20} 
+                    size={Sizes.iconMd} 
                     color={colors.text} 
                     strokeWidth={2}
                   />
@@ -188,11 +188,6 @@ const styles = StyleSheet.create({
   },
   glass: {
     borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.18,
-    shadowRadius: 20,
-    elevation: 8,
   },
   iconButton: {
     width: Sizes.bubble,
@@ -212,10 +207,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -2,
     right: -2,
-    minWidth: 16,
-    height: 16,
-    paddingHorizontal: 3,
-    borderRadius: 8,
+    minWidth: Spacing.lg,
+    height: Spacing.lg,
+    paddingHorizontal: Sizes.badgePaddingV,
+    borderRadius: Radius.md,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
@@ -234,13 +229,13 @@ const styles = StyleSheet.create({
   pillContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    gap: Spacing.xs,
   },
   badge: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 10,
-    minWidth: 18,
+    paddingHorizontal: Sizes.badgePaddingH,
+    paddingVertical: Sizes.badgePaddingV,
+    borderRadius: Radius.lg,
+    minWidth: Sizes.iconSm,
     alignItems: 'center',
   },
 });

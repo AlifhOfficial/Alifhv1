@@ -16,7 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ChevronLeft, ChevronRight, CheckCircle2, Calendar, Clock, Users, FileText } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import {
   Heading,
@@ -387,11 +387,11 @@ export const BookingSheet = memo(function BookingSheet({
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
+      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
       detached
-      bottomInset={insets.bottom + 20}
+      bottomInset={insets.bottom + Spacing.xl}
       style={styles.sheetContainer}
     >
       <BottomSheetView style={styles.content}>
@@ -403,7 +403,7 @@ export const BookingSheet = memo(function BookingSheet({
         {/* ── SUCCESS ─────────────────────────────────────────────── */}
         {step === 'success' && bookingResult ? (
           <View style={styles.successContainer}>
-            <CheckCircle2 size={48} color={colors.success} strokeWidth={1.5} />
+            <CheckCircle2 size={Spacing['5xl']} color={colors.success} strokeWidth={1.5} />
 
             <Heading size="medium" style={styles.centerText}>
               You're all set!
@@ -417,7 +417,7 @@ export const BookingSheet = memo(function BookingSheet({
               <Data size="small" style={{ color: colors.text }}>{listingTitle}</Data>
               {selectedDate && selectedSlot && (
                 <View style={styles.successCardRow}>
-                  <Calendar size={13} color={colors.textSecondary} />
+                  <Calendar size={Spacing.md} color={colors.textSecondary} />
                   <Supporting size="medium">
                     {formatDateShort(selectedDate)} at {formatTime(selectedSlot.startTime)}
                   </Supporting>
@@ -452,10 +452,10 @@ export const BookingSheet = memo(function BookingSheet({
                 {(step === 'time' || step === 'confirm') && (
                   <HapticPressable
                     onPress={step === 'confirm' ? handleBackToTime : handleBackToDate}
-                    hitSlop={12}
+                    hitSlop={Spacing.md}
                     style={[styles.backButton, { backgroundColor: colors.fillSecondary }]}
                   >
-                    <ChevronLeft size={18} color={colors.text} />
+                    <ChevronLeft size={Sizes.iconSm} color={colors.text} />
                   </HapticPressable>
                 )}
                 <View>
@@ -468,7 +468,7 @@ export const BookingSheet = memo(function BookingSheet({
                 hitSlop={Spacing.md}
                 style={[styles.closeButton, { backgroundColor: colors.fillSecondary }]}
               >
-                <Ionicons name="close" size={16} color={colors.textSecondary} />
+                <Ionicons name="close" size={Spacing.lg} color={colors.textSecondary} />
               </HapticPressable>
             </View>
 
@@ -493,7 +493,7 @@ export const BookingSheet = memo(function BookingSheet({
             {/* ── ERROR ───────────────────────────────────────────── */}
             {error && (
               <View style={[styles.errorBanner, { backgroundColor: colors.error + '10' }]}>
-                <Ionicons name="alert-circle" size={15} color={colors.error} />
+                <Ionicons name="alert-circle" size={Spacing.md + 2} color={colors.error} />
                 <Supporting size="small" style={{ color: colors.error, flex: 1 }}>
                   {error}
                 </Supporting>
@@ -522,7 +522,7 @@ export const BookingSheet = memo(function BookingSheet({
                       !canGoPreviousMonth && styles.monthNavBtnDisabled,
                     ]}
                   >
-                    <ChevronLeft size={16} color={canGoPreviousMonth ? colors.text : colors.textMuted} />
+                    <ChevronLeft size={Spacing.lg} color={canGoPreviousMonth ? colors.text : colors.textMuted} />
                   </HapticPressable>
                   <Data size="medium">
                     {MONTH_NAMES[currentMonth.getMonth()]} {currentMonth.getFullYear()}
@@ -532,7 +532,7 @@ export const BookingSheet = memo(function BookingSheet({
                     hitSlop={12}
                     style={[styles.monthNavBtn, { backgroundColor: colors.fillSecondary }]}
                   >
-                    <ChevronRight size={16} color={colors.text} />
+                    <ChevronRight size={Spacing.lg} color={colors.text} />
                   </HapticPressable>
                 </View>
 
@@ -595,7 +595,7 @@ export const BookingSheet = memo(function BookingSheet({
               <View style={styles.stepContainer}>
                 {/* Selected date display */}
                 <View style={[styles.selectedDateBar, { backgroundColor: colors.fillSecondary }]}>
-                  <Calendar size={14} color={colors.textSecondary} />
+                  <Calendar size={Sizes.iconXs} color={colors.textSecondary} />
                   <Data size="small" style={{ color: colors.text }}>
                     {formatDate(selectedDate)}
                   </Data>
@@ -603,7 +603,7 @@ export const BookingSheet = memo(function BookingSheet({
 
                 {availableSlots.length === 0 ? (
                   <View style={styles.emptySlots}>
-                    <Clock size={24} color={colors.textMuted} />
+                    <Clock size={Sizes.iconLg} color={colors.textMuted} />
                     <Supporting size="medium" tone="muted" style={{ marginTop: Spacing.sm }}>
                       No times available for this date
                     </Supporting>
@@ -669,7 +669,7 @@ export const BookingSheet = memo(function BookingSheet({
                 <View style={[styles.confirmCard, { backgroundColor: colors.fillSecondary }]}>
                   <View style={styles.confirmRow}>
                     <View style={[styles.confirmIconBox, { backgroundColor: colors.fillSecondary }]}>
-                      <Calendar size={16} color={colors.textSecondary} />
+                      <Calendar size={Spacing.lg} color={colors.textSecondary} />
                     </View>
                     <View style={{ flex: 1 }}>
                       <Supporting size="small" tone="muted">Date</Supporting>
@@ -679,7 +679,7 @@ export const BookingSheet = memo(function BookingSheet({
                   <View style={[styles.confirmDivider, { backgroundColor: colors.border + '30' }]} />
                   <View style={styles.confirmRow}>
                     <View style={[styles.confirmIconBox, { backgroundColor: colors.fillSecondary }]}>
-                      <Clock size={16} color={colors.textSecondary} />
+                      <Clock size={Spacing.lg} color={colors.textSecondary} />
                     </View>
                     <View style={{ flex: 1 }}>
                       <Supporting size="small" tone="muted">Time</Supporting>
@@ -696,7 +696,7 @@ export const BookingSheet = memo(function BookingSheet({
                 {/* Attendees */}
                 <View style={styles.fieldGroup}>
                   <View style={styles.fieldHeader}>
-                    <Users size={14} color={colors.textSecondary} />
+                    <Users size={Sizes.iconXs} color={colors.textSecondary} />
                     <Label size="small" tone="muted">ATTENDEES</Label>
                   </View>
                   <View style={[styles.attendeePicker, { backgroundColor: colors.fillSecondary }]}>
@@ -709,7 +709,7 @@ export const BookingSheet = memo(function BookingSheet({
                         attendees <= 1 && styles.attendeeBtnDisabled,
                       ]}
                     >
-                      <Ionicons name="remove" size={16} color={attendees <= 1 ? colors.textMuted : colors.text} />
+                      <Ionicons name="remove" size={Spacing.lg} color={attendees <= 1 ? colors.textMuted : colors.text} />
                     </HapticPressable>
                     <Data size="medium" style={{ minWidth: 24, textAlign: 'center' }}>{attendees}</Data>
                     <HapticPressable
@@ -721,7 +721,7 @@ export const BookingSheet = memo(function BookingSheet({
                         attendees >= 5 && styles.attendeeBtnDisabled,
                       ]}
                     >
-                      <Ionicons name="add" size={16} color={attendees >= 5 ? colors.textMuted : colors.text} />
+                      <Ionicons name="add" size={Spacing.lg} color={attendees >= 5 ? colors.textMuted : colors.text} />
                     </HapticPressable>
                   </View>
                 </View>
@@ -729,7 +729,7 @@ export const BookingSheet = memo(function BookingSheet({
                 {/* Notes */}
                 <View style={styles.fieldGroup}>
                   <View style={styles.fieldHeader}>
-                    <FileText size={14} color={colors.textSecondary} />
+                    <FileText size={Sizes.iconXs} color={colors.textSecondary} />
                     <Label size="small" tone="muted">NOTES</Label>
                     <Supporting size="small" tone="muted">(optional)</Supporting>
                   </View>
@@ -829,15 +829,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   backButton: {
-    width: 30,
-    height: 30,
+    width: Spacing['3xl'] - 2,
+    height: Spacing['3xl'] - 2,
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
   },
   closeButton: {
-    width: 30,
-    height: 30,
+    width: Spacing['3xl'] - 2,
+    height: Spacing['3xl'] - 2,
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
@@ -848,13 +848,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
+    gap: Spacing.sm,
     marginBottom: Spacing.lg,
   },
   stepDot: {
-    width: 24,
-    height: 3,
-    borderRadius: 2,
+    width: Spacing['2xl'],
+    height: Spacing.xs,
+    borderRadius: Spacing.xs / 2,
   },
 
   // Error
@@ -886,8 +886,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   monthNavBtn: {
-    width: 30,
-    height: 30,
+    width: Spacing['3xl'] - 2,
+    height: Spacing['3xl'] - 2,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Radius.full,
@@ -917,16 +917,16 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   calendarDayInner: {
-    width: 36,
-    height: 36,
+    width: Sizes.bubble,
+    height: Sizes.bubble,
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
   },
   availableDot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
+    width: Spacing.xs,
+    height: Spacing.xs,
+    borderRadius: Spacing.xs / 2,
     marginTop: 1,
   },
 
@@ -954,7 +954,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     minWidth: '30%',
     alignItems: 'center',
-    gap: 2,
+    gap: Spacing.xs,
   },
   slotDisabled: {
     opacity: 0.25,
@@ -976,8 +976,8 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   confirmIconBox: {
-    width: 36,
-    height: 36,
+    width: Sizes.bubble,
+    height: Sizes.bubble,
     borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
@@ -1008,8 +1008,8 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
   },
   attendeeBtn: {
-    width: 32,
-    height: 32,
+    width: Spacing['3xl'],
+    height: Spacing['3xl'],
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Radius.full,
@@ -1023,13 +1023,13 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     borderWidth: 1,
     fontSize: 14,
-    minHeight: 56,
+    minHeight: Sizes.avatarLg + Spacing.sm,
     textAlignVertical: 'top',
   },
 
   // ── CTA Button ───────────────────────────────────────────────────────
   primaryButton: {
-    height: 48,
+    height: Spacing['5xl'],
     borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
@@ -1072,7 +1072,7 @@ const styles = StyleSheet.create({
   },
   tokenContainer: {
     alignItems: 'center',
-    gap: 2,
+    gap: Spacing.xs,
     marginTop: Spacing.sm,
     paddingTop: Spacing.sm,
     borderTopWidth: 1,

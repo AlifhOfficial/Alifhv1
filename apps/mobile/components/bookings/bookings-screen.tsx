@@ -34,7 +34,7 @@ import {
   Clock,
 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import {
   Heading,
@@ -62,11 +62,14 @@ import { CancelBookingSheet } from './cancel-booking-sheet';
 import { BookingDetailsSheet } from './booking-details-sheet';
 import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 
-// ─── Constants (matches CarCardList) ─────────────────────────────────────────
+// ─── Constants (derived from theme for responsive scaling) ──────────────────
 
-const IMAGE_WIDTH = 160;
-const IMAGE_HEIGHT = 140;
+const IMAGE_WIDTH = Sizes.cardThumbnailWidth;
+const IMAGE_HEIGHT = Sizes.cardThumbnailHeight;
 const PAGE_SIZE = 20;
+
+/** Empty state icon container — derived from theme */
+const EMPTY_ICON_SIZE = Spacing['5xl'] + Spacing['3xl'];
 
 // ─── Tab Configuration ───────────────────────────────────────────────────────
 
@@ -242,7 +245,7 @@ export function BookingsScreen() {
 
             {/* Date */}
             <View style={styles.metaRow}>
-              <Calendar size={12} color={colors.textSecondary} />
+              <Calendar size={Sizes.iconXs} color={colors.textSecondary} />
               <Data size="mini" style={{ color: colors.textSecondary }}>
                 {formatBookingDate(item.scheduledDate)}
               </Data>
@@ -250,7 +253,7 @@ export function BookingsScreen() {
 
             {/* Time */}
             <View style={styles.metaRow}>
-              <Clock size={12} color={colors.textSecondary} />
+              <Clock size={Sizes.iconXs} color={colors.textSecondary} />
               <Data size="mini" style={{ color: colors.textSecondary }}>
                 {formatTimeRange(item.scheduledStartTime, item.scheduledEndTime)}
               </Data>
@@ -306,7 +309,7 @@ export function BookingsScreen() {
     return (
       <View style={styles.emptyContainer}>
         <View style={[styles.emptyIcon, { backgroundColor: colors.surfaceSecondary }]}>
-          <Ionicons name="calendar-outline" size={36} color={colors.textMuted} />
+          <Ionicons name="calendar-outline" size={Sizes.iconXl} color={colors.textMuted} />
         </View>
         <Heading size="small" style={{ marginTop: Spacing.lg }}>
           {isAll ? 'No bookings yet' : `No ${tabLabel.toLowerCase()} bookings`}
@@ -321,9 +324,9 @@ export function BookingsScreen() {
   }, [isLoading, activeTab, colors]);
 
   const renderFooter = useCallback(() => {
-    if (!isLoadingMore) return <View style={{ height: insets.bottom + 40 }} />;
+    if (!isLoadingMore) return <View style={{ height: insets.bottom + Spacing['4xl'] }} />;
     return (
-      <View style={[styles.footer, { paddingBottom: insets.bottom + 40 }]}>
+      <View style={[styles.footer, { paddingBottom: insets.bottom + Spacing['4xl'] }]}>
         <ActivityIndicator size="small" color={colors.primary} />
       </View>
     );
@@ -333,7 +336,7 @@ export function BookingsScreen() {
   // MAIN RENDER
   // ════════════════════════════════════════════════════════════════════════
 
-  const headerHeight = insets.top + Layout.headerPadding + 32 + Spacing.sm + 36 + Spacing.sm;
+  const headerHeight = insets.top + Layout.headerPadding + Spacing['3xl'] + Spacing.sm + Sizes.pillHeight + Spacing.sm;
 
   return (
     <View style={styles.container}>
@@ -349,7 +352,7 @@ export function BookingsScreen() {
         ]}
       >
         {/* Title */}
-        <Heading size="large">Bookings</Heading>
+        <Heading size="medium">Bookings</Heading>
 
         {/* Filter pills */}
         <ScrollView
@@ -359,7 +362,7 @@ export function BookingsScreen() {
           contentContainerStyle={styles.pillScrollContent}
         >
           {STATUS_TABS.map((tab) => {
-            const isActive = activeTab === tab.key;
+            const isActiveTab = activeTab === tab.key;
             return (
               <View
                 key={tab.key}
@@ -367,7 +370,7 @@ export function BookingsScreen() {
                   styles.pill,
                   styles.glass,
                   {
-                    borderColor: colors.glassBorder,
+                    borderColor: isActiveTab ? colors.textMuted : colors.glassBorder,
                     backgroundColor: colors.glassBackground,
                   },
                 ]}
@@ -380,7 +383,7 @@ export function BookingsScreen() {
                     <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
                       <Data
                         size="small"
-                        tone={isActive ? 'default' : 'secondary'}
+                        style={{ color: isActiveTab ? colors.text : colors.textSecondary }}
                         numberOfLines={1}
                       >
                         {tab.label}
@@ -404,18 +407,18 @@ export function BookingsScreen() {
             >
               <Skeleton width={IMAGE_WIDTH} height={IMAGE_HEIGHT} borderRadius={Radius.md} />
               <View style={styles.content}>
-                <Skeleton width={130} height={14} />
-                <Skeleton width={90} height={12} />
-                <Skeleton width={110} height={12} />
-                <Skeleton width={100} height={12} />
-                <Skeleton width={70} height={20} borderRadius={Radius.sm} />
+                <Skeleton width="85%" height={Spacing.md} />
+                <Skeleton width="60%" height={Spacing.md} />
+                <Skeleton width="70%" height={Spacing.md} />
+                <Skeleton width="65%" height={Spacing.md} />
+                <Skeleton width="45%" height={Spacing.xl} borderRadius={Radius.sm} />
               </View>
             </View>
           ))}
         </View>
       ) : error && bookings.length === 0 ? (
         <View style={[styles.centerContainer, { paddingTop: headerHeight }]}>
-          <Ionicons name="alert-circle-outline" size={48} color={colors.error} />
+          <Ionicons name="alert-circle-outline" size={Sizes.avatarLg} color={colors.error} />
           <Body
             size="medium"
             style={{ color: colors.error, textAlign: 'center', marginTop: Spacing.md }}
@@ -497,7 +500,6 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
 
-
   // ── Filter Pills ──────────────────────────────────────────────────────
   pillScroll: {
     flexGrow: 0,
@@ -510,26 +512,21 @@ const styles = StyleSheet.create({
   },
   glass: {
     borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.18,
-    shadowRadius: 20,
-    elevation: 8,
   },
   pill: {
     borderRadius: Radius.full,
     overflow: 'hidden',
   },
   pillInner: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },
   pillContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    gap: Spacing.xs,
   },
 
   // ── List ───────────────────────────────────────────────────────────────
@@ -563,8 +560,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: Spacing.sm,
     left: Spacing.sm,
-    paddingHorizontal: Spacing.sm - 2,
-    paddingVertical: 2,
+    paddingHorizontal: Sizes.badgePaddingH,
+    paddingVertical: Sizes.badgePaddingV,
     borderRadius: Radius.sm,
   },
   content: {
@@ -576,18 +573,18 @@ const styles = StyleSheet.create({
   metaRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: Spacing.xs,
     marginTop: 1,
   },
 
   // ── Countdown ──────────────────────────────────────────────────────────
   countdownRow: {
     flexDirection: 'row',
-    marginTop: 4,
+    marginTop: Spacing.xs,
   },
   countdownPill: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Sizes.badgePaddingV,
     borderRadius: Radius.sm,
   },
 
@@ -595,13 +592,13 @@ const styles = StyleSheet.create({
   emptyContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 80,
-    paddingHorizontal: 40,
+    paddingVertical: EMPTY_ICON_SIZE,
+    paddingHorizontal: Spacing['4xl'],
   },
   emptyIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: EMPTY_ICON_SIZE,
+    height: EMPTY_ICON_SIZE,
+    borderRadius: EMPTY_ICON_SIZE / 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -611,7 +608,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 40,
+    paddingHorizontal: Spacing['4xl'],
   },
 
   // ── Footer ─────────────────────────────────────────────────────────────

@@ -8,8 +8,8 @@ import { StyleSheet, View, Platform } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 
-import { Heading, Body, Label } from '@/components/ui';
-import { Spacing, Radius, Sizes } from '@/constants/theme';
+import { Heading, Data } from '@/components/ui';
+import { Spacing, Sizes, Radius } from '@/constants/theme';
 import type { ThemeColors, SavedTab } from './types';
 
 interface SavedHeaderProps {
@@ -42,12 +42,12 @@ export function SavedHeader({
     onTabChange(tab);
   };
 
-  const getCount = (key: SavedTab) => key === 'favorites' ? favoritesCount : superlikesCount;
+  const getCount = (tab: SavedTab) => tab === 'favorites' ? favoritesCount : superlikesCount;
 
   return (
-    <View style={[styles.container, { paddingTop: topInset + 8 }]}>
+    <View style={[styles.container, { paddingTop: topInset + Spacing.sm }]}>
       {/* Title */}
-      <Heading size="large">Saved</Heading>
+      <Heading size="medium">Saved</Heading>
 
       {/* Pill tabs — matches InventoryScreen filter pills */}
       <View style={styles.pillRow}>
@@ -55,44 +55,49 @@ export function SavedHeader({
           const active = activeTab === key;
           const count = getCount(key);
           return (
-            <HapticPressable
+            <View
               key={key}
-              onPress={() => handleTab(key)}
               style={[
                 styles.pill,
+                styles.glass,
                 {
-                  backgroundColor: colors.surface,
-                  borderColor: colors.border,
+                  backgroundColor: colors.glassBackground,
+                  borderColor: active ? colors.textMuted : colors.glassBorder,
                 },
               ]}
             >
-              {({ pressed }) => (
-                <>
+              <HapticPressable
+                onPress={() => handleTab(key)}
+                style={styles.pillInner}
+              >
+                {({ pressed }) => (
                   <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
-                  <Body
-                    size="small"
-                    style={{
-                      color: active ? colors.text : colors.textSecondary,
-                      fontFamily: active ? 'Inter_600SemiBold' : 'Inter_500Medium',
-                    }}
-                  >
-                    {label}
-                  </Body>
-                  {count > 0 && (
-                    <View style={[styles.pillBadge, { backgroundColor: colors.text }]}>
-                      <Label
-                        size="badge"
-                        uppercase={false}
-                        style={{ color: colors.background }}
+                    <Data
+                      size="small"
+                      style={{ color: active ? colors.text : colors.textSecondary }}
+                      numberOfLines={1}
+                    >
+                      {label}
+                    </Data>
+                    {count > 0 && (
+                      <View
+                        style={[
+                          styles.pillBadge,
+                          { backgroundColor: colors.fillSecondary },
+                        ]}
                       >
-                        {count > 99 ? '99+' : count}
-                      </Label>
-                    </View>
-                  )}
-                </View>
-                </>
-              )}
-            </HapticPressable>
+                        <Data
+                          size="mini"
+                          style={{ color: colors.textSecondary }}
+                        >
+                          {count > 99 ? '99+' : count}
+                        </Data>
+                      </View>
+                    )}
+                  </View>
+                )}
+              </HapticPressable>
+            </View>
           );
         })}
       </View>
@@ -112,29 +117,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: Spacing.sm,
   },
-  pill: {
-    height: Sizes.pillHeight,
-    borderRadius: Sizes.pillRadius,
+  glass: {
     borderWidth: 1,
+  },
+  pill: {
+    borderRadius: Radius.full,
+    overflow: 'hidden',
+  },
+  pillInner: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: Spacing.lg,
-    overflow: 'visible',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
   },
   pillContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
+    gap: Spacing.xs,
   },
   pillBadge: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 10,
-    minWidth: 18,
+    paddingHorizontal: Sizes.badgePaddingH,
+    paddingVertical: Sizes.badgePaddingV,
+    borderRadius: Radius.lg,
+    minWidth: Sizes.iconSm,
     alignItems: 'center',
   },
 });

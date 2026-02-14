@@ -13,7 +13,7 @@ import * as Clipboard from 'expo-clipboard';
 import { Phone, Copy } from 'lucide-react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, ButtonText } from '@/components/ui';
 
@@ -103,7 +103,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
       handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
       stackBehavior="push"
       detached
-      bottomInset={insets.bottom + 20}
+      bottomInset={insets.bottom + Spacing.xl}
       style={styles.sheetContainer}
     >
       <BottomSheetView style={styles.content}>
@@ -118,7 +118,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
               { backgroundColor: colors.fillSecondary }
             ]}
           >
-            <Ionicons name="close" size={18} color={colors.textSecondary} />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.textSecondary} />
           </HapticPressable>
         </View>
 
@@ -132,7 +132,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             ]}
           >
             <View style={[styles.iconCircle, { backgroundColor: colors.primary }]}>
-              <Phone size={22} color="#FFF" />
+              <Phone size={Sizes.iconMd} color="#FFF" />
             </View>
             <ButtonText size="small" style={styles.actionLabel}>Call</ButtonText>
           </HapticPressable>
@@ -145,7 +145,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             ]}
           >
             <View style={[styles.iconCircle, { backgroundColor: '#25D366' }]}>
-              <Ionicons name="logo-whatsapp" size={24} color="#FFF" />
+              <Ionicons name="logo-whatsapp" size={Sizes.iconLg} color="#FFF" />
             </View>
             <ButtonText size="small" style={styles.actionLabel}>WhatsApp</ButtonText>
           </HapticPressable>
@@ -158,7 +158,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             ]}
           >
             <View style={[styles.iconCircle, { backgroundColor: colors.surfaceSecondary }]}>
-              <Copy size={22} color={colors.text} />
+              <Copy size={Sizes.iconMd} color={colors.text} />
             </View>
             <ButtonText size="small" style={styles.actionLabel}>Copy</ButtonText>
           </HapticPressable>
@@ -170,14 +170,14 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
 
 const styles = StyleSheet.create({
   sheetContainer: {
-    marginHorizontal: 16,
+    marginHorizontal: Spacing.lg,
   },
   background: {
-    borderRadius: 24,
+    borderRadius: Radius['3xl'],
   },
   handleIndicator: {
-    width: 36,
-    height: 4,
+    width: Sizes.bubble,
+    height: Spacing.xs,
     borderRadius: Radius.full,
   },
   content: {
@@ -192,8 +192,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xs,
   },
   closeButton: {
-    width: 32,
-    height: 32,
+    width: Spacing['3xl'],
+    height: Spacing['3xl'],
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
@@ -212,9 +212,9 @@ const styles = StyleSheet.create({
     minWidth: 80,
   },
   iconCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: Spacing['5xl'] + Spacing.sm,
+    height: Spacing['5xl'] + Spacing.sm,
+    borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.sm,

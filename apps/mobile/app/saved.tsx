@@ -3,7 +3,7 @@
  * Native-feeling, modular saved screen connected to API
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -18,7 +18,6 @@ import { useAuth } from '@/context/auth-context';
 import {
   SavedHeader,
   SavedList,
-  SavedNotAuthenticatedView,
 } from '@/components/saved';
 import { useSaved } from '@/hooks/use-saved';
 
@@ -29,8 +28,17 @@ import { useSaved } from '@/hooks/use-saved';
 export default function SavedScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const { isAuthenticated, openAuthFlow } = useAuth();
+  const { isAuthenticated, showAuthSheet } = useAuth();
   const insets = useSafeAreaInsets();
+
+  // Show auth sheet when not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      // Small delay to ensure sheet modal is mounted
+      const timer = setTimeout(() => showAuthSheet('saved'), 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated, showAuthSheet]);
 
   // Saved data from hook (pass isAuthenticated like profile does)
   const {
@@ -47,21 +55,26 @@ export default function SavedScreen() {
   // Get current listings based on active tab
   const currentListings = activeTab === 'favorites' ? favorites : superlikes;
 
-  // Not authenticated state
+  // Unauthenticated - show header only (sheet comes from context)
   if (!isAuthenticated) {
     return (
-      <SavedNotAuthenticatedView
-        colors={colors}
-        topInset={insets.top}
-        onSignIn={openAuthFlow}
-      />
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <SavedHeader
+          colors={colors}
+          topInset={insets.top}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          favoritesCount={0}
+          superlikesCount={0}
+        />
+      </View>
     );
   }
 
   // Loading state
   if (isLoading && currentListings.length === 0) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <SavedHeader
           colors={colors}
           topInset={insets.top}
@@ -93,7 +106,7 @@ export default function SavedScreen() {
   // Error state
   if (error && currentListings.length === 0) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <SavedHeader
           colors={colors}
           topInset={insets.top}
@@ -118,7 +131,7 @@ export default function SavedScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <SavedHeader
         colors={colors}

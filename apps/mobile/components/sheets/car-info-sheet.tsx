@@ -23,7 +23,7 @@ import {
   AlertTriangle,
 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Data, Supporting, Label } from '@/components/ui';
 import { getListingSummary, type ListingSummary } from '@/lib/summary-api';
@@ -143,10 +143,10 @@ export function CarInfoSheet({
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
+      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
+      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
       detached
-      bottomInset={insets.bottom + 20}
+      bottomInset={insets.bottom + Spacing.xl}
       style={styles.sheetContainer}
     >
       <BottomSheetScrollView
@@ -158,7 +158,7 @@ export function CarInfoSheet({
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerTitle}>
-              <Zap size={18} color={colors.text} fill={colors.text} />
+              <Zap size={Sizes.iconSm} color={colors.text} fill={colors.text} />
               <Heading size="medium">DarkWeave</Heading>
             </View>
             <HapticPressable 
@@ -166,7 +166,7 @@ export function CarInfoSheet({
               hitSlop={Spacing.md}
               style={[styles.iconButton, { backgroundColor: colors.fillSecondary }]}
             >
-              <Ionicons name="close" size={18} color={colors.textSecondary} />
+              <Ionicons name="close" size={Sizes.iconSm} color={colors.textSecondary} />
             </HapticPressable>
           </View>
 
@@ -203,7 +203,7 @@ export function CarInfoSheet({
           {/* Error State */}
           {error && !isLoading && (
             <View style={styles.errorContainer}>
-              <Zap size={20} color={colors.textTertiary} />
+              <Zap size={Spacing.xl} color={colors.textTertiary} />
               <Supporting size="medium" style={{ color: colors.textSecondary }}>
                 {error}
               </Supporting>
@@ -240,7 +240,7 @@ export function CarInfoSheet({
               {/* Dark Take — The Headline */}
               {summary.darkTake ? (
                 <View style={[styles.darkTake, { backgroundColor: colors.fillSecondary, borderColor: colors.border }]}>
-                  <Flame size={16} color="#FF6B35" fill="#FF6B35" style={{ marginTop: 2 }} />
+                  <Flame size={Spacing.lg} color="#FF6B35" fill="#FF6B35" style={{ marginTop: 2 }} />
                   <Body size="medium" style={{ flex: 1, color: colors.text, fontWeight: '600' }}>
                     {summary.darkTake}
                   </Body>
@@ -250,7 +250,7 @@ export function CarInfoSheet({
               {/* Machine Notes */}
               <View style={styles.section}>
                 <View style={styles.sectionHeader}>
-                  <Crosshair size={15} color={colors.textSecondary} />
+                  <Crosshair size={Sizes.iconXs + 1} color={colors.textSecondary} />
                   <Label size="medium" style={{ color: colors.textSecondary, letterSpacing: 0.5 }}>
                     THE READ
                   </Label>
@@ -269,7 +269,7 @@ export function CarInfoSheet({
               {(summary.flags ?? []).length > 0 ? (
                 <View style={styles.section}>
                   <View style={styles.sectionHeader}>
-                    <Zap size={15} color={colors.textSecondary} />
+                    <Zap size={Sizes.iconXs + 1} color={colors.textSecondary} />
                     <Label size="medium" style={{ color: colors.textSecondary, letterSpacing: 0.5 }}>
                       WORTH NOTING
                     </Label>
@@ -290,7 +290,7 @@ export function CarInfoSheet({
               {/* Seller Read */}
               <View style={styles.section}>
                 <View style={styles.sectionHeader}>
-                  <Zap size={14} color={colors.text} fill={colors.text} />
+                  <Zap size={Sizes.iconXs} color={colors.text} fill={colors.text} />
                   <Label size="medium" style={{ color: colors.textSecondary, letterSpacing: 0.5 }}>
                     {sellerName ? sellerName.toUpperCase() : 'SELLER'}
                   </Label>
@@ -315,7 +315,7 @@ export function CarInfoSheet({
               {/* Good to Know */}
               {summary.negotiationTip ? (
                 <View style={[styles.negotiationTip, { borderColor: colors.border, backgroundColor: colors.fillSecondary }]}>
-                  <Zap size={13} color={colors.text} fill={colors.text} style={{ marginTop: 2 }} />
+                  <Zap size={Sizes.iconXs - 1} color={colors.text} fill={colors.text} style={{ marginTop: 2 }} />
                   <View style={{ flex: 1 }}>
                     <Label size="small" style={{ color: colors.textSecondary, letterSpacing: 0.5, marginBottom: 2 }}>
                       GOOD TO KNOW
@@ -330,7 +330,7 @@ export function CarInfoSheet({
               {/* Disclaimer */}
               <View style={[styles.disclaimer, { backgroundColor: 'rgba(245, 158, 11, 0.06)', borderColor: 'rgba(245, 158, 11, 0.15)' }]}>
                 <View style={styles.disclaimerRow}>
-                  <AlertTriangle size={13} color="#F59E0B" />
+                  <AlertTriangle size={Sizes.iconXs - 1} color="#F59E0B" />
                   <Supporting size="small" style={{ color: colors.textSecondary }}>
                     AI-generated · may not be accurate · do your own check
                   </Supporting>
@@ -352,7 +352,7 @@ export function CarInfoSheet({
 
 const styles = StyleSheet.create({
   sheetContainer: {
-    marginHorizontal: 16,
+    marginHorizontal: Spacing.lg,
   },
   scrollView: {
     flex: 1,
@@ -377,8 +377,8 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   iconButton: {
-    width: 32,
-    height: 32,
+    width: Spacing['3xl'],
+    height: Spacing['3xl'],
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
@@ -395,7 +395,7 @@ const styles = StyleSheet.create({
   dealBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: Spacing.xs,
     paddingHorizontal: Spacing.sm,
     paddingVertical: 3,
     borderRadius: Radius.sm,
@@ -437,10 +437,10 @@ const styles = StyleSheet.create({
     paddingLeft: Spacing.xs,
   },
   bulletDot: {
-    width: 5,
-    height: 5,
-    borderRadius: 3,
-    marginTop: 8,
+    width: Spacing.xs,
+    height: Spacing.xs,
+    borderRadius: Spacing.xs / 2,
+    marginTop: Spacing.sm,
   },
   flagRow: {
     flexDirection: 'row',
@@ -475,9 +475,9 @@ const styles = StyleSheet.create({
   ratingBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 3,
+    gap: Spacing.xs,
     paddingHorizontal: Spacing.sm,
-    paddingVertical: 2,
+    paddingVertical: Spacing.xs / 2,
     borderRadius: Radius.sm,
     borderWidth: 1,
     marginLeft: 'auto',

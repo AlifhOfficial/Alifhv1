@@ -10,17 +10,15 @@ import { View, StyleSheet, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { CheckCircle2, Star, Clock } from 'lucide-react-native';
 
-import { Spacing, Radius } from '@/constants/theme';
+import { Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { Label, Heading, Supporting, Data, Text } from '@/components/ui';
 import type { SellerHeroProps } from './types';
 import { formatMemberSince } from './utils';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const HERO_IMAGE_HEIGHT = SCREEN_WIDTH * 0.65;
-const AVATAR_SIZE = 56;
-const LOGO_SIZE = 64;
-const ICON_SIZE_SM = 16;
-const ICON_SIZE_XS = 14;
+const AVATAR_SIZE = Sizes.avatarLg + Spacing.sm; // 56
+const LOGO_SIZE = Sizes.avatarLg + Spacing.lg; // 64
 
 export const SellerHero = memo(function SellerHero({ seller, colors, topInset }: SellerHeroProps) {
   const hasHeroImage = seller.heroImage && seller.isDealer;
@@ -47,7 +45,7 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
               {seller.name}
             </Heading>
             {seller.isVerified && seller.tier?.toLowerCase() !== 'black' && (
-              <CheckCircle2 size={ICON_SIZE_SM} color={colors.primary} />
+              <CheckCircle2 size={Sizes.iconXs} color={colors.primary} />
             )}
             {seller.tier?.toLowerCase() === 'black' && (
               <View style={[localStyles.tierBadge, { backgroundColor: colors.blkBadgeBackground }]}>
@@ -66,7 +64,7 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
           {/* Member Since */}
           {seller.memberSince && (
             <View style={localStyles.metaRow}>
-              <Clock size={ICON_SIZE_XS} color={colors.iconMuted} />
+              <Clock size={Sizes.iconXs} color={colors.iconMuted} />
               <Supporting size="mini" tone="muted">
                 Member since {formatMemberSince(seller.memberSince)}
               </Supporting>
@@ -76,7 +74,7 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
           {/* Rating */}
           {seller.rating != null && (
             <View style={localStyles.ratingRow}>
-              <Star size={ICON_SIZE_XS} color={colors.warning} fill={colors.warning} />
+              <Star size={Sizes.iconXs} color={colors.warning} fill={colors.warning} />
               <Data size="small">{seller.rating.toFixed(1)}</Data>
               {seller.reviewCount != null && (
                 <Supporting size="small">

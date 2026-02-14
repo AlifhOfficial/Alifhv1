@@ -9,7 +9,7 @@ import { HapticPressable } from '@/components/ui';
 import Animated from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
-import { Radius } from '@/constants/theme';
+import { Radius, Sizes, Spacing } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 interface ToggleProps {
@@ -18,6 +18,12 @@ interface ToggleProps {
   disabled?: boolean;
   colors: ThemeColors;
 }
+
+// Toggle dimensions
+const TOGGLE_WIDTH = Sizes.actionButtonMd + Spacing.xs;
+const TOGGLE_HEIGHT = Spacing['2xl'];
+const KNOB_SIZE = Spacing.xl;
+const KNOB_TRAVEL = TOGGLE_WIDTH - KNOB_SIZE - Spacing.xs;
 
 export function Toggle({ enabled, onToggle, disabled, colors }: ToggleProps) {
   const handleToggle = () => {
@@ -38,7 +44,7 @@ export function Toggle({ enabled, onToggle, disabled, colors }: ToggleProps) {
       ]}
     >
       <Animated.View
-        style={[styles.knob, { backgroundColor: colors.surface }, { transform: [{ translateX: enabled ? 20 : 2 }] }]}
+        style={[styles.knob, { backgroundColor: colors.surface }, { transform: [{ translateX: enabled ? KNOB_TRAVEL : Sizes.badgePaddingV }] }]}
       />
     </HapticPressable>
   );
@@ -46,20 +52,15 @@ export function Toggle({ enabled, onToggle, disabled, colors }: ToggleProps) {
 
 const styles = StyleSheet.create({
   toggle: {
-    width: 44,
-    height: 24,
+    width: TOGGLE_WIDTH,
+    height: TOGGLE_HEIGHT,
     borderRadius: Radius.lg,
     justifyContent: 'center',
   },
   knob: {
-    width: 20,
-    height: 20,
+    width: KNOB_SIZE,
+    height: KNOB_SIZE,
     borderRadius: Radius.lg,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
-    elevation: 2,
   },
   disabled: {
     opacity: 0.6,

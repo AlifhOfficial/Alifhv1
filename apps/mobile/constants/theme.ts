@@ -58,6 +58,17 @@ const scale = (size: number, factor = 0.5): number => {
  */
 const fontScale = (size: number): number => scale(size, 0.3);
 
+// ═══════════════════════════════════════════════════
+// FONT FAMILY NAMES
+// ═══════════════════════════════════════════════════
+export const Fonts = {
+  regular: 'Inter_400Regular',
+  medium: 'Inter_500Medium',
+  semiBold: 'Inter_600SemiBold',
+  bold: 'Inter_700Bold',
+  extraBold: 'Inter_800ExtraBold',
+} as const;
+
 export const Colors = {
   light: {
     // BACKGROUNDS - Pure white base
@@ -250,8 +261,11 @@ export const Sizes = {
   
   // Bubbles & Pills (universal action containers)
   bubble: scale(36),        // Standard action bubble (back, search, sort, create, etc.)
+  bubbleLg: scale(48),      // Large bubble for global tab bar
   pillHeight: scale(36),    // Inner pill height for tab bars
+  pillHeightLg: scale(48),  // Large pill height for global tab bar
   pillRadius: 18,           // Pill border radius
+  pillRadiusLg: 24,         // Large pill border radius
   
   // Action buttons (icon containers)
   actionButtonSm: scale(36),
@@ -697,18 +711,6 @@ const SemanticTypography = {
     fontSize: fontScale(20), 
     lineHeight: fontScale(24), 
     fontFamily: 'Inter_700Bold' 
-  },
-
-  // ─────────────────────────────────────────────────────
-  // SPLASH SCREEN - Boot-up branded text (Revolut-style)
-  // ─────────────────────────────────────────────────────
-  splashBrand: { 
-    ...base, 
-    ...centered,
-    fontSize: 42, 
-    lineHeight: 48, 
-    fontFamily: 'Inter_800ExtraBold',
-    letterSpacing: -1,
   },
 } as const;
 

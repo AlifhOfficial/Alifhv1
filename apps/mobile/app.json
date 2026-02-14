@@ -42,6 +42,12 @@
     "plugins": [
       "expo-router",
       [
+        "expo-font",
+        {
+          "fonts": ["./assets/fonts/Inter-ExtraBold.ttf"]
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "backgroundColor": "#FAFAFA",

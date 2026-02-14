@@ -9,7 +9,7 @@ import { HapticPressable } from '@/components/ui';
 import { Body } from '@/components/ui/text';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import {
   MessageCircle,
   CheckCircle,
@@ -115,7 +115,7 @@ export function NotificationItem({ notification, onPress, onLongPress }: Notific
             />
           ) : (
             <View style={[styles.avatar, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-              <Icon size={20} color={iconColor} strokeWidth={2} />
+              <Icon size={Sizes.iconSm} color={iconColor} strokeWidth={2} />
             </View>
           )}
 
@@ -151,7 +151,7 @@ export function NotificationItem({ notification, onPress, onLongPress }: Notific
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: Spacing.lg,
-    paddingVertical: 14,
+    paddingVertical: Spacing.md,
   },
   inner: {
     flexDirection: 'row',
@@ -159,8 +159,8 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   avatar: {
-    width: 40,
-    height: 40,
+    width: Sizes.avatarMd,
+    height: Sizes.avatarMd,
     borderRadius: Radius.full,
     borderWidth: 1,
     alignItems: 'center',
@@ -169,17 +169,13 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    gap: 2,
+    gap: Spacing.xs / 2,
   },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.sm,
   },
-  body: {
-    lineHeight: 18,
-  },
-  time: {
-    fontSize: 11,
-  },
+  body: {},
+  time: {},
 });

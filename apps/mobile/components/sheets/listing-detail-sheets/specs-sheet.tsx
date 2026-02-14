@@ -12,7 +12,7 @@ import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Supporting, Data } from '@/components/ui';
 import { Copy } from 'lucide-react-native';
@@ -94,10 +94,10 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
+      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
+      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
       detached
-      bottomInset={insets.bottom + 20}
+      bottomInset={insets.bottom + Spacing.xl}
       style={styles.sheetContainer}
     >
       <View style={styles.content}>
@@ -114,9 +114,9 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
               ]}
             >
               {copied ? (
-                <Ionicons name="checkmark" size={18} color={colors.primary} />
+                <Ionicons name="checkmark" size={Sizes.iconSm} color={colors.primary} />
               ) : (
-                <Copy size={18} color={colors.textSecondary} />
+                <Copy size={Sizes.iconSm} color={colors.textSecondary} />
               )}
             </HapticPressable>
             <HapticPressable
@@ -127,7 +127,7 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
                 { backgroundColor: colors.fillSecondary }
               ]}
             >
-              <Ionicons name="close" size={18} color={colors.textSecondary} />
+              <Ionicons name="close" size={Sizes.iconSm} color={colors.textSecondary} />
             </HapticPressable>
           </View>
         </View>
@@ -157,7 +157,7 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
 
 const styles = StyleSheet.create({
   sheetContainer: {
-    marginHorizontal: 16,
+    marginHorizontal: Spacing.lg,
   },
   content: {
     flex: 1,
@@ -176,8 +176,8 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   iconButton: {
-    width: 32,
-    height: 32,
+    width: Spacing['3xl'],
+    height: Spacing['3xl'],
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',

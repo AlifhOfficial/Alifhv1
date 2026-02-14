@@ -70,11 +70,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     padding: Spacing.lg,
-    gap: Spacing.sm + 2,
+    gap: Spacing.md,
   },
   badge: {
-    paddingHorizontal: Spacing.lg - 2,
-    paddingVertical: Spacing.sm + 2,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
     borderRadius: Radius.lg,
   },
   badgeText: {
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   },
   learnMoreBtn: {
     marginTop: Spacing.md,
-    paddingVertical: Spacing.sm - 2,
+    paddingVertical: Spacing.xs,
     paddingHorizontal: Spacing.md,
   },
 });

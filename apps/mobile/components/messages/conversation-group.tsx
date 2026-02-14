@@ -8,7 +8,7 @@ import { View, StyleSheet } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { Data, Supporting, Label } from '@/components/ui';
 import { formatDistanceToNow } from 'date-fns';
@@ -94,7 +94,7 @@ export function ConversationGroup({
                 </Label>
               </View>
             )}
-            <ChevronIcon size={16} color={colors.textTertiary} strokeWidth={2} />
+            <ChevronIcon size={Sizes.iconXs} color={colors.textTertiary} strokeWidth={2} />
           </View>
         )}
       </HapticPressable>
@@ -171,21 +171,21 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    width: Spacing.md,
+    height: Spacing.md,
+    borderRadius: Spacing.md / 2,
     borderWidth: 2,
   },
   unreadBadge: {
-    minWidth: 20,
-    height: 20,
+    minWidth: Spacing.xl,
+    height: Spacing.xl,
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 5,
+    paddingHorizontal: Sizes.badgePaddingH,
   },
   chatList: {
-    marginLeft: Spacing.lg + 40 + Spacing.md,
+    marginLeft: Spacing.lg + Sizes.avatarMd + Spacing.md,
     marginRight: Spacing.lg,
     borderLeftWidth: 1,
     paddingLeft: Spacing.md,
@@ -202,8 +202,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   dot: {
-    width: 6,
-    height: 6,
+    width: Spacing.sm,
+    height: Spacing.sm,
     borderRadius: Radius.full,
     marginLeft: Spacing.sm,
   },

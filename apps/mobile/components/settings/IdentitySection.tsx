@@ -8,7 +8,7 @@ import { StyleSheet, View } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 
 import { Body, ButtonText } from '@/components/ui';
-import { Spacing, Radius } from '@/constants/theme';
+import { Sizes, Spacing, Radius } from '@/constants/theme';
 import { Section } from './Section';
 import type { ThemeColors } from './types';
 
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: Spacing.lg - 2,
+    paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.lg,
   },
   content: {
@@ -161,10 +161,10 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   description: {
-    marginTop: 2,
+    marginTop: Sizes.badgePaddingV,
   },
   actionButton: {
-    paddingHorizontal: Spacing.lg - 2,
+    paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: Radius.md,
   },

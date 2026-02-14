@@ -19,13 +19,8 @@ export * from './listing-timestamp';
 // Seller components
 export * from './seller-card';
 
-// Contact & Actions
-export * from './contact-section';
-export * from './location-section';
+// Actions
 export * from './floating-listing-actions';
-
-// Navigation
-export * from './breadcrumb-header';
 
 // Utilities
 export { formatPrice, formatMileage, formatEmirate, formatSpecs, formatEnumValue } from './types';

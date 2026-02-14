@@ -15,7 +15,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 import { Body } from './text';
 
 // Main Loader component - uses branded typography
@@ -240,14 +240,14 @@ const styles = StyleSheet.create({
     letterSpacing: -2,
   },
   message: {
-    marginTop: 16,
+    marginTop: Spacing.lg,
   },
   inlineMessage: {
-    marginTop: 12,
+    marginTop: Spacing.md,
   },
   refreshContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
+    paddingVertical: Spacing.lg,
   },
 });

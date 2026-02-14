@@ -16,7 +16,7 @@ import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { X as XIcon } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, ButtonText, Supporting } from '@/components/ui';
 import {
@@ -149,11 +149,11 @@ export function CancelBookingSheet({
           <Heading size="medium">Cancel Booking</Heading>
           <HapticPressable
             onPress={onClose}
-            hitSlop={Spacing.md}
+            hitSlop={Layout.hitSlop}
             disabled={loading}
             style={[styles.closeButton, { backgroundColor: colors.fillSecondary }]}
           >
-            <Ionicons name="close" size={18} color={colors.textSecondary} />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.textSecondary} />
           </HapticPressable>
         </View>
 
@@ -163,7 +163,7 @@ export function CancelBookingSheet({
             <Image source={{ uri: listingThumbnail }} style={styles.thumbnail} />
           ) : (
             <View style={[styles.thumbnail, { backgroundColor: colors.fill }]}>
-              <Ionicons name="car-outline" size={24} color={colors.textMuted} />
+              <Ionicons name="car-outline" size={Sizes.iconLg} color={colors.textMuted} />
             </View>
           )}
           <View style={styles.previewInfo}>
@@ -273,7 +273,7 @@ export function CancelBookingSheet({
               <ActivityIndicator size="small" color="#FFF" />
             ) : (
               <>
-                <XIcon size={18} color="#FFF" />
+                <XIcon size={Sizes.iconSm} color="#FFF" />
                 <ButtonText size="medium" style={{ color: '#FFF' }}>
                   Cancel Booking
                 </ButtonText>
@@ -292,7 +292,7 @@ export function CancelBookingSheet({
 
 const styles = StyleSheet.create({
   sheetContainer: {
-    marginHorizontal: 16,
+    marginHorizontal: Layout.screenPadding,
   },
   content: {
     paddingHorizontal: Spacing.lg,
@@ -305,8 +305,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xs,
   },
   closeButton: {
-    width: 32,
-    height: 32,
+    width: Sizes.avatarSm,
+    height: Sizes.avatarSm,
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
@@ -320,8 +320,8 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   thumbnail: {
-    width: 56,
-    height: 56,
+    width: Spacing['5xl'] + Spacing.sm,
+    height: Spacing['5xl'] + Spacing.sm,
     borderRadius: Radius.md,
     alignItems: 'center',
     justifyContent: 'center',
@@ -334,38 +334,37 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   reasonList: {
-    maxHeight: 180,
+    maxHeight: Spacing['5xl'] * 3 + Spacing['4xl'],
   },
   reasonItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
     paddingHorizontal: Spacing.md,
-    paddingVertical: 12,
+    paddingVertical: Spacing.md,
     borderRadius: Radius.md,
     borderWidth: 1,
     marginBottom: Spacing.xs,
   },
   radioOuter: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: Spacing.xl,
+    height: Spacing.xl,
+    borderRadius: Spacing.sm + 2,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: Spacing.sm + 2,
+    height: Spacing.sm + 2,
+    borderRadius: Spacing.xs + 1,
   },
   textInput: {
     borderWidth: 1,
     borderRadius: Radius.md,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
-    fontSize: 14,
-    minHeight: 60,
+    minHeight: Spacing['5xl'] + Spacing.md,
     textAlignVertical: 'top',
   },
   errorBanner: {
@@ -382,7 +381,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
+    paddingVertical: Spacing.md,
     borderRadius: Radius.lg,
     borderWidth: 1,
   },
@@ -392,7 +391,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-    paddingVertical: 14,
+    paddingVertical: Spacing.md,
     borderRadius: Radius.lg,
   },
 });

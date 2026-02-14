@@ -32,7 +32,7 @@ import {
   BarChart3,
 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, ButtonText, Supporting } from '@/components/ui';
 import type { ModerationStatus, LifecycleStatus } from '@/lib/sell-car-user-api';
@@ -252,7 +252,7 @@ export function EditStatusSheet({
               { backgroundColor: colors.fillSecondary },
             ]}
           >
-            <Ionicons name="close" size={18} color={colors.textSecondary} />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.textSecondary} />
           </HapticPressable>
         </View>
 
@@ -262,7 +262,7 @@ export function EditStatusSheet({
             <Image source={{ uri: listingThumbnail }} style={styles.thumbnail} />
           ) : (
             <View style={[styles.thumbnail, { backgroundColor: colors.fill }]}>
-              <Ionicons name="image-outline" size={24} color={colors.textMuted} />
+              <Ionicons name="image-outline" size={Sizes.iconLg} color={colors.textMuted} />
             </View>
           )}
           <View style={styles.previewInfo}>
@@ -297,7 +297,7 @@ export function EditStatusSheet({
                 ]}
               >
                 <View style={[styles.actionIcon, { backgroundColor: isDestructive ? colors.errorMuted : colors.fillSecondary }]}>
-                  <IconComponent size={20} color={iconColor} />
+                  <IconComponent size={Sizes.iconMd} color={iconColor} />
                 </View>
                 <Body
                   size="medium"
@@ -305,7 +305,7 @@ export function EditStatusSheet({
                 >
                   {action.label}
                 </Body>
-                <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+                <Ionicons name="chevron-forward" size={Sizes.iconSm} color={colors.textMuted} />
               </HapticPressable>
             );
           })}
@@ -321,7 +321,7 @@ export function EditStatusSheet({
 
 const styles = StyleSheet.create({
   sheetContainer: {
-    marginHorizontal: 16,
+    marginHorizontal: Layout.screenPadding,
   },
   content: {
     paddingHorizontal: Spacing.lg,
@@ -334,8 +334,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xs,
   },
   closeButton: {
-    width: 32,
-    height: 32,
+    width: Sizes.avatarSm,
+    height: Sizes.avatarSm,
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
@@ -349,25 +349,25 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   thumbnail: {
-    width: 48,
-    height: 48,
+    width: Sizes.avatarLg,
+    height: Sizes.avatarLg,
     borderRadius: Radius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
   previewInfo: {
     flex: 1,
-    gap: 4,
+    gap: Spacing.xs,
   },
   statusRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: Spacing.sm,
   },
   statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: Spacing.sm,
+    height: Spacing.sm,
+    borderRadius: Radius.sm,
   },
   actionList: {
     gap: 0,
@@ -380,8 +380,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xs,
   },
   actionIcon: {
-    width: 36,
-    height: 36,
+    width: Sizes.bubble,
+    height: Sizes.bubble,
     borderRadius: Radius.md,
     alignItems: 'center',
     justifyContent: 'center',

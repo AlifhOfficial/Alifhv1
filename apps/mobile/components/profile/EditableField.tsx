@@ -23,8 +23,8 @@ import Animated, {
 import { ChevronRight } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Supporting, Body, Data } from '@/components/ui';
-import { Typography, Spacing, Radius } from '@/constants/theme';
+import { Body, Data } from '@/components/ui';
+import { Typography, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 interface EditableFieldProps {
@@ -99,7 +99,7 @@ export function EditableField({
         entering={FadeIn.duration(200)}
         style={[styles.container, !isLast && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border }]}
       >
-        <Supporting size="medium" tone="muted">{label}</Supporting>
+        <Body size="small" tone="muted">{label}</Body>
         <View style={styles.editContainer}>
           <View style={styles.inputWrapper}>
             {prefix && (
@@ -127,20 +127,20 @@ export function EditableField({
           <View style={styles.actions}>
             <HapticPressable
               onPress={onCancel}
-              hitSlop={8}
+              hitSlop={Layout.hitSlopSmall}
               style={({ pressed }) => [
                 styles.actionBtn,
                 pressed && { opacity: 0.6 },
               ]}
             >
-              <Supporting size="medium" tone="secondary">
+              <Body size="small" tone="secondary">
                 Cancel
-              </Supporting>
+              </Body>
             </HapticPressable>
             <HapticPressable
               onPress={onSave}
               disabled={saving}
-              hitSlop={8}
+              hitSlop={Layout.hitSlopSmall}
               style={({ pressed }) => [
                 styles.actionBtn,
                 pressed && { opacity: 0.6 },
@@ -172,9 +172,9 @@ export function EditableField({
       >
         <View style={styles.row}>
           <View style={styles.labelValueContainer}>
-            <Supporting size="medium" tone="muted">{label}</Supporting>
+            <Body size="small" tone="muted">{label}</Body>
             <Body
-              size="large"
+              size="medium"
               tone={value ? 'default' : 'muted'}
               numberOfLines={1}
             >
@@ -185,7 +185,7 @@ export function EditableField({
             {suffix}
             {!disabled && (
               <ChevronRight
-                size={18}
+                size={Sizes.iconSm}
                 color={colors.textTertiary}
                 strokeWidth={2}
                 style={styles.chevron}
@@ -200,7 +200,7 @@ export function EditableField({
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: Spacing.lg - 2,
+    paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.lg,
   },
   row: {
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    height: 44,
+    height: Layout.hitTarget,
     borderRadius: Radius.lg,
     paddingHorizontal: Spacing.md,
   },

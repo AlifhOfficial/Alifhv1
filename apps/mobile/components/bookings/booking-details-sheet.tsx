@@ -49,7 +49,7 @@ import {
   ChevronRight,
 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Data, Supporting, ButtonText, Label } from '@/components/ui';
 import type { UserBooking } from '@/lib/booking-api';
@@ -234,10 +234,10 @@ export function BookingDetailsSheet({
           <Heading size="medium">Booking Details</Heading>
           <HapticPressable
             onPress={onClose}
-            hitSlop={Spacing.md}
+            hitSlop={Layout.hitSlop}
             style={[styles.closeButton, { backgroundColor: colors.fillSecondary }]}
           >
-            <Ionicons name="close" size={18} color={colors.textSecondary} />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.textSecondary} />
           </HapticPressable>
         </View>
 
@@ -255,7 +255,7 @@ export function BookingDetailsSheet({
             />
           ) : (
             <View style={[styles.heroImage, { backgroundColor: colors.fill, alignItems: 'center', justifyContent: 'center' }]}>
-              <Ionicons name="car-outline" size={32} color={colors.textMuted} />
+              <Ionicons name="car-outline" size={Sizes.iconXl} color={colors.textMuted} />
             </View>
           )}
           <View style={styles.heroInfo}>
@@ -269,46 +269,58 @@ export function BookingDetailsSheet({
             )}
             <View style={styles.heroAction}>
               <Supporting size="small" style={{ color: colors.primary }}>View listing</Supporting>
-              <ChevronRight size={14} color={colors.primary} />
+              <ChevronRight size={Sizes.iconXs} color={colors.primary} />
             </View>
           </View>
         </HapticPressable>
 
         {/* ── Status + Countdown ───────────────────────────────────────── */}
         <View style={styles.statusRow}>
-          <View style={[styles.statusBadge, { backgroundColor: statusColor + '18' }]}>
+          <View
+            style={[
+              styles.statusBadge,
+              {
+                backgroundColor:
+                  booking.status === 'pending'
+                    ? colors.warningMuted
+                    : booking.status === 'confirmed'
+                      ? colors.primaryMuted
+                      : booking.status === 'completed'
+                        ? colors.successMuted
+                        : booking.status === 'cancelled' || booking.status === 'rejected' || booking.status === 'no_show'
+                          ? colors.errorMuted
+                          : colors.fillSecondary,
+              },
+            ]}
+          >
             <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
             <Label size="small" style={{ color: statusColor, fontWeight: '700' }}>
               {statusLabel}
             </Label>
           </View>
 
-          {isActive && (
+          {isActive && countdown && (
             <View
               style={[
                 styles.countdownBadge,
                 {
                   backgroundColor: countdown.isToday
-                    ? colors.successMuted
-                    : countdown.isTomorrow
-                      ? colors.warningMuted
-                      : colors.primaryMuted,
-                },
-              ]}
-            >
-              <Supporting
-                size="small"
-                style={{
-                  fontWeight: '600',
-                  color: countdown.isToday
                     ? colors.success
                     : countdown.isTomorrow
                       ? colors.warning
                       : colors.primary,
+                },
+              ]}
+            >
+              <Label
+                size="small"
+                style={{
+                  fontWeight: '700',
+                  color: '#FFFFFF',
                 }}
               >
                 {countdown.text}
-              </Supporting>
+              </Label>
             </View>
           )}
         </View>
@@ -316,7 +328,7 @@ export function BookingDetailsSheet({
         {/* ── Date & Time ──────────────────────────────────────────────── */}
         <View style={[styles.section, { backgroundColor: colors.surfaceSecondary }]}>
           <View style={styles.detailRow}>
-            <Calendar size={16} color={colors.textSecondary} />
+            <Calendar size={Sizes.iconSm} color={colors.textSecondary} />
             <View style={styles.detailText}>
               <Supporting size="small" tone="secondary">Date</Supporting>
               <Body size="medium">{formatBookingDate(booking.scheduledDate)}</Body>
@@ -324,7 +336,7 @@ export function BookingDetailsSheet({
           </View>
           <View style={[styles.divider, { backgroundColor: colors.border }]} />
           <View style={styles.detailRow}>
-            <Clock size={16} color={colors.textSecondary} />
+            <Clock size={Sizes.iconSm} color={colors.textSecondary} />
             <View style={styles.detailText}>
               <Supporting size="small" tone="secondary">Time</Supporting>
               <Body size="medium">{timeRange}</Body>
@@ -339,7 +351,7 @@ export function BookingDetailsSheet({
               <Image source={{ uri: booking.partnerLogo }} style={styles.partnerLogoLg} contentFit="contain" />
             ) : (
               <View style={[styles.dealerIconCircle, { backgroundColor: colors.surfaceSecondary }]}>
-                <Ionicons name="storefront-outline" size={14} color={colors.textSecondary} />
+                <Ionicons name="storefront-outline" size={Sizes.iconXs} color={colors.textSecondary} />
               </View>
             )}
             <View style={styles.detailText}>
@@ -355,12 +367,12 @@ export function BookingDetailsSheet({
                 onPress={() => handleOpenMaps(booking.partnerAddress!)}
                 style={styles.detailRow}
               >
-                <MapPin size={16} color={colors.textSecondary} />
+                <MapPin size={Sizes.iconSm} color={colors.textSecondary} />
                 <View style={[styles.detailText, { flex: 1 }]}>
                   <Supporting size="small" tone="secondary">Address</Supporting>
                   <Body size="small" numberOfLines={2}>{booking.partnerAddress}</Body>
                 </View>
-                <ExternalLink size={14} color={colors.primary} />
+                <ExternalLink size={Sizes.iconXs} color={colors.primary} />
               </HapticPressable>
             </>
           )}
@@ -372,12 +384,12 @@ export function BookingDetailsSheet({
                 onPress={() => handleCall(booking.partnerPhone)}
                 style={styles.detailRow}
               >
-                <Phone size={16} color={colors.textSecondary} />
+                <Phone size={Sizes.iconSm} color={colors.textSecondary} />
                 <View style={[styles.detailText, { flex: 1 }]}>
                   <Supporting size="small" tone="secondary">Phone</Supporting>
                   <Body size="medium">{booking.partnerPhone}</Body>
                 </View>
-                <ExternalLink size={14} color={colors.primary} />
+                <ExternalLink size={Sizes.iconXs} color={colors.primary} />
               </HapticPressable>
             </>
           )}
@@ -386,7 +398,7 @@ export function BookingDetailsSheet({
             <>
               <View style={[styles.divider, { backgroundColor: colors.border }]} />
               <View style={styles.detailRow}>
-                <User size={16} color={colors.textSecondary} />
+                <User size={Sizes.iconSm} color={colors.textSecondary} />
                 <View style={styles.detailText}>
                   <Supporting size="small" tone="secondary">Contact Person</Supporting>
                   <Body size="medium">
@@ -403,7 +415,7 @@ export function BookingDetailsSheet({
         {booking.confirmationToken && isActive && (
           <View style={[styles.section, { backgroundColor: colors.surfaceSecondary }]}>
             <View style={styles.detailRow}>
-              <Hash size={16} color={colors.textSecondary} />
+              <Hash size={Sizes.iconSm} color={colors.textSecondary} />
               <View style={styles.detailText}>
                 <Supporting size="small" tone="secondary">Confirmation Code</Supporting>
                 <Data size="medium" style={{ color: colors.text, fontWeight: '700', letterSpacing: 1 }}>
@@ -419,7 +431,7 @@ export function BookingDetailsSheet({
           <View style={[styles.section, { backgroundColor: colors.surfaceSecondary }]}>
             {booking.numberOfAttendees > 1 && (
               <View style={styles.detailRow}>
-                <Users size={16} color={colors.textSecondary} />
+                <Users size={Sizes.iconSm} color={colors.textSecondary} />
                 <View style={styles.detailText}>
                   <Supporting size="small" tone="secondary">Attendees</Supporting>
                   <Body size="medium">{booking.numberOfAttendees}</Body>
@@ -432,7 +444,7 @@ export function BookingDetailsSheet({
                   <View style={[styles.divider, { backgroundColor: colors.border }]} />
                 )}
                 <View style={styles.detailRow}>
-                  <FileText size={16} color={colors.textSecondary} />
+                  <FileText size={Sizes.iconSm} color={colors.textSecondary} />
                   <View style={styles.detailText}>
                     <Supporting size="small" tone="secondary">Notes</Supporting>
                     <Body size="small">{booking.notes}</Body>
@@ -444,7 +456,7 @@ export function BookingDetailsSheet({
               <>
                 <View style={[styles.divider, { backgroundColor: colors.border }]} />
                 <View style={styles.detailRow}>
-                  <Star size={16} color={colors.textSecondary} />
+                  <Star size={Sizes.iconSm} color={colors.textSecondary} />
                   <View style={styles.detailText}>
                     <Supporting size="small" tone="secondary">Special Requests</Supporting>
                     <Body size="small">{booking.specialRequests}</Body>
@@ -459,7 +471,7 @@ export function BookingDetailsSheet({
         {isActive && settings && (settings.preparationInstructions || settings.directions || settings.parkingInstructions) && (
           <View style={[styles.section, { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.primary }]}>
             <View style={styles.sectionHeader}>
-              <Info size={14} color={colors.primary} />
+              <Info size={Sizes.iconXs} color={colors.primary} />
               <Label size="small" style={{ color: colors.primary, fontWeight: '700' }}>
                 Visit Information
               </Label>
@@ -490,7 +502,7 @@ export function BookingDetailsSheet({
         {booking.status === 'cancelled' && (
           <View style={[styles.section, { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.error }]}>
             <View style={styles.sectionHeader}>
-              <XIcon size={14} color={colors.error} />
+              <XIcon size={Sizes.iconXs} color={colors.error} />
               <Label size="small" style={{ color: colors.error, fontWeight: '700' }}>
                 Cancelled
               </Label>
@@ -520,7 +532,7 @@ export function BookingDetailsSheet({
         {booking.status === 'rejected' && booking.rejectionReason && (
           <View style={[styles.section, { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.error }]}>
             <View style={styles.sectionHeader}>
-              <XIcon size={14} color={colors.error} />
+              <XIcon size={Sizes.iconXs} color={colors.error} />
               <Label size="small" style={{ color: colors.error, fontWeight: '700' }}>
                 Rejected
               </Label>
@@ -542,12 +554,12 @@ export function BookingDetailsSheet({
                 { backgroundColor: 'transparent', borderColor: colors.border },
               ]}
             >
-              <CalendarPlus size={16} color={colors.text} />
+              <CalendarPlus size={Sizes.iconSm} color={colors.text} />
               <ButtonText size="medium">Add to Calendar</ButtonText>
             </HapticPressable>
           )}
 
-          {cancelCheck.canCancel && (
+          {cancelCheck.canCancel ? (
             <HapticPressable
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -555,10 +567,17 @@ export function BookingDetailsSheet({
               }}
               style={[styles.cancelBtn, { backgroundColor: colors.error }]}
             >
-              <XIcon size={18} color="#FFF" />
+              <XIcon size={Sizes.iconSm} color="#FFF" />
               <ButtonText size="medium" style={{ color: '#FFF' }}>Cancel Booking</ButtonText>
             </HapticPressable>
-          )}
+          ) : isActive && cancelCheck.reason ? (
+            <View style={[styles.cancelDisabledRow, { backgroundColor: colors.surfaceSecondary }]}>
+              <Info size={Sizes.iconXs} color={colors.textMuted} />
+              <Body size="small" style={styles.cancelDisabledText}>
+                {cancelCheck.reason}
+              </Body>
+            </View>
+          ) : null}
         </View>
 
         {/* ── Booked at ────────────────────────────────────────────────── */}
@@ -577,10 +596,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sheetContainer: {
-    marginHorizontal: 16,
+    marginHorizontal: Layout.screenPadding,
   },
   content: {
     paddingHorizontal: Spacing.lg,
+    overflow: 'hidden',
   },
   header: {
     flexDirection: 'row',
@@ -590,8 +610,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xs,
   },
   closeButton: {
-    width: 32,
-    height: 32,
+    width: Sizes.avatarSm,
+    height: Sizes.avatarSm,
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
@@ -607,8 +627,8 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   heroImage: {
-    width: 80,
-    height: 64,
+    width: Spacing['5xl'] + Spacing['3xl'],
+    height: Spacing['5xl'] + Spacing.lg,
     borderRadius: Radius.md,
   },
   heroInfo: {
@@ -632,19 +652,19 @@ const styles = StyleSheet.create({
   statusBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    gap: Sizes.badgePaddingH,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Sizes.badgePaddingH,
     borderRadius: Radius.full,
   },
   statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: Spacing.sm,
+    height: Spacing.sm,
+    borderRadius: Spacing.xs,
   },
   countdownBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingHorizontal: Spacing.sm + 2,
+    paddingVertical: Sizes.badgePaddingH,
     borderRadius: Radius.full,
   },
 
@@ -657,14 +677,14 @@ const styles = StyleSheet.create({
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: Sizes.badgePaddingH,
     marginBottom: Spacing.sm,
   },
   detailRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: Spacing.sm,
-    paddingVertical: 4,
+    paddingVertical: Spacing.xs,
   },
   detailText: {
     gap: 1,
@@ -674,15 +694,15 @@ const styles = StyleSheet.create({
     marginVertical: Spacing.sm,
   },
   partnerLogoLg: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: Sizes.iconXl,
+    height: Sizes.iconXl,
+    borderRadius: Sizes.iconXs,
     marginTop: 2,
   },
   dealerIconCircle: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: Sizes.iconXl,
+    height: Sizes.iconXl,
+    borderRadius: Sizes.iconXs,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 2,
@@ -698,13 +718,14 @@ const styles = StyleSheet.create({
   actions: {
     gap: Spacing.sm,
     marginTop: Spacing.sm,
+    width: '100%',
   },
   cancelBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-    paddingVertical: 14,
+    paddingVertical: Spacing.md,
     borderRadius: Radius.lg,
   },
   viewListingBtn: {
@@ -712,8 +733,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-    paddingVertical: 14,
+    paddingVertical: Spacing.md,
     borderRadius: Radius.lg,
     borderWidth: 1,
+  },
+  cancelDisabledRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    gap: Spacing.sm,
+    padding: Spacing.md,
+    borderRadius: Radius.md,
+  },
+  cancelDisabledText: {
+    flex: 1,
+    flexShrink: 1,
   },
 });

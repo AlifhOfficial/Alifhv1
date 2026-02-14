@@ -11,7 +11,7 @@ import { HapticPressable } from '@/components/ui';
 import { MapPin, ExternalLink, Navigation } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Skeleton, Label, Data, ButtonText } from '@/components/ui';
 
@@ -95,7 +95,7 @@ export const LocationSection = memo(function LocationSection({
 
       {/* Address Display */}
       <View style={styles.addressRow}>
-        <MapPin size={20} color={secondaryTextColor} style={styles.mapIcon} />
+        <MapPin size={Spacing.xl} color={secondaryTextColor} style={styles.mapIcon} />
         <View style={styles.addressText}>
           {address && (
             <Data size="medium" style={{ color: textColor }}>
@@ -125,7 +125,7 @@ export const LocationSection = memo(function LocationSection({
             },
           ]}
         >
-          <ExternalLink size={16} color={textColor} />
+          <ExternalLink size={Spacing.lg} color={textColor} />
           <ButtonText size="small">View Map</ButtonText>
         </HapticPressable>
 
@@ -139,7 +139,7 @@ export const LocationSection = memo(function LocationSection({
             },
           ]}
         >
-          <Navigation size={16} color={textColor} />
+          <Navigation size={Spacing.lg} color={textColor} />
           <ButtonText size="small">Directions</ButtonText>
         </HapticPressable>
       </View>

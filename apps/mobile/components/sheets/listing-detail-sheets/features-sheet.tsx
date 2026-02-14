@@ -12,7 +12,7 @@ import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body } from '@/components/ui';
 import { Copy } from 'lucide-react-native';
@@ -85,7 +85,7 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
       backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
       handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
       detached
-      bottomInset={insets.bottom + 20}
+      bottomInset={insets.bottom + Spacing.xl}
       style={styles.sheetContainer}
     >
       <View style={styles.content}>
@@ -101,9 +101,9 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
               ]}
             >
               {copied ? (
-                <Ionicons name="checkmark" size={18} color={colors.primary} />
+                <Ionicons name="checkmark" size={Sizes.iconSm} color={colors.primary} />
               ) : (
-                <Copy size={18} color={colors.textSecondary} />
+                <Copy size={Sizes.iconSm} color={colors.textSecondary} />
               )}
             </HapticPressable>
             <HapticPressable
@@ -114,7 +114,7 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
                 { backgroundColor: colors.fillSecondary },
               ]}
             >
-              <Ionicons name="close" size={18} color={colors.textSecondary} />
+              <Ionicons name="close" size={Sizes.iconSm} color={colors.textSecondary} />
             </HapticPressable>
           </View>
         </View>
@@ -155,8 +155,8 @@ const styles = StyleSheet.create({
     borderRadius: Radius['3xl'],
   },
   handleIndicator: {
-    width: 36,
-    height: 4,
+    width: Sizes.bubble,
+    height: Spacing.xs,
     borderRadius: Radius.full,
   },
   content: {
@@ -176,8 +176,8 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   iconButton: {
-    width: 32,
-    height: 32,
+    width: Spacing['3xl'],
+    height: Spacing['3xl'],
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
@@ -194,8 +194,8 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   badge: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
     borderRadius: Radius.md,
     borderWidth: 1,
   },

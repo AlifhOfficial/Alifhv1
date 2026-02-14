@@ -9,7 +9,7 @@ import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Clock } from 'lucide-react-native';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Sizes, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Skeleton, Data } from '@/components/ui';
 
@@ -103,7 +103,7 @@ export const ListingTimestamp = memo(function ListingTimestamp({
 
   return (
     <View style={styles.container}>
-      <Clock size={ICON_SIZE} color={secondaryTextColor} />
+      <Clock size={Sizes.iconSm} color={secondaryTextColor} />
       <View style={styles.textContainer}>
         <Data size="medium" style={{ color: textColor }}>
           {postedTimeAgo}
@@ -125,24 +125,14 @@ export const ListingTimestamp = memo(function ListingTimestamp({
 export function ListingTimestampSkeleton() {
   return (
     <View style={styles.container}>
-      <Skeleton width={18} height={18} borderRadius={9} />
-      <View style={[styles.textContainer, { gap: 6 }]}>
-        <Skeleton width={60} height={16} />
-        <Skeleton width={100} height={14} />
+      <Skeleton width={Sizes.iconSm} height={Sizes.iconSm} borderRadius={Radius.full} />
+      <View style={[styles.textContainer, { gap: Spacing.sm }]}>
+        <Skeleton width="20%" height={Spacing.lg} />
+        <Skeleton width="30%" height={Spacing.md} />
       </View>
     </View>
   );
 }
-
-// ============================================================================
-// STYLES
-// ============================================================================
-
-// ============================================================================
-// CONSTANTS
-// ============================================================================
-
-const ICON_SIZE = 18;
 
 // ============================================================================
 // STYLES
@@ -158,7 +148,7 @@ const styles = StyleSheet.create({
   textContainer: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    gap: Spacing.sm - 2, // 6
+    gap: Spacing.sm,
     flexWrap: 'wrap',
   },
 });

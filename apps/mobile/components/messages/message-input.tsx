@@ -18,7 +18,7 @@ import { HapticPressable } from '@/components/ui';
 import { Send } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography, Sizes, Layout } from '@/constants/theme';
 
 interface MessageInputProps {
   onSend: (text: string) => Promise<void>;
@@ -29,8 +29,8 @@ interface MessageInputProps {
   resetKey?: string;
 }
 
-const MIN_HEIGHT = 40;
-const MAX_HEIGHT = 120;
+const MIN_HEIGHT = Sizes.actionButtonMd;
+const MAX_HEIGHT = Spacing['5xl'] * 2.5;
 
 export function MessageInput({
   onSend,
@@ -210,7 +210,7 @@ export function MessageInput({
         ]}
       >
         <Send
-          size={20}
+          size={Sizes.iconSm}
           color={canSend ? colors.primaryForeground : colors.textTertiary}
           strokeWidth={2}
         />
@@ -225,12 +225,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.sm,
-    borderTopWidth: 0.5,
+    borderTopWidth: StyleSheet.hairlineWidth,
     gap: Spacing.sm,
   },
   inputWrapper: {
     flex: 1,
-    minHeight: 44,
+    minHeight: Layout.hitTarget,
     borderWidth: 1,
     borderRadius: Radius.full,
     paddingHorizontal: Spacing.lg,
@@ -239,13 +239,13 @@ const styles = StyleSheet.create({
   input: {
     ...Typography.bodyLarge,
     lineHeight: undefined,
-    paddingTop: Platform.OS === 'ios' ? 10 : 8,
-    paddingBottom: Platform.OS === 'ios' ? 10 : 8,
+    paddingTop: Spacing.sm,
+    paddingBottom: Spacing.sm,
     textAlignVertical: 'center',
   },
   sendWrapper: {
-    width: 44,
-    height: 44,
+    width: Layout.hitTarget,
+    height: Layout.hitTarget,
     borderRadius: Radius.full,
     borderWidth: 1,
     alignItems: 'center',

@@ -9,7 +9,7 @@ import { HapticPressable } from '@/components/ui';
 import { CheckCircle2 } from 'lucide-react-native';
 
 import { ButtonText } from '@/components/ui';
-import { Spacing } from '@/constants/theme';
+import { Spacing, Sizes } from '@/constants/theme';
 import { Section } from './Section';
 import { EditableField } from './EditableField';
 import { PhoneVerificationField } from './PhoneVerificationField';
@@ -92,7 +92,7 @@ export function PersonalInfoSection({
         disabled
         suffix={
           profile.emailVerified ? (
-            <CheckCircle2 size={16} color={colors.success} strokeWidth={2} />
+            <CheckCircle2 size={Sizes.iconXs} color={colors.success} strokeWidth={2} />
           ) : (
             <HapticPressable onPress={() => {}}>
               <ButtonText size="small" tone="primary">

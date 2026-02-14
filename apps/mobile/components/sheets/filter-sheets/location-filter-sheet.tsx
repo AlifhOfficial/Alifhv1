@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Supporting, ButtonText } from '@/components/ui';
 import { searchApi, type FacetBucket, type SearchParams } from '@/lib/search-api';
@@ -134,7 +134,7 @@ export function LocationFilterSheet({
       backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
       handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
       detached
-      bottomInset={insets.bottom + 20}
+      bottomInset={insets.bottom + Spacing.xl}
       style={styles.sheetContainer}
     >
       <BottomSheetScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -173,7 +173,7 @@ export function LocationFilterSheet({
               <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
                 {localSelected.join(', ')}
               </Body>
-              <HapticPressable onPress={handleClear} hitSlop={8}>
+              <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
                 <Supporting size="small" style={{ color: colors.error }}>
                   Clear
                 </Supporting>
@@ -209,10 +209,10 @@ export function LocationFilterSheet({
                 </View>
                 <View style={[
                   styles.radio,
-                  { borderColor: isSelected ? colors.text : colors.border },
+                  { borderColor: isSelected ? colors.textMuted : colors.border },
                 ]}>
                   {isSelected && (
-                    <View style={[styles.radioInner, { backgroundColor: colors.text }]} />
+                    <View style={[styles.radioInner, { backgroundColor: colors.textMuted }]} />
                   )}
                 </View>
               </HapticPressable>
@@ -234,8 +234,8 @@ const styles = StyleSheet.create({
     borderRadius: Radius['3xl'],
   },
   handleIndicator: {
-    width: 36,
-    height: 4,
+    width: Sizes.bubble,
+    height: Spacing.xs,
     borderRadius: Radius.full,
   },
   content: {
@@ -282,16 +282,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   radio: {
-    width: 22,
-    height: 22,
+    width: Sizes.iconMd,
+    height: Sizes.iconMd,
     borderRadius: Radius.full,
-    borderWidth: 2,
+    borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioInner: {
-    width: 12,
-    height: 12,
+    width: Spacing.sm + 2,
+    height: Spacing.sm + 2,
     borderRadius: Radius.full,
   },
   applyButton: {

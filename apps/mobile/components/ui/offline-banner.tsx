@@ -16,7 +16,7 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WifiOff, RefreshCw } from 'lucide-react-native';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useNetwork } from '@/context/network-context';
 import { Body, Supporting } from '@/components/ui/text';
@@ -80,7 +80,7 @@ export function OfflineBanner() {
         animatedStyle,
       ]}
     >
-      <WifiOff size={18} color="#fff" strokeWidth={2} />
+      <WifiOff size={Sizes.iconSm} color="#fff" strokeWidth={2} />
       <Body size="small" style={styles.text}>
         {isReconnecting ? 'Reconnecting...' : 'No internet connection'}
       </Body>
@@ -91,7 +91,7 @@ export function OfflineBanner() {
       )}
       <Pressable onPress={retry} style={styles.retryButton} hitSlop={12}>
         <Animated.View style={spinStyle}>
-          <RefreshCw size={16} color="#fff" strokeWidth={2.5} />
+          <RefreshCw size={Spacing.lg} color="#fff" strokeWidth={2.5} />
         </Animated.View>
       </Pressable>
     </Animated.View>

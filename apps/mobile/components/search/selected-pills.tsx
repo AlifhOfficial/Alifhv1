@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 
+import { Layout, Spacing } from '@/constants/theme';
 import { Data } from '@/components/ui';
 import { FilterPill } from './filter-pill';
 
@@ -21,7 +22,7 @@ export function SelectedPills({ items, onRemove, onClearAll, label }: SelectedPi
         <View style={styles.header}>
           <Data size="mini" tone="secondary">{label}</Data>
           {onClearAll && items.length > 1 && (
-            <HapticPressable onPress={onClearAll} hitSlop={8}>
+            <HapticPressable onPress={onClearAll} hitSlop={Layout.hitSlopSmall}>
               <Data size="mini" tone="primary">Clear all</Data>
             </HapticPressable>
           )}
@@ -48,17 +49,17 @@ export function SelectedPills({ items, onRemove, onClearAll, label }: SelectedPi
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 8,
+    paddingVertical: Spacing.sm,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    marginBottom: 10,
+    paddingHorizontal: Spacing.xl,
+    marginBottom: Spacing.sm,
   },
   scrollContent: {
-    paddingHorizontal: 20,
-    gap: 8,
+    paddingHorizontal: Spacing.xl,
+    gap: Spacing.sm,
   },
 });

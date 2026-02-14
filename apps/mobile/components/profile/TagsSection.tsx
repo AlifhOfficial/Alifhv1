@@ -8,7 +8,7 @@ import { StyleSheet, View, Platform, Alert } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 
-import { Supporting, ButtonText } from '@/components/ui';
+import { Body, Supporting } from '@/components/ui';
 import { Spacing, Radius } from '@/constants/theme';
 import { Section } from './Section';
 import { PROFILE_TAGS } from './types';
@@ -35,12 +35,12 @@ function TagItem({ tag, isSelected, colors, onPress }: TagItemProps) {
         },
       ]}
     >
-      <ButtonText
-        size="medium"
+      <Body
+        size="small"
         tone={isSelected ? 'default' : 'secondary'}
       >
         {tag}
-      </ButtonText>
+      </Body>
     </HapticPressable>
   );
 }
@@ -100,11 +100,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     padding: Spacing.lg,
-    gap: Spacing.sm + 2,
+    gap: Spacing.md,
   },
   tag: {
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.sm + 2,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.sm,
     borderRadius: Radius.full,
     borderWidth: StyleSheet.hairlineWidth,
   },

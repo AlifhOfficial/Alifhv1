@@ -20,7 +20,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useSearch, type SearchChip, type SearchParams, type FilterParams, type RemovableFilterKey } from '@/context/search-context';
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Colors, Spacing, Typography, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 const AnimatedView = Animated.View;
@@ -133,7 +133,7 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
                       {chip.label}
                     </Body>
                     <X 
-                      size={12} 
+                      size={Spacing.md} 
                       color={colors.textTertiary} 
                       strokeWidth={2.5} 
                     />

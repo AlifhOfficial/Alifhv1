@@ -8,7 +8,7 @@ import { View, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AlertTriangle, RefreshCw, Home, Bug } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { Heading, Body, Supporting, ButtonText } from '@/components/ui/text';
 
 interface Props {
@@ -85,7 +85,7 @@ function ErrorFallback({ error, onReload, onReset }: ErrorFallbackProps) {
       >
         {/* Icon */}
         <View style={[styles.iconContainer, { backgroundColor: colors.error + '20' }]}>
-          <AlertTriangle size={40} color={colors.error} strokeWidth={1.5} />
+          <AlertTriangle size={Sizes.avatarMd} color={colors.error} strokeWidth={1.5} />
         </View>
 
         {/* Title */}
@@ -104,7 +104,7 @@ function ErrorFallback({ error, onReload, onReset }: ErrorFallbackProps) {
             onPress={onReload}
             style={[styles.button, styles.primaryButton, { backgroundColor: colors.primary }]}
           >
-            <RefreshCw size={18} color="#fff" strokeWidth={2} />
+            <RefreshCw size={Sizes.iconSm} color="#fff" strokeWidth={2} />
             <ButtonText size="medium" style={{ color: '#fff' }}>Reload App</ButtonText>
           </Pressable>
 
@@ -112,7 +112,7 @@ function ErrorFallback({ error, onReload, onReset }: ErrorFallbackProps) {
             onPress={onReset}
             style={[styles.button, styles.secondaryButton, { borderColor: colors.border }]}
           >
-            <Home size={18} color={colors.text} strokeWidth={2} />
+            <Home size={Sizes.iconSm} color={colors.text} strokeWidth={2} />
             <ButtonText size="medium" style={{ color: colors.text }}>Try Again</ButtonText>
           </Pressable>
         </View>
@@ -124,7 +124,7 @@ function ErrorFallback({ error, onReload, onReset }: ErrorFallbackProps) {
               onPress={() => setShowDetails(!showDetails)}
               style={styles.detailsToggle}
             >
-              <Bug size={14} color={colors.textMuted} />
+              <Bug size={Sizes.iconXs} color={colors.textMuted} />
               <Supporting size="small" tone="muted">
                 {showDetails ? 'Hide' : 'Show'} error details
               </Supporting>
@@ -161,9 +161,9 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing['2xl'],
   },
   iconContainer: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
+    width: Sizes.avatarLg + Sizes.avatarMd,
+    height: Sizes.avatarLg + Sizes.avatarMd,
+    borderRadius: (Sizes.avatarLg + Sizes.avatarMd) / 2,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.lg,
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-    height: 52,
+    height: Spacing['5xl'] + Spacing.xs,
     borderRadius: Radius.lg,
   },
   primaryButton: {

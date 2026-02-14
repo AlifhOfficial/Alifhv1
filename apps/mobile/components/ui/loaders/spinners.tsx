@@ -18,6 +18,7 @@ import Animated, {
   FadeOut,
 } from 'react-native-reanimated';
 import { useTheme } from '@/context/theme-context';
+import { Sizes, Spacing, Radius } from '@/constants/theme';
 import { Body } from '../text';
 import { LoaderProps, LOADER_SIZES, LOADER_COLORS } from './types';
 import { RevvupLogo, RevvupLogoAnimated } from './revvup-logo';
@@ -137,7 +138,7 @@ export function FullScreenLoader({
         { backgroundColor: isDark ? '#0A0A0A' : '#E8E8E8' },
       ]}
     >
-      <RevvupLogoAnimated size={80} animation="pulse" duration={1400} />
+      <RevvupLogoAnimated size={Sizes.avatarLg + Spacing['3xl']} animation="pulse" duration={1400} />
       {message && (
         <Body
           size="small"
@@ -163,8 +164,8 @@ interface SkeletonLoaderProps {
  */
 export function SkeletonLoader({ 
   width = '100%', 
-  height = 20, 
-  borderRadius = 8,
+  height = Spacing.xl, 
+  borderRadius = Radius.md,
   style,
 }: SkeletonLoaderProps) {
   const { colorScheme } = useTheme();

@@ -8,15 +8,15 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
-import { Colors } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { Colors } from '@/constants/theme';
 
 export default function TabLayout() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Tabs
         tabBar={() => null}
         screenOptions={{

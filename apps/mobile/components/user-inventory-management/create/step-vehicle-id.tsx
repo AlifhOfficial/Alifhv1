@@ -20,7 +20,7 @@ import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { Search, X, ChevronDown, Info } from 'lucide-react-native';
 
-import { Spacing, Radius, Colors } from '@/constants/theme';
+import { Spacing, Radius, Colors, Sizes, Layout, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Supporting, ButtonText, Label } from '@/components/ui';
 import { CAR_MAKES, getModelsForMake } from '@/lib/filter-constants';
@@ -74,7 +74,7 @@ function InlinePicker({
         >
           {selected || placeholder}
         </Body>
-        <ChevronDown size={18} color={colors.textMuted} />
+        <ChevronDown size={Sizes.iconSm} color={colors.textMuted} />
       </HapticPressable>
     );
   }
@@ -84,7 +84,7 @@ function InlinePicker({
       {/* Search */}
       {searchable && (
         <View style={[styles.pickerSearch, { backgroundColor: colors.fillSecondary }]}>
-          <Search size={16} color={colors.textMuted} />
+          <Search size={Sizes.iconXs} color={colors.textMuted} />
           <TextInput
             style={[styles.pickerSearchInput, { color: colors.text }]}
             placeholder={`Search ${title.toLowerCase()}...`}
@@ -95,8 +95,8 @@ function InlinePicker({
             autoCorrect={false}
           />
           {query.length > 0 && (
-            <HapticPressable onPress={() => setQuery('')} hitSlop={8}>
-              <X size={14} color={colors.textMuted} />
+            <HapticPressable onPress={() => setQuery('')} hitSlop={Layout.hitSlopSmall}>
+              <X size={Sizes.iconXs} color={colors.textMuted} />
             </HapticPressable>
           )}
         </View>
@@ -289,10 +289,10 @@ export function StepVehicleId({ form, updateForm, colors }: StepProps) {
                   <ActivityIndicator size="small" color={colors.primary} />
                 )}
                 {vinStatus === 'verified' && (
-                  <Ionicons name="checkmark-circle" size={20} color={colors.primary} />
+                  <Ionicons name="checkmark-circle" size={Sizes.iconMd} color={colors.primary} />
                 )}
                 {(vinStatus === 'taken' || vinStatus === 'error') && (
-                  <Ionicons name="alert-circle" size={20} color={colors.error} />
+                  <Ionicons name="alert-circle" size={Sizes.iconMd} color={colors.error} />
                 )}
               </View>
             </View>
@@ -306,7 +306,7 @@ export function StepVehicleId({ form, updateForm, colors }: StepProps) {
           {/* Error message */}
           {vinError && (
             <View style={[styles.vinMessage, { backgroundColor: colors.errorMuted }]}>
-              <Ionicons name="alert-circle" size={16} color={colors.error} />
+              <Ionicons name="alert-circle" size={Sizes.iconXs} color={colors.error} />
               <Supporting size="small" tone="error" style={{ flex: 1 }}>{vinError}</Supporting>
             </View>
           )}
@@ -314,7 +314,7 @@ export function StepVehicleId({ form, updateForm, colors }: StepProps) {
           {/* Success message */}
           {form.vinVerified && !vinError && (
             <View style={[styles.vinMessage, { backgroundColor: colors.primaryMuted }]}>
-              <Ionicons name="checkmark-circle" size={16} color={colors.primary} />
+              <Ionicons name="checkmark-circle" size={Sizes.iconXs} color={colors.primary} />
               <View style={{ flex: 1 }}>
                 <Supporting size="small" style={{ color: colors.primary }}>
                   VIN verified{vinDecodedFields.length > 0 ? ' — auto-filled:' : ''}
@@ -339,7 +339,7 @@ export function StepVehicleId({ form, updateForm, colors }: StepProps) {
           )}
 
           <View style={[styles.vinNote, { backgroundColor: colors.fillSecondary }]}>
-            <Info size={14} color={colors.textMuted} />
+            <Info size={Sizes.iconXs} color={colors.textMuted} />
             <Supporting size="mini" tone="muted" style={{ flex: 1 }}>
               VIN is verified for uniqueness. If decode fails, you can still fill in details manually below.
             </Supporting>
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
   vinStatusIcon: {
     position: 'absolute',
     right: Spacing.md,
-    top: 14,
+    top: Spacing.md + 2, // vertically center in 48px input
   },
   retryBtn: {
     alignItems: 'center',
@@ -443,12 +443,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   textInput: {
-    height: 48,
+    height: Sizes.actionButtonLg,
     borderRadius: Radius.lg,
     borderWidth: 1,
     paddingHorizontal: Spacing.lg,
-    fontFamily: 'Inter_500Medium',
-    fontSize: 15,
+    ...Typography.bodyMedium,
   },
   vinRow: {
     flexDirection: 'row',
@@ -473,7 +472,7 @@ const styles = StyleSheet.create({
   },
   // Inline picker
   selectButton: {
-    height: 48,
+    height: Sizes.actionButtonLg,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: Spacing.lg,
@@ -491,13 +490,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.sm,
     paddingHorizontal: Spacing.md,
-    height: 44,
+    height: Sizes.actionButtonMd + Spacing.xs, // 44px
   },
   pickerSearchInput: {
     flex: 1,
-    fontFamily: 'Inter_500Medium',
-    fontSize: 15,
-    height: 44,
+    ...Typography.bodyMedium,
+    height: Sizes.actionButtonMd + Spacing.xs, // 44px
   },
   pickerOption: {
     flexDirection: 'row',

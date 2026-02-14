@@ -10,7 +10,7 @@ import { LogOut } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { ButtonText } from '@/components/ui';
-import { Spacing, Radius } from '@/constants/theme';
+import { Spacing, Radius, Sizes } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 import type { ThemeColors } from './types';
 
@@ -53,7 +53,7 @@ export function SignOutButton({ colors }: SignOutButtonProps) {
         },
       ]}
     >
-      <LogOut size={18} color={colors.error} strokeWidth={2} />
+      <LogOut size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
       <ButtonText size="medium" tone="error">Sign Out</ButtonText>
     </HapticPressable>
   );
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: Spacing.sm + 2,
+    gap: Spacing.md,
     paddingVertical: Spacing.lg,
     borderRadius: Radius.xl,
     marginTop: Spacing.md,

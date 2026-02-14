@@ -7,7 +7,7 @@
 import React from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { Body, Data, Supporting } from '@/components/ui';
 import type { Message } from '@/lib/messaging-api';
@@ -181,13 +181,13 @@ export function MessageBubble({
 }
 
 // Bubble corner radii
-const BUBBLE_RADIUS = 18;
-const BUBBLE_TAIL = 4;
+const BUBBLE_RADIUS = Radius.xl;
+const BUBBLE_TAIL = Radius.sm;
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    marginBottom: 2,
+    marginBottom: Spacing.xs / 2,
     paddingHorizontal: Spacing.md,
     gap: Spacing.sm,
     alignItems: 'flex-end',
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   avatarPlaceholder: {
-    width: 24,
+    width: Sizes.iconXl,
   },
   content: {
     maxWidth: '75%',
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     borderRadius: BUBBLE_RADIUS,
     overflow: 'hidden',
     marginBottom: Spacing.xs,
-    width: 200,
+    width: '85%',
     borderWidth: StyleSheet.hairlineWidth,
   },
   listingImage: {
@@ -230,14 +230,14 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   sendingDot: {
-    width: 5,
-    height: 5,
+    width: Spacing.xs,
+    height: Spacing.xs,
     borderRadius: Radius.full,
   },
   bubble: {
-    paddingHorizontal: 14,
-    paddingVertical: 9,
-    minHeight: 36,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    minHeight: Sizes.bubble,
   },
   // Own message bubble shapes
   bubbleOwn: {
@@ -272,8 +272,8 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: BUBBLE_RADIUS,
   },
   mediaImage: {
-    width: 200,
-    height: 150,
+    width: '100%',
+    aspectRatio: 4 / 3,
     borderRadius: Radius.md,
     marginBottom: Spacing.xs,
   },
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
-    marginTop: 2,
+    marginTop: Spacing.xs / 2,
   },
   systemContainer: {
     alignItems: 'center',

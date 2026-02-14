@@ -6,7 +6,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { View, Pressable, StyleSheet, Platform } from 'react-native';
-import { HapticPressable, ConfettiBurst, useConfettiBurst } from '@/components/ui';
+import { HapticPressable, ConfettiBurst, useConfettiBurst, Body } from '@/components/ui';
 import { useRouter, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -24,8 +24,7 @@ import { useSearch } from '@/context/search-context';
 import { useTabBar } from '@/context/tab-bar-context';
 import { useAuth } from '@/context/auth-context';
 import { Colors, Layout, Sizes, Spacing } from '@/constants/theme';
-import { SearchSheet, SortSheet, AmnaSheet } from '@/components/sheets';
-import { ActiveSearchChips, ACTIVE_CHIPS_HEIGHT } from './active-search-chips';
+import { SearchSheet, SortSheet, AmnaSheet, ActiveFiltersSheet } from '@/components/sheets';
 import { getUnreadCount } from '@/lib/messaging-api';
 import type { SearchSortOption } from '@/lib/search-api';
 
@@ -74,7 +73,7 @@ const HIDE_TAB_BAR_PATHS = [
 
 export function GlobalTabBar() {
   const { colorScheme } = useTheme();
-  const { applySearch, sortBy, applySort, searchParams, filterParams, updateFilterParams, triggerScrollToTop } = useSearch();
+  const { applySearch, sortBy, applySort, searchParams, filterParams, updateFilterParams, triggerScrollToTop, getSearchChips } = useSearch();
   const { isTabBarVisible } = useTabBar();
   const { isAuthenticated } = useAuth();
   const insets = useSafeAreaInsets();
@@ -110,6 +109,7 @@ export function GlobalTabBar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [isAmnaOpen, setIsAmnaOpen] = useState(false);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   // Check if current screen is NOT a main tab OR is on browse tab (show back button)
   const showBackButton = !MAIN_TAB_PATHS.includes(pathname) || onBrowseTab;
@@ -123,13 +123,14 @@ export function GlobalTabBar() {
   // Check if on home tab (show create bubble) - use robust matching
   const showCreateBubble = isHomePath(pathname);
 
-  // Check if we have active search, filters, or non-default sort (show chips)
-  const hasActiveFilters = filterParams && Object.keys(filterParams).length > 0;
-  const hasActiveSearch = (searchParams !== null && Object.keys(searchParams).length > 0) || hasActiveFilters || sortBy !== 'relevance';
+  // Check if we have active search, filters, or non-default sort
+  const chips = getSearchChips();
+  const activeFilterCount = chips.length;
 
   // Animation values
   const progress = useSharedValue(showBackButton ? 1 : 0);
   const createProgress = useSharedValue(showCreateBubble ? 1 : 0);
+  const filterProgress = useSharedValue(activeFilterCount > 0 && showSearchBubble ? 1 : 0);
 
   React.useEffect(() => {
     progress.value = withTiming(showBackButton ? 1 : 0, {
@@ -145,13 +146,20 @@ export function GlobalTabBar() {
     });
   }, [showCreateBubble]);
 
+  React.useEffect(() => {
+    filterProgress.value = withTiming(activeFilterCount > 0 && showSearchBubble ? 1 : 0, {
+      duration: 200,
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+    });
+  }, [activeFilterCount, showSearchBubble]);
+
   // Back bubble animates in from left
   const backBubbleStyle = useAnimatedStyle(() => {
     return {
       transform: [
         { scale: interpolate(progress.value, [0, 1], [0, 1]) },
       ],
-      width: interpolate(progress.value, [0, 1], [0, Sizes.bubble]),
+      width: interpolate(progress.value, [0, 1], [0, Sizes.bubbleLg]),
       marginRight: interpolate(progress.value, [0, 1], [0, GAP]),
     };
   });
@@ -162,8 +170,19 @@ export function GlobalTabBar() {
       transform: [
         { scale: interpolate(createProgress.value, [0, 1], [0, 1]) },
       ],
-      width: interpolate(createProgress.value, [0, 1], [0, Sizes.bubble]),
+      width: interpolate(createProgress.value, [0, 1], [0, Sizes.bubbleLg]),
       marginLeft: interpolate(createProgress.value, [0, 1], [0, GAP]),
+    };
+  });
+
+  // Filter bubble animates in from right (on browse tab when filters active)
+  const filterBubbleStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { scale: interpolate(filterProgress.value, [0, 1], [0, 1]) },
+      ],
+      width: interpolate(filterProgress.value, [0, 1], [0, Sizes.bubbleLg]),
+      marginLeft: interpolate(filterProgress.value, [0, 1], [0, GAP]),
     };
   });
 
@@ -319,6 +338,17 @@ export function GlobalTabBar() {
     applySort(sort);
   }, [applySort]);
 
+  const handleFiltersPress = useCallback(() => {
+    if (Platform.OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    setIsFiltersOpen(true);
+  }, []);
+
+  const handleFiltersClose = useCallback(() => {
+    setIsFiltersOpen(false);
+  }, []);
+
   // Determine which tab is active
   const getIsActive = (tab: TabRoute) => {
     if (tab.name === 'index') {
@@ -335,14 +365,6 @@ export function GlobalTabBar() {
 
   return (
     <View style={styles.container}>
-      {/* Active Search Chips - positioned above tab bar */}
-      <View style={[
-        styles.chipsWrapper,
-        { bottom: Sizes.bubble + insets.bottom + Spacing.xs + Spacing.md } // Tab bar height + padding + gap
-      ]}>
-        <ActiveSearchChips visible={showSearchBubble && hasActiveSearch} />
-      </View>
-
       <View style={[styles.tabBarContent, { paddingBottom: insets.bottom + Spacing.xs }]}>
         <View style={styles.navGroup}>
           {/* Back bubble */}
@@ -358,7 +380,7 @@ export function GlobalTabBar() {
             ]}
             pointerEvents={showBackButton ? 'auto' : 'none'}
           >
-            <View style={[StyleSheet.absoluteFill, { borderRadius: Sizes.bubble / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
+            <View style={[StyleSheet.absoluteFill, { borderRadius: Sizes.bubbleLg / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
             <ChevronLeft
               size={Sizes.iconMd}
               color={colors.text}
@@ -376,7 +398,7 @@ export function GlobalTabBar() {
               }, 
               pillStyle
             ]}>
-              <View style={[StyleSheet.absoluteFill, { borderRadius: Sizes.pillRadius, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
+              <View style={[StyleSheet.absoluteFill, { borderRadius: Sizes.bubbleLg / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
               <View style={styles.pillContent}>
                 {TABS.map((tab) => {
                   const isActive = getIsActive(tab);
@@ -410,45 +432,92 @@ export function GlobalTabBar() {
             </AnimatedView>
           )}
 
-          {/* Search/Amna/Sort Pill Group (appears on browse tab) */}
+          {/* Search bubble (appears on browse tab) */}
           {showSearchBubble && (
-            <AnimatedView style={[
-              styles.pillWrapper,
+            <HapticPressable
+              onPress={handleSearchPress}
+              style={[
+                styles.actionBubble,
+                styles.glass,
+                {
+                  borderColor: colors.glassBorder,
+                  marginLeft: GAP,
+                },
+              ]}
+            >
+              <View style={[StyleSheet.absoluteFill, { borderRadius: Sizes.bubbleLg / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
+              <Search
+                size={Sizes.iconMd}
+                color={colors.text}
+                strokeWidth={2}
+              />
+            </HapticPressable>
+          )}
+
+          {/* Amna AI bubble (appears on browse tab) */}
+          {showSearchBubble && (
+            <View style={{ overflow: 'visible', marginLeft: GAP }}>
+              <HapticPressable
+                onPress={handleAmnaPress}
+                style={[
+                  styles.actionBubble,
+                  styles.glass,
+                  {
+                    borderColor: colors.glassBorder,
+                  },
+                ]}
+              >
+                <View style={[StyleSheet.absoluteFill, { borderRadius: Sizes.bubbleLg / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
+                <Zap
+                  size={Sizes.iconMd}
+                  color="#8B5CF6"
+                  strokeWidth={2}
+                />
+              </HapticPressable>
+              <ConfettiBurst ref={amnaConfetti.ref} />
+            </View>
+          )}
+
+          {/* Sort bubble (appears on browse tab) */}
+          {showSearchBubble && (
+            <HapticPressable
+              onPress={handleSortPress}
+              style={[
+                styles.actionBubble,
+                styles.glass,
+                {
+                  borderColor: colors.glassBorder,
+                  marginLeft: GAP,
+                },
+              ]}
+            >
+              <View style={[StyleSheet.absoluteFill, { borderRadius: Sizes.bubbleLg / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
+              <ArrowUpDown
+                size={Sizes.iconMd}
+                color={colors.text}
+                strokeWidth={2}
+              />
+            </HapticPressable>
+          )}
+
+          {/* Filter bubble (appears on browse tab when filters active) */}
+          <AnimatedPressable
+            onPress={handleFiltersPress}
+            style={[
+              styles.filterBubble,
               styles.glass,
               {
                 borderColor: colors.glassBorder,
-                marginLeft: GAP,
               },
-            ]}>
-              <View style={[StyleSheet.absoluteFill, { borderRadius: Sizes.pillRadius, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
-              <View style={styles.pillContent}>
-                <HapticPressable onPress={handleSearchPress} style={styles.pillTab}>
-                  <Search
-                    size={Sizes.iconMd}
-                    color={colors.text}
-                    strokeWidth={2}
-                  />
-                </HapticPressable>
-                <View style={{ overflow: 'visible' }}>
-                  <HapticPressable onPress={handleAmnaPress} style={styles.pillTab}>
-                    <Zap
-                      size={Sizes.iconMd}
-                      color="#8B5CF6"
-                      strokeWidth={2}
-                    />
-                  </HapticPressable>
-                  <ConfettiBurst ref={amnaConfetti.ref} />
-                </View>
-                <HapticPressable onPress={handleSortPress} style={styles.pillTab}>
-                  <ArrowUpDown
-                    size={Sizes.iconSm}
-                    color={colors.text}
-                    strokeWidth={2}
-                  />
-                </HapticPressable>
-              </View>
-            </AnimatedView>
-          )}
+              filterBubbleStyle,
+            ]}
+            pointerEvents={activeFilterCount > 0 && showSearchBubble ? 'auto' : 'none'}
+          >
+            <View style={[StyleSheet.absoluteFill, { borderRadius: Sizes.bubbleLg / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
+            <Body tone="secondary">
+              {activeFilterCount > 9 ? '9+' : activeFilterCount}
+            </Body>
+          </AnimatedPressable>
 
           {/* Create bubble (appears on home tab) */}
           <AnimatedPressable
@@ -463,7 +532,7 @@ export function GlobalTabBar() {
             ]}
             pointerEvents={showCreateBubble ? 'auto' : 'none'}
           >
-            <View style={[StyleSheet.absoluteFill, { borderRadius: Sizes.bubble / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
+            <View style={[StyleSheet.absoluteFill, { borderRadius: Sizes.bubbleLg / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
             <Plus
               size={Sizes.iconMd}
               color={colors.text}
@@ -495,6 +564,12 @@ export function GlobalTabBar() {
         onSearch={handleAmnaSearch}
       />
 
+      {/* Active Filters Sheet */}
+      <ActiveFiltersSheet
+        visible={isFiltersOpen}
+        onClose={handleFiltersClose}
+      />
+
     </View>
   );
 }
@@ -506,12 +581,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 20,
-  },
-  chipsWrapper: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    zIndex: 15,
   },
   tabBarContent: {
     flexDirection: 'row',
@@ -527,41 +596,54 @@ const styles = StyleSheet.create({
   },
   glass: {
     borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.18,
-    shadowRadius: 20,
-    elevation: 8,
   },
   backBubble: {
-    width: Sizes.bubble,
-    height: Sizes.bubble,
-    borderRadius: Sizes.bubble / 2,
+    width: Sizes.bubbleLg,
+    height: Sizes.bubbleLg,
+    borderRadius: Sizes.bubbleLg / 2,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
   },
   pillWrapper: {
-    borderRadius: Sizes.pillRadius,
+    height: Sizes.bubbleLg,
+    borderRadius: Sizes.bubbleLg / 2,
     overflow: 'hidden',
   },
   pillContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: Spacing.xs,
+    height: '100%',
+    paddingHorizontal: Spacing.xs,
     gap: Spacing.xs,
   },
   pillTab: {
-    width: Sizes.bubble,
-    height: Sizes.pillHeight,
+    width: Sizes.bubbleLg - Spacing.sm,
+    height: Sizes.bubbleLg - Spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: Sizes.pillRadius,
+    borderRadius: (Sizes.bubbleLg - Spacing.sm) / 2,
   },
   createBubble: {
-    width: Sizes.bubble,
-    height: Sizes.bubble,
-    borderRadius: Sizes.bubble / 2,
+    width: Sizes.bubbleLg,
+    height: Sizes.bubbleLg,
+    borderRadius: Sizes.bubbleLg / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  actionBubble: {
+    width: Sizes.bubbleLg,
+    height: Sizes.bubbleLg,
+    borderRadius: Sizes.bubbleLg / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  filterBubble: {
+    width: Sizes.bubbleLg,
+    height: Sizes.bubbleLg,
+    borderRadius: Sizes.bubbleLg / 2,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',

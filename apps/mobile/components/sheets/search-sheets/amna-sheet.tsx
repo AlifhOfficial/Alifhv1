@@ -24,7 +24,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Label, ButtonText, Supporting } from '@/components/ui';
 import { searchApi } from '@/lib/search-api';
@@ -220,13 +220,13 @@ export function AmnaSheet({ visible, onClose, onSearch }: AmnaSheetProps) {
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
+      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
+      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
       keyboardBehavior="extend"
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
       detached
-      bottomInset={insets.bottom + 20}
+      bottomInset={insets.bottom + Spacing.xl}
       style={styles.sheetContainer}
     >
       <View style={styles.container}>
@@ -234,8 +234,8 @@ export function AmnaSheet({ visible, onClose, onSearch }: AmnaSheetProps) {
         {isLoading && (
           <View style={[styles.overlay, { backgroundColor: colors.surface }]}>
             <View style={styles.overlayContent}>
-              <Ionicons name="flash" size={40} color="#8B5CF6" />
-              <View style={{ alignItems: 'center', gap: 6, marginTop: 16, width: '100%', paddingHorizontal: Spacing.md }}>
+              <Ionicons name="flash" size={Spacing['4xl']} color="#8B5CF6" />
+              <View style={{ alignItems: 'center', gap: Spacing.sm, marginTop: Spacing.lg, width: '100%', paddingHorizontal: Spacing.md }}>
                 {message ? (
                   <Heading size="small" style={{ textAlign: 'center', flexShrink: 1 }}>
                     {message}
@@ -247,7 +247,7 @@ export function AmnaSheet({ visible, onClose, onSearch }: AmnaSheetProps) {
                   </>
                 )}
               </View>
-              {!message && <ActivityIndicator size="small" color="#8B5CF6" style={{ marginTop: 16 }} />}
+              {!message && <ActivityIndicator size="small" color="#8B5CF6" style={{ marginTop: Spacing.lg }} />}
             </View>
           </View>
         )}
@@ -262,7 +262,7 @@ export function AmnaSheet({ visible, onClose, onSearch }: AmnaSheetProps) {
               <Body size="medium" tone="secondary">Cancel</Body>
             </HapticPressable>
             <View style={styles.headerTitle}>
-              <Ionicons name="flash" size={16} color="#8B5CF6" />
+              <Ionicons name="flash" size={Spacing.lg} color="#8B5CF6" />
               <Heading size="small">Ask Amna</Heading>
             </View>
             <View style={{ width: 50 }} />
@@ -319,7 +319,7 @@ export function AmnaSheet({ visible, onClose, onSearch }: AmnaSheetProps) {
                 <View style={[styles.submitContent, { opacity: pressed ? 0.8 : 1 }]}>
                   <Ionicons
                     name="flash"
-                    size={16}
+                    size={Spacing.lg}
                     color={query.trim() ? '#fff' : colors.textMuted}
                   />
                   <ButtonText
@@ -392,7 +392,7 @@ export function AmnaSheet({ visible, onClose, onSearch }: AmnaSheetProps) {
 
 const styles = StyleSheet.create({
   sheetContainer: {
-    marginHorizontal: 16,
+    marginHorizontal: Spacing.lg,
   },
   container: {
     flex: 1,
@@ -424,7 +424,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: Spacing.sm,
   },
   content: {
     paddingHorizontal: Spacing.lg,
@@ -450,13 +450,13 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     borderRadius: Radius.full,
-    paddingVertical: 14,
+    paddingVertical: Spacing.md,
     alignItems: 'center',
   },
   submitContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.sm,
   },
   messageBox: {
     paddingVertical: Spacing.sm,
@@ -468,11 +468,11 @@ const styles = StyleSheet.create({
   suggestionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: Spacing.sm,
   },
   suggestionChip: {
-    paddingVertical: 8,
-    paddingHorizontal: 14,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
     borderRadius: Radius.full,
     borderWidth: 1,
   },

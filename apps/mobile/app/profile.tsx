@@ -3,18 +3,14 @@
  * Native-feeling, modular profile screen connected to API
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
   StyleSheet,
   View,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-  Alert,
-  RefreshControl,
 } from 'react-native';
 import { Body, Supporting, Skeleton, SkeletonCircle } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScreenContainer } from '@/components/layout';
 
 import { Layout, Spacing, Radius } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
@@ -28,7 +24,6 @@ import {
   PersonalInfoSection,
   BioSection,
   TagsSection,
-  NotAuthenticatedView,
   SignOutButton,
   type ProfileStats,
   type ProfileStatus,
@@ -40,8 +35,16 @@ import {
 
 export default function ProfileScreen() {
   const colors = useProfileColors();
-  const { user, isAuthenticated, openAuthFlow } = useAuth();
+  const { user, isAuthenticated, showAuthSheet } = useAuth();
   const insets = useSafeAreaInsets();
+
+  // Show auth sheet when not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      const timer = setTimeout(() => showAuthSheet('profile'), 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated, showAuthSheet]);
 
   // Profile data from API
   const {
@@ -118,21 +121,19 @@ export default function ProfileScreen() {
     // TODO: Navigate to badges info
   }, []);
 
-  // Not authenticated state
+  // Unauthenticated - show header only (sheet comes from context)
   if (!isAuthenticated) {
     return (
-      <NotAuthenticatedView
-        colors={colors}
-        topInset={insets.top}
-        onSignIn={openAuthFlow}
-      />
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <ProfileHeader colors={colors} topInset={insets.top} />
+      </View>
     );
   }
 
   // Loading state — skeleton
   if (isLoading) {
     return (
-      <View style={[styles.container, styles.centered]}>
+      <View style={[styles.container, styles.centered, { backgroundColor: colors.background }]}>
         <ProfileHeader colors={colors} topInset={insets.top} />
         <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding }]}>
           {/* Avatar */}
@@ -189,7 +190,7 @@ export default function ProfileScreen() {
   // Error state
   if (error && !profile) {
     return (
-      <View style={[styles.container, styles.centered]}>
+      <View style={[styles.container, styles.centered, { backgroundColor: colors.background }]}>
         <ProfileHeader colors={colors} topInset={insets.top} />
         <View style={[styles.errorContainer, { backgroundColor: colors.background }]}>
           <Body size="medium" tone="error" style={styles.errorText}>
@@ -204,99 +205,79 @@ export default function ProfileScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <ProfileHeader colors={colors} topInset={insets.top} />
+    <ScreenContainer
+      header={<ProfileHeader colors={colors} topInset={insets.top} />}
+      refreshing={isRefreshing}
+      onRefresh={refresh}
+      verticalPadding={0}
+    >
+      {/* Profile Identity */}
+      <ProfileIdentity
+        displayName={displayName}
+        email={user?.email}
+        memberSince={memberSinceYear}
+        avatarUrl={avatarUrl}
+        useGeneratedAvatar={useGeneratedAvatar}
+        isVerified={profileStatus.kycVerified && !isKycExpired}
+        isExpiringSoon={isExpiringSoon}
+        isUploading={isUploadingAvatar}
+        colors={colors}
+        onPhotoSelected={uploadPhoto}
+        onRemovePhoto={removePhoto}
+      />
 
-      {/* Scrollable Content */}
-      <KeyboardAvoidingView
-        style={styles.keyboardView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
-        <ScrollView
-          contentContainerStyle={[
-            styles.scrollContent,
-            { paddingBottom: insets.bottom + Layout.tabBarHeight },
-          ]}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={refresh}
-              tintColor={colors.primary}
-            />
-          }
-        >
-          {/* Profile Identity */}
-          <ProfileIdentity
-            displayName={displayName}
-            email={user?.email}
-            memberSince={memberSinceYear}
-            avatarUrl={avatarUrl}
-            useGeneratedAvatar={useGeneratedAvatar}
-            isVerified={profileStatus.kycVerified && !isKycExpired}
-            isExpiringSoon={isExpiringSoon}
-            isUploading={isUploadingAvatar}
-            colors={colors}
-            onPhotoSelected={uploadPhoto}
-            onRemovePhoto={removePhoto}
-          />
+      {/* Personal Information */}
+      <PersonalInfoSection
+        form={form}
+        user={user}
+        profile={profileStatus}
+        editingField={editingField}
+        saving={isSaving}
+        colors={colors}
+        onEdit={setEditingField}
+        onSave={saveField}
+        onCancel={cancelEdit}
+        onUpdateField={updateField}
+        onPhoneRemove={removePhone}
+        onPhoneVerified={onPhoneVerified}
+      />
 
-          {/* Personal Information */}
-          <PersonalInfoSection
-            form={form}
-            user={user}
-            profile={profileStatus}
-            editingField={editingField}
-            saving={isSaving}
-            colors={colors}
-            onEdit={setEditingField}
-            onSave={saveField}
-            onCancel={cancelEdit}
-            onUpdateField={updateField}
-            onPhoneRemove={removePhone}
-            onPhoneVerified={onPhoneVerified}
-          />
+      {/* Bio */}
+      <BioSection
+        bio={form.bio}
+        isEditing={editingField === 'bio'}
+        saving={isSaving}
+        colors={colors}
+        onEdit={() => setEditingField('bio')}
+        onSave={() => saveField('bio')}
+        onCancel={cancelEdit}
+        onChange={(text) => updateField('bio', text)}
+      />
 
-          {/* Bio */}
-          <BioSection
-            bio={form.bio}
-            isEditing={editingField === 'bio'}
-            saving={isSaving}
-            colors={colors}
-            onEdit={() => setEditingField('bio')}
-            onSave={() => saveField('bio')}
-            onCancel={cancelEdit}
-            onChange={(text) => updateField('bio', text)}
-          />
+      {/* Tags */}
+      <TagsSection
+        selectedTags={form.tags}
+        colors={colors}
+        onToggle={toggleTag}
+      />
 
-          {/* Tags */}
-          <TagsSection
-            selectedTags={form.tags}
-            colors={colors}
-            onToggle={toggleTag}
-          />
+      {/* Stats Grid - Only shows when data exists */}
+      <StatsGrid
+        stats={stats}
+        platformRating={profileStatus.platformRating}
+        colors={colors}
+      />
 
-          {/* Stats Grid - Only shows when data exists */}
-          <StatsGrid
-            stats={stats}
-            platformRating={profileStatus.platformRating}
-            colors={colors}
-          />
+      {/* Badges */}
+      <BadgesSection
+        badges={profileStatus.badges}
+        colors={colors}
+        onLearnMore={handleBadgesLearnMore}
+      />
 
-          {/* Badges */}
-          <BadgesSection
-            badges={profileStatus.badges}
-            colors={colors}
-            onLearnMore={handleBadgesLearnMore}
-          />
-
-          {/* Sign Out */}
-          <SignOutButton colors={colors} />
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </View>
+      {/* Sign Out */}
+      <SignOutButton colors={colors} />
+    </ScreenContainer>
   );
 }
 
@@ -310,12 +291,6 @@ const styles = StyleSheet.create({
   },
   centered: {
     justifyContent: 'flex-start',
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: Layout.screenPadding,
   },
   skeletonContainer: {
     flex: 1,

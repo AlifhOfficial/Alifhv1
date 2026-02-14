@@ -7,12 +7,10 @@
 
 import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Spacing } from '@/constants/theme';
+import { Spacing, Sizes } from '@/constants/theme';
 import { Label, Data } from '@/components/ui';
 import { CheckCircle2, Circle } from 'lucide-react-native';
 import type { SellerStatsGridProps } from './types';
-
-const ICON_SIZE = 16;
 
 export const SellerStatsGrid = memo(function SellerStatsGrid({
   seller,
@@ -29,11 +27,11 @@ export const SellerStatsGrid = memo(function SellerStatsGrid({
         <Label size="small" tone="muted">EMAIL</Label>
         <View style={localStyles.verifiedRow}>
           {seller.emailVerified ? (
-            <CheckCircle2 size={ICON_SIZE} color="#22c55e" />
+            <CheckCircle2 size={Sizes.iconXs} color={colors.success} />
           ) : (
-            <Circle size={ICON_SIZE} color={colors.textMuted} />
+            <Circle size={Sizes.iconXs} color={colors.textMuted} />
           )}
-          <Data size="small" style={{ color: seller.emailVerified ? '#22c55e' : colors.textMuted }}>
+          <Data size="small" style={{ color: seller.emailVerified ? colors.success : colors.textMuted }}>
             {seller.emailVerified ? 'Verified' : 'Unverified'}
           </Data>
         </View>
@@ -44,11 +42,11 @@ export const SellerStatsGrid = memo(function SellerStatsGrid({
         <Label size="small" tone="muted">PHONE</Label>
         <View style={localStyles.verifiedRow}>
           {seller.phoneVerified ? (
-            <CheckCircle2 size={ICON_SIZE} color="#22c55e" />
+            <CheckCircle2 size={Sizes.iconXs} color={colors.success} />
           ) : (
-            <Circle size={ICON_SIZE} color={colors.textMuted} />
+            <Circle size={Sizes.iconXs} color={colors.textMuted} />
           )}
-          <Data size="small" style={{ color: seller.phoneVerified ? '#22c55e' : colors.textMuted }}>
+          <Data size="small" style={{ color: seller.phoneVerified ? colors.success : colors.textMuted }}>
             {seller.phoneVerified ? 'Verified' : 'Unverified'}
           </Data>
         </View>
@@ -84,6 +82,6 @@ const localStyles = StyleSheet.create({
   verifiedRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: Spacing.xs,
   },
 });

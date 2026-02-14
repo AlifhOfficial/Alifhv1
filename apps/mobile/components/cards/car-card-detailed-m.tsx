@@ -19,7 +19,7 @@ import { HapticPressable } from '@/components/ui';
 import { ChevronRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Skeleton, Data } from '@/components/ui';
 import { DescriptionSheet, FeaturesSheet, SpecsSheet } from '@/components/sheets';
@@ -170,7 +170,7 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
                   <Data size="medium" tone="primary">
                     Contact
                   </Data>
-                  <ChevronRight size={ICON_SIZE_SM} color={colors.primary} strokeWidth={2} />
+                  <ChevronRight size={Sizes.iconSm} color={colors.primary} strokeWidth={2} />
                 </View>
               }
             />
@@ -234,15 +234,15 @@ export function CarCardDetailedMSkeleton() {
       <View style={styles.content}>
         {/* Title block */}
         <View style={styles.skeletonTitleBlock}>
-          <Skeleton width="70%" height={24} />
-          <Skeleton width={140} height={22} />
+          <Skeleton width="70%" height={Spacing['2xl']} />
+          <Skeleton width="35%" height={Spacing.xl} />
         </View>
 
         {/* Stats row */}
         <View style={styles.skeletonStats}>
-          <Skeleton width={60} height={16} />
-          <Skeleton width={70} height={16} />
-          <Skeleton width={80} height={16} />
+          <Skeleton width="18%" height={Spacing.lg} />
+          <Skeleton width="20%" height={Spacing.lg} />
+          <Skeleton width="22%" height={Spacing.lg} />
         </View>
 
         {/* Divider placeholder */}
@@ -250,28 +250,24 @@ export function CarCardDetailedMSkeleton() {
 
         {/* Description block */}
         <View style={styles.skeletonDescBlock}>
-          <Skeleton width={100} height={14} />
-          <Skeleton width="100%" height={60} />
+          <Skeleton width="25%" height={Spacing.md} />
+          <Skeleton width="100%" height={Spacing['5xl'] + Spacing.md} />
         </View>
 
         {/* Specs block */}
         <View style={styles.skeletonDescBlock}>
-          <Skeleton width={120} height={14} />
-          <Skeleton width="100%" height={80} />
+          <Skeleton width="30%" height={Spacing.md} />
+          <Skeleton width="100%" height={Spacing['5xl'] + Spacing['3xl']} />
         </View>
 
         {/* CTA */}
-        <Skeleton width="100%" height={48} borderRadius={Radius.lg} />
+        <Skeleton width="100%" height={Spacing['5xl']} borderRadius={Radius.lg} />
       </View>
     </View>
   );
 }
 
-// ============================================================================
-// CONSTANTS
-// ============================================================================
 
-const ICON_SIZE_SM = 18;
 
 // ============================================================================
 // STYLES

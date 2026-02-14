@@ -16,8 +16,8 @@
  *   const { isFavorite, isSuperliked, toggleFavorite, toggleSuperlike } = useFavoriteActions(id);
  */
 
-import React, { useCallback, memo } from 'react';
-import { View, StyleSheet, Alert, Platform } from 'react-native';
+import React, { useCallback, memo, useState } from 'react';
+import { View, StyleSheet, Platform } from 'react-native';
 import { Heart, Zap } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
@@ -33,6 +33,10 @@ import {
   FAVORITE_COLORS,
   SUPERLIKE_COLORS,
 } from './confetti-burst';
+import {
+  SuperlikeConfirmationSheet,
+  SuperlikeQuotaExhaustedSheet,
+} from '@/components/sheets';
 
 // ============================================================================
 // TYPES
@@ -97,6 +101,10 @@ export function useFavoriteActions(
 ) {
   const { openAuthFlow, isAuthenticated } = useAuth();
   const favoriteState = useListingFavorite(listingId);
+  
+  // Sheet visibility state
+  const [showConfirmSheet, setShowConfirmSheet] = useState(false);
+  const [showExhaustedSheet, setShowExhaustedSheet] = useState(false);
   
   // Confetti effects
   const favConfetti = useConfettiBurst();
@@ -187,42 +195,14 @@ export function useFavoriteActions(
 
     // Check quota before showing confirmation
     const remaining = quota?.remaining ?? 0;
-    const total = (quota?.maxSuperlikesPerMonth ?? 0) + (quota?.premiumSuperlikesBonus ?? 0);
 
     if (remaining <= 0) {
-      const resetDate = quota?.periodEndDate
-        ? new Date(quota.periodEndDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-        : null;
-      Alert.alert(
-        'No Superlikes Left',
-        `You've used all your superlikes for this month.${resetDate ? ` They'll reset on ${resetDate}.` : ''}`,
-        [{ text: 'OK' }]
-      );
+      setShowExhaustedSheet(true);
       return;
     }
 
-    // Show confirmation
-    Alert.alert(
-      'Superlike this listing?',
-      `You have ${remaining}/${total} superlikes remaining this month.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Confirm',
-          onPress: () => {
-            superConfetti.fire({ colors: SUPERLIKE_COLORS, count: 14 });
-            playSuperlikeChime();
-            favoriteState.toggleSuperlike().catch((err) => {
-              if (err?.message === 'AUTH_REQUIRED') {
-                openAuthFlow();
-              } else if (err?.message === 'QUOTA_EXCEEDED') {
-                Alert.alert('No Superlikes Left', "You've used all your superlikes for this month.");
-              }
-            });
-          },
-        },
-      ]
-    );
+    // Show confirmation sheet
+    setShowConfirmSheet(true);
   }, [
     listingId,
     options.onSuperlikePress,
@@ -235,6 +215,19 @@ export function useFavoriteActions(
     triggerHaptic,
   ]);
 
+  const handleConfirmSuperlike = useCallback(() => {
+    setShowConfirmSheet(false);
+    superConfetti.fire({ colors: SUPERLIKE_COLORS, count: 14 });
+    playSuperlikeChime();
+    favoriteState.toggleSuperlike().catch((err) => {
+      if (err?.message === 'AUTH_REQUIRED') {
+        openAuthFlow();
+      } else if (err?.message === 'QUOTA_EXCEEDED') {
+        setShowExhaustedSheet(true);
+      }
+    });
+  }, [favoriteState, openAuthFlow, superConfetti]);
+
   return {
     isFavorite,
     isSuperliked,
@@ -243,6 +236,12 @@ export function useFavoriteActions(
     toggleSuperlike,
     favConfettiRef: favConfetti.ref,
     superConfettiRef: superConfetti.ref,
+    // Sheet state and handlers
+    showConfirmSheet,
+    showExhaustedSheet,
+    setShowConfirmSheet,
+    setShowExhaustedSheet,
+    handleConfirmSuperlike,
   };
 }
 
@@ -304,7 +303,17 @@ export const SuperlikeButton = memo(function SuperlikeButton({
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   
-  const { isSuperliked, toggleSuperlike, superConfettiRef } = useFavoriteActions(listingId, {
+  const {
+    isSuperliked,
+    toggleSuperlike,
+    superConfettiRef,
+    quota,
+    showConfirmSheet,
+    showExhaustedSheet,
+    setShowConfirmSheet,
+    setShowExhaustedSheet,
+    handleConfirmSuperlike,
+  } = useFavoriteActions(listingId, {
     onSuperlikePress: onPress,
     isSuperliked: isSuperlikedProp,
   });
@@ -324,6 +333,17 @@ export const SuperlikeButton = memo(function SuperlikeButton({
         />
       </HapticPressable>
       <ConfettiBurst ref={superConfettiRef} />
+      <SuperlikeConfirmationSheet
+        visible={showConfirmSheet}
+        onClose={() => setShowConfirmSheet(false)}
+        onConfirm={handleConfirmSuperlike}
+        quota={quota}
+      />
+      <SuperlikeQuotaExhaustedSheet
+        visible={showExhaustedSheet}
+        onClose={() => setShowExhaustedSheet(false)}
+        quota={quota}
+      />
     </View>
   );
 });

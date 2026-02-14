@@ -9,7 +9,7 @@ import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
 import { CheckCircle2 } from 'lucide-react-native';
 
-import { Radius } from '@/constants/theme';
+import { Radius, Sizes, Spacing, Typography } from '@/constants/theme';
 import { Data, Supporting, Price, Label, Body } from '@/components/ui';
 import { SavedListingCard } from '@/lib/saved-api';
 import type { ThemeColors } from './types';
@@ -133,7 +133,7 @@ export function SavedListingItem({ listing, colors }: SavedListingItemProps) {
             {sellerName}
           </Supporting>
           {isVerified && (
-            <CheckCircle2 size={12} color={colors.success} strokeWidth={2} />
+            <CheckCircle2 size={Sizes.iconXs - 2} color={colors.success} strokeWidth={2} />
           )}
         </View>
       </View>
@@ -149,8 +149,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   imageContainer: {
-    width: 100,
-    height: 100,
+    width: Sizes.cardThumbnailHeight,
+    height: Sizes.cardThumbnailHeight,
     position: 'relative',
   },
   image: {
@@ -165,39 +165,39 @@ const styles = StyleSheet.create({
   },
   blkBadge: {
     position: 'absolute',
-    top: 6,
-    left: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
+    top: Spacing.xs,
+    left: Spacing.xs,
+    paddingHorizontal: Spacing.xs,
+    paddingVertical: Sizes.badgePaddingV,
     borderRadius: Radius.none,
   },
   blkText: {
   },
   details: {
     flex: 1,
-    padding: 10,
+    padding: Spacing.sm,
     justifyContent: 'center',
   },
   trim: {
-    marginTop: 2,
+    marginTop: Sizes.badgePaddingV,
   },
   price: {
-    marginTop: 4,
+    marginTop: Spacing.xs,
   },
   meta: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 4,
+    marginTop: Spacing.xs,
   },
   metaDot: {
-    fontSize: 11,
-    marginHorizontal: 4,
+    ...Typography.supportingMini,
+    marginHorizontal: Spacing.xs,
   },
   seller: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    marginTop: 4,
+    gap: Spacing.xs,
+    marginTop: Spacing.xs,
   },
   sellerName: {
     flex: 1,

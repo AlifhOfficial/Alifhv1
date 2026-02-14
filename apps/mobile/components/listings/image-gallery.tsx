@@ -19,7 +19,7 @@ import { Image } from 'expo-image';
 import { Grid3x3 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Skeleton, Data, ButtonText } from '@/components/ui';
 import { ImageLightbox } from './image-lightbox';
@@ -28,10 +28,9 @@ import { ImageGridModal } from './image-grid-modal';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 // 4:3 aspect ratio for main image + thumbnail strip
 const MAIN_IMAGE_HEIGHT = SCREEN_WIDTH * (3 / 4);
-const THUMBNAIL_STRIP_HEIGHT = 72;
+const THUMBNAIL_SIZE = Sizes.cardThumbnailWidth * 0.35; // ~56
+const THUMBNAIL_STRIP_HEIGHT = THUMBNAIL_SIZE + Spacing.lg;
 const GALLERY_HEIGHT = MAIN_IMAGE_HEIGHT + THUMBNAIL_STRIP_HEIGHT;
-const THUMBNAIL_SIZE = 56;
-const ICON_SIZE = 16;
 
 interface ImageGalleryProps {
   images: string[];
@@ -173,7 +172,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
         >
           {({ pressed }) => (
             <View style={[styles.viewAllContent, { opacity: pressed ? 0.7 : 1 }]}>
-              <Grid3x3 size={ICON_SIZE} color={colors.text} strokeWidth={1.75} />
+              <Grid3x3 size={Sizes.iconXs} color={colors.text} strokeWidth={1.75} />
               <ButtonText size="small">All</ButtonText>
             </View>
           )}
@@ -210,7 +209,7 @@ export function ImageGallerySkeleton() {
   return (
     <View style={styles.container}>
       {/* Main image skeleton */}
-      <Skeleton width="100%" height={GALLERY_HEIGHT - 60} borderRadius={0} />
+      <Skeleton width="100%" height={MAIN_IMAGE_HEIGHT} borderRadius={0} />
       
       {/* Thumbnails skeleton */}
       <View style={[styles.thumbnailStrip, { backgroundColor: colors.background }]}>
@@ -254,11 +253,11 @@ const styles = StyleSheet.create({
   },
   counterOverlay: {
     position: 'absolute',
-    bottom: 12,
-    right: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+    bottom: Spacing.md,
+    right: Spacing.md,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: Radius.lg,
     backgroundColor: 'rgba(0,0,0,0.6)',
   },
   counterOverlayText: {
@@ -297,14 +296,14 @@ const styles = StyleSheet.create({
   // View All Button
   viewAllButton: {
     marginLeft: 'auto',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
     borderRadius: Radius.md,
     borderWidth: 1,
   },
   viewAllContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: Spacing.sm,
   },
 });

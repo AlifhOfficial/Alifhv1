@@ -27,7 +27,7 @@ import {
   ConversationGroup,
   useConversations,
 } from '@/components/messages';
-import { Colors, Layout, Spacing, Radius } from '@/constants/theme';
+import { Colors, Layout, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { Heading, Body, Data, ButtonText, Skeleton, SkeletonCircle } from '@/components/ui';
@@ -215,7 +215,7 @@ export default function MessagesScreen() {
       return (
         <View style={styles.emptyState}>
           <View style={[styles.iconCircle, { backgroundColor: colors.fillSecondary }]}>
-            <MessageCircle size={32} color={colors.textTertiary} strokeWidth={1.5} />
+            <MessageCircle size={Sizes.avatarSm} color={colors.textTertiary} strokeWidth={1.5} />
           </View>
           <Heading size="medium">
             Sign In to Message
@@ -239,7 +239,7 @@ export default function MessagesScreen() {
               },
             ]}
           >
-            <LogIn size={18} color={colors.primaryForeground} strokeWidth={2} />
+            <LogIn size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2} />
             <ButtonText size="medium" style={{ color: colors.primaryForeground }}>
               Sign In
             </ButtonText>
@@ -254,7 +254,7 @@ export default function MessagesScreen() {
         <View style={styles.skeletonList}>
           {Array.from({ length: 6 }).map((_, i) => (
             <View key={i} style={styles.skeletonRow}>
-              <SkeletonCircle size={48} />
+              <SkeletonCircle size={Sizes.avatarLg} />
               <View style={styles.skeletonRowContent}>
                 <View style={styles.skeletonRowTop}>
                   <Skeleton width={120} height={14} />
@@ -298,7 +298,7 @@ export default function MessagesScreen() {
           !isLoading && !isRefreshing ? (
             <View style={styles.emptyState}>
               <View style={[styles.iconCircle, { backgroundColor: colors.fillSecondary }]}>
-                <MessageCircle size={32} color={colors.textTertiary} strokeWidth={1.5} />
+                <MessageCircle size={Sizes.avatarSm} color={colors.textTertiary} strokeWidth={1.5} />
               </View>
               <Heading size="medium">No Messages Yet</Heading>
               <Body size="medium" tone="secondary" style={{ textAlign: 'center' }}>
@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
   },
   skeletonRowContent: {
     flex: 1,
-    gap: 6,
+    gap: Spacing.sm - 2,
   },
   skeletonRowTop: {
     flexDirection: 'row',
@@ -364,8 +364,8 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   iconCircle: {
-    width: 64,
-    height: 64,
+    width: Sizes.avatarLg + Spacing.lg,
+    height: Sizes.avatarLg + Spacing.lg,
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
@@ -376,7 +376,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-    height: 48,
+    height: Sizes.avatarLg,
     paddingHorizontal: Spacing['2xl'],
     borderRadius: Radius.lg,
     marginTop: Spacing.md,

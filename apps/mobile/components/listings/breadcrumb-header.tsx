@@ -8,7 +8,7 @@ import { StyleSheet, View } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { Share2 } from 'lucide-react-native';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Sizes, Radius, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading } from '@/components/ui';
 
@@ -42,7 +42,7 @@ export const BreadcrumbHeader = memo(function BreadcrumbHeader({
       {/* Right: Share Button */}
       <HapticPressable
         onPress={onShare}
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        hitSlop={Layout.hitSlop}
         style={[
           styles.iconButton,
           {
@@ -53,7 +53,7 @@ export const BreadcrumbHeader = memo(function BreadcrumbHeader({
       >
         {({ pressed }) => (
           <Share2
-            size={20}
+            size={Spacing.xl}
             color={colors.icon}
             strokeWidth={1.75}
             style={{ opacity: pressed ? 0.7 : 1 }}
@@ -74,11 +74,11 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   iconButton: {
-    padding: 4,
+    padding: Spacing.xs,
     borderWidth: 1,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: Sizes.avatarMd,
+    height: Sizes.avatarMd,
+    borderRadius: Sizes.avatarMd / 2,
     alignItems: 'center',
     justifyContent: 'center',
   },

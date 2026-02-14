@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.xs,
-    marginBottom: Spacing.sm + 2,
+    marginBottom: Spacing.sm,
   },
   title: {
     // textTransform and letterSpacing handled by <Label> component

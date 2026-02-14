@@ -9,8 +9,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CheckCheck, Trash2 } from 'lucide-react-native';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius } from '@/constants/theme';
-import { Heading, Body } from '@/components/ui';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Heading, Body, Supporting } from '@/components/ui';
 
 interface NotificationsHeaderProps {
   unreadCount: number;
@@ -24,15 +24,15 @@ export function NotificationsHeader({ unreadCount, onMarkAllRead, onClearAll }: 
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + 8 }]}>
+    <View style={[styles.container, { paddingTop: insets.top + Spacing.sm }]}>
       <View style={styles.topRow}>
         <View style={styles.titleWrapper}>
           <Heading size="large">Notifications</Heading>
           {unreadCount > 0 && (
             <View style={[styles.countBadge, { backgroundColor: colors.primary }]}>
-              <Body size="small" style={{ color: '#FFFFFF', fontSize: 11, fontFamily: 'Inter_600SemiBold' }}>
+              <Supporting size="small" style={{ color: '#FFFFFF', fontFamily: 'Inter_600SemiBold' }}>
                 {unreadCount > 99 ? '99+' : unreadCount}
-              </Body>
+              </Supporting>
             </View>
           )}
         </View>
@@ -43,20 +43,20 @@ export function NotificationsHeader({ unreadCount, onMarkAllRead, onClearAll }: 
             <HapticPressable
               onPress={onMarkAllRead}
               style={[styles.actionButton, { borderColor: colors.border, backgroundColor: colors.surface }]}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              hitSlop={Layout.hitSlop}
             >
               {({ pressed }) => (
-                <CheckCheck size={18} color={colors.primary} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
+                <CheckCheck size={Sizes.iconSm} color={colors.primary} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
               )}
             </HapticPressable>
           )}
           <HapticPressable
             onPress={onClearAll}
             style={[styles.actionButton, { borderColor: colors.border, backgroundColor: colors.surface }]}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            hitSlop={Layout.hitSlop}
           >
             {({ pressed }) => (
-              <Trash2 size={18} color={colors.icon} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
+              <Trash2 size={Sizes.iconSm} color={colors.icon} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
             )}
           </HapticPressable>
         </View>
@@ -79,26 +79,26 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginLeft: 12,
+    gap: Spacing.sm,
+    marginLeft: Spacing.md,
   },
   countBadge: {
-    paddingHorizontal: 7,
-    paddingVertical: 2,
+    paddingHorizontal: Sizes.badgePaddingH,
+    paddingVertical: Sizes.badgePaddingV,
     borderRadius: Radius.full,
-    minWidth: 22,
+    minWidth: Sizes.iconLg,
     alignItems: 'center',
   },
   actions: {
     flexDirection: 'row',
-    gap: 8,
+    gap: Spacing.sm,
   },
   actionButton: {
-    padding: 4,
+    padding: Spacing.xs,
     borderRadius: Radius.full,
     borderWidth: 1,
-    width: 40,
-    height: 40,
+    width: Sizes.actionButtonMd,
+    height: Sizes.actionButtonMd,
     alignItems: 'center',
     justifyContent: 'center',
   },

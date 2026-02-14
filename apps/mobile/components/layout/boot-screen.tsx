@@ -1,19 +1,23 @@
 /**
  * Boot Screen
  * Full-screen branded boot-up state - Revolut-style minimal design
+ * 
+ * IMPORTANT: This screen renders BEFORE providers/fonts are loaded.
+ * Uses system font for instant, consistent rendering.
  */
 
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
-import { Text } from '@/components/ui';
+import { BootLogo } from './boot-logo';
+
+// Pure black OLED background
+const BOOT_BG = '#000000';
 
 export function BootScreen() {
   return (
     <View style={styles.container}>
-      <Text variant="splashBrand" style={styles.brandName}>
-        Revvup
-      </Text>
+      <BootLogo />
     </View>
   );
 }
@@ -21,11 +25,8 @@ export function BootScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: BOOT_BG,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  brandName: {
-    color: '#FFFFFF',
   },
 });

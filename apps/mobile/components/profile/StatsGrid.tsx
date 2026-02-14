@@ -9,7 +9,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Star } from 'lucide-react-native';
 
 import { Label, Display } from '@/components/ui';
-import { Spacing, Radius } from '@/constants/theme';
+import { Spacing, Radius, Sizes } from '@/constants/theme';
 import type { ThemeColors, ProfileStats } from './types';
 
 interface StatItemProps {
@@ -25,7 +25,7 @@ function StatItem({ label, value, colors, showStar }: StatItemProps) {
       <Label size="medium" tone="muted" style={styles.statLabel}>{label}</Label>
       <View style={styles.valueRow}>
         {showStar && value !== '—' && (
-          <Star size={16} color="#FACC15" fill="#FACC15" strokeWidth={0} style={styles.starIcon} />
+          <Star size={Sizes.iconXs} color="#FACC15" fill="#FACC15" strokeWidth={0} style={styles.starIcon} />
         )}
         <Display size="number" style={styles.statValue}>{value}</Display>
       </View>

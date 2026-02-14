@@ -9,4 +9,3 @@ export * from './types';
 export { SavedHeader } from './saved-header';
 export { SavedList } from './saved-list';
 export { SavedListingItem } from './saved-listing-item';
-export { SavedNotAuthenticatedView } from './not-authenticated-view';

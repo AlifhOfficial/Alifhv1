@@ -38,7 +38,7 @@ import {
   Clock,
 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import {
   Heading,
@@ -75,9 +75,15 @@ import { ListingStatsSheet } from './sub-operations/listing-stats-sheet';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-/** Card image dimensions — matches CarCardList */
-const IMAGE_WIDTH = 180;
-const IMAGE_HEIGHT = 160;
+/** Card image dimensions — derived from theme for responsive scaling */
+const IMAGE_WIDTH = Sizes.cardThumbnailWidth + Spacing.xl;
+const IMAGE_HEIGHT = Sizes.cardThumbnailHeight + Spacing.xl;
+
+/** FAB dimensions — derived from theme */
+const FAB_SIZE = Sizes.bubbleLg + Spacing.xs;
+
+/** Empty state icon container — derived from theme */
+const EMPTY_ICON_SIZE = Spacing['5xl'] + Spacing['3xl'];
 
 const SPECS_SHORT: Record<string, string> = {
   gcc: 'GCC', us: 'US', european: 'EU', japanese: 'JP',
@@ -266,7 +272,7 @@ export function InventoryScreen() {
               />
             ) : (
               <View style={[styles.image, styles.imagePlaceholder, { backgroundColor: colors.skeleton }]}>
-                <Ionicons name="image-outline" size={32} color={colors.textMuted} />
+                <Ionicons name="image-outline" size={Sizes.iconXl} color={colors.textMuted} />
               </View>
             )}
             {/* Status badge overlaid on image */}
@@ -286,10 +292,10 @@ export function InventoryScreen() {
               </Data>
               <HapticPressable
                 onPress={() => openActions(item)}
-                hitSlop={12}
-                style={{ padding: 4 }}
+                hitSlop={Layout.hitSlop}
+                style={{ padding: Spacing.xs }}
               >
-                <MoreVertical size={18} color={colors.textSecondary} strokeWidth={2} />
+                <MoreVertical size={Sizes.iconSm} color={colors.textSecondary} strokeWidth={2} />
               </HapticPressable>
             </View>
 
@@ -307,7 +313,7 @@ export function InventoryScreen() {
             {expiry && (
               <View style={styles.expiryRow}>
                 <Clock
-                  size={12}
+                  size={Sizes.iconXs}
                   color={
                     expiry.isExpired ? colors.error : expiry.isUrgent ? colors.warning : colors.textMuted
                   }
@@ -346,7 +352,7 @@ export function InventoryScreen() {
     return (
       <View style={styles.emptyContainer}>
         <View style={[styles.emptyIcon, { backgroundColor: colors.surfaceSecondary }]}>
-          <Ionicons name="image-outline" size={36} color={colors.textMuted} />
+          <Ionicons name="image-outline" size={Sizes.iconXl} color={colors.textMuted} />
         </View>
         <Heading size="small" style={{ marginTop: Spacing.lg }}>
           {isAll ? 'No listings yet' : `No ${tabLabel.toLowerCase()} listings`}
@@ -361,7 +367,7 @@ export function InventoryScreen() {
             onPress={() => router.push('/create-listing')}
             style={[styles.emptyBtn, { backgroundColor: colors.primary }]}
           >
-            <Plus size={18} color="#FFFFFF" />
+            <Plus size={Sizes.iconSm} color="#FFFFFF" />
             <ButtonText size="medium" style={{ color: '#FFFFFF' }}>
               Create Listing
             </ButtonText>
@@ -372,9 +378,9 @@ export function InventoryScreen() {
   }, [isLoading, activeTab, colors, router]);
 
   const renderFooter = useCallback(() => {
-    if (!isLoadingMore) return <View style={{ height: insets.bottom + 40 }} />;
+    if (!isLoadingMore) return <View style={{ height: insets.bottom + Spacing['4xl'] }} />;
     return (
-      <View style={[styles.footer, { paddingBottom: insets.bottom + 40 }]}>
+      <View style={[styles.footer, { paddingBottom: insets.bottom + Spacing['4xl'] }]}>
         <ActivityIndicator size="small" color={colors.primary} />
       </View>
     );
@@ -385,7 +391,7 @@ export function InventoryScreen() {
   // ════════════════════════════════════════════════════════════════════════
 
   // Calculate header height for content offset (matches browse-header pattern)
-  const headerHeight = insets.top + Layout.headerPadding + 32 + Spacing.sm + 36 + Spacing.sm; // safe area + title + gap + pills + bottom padding
+  const headerHeight = insets.top + Layout.headerPadding + Spacing['3xl'] + Spacing.sm + Sizes.pillHeight + Spacing.sm; // safe area + title + gap + pills + bottom padding
 
   return (
     <View style={styles.container}>
@@ -467,17 +473,17 @@ export function InventoryScreen() {
                 <Skeleton width={IMAGE_WIDTH - Spacing.sm * 2} height={IMAGE_HEIGHT - Spacing.sm * 2} borderRadius={Radius.md} />
               </View>
               <View style={styles.content}>
-                <Skeleton width={130} height={14} />
-                <Skeleton width={90} height={14} />
-                <Skeleton width={100} height={12} />
-                <Skeleton width={80} height={12} />
+                <Skeleton width="80%" height={Spacing.md} />
+                <Skeleton width="55%" height={Spacing.md} />
+                <Skeleton width="60%" height={Spacing.md} />
+                <Skeleton width="50%" height={Spacing.md} />
               </View>
             </View>
           ))}
         </View>
       ) : error && listings.length === 0 ? (
         <View style={[styles.centerContainer, { paddingTop: headerHeight }]}>
-          <Ionicons name="alert-circle-outline" size={48} color={colors.error} />
+          <Ionicons name="alert-circle-outline" size={Sizes.avatarLg} color={colors.error} />
           <Body
             size="medium"
             style={{ color: colors.error, textAlign: 'center', marginTop: Spacing.md }}
@@ -584,13 +590,13 @@ export function InventoryScreen() {
           {
             backgroundColor: colors.surface,
             borderColor: colors.border,
-            bottom: insets.bottom + 20,
+            bottom: insets.bottom + Spacing.xl,
           },
         ]}
       >
         {({ pressed }) => (
           <>
-            <Plus size={22} color={colors.text} strokeWidth={2} style={{ opacity: pressed ? 0.6 : 1 }} />
+            <Plus size={Sizes.iconMd} color={colors.text} strokeWidth={2} style={{ opacity: pressed ? 0.6 : 1 }} />
           </>
         )}
       </HapticPressable>
@@ -630,9 +636,9 @@ const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     right: Layout.screenPadding,
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: FAB_SIZE,
+    height: FAB_SIZE,
+    borderRadius: FAB_SIZE / 2,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -640,37 +646,32 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 12,
+    shadowRadius: Spacing.md,
     elevation: 6,
   },
   glass: {
     borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.18,
-    shadowRadius: 20,
-    elevation: 8,
   },
   pill: {
     borderRadius: Radius.full,
     overflow: 'hidden',
   },
   pillInner: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },
   pillContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    gap: Spacing.xs,
   },
   pillBadge: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 10,
-    minWidth: 18,
+    paddingHorizontal: Sizes.badgePaddingH,
+    paddingVertical: Sizes.badgePaddingV,
+    borderRadius: Radius.lg,
+    minWidth: Sizes.iconSm,
     alignItems: 'center',
   },
 
@@ -705,10 +706,10 @@ const styles = StyleSheet.create({
   },
   statusOverlay: {
     position: 'absolute',
-    top: 8,
-    left: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    top: Spacing.sm,
+    left: Spacing.sm,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Sizes.badgePaddingV,
     borderRadius: Radius.sm,
   },
   content: {
@@ -716,7 +717,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
     justifyContent: 'center',
-    gap: 4,
+    gap: Spacing.xs,
   },
   titleRow: {
     flexDirection: 'row',
@@ -728,7 +729,7 @@ const styles = StyleSheet.create({
   expiryRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: Spacing.xs,
     marginTop: 2,
   },
 
@@ -736,13 +737,13 @@ const styles = StyleSheet.create({
   emptyContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 80,
-    paddingHorizontal: 40,
+    paddingVertical: EMPTY_ICON_SIZE,
+    paddingHorizontal: Spacing['4xl'],
   },
   emptyIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: EMPTY_ICON_SIZE,
+    height: EMPTY_ICON_SIZE,
+    borderRadius: EMPTY_ICON_SIZE / 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -761,7 +762,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 40,
+    paddingHorizontal: Spacing['4xl'],
   },
 
   // ── Footer ─────────────────────────────────────────────────────────────

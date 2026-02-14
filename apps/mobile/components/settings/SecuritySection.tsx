@@ -9,7 +9,7 @@ import { HapticPressable } from '@/components/ui';
 import { ScanFace, Fingerprint, Key, Trash2, Loader2 } from 'lucide-react-native';
 
 import { Supporting, Body } from '@/components/ui';
-import { Spacing, Radius } from '@/constants/theme';
+import { Layout, Sizes, Spacing, Radius } from '@/constants/theme';
 import { Section } from './Section';
 import type { ThemeColors, Passkey } from './types';
 
@@ -44,11 +44,11 @@ export function SecuritySection({
           style={[styles.addButton, { backgroundColor: colors.surfaceSecondary }]}
         >
           {addingPasskey ? (
-            <Loader2 size={22} color={colors.textSecondary} strokeWidth={2} />
+            <Loader2 size={Sizes.iconMd} color={colors.textSecondary} strokeWidth={2} />
           ) : Platform.OS === 'ios' ? (
-            <ScanFace size={22} color={colors.text} strokeWidth={1.5} />
+            <ScanFace size={Sizes.iconMd} color={colors.text} strokeWidth={1.5} />
           ) : (
-            <Fingerprint size={22} color={colors.text} strokeWidth={1.5} />
+            <Fingerprint size={Sizes.iconMd} color={colors.text} strokeWidth={1.5} />
           )}
         </HapticPressable>
       </View>
@@ -66,16 +66,17 @@ export function SecuritySection({
               key={pk.id}
               style={[styles.item, { backgroundColor: colors.surfaceSecondary }]}
             >
-              <Key size={16} color={colors.textSecondary} strokeWidth={1.5} />
+              <Key size={Sizes.iconXs} color={colors.textSecondary} strokeWidth={1.5} />
               <View style={styles.itemInfo}>
                 <Body size="small">{pk.name || 'Passkey'}</Body>
                 <Supporting size="small" tone="muted">Added {pk.createdAt}</Supporting>
               </View>
               <HapticPressable
                 onPress={() => onDeletePasskey?.(pk.id)}
+                hitSlop={Layout.hitSlopSmall}
                 style={styles.deleteButton}
               >
-                <Trash2 size={16} color={colors.error} strokeWidth={1.5} />
+                <Trash2 size={Sizes.iconXs} color={colors.error} strokeWidth={1.5} />
               </HapticPressable>
             </View>
           ))}
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: Spacing.lg - 2,
+    paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.lg,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
@@ -99,8 +100,8 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   addButton: {
-    width: 36,
-    height: 36,
+    width: Sizes.actionButtonSm,
+    height: Sizes.actionButtonSm,
     borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
@@ -108,7 +109,7 @@ const styles = StyleSheet.create({
   empty: {
     padding: Spacing.xl,
     alignItems: 'center',
-    gap: Spacing.sm - 2,
+    gap: Spacing.xs,
   },
   list: {
     padding: Spacing.md,
@@ -119,7 +120,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: Spacing.md,
     borderRadius: Radius.lg,
-    gap: Spacing.sm + 2,
+    gap: Spacing.sm,
   },
   itemInfo: {
     flex: 1,

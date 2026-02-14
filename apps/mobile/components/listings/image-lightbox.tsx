@@ -21,12 +21,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { X } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Data } from '@/components/ui';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const THUMBNAIL_SIZE = 56;
+const THUMBNAIL_SIZE = Sizes.cardThumbnailWidth * 0.35; // ~56
 
 interface ImageLightboxProps {
   images: string[];
@@ -120,7 +120,7 @@ export function ImageLightbox({
       <StatusBar barStyle="light-content" backgroundColor="#000" />
       <View style={styles.container}>
         {/* Header */}
-        <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+        <View style={[styles.header, { paddingTop: insets.top + Spacing.sm }]}>
           <View style={styles.counterBadge}>
             <Data size="small" style={styles.counterText}>
               {safeIndex + 1} / {totalImages}
@@ -130,10 +130,10 @@ export function ImageLightbox({
           <HapticPressable
             onPress={onClose}
             style={styles.closeButton}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            hitSlop={Layout.hitSlop}
           >
             {({ pressed }) => (
-              <X size={22} color="#fff" strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
+              <X size={Sizes.iconMd} color="#fff" strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
             )}
           </HapticPressable>
         </View>
@@ -166,7 +166,7 @@ export function ImageLightbox({
         />
 
         {/* Thumbnail Strip */}
-        <View style={[styles.thumbnailStrip, { paddingBottom: insets.bottom + 12 }]}>
+        <View style={[styles.thumbnailStrip, { paddingBottom: insets.bottom + Spacing.md }]}>
           <FlatList
             ref={thumbnailListRef}
             data={validImages}
@@ -175,8 +175,8 @@ export function ImageLightbox({
             contentContainerStyle={styles.thumbnailList}
             keyExtractor={(_, idx) => `lightbox-thumb-${idx}`}
             getItemLayout={(_, index) => ({
-              length: THUMBNAIL_SIZE + 8,
-              offset: (THUMBNAIL_SIZE + 8) * index,
+              length: THUMBNAIL_SIZE + Spacing.sm,
+              offset: (THUMBNAIL_SIZE + Spacing.sm) * index,
               index,
             })}
             renderItem={({ item, index }) => (
@@ -219,21 +219,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingBottom: 12,
+    paddingHorizontal: Layout.screenPadding,
+    paddingBottom: Spacing.md,
   },
   closeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: Sizes.actionButtonMd,
+    height: Sizes.actionButtonMd,
+    borderRadius: Radius.full,
     backgroundColor: 'rgba(255,255,255,0.15)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   counterBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: Radius.xl,
     backgroundColor: 'rgba(255,255,255,0.15)',
   },
   counterText: {
@@ -255,16 +255,16 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: 'rgba(0,0,0,0.7)',
-    paddingTop: 12,
+    paddingTop: Spacing.md,
   },
   thumbnailList: {
-    paddingHorizontal: 16,
-    gap: 8,
+    paddingHorizontal: Layout.screenPadding,
+    gap: Spacing.sm,
   },
   thumbnail: {
     width: THUMBNAIL_SIZE,
     height: THUMBNAIL_SIZE * 0.75,
-    borderRadius: 8,
+    borderRadius: Radius.md,
     overflow: 'hidden',
     borderWidth: 2,
   },

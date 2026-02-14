@@ -8,8 +8,8 @@ import { StyleSheet, View, Platform } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { CheckCircle2 } from 'lucide-react-native';
 
-import { Heading, Data, Supporting } from '@/components/ui';
-import { Spacing } from '@/constants/theme';
+import { Heading, Data, Body } from '@/components/ui';
+import { Spacing, Sizes } from '@/constants/theme';
 import { ProfileAvatar } from './ProfileAvatar';
 import type { ThemeColors } from './types';
 
@@ -66,7 +66,7 @@ export function ProfileIdentity({
           </Heading>
           {isVerified && (
             <CheckCircle2
-              size={16}
+              size={Sizes.iconXs}
               color={colors.primary}
               strokeWidth={2.5}
               style={isExpiringSoon ? styles.expiringBadge : undefined}
@@ -85,9 +85,9 @@ export function ProfileIdentity({
           </Data>
         )}
 
-        <Supporting size="medium" tone="muted" style={styles.memberSince}>
+        <Body size="small" tone="muted" style={styles.memberSince}>
           Member since {memberSince}
-        </Supporting>
+        </Body>
       </View>
     </Animated.View>
   );
@@ -117,9 +117,9 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   email: {
-    marginTop: 2,
+    marginTop: Sizes.badgePaddingV,
   },
   memberSince: {
-    marginTop: 2,
+    marginTop: Sizes.badgePaddingV,
   },
 });

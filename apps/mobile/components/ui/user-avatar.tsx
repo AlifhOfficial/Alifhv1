@@ -13,7 +13,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 import { useTheme } from '@/context/theme-context';
-import { Colors } from '@/constants/theme';
+import { Colors, Sizes, Spacing, Typography } from '@/constants/theme';
 import { Body } from './text';
 
 // DiceBear style - fun robot characters with transparent backgrounds
@@ -39,22 +39,24 @@ interface UserAvatarProps {
   useGeneratedAvatar?: boolean;
 }
 
+// Avatar sizes mapped to theme tokens
 const sizes = {
-  xs: 24,
-  sm: 32,
-  md: 40,
-  lg: 48,
-  xl: 64,
-  xxl: 112,
+  xs: Sizes.iconLg,                           // 24
+  sm: Sizes.avatarSm,                         // 32
+  md: Sizes.avatarMd,                         // 40
+  lg: Sizes.avatarLg,                         // 48
+  xl: Sizes.avatarLg + Spacing.lg,            // 64
+  xxl: Sizes.avatarLg * 2 + Spacing.lg,       // 112
 };
 
+// Font sizes for initials - proportional to avatar size
 const fontSizes = {
-  xs: 10,
-  sm: 12,
-  md: 14,
-  lg: 16,
-  xl: 22,
-  xxl: 38,
+  xs: Typography.labelBadge.fontSize,         // ~10
+  sm: Typography.labelSmall.fontSize,         // ~12
+  md: Typography.labelMedium.fontSize,        // ~14
+  lg: Typography.bodyMedium.fontSize,         // ~16
+  xl: Typography.headingSmall.fontSize,       // ~22
+  xxl: Typography.displayLarge.fontSize,      // ~34
 };
 
 /** Generate DiceBear avatar URL */

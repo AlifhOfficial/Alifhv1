@@ -8,7 +8,7 @@ import { StyleSheet, View } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { ChevronRight } from 'lucide-react-native';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Label, Data, Supporting } from '@/components/ui';
 import { formatEnumValue } from './types';
@@ -106,7 +106,7 @@ export const ListingSpecs = memo(function ListingSpecs({
               <Data size="medium" tone="primary">
                 View All Specifications
               </Data>
-              <ChevronRight size={ICON_SIZE_SM} color={colors.primary} strokeWidth={2} />
+              <ChevronRight size={Sizes.iconSm} color={colors.primary} strokeWidth={2} />
             </View>
           )}
         </HapticPressable>
@@ -114,12 +114,6 @@ export const ListingSpecs = memo(function ListingSpecs({
     </View>
   );
 });
-
-// ============================================================================
-// CONSTANTS
-// ============================================================================
-
-const ICON_SIZE_SM = 18;
 
 // ============================================================================
 // STYLES
@@ -130,13 +124,13 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   specsList: {
-    gap: 2,
+    gap: Spacing.xs / 2,
   },
   specRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: Spacing.sm + 2,
+    paddingVertical: Spacing.sm,
   },
   viewAllButton: {
     paddingVertical: Spacing.xs,

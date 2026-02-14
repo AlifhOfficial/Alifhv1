@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Eye, Heart, Zap } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Data, Supporting } from '@/components/ui';
 
@@ -130,7 +130,7 @@ export function ListingStatsSheet({
               { backgroundColor: colors.fillSecondary },
             ]}
           >
-            <Ionicons name="close" size={18} color={colors.textSecondary} />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.textSecondary} />
           </HapticPressable>
         </View>
 
@@ -140,7 +140,7 @@ export function ListingStatsSheet({
             <Image source={{ uri: listingThumbnail }} style={styles.thumbnail} />
           ) : (
             <View style={[styles.thumbnail, { backgroundColor: colors.fill }]}>
-              <Ionicons name="image-outline" size={18} color={colors.textMuted} />
+              <Ionicons name="image-outline" size={Sizes.iconSm} color={colors.textMuted} />
             </View>
           )}
           <Data size="small" style={{ color: colors.text, flex: 1 }} numberOfLines={1}>
@@ -163,7 +163,7 @@ export function ListingStatsSheet({
               >
                 <View style={styles.statLeft}>
                   <IconComponent
-                    size={18}
+                    size={Sizes.iconSm}
                     color={stat.color}
                     fill={stat.label === 'Saves' ? stat.color : 'none'}
                     strokeWidth={1.75}
@@ -190,7 +190,7 @@ export function ListingStatsSheet({
 
 const styles = StyleSheet.create({
   sheetContainer: {
-    marginHorizontal: 16,
+    marginHorizontal: Layout.screenPadding,
   },
   content: {
     paddingHorizontal: Spacing.lg,
@@ -203,8 +203,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xs,
   },
   closeButton: {
-    width: 32,
-    height: 32,
+    width: Sizes.avatarSm,
+    height: Sizes.avatarSm,
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
@@ -218,8 +218,8 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   thumbnail: {
-    width: 40,
-    height: 40,
+    width: Sizes.avatarMd,
+    height: Sizes.avatarMd,
     borderRadius: Radius.md,
     alignItems: 'center',
     justifyContent: 'center',

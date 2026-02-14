@@ -7,7 +7,7 @@ import { StyleSheet } from 'react-native';
 import { HapticPressable } from './haptic-pressable';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useTheme } from '@/context/theme-context';
-import { Colors } from '@/constants/theme';
+import { Colors, Layout, Sizes, Spacing, Radius } from '@/constants/theme';
 
 export function ThemeToggle() {
   const { colorScheme, toggleTheme } = useTheme();
@@ -24,24 +24,26 @@ export function ThemeToggle() {
           opacity: pressed ? 0.7 : 1 
         }
       ]}
-      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      hitSlop={Layout.hitSlop}
     >
       <IconSymbol 
         name={colorScheme === 'dark' ? 'moon.fill' : 'sun.max.fill'} 
-        size={22} 
+        size={Sizes.iconMd} 
         color={colors.iconMuted} 
       />
     </HapticPressable>
   );
 }
 
+const BUTTON_SIZE = Sizes.actionButtonLg + Spacing.xs; // 52
+
 const styles = StyleSheet.create({
   button: {
-    padding: 6,
-    borderRadius: 32,
+    padding: Spacing.sm - 2,
+    borderRadius: Radius['3xl'],
     borderWidth: 1,
-    width: 52,
-    height: 52,
+    width: BUTTON_SIZE,
+    height: BUTTON_SIZE,
     alignItems: 'center',
     justifyContent: 'center',
   },

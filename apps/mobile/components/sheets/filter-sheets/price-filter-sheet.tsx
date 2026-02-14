@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Label, Body, Supporting, ButtonText } from '@/components/ui';
 
@@ -135,7 +135,7 @@ export function PriceFilterSheet({
       handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
       stackBehavior="push"
       detached
-      bottomInset={insets.bottom + 20}
+      bottomInset={insets.bottom + Spacing.xl}
       style={styles.sheetContainer}
     >
       <BottomSheetView style={styles.content}>
@@ -174,7 +174,7 @@ export function PriceFilterSheet({
               <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
                 {localMin && localMax ? `AED ${parseInt(localMin).toLocaleString()} - ${parseInt(localMax).toLocaleString()}` : localMin ? `From AED ${parseInt(localMin).toLocaleString()}` : `Up to AED ${parseInt(localMax).toLocaleString()}`}
               </Body>
-              <HapticPressable onPress={handleClear} hitSlop={8}>
+              <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
                 <Supporting size="small" style={{ color: colors.error }}>
                   Clear
                 </Supporting>
@@ -266,14 +266,14 @@ export function PriceFilterSheet({
 
 const styles = StyleSheet.create({
   sheetContainer: {
-    marginHorizontal: 16,
+    marginHorizontal: Spacing.lg,
   },
   background: {
-    borderRadius: 24,
+    borderRadius: Radius['3xl'],
   },
   handleIndicator: {
-    width: 36,
-    height: 4,
+    width: Sizes.bubble,
+    height: Spacing.xs,
     borderRadius: Radius.full,
   },
   content: {
@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   input: {
-    height: 48,
+    height: Spacing['5xl'],
     borderRadius: Radius.lg,
     borderWidth: 1,
     paddingHorizontal: Spacing.md,

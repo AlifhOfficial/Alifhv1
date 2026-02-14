@@ -11,7 +11,7 @@ import { StyleSheet, View } from 'react-native';
 import { Text as RNText } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Layout, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Label, Body, Text } from '@/components/ui';
 
@@ -69,7 +69,7 @@ export const ListingDescription = memo(function ListingDescription({
       </Body>
 
       {showReadMore && (
-        <HapticPressable onPress={onReadMore} hitSlop={8}>
+        <HapticPressable onPress={onReadMore} hitSlop={Layout.hitSlopSmall}>
           <Text variant="link" tone="primary">
             Read more
           </Text>
@@ -87,8 +87,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     opacity: 0,
     pointerEvents: 'none',
-    fontSize: 15,
-    lineHeight: 22,
-    fontFamily: 'Inter_500Medium',
+    ...Typography.bodyMedium,
   },
 });

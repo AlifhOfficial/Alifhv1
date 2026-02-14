@@ -18,8 +18,8 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { CheckCircle2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Supporting, Body, Data, ButtonText } from '@/components/ui';
-import { Typography, Spacing, Radius } from '@/constants/theme';
+import { Body, Data, ButtonText } from '@/components/ui';
+import { Typography, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
 import { sendPhoneOTP, verifyPhoneOTP } from '@/lib/profile-api';
 import type { ThemeColors } from './types';
 
@@ -175,20 +175,20 @@ export function PhoneVerificationField({
         style={[styles.fieldContainer, { borderBottomWidth: 0 }]}
       >
         <View style={styles.labelRow}>
-          <Supporting size="medium" tone="secondary">
+          <Body size="small" tone="muted">
             Phone Number
-          </Supporting>
+          </Body>
           {displayVerified ? (
-            <CheckCircle2 size={16} color={colors.success} strokeWidth={2} />
+            <CheckCircle2 size={Sizes.iconXs} color={colors.success} strokeWidth={2} />
           ) : phone ? (
-            <HapticPressable onPress={handleSendOTP} hitSlop={8}>
+            <HapticPressable onPress={handleSendOTP} hitSlop={Layout.hitSlopSmall}>
               <ButtonText size="small" tone="primary">
                 Verify
               </ButtonText>
             </HapticPressable>
           ) : null}
         </View>
-        <Body size="large" tone={phone ? 'default' : 'muted'}>
+        <Body size="medium" tone={phone ? 'default' : 'muted'}>
           {phone ? `+971 ${phone}` : 'Tap to add'}
         </Body>
       </HapticPressable>
@@ -202,11 +202,11 @@ export function PhoneVerificationField({
         entering={FadeIn.duration(200)}
         style={[styles.fieldContainer, { borderBottomWidth: 0 }]}
       >
-        <Supporting size="medium" tone="secondary">
+        <Body size="small" tone="muted">
           Phone Number
-        </Supporting>
+        </Body>
         <View style={styles.editRow}>
-          <Body size="large" tone="secondary" style={styles.prefix}>+971</Body>
+          <Body size="medium" tone="secondary" style={styles.prefix}>+971</Body>
           <TextInput
             ref={inputRef}
             value={phone}
@@ -227,20 +227,20 @@ export function PhoneVerificationField({
           />
         </View>
         {error && (
-          <Supporting size="medium" tone="error">{error}</Supporting>
+          <Body size="small" tone="error">{error}</Body>
         )}
         <View style={styles.actions}>
-          <HapticPressable onPress={handleCancel} hitSlop={8}>
-            <Supporting size="medium" tone="secondary">
+          <HapticPressable onPress={handleCancel} hitSlop={Layout.hitSlopSmall}>
+            <Body size="small" tone="secondary">
               Cancel
-            </Supporting>
+            </Body>
           </HapticPressable>
-          <HapticPressable onPress={handleRemovePhone} hitSlop={8}>
-            <Supporting size="medium" tone="error">
+          <HapticPressable onPress={handleRemovePhone} hitSlop={Layout.hitSlopSmall}>
+            <Body size="small" tone="error">
               Remove
-            </Supporting>
+            </Body>
           </HapticPressable>
-          <HapticPressable onPress={handleSavePhone} hitSlop={8}>
+          <HapticPressable onPress={handleSavePhone} hitSlop={Layout.hitSlopSmall}>
             <Data size="medium" tone="primary">
               Save
             </Data>
@@ -268,12 +268,12 @@ export function PhoneVerificationField({
       entering={FadeInDown.duration(250)}
       style={[styles.fieldContainer, { borderBottomWidth: 0 }]}
     >
-      <Supporting size="medium" tone="secondary">
+      <Body size="small" tone="muted">
         Phone Number
-      </Supporting>
-      <Supporting size="medium" tone="muted" style={styles.otpHint}>
+      </Body>
+      <Body size="small" tone="muted" style={styles.otpHint}>
         Enter the 6-digit code sent to +971 {phone}
-      </Supporting>
+      </Body>
       
       <TextInput
         ref={otpInputRef}
@@ -296,30 +296,30 @@ export function PhoneVerificationField({
       />
       
       {error && (
-        <Supporting size="medium" tone="error" style={styles.errorText}>{error}</Supporting>
+        <Body size="small" tone="error" style={styles.errorText}>{error}</Body>
       )}
 
       <View style={styles.otpActions}>
         <HapticPressable
           onPress={countdown > 0 ? undefined : handleSendOTP}
           disabled={countdown > 0}
-          hitSlop={8}
+          hitSlop={Layout.hitSlopSmall}
         >
-          <Supporting size="medium" tone={countdown > 0 ? 'muted' : 'secondary'}>
+          <Body size="small" tone={countdown > 0 ? 'muted' : 'secondary'}>
             {countdown > 0 ? `Resend in ${countdown}s` : 'Resend code'}
-          </Supporting>
+          </Body>
         </HapticPressable>
         
         <View style={styles.otpButtonRow}>
-          <HapticPressable onPress={handleCancel} hitSlop={8}>
-            <Supporting size="medium" tone="secondary">
+          <HapticPressable onPress={handleCancel} hitSlop={Layout.hitSlopSmall}>
+            <Body size="small" tone="secondary">
               Cancel
-            </Supporting>
+            </Body>
           </HapticPressable>
           <HapticPressable
             onPress={handleVerifyOTP}
             disabled={otp.length !== 6}
-            hitSlop={8}
+            hitSlop={Layout.hitSlopSmall}
           >
             <ButtonText size="medium" tone={otp.length === 6 ? 'primary' : 'muted'}>
               Verify
@@ -333,7 +333,7 @@ export function PhoneVerificationField({
 
 const styles = StyleSheet.create({
   fieldContainer: {
-    paddingVertical: Spacing.lg - 2,
+    paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.lg,
   },
   labelRow: {
@@ -353,7 +353,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    height: 44,
+    height: Layout.hitTarget,
     borderRadius: Radius.lg,
     borderWidth: 1,
     paddingHorizontal: Spacing.md,
@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   otpInput: {
-    height: 52,
+    height: Layout.hitTarget + Spacing.sm,
     borderRadius: Radius.lg,
     borderWidth: 1,
     paddingHorizontal: Spacing.lg,
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: Spacing.lg - 2,
+    marginTop: Spacing.md,
   },
   otpButtonRow: {
     flexDirection: 'row',

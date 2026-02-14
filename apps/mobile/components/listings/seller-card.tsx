@@ -7,7 +7,7 @@ import { StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
 import { CheckCircle2 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Text, Data, Supporting, Label } from '@/components/ui';
 import { SellerData } from '@/lib/listing-api';
@@ -81,11 +81,11 @@ export const SellerCard = memo(function SellerCard({
           <View style={styles.nameRow}>
             <Data size="medium" style={{ color: textColor }}>{sellerName}</Data>
             {isVerified && !isBlackTier && (
-              <CheckCircle2 size={ICON_SIZE} color={colors.primary} />
+              <CheckCircle2 size={Sizes.iconXs} color={colors.primary} />
             )}
             {isBlackTier && (
               <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBackground }]}>
-                <Label size="badge" uppercase={false} style={[styles.blkBadgeText, { color: colors.blkBadgeText }]}>BLK</Label>
+                <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>BLK</Label>
               </View>
             )}
           </View>
@@ -102,13 +102,6 @@ export const SellerCard = memo(function SellerCard({
 });
 
 // ============================================================================
-// CONSTANTS
-// ============================================================================
-
-const AVATAR_SIZE = 48;
-const ICON_SIZE = 16;
-
-// ============================================================================
 // STYLES
 // ============================================================================
 
@@ -117,6 +110,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingBottom: 0,
   },
   content: {
     flexDirection: 'row',
@@ -125,9 +119,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   avatar: {
-    width: AVATAR_SIZE,
-    height: AVATAR_SIZE,
-    borderRadius: AVATAR_SIZE / 2,
+    width: Sizes.avatarLg,
+    height: Sizes.avatarLg,
+    borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -138,19 +132,16 @@ const styles = StyleSheet.create({
   },
   details: {
     flex: 1,
-    gap: 2,
+    gap: Spacing.xs / 2,
   },
   nameRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm - 2,
+    gap: Spacing.sm,
   },
   blkBadge: {
-    paddingHorizontal: Spacing.sm - 2,
-    paddingVertical: 2,
+    paddingHorizontal: Sizes.badgePaddingH,
+    paddingVertical: Sizes.badgePaddingV,
     borderRadius: Radius.none,
-  },
-  blkBadgeText: {
-    fontSize: 8,
   },
 });

@@ -28,7 +28,7 @@ import {
   StyleProp,
 } from 'react-native';
 
-import { Spacing, Radius, Colors } from '@/constants/theme';
+import { Spacing, Radius, Colors, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { ButtonText } from './text';
 
@@ -64,22 +64,22 @@ export interface ButtonProps extends Omit<PressableProps, 'style' | 'children'> 
 
 const sizeConfig = {
   small: {
-    height: 36,
+    height: Sizes.actionButtonSm,
     paddingHorizontal: Spacing.md,
     textSize: 'small' as const,
-    iconSize: 16,
+    iconSize: Spacing.lg,
   },
   medium: {
-    height: 44,
+    height: Sizes.actionButtonMd + Spacing.xs,
     paddingHorizontal: Spacing.lg,
     textSize: 'medium' as const,
-    iconSize: 18,
+    iconSize: Sizes.iconSm,
   },
   large: {
-    height: 52,
+    height: Spacing['5xl'] + Spacing.xs,
     paddingHorizontal: Spacing.xl,
     textSize: 'large' as const,
-    iconSize: 20,
+    iconSize: Spacing.xl,
   },
 };
 

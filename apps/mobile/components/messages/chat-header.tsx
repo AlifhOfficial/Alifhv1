@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { Data, Supporting } from '@/components/ui';
 
@@ -80,9 +80,9 @@ export function ChatHeader({
           styles.backButton,
           { backgroundColor: pressed ? colors.surface : 'transparent' },
         ]}
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        hitSlop={Layout.hitSlop}
       >
-        <ArrowLeft size={22} color={colors.text} strokeWidth={2} />
+        <ArrowLeft size={Sizes.iconMd} color={colors.text} strokeWidth={2} />
       </HapticPressable>
 
       {/* Avatar with online indicator */}
@@ -140,9 +140,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    width: Spacing.md,
+    height: Spacing.md,
+    borderRadius: Spacing.md / 2,
     borderWidth: 2,
   },
 });

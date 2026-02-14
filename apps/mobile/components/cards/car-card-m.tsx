@@ -269,9 +269,9 @@ export const CarCardM = memo(function CarCardM({
         />
 
         {/* Price */}
-        <Data size="large" style={{ color: theme.price }}>
+        <Heading size="small" style={{ color: theme.price }}>
           {formatPrice(price)}
-        </Data>
+        </Heading>
 
         {/* Stats: Mileage · Specs · Location */}
         <CardStats
@@ -373,7 +373,7 @@ const CardStats = memo(function CardStats({ mileage, specs, emirate, statsColor,
     <View style={styles.statsRow}>
       <Data size="medium" style={{ color: statsColor }}>{formatMileage(mileage)} km</Data>
       {StatSeparator}
-      <Data size="medium" style={{ color: statsColor }}>{specs}</Data>
+      <Data size="small" style={{ color: statsColor }}>{specs}</Data>
       {StatSeparator}
       <Data size="medium" style={{ color: statsColor }} numberOfLines={1}>{emirate}</Data>
     </View>

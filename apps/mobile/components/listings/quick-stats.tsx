@@ -8,7 +8,7 @@ import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 import { MapPin, Copy, Check } from 'lucide-react-native';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Data, Supporting } from '@/components/ui';
 import { formatMileage, formatSpecs, formatEmirate } from './types';
@@ -70,7 +70,7 @@ export const QuickStats = memo(function QuickStats({
           •
         </Supporting>
         <View style={styles.locationRow}>
-          <MapPin size={ICON_SIZE_SM} color={secondaryTextColor} />
+          <MapPin size={Sizes.iconXs} color={secondaryTextColor} />
           <Data size="medium" style={{ color: secondaryTextColor }}>
             {displayEmirate}
           </Data>
@@ -87,9 +87,9 @@ export const QuickStats = memo(function QuickStats({
                 {vin}
               </Data>
               {copied ? (
-                <Check size={ICON_SIZE_SM} color={colors.success} strokeWidth={2.5} />
+                <Check size={Sizes.iconXs} color={colors.success} strokeWidth={2.5} />
               ) : (
-                <Copy size={ICON_SIZE_SM} color={colors.textTertiary} strokeWidth={1.75} />
+                <Copy size={Sizes.iconXs} color={colors.textTertiary} strokeWidth={1.75} />
               )}
             </>
           )}
@@ -98,12 +98,6 @@ export const QuickStats = memo(function QuickStats({
     </View>
   );
 });
-
-// ============================================================================
-// CONSTANTS
-// ============================================================================
-
-const ICON_SIZE_SM = 14;
 
 // ============================================================================
 // STYLES

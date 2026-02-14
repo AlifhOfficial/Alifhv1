@@ -18,7 +18,8 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Layout, Shadows, Sizes, Spacing } from '@/constants/theme';
+import { Colors, Layout, Sizes, Spacing } from '@/constants/theme';
+import { SuperlikeConfirmationSheet, SuperlikeQuotaExhaustedSheet } from '@/components/sheets';
 
 const AnimatedView = Animated.View;
 
@@ -31,7 +32,7 @@ interface FloatingListingActionsProps {
   onSharePress?: (id: string) => void;
 }
 
-const BUBBLE_SIZE = Sizes.bubble;
+const BUBBLE_SIZE = Sizes.bubbleLg;
 const GAP = Spacing.sm;
 
 export function FloatingListingActions({
@@ -55,6 +56,12 @@ export function FloatingListingActions({
     toggleSuperlike,
     favConfettiRef,
     superConfettiRef,
+    quota,
+    showConfirmSheet,
+    showExhaustedSheet,
+    setShowConfirmSheet,
+    setShowExhaustedSheet,
+    handleConfirmSuperlike,
   } = useFavoriteActions(id, {
     onFavoritePress: onFavoritePress,
     onSuperlikePress: onSuperlikePress,
@@ -134,7 +141,8 @@ export function FloatingListingActions({
   }
 
   return (
-    <View style={[styles.container, { paddingBottom: insets.bottom + 12 }]}>
+    <>
+    <View style={[styles.container, { paddingBottom: insets.bottom + Spacing.md }]}>
       <View style={styles.actionGroup}>
         {/* Like Bubble */}
         <Animated.View style={[favoriteBubbleStyle, styles.bubbleWrapper]}>
@@ -149,7 +157,7 @@ export function FloatingListingActions({
             ]}
           >
             <Heart
-              size={22}
+              size={Sizes.iconMd}
               color={isFavorite ? colors.favorite : colors.text}
               fill={isFavorite ? colors.favorite : 'none'}
               strokeWidth={isFavorite ? 2.25 : 1.75}
@@ -171,7 +179,7 @@ export function FloatingListingActions({
             ]}
           >
             <Zap
-              size={22}
+              size={Sizes.iconMd}
               color={isSuperliked ? colors.warning : colors.text}
               fill={isSuperliked ? colors.warning : 'none'}
               strokeWidth={1.75}
@@ -193,7 +201,7 @@ export function FloatingListingActions({
             ]}
           >
             <Share2
-              size={22}
+              size={Sizes.iconMd}
               color={colors.text}
               strokeWidth={2}
             />
@@ -201,6 +209,18 @@ export function FloatingListingActions({
         </Animated.View>
       </View>
     </View>
+    <SuperlikeConfirmationSheet
+      visible={showConfirmSheet}
+      onClose={() => setShowConfirmSheet(false)}
+      onConfirm={handleConfirmSuperlike}
+      quota={quota}
+    />
+    <SuperlikeQuotaExhaustedSheet
+      visible={showExhaustedSheet}
+      onClose={() => setShowExhaustedSheet(false)}
+      quota={quota}
+    />
+    </>
   );
 }
 
@@ -235,6 +255,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'visible',
-    ...Shadows.lg,
   },
 });

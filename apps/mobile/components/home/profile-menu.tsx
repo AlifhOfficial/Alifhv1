@@ -3,14 +3,14 @@
  */
 
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { useRouter } from 'expo-router';
 import { User } from 'lucide-react-native';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { Colors } from '@/constants/theme';
+import { Colors, Sizes } from '@/constants/theme';
 
 export function ProfileMenu() {
   const { colorScheme } = useTheme();
@@ -29,69 +29,75 @@ export function ProfileMenu() {
   // Show user avatar if authenticated
   if (isAuthenticated && user) {
     return (
-      <HapticPressable
+      <View
         style={[
-          styles.trigger,
-          styles.authTrigger,
+          styles.bubble,
+          styles.glass,
           {
-            borderColor: colors.border,
-            backgroundColor: colors.background,
+            borderColor: colors.glassBorder,
+            backgroundColor: colors.glassBackground,
           },
         ]}
-        onPress={handlePress}
       >
-        <UserAvatar
-          src={user.avatarUrl || user.image}
-          name={user.name}
-          size="md"
-          useGeneratedAvatar={user.useGeneratedAvatar ?? true}
-        />
-      </HapticPressable>
+        <HapticPressable
+          style={styles.bubbleInner}
+          onPress={handlePress}
+        >
+          <UserAvatar
+            src={user.avatarUrl || user.image}
+            name={user.name}
+            size="md"
+            useGeneratedAvatar={user.useGeneratedAvatar ?? true}
+          />
+        </HapticPressable>
+      </View>
     );
   }
 
   return (
-    <HapticPressable
+    <View
       style={[
-        styles.trigger,
-        styles.unauthTrigger,
+        styles.bubble,
+        styles.glass,
         { 
-          borderColor: colors.border,
-          backgroundColor: colors.background,
+          borderColor: colors.glassBorder,
+          backgroundColor: colors.glassBackground,
         }
       ]}
-      onPress={handlePress}
     >
-      {({ pressed }) => (
-        <User 
-          size={20} 
-          color={colors.icon}
-          strokeWidth={2}
-          style={{ opacity: pressed ? 0.7 : 1 }}
-        />
-      )}
-    </HapticPressable>
+      <HapticPressable
+        style={styles.bubbleInner}
+        onPress={handlePress}
+      >
+        {({ pressed }) => (
+          <User 
+            size={Sizes.iconSm} 
+            color={colors.icon}
+            strokeWidth={2}
+            style={{ opacity: pressed ? 0.7 : 1 }}
+          />
+        )}
+      </HapticPressable>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  trigger: {
-    borderRadius: 24,
-  },
-  authTrigger: {
-    borderWidth: 1,
-    width: 40,
-    height: 40,
+  bubble: {
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Sizes.bubble / 2,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
   },
-  unauthTrigger: {
-    padding: 4,
-    borderWidth: 1,
-    width: 40,
-    height: 40,
+  bubbleInner: {
+    width: '100%',
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  glass: {
+    borderWidth: 1,
   },
 });

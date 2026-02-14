@@ -11,7 +11,7 @@ import { HapticPressable } from '@/components/ui';
 import { Trash2, Loader2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Typography, Spacing, Radius } from '@/constants/theme';
+import { Colors, Typography, Layout, Radius, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Supporting, Data, ButtonText } from '@/components/ui';
 
@@ -102,19 +102,19 @@ export function DeleteAccountSheet({
       enablePanDownToClose={!isDeleting}
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
+      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.actionButtonSm }}
+      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
       detached
-      bottomInset={insets.bottom + 20}
+      bottomInset={insets.bottom + Spacing.xl}
       style={styles.sheetContainer}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
           <View style={[styles.iconContainer, { backgroundColor: colors.errorMuted }]}>
-            <Trash2 size={24} color={colors.error} />
+            <Trash2 size={Sizes.iconLg} color={colors.error} />
           </View>
           <Heading size="small" tone="error">Delete Account?</Heading>
         </View>
@@ -176,9 +176,9 @@ export function DeleteAccountSheet({
             ]}
           >
             {isDeleting ? (
-              <Loader2 size={18} color="#fff" strokeWidth={2} />
+              <Loader2 size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2} />
             ) : (
-              <Data size="medium" style={{ color: '#fff' }}>Delete</Data>
+              <Data size="medium" style={{ color: colors.primaryForeground }}>Delete</Data>
             )}
           </HapticPressable>
         </View>
@@ -193,7 +193,7 @@ export function DeleteAccountSheet({
 
 const styles = StyleSheet.create({
   sheetContainer: {
-    marginHorizontal: 16,
+    marginHorizontal: Layout.screenPadding,
   },
   content: {
     paddingHorizontal: Spacing.lg,
@@ -205,8 +205,8 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.sm,
   },
   iconContainer: {
-    width: 56,
-    height: 56,
+    width: Sizes.avatarLg + Spacing.sm,
+    height: Sizes.avatarLg + Spacing.sm,
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   input: {
-    height: 48,
+    height: Sizes.actionButtonLg,
     borderRadius: Radius.lg,
     borderWidth: 1,
     paddingHorizontal: Spacing.lg,
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    height: 48,
+    height: Sizes.actionButtonLg,
     borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',

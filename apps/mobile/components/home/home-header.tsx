@@ -4,10 +4,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet, Platform, ScrollView } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Bell, Sun, Moon, Bookmark, Package } from 'lucide-react-native';
+import { Bell, Sun, Moon, Bookmark, Package, CalendarDays } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 
@@ -66,12 +66,28 @@ export function HomeHeader() {
     router.push('/inventory');
   };
 
+  const handleBookingsPress = () => {
+    if (Platform.OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    if (!isAuthenticated) {
+      openAuthFlow();
+      return;
+    }
+    router.push('/bookings');
+  };
+
   const ThemeIcon = colorScheme === 'dark' ? Moon : Sun;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + Layout.headerPadding }]}>
-      {/* Left: Profile + Notifications + Saved + Inventory */}
-      <View style={styles.leftGroup}>
+      {/* Left: Profile + Notifications + Saved + Inventory + Bookings (Scrollable) */}
+      <ScrollView 
+        horizontal 
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.leftGroup}
+        style={styles.scrollView}
+      >
         <ProfileMenu />
         <View
           style={[
@@ -86,12 +102,12 @@ export function HomeHeader() {
           <HapticPressable
             style={styles.iconButtonInner}
             onPress={handleNotificationPress}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            hitSlop={Layout.hitSlop}
           >
             {({ pressed }) => (
               <View>
                 <Bell 
-                  size={20} 
+                  size={Sizes.iconSm} 
                   color={colors.icon}
                   strokeWidth={2}
                   style={{ opacity: pressed ? 0.7 : 1 }}
@@ -120,11 +136,11 @@ export function HomeHeader() {
           <HapticPressable
             style={styles.pillButtonInner}
             onPress={handleSavedPress}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            hitSlop={Layout.hitSlop}
           >
             {({ pressed }) => (
               <View style={styles.pillContent}>
-                <Bookmark size={16} color={colors.icon} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
+                <Bookmark size={Sizes.iconXs} color={colors.icon} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
                 <Data size="small" style={{ opacity: pressed ? 0.7 : 1 }}>
                   Saved
                 </Data>
@@ -145,11 +161,11 @@ export function HomeHeader() {
           <HapticPressable
             style={styles.pillButtonInner}
             onPress={handleInventoryPress}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            hitSlop={Layout.hitSlop}
           >
             {({ pressed }) => (
               <View style={styles.pillContent}>
-                <Package size={16} color={colors.icon} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
+                <Package size={Sizes.iconXs} color={colors.icon} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
                 <Data size="small" style={{ opacity: pressed ? 0.7 : 1 }}>
                   Inventory
                 </Data>
@@ -157,34 +173,57 @@ export function HomeHeader() {
             )}
           </HapticPressable>
         </View>
-      </View>
-
-      {/* Right: Theme Toggle */}
-      <View
-        style={[
-          styles.iconButton,
-          styles.glass,
-          { 
-            borderColor: colors.glassBorder,
-            backgroundColor: colors.glassBackground,
-          }
-        ]}
-      >
-        <HapticPressable
-          style={styles.iconButtonInner}
-          onPress={handleToggleTheme}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        <View
+          style={[
+            styles.pillButton,
+            styles.glass,
+            {
+              borderColor: colors.glassBorder,
+              backgroundColor: colors.glassBackground,
+            },
+          ]}
         >
-          {({ pressed }) => (
-            <ThemeIcon 
-              size={20} 
-              color={colors.icon}
-              strokeWidth={2}
-              style={{ opacity: pressed ? 0.7 : 1 }}
-            />
-          )}
-        </HapticPressable>
-      </View>
+          <HapticPressable
+            style={styles.pillButtonInner}
+            onPress={handleBookingsPress}
+            hitSlop={Layout.hitSlop}
+          >
+            {({ pressed }) => (
+              <View style={styles.pillContent}>
+                <CalendarDays size={Sizes.iconXs} color={colors.icon} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
+                <Data size="small" style={{ opacity: pressed ? 0.7 : 1 }}>
+                  Bookings
+                </Data>
+              </View>
+            )}
+          </HapticPressable>
+        </View>
+        <View
+          style={[
+            styles.iconButton,
+            styles.glass,
+            { 
+              borderColor: colors.glassBorder,
+              backgroundColor: colors.glassBackground,
+            }
+          ]}
+        >
+          <HapticPressable
+            style={styles.iconButtonInner}
+            onPress={handleToggleTheme}
+            hitSlop={Layout.hitSlop}
+          >
+            {({ pressed }) => (
+              <ThemeIcon 
+                size={Sizes.iconSm} 
+                color={colors.icon}
+                strokeWidth={2}
+                style={{ opacity: pressed ? 0.7 : 1 }}
+              />
+            )}
+          </HapticPressable>
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -202,19 +241,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  scrollView: {
+    flex: 1,
+  },
   leftGroup: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Layout.headerGap,
-    flex: 1,
   },
   glass: {
     borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.18,
-    shadowRadius: 20,
-    elevation: 8,
   },
   iconButton: {
     width: Sizes.bubble,
@@ -222,7 +258,6 @@ const styles = StyleSheet.create({
     borderRadius: Sizes.bubble / 2,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
   },
   iconButtonInner: {
     width: '100%',
@@ -251,19 +286,19 @@ const styles = StyleSheet.create({
   },
   badge: {
     position: 'absolute',
-    top: -6,
-    right: -6,
-    minWidth: 16,
-    height: 16,
-    borderRadius: 8,
+    top: -Spacing.xs,
+    right: -Spacing.xs,
+    minWidth: Spacing.md,
+    height: Spacing.md,
+    borderRadius: Spacing.md / 2,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 3,
+    paddingHorizontal: Spacing.xs / 2,
   },
   badgeText: {
     color: '#FFFFFF',
-    fontSize: 9,
     fontFamily: 'Inter_700Bold',
-    lineHeight: 12,
+    fontSize: 8,
+    lineHeight: 10,
   },
 });

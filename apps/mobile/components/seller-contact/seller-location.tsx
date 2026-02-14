@@ -10,12 +10,9 @@ import { View, StyleSheet } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { MapPin, ExternalLink, Navigation, Globe } from 'lucide-react-native';
 
-import { Spacing, Radius } from '@/constants/theme';
+import { Spacing, Radius, Sizes } from '@/constants/theme';
 import { Label, Data, ButtonText } from '@/components/ui';
 import type { SellerLocationProps } from './types';
-
-const ICON_SIZE = 20;
-const ICON_SIZE_SM = 16;
 
 export const SellerLocation = memo(function SellerLocation({
   seller,
@@ -32,7 +29,7 @@ export const SellerLocation = memo(function SellerLocation({
       
       {seller.location && (
         <View style={localStyles.locationRow}>
-          <MapPin size={ICON_SIZE} color={colors.textSecondary} style={localStyles.mapIcon} />
+          <MapPin size={Sizes.iconMd} color={colors.textSecondary} style={localStyles.mapIcon} />
           <View style={localStyles.locationText}>
             <Data size="medium">{seller.location}</Data>
           </View>
@@ -50,7 +47,7 @@ export const SellerLocation = memo(function SellerLocation({
               ]}
               onPress={onViewMap}
             >
-              <ExternalLink size={ICON_SIZE_SM} color={colors.text} />
+              <ExternalLink size={Sizes.iconXs} color={colors.text} />
               <ButtonText size="small">View Map</ButtonText>
             </HapticPressable>
             <HapticPressable
@@ -60,7 +57,7 @@ export const SellerLocation = memo(function SellerLocation({
               ]}
               onPress={onGetDirections}
             >
-              <Navigation size={ICON_SIZE_SM} color={colors.text} />
+              <Navigation size={Sizes.iconXs} color={colors.text} />
               <ButtonText size="small">Directions</ButtonText>
             </HapticPressable>
           </>
@@ -73,7 +70,7 @@ export const SellerLocation = memo(function SellerLocation({
             ]}
             onPress={onWebsite}
           >
-            <Globe size={ICON_SIZE_SM} color={colors.text} />
+            <Globe size={Sizes.iconXs} color={colors.text} />
             <ButtonText size="small">Website</ButtonText>
           </HapticPressable>
         )}
@@ -92,11 +89,11 @@ const localStyles = StyleSheet.create({
     gap: Spacing.sm,
   },
   mapIcon: {
-    marginTop: 2,
+    marginTop: Spacing.xs / 2,
   },
   locationText: {
     flex: 1,
-    gap: 2,
+    gap: Spacing.xs / 2,
   },
   actions: {
     flexDirection: 'row',
@@ -106,7 +103,7 @@ const localStyles = StyleSheet.create({
   pill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: Spacing.sm,
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.md,
     borderRadius: Radius.full,

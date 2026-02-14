@@ -11,12 +11,10 @@ import { HapticPressable } from '@/components/ui';
 import { MessageCircle, Calendar } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Spacing, Radius, Colors } from '@/constants/theme';
+import { Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { ButtonText, Supporting } from '@/components/ui';
 import type { SellerActionsProps } from './types';
-
-const ICON_SIZE = 18;
 
 export const SellerActions = memo(function SellerActions({
   seller,
@@ -59,7 +57,7 @@ export const SellerActions = memo(function SellerActions({
             <ActivityIndicator size="small" color={colors.primaryForeground} />
           ) : (
             <>
-              <MessageCircle size={ICON_SIZE} color={colors.primaryForeground} />
+              <MessageCircle size={Sizes.iconSm} color={colors.primaryForeground} />
               <ButtonText size="medium" style={{ color: colors.primaryForeground }}>
                 Chat
               </ButtonText>
@@ -80,7 +78,7 @@ export const SellerActions = memo(function SellerActions({
               },
             ]}
           >
-            <Calendar size={ICON_SIZE} color={colors.text} />
+            <Calendar size={Sizes.iconSm} color={colors.text} />
             <ButtonText size="medium" style={{ color: colors.text }}>
               Book
             </ButtonText>
@@ -90,7 +88,7 @@ export const SellerActions = memo(function SellerActions({
 
       {/* Phone Number Link */}
       {seller.phone && (
-        <HapticPressable onPress={handleShowPhone} hitSlop={8}>
+        <HapticPressable onPress={handleShowPhone} hitSlop={Layout.hitSlopSmall}>
           <Supporting size="medium" style={{ textAlign: 'center' }}>
             Show phone number
           </Supporting>
@@ -114,7 +112,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-    height: 48,
+    height: Sizes.actionButtonLg,
     borderRadius: Radius.lg,
   },
 });

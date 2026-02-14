@@ -27,7 +27,7 @@ import {
   GripVertical,
 } from 'lucide-react-native';
 
-import { Spacing, Radius } from '@/constants/theme';
+import { Spacing, Radius, Sizes, Layout, Typography } from '@/constants/theme';
 import { Heading, Body, Supporting, ButtonText, Label } from '@/components/ui';
 import { UAE_EMIRATES } from '@/lib/filter-constants';
 import { pickAndUploadListingImage, deleteListingImageByUrl } from '../utilities/image-upload';
@@ -38,7 +38,7 @@ const IMAGE_GAP = Spacing.sm;
 const GRID_PADDING = 0;
 const IMAGES_PER_ROW = 3;
 const IMAGE_SIZE =
-  (SCREEN_WIDTH - 2 * 16 - GRID_PADDING * 2 - IMAGE_GAP * (IMAGES_PER_ROW - 1)) /
+  (SCREEN_WIDTH - 2 * Layout.screenPadding - GRID_PADDING * 2 - IMAGE_GAP * (IMAGES_PER_ROW - 1)) /
   IMAGES_PER_ROW;
 const MAX_IMAGES = 20;
 const MAX_DESCRIPTION = 700;
@@ -283,9 +283,9 @@ export function StepMedia({ form, updateForm, colors }: StepProps) {
             <HapticPressable
               onPress={() => handleDeleteImage(url)}
               style={[styles.imageDeleteBtn, { backgroundColor: colors.error }]}
-              hitSlop={6}
+              hitSlop={Spacing.xs}
             >
-              <X size={12} color="#FFF" strokeWidth={3} />
+              <X size={Spacing.md} color="#FFF" strokeWidth={3} />
             </HapticPressable>
           </View>
         ))}
@@ -309,7 +309,7 @@ export function StepMedia({ form, updateForm, colors }: StepProps) {
               </View>
             ) : (
               <>
-                <ImagePlus size={24} color={colors.textMuted} />
+                <ImagePlus size={Sizes.iconLg} color={colors.textMuted} />
                 <Supporting size="mini" tone="muted">Add</Supporting>
               </>
             )}
@@ -359,8 +359,8 @@ export function StepMedia({ form, updateForm, colors }: StepProps) {
             style={[styles.noteItem, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}
           >
             <Body size="small" style={{ flex: 1 }}>{note}</Body>
-            <HapticPressable onPress={() => removeNote(index)} hitSlop={8}>
-              <X size={16} color={colors.textMuted} />
+            <HapticPressable onPress={() => removeNote(index)} hitSlop={Layout.hitSlopSmall}>
+              <X size={Sizes.iconXs} color={colors.textMuted} />
             </HapticPressable>
           </View>
         ))}
@@ -390,7 +390,7 @@ export function StepMedia({ form, updateForm, colors }: StepProps) {
                 },
               ]}
             >
-              <Plus size={20} color={noteInput.trim() ? '#FFF' : colors.textMuted} />
+              <Plus size={Sizes.iconMd} color={noteInput.trim() ? '#FFF' : colors.textMuted} />
             </HapticPressable>
           </View>
         )}
@@ -414,20 +414,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   textInput: {
-    height: 48,
+    height: Sizes.actionButtonLg,
     borderRadius: Radius.lg,
     borderWidth: 1,
     paddingHorizontal: Spacing.lg,
-    fontFamily: 'Inter_500Medium',
-    fontSize: 15,
+    ...Typography.bodyMedium,
   },
   priceInput: {
-    fontSize: 22,
-    fontFamily: 'Inter_700Bold',
-    height: 56,
+    ...Typography.headingMedium, // replaces fontSize: 22, fontFamily: bold
+    height: Sizes.actionButtonLg + Spacing.sm, // 56px - larger for price
   },
   textArea: {
-    height: 120,
+    height: Sizes.actionButtonLg * 2.5, // 120px - multiline description
     paddingTop: Spacing.md,
     paddingBottom: Spacing.md,
     textAlignVertical: 'top',
@@ -452,15 +450,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   toggleTrack: {
-    width: 44,
-    height: 24,
-    borderRadius: 12,
+    width: Sizes.actionButtonMd + Spacing.xs, // 44px
+    height: Spacing['2xl'], // 24px
+    borderRadius: Spacing.md, // 12px
     justifyContent: 'center',
   },
   toggleThumb: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: Spacing.xl, // 20px
+    height: Spacing.xl, // 20px
+    borderRadius: Spacing.xl / 2, // 10px
   },
   // Image grid
   imageGrid: {
@@ -480,19 +478,19 @@ const styles = StyleSheet.create({
   },
   thumbnailBadge: {
     position: 'absolute',
-    bottom: 4,
-    left: 4,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
+    bottom: Spacing.xs,
+    left: Spacing.xs,
+    paddingHorizontal: Sizes.badgePaddingH,
+    paddingVertical: Sizes.badgePaddingV - 1, // 2px
     borderRadius: Radius.sm,
   },
   imageDeleteBtn: {
     position: 'absolute',
-    top: 4,
-    right: 4,
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    top: Spacing.xs,
+    right: Spacing.xs,
+    width: Sizes.iconMd,
+    height: Sizes.iconMd,
+    borderRadius: Sizes.iconMd / 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -504,11 +502,11 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 4,
+    gap: Spacing.xs,
   },
   uploadingContainer: {
     alignItems: 'center',
-    gap: 4,
+    gap: Spacing.xs,
   },
   // Notes
   noteItem: {
@@ -526,8 +524,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   noteAddBtn: {
-    width: 48,
-    height: 48,
+    width: Sizes.actionButtonLg,
+    height: Sizes.actionButtonLg,
     borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',

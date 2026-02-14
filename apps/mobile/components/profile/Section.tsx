@@ -34,7 +34,7 @@ export function Section({
       style={styles.container}
     >
       <View style={styles.header}>
-        <Label size="medium" tone="secondary" style={styles.title}>{title}</Label>
+        <Label size="small" tone="muted" style={styles.title}>{title}</Label>
         {rightElement}
       </View>
       <View
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.xs,
-    marginBottom: Spacing.sm + 2,
+    marginBottom: Spacing.sm,
   },
   title: {
     // textTransform and letterSpacing handled by <Label> component

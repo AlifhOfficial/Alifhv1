@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Heart, Zap } from 'lucide-react-native';
 
-import { Layout } from '@/constants/theme';
+import { Layout, Sizes, Spacing, Radius } from '@/constants/theme';
 import { Heading, Supporting } from '@/components/ui';
 import { CarCardList } from '@/components/cards/car-card-list';
 import { SavedListingCard } from '@/lib/saved-api';
@@ -44,9 +44,9 @@ function EmptyState({
         
         {/* Icon */}
         {isFavorites ? (
-          <Heart size={48} color={colors.favorite} strokeWidth={1.5} />
+          <Heart size={Sizes.avatarLg} color={colors.favorite} strokeWidth={1.5} />
         ) : (
-          <Zap size={48} color={colors.warning} strokeWidth={1.5} />
+          <Zap size={Sizes.avatarLg} color={colors.warning} strokeWidth={1.5} />
         )}
 
         {/* Title */}
@@ -126,7 +126,7 @@ export function SavedList({
       ListHeaderComponent={
         activeTab === 'superlikes' && quota ? (
           <View style={[styles.quotaBadge, { backgroundColor: colors.surface }]}>
-            <Zap size={14} color={colors.primary} strokeWidth={2} />
+            <Zap size={Sizes.iconXs} color={colors.primary} strokeWidth={2} />
             <Supporting size="mini" tone="secondary">
               {quota.remaining}/{quota.maxSuperlikesPerMonth} remaining this month
             </Supporting>
@@ -143,15 +143,15 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 40,
+    paddingHorizontal: Spacing['4xl'],
   },
   emptyContent: {
     alignItems: 'center',
-    gap: 16,
+    gap: Spacing.lg,
   },
   emptyTitle: {
     textAlign: 'center',
-    marginTop: 8,
+    marginTop: Spacing.sm,
   },
   emptySubtitle: {
     textAlign: 'center',
@@ -159,17 +159,17 @@ const styles = StyleSheet.create({
   
   // List
   listContent: {
-    paddingHorizontal: 16,
-    paddingTop: 4,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.xs,
   },
   quotaBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 16,
-    gap: 6,
-    marginBottom: 12,
+    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
+    borderRadius: Radius.xl,
+    gap: Spacing.xs,
+    marginBottom: Spacing.md,
   },
 });

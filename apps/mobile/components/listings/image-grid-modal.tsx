@@ -19,13 +19,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { X } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Supporting, Data } from '@/components/ui';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const GRID_GAP = 6;
-const PADDING = 12;
+const GRID_GAP = Spacing.sm;
+const PADDING = Spacing.md;
 
 interface ImageGridModalProps {
   images: string[];
@@ -260,20 +260,20 @@ export function ImageGridModal({
       <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         {/* Header */}
-        <View style={[styles.header, { paddingTop: insets.top + 8, backgroundColor: colors.background, borderBottomColor: colors.border }]}>
+        <View style={[styles.header, { paddingTop: insets.top + Spacing.sm, backgroundColor: colors.background, borderBottomColor: colors.border }]}>
           <View>
             <Heading size="medium">{title}</Heading>
-            <Supporting size="small" style={{ marginTop: 2 }}>
+            <Supporting size="small" style={{ marginTop: Spacing.xs / 2 }}>
               {totalImages} images
             </Supporting>
           </View>
           <HapticPressable
             onPress={onClose}
             style={[styles.closeButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            hitSlop={Layout.hitSlop}
           >
             {({ pressed }) => (
-              <X size={20} color={colors.text} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
+              <X size={Sizes.iconMd} color={colors.text} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
             )}
           </HapticPressable>
         </View>
@@ -281,7 +281,7 @@ export function ImageGridModal({
         {/* Image Grid */}
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={[styles.grid, { paddingBottom: insets.bottom + 24 }]}
+          contentContainerStyle={[styles.grid, { paddingBottom: insets.bottom + Spacing['2xl'] }]}
           showsVerticalScrollIndicator={false}
         >
           {buildRows()}
@@ -299,14 +299,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingBottom: 12,
+    paddingHorizontal: Layout.screenPadding,
+    paddingBottom: Spacing.md,
     borderBottomWidth: 1,
   },
   closeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: Sizes.actionButtonMd,
+    height: Sizes.actionButtonMd,
+    borderRadius: Radius.full,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -356,11 +356,11 @@ const styles = StyleSheet.create({
   },
   indexBadge: {
     position: 'absolute',
-    bottom: 6,
-    right: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
+    bottom: Spacing.sm,
+    right: Spacing.sm,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs / 2,
+    borderRadius: Radius.sm,
     backgroundColor: 'rgba(0,0,0,0.6)',
   },
   indexText: {

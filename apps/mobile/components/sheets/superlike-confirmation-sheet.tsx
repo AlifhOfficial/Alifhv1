@@ -3,14 +3,15 @@
  * Shows quota info and confirms before using a superlike
  */
 
-import React, { useRef, useCallback, useEffect } from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import React, { useRef, useCallback, useEffect, useMemo } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Zap } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Data, Supporting } from '@/components/ui';
+import { Heading, Data, Supporting, HapticPressable } from '@/components/ui';
 import type { FavoritesStatusData } from '@/lib/saved-api';
 
 // ============================================================================
@@ -40,7 +41,11 @@ export function SuperlikeConfirmationSheet({
 }: SuperlikeConfirmationSheetProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
+
+  // Snap points
+  const snapPoints = useMemo(() => ['40%', '55%'], []);
 
   // Show/hide based on visible prop
   useEffect(() => {
@@ -76,18 +81,22 @@ export function SuperlikeConfirmationSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={['35%']}
+      snapPoints={snapPoints}
       enableDynamicSizing={false}
+      enablePanDownToClose
       onDismiss={onClose}
       backdropComponent={renderBackdrop}
-      handleIndicatorStyle={{ backgroundColor: colors.textTertiary }}
-      backgroundStyle={{ backgroundColor: colors.surface }}
+      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
+      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
+      style={styles.sheetContainer}
+      detached
+      bottomInset={insets.bottom + Spacing.xl}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
           <View style={[styles.iconContainer, { backgroundColor: colors.warning + '20' }]}>
-            <Zap size={24} color={colors.warning} fill={colors.warning} />
+            <Zap size={Sizes.iconLg} color={colors.warning} fill={colors.warning} />
           </View>
           <View style={styles.headerText}>
             <Heading size="small">Superlike this listing?</Heading>
@@ -113,19 +122,27 @@ export function SuperlikeConfirmationSheet({
 
         {/* Actions */}
         <View style={styles.actions}>
-          <Pressable
+          <HapticPressable
             onPress={onClose}
-            style={[styles.button, styles.cancelButton, { borderColor: colors.border }]}
+            style={({ pressed }) => [
+              styles.button,
+              styles.cancelButton,
+              { borderColor: colors.border, opacity: pressed ? 0.7 : 1 },
+            ]}
           >
             <Data size="medium" style={{ color: colors.text }}>Cancel</Data>
-          </Pressable>
-          <Pressable
+          </HapticPressable>
+          <HapticPressable
             onPress={handleConfirm}
-            style={[styles.button, styles.confirmButton, { backgroundColor: colors.primary }]}
+            style={({ pressed }) => [
+              styles.button,
+              styles.confirmButton,
+              { backgroundColor: colors.primary, opacity: pressed ? 0.8 : 1 },
+            ]}
           >
-            <Zap size={16} color="#fff" />
+            <Zap size={Spacing.lg} color="#fff" />
             <Data size="medium" style={{ color: '#fff' }}>Confirm</Data>
-          </Pressable>
+          </HapticPressable>
         </View>
       </BottomSheetView>
     </BottomSheetModal>
@@ -149,7 +166,11 @@ export function SuperlikeQuotaExhaustedSheet({
 }: SuperlikeQuotaExhaustedSheetProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
+
+  // Snap points
+  const snapPoints = useMemo(() => ['35%', '50%'], []);
 
   useEffect(() => {
     if (visible) {
@@ -179,18 +200,22 @@ export function SuperlikeQuotaExhaustedSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={['32%']}
+      snapPoints={snapPoints}
       enableDynamicSizing={false}
+      enablePanDownToClose
       onDismiss={onClose}
       backdropComponent={renderBackdrop}
-      handleIndicatorStyle={{ backgroundColor: colors.textTertiary }}
-      backgroundStyle={{ backgroundColor: colors.surface }}
+      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
+      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
+      style={styles.sheetContainer}
+      detached
+      bottomInset={insets.bottom + Spacing.xl}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.exhaustedHeader}>
           <View style={[styles.iconContainer, { backgroundColor: colors.warning + '20' }]}>
-            <Zap size={28} color={colors.warning} />
+            <Zap size={Sizes.iconXl} color={colors.warning} />
           </View>
           <Heading size="medium" style={{ marginTop: Spacing.md }}>
             No Superlikes Left
@@ -202,12 +227,16 @@ export function SuperlikeQuotaExhaustedSheet({
         </View>
 
         {/* Action */}
-        <Pressable
+        <HapticPressable
           onPress={onClose}
-          style={[styles.button, styles.confirmButton, { backgroundColor: colors.primary, marginTop: Spacing.lg }]}
+          style={({ pressed }) => [
+            styles.button,
+            styles.confirmButton,
+            { backgroundColor: colors.primary, marginTop: Spacing.lg, opacity: pressed ? 0.8 : 1 },
+          ]}
         >
           <Data size="medium" style={{ color: '#fff' }}>Got it</Data>
-        </Pressable>
+        </HapticPressable>
       </BottomSheetView>
     </BottomSheetModal>
   );
@@ -218,6 +247,9 @@ export function SuperlikeQuotaExhaustedSheet({
 // ============================================================================
 
 const styles = StyleSheet.create({
+  sheetContainer: {
+    marginHorizontal: Spacing.lg,
+  },
   content: {
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.xl,
@@ -231,8 +263,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   iconContainer: {
-    width: 44,
-    height: 44,
+    width: Layout.hitTarget,
+    height: Layout.hitTarget,
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
@@ -254,7 +286,7 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    height: 48,
+    height: Sizes.actionButtonLg,
     borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',

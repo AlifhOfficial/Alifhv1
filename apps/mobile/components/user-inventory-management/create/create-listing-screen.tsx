@@ -28,7 +28,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { ChevronLeft, X } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Supporting, ButtonText } from '@/components/ui';
 
@@ -265,9 +265,9 @@ export default function CreateListingScreen() {
           hitSlop={8}
         >
           {step > 1 ? (
-            <ChevronLeft size={24} color={colors.text} />
+            <ChevronLeft size={Sizes.iconLg} color={colors.text} />
           ) : (
-            <X size={22} color={colors.text} />
+            <X size={Sizes.iconMd} color={colors.text} />
           )}
         </HapticPressable>
 
@@ -390,10 +390,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   headerBtn: {
-    width: 72,
+    width: Sizes.actionButtonLg + Spacing.lg + Spacing.sm, // ~72px derived
     alignItems: 'center',
     justifyContent: 'center',
-    height: 40,
+    height: Sizes.actionButtonMd,
   },
   headerCenter: {
     flex: 1,
@@ -402,14 +402,14 @@ const styles = StyleSheet.create({
   // Progress
   progressContainer: {
     flexDirection: 'row',
-    gap: 4,
+    gap: Spacing.xs,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.sm,
   },
   progressSegment: {
     flex: 1,
-    height: 3,
-    borderRadius: 1.5,
+    height: Spacing.xs - 1, // 3px progress bar height
+    borderRadius: Radius.sm / 2,
   },
   // Content
   scroll: {
@@ -426,7 +426,7 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
   },
   primaryBtn: {
-    height: 52,
+    height: Sizes.actionButtonLg + Spacing.xs, // 52px - prominent CTA
     borderRadius: Radius.xl,
     alignItems: 'center',
     justifyContent: 'center',

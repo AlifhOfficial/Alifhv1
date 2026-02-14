@@ -7,11 +7,11 @@ import React, { useState, useCallback } from 'react';
 import {
   StyleSheet,
   View,
-  ScrollView,
   Alert,
 } from 'react-native';
 import { Body, Skeleton } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScreenContainer } from '@/components/layout';
 
 import { Layout, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -93,7 +93,7 @@ export default function SettingsScreen() {
   // Loading state — skeleton
   if (isLoading) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <SettingsHeader colors={colors} topInset={insets.top} />
         <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding }]}>
           {/* Section skeletons */}
@@ -110,23 +110,18 @@ export default function SettingsScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <SettingsHeader 
-        colors={colors} 
-        topInset={insets.top}
-      />
-
-      {/* Scrollable Content */}
-      <ScrollView
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingBottom: insets.bottom + Layout.tabBarHeight },
-        ]}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Privacy */}
-        <PrivacySection
+    <ScreenContainer
+      header={
+        <SettingsHeader 
+          colors={colors} 
+          topInset={insets.top}
+        />
+      }
+      keyboardAvoiding={false}
+      verticalPadding={0}
+    >
+      {/* Privacy */}
+      <PrivacySection
           showPhone={showPhone}
           useGeneratedAvatar={useGeneratedAvatar}
           savingField={savingField}
@@ -171,12 +166,11 @@ export default function SettingsScreen() {
           onFeedbackPress={handleFeedbackPress}
         />
 
-        {/* Danger Zone */}
-        <DangerZone
-          colors={colors}
-          onDeletePress={() => setShowDeleteModal(true)}
-        />
-      </ScrollView>
+      {/* Danger Zone */}
+      <DangerZone
+        colors={colors}
+        onDeletePress={() => setShowDeleteModal(true)}
+      />
 
       {/* Delete Account Sheet */}
       <DeleteAccountSheet
@@ -188,7 +182,7 @@ export default function SettingsScreen() {
         }}
         onConfirm={handleDeleteAccount}
       />
-    </View>
+    </ScreenContainer>
   );
 }
 
@@ -199,9 +193,6 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: Layout.screenPadding,
   },
   skeletonContainer: {
     flex: 1,

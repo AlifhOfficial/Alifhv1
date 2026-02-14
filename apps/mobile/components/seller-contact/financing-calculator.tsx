@@ -10,7 +10,7 @@ import { View, StyleSheet } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { Settings2 } from 'lucide-react-native';
 
-import { Spacing, Radius } from '@/constants/theme';
+import { Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { Label, Data, Supporting } from '@/components/ui';
 import type { FinancingCalculatorProps } from './types';
 import { formatPrice, calculateEMI } from './utils';
@@ -42,8 +42,8 @@ export const FinancingCalculator = memo(function FinancingCalculator({
       <View style={localStyles.headerRow}>
         <Label size="medium" tone="muted">FINANCING ESTIMATE</Label>
         {onCustomize && (
-          <HapticPressable onPress={onCustomize} hitSlop={8} style={localStyles.customizeBtn}>
-            <Settings2 size={16} color={colors.textSecondary} />
+          <HapticPressable onPress={onCustomize} hitSlop={Layout.hitSlopSmall} style={localStyles.customizeBtn}>
+            <Settings2 size={Sizes.iconXs} color={colors.textSecondary} />
             <Supporting size="small">Customize</Supporting>
           </HapticPressable>
         )}
@@ -140,7 +140,7 @@ const localStyles = StyleSheet.create({
     gap: Spacing.xs,
   },
   emiRow: {
-    gap: 2,
+    gap: Spacing.xs / 2,
   },
   row: {
     flexDirection: 'row',
@@ -148,7 +148,7 @@ const localStyles = StyleSheet.create({
     gap: Spacing.md,
   },
   label: {
-    width: 52,
+    width: Spacing['5xl'] + Spacing.xs, // 52
   },
   options: {
     flexDirection: 'row',

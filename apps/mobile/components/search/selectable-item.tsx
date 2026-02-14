@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Fonts, Radius, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Data } from '@/components/ui';
 
@@ -48,7 +48,7 @@ export function SelectableItem({
             }
           ]}>
             {isSelected && (
-              <Ionicons name="checkmark" size={14} color={colors.primaryForeground} />
+              <Ionicons name="checkmark" size={Sizes.iconXs} color={colors.primaryForeground} />
             )}
           </View>
         )}
@@ -65,7 +65,7 @@ export function SelectableItem({
           <Data size="small" tone="muted">{count.toLocaleString()}</Data>
         )}
         {showChevron && (
-          <Ionicons name="chevron-forward" size={18} color={colors.textTertiary} />
+          <Ionicons name="chevron-forward" size={Sizes.iconSm} color={colors.textTertiary} />
         )}
       </View>
     </HapticPressable>
@@ -77,26 +77,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 14,
-    paddingHorizontal: 20,
+    paddingVertical: Sizes.badgePaddingH,
+    paddingHorizontal: Spacing.xl,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   leftContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
+    gap: Sizes.badgePaddingH,
     flex: 1,
   },
   checkbox: {
-    width: 22,
-    height: 22,
+    width: Sizes.iconMd,
+    height: Sizes.iconMd,
     borderRadius: Radius.md,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
   labelSelected: {
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: Fonts.semiBold,
   },
   rightContent: {
     flexDirection: 'row',

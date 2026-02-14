@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Radius } from '@/constants/theme';
+import { Colors, Radius, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Data } from '@/components/ui';
 
@@ -47,7 +47,7 @@ export function FilterPill({
       {showRemove && (
         <Ionicons 
           name="close" 
-          size={14} 
+          size={Sizes.iconXs} 
           color={isPrimary ? colors.primaryForeground : colors.textSecondary} 
         />
       )}
@@ -59,10 +59,10 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 14,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Sizes.badgePaddingH,
     borderRadius: Radius.xl,
     borderWidth: 1,
-    gap: 6,
+    gap: Spacing.xs,
   },
 });

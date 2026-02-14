@@ -18,7 +18,7 @@ import {
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Colors, Spacing, Typography } from '@/constants/theme';
+import { Colors, Spacing, Typography, Layout, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useTabBar } from '@/context/tab-bar-context';
 import { CarCardDetailedM, CarCardDetailedMSkeleton } from '@/components/cards';
@@ -68,9 +68,14 @@ export default function ListingDetailScreen() {
     try {
       const data = await listingApi.getDetailed(id);
       setListing(data);
-    } catch (err) {
-      console.error('Failed to fetch listing:', err);
-      setError('Failed to load listing');
+    } catch (err: any) {
+      if (err?.message?.includes('not found')) {
+        console.log('[ListingScreen] Listing not found or expired:', id);
+        setError('This listing is no longer available or may have expired');
+      } else {
+        console.error('Failed to fetch listing:', err);
+        setError('Failed to load listing. Please try again.');
+      }
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -121,7 +126,7 @@ export default function ListingDetailScreen() {
         style={styles.scrollView}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingBottom: insets.bottom + Spacing['3xl'] + 80 },
+          { paddingBottom: insets.bottom + Spacing['3xl'] + Sizes.actionButtonLg + Spacing['3xl'] },
         ]}
         showsVerticalScrollIndicator={false}
         onScroll={handleScroll}
@@ -180,7 +185,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 100,
+    paddingTop: Spacing['5xl'] * 2,
     paddingHorizontal: Spacing.lg,
   },
   errorText: {

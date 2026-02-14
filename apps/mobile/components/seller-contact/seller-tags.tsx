@@ -8,7 +8,7 @@
 import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 
-import { Spacing, Radius } from '@/constants/theme';
+import { Spacing, Radius, Sizes } from '@/constants/theme';
 import { Label, Text } from '@/components/ui';
 import type { SellerTagsProps } from './types';
 
@@ -39,7 +39,7 @@ const localStyles = StyleSheet.create({
     gap: Spacing.sm,
   },
   tag: {
-    paddingHorizontal: Spacing.md + 2,
+    paddingHorizontal: Sizes.badgePaddingH,
     paddingVertical: Spacing.sm,
     borderRadius: Radius.md,
   },

@@ -7,7 +7,7 @@ import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Calculator } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Skeleton, Data, Supporting, Label } from '@/components/ui';
 
@@ -75,7 +75,7 @@ export const EMICalculator = memo(function EMICalculator({
       <Label size="small" tone="muted">ESTIMATED EMI</Label>
 
       <View style={[styles.card, { backgroundColor: surfaceColor, borderColor }]}>
-        <Calculator size={20} color={colors.primary} />
+        <Calculator size={Sizes.iconMd} color={colors.primary} />
         <View style={styles.content}>
           <Data size="large" style={{ color: textColor }}>
             {formatCurrency(emi)}/mo
@@ -99,12 +99,12 @@ export function EMICalculatorSkeleton() {
 
   return (
     <View style={styles.container}>
-      <Skeleton width={100} height={12} />
+      <Skeleton width="25%" height={Spacing.md} />
       <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-        <Skeleton width={20} height={20} borderRadius={10} />
-        <View style={{ gap: 6, flex: 1 }}>
-          <Skeleton width={140} height={18} />
-          <Skeleton width={180} height={14} />
+        <Skeleton width={Sizes.iconMd} height={Sizes.iconMd} borderRadius={Radius.full} />
+        <View style={{ gap: Spacing.sm, flex: 1 }}>
+          <Skeleton width="40%" height={Spacing.lg} />
+          <Skeleton width="55%" height={Spacing.md} />
         </View>
       </View>
     </View>
@@ -129,6 +129,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    gap: 2,
+    gap: Spacing.xs / 2,
   },
 });

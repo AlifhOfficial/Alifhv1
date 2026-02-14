@@ -11,7 +11,7 @@ import { HapticPressable } from '@/components/ui';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 
-import { Colors } from '@/constants/theme';
+import { Colors, Spacing, Radius, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Data } from '@/components/ui';
 
@@ -37,7 +37,7 @@ export function SavedTube() {
         },
       ]}
       onPress={handlePress}
-      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      hitSlop={Layout.hitSlop}
     >
       {({ pressed }) => (
         <Data size="small" tone="secondary" style={{ opacity: pressed ? 0.7 : 1 }}>
@@ -50,9 +50,9 @@ export function SavedTube() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 16,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: Radius.xl,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',

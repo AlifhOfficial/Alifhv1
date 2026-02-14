@@ -16,7 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Bell } from 'lucide-react-native';
 
 import { NotificationsHeader, NotificationItem } from '@/components/notifications';
-import { Colors, Layout, Spacing } from '@/constants/theme';
+import { Colors, Layout, Spacing, Sizes, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { Body, Heading, Skeleton, SkeletonCircle } from '@/components/ui';
@@ -199,12 +199,12 @@ export default function NotificationsScreen() {
     return (
       <View style={styles.emptyContainer}>
         <View style={[styles.emptyIcon, { backgroundColor: colors.surface }]}>
-          <Bell size={32} color={colors.textMuted} strokeWidth={1.5} />
+          <Bell size={Sizes.avatarSm} color={colors.textMuted} strokeWidth={1.5} />
         </View>
-        <Heading size="small" style={{ marginTop: 16 }}>
+        <Heading size="small" style={{ marginTop: Spacing.lg }}>
           No notifications yet
         </Heading>
-        <Body size="medium" tone="secondary" style={{ marginTop: 4, textAlign: 'center' }}>
+        <Body size="medium" tone="secondary" style={{ marginTop: Spacing.xs, textAlign: 'center' }}>
           When you get messages, listing updates, or other activity, they'll show up here.
         </Body>
       </View>
@@ -232,7 +232,7 @@ export default function NotificationsScreen() {
         <View style={styles.skeletonList}>
           {Array.from({ length: 8 }).map((_, i) => (
             <View key={i} style={styles.skeletonRow}>
-              <SkeletonCircle size={40} />
+              <SkeletonCircle size={Sizes.avatarMd} />
               <View style={styles.skeletonRowContent}>
                 <View style={styles.skeletonRowTop}>
                   <Skeleton width={140} height={14} />
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
   },
   skeletonRowContent: {
     flex: 1,
-    gap: 6,
+    gap: Spacing.sm - 2,
   },
   skeletonRowTop: {
     flexDirection: 'row',
@@ -298,17 +298,17 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 40,
+    padding: Spacing['4xl'],
   },
   emptyIcon: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: Sizes.avatarLg + Spacing['2xl'],
+    height: Sizes.avatarLg + Spacing['2xl'],
+    borderRadius: (Sizes.avatarLg + Spacing['2xl']) / 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
   footer: {
-    paddingVertical: 20,
+    paddingVertical: Spacing.xl,
     alignItems: 'center',
   },
 });

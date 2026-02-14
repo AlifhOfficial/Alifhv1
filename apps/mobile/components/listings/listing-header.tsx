@@ -6,7 +6,7 @@ import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { CheckCircle2 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Text, Heading, Data, Label } from '@/components/ui';
 import { SpecialNotes } from '@/lib/listing-api';
@@ -87,7 +87,7 @@ export const ListingHeader = memo(function ListingHeader({
         <View style={styles.highlightsRow}>
           {highlights.map((highlight, idx) => (
             <View key={idx} style={styles.highlightItem}>
-              <CheckCircle2 size={ICON_SIZE_SM} color={colors.success} />
+              <CheckCircle2 size={Sizes.iconXs} color={colors.success} />
               <Data size="mini" style={{ color: textColor }}>
                 {highlight}
               </Data>
@@ -98,12 +98,6 @@ export const ListingHeader = memo(function ListingHeader({
     </View>
   );
 });
-
-// ============================================================================
-// CONSTANTS
-// ============================================================================
-
-const ICON_SIZE_SM = 14;
 
 // ============================================================================
 // STYLES
@@ -129,8 +123,8 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   blkBadge: {
-    paddingHorizontal: Spacing.sm - 2,
-    paddingVertical: 2,
+    paddingHorizontal: Sizes.badgePaddingH,
+    paddingVertical: Sizes.badgePaddingV,
     borderRadius: Radius.none,
   },
   highlightsRow: {

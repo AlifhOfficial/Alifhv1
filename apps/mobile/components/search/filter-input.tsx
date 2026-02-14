@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 interface FilterInputProps {
@@ -27,7 +27,7 @@ export function FilterInput({
       backgroundColor: colors.fillSecondary, 
       borderColor: colors.border 
     }]}>
-      <Ionicons name="search" size={18} color={colors.textTertiary} />
+      <Ionicons name="search" size={Sizes.iconSm} color={colors.textTertiary} />
       <BottomSheetTextInput
         style={[styles.input, { color: colors.text }]}
         placeholder={placeholder}
@@ -41,7 +41,7 @@ export function FilterInput({
       {value.length > 0 && (
         <Ionicons 
           name="close-circle" 
-          size={18} 
+          size={Sizes.iconSm} 
           color={colors.textTertiary}
           onPress={() => onChangeText('')}
         />
@@ -56,11 +56,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: Spacing.xl,
     marginVertical: Spacing.sm,
-    paddingHorizontal: 14,
+    paddingHorizontal: Sizes.badgePaddingH,
     paddingVertical: Spacing.md,
     borderRadius: Radius.lg,
     borderWidth: 1,
-    gap: 10,
+    gap: Spacing.sm,
   },
   input: {
     flex: 1,

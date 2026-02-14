@@ -14,7 +14,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { Body } from '@/components/ui';
-import { Spacing } from '@/constants/theme';
+import { Sizes, Spacing } from '@/constants/theme';
 import { Section } from './Section';
 import type { ThemeColors } from './types';
 
@@ -66,13 +66,13 @@ function SupportItem({
         ]}
       >
         <View style={styles.itemLeft}>
-          <Icon size={18} color={colors.textSecondary} strokeWidth={1.5} />
+          <Icon size={Sizes.iconSm} color={colors.textSecondary} strokeWidth={1.5} />
           <View style={styles.itemContent}>
             <Body size="small" tone="muted">Navigate</Body>
             <Body size="medium">{label}</Body>
           </View>
         </View>
-        <ChevronRight size={18} color={colors.textTertiary} strokeWidth={2} />
+        <ChevronRight size={Sizes.iconSm} color={colors.textTertiary} strokeWidth={2} />
       </Animated.View>
     </HapticPressable>
   );
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: Spacing.lg - 2,
+    paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.lg,
   },
   itemLeft: {

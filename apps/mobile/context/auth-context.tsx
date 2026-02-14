@@ -2,11 +2,15 @@
  * Auth Context - Manages authentication state and flow visibility
  * 
  * Uses auth-api.ts for API calls and AsyncStorage for persistence.
+ * Also manages the auth sheet state for unauthenticated users.
  */
 
 import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import * as AuthAPI from '@/lib/auth-api';
 import { unregisterPushTokenOnLogout } from '@/lib/push-token-store';
+
+// Auth sheet context types
+export type AuthSheetContext = 'profile' | 'saved' | 'messages' | 'listings' | 'default';
 
 export interface AuthUser {
   id: string;
@@ -51,6 +55,12 @@ interface AuthContextType {
   openAuthFlow: () => void;
   closeAuthFlow: () => void;
   
+  // Auth sheet (for unauthenticated prompts)
+  showAuthSheet: (context?: AuthSheetContext) => void;
+  hideAuthSheet: () => void;
+  authSheetVisible: boolean;
+  authSheetContext: AuthSheetContext;
+  
   // Auth actions
   signIn: (user: AuthUser) => void;
   signOut: () => Promise<void>;
@@ -68,6 +78,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<AuthUser | null>(null);
   const [showAuthFlow, setShowAuthFlow] = useState(false);
+  
+  // Auth sheet state
+  const [authSheetVisible, setAuthSheetVisible] = useState(false);
+  const [authSheetContext, setAuthSheetContext] = useState<AuthSheetContext>('default');
 
   // Check for existing session on mount
   useEffect(() => {
@@ -121,6 +135,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setShowAuthFlow(false);
   }, []);
 
+  // Auth sheet controls
+  const showAuthSheetFn = useCallback((context: AuthSheetContext = 'default') => {
+    setAuthSheetContext(context);
+    setAuthSheetVisible(true);
+  }, []);
+
+  const hideAuthSheet = useCallback(() => {
+    setAuthSheetVisible(false);
+  }, []);
+
   const signIn = useCallback(async (userData: AuthUser) => {
     // Set basic user data immediately for quick UI update
     setUser(userData);
@@ -165,6 +189,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         isSuperAdmin,
         openAuthFlow,
         closeAuthFlow,
+        showAuthSheet: showAuthSheetFn,
+        hideAuthSheet,
+        authSheetVisible,
+        authSheetContext,
         signIn,
         signOut,
         refreshSession,

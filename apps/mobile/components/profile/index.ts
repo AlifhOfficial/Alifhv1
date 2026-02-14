@@ -22,5 +22,4 @@ export { PersonalInfoSection } from './PersonalInfoSection';
 export { BioSection } from './BioSection';
 export { BadgesSection } from './BadgesSection';
 export { TagsSection } from './TagsSection';
-export { NotAuthenticatedView } from './NotAuthenticatedView';
 export { SignOutButton } from './SignOutButton';

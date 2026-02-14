@@ -10,9 +10,10 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, Inter_800ExtraBold } from '@expo-google-fonts/inter';
 import * as SplashScreen from 'expo-splash-screen';
+import * as SystemUI from 'expo-system-ui';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState, useMemo } from 'react';
-import { Modal, View, LogBox } from 'react-native';
+import { Modal, View, LogBox, Platform } from 'react-native';
 import 'react-native-reanimated';
 
 // Suppress warnings from third-party dependencies that can't be fixed in user code
@@ -22,7 +23,7 @@ LogBox.ignoreLogs([
   '`expo-notifications` functionality is not fully supported in Expo Go',
 ]);
 
-import { Colors } from '@/constants/theme';
+import { Colors, Fonts } from '@/constants/theme';
 import { ThemeProvider, useTheme } from '@/context/theme-context';
 import { AuthProvider, useAuth } from '@/context/auth-context';
 import { FavoritesProvider } from '@/context/favorites-context';
@@ -35,9 +36,9 @@ import { BootScreen } from '@/components/layout/boot-screen';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { OfflineBanner } from '@/components/ui/offline-banner';
 import { GlobalTabBar } from '@/components/layout/global-tab-bar';
-import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
 import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { AuthFlow } from '@/components/auth';
+import { AuthSheet } from '@/components/sheets';
 
 // Prevent splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -45,7 +46,7 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 // Hide native splash immediately - we show our own loader
 SplashScreen.hideAsync().catch(() => {});
 
-// Custom themes using our Colors
+// Custom themes using our Colors and Fonts
 const LightTheme: NavTheme = {
   dark: false,
   colors: {
@@ -57,10 +58,10 @@ const LightTheme: NavTheme = {
     notification: Colors.light.primary,
   },
   fonts: {
-    regular: { fontFamily: 'Inter_400Regular', fontWeight: '400' },
-    medium: { fontFamily: 'Inter_500Medium', fontWeight: '500' },
-    bold: { fontFamily: 'Inter_700Bold', fontWeight: '700' },
-    heavy: { fontFamily: 'Inter_700Bold', fontWeight: '800' },
+    regular: { fontFamily: Fonts.regular, fontWeight: '400' },
+    medium: { fontFamily: Fonts.medium, fontWeight: '500' },
+    bold: { fontFamily: Fonts.bold, fontWeight: '700' },
+    heavy: { fontFamily: Fonts.bold, fontWeight: '800' },
   },
 };
 
@@ -75,10 +76,10 @@ const CustomDarkTheme: NavTheme = {
     notification: Colors.dark.primary,
   },
   fonts: {
-    regular: { fontFamily: 'Inter_400Regular', fontWeight: '400' },
-    medium: { fontFamily: 'Inter_500Medium', fontWeight: '500' },
-    bold: { fontFamily: 'Inter_700Bold', fontWeight: '700' },
-    heavy: { fontFamily: 'Inter_700Bold', fontWeight: '800' },
+    regular: { fontFamily: Fonts.regular, fontWeight: '400' },
+    medium: { fontFamily: Fonts.medium, fontWeight: '500' },
+    bold: { fontFamily: Fonts.bold, fontWeight: '700' },
+    heavy: { fontFamily: Fonts.bold, fontWeight: '800' },
   },
 };
 
@@ -133,9 +134,16 @@ if (!navLockState.installed) {
 function RootLayoutNav() {
   const { colorScheme } = useTheme();
   const { showAuthFlow, closeAuthFlow, signIn } = useAuth();
-  const { isTabBarVisible, isHeaderVisible } = useTabBar();
+  const { isTabBarVisible } = useTabBar();
   const router = useRouter();
   const colors = Colors[colorScheme];
+  
+  // Set native root view background color (fixes Android black flash during transitions)
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      SystemUI.setBackgroundColorAsync(colors.background);
+    }
+  }, [colors.background]);
   
   // Memoize navigation theme to prevent full re-renders
   const navTheme = useMemo(
@@ -208,28 +216,30 @@ function RootLayoutNav() {
 
   return (
     <NavigationThemeProvider value={navTheme}>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          gestureEnabled: true,
-          gestureDirection: 'horizontal',
-          animation: 'slide_from_right',
-          contentStyle: { backgroundColor: colors.background },
-        }}
-      >
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="browse" options={{ animation: 'none' }} />
-        <Stack.Screen name="messages" options={{ animation: 'none' }} />
-        <Stack.Screen name="listing/[id]" options={{ presentation: 'card' }} />
-        <Stack.Screen name="seller-contact/[listingId]" options={{ presentation: 'card' }} />
-        <Stack.Screen name="profile" options={{ presentation: 'card' }} />
-        <Stack.Screen name="settings" options={{ presentation: 'card' }} />
-
-        <Stack.Screen name="chat/[conversationId]" options={{ presentation: 'card' }} />
-        <Stack.Screen name="notifications" options={{ presentation: 'card' }} />
-        <Stack.Screen name="create-listing" options={{ presentation: 'card' }} />
-        <Stack.Screen name="inventory" options={{ presentation: 'card' }} />
-      </Stack>
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            gestureEnabled: true,
+            gestureDirection: 'horizontal',
+            animation: 'slide_from_right',
+            contentStyle: { backgroundColor: colors.background },
+            animationTypeForReplace: 'push',
+          }}
+        >
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="browse" options={{ animation: 'none' }} />
+          <Stack.Screen name="messages" options={{ animation: 'none' }} />
+          <Stack.Screen name="listing/[id]" />
+          <Stack.Screen name="seller-contact/[listingId]" />
+          <Stack.Screen name="profile" />
+          <Stack.Screen name="settings" />
+          <Stack.Screen name="chat/[conversationId]" />
+          <Stack.Screen name="notifications" />
+          <Stack.Screen name="create-listing" />
+          <Stack.Screen name="inventory" />
+        </Stack>
+      </View>
       
       {/* Global Safe Area Gradients - hidden when chrome is hidden */}
       {isTabBarVisible && <BottomSafeAreaGradient />}
@@ -280,7 +290,7 @@ export default function RootLayout() {
   // Show branded boot screen until fonts are loaded AND minimum time has passed
   if (!fontsLoaded || !minTimeElapsed) {
     return (
-      <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#000000' }}>
+      <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.dark.background }}>
         <BootScreen />
       </GestureHandlerRootView>
     );
@@ -302,6 +312,7 @@ export default function RootLayout() {
                           <NotificationWrapper>
                             <RootLayoutNav />
                             <OfflineBanner />
+                            <AuthSheetRenderer />
                           </NotificationWrapper>
                         </WebSocketWrapper>
                       </FavoritesProvider>
@@ -324,6 +335,28 @@ function WebSocketWrapper({ children }: { children: React.ReactNode }) {
     <WebSocketProvider userId={user?.id}>
       {children}
     </WebSocketProvider>
+  );
+}
+
+// Auth sheet renderer - uses auth context
+function AuthSheetRenderer() {
+  const { authSheetVisible, authSheetContext, hideAuthSheet, openAuthFlow } = useAuth();
+  
+  const handleSignIn = () => {
+    hideAuthSheet();
+    // Small delay to let sheet dismiss smoothly
+    setTimeout(() => {
+      openAuthFlow();
+    }, 150);
+  };
+  
+  return (
+    <AuthSheet
+      visible={authSheetVisible}
+      onClose={hideAuthSheet}
+      onSignIn={handleSignIn}
+      context={authSheetContext}
+    />
   );
 }
 

@@ -28,8 +28,8 @@ import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { Supporting } from '@/components/ui';
-import { Spacing, Radius } from '@/constants/theme';
+import { Body } from '@/components/ui';
+import { Spacing, Radius, Sizes } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -231,16 +231,16 @@ export function ProfileAvatar({
       {/* Loading overlay */}
       {isUploading && (
         <Animated.View entering={FadeIn.duration(200)} style={styles.overlay}>
-          <Supporting size="small" style={[styles.loadingText, loadingTextStyle]}>
+          <Body size="small" style={[styles.loadingText, loadingTextStyle]}>
             Uploading
-          </Supporting>
+          </Body>
         </Animated.View>
       )}
       
       {/* Camera badge */}
       {!isUploading && (
         <View style={styles.cameraBadge}>
-          <Camera size={12} color={colors.primaryForeground} strokeWidth={2.5} />
+          <Camera size={Sizes.iconXs} color={colors.primaryForeground} strokeWidth={2.5} />
         </View>
       )}
     </AnimatedPressable>
@@ -272,16 +272,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(0,0,0,0.5)',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.15,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
   },
 });
