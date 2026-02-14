@@ -99,7 +99,7 @@ export function useFavoriteActions(
   listingId: string,
   options: UseFavoriteActionsOptions = {}
 ) {
-  const { openAuthFlow, isAuthenticated } = useAuth();
+  const { showAuthSheet, isAuthenticated } = useAuth();
   const favoriteState = useListingFavorite(listingId);
   
   // Sheet visibility state
@@ -138,7 +138,7 @@ export function useFavoriteActions(
 
     // Check auth
     if (!isAuthenticated) {
-      openAuthFlow();
+      showAuthSheet('saved');
       return;
     }
 
@@ -150,7 +150,7 @@ export function useFavoriteActions(
 
     favoriteState.toggleFavorite().catch((err) => {
       if (err?.message === 'AUTH_REQUIRED') {
-        openAuthFlow();
+        showAuthSheet('saved');
       }
     });
   }, [
@@ -158,7 +158,7 @@ export function useFavoriteActions(
     options.onFavoritePress,
     favoriteState,
     isAuthenticated,
-    openAuthFlow,
+    showAuthSheet,
     isFavorite,
     favConfetti,
     triggerHaptic,
@@ -179,7 +179,7 @@ export function useFavoriteActions(
 
     // Check auth
     if (!isAuthenticated) {
-      openAuthFlow();
+      showAuthSheet('saved');
       return;
     }
 
@@ -187,7 +187,7 @@ export function useFavoriteActions(
     if (isSuperliked) {
       favoriteState.toggleSuperlike().catch((err) => {
         if (err?.message === 'AUTH_REQUIRED') {
-          openAuthFlow();
+          showAuthSheet('saved');
         }
       });
       return;
@@ -208,7 +208,7 @@ export function useFavoriteActions(
     options.onSuperlikePress,
     favoriteState,
     isAuthenticated,
-    openAuthFlow,
+    showAuthSheet,
     isSuperliked,
     quota,
     superConfetti,
@@ -221,12 +221,12 @@ export function useFavoriteActions(
     playSuperlikeChime();
     favoriteState.toggleSuperlike().catch((err) => {
       if (err?.message === 'AUTH_REQUIRED') {
-        openAuthFlow();
+        showAuthSheet('saved');
       } else if (err?.message === 'QUOTA_EXCEEDED') {
         setShowExhaustedSheet(true);
       }
     });
-  }, [favoriteState, openAuthFlow, superConfetti]);
+  }, [favoriteState, showAuthSheet, superConfetti]);
 
   return {
     isFavorite,

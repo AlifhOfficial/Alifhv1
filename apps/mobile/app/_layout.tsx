@@ -247,6 +247,9 @@ function RootLayoutNav() {
       {/* Global Tab Bar - always render, let component handle visibility */}
       <GlobalTabBar />
       
+      {/* Auth Sheet - renders above tab bar */}
+      <AuthSheetRenderer />
+      
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       
       {/* Auth Flow Modal - can be triggered from anywhere via useAuth */}
@@ -312,7 +315,6 @@ export default function RootLayout() {
                           <NotificationWrapper>
                             <RootLayoutNav />
                             <OfflineBanner />
-                            <AuthSheetRenderer />
                           </NotificationWrapper>
                         </WebSocketWrapper>
                       </FavoritesProvider>

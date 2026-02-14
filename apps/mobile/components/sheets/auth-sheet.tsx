@@ -5,18 +5,18 @@
  */
 
 import React, { useCallback, useRef, useEffect } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import { StyleSheet, Platform } from 'react-native';
+import { HapticPressable, Data, Heading, Supporting } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { LogIn } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Body, ButtonText } from '@/components/ui';
-import { RevvupLogoAnimated } from '@/components/ui/loaders/revvup-logo';
+import { RevvupLogo } from '@/components/ui/loaders/revvup-logo';
+import { AuthDoodle } from './auth-doodle';
 
 interface AuthSheetProps {
   visible: boolean;
@@ -65,6 +65,7 @@ export function AuthSheet({
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   // Get contextual messages
@@ -83,8 +84,10 @@ export function AuthSheet({
   const handleSheetChanges = useCallback((index: number) => {
     if (index === -1) {
       onClose();
+      // Navigate back to home when dismissed without signing in
+      router.push('/');
     }
-  }, [onClose]);
+  }, [onClose, router]);
 
   const handleSignIn = useCallback(() => {
     if (Platform.OS === 'ios') {
@@ -97,13 +100,18 @@ export function AuthSheet({
     }, 150);
   }, [onClose, onSignIn]);
 
+  const handleDismiss = useCallback(() => {
+    onClose();
+    router.push('/');
+  }, [onClose, router]);
+
   const renderBackdrop = useCallback(
     (props: any) => (
       <BottomSheetBackdrop
         {...props}
         disappearsOnIndex={-1}
         appearsOnIndex={0}
-        opacity={0.6}
+        opacity={0.5}
         pressBehavior="close"
       />
     ),
@@ -117,72 +125,77 @@ export function AuthSheet({
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['2xl'] }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
+      backgroundStyle={{ backgroundColor: colors.blkBackground, borderRadius: Radius['3xl'] }}
+      handleIndicatorStyle={{ backgroundColor: colors.blkTextSecondary, width: Sizes.bubble }}
+      containerStyle={{ zIndex: 100 }}
       detached
       bottomInset={insets.bottom + Spacing.xl}
       style={styles.sheetContainer}
     >
-      <BottomSheetView style={styles.container}>
-        {/* Logo section */}
+      <BottomSheetView style={styles.content}>
+        {/* Doodle Background */}
+        <AuthDoodle />
+
+        {/* Header with Logo */}
         <Animated.View 
           entering={FadeInUp.delay(100).duration(400)}
-          style={styles.logoContainer}
+          style={styles.header}
         >
-          <View style={[styles.logoBackground, { backgroundColor: colors.backgroundSecondary }]}>
-            <RevvupLogoAnimated 
-              size={48} 
-              color={colors.text}
-              animation="breathe"
-              duration={2000}
-            />
-          </View>
+          <RevvupLogo 
+            size={Sizes.iconXl} 
+            color={colors.blkText}
+          />
         </Animated.View>
 
-        {/* Content */}
+        {/* Title & Subtitle */}
         <Animated.View 
           entering={FadeInUp.delay(200).duration(400)}
-          style={styles.content}
+          style={styles.textContent}
         >
-          <Heading size="medium" style={styles.title}>
+          <Heading size="medium" style={[styles.title, { color: colors.blkText }]}>
             {displayTitle}
           </Heading>
-          <Body size="small" tone="secondary" style={styles.subtitle}>
+          <Supporting size="small" style={[styles.subtitle, { color: colors.blkTextSecondary }]}>
             {displaySubtitle}
-          </Body>
+          </Supporting>
         </Animated.View>
 
-        {/* Sign in button */}
+        {/* Actions */}
         <Animated.View 
           entering={FadeInUp.delay(300).duration(400)}
-          style={styles.buttonContainer}
+          style={styles.actions}
         >
           <HapticPressable
             onPress={handleSignIn}
-            style={({ pressed }) => [
-              styles.signInButton,
-              {
-                backgroundColor: colors.primary,
-                transform: [{ scale: pressed ? 0.98 : 1 }],
-                opacity: pressed ? 0.9 : 1,
-              },
-            ]}
+            style={({ pressed }) => [{
+              height: Sizes.actionButtonLg,
+              borderRadius: Radius.lg,
+              alignItems: 'center' as const,
+              justifyContent: 'center' as const,
+              backgroundColor: colors.primary,
+              opacity: pressed ? 0.8 : 1,
+            }]}
           >
-            <LogIn size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2} />
-            <ButtonText size="medium" style={{ color: colors.primaryForeground }}>
+            <Data size="medium" style={{ color: colors.primaryForeground }}>
               Sign In
-            </ButtonText>
+            </Data>
           </HapticPressable>
 
-          {/* Skip/Cancel option */}
           <HapticPressable
-            onPress={onClose}
-            hitSlop={Spacing.md}
-            style={styles.skipButton}
+            onPress={handleDismiss}
+            style={({ pressed }) => [{
+              height: Sizes.actionButtonLg,
+              borderRadius: Radius.lg,
+              alignItems: 'center' as const,
+              justifyContent: 'center' as const,
+              borderWidth: 1,
+              borderColor: colors.blkBorder,
+              opacity: pressed ? 0.7 : 1,
+            }]}
           >
-            <Body size="small" tone="tertiary">
-              Maybe later
-            </Body>
+            <Data size="medium" style={{ color: colors.blkTextSecondary }}>
+              Maybe Later
+            </Data>
           </HapticPressable>
         </Animated.View>
       </BottomSheetView>
@@ -190,55 +203,39 @@ export function AuthSheet({
   );
 }
 
+// ============================================================================
+// STYLES
+// ============================================================================
+
 const styles = StyleSheet.create({
   sheetContainer: {
     marginHorizontal: Spacing.lg,
   },
-  container: {
-    alignItems: 'center',
-    paddingHorizontal: Spacing.xl,
-    paddingBottom: Spacing.xl,
-  },
-  logoContainer: {
-    marginTop: Spacing.sm,
-    marginBottom: Spacing.lg,
-  },
-  logoBackground: {
-    width: 80,
-    height: 80,
-    borderRadius: Radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   content: {
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing['2xl'],
+    overflow: 'hidden',
+  },
+  header: {
     alignItems: 'center',
+    paddingTop: Spacing.md,
+  },
+  textContent: {
+    alignItems: 'center',
+    marginTop: Spacing.lg,
     gap: Spacing.xs,
-    marginBottom: Spacing.xl,
   },
   title: {
     textAlign: 'center',
   },
   subtitle: {
     textAlign: 'center',
-    maxWidth: 260,
-    lineHeight: 20,
+    maxWidth: 280,
   },
-  buttonContainer: {
-    width: '100%',
-    alignItems: 'center',
+  actions: {
+    marginTop: Spacing['2xl'],
     gap: Spacing.md,
-  },
-  signInButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.sm,
-    width: '100%',
-    paddingVertical: Spacing.md,
-    borderRadius: Radius.lg,
-  },
-  skipButton: {
-    paddingVertical: Spacing.xs,
   },
 });
 

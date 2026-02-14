@@ -137,6 +137,13 @@ export const Colors = {
     blkBorder: '#B6B6B6',
     blkText: '#1C1C1E',
     blkTextSecondary: '#6E6E73',
+    
+    // DOODLE ACCENTS - Royal luxury palette (Gucci/LV inspired)
+    doodleAccent1: '#1E3A5F', // Deep navy
+    doodleAccent2: '#8B2942', // Burgundy wine
+    doodleAccent3: '#2D4A3E', // Forest green
+    doodleAccent4: '#9C7C38', // Antique gold
+    doodleAccent5: '#5C4033', // Rich espresso
   },
   
   dark: {
@@ -206,6 +213,13 @@ export const Colors = {
     blkBorder: '#262626',
     blkText: '#FAFAFA',
     blkTextSecondary: '#A3A3A3',
+    
+    // DOODLE ACCENTS - Royal luxury palette (Gucci/LV inspired)
+    doodleAccent1: '#4A6A8A', // Muted steel blue
+    doodleAccent2: '#A85A6D', // Dusty rose burgundy
+    doodleAccent3: '#5A7A6A', // Sage green
+    doodleAccent4: '#C9A962', // Champagne gold
+    doodleAccent5: '#8B7355', // Warm taupe
   },
 };
 
