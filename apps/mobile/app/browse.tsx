@@ -410,7 +410,7 @@ export default function BrowseScreen() {
   // ──────────────────────────────────────────────────────────────────────────
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colorScheme === 'dark' ? colors.oledBlack : colors.background }]}>
       {/* Browse Header with Filter Pills */}
       <BrowseHeader 
         pills={filterPillConfigs}

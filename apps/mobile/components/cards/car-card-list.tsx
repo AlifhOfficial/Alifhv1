@@ -4,8 +4,8 @@
  */
 
 import React, { useCallback, memo, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Image } from 'expo-image';
+import { StyleSheet, View, ImageSourcePropType } from 'react-native';
+import { Image, ImageSource } from 'expo-image';
 import { Share2 } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
@@ -90,8 +90,8 @@ export interface CarCardListProps {
   mileage: number;
   emirate: string;
   specs?: string | null;
-  thumbnail?: string | null;
-  images?: string[];
+  thumbnail?: ImageSourcePropType | string | null;
+  images?: (ImageSourcePropType | string)[];
   isBlkListing?: boolean;
   partnerName?: string | null;
   partnerLogo?: string | null;
@@ -177,7 +177,7 @@ export const CarCardList = memo(function CarCardList({
     >
       {/* === IMAGE SECTION === */}
       <ListImage
-        uri={displayImage}
+        imageSource={displayImage}
         backgroundColor={theme.imageBg}
         skeletonColor={colors.skeleton}
         isBlkListing={isBlkListing}
@@ -221,7 +221,7 @@ export const CarCardList = memo(function CarCardList({
 // ============================================================================
 
 interface ListImageProps {
-  uri?: string | null;
+  imageSource?: ImageSourcePropType | string | null;
   backgroundColor: string;
   skeletonColor: string;
   isBlkListing: boolean;
@@ -230,17 +230,24 @@ interface ListImageProps {
 }
 
 const ListImage = memo(function ListImage({
-  uri,
+  imageSource,
   backgroundColor,
   skeletonColor,
   isBlkListing,
   blkBadgeBackground,
   blkBadgeText,
 }: ListImageProps) {
+  // Handle both local require() assets (number) and URL strings
+  const source: ImageSource | undefined = imageSource
+    ? typeof imageSource === 'string'
+      ? { uri: imageSource }
+      : imageSource
+    : undefined;
+
   return (
     <View style={[styles.imageContainer, { backgroundColor }]}>
-      {uri ? (
-        <Image source={{ uri }} style={styles.image} contentFit="cover" transition={150} />
+      {source ? (
+        <Image source={source} style={styles.image} contentFit="cover" transition={150} />
       ) : (
         <View style={[styles.image, { backgroundColor: skeletonColor }]} />
       )}

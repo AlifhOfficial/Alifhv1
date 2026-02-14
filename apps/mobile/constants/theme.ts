@@ -67,6 +67,9 @@ export const Fonts = {
   semiBold: 'Inter_600SemiBold',
   bold: 'Inter_700Bold',
   extraBold: 'Inter_800ExtraBold',
+  // Script/Signature fonts
+  script: 'DancingScript_400Regular',
+  scriptBold: 'DancingScript_700Bold',
 } as const;
 
 export const Colors = {
@@ -147,6 +150,10 @@ export const Colors = {
   },
   
   dark: {
+    // OLED - True black/white for AMOLED screens
+    oledBlack: '#000000',
+    oledWhite: '#FFFFFF',
+    
     // BACKGROUNDS - Near-black
     background: '#0D0D0D',
     backgroundSecondary: '#141414',
@@ -725,6 +732,24 @@ const SemanticTypography = {
     fontSize: fontScale(20), 
     lineHeight: fontScale(24), 
     fontFamily: 'Inter_700Bold' 
+  },
+
+  // ─────────────────────────────────────────────────────
+  // BLK PREMIUM - Signature line styling
+  // ─────────────────────────────────────────────────────
+  blkBadge: { 
+    ...base, 
+    ...centered,
+    fontSize: fontScale(13), 
+    lineHeight: fontScale(16), 
+    fontFamily: 'Inter_800ExtraBold',
+    letterSpacing: 3,
+  },
+  blkSignature: { 
+    ...base, 
+    fontSize: fontScale(18), 
+    lineHeight: fontScale(24), 
+    fontFamily: 'DancingScript_400Regular',
   },
 } as const;
 

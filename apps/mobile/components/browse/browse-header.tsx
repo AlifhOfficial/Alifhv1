@@ -68,7 +68,7 @@ export function BrowseHeader({
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + Layout.headerPadding }]}>
+    <View style={[styles.container, { paddingTop: insets.top + Layout.headerPadding, backgroundColor: colorScheme === 'dark' ? colors.oledBlack : colors.background }]}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -89,9 +89,9 @@ export function BrowseHeader({
             {({ pressed }) => (
               <View style={{ opacity: pressed ? 0.7 : 1 }}>
                 {viewMode === 'grid' ? (
-                  <LayoutGrid size={Sizes.iconSm} color={colors.text} strokeWidth={2} />
+                  <LayoutGrid size={Sizes.iconSm} color={colorScheme === 'dark' ? colors.oledWhite : colors.text} strokeWidth={2} />
                 ) : (
-                  <List size={Sizes.iconSm} color={colors.text} strokeWidth={2} />
+                  <List size={Sizes.iconSm} color={colorScheme === 'dark' ? colors.oledWhite : colors.text} strokeWidth={2} />
                 )}
               </View>
             )}
@@ -115,7 +115,7 @@ export function BrowseHeader({
                 <View style={{ opacity: pressed ? 0.7 : 1 }}>
                   <Settings2 
                     size={Sizes.iconMd} 
-                    color={colors.text} 
+                    color={colorScheme === 'dark' ? colors.oledWhite : colors.text} 
                     strokeWidth={2}
                   />
                 </View>
