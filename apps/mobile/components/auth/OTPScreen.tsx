@@ -1,14 +1,12 @@
 /**
  * OTP Verification Screen
- * Clean, minimal iOS-style OTP input
+ * Clean, minimal iOS-style OTP input using design system tokens
  */
 
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  StyleSheet, 
   View, 
   TextInput, 
-  
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
@@ -16,11 +14,12 @@ import { HapticPressable } from '@/components/ui';
 import { InlineLoader } from '@/components/ui/loaders';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
-import Svg, { Path } from 'react-native-svg';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 import { Display, Body, Heading, Data, Supporting } from '@/components/ui';
+import { authStyles } from './auth-styles';
+import { ChevronLeftIcon } from './icons';
 
 interface OTPScreenProps {
   email: string;
@@ -85,40 +84,46 @@ export function OTPScreen({
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[authStyles.container, { backgroundColor: colors.background }]}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}
+        style={authStyles.keyboardView}
       >
-        <View style={[styles.content, { paddingTop: insets.top, paddingBottom: insets.bottom + Spacing['2xl'] }]}>
+        <View style={[
+          authStyles.content, 
+          { paddingTop: insets.top, paddingBottom: insets.bottom + Spacing['2xl'] }
+        ]}>
           {/* Header */}
-          <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
+          <Animated.View entering={FadeIn.duration(300)} style={authStyles.header}>
             <HapticPressable
               onPress={onBack}
-              style={({ pressed }) => [styles.backButton, { opacity: pressed ? 0.5 : 1 }]}
+              style={({ pressed }) => [authStyles.backButton, { opacity: pressed ? 0.5 : 1 }]}
             >
               <ChevronLeftIcon color={colors.text} />
             </HapticPressable>
           </Animated.View>
 
           {/* Title */}
-          <Animated.View entering={FadeInDown.delay(100).duration(400)} style={styles.titleSection}>
+          <Animated.View entering={FadeInDown.delay(100).duration(400)} style={authStyles.titleSection}>
             <Display size="large">Enter code</Display>
-            <Body tone="secondary" style={styles.subtitle}>
+            <Body tone="secondary" style={authStyles.subtitle}>
               Sent to {email}
             </Body>
           </Animated.View>
 
           {/* Error */}
           {error && (
-            <Animated.View entering={FadeIn.duration(200)} style={[styles.errorBox, { backgroundColor: colors.errorMuted }]}>
-              <Body size="small" tone="error" style={styles.errorText}>{error}</Body>
+            <Animated.View 
+              entering={FadeIn.duration(200)} 
+              style={[authStyles.errorBox, { backgroundColor: colors.errorMuted }]}
+            >
+              <Body size="small" tone="error" style={authStyles.errorText}>{error}</Body>
             </Animated.View>
           )}
 
           {/* Code Input */}
-          <Animated.View entering={FadeInDown.delay(150).duration(400)} style={styles.codeSection}>
-            <HapticPressable onPress={focusInput} style={styles.codeBoxes}>
+          <Animated.View entering={FadeInDown.delay(150).duration(400)} style={authStyles.codeSection}>
+            <HapticPressable onPress={focusInput} style={authStyles.codeBoxes}>
               {Array.from({ length: CODE_LENGTH }).map((_, index) => {
                 const digit = code[index] || '';
                 const isActive = index === code.length;
@@ -127,7 +132,7 @@ export function OTPScreen({
                   <View
                     key={index}
                     style={[
-                      styles.codeBox,
+                      authStyles.codeBox,
                       { 
                         backgroundColor: colors.input,
                         borderColor: error ? colors.error : isActive ? colors.primary : colors.border,
@@ -138,7 +143,7 @@ export function OTPScreen({
                     {isActive && !isLoading && (
                       <Animated.View 
                         entering={FadeIn.duration(150)}
-                        style={[styles.cursor, { backgroundColor: colors.primary }]} 
+                        style={[authStyles.codeCursor, { backgroundColor: colors.primary }]} 
                       />
                     )}
                   </View>
@@ -154,20 +159,20 @@ export function OTPScreen({
               keyboardType="number-pad"
               maxLength={CODE_LENGTH}
               autoFocus
-              style={styles.hiddenInput}
+              style={authStyles.codeHiddenInput}
               editable={!isLoading}
             />
           </Animated.View>
 
           {/* Loading */}
           {isLoading && (
-            <Animated.View entering={FadeIn.duration(150)} style={styles.loadingSection}>
+            <Animated.View entering={FadeIn.duration(150)} style={authStyles.loadingSection}>
               <InlineLoader size="sm" />
             </Animated.View>
           )}
 
           {/* Resend */}
-          <Animated.View entering={FadeIn.delay(250).duration(300)} style={styles.resendSection}>
+          <Animated.View entering={FadeIn.delay(250).duration(300)} style={authStyles.resendSection}>
             {canResend ? (
               <HapticPressable onPress={handleResend} disabled={isLoading}>
                 <Data tone="primary">Resend code</Data>
@@ -180,8 +185,8 @@ export function OTPScreen({
           </Animated.View>
 
           {/* Help text */}
-          <Animated.View entering={FadeIn.delay(350).duration(300)} style={styles.helpSection}>
-            <Supporting size="small" tone="muted" style={styles.helpText}>
+          <Animated.View entering={FadeIn.delay(350).duration(300)} style={authStyles.helpSection}>
+            <Supporting size="small" tone="muted" style={authStyles.helpText}>
               Check your spam folder if you don't see it
             </Supporting>
           </Animated.View>
@@ -190,101 +195,3 @@ export function OTPScreen({
     </View>
   );
 }
-
-function ChevronLeftIcon({ color }: { color: string }) {
-  return (
-    <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M15 18l-6-6 6-6"
-        stroke={color}
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: Spacing['2xl'],
-  },
-  header: {
-    height: 52,
-    justifyContent: 'center',
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    marginLeft: -Spacing.sm,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  titleSection: {
-    marginTop: Spacing.sm,
-    marginBottom: Spacing['3xl'],
-  },
-  subtitle: {
-    marginTop: Spacing.sm,
-  },
-  errorBox: {
-    borderRadius: Radius.lg,
-    padding: Spacing.md,
-    marginBottom: Spacing.xl,
-  },
-  errorText: {
-    textAlign: 'center',
-  },
-  codeSection: {
-    position: 'relative',
-  },
-  codeBoxes: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: Spacing.sm,
-  },
-  codeBox: {
-    width: 50,
-    height: 60,
-    borderRadius: Radius.xl,
-    borderWidth: 1.5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  cursor: {
-    position: 'absolute',
-    width: 2,
-    height: 26,
-    borderRadius: 1,
-  },
-  hiddenInput: {
-    position: 'absolute',
-    opacity: 0,
-    width: 1,
-    height: 1,
-  },
-  loadingSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: Spacing['2xl'],
-  },
-  resendSection: {
-    alignItems: 'center',
-    marginTop: Spacing['3xl'],
-  },
-  helpSection: {
-    marginTop: 'auto',
-    paddingBottom: Spacing['2xl'],
-  },
-  helpText: {
-    textAlign: 'center',
-  },
-});

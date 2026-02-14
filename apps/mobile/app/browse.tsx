@@ -11,7 +11,7 @@ import { StyleSheet, View, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
-import { ScreenContainer, TopSafeAreaGradient } from '@/components/layout';
+import { ScreenContainer } from '@/components/layout';
 import { BrowseHeader, type FilterPillType, ACTIVE_CHIPS_HEIGHT } from '@/components/browse';
 import { 
   MakeFilterSheet,
@@ -411,9 +411,6 @@ export default function BrowseScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Top safe area gradient behind pills */}
-      <TopSafeAreaGradient />
-
       {/* Browse Header with Filter Pills */}
       <BrowseHeader 
         pills={filterPillConfigs}

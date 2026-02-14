@@ -1,16 +1,15 @@
 /**
  * Auth Success Screen
- * Clean, minimal success confirmation with confetti
+ * Clean, minimal success confirmation with confetti using design system tokens
  */
 
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Dimensions } from 'react-native';
+import { View, Dimensions } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { 
   FadeIn, 
   FadeInDown,
-  FadeOut,
   useSharedValue,
   useAnimatedStyle,
   withSpring,
@@ -19,11 +18,12 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { CheckCircle2 } from 'lucide-react-native';
-import Svg, { Path } from 'react-native-svg';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 import { Heading, Body, ButtonText } from '@/components/ui';
+import { authStyles } from './auth-styles';
+import { ArrowRightIcon } from './icons';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CONFETTI_COUNT = 50;
@@ -73,7 +73,6 @@ export function AuthSuccessScreen({
     setIsExiting(true);
     
     // Wait for confetti to start, then exit
-    // Don't fade out the screen to avoid showing white background
     setTimeout(() => {
       onContinue();
     }, 800);
@@ -82,39 +81,45 @@ export function AuthSuccessScreen({
   const firstName = userName?.split(' ')[0];
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[authStyles.container, { backgroundColor: colors.background }]}>
       {/* Confetti Layer */}
       {showConfetti && <ConfettiExplosion />}
       
-      <View style={[styles.content, { paddingTop: insets.top, paddingBottom: insets.bottom + Spacing['2xl'] }]}>
+      <View style={[
+        authStyles.content, 
+        { paddingTop: insets.top, paddingBottom: insets.bottom + Spacing['2xl'] }
+      ]}>
         {/* Centered Content */}
-        <View style={styles.centerSection}>
+        <View style={authStyles.centerSection}>
           {/* Success Check */}
-          <Animated.View entering={FadeIn.duration(300)} style={styles.iconSection}>
+          <Animated.View entering={FadeIn.duration(300)} style={authStyles.iconSection}>
             <Animated.View style={iconAnimatedStyle}>
               <CheckCircle2 size={80} color={colors.success} strokeWidth={1.5} />
             </Animated.View>
           </Animated.View>
 
           {/* Title */}
-          <Animated.View entering={FadeInDown.delay(200).duration(400)} style={styles.titleSection}>
-            <Heading size="large" style={styles.title}>
+          <Animated.View 
+            entering={FadeInDown.delay(200).duration(400)} 
+            style={[authStyles.titleSection, { alignItems: 'center' }]}
+          >
+            <Heading size="large" style={{ textAlign: 'center' }}>
               {firstName ? `Welcome, ${firstName}` : "You're in"}
             </Heading>
-            <Body size="large" tone="secondary" style={styles.subtitle}>
+            <Body size="large" tone="secondary" style={authStyles.subtitle}>
               {"Let's find your next car"}
             </Body>
           </Animated.View>
         </View>
 
         {/* Continue Button - Bottom Right */}
-        <Animated.View entering={FadeInDown.delay(400).duration(400)} style={styles.buttonSection}>
+        <Animated.View entering={FadeInDown.delay(400).duration(400)} style={authStyles.buttonSection}>
           <Animated.View style={buttonAnimatedStyle}>
             <HapticPressable
               onPress={handleContinue}
               disabled={isExiting}
               style={({ pressed }) => [
-                styles.continueButton,
+                authStyles.continueButton,
                 { backgroundColor: colors.primary, opacity: isExiting ? 0.7 : pressed ? 0.9 : 1 }
               ]}
             >
@@ -130,7 +135,7 @@ export function AuthSuccessScreen({
 
 function ConfettiExplosion() {
   return (
-    <View style={styles.confettiContainer} pointerEvents="none">
+    <View style={authStyles.confettiContainer} pointerEvents="none">
       {Array.from({ length: CONFETTI_COUNT }).map((_, index) => (
         <ConfettiPiece key={index} index={index} />
       ))}
@@ -180,7 +185,7 @@ function ConfettiPiece({ index }: { index: number }) {
   return (
     <Animated.View
       style={[
-        styles.confettiPiece,
+        authStyles.confettiPiece,
         {
           width: size,
           height: isCircle ? size : size * 1.5,
@@ -192,65 +197,3 @@ function ConfettiPiece({ index }: { index: number }) {
     />
   );
 }
-
-function ArrowRightIcon({ color = '#FFFFFF' }: { color?: string }) {
-  return (
-    <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M5 12h14M12 5l7 7-7 7"
-        stroke={color}
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: Spacing['2xl'],
-  },
-  confettiContainer: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 100,
-  },
-  confettiPiece: {
-    position: 'absolute',
-  },
-  centerSection: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  iconSection: {
-    marginBottom: Spacing['3xl'],
-  },
-  titleSection: {
-    alignItems: 'center',
-  },
-  title: {
-    textAlign: 'center',
-  },
-  subtitle: {
-    marginTop: Spacing.sm,
-    textAlign: 'center',
-  },
-  buttonSection: {
-    alignItems: 'flex-end',
-    paddingBottom: Spacing['4xl'],
-  },
-  continueButton: {
-    height: 54,
-    paddingHorizontal: Spacing['2xl'],
-    borderRadius: Radius.full,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.sm,
-  },
-});

@@ -17,8 +17,9 @@ import { Modal, View, LogBox, Platform } from 'react-native';
 import 'react-native-reanimated';
 
 // Suppress warnings from third-party dependencies that can't be fixed in user code
+// Note: These warnings come from dependencies, not our code
 LogBox.ignoreLogs([
-  'SafeAreaView has been deprecated',
+  /SafeAreaView.*deprecated/,
   'expo-notifications: Android Push notifications',
   '`expo-notifications` functionality is not fully supported in Expo Go',
 ]);

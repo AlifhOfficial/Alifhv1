@@ -33,10 +33,11 @@ import {
   FAVORITE_COLORS,
   SUPERLIKE_COLORS,
 } from './confetti-burst';
+// Import directly to avoid circular dependency with @/components/sheets barrel
 import {
   SuperlikeConfirmationSheet,
   SuperlikeQuotaExhaustedSheet,
-} from '@/components/sheets';
+} from '@/components/sheets/superlike-confirmation-sheet';
 
 // ============================================================================
 // TYPES

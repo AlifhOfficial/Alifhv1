@@ -22,6 +22,8 @@ import type { EditingField, ProfileFormData } from '../types';
 
 interface UseProfileOptions {
   isAuthenticated: boolean;
+  /** Callback to refresh auth context session (syncs avatar across app) */
+  onAvatarChange?: () => Promise<void>;
 }
 
 interface UseProfileReturn {
@@ -55,7 +57,7 @@ interface UseProfileReturn {
   error: string | null;
 }
 
-export function useProfile({ isAuthenticated }: UseProfileOptions): UseProfileReturn {
+export function useProfile({ isAuthenticated, onAvatarChange }: UseProfileOptions): UseProfileReturn {
   // Loading states
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -259,6 +261,9 @@ export function useProfile({ isAuthenticated }: UseProfileOptions): UseProfileRe
             prev ? { ...prev, profile: updateResult.profile! } : null
           );
           
+          // Sync auth context so avatar updates across the app
+          await onAvatarChange?.();
+          
           if (Platform.OS === 'ios') {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
           }
@@ -279,7 +284,7 @@ export function useProfile({ isAuthenticated }: UseProfileOptions): UseProfileRe
     } finally {
       setIsUploadingAvatar(false);
     }
-  }, [profile?.avatar]);
+  }, [profile?.avatar, onAvatarChange]);
 
   // Remove avatar photo
   const removePhoto = useCallback(async () => {
@@ -293,6 +298,9 @@ export function useProfile({ isAuthenticated }: UseProfileOptions): UseProfileRe
           prev ? { ...prev, profile: result.profile! } : null
         );
         
+        // Sync auth context so avatar updates across the app
+        await onAvatarChange?.();
+        
         if (Platform.OS === 'ios') {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }
@@ -304,7 +312,7 @@ export function useProfile({ isAuthenticated }: UseProfileOptions): UseProfileRe
     } finally {
       setIsUploadingAvatar(false);
     }
-  }, []);
+  }, [onAvatarChange]);
 
   // Remove phone number
   const removePhone = useCallback(async () => {

@@ -1,6 +1,6 @@
 /**
  * Welcome Screen - First touch point
- * Minimal, clean design with animated logo reveal
+ * Minimal, clean design with animated logo reveal using design system tokens
  */
 
 import React, { useEffect } from 'react';
@@ -18,7 +18,7 @@ import Animated, {
 import Svg, { Path } from 'react-native-svg';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing, Layout } from '@/constants/theme';
 import { Heading, Supporting } from '@/components/ui';
 
 interface WelcomeScreenProps {
@@ -138,7 +138,7 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
         >
           <HapticPressable
             onPress={onSkip}
-            hitSlop={{ top: 16, bottom: 16, left: 24, right: 24 }}
+            hitSlop={{ top: Layout.hitSlop, bottom: Layout.hitSlop, left: Spacing['2xl'], right: Spacing['2xl'] }}
             style={({ pressed }) => [{ opacity: pressed ? 0.4 : 1 }]}
           >
             <Supporting size="small" tone="muted">Skip</Supporting>

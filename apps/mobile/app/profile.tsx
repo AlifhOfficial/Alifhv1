@@ -35,7 +35,7 @@ import {
 
 export default function ProfileScreen() {
   const colors = useProfileColors();
-  const { user, isAuthenticated, showAuthSheet } = useAuth();
+  const { user, isAuthenticated, showAuthSheet, refreshSession } = useAuth();
   const insets = useSafeAreaInsets();
 
   // Show auth sheet when not authenticated
@@ -67,7 +67,7 @@ export default function ProfileScreen() {
     removePhone,
     onPhoneVerified,
     error,
-  } = useProfile({ isAuthenticated });
+  } = useProfile({ isAuthenticated, onAvatarChange: refreshSession });
 
   // Transform API stats to component format
   const stats: ProfileStats = {
