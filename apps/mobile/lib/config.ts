@@ -7,7 +7,8 @@
  */
 
 // Development API URL - your local web server
-export const API_BASE = 'http://192.168.1.14:3000';
+// Use your machine's local IP (check with: ifconfig | grep inet)
+export const API_BASE = 'http://192.168.1.33:3000';
 
 // ============================================================================
 // GLOBAL FETCH INTERCEPTOR
@@ -40,7 +41,7 @@ export const CDN_BASE = 'https://cdn.alifh.ae';
 export const R2_PUBLIC_URL = 'https://cdn.alifh.ae';
 
 // WebSocket URL
-export const WS_URL = 'ws://192.168.1.14:3001';
+export const WS_URL = 'ws://192.168.1.33:3001';
 
 /**
  * Convert avatar key to full public URL

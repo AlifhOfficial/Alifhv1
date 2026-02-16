@@ -15,7 +15,8 @@
       "bundleIdentifier": "ae.revvup.mobile",
       "associatedDomains": [
         "webcredentials:revvup.ae",
-        "webcredentials:192.168.1.14:3000"
+        "webcredentials:192.168.1.14:3000",
+        "webcredentials:192.168.1.33:3000"
       ]
     },
     "android": {
@@ -44,7 +45,9 @@
       [
         "expo-font",
         {
-          "fonts": ["./assets/fonts/Geom/static/Geom-Black.ttf"]
+          "fonts": [
+            "./assets/fonts/Geom/static/Geom-Black.ttf"
+          ]
         }
       ],
       [
@@ -63,7 +66,8 @@
           "defaultChannel": "messages"
         }
       ],
-      "expo-audio"
+      "expo-audio",
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true,

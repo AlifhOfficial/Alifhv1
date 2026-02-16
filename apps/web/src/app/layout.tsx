@@ -48,20 +48,21 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Inter Font - Preconnect for performance */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link key="preconnect-google-fonts" rel="preconnect" href="https://fonts.googleapis.com" />
+        <link key="preconnect-gstatic" rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link 
+          key="google-fonts-inter"
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" 
           rel="stylesheet" 
         />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="icon" type="image/png" href="/favicon.png" />
-        <link rel="shortcut icon" href="/favicon.ico" />
+        <link key="favicon-svg" rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link key="favicon-png" rel="icon" type="image/png" href="/favicon.png" />
+        <link key="favicon-ico" rel="shortcut icon" href="/favicon.ico" />
         {/* PWA - Apple Touch Icon */}
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <script dangerouslySetInnerHTML={{
+        <link key="apple-touch-icon" rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+        <meta key="apple-webapp-capable" name="apple-mobile-web-app-capable" content="yes" />
+        <meta key="mobile-webapp-capable" name="mobile-web-app-capable" content="yes" />
+        <script key="favicon-script" dangerouslySetInnerHTML={{
           __html: `
             (function() {
               const updateFavicon = () => {
