@@ -40,6 +40,7 @@ export function ListingsView({
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'minimal'>('list'); // Default to list
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(defaultFiltersOpen);
+  const desktopScrollRef = useRef<HTMLDivElement>(null);
 
   const { isSignedIn } = useUser();
 
@@ -79,6 +80,10 @@ export function ListingsView({
   const prevPageRef = useRef(currentPage);
   useEffect(() => {
     if (prevPageRef.current !== currentPage && !isFetching) {
+      // Desktop: scroll the container div, Mobile: scroll window
+      if (desktopScrollRef.current) {
+        desktopScrollRef.current.scrollTo({ top: 0, behavior: 'instant' });
+      }
       window.scrollTo({ top: 0, behavior: 'instant' });
       prevPageRef.current = currentPage;
     }
@@ -164,7 +169,7 @@ export function ListingsView({
             )}
 
             {/* RIGHT: Search Header + Content - scrollable */}
-            <div className="flex-1 min-w-0 h-full overflow-y-auto scrollbar-hide">
+            <div ref={desktopScrollRef} className="flex-1 min-w-0 h-full overflow-y-auto scrollbar-hide">
               {/* TOP: Sticky Search Header - stickiness handled by the header itself */}
               <ListingsHeader
                 params={params}

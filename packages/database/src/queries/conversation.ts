@@ -387,12 +387,12 @@ export async function getUserConversations(
             id: row.otherParticipantId,
             name: showPartnerBrand ? row.partnerName : row.otherParticipantName,
             avatarUrl: showPartnerBrand ? row.partnerLogo : row.otherParticipantAvatar,
-            // Convert dates to ISO strings (DB returns them in "YYYY-MM-DD HH:mm:ss" format)
+            // Convert DB timestamp strings to Date objects
             lastReadAt: row.otherParticipantLastReadAt
-              ? new Date(row.otherParticipantLastReadAt).toISOString()
+              ? new Date(row.otherParticipantLastReadAt)
               : null,
             lastSeenAt: row.otherParticipantLastSeenAt
-              ? new Date(row.otherParticipantLastSeenAt).toISOString()
+              ? new Date(row.otherParticipantLastSeenAt)
               : null,
           }
         : null,
