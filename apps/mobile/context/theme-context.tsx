@@ -72,8 +72,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // Sync theme with native system UI
   // With edge-to-edge on Android 15+, background colors are handled by app content.
   useEffect(() => {
-    // Status bar icon style (light/dark) - works on both platforms
-    setStatusBarStyle(isDark ? 'light' : 'dark', true);
+    // Status bar icon style (light/dark) - instant, no animation
+    setStatusBarStyle(isDark ? 'light' : 'dark', false);
     
     // Appearance API - controls keyboard theme, alerts, action sheets
     // Only call on iOS; on Android it can interfere with edge-to-edge nav bar

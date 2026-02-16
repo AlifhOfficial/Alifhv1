@@ -287,12 +287,12 @@ export const Sizes = {
   avatarLg: scale(48),
   
   // Bubbles & Pills (universal action containers)
-  bubble: scale(36),        // Standard action bubble (back, search, sort, create, etc.)
-  bubbleLg: scale(48),      // Large bubble for global tab bar
+  bubble: scale(36),        // Standard action bubble (home header, etc.)
+  bubbleMd: scale(42),      // Medium bubble for global tab bar
   pillHeight: scale(36),    // Inner pill height for tab bars
-  pillHeightLg: scale(48),  // Large pill height for global tab bar
+  pillHeightMd: scale(42),  // Medium pill height for global tab bar
   pillRadius: 18,           // Pill border radius
-  pillRadiusLg: 24,         // Large pill border radius
+  pillRadiusMd: 21,         // Medium pill border radius
   
   // Action buttons (icon containers)
   actionButtonSm: scale(36),

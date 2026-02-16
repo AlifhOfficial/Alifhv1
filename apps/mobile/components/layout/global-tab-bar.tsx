@@ -160,7 +160,7 @@ export function GlobalTabBar() {
       transform: [
         { scale: interpolate(progress.value, [0, 1], [0, 1]) },
       ],
-      width: interpolate(progress.value, [0, 1], [0, Sizes.bubbleLg]),
+      width: interpolate(progress.value, [0, 1], [0, Sizes.bubbleMd]),
       marginRight: interpolate(progress.value, [0, 1], [0, GAP]),
     };
   });
@@ -171,7 +171,7 @@ export function GlobalTabBar() {
       transform: [
         { scale: interpolate(createProgress.value, [0, 1], [0, 1]) },
       ],
-      width: interpolate(createProgress.value, [0, 1], [0, Sizes.bubbleLg]),
+      width: interpolate(createProgress.value, [0, 1], [0, Sizes.bubbleMd]),
       marginLeft: interpolate(createProgress.value, [0, 1], [0, GAP]),
     };
   });
@@ -182,7 +182,7 @@ export function GlobalTabBar() {
       transform: [
         { scale: interpolate(filterProgress.value, [0, 1], [0, 1]) },
       ],
-      width: interpolate(filterProgress.value, [0, 1], [0, Sizes.bubbleLg]),
+      width: interpolate(filterProgress.value, [0, 1], [0, Sizes.bubbleMd]),
       marginLeft: interpolate(filterProgress.value, [0, 1], [0, GAP]),
     };
   });
@@ -385,12 +385,12 @@ export function GlobalTabBar() {
               styles.glass,
               {
                 borderColor: colors.glassBorder,
+                backgroundColor: colors.glassBackground,
               },
               backBubbleStyle,
             ]}
             pointerEvents={showBackButton ? 'auto' : 'none'}
           >
-            <View style={[StyleSheet.absoluteFill, { borderRadius: Sizes.bubbleLg / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
             <ChevronLeft
               size={Sizes.iconMd}
               color={colors.text}
@@ -405,10 +405,10 @@ export function GlobalTabBar() {
               styles.glass,
               {
                 borderColor: colors.glassBorder,
+                backgroundColor: colors.glassBackground,
               }, 
               pillStyle
             ]}>
-              <View style={[StyleSheet.absoluteFill, { borderRadius: Sizes.bubbleLg / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
               <View style={styles.pillContent}>
                 {TABS.map((tab) => {
                   const isActive = getIsActive(tab);
@@ -451,11 +451,11 @@ export function GlobalTabBar() {
                 styles.glass,
                 {
                   borderColor: colors.glassBorder,
+                  backgroundColor: colors.glassBackground,
                   marginLeft: GAP,
                 },
               ]}
             >
-              <View style={[StyleSheet.absoluteFill, { borderRadius: Sizes.bubbleLg / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
               <Search
                 size={Sizes.iconMd}
                 color={colors.text}
@@ -474,10 +474,10 @@ export function GlobalTabBar() {
                   styles.glass,
                   {
                     borderColor: colors.glassBorder,
+                    backgroundColor: colors.glassBackground,
                   },
                 ]}
               >
-                <View style={[StyleSheet.absoluteFill, { borderRadius: Sizes.bubbleLg / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
                 <Zap
                   size={Sizes.iconMd}
                   color="#8B5CF6"
@@ -497,11 +497,11 @@ export function GlobalTabBar() {
                 styles.glass,
                 {
                   borderColor: colors.glassBorder,
+                  backgroundColor: colors.glassBackground,
                   marginLeft: GAP,
                 },
               ]}
             >
-              <View style={[StyleSheet.absoluteFill, { borderRadius: Sizes.bubbleLg / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
               <ArrowUpDown
                 size={Sizes.iconMd}
                 color={colors.text}
@@ -518,12 +518,12 @@ export function GlobalTabBar() {
               styles.glass,
               {
                 borderColor: colors.glassBorder,
+                backgroundColor: colors.glassBackground,
               },
               filterBubbleStyle,
             ]}
             pointerEvents={activeFilterCount > 0 && showSearchBubble ? 'auto' : 'none'}
           >
-            <View style={[StyleSheet.absoluteFill, { borderRadius: Sizes.bubbleLg / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
             <Body tone="secondary">
               {activeFilterCount > 9 ? '9+' : activeFilterCount}
             </Body>
@@ -537,12 +537,12 @@ export function GlobalTabBar() {
               styles.glass,
               {
                 borderColor: colors.glassBorder,
+                backgroundColor: colors.glassBackground,
               },
               createBubbleStyle,
             ]}
             pointerEvents={showCreateBubble ? 'auto' : 'none'}
           >
-            <View style={[StyleSheet.absoluteFill, { borderRadius: Sizes.bubbleLg / 2, overflow: 'hidden', backgroundColor: colors.glassBackground }]} />
             <Plus
               size={Sizes.iconMd}
               color={colors.text}
@@ -615,55 +615,50 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   backBubble: {
-    width: Sizes.bubbleLg,
-    height: Sizes.bubbleLg,
-    borderRadius: Sizes.bubbleLg / 2,
+    width: Sizes.bubbleMd,
+    height: Sizes.bubbleMd,
+    borderRadius: Sizes.bubbleMd / 2,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
   },
   pillWrapper: {
-    height: Sizes.bubbleLg,
-    borderRadius: Sizes.bubbleLg / 2,
-    overflow: 'hidden',
+    height: Sizes.bubbleMd,
+    borderRadius: Sizes.bubbleMd / 2,
   },
   pillContent: {
     flexDirection: 'row',
     alignItems: 'center',
     height: '100%',
-    paddingHorizontal: Spacing.xs,
-    gap: Spacing.xs,
+    paddingHorizontal: Spacing.md,
+    gap: Spacing.md,
   },
   pillTab: {
-    width: Sizes.bubbleLg - Spacing.sm,
-    height: Sizes.bubbleLg - Spacing.sm,
+    width: Sizes.bubbleMd - Spacing.sm,
+    height: Sizes.bubbleMd - Spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: (Sizes.bubbleLg - Spacing.sm) / 2,
+    borderRadius: (Sizes.bubbleMd - Spacing.sm) / 2,
   },
   createBubble: {
-    width: Sizes.bubbleLg,
-    height: Sizes.bubbleLg,
-    borderRadius: Sizes.bubbleLg / 2,
+    width: Sizes.bubbleMd,
+    height: Sizes.bubbleMd,
+    borderRadius: Sizes.bubbleMd / 2,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
   },
   actionBubble: {
-    width: Sizes.bubbleLg,
-    height: Sizes.bubbleLg,
-    borderRadius: Sizes.bubbleLg / 2,
+    width: Sizes.bubbleMd,
+    height: Sizes.bubbleMd,
+    borderRadius: Sizes.bubbleMd / 2,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
   },
   filterBubble: {
-    width: Sizes.bubbleLg,
-    height: Sizes.bubbleLg,
-    borderRadius: Sizes.bubbleLg / 2,
+    width: Sizes.bubbleMd,
+    height: Sizes.bubbleMd,
+    borderRadius: Sizes.bubbleMd / 2,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
   },
   unreadDot: {
     position: 'absolute',

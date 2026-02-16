@@ -82,7 +82,7 @@ const IMAGE_WIDTH = Sizes.cardThumbnailWidth + Spacing.xl;
 const IMAGE_HEIGHT = Sizes.cardThumbnailHeight + Spacing.xl;
 
 /** FAB dimensions — derived from theme */
-const FAB_SIZE = Sizes.bubbleLg + Spacing.xs;
+const FAB_SIZE = Sizes.bubbleMd + Spacing.xs;
 
 /** Empty state icon container — derived from theme */
 const EMPTY_ICON_SIZE = Spacing['5xl'] + Spacing['3xl'];

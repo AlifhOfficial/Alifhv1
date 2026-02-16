@@ -32,7 +32,7 @@ interface FloatingListingActionsProps {
   onSharePress?: (id: string) => void;
 }
 
-const BUBBLE_SIZE = Sizes.bubbleLg;
+const BUBBLE_SIZE = Sizes.bubbleMd;
 const GAP = Spacing.sm;
 
 export function FloatingListingActions({
