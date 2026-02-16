@@ -1,13 +1,14 @@
 /**
  * Settings Header Component
- * Title header matching HomeHeader icon styling
+ * Glass pill style matching other headers
  */
 
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { Settings2 } from 'lucide-react-native';
 
-import { Heading } from '@/components/ui';
-import { Spacing, Layout } from '@/constants/theme';
+import { Data } from '@/components/ui';
+import { Spacing, Layout, Sizes } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 interface SettingsHeaderProps {
@@ -20,18 +21,52 @@ export function SettingsHeader({
   topInset,
 }: SettingsHeaderProps) {
   return (
-    <View style={[styles.container, { paddingTop: topInset + Layout.headerPadding }]}>
-      <Heading size="medium">Settings</Heading>
+    <View style={[styles.header, { paddingTop: topInset + Layout.headerPadding }]}>
+      {/* Settings Title Pill */}
+      <View
+        style={[
+          styles.pillButton,
+          styles.glass,
+          {
+            borderColor: colors.glassBorder,
+            backgroundColor: colors.glassBackground,
+          },
+        ]}
+      >
+        <View style={styles.pillContent}>
+          <Settings2 size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
+          <Data size="small">Settings</Data>
+        </View>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 20,
     paddingBottom: Spacing.md,
     paddingHorizontal: Layout.screenPadding,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  glass: {
+    borderWidth: 1,
+  },
+  pillButton: {
+    height: Sizes.pillHeight,
+    paddingHorizontal: Spacing.md,
+    borderRadius: Sizes.pillRadius,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pillContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
   },
 });

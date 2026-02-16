@@ -12,8 +12,9 @@ import { Body, Supporting, Skeleton, SkeletonCircle } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenContainer } from '@/components/layout';
 
-import { Layout, Spacing, Radius } from '@/constants/theme';
+import { Layout, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
+import { TopSafeAreaGradient } from '@/components/layout';
 import {
   useProfileColors,
   useProfile,
@@ -24,7 +25,6 @@ import {
   PersonalInfoSection,
   BioSection,
   TagsSection,
-  SignOutButton,
   type ProfileStats,
   type ProfileStatus,
 } from '@/components/profile';
@@ -121,10 +121,14 @@ export default function ProfileScreen() {
     // TODO: Navigate to badges info
   }, []);
 
+  // Header height for content offset
+  const headerHeight = insets.top + Layout.headerPadding + Sizes.pillHeight + Spacing.md;
+
   // Unauthenticated - show header only (sheet comes from context)
   if (!isAuthenticated) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <TopSafeAreaGradient />
         <ProfileHeader colors={colors} topInset={insets.top} />
       </View>
     );
@@ -134,8 +138,9 @@ export default function ProfileScreen() {
   if (isLoading) {
     return (
       <View style={[styles.container, styles.centered, { backgroundColor: colors.background }]}>
+        <TopSafeAreaGradient />
         <ProfileHeader colors={colors} topInset={insets.top} />
-        <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding }]}>
+        <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding, paddingTop: headerHeight }]}>
           {/* Avatar */}
           <View style={styles.skeletonIdentity}>
             <SkeletonCircle size={88} />
@@ -191,8 +196,9 @@ export default function ProfileScreen() {
   if (error && !profile) {
     return (
       <View style={[styles.container, styles.centered, { backgroundColor: colors.background }]}>
+        <TopSafeAreaGradient />
         <ProfileHeader colors={colors} topInset={insets.top} />
-        <View style={[styles.errorContainer, { backgroundColor: colors.background }]}>
+        <View style={[styles.errorContainer, { backgroundColor: colors.background, paddingTop: headerHeight }]}>
           <Body size="medium" tone="error" style={styles.errorText}>
             {error}
           </Body>
@@ -205,12 +211,15 @@ export default function ProfileScreen() {
   }
 
   return (
-    <ScreenContainer
-      header={<ProfileHeader colors={colors} topInset={insets.top} />}
-      refreshing={isRefreshing}
-      onRefresh={refresh}
-      verticalPadding={0}
-    >
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <TopSafeAreaGradient />
+      <ProfileHeader colors={colors} topInset={insets.top} />
+      <ScreenContainer
+        refreshing={isRefreshing}
+        onRefresh={refresh}
+        verticalPadding={0}
+        contentContainerStyle={{ paddingTop: headerHeight }}
+      >
       {/* Profile Identity */}
       <ProfileIdentity
         displayName={displayName}
@@ -274,10 +283,8 @@ export default function ProfileScreen() {
         colors={colors}
         onLearnMore={handleBadgesLearnMore}
       />
-
-      {/* Sign Out */}
-      <SignOutButton colors={colors} />
-    </ScreenContainer>
+      </ScreenContainer>
+    </View>
   );
 }
 
@@ -294,7 +301,6 @@ const styles = StyleSheet.create({
   },
   skeletonContainer: {
     flex: 1,
-    paddingTop: Spacing['2xl'],
     gap: Spacing.xl,
   },
   skeletonIdentity: {

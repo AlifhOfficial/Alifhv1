@@ -74,6 +74,9 @@ export const Fonts = {
 
 export const Colors = {
   light: {
+    // OLED - True black/white for AMOLED screens (always present for typing)
+    oledBlack: '#000000',
+    oledWhite: '#FFFFFF',
     // BACKGROUNDS - Pure white base
     background: '#FFFFFF',
     backgroundSecondary: '#F5F5F7',
@@ -150,6 +153,9 @@ export const Colors = {
   },
   
   dark: {
+    // OLED - True black/white for AMOLED screens
+    oledBlack: '#000000',
+    oledWhite: '#FFFFFF',
     // OLED - True black/white for AMOLED screens
     oledBlack: '#000000',
     oledWhite: '#FFFFFF',
@@ -786,7 +792,7 @@ export const Shadows = {
 
 // Type helpers
 export type ColorScheme = keyof typeof Colors;
-export type ThemeColors = typeof Colors.light;
+export type ThemeColors = typeof Colors.light & { oledBlack: string; oledWhite: string };
 
 // Export scaling utilities for custom use
 export { scale, fontScale, SCREEN_WIDTH, BASE_WIDTH };

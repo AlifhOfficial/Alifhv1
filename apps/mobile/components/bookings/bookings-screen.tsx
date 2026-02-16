@@ -61,6 +61,7 @@ import {
 import { CancelBookingSheet } from './cancel-booking-sheet';
 import { BookingDetailsSheet } from './booking-details-sheet';
 import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
+import { TopSafeAreaGradient } from '@/components/layout';
 
 // ─── Constants (derived from theme for responsive scaling) ──────────────────
 
@@ -336,33 +337,42 @@ export function BookingsScreen() {
   // MAIN RENDER
   // ════════════════════════════════════════════════════════════════════════
 
-  const headerHeight = insets.top + Layout.headerPadding + Spacing['3xl'] + Spacing.sm + Sizes.pillHeight + Spacing.sm;
+  const headerHeight = insets.top + Layout.headerPadding + Sizes.pillHeight + Spacing.md;
 
   return (
     <View style={styles.container}>
-      {/* ─────────────────────── Floating Header ───────────────────────── */}
-      <View
-        style={[
-          styles.header,
-          {
-            paddingTop: insets.top + Layout.headerPadding,
-            backgroundColor: colors.background,
-            paddingHorizontal: Layout.screenPadding,
-          },
-        ]}
-      >
-        {/* Title */}
-        <Heading size="medium">Bookings</Heading>
+      {/* ─────────────────────── Top Safe Area Gradient ────────────────────────────────── */}
+      <TopSafeAreaGradient />
 
-        {/* Filter pills */}
+      {/* ─────────────────────── Floating Header (absolute) ────────────────────────────────── */}
+      <View style={[styles.header, { paddingTop: insets.top + Layout.headerPadding }]}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          style={styles.pillScroll}
-          contentContainerStyle={styles.pillScrollContent}
+          contentContainerStyle={styles.headerScrollContent}
+          style={styles.headerScroll}
         >
+          {/* Bookings Title Pill */}
+          <View
+            style={[
+              styles.pillButton,
+              styles.glass,
+              {
+                borderColor: colors.glassBorder,
+                backgroundColor: colors.glassBackground,
+              },
+            ]}
+          >
+            <View style={styles.pillContent}>
+              <Calendar size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
+              <Data size="small">Bookings</Data>
+            </View>
+          </View>
+
+          {/* Filter Pills */}
           {STATUS_TABS.map((tab) => {
-            const isActiveTab = activeTab === tab.key;
+            const isActive = tab.key === activeTab;
+
             return (
               <View
                 key={tab.key}
@@ -370,7 +380,7 @@ export function BookingsScreen() {
                   styles.pill,
                   styles.glass,
                   {
-                    borderColor: isActiveTab ? colors.textMuted : colors.glassBorder,
+                    borderColor: colors.glassBorder,
                     backgroundColor: colors.glassBackground,
                   },
                 ]}
@@ -383,7 +393,7 @@ export function BookingsScreen() {
                     <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
                       <Data
                         size="small"
-                        style={{ color: isActiveTab ? colors.text : colors.textSecondary }}
+                        style={{ color: isActive ? colors.text : colors.textMuted }}
                         numberOfLines={1}
                       >
                         {tab.label}
@@ -488,27 +498,32 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // ── Header ─────────────────────────────────────────────────────────────
+  // ── Header (absolute floating) ─────────────────────────────────────────────────────────────────
   header: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     zIndex: 20,
-    paddingBottom: Spacing.sm,
-    flexDirection: 'column',
-    gap: Spacing.sm,
+    paddingBottom: Spacing.md,
+    paddingHorizontal: Layout.screenPadding,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-
-  // ── Filter Pills ──────────────────────────────────────────────────────
-  pillScroll: {
-    flexGrow: 0,
+  headerScroll: {
+    flex: 1,
   },
-  pillScrollContent: {
+  headerScrollContent: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Layout.headerGap,
-    paddingRight: Layout.screenPadding,
+  },
+  pillButton: {
+    height: Sizes.pillHeight,
+    paddingHorizontal: Spacing.md,
+    borderRadius: Sizes.pillRadius,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   glass: {
     borderWidth: 1,

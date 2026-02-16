@@ -11,8 +11,9 @@ import { StyleSheet, View, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
-import { ScreenContainer } from '@/components/layout';
-import { BrowseHeader, type FilterPillType, ACTIVE_CHIPS_HEIGHT } from '@/components/browse';
+import { ScreenContainer, TopSafeAreaGradient } from '@/components/layout';
+import { BrowseHeader, type FilterPillType } from '@/components/browse';
+import { ACTIVE_CHIPS_HEIGHT } from '@/components/layout/active-search-chips';
 import { 
   MakeFilterSheet,
   ModelFilterSheet,
@@ -27,7 +28,7 @@ import { CarInfoSheet } from '@/components/sheets';
 import { CarCardM, CarCardMSkeleton, CarCardList, CarCardListSkeleton } from '@/components/cards';
 import { LogoLoader, Body } from '@/components/ui';
 import { searchApi, type ListingCard, type SearchParams, type SearchFacets, type SearchSortOption } from '@/lib/search-api';
-import { Colors, Spacing, Layout, Typography } from '@/constants/theme';
+import { Colors, Spacing, Layout, Typography, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch, type FilterParams } from '@/context/search-context';
 import { getModelsForMake } from '@/lib/filter-constants';
@@ -36,6 +37,9 @@ import { getModelsForMake } from '@/lib/filter-constants';
 // MODULE-LEVEL PERSISTENCE (survives tab switches, no async/race conditions)
 // ============================================================================
 let persistedViewMode: ViewMode = 'grid';
+
+// Header height calculation: headerPadding + bubble height + bottom padding
+const HEADER_HEIGHT = Layout.headerPadding + Sizes.bubble + Spacing.md;
 
 // ============================================================================
 // HELPERS
@@ -292,6 +296,11 @@ export default function BrowseScreen() {
   // Stable callbacks for FilterPills (prevents ScrollView scroll-reset)
   const handleSettingsPress = useCallback(() => setSettingsSheetVisible(true), []);
 
+  // Handle Browse pill press - scroll to top
+  const handleBrowsePress = useCallback(() => {
+    scrollRef.current?.scrollTo({ y: 0, animated: true });
+  }, []);
+
   // Handle make filter apply — updates searchParams in context
   const handleMakeApply = useCallback((makes: string[]) => {
     const current = searchParams ?? {};
@@ -409,8 +418,12 @@ export default function BrowseScreen() {
   // RENDER
   // ──────────────────────────────────────────────────────────────────────────
 
+  // Dynamic top padding based on safe area + header
+  const contentTopPadding = insets.top + HEADER_HEIGHT + Spacing.md;
+
   return (
-    <View style={[styles.container, { backgroundColor: colorScheme === 'dark' ? colors.oledBlack : colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}> 
+      <TopSafeAreaGradient />
       {/* Browse Header with Filter Pills */}
       <BrowseHeader 
         pills={filterPillConfigs}
@@ -419,6 +432,7 @@ export default function BrowseScreen() {
         settingsCount={moreFiltersCount}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
+        onBrowsePress={handleBrowsePress}
       />
 
       {/* Make Filter Sheet - reads from searchParams */}
@@ -500,7 +514,8 @@ export default function BrowseScreen() {
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.3}
         horizontalPadding="sm"
-        verticalPadding="sm"
+        verticalPadding={0}
+        contentContainerStyle={{ paddingTop: contentTopPadding }}
         extraBottomPadding={hasActiveChips ? ACTIVE_CHIPS_HEIGHT + Spacing.sm : 0}
         keyboardAvoiding={false}
       >

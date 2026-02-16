@@ -160,16 +160,16 @@ export const BlkGridCard = memo(function BlkGridCard({
 
   return (
     <View style={styles.container}>
-      {/* Dark Background */}
+      {/* Dark Background - Pure black like category-grid */}
       <LinearGradient
-        colors={['#080808', '#0A0A0A', '#080808']}
+        colors={['#000000', '#0A0A0A', '#000000']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
 
-      {/* BLK Doodle Pattern */}
-      <BlkDoodle opacity={1.2} />
+      {/* BLK Doodle Pattern - Luxury monogram style */}
+      <BlkDoodle opacity={1} />
 
       {/* Header with Revvup Logo & BLK Badge */}
       <View style={styles.header}>

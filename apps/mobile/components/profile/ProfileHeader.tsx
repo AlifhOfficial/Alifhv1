@@ -1,16 +1,17 @@
 /**
  * Profile Header Component
- * Matches HomeHeader style for consistency
+ * Glass pill style matching other headers
  */
 
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import { StyleSheet, View, Platform, Alert } from 'react-native';
+import { HapticPressable, Data } from '@/components/ui';
 import { useRouter } from 'expo-router';
-import { Settings } from 'lucide-react-native';
+import { Settings2, User, LogOut } from 'lucide-react-native';
+import * as Haptics from 'expo-haptics';
 
-import { Heading } from '@/components/ui';
 import { Spacing, Layout, Sizes } from '@/constants/theme';
+import { useAuth } from '@/context/auth-context';
 import type { ThemeColors } from './types';
 
 interface ProfileHeaderProps {
@@ -20,55 +21,136 @@ interface ProfileHeaderProps {
 
 export function ProfileHeader({ colors, topInset }: ProfileHeaderProps) {
   const router = useRouter();
+  const { signOut, isAuthenticated } = useAuth();
+
+  const handleSignOut = () => {
+    if (Platform.OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+
+    Alert.alert(
+      'Sign Out',
+      'Are you sure you want to sign out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Sign Out',
+          style: 'destructive',
+          onPress: () => signOut(),
+        },
+      ]
+    );
+  };
 
   return (
-    <View style={[styles.container, { paddingTop: topInset + Layout.headerPadding }]}>
-      {/* Left: Title */}
-      <Heading size="medium">Profile</Heading>
-
-      {/* Right: Settings */}
-      <HapticPressable
-        onPress={() => router.push('/settings')}
-        hitSlop={Layout.hitSlop}
+    <View style={[styles.header, { paddingTop: topInset + Layout.headerPadding }]}>
+      {/* Left: Profile Title Pill */}
+      <View
         style={[
-          styles.iconButton,
+          styles.pillButton,
+          styles.glass,
           {
-            borderColor: colors.border,
-            backgroundColor: colors.background,
+            borderColor: colors.glassBorder,
+            backgroundColor: colors.glassBackground,
           },
         ]}
       >
-        {({ pressed }) => (
-          <>
-            <Settings
-              size={Sizes.iconSm}
-              color={colors.text}
+        <View style={styles.pillContent}>
+          <User size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
+          <Data size="small">Profile</Data>
+        </View>
+      </View>
+
+      {/* Right: Action Bubbles */}
+      <View style={styles.rightSection}>
+        {/* Settings Bubble */}
+        <HapticPressable
+          onPress={() => router.push('/settings')}
+          style={[
+            styles.bubble,
+            styles.glass,
+            {
+              borderColor: colors.glassBorder,
+              backgroundColor: colors.glassBackground,
+            },
+          ]}
+        >
+          {({ pressed }) => (
+            <Settings2
+              size={Sizes.iconXs}
+              color={colors.icon}
               strokeWidth={2}
               style={{ opacity: pressed ? 0.7 : 1 }}
             />
-          </>
+          )}
+        </HapticPressable>
+
+        {/* Sign Out Bubble - only show when authenticated */}
+        {isAuthenticated && (
+          <HapticPressable
+            onPress={handleSignOut}
+            style={[
+              styles.bubble,
+              styles.glass,
+              {
+                borderColor: colors.glassBorder,
+                backgroundColor: colors.glassBackground,
+              },
+            ]}
+          >
+            {({ pressed }) => (
+              <LogOut
+                size={Sizes.iconXs}
+                color={colors.error}
+                strokeWidth={2}
+                style={{ opacity: pressed ? 0.7 : 1 }}
+              />
+            )}
+          </HapticPressable>
         )}
-      </HapticPressable>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 20,
     paddingBottom: Spacing.md,
     paddingHorizontal: Layout.screenPadding,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  iconButton: {
-    padding: Spacing.xs,
+  rightSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Layout.headerGap,
+  },
+  glass: {
     borderWidth: 1,
+  },
+  pillButton: {
+    height: Sizes.pillHeight,
+    paddingHorizontal: Spacing.md,
+    borderRadius: Sizes.pillRadius,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pillContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  bubble: {
     width: Sizes.bubble,
     height: Sizes.bubble,
     borderRadius: Sizes.bubble / 2,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'visible',
   },
 });

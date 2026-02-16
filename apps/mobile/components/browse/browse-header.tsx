@@ -31,6 +31,7 @@ interface BrowseHeaderProps {
   settingsCount?: number;
   viewMode?: ViewMode;
   onViewModeChange?: (mode: ViewMode) => void;
+  onBrowsePress?: () => void;
 }
 
 export function BrowseHeader({ 
@@ -40,6 +41,7 @@ export function BrowseHeader({
   settingsCount = 0,
   viewMode = 'grid',
   onViewModeChange,
+  onBrowsePress,
 }: BrowseHeaderProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
@@ -67,17 +69,24 @@ export function BrowseHeader({
     onViewModeChange?.(newMode);
   };
 
+  const handleBrowsePress = () => {
+    if (Platform.OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    onBrowsePress?.();
+  };
+
   return (
-    <View style={[styles.container, { paddingTop: insets.top + Layout.headerPadding, backgroundColor: colorScheme === 'dark' ? colors.oledBlack : colors.background }]}>
+    <View style={[styles.container, { paddingTop: insets.top + Layout.headerPadding }]}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* View Mode Toggle */}
+        {/* Browse Title Pill */}
         <View
           style={[
-            styles.iconButton,
+            styles.pill,
             styles.glass,
             {
               borderColor: colors.glassBorder,
@@ -85,24 +94,21 @@ export function BrowseHeader({
             },
           ]}
         >
-          <HapticPressable onPress={handleViewModeToggle} style={styles.iconButtonInner}>
+          <HapticPressable onPress={handleBrowsePress} style={styles.pillInner}>
             {({ pressed }) => (
-              <View style={{ opacity: pressed ? 0.7 : 1 }}>
-                {viewMode === 'grid' ? (
-                  <LayoutGrid size={Sizes.iconSm} color={colorScheme === 'dark' ? colors.oledWhite : colors.text} strokeWidth={2} />
-                ) : (
-                  <List size={Sizes.iconSm} color={colorScheme === 'dark' ? colors.oledWhite : colors.text} strokeWidth={2} />
-                )}
+              <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
+                <LayoutGrid size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
+                <Data size="small">Browse</Data>
               </View>
             )}
           </HapticPressable>
         </View>
 
-        {/* Settings bubble */}
+        {/* Filters pill */}
         <View>
           <View
             style={[
-              styles.iconButton,
+              styles.pill,
               styles.glass,
               {
                 borderColor: colors.glassBorder,
@@ -110,14 +116,11 @@ export function BrowseHeader({
               },
             ]}
           >
-            <HapticPressable onPress={handleSettingsPress} style={styles.iconButtonInner}>
+            <HapticPressable onPress={handleSettingsPress} style={styles.pillInner}>
               {({ pressed }) => (
-                <View style={{ opacity: pressed ? 0.7 : 1 }}>
-                  <Settings2 
-                    size={Sizes.iconMd} 
-                    color={colorScheme === 'dark' ? colors.oledWhite : colors.text} 
-                    strokeWidth={2}
-                  />
+                <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
+                  <Settings2 size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
+                  <Data size="small">Filters</Data>
                 </View>
               )}
             </HapticPressable>
@@ -170,6 +173,30 @@ export function BrowseHeader({
             </HapticPressable>
           </View>
         ))}
+
+        {/* View Mode Toggle */}
+        <View
+          style={[
+            styles.iconButton,
+            styles.glass,
+            {
+              borderColor: colors.glassBorder,
+              backgroundColor: colors.glassBackground,
+            },
+          ]}
+        >
+          <HapticPressable onPress={handleViewModeToggle} style={styles.iconButtonInner}>
+            {({ pressed }) => (
+              <View style={{ opacity: pressed ? 0.7 : 1 }}>
+                {viewMode === 'grid' ? (
+                  <LayoutGrid size={Sizes.iconSm} color={colors.icon} strokeWidth={2} />
+                ) : (
+                  <List size={Sizes.iconSm} color={colors.icon} strokeWidth={2} />
+                )}
+              </View>
+            )}
+          </HapticPressable>
+        </View>
       </ScrollView>
     </View>
   );
@@ -177,7 +204,12 @@ export function BrowseHeader({
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: Spacing.sm,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 20,
+    paddingBottom: Spacing.md,
     paddingHorizontal: Layout.screenPadding,
   },
   scrollContent: {
@@ -217,12 +249,16 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   pill: {
+    height: Sizes.pillHeight,
+    paddingHorizontal: Spacing.md,
     borderRadius: Sizes.pillRadius,
+    alignItems: 'center',
+    justifyContent: 'center',
     overflow: 'hidden',
   },
   pillInner: {
-    paddingHorizontal: Spacing.md,
-    height: Sizes.pillHeight,
+    width: '100%',
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
   },

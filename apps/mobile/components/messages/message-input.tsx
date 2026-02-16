@@ -1,19 +1,18 @@
 /**
  * Message Input - Mobile Native
  * Text input with send button, auto-resize, typing indicators
+ * Inline component - parent handles keyboard avoidance
  */
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
-  View,
   TextInput,
-  Pressable,
   StyleSheet,
-  Keyboard,
-  Platform,
   NativeSyntheticEvent,
   TextInputContentSizeChangeEventData,
 } from 'react-native';
+import Animated, { useAnimatedStyle, interpolate } from 'react-native-reanimated';
+import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
 import { HapticPressable } from '@/components/ui';
 import { Send } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -46,26 +45,9 @@ export function MessageInput({
 
   const [text, setText] = useState('');
   const [inputHeight, setInputHeight] = useState(MIN_HEIGHT);
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const inputRef = useRef<TextInput>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const isTypingRef = useRef(false);
-
-  // Track keyboard visibility
-  useEffect(() => {
-    const showSub = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
-      () => setIsKeyboardVisible(true)
-    );
-    const hideSub = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
-      () => setIsKeyboardVisible(false)
-    );
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
-  }, []);
 
   // Reset state when conversation changes
   useEffect(() => {
@@ -159,79 +141,90 @@ export function MessageInput({
 
   const canSend = text.trim().length > 0 && !disabled;
 
-  // Add small padding when keyboard open, full safe area when closed
-  const bottomPadding = isKeyboardVisible ? Spacing.md : insets.bottom;
+  // Animate bottom padding based on keyboard state
+  const { progress } = useReanimatedKeyboardAnimation();
+  const animatedContainerStyle = useAnimatedStyle(() => {
+    // When keyboard is open (progress=1), use minimal padding; when closed (progress=0), use safe area
+    const bottomPadding = interpolate(
+      progress.value,
+      [0, 1],
+      [insets.bottom, Spacing.sm]
+    );
+    return { paddingBottom: bottomPadding };
+  });
 
   return (
-    <View
+    <Animated.View
       style={[
         styles.container,
-        { 
-          backgroundColor: colors.background, 
-          borderTopColor: colors.border,
-          paddingBottom: bottomPadding,
-        },
+        animatedContainerStyle,
       ]}
     >
-      <View
-        style={[
-          styles.inputWrapper,
-          { backgroundColor: colors.surface, borderColor: colors.border },
-        ]}
-      >
-        <TextInput
-          ref={inputRef}
+        <Animated.View
           style={[
-            styles.input,
-            { color: colors.text, minHeight: MIN_HEIGHT, maxHeight: MAX_HEIGHT },
+            styles.inputWrapper,
+            styles.glass,
+            { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder },
           ]}
-          value={text}
-          onChangeText={handleChangeText}
-          onContentSizeChange={handleContentSizeChange}
-          placeholder={placeholder}
-          placeholderTextColor={colors.textMuted}
-          multiline
-          editable={!disabled}
-          returnKeyType="default"
-          blurOnSubmit={false}
-        />
-      </View>
+        >
+          <TextInput
+            ref={inputRef}
+            style={[
+              styles.input,
+              { color: colors.text, minHeight: MIN_HEIGHT, maxHeight: MAX_HEIGHT },
+            ]}
+            value={text}
+            onChangeText={handleChangeText}
+            onContentSizeChange={handleContentSizeChange}
+            placeholder={placeholder}
+            placeholderTextColor={colors.textMuted}
+            multiline
+            editable={!disabled}
+            returnKeyType="default"
+            blurOnSubmit={false}
+          />
+        </Animated.View>
 
-      <HapticPressable
-        haptic="medium"
-        onPress={handleSend}
-        disabled={!canSend}
-        style={[
-          styles.sendWrapper,
-          {
-            backgroundColor: canSend ? colors.primary : colors.surface,
-            borderColor: canSend ? colors.primary : colors.border,
-          },
-        ]}
-      >
-        <Send
-          size={Sizes.iconSm}
-          color={canSend ? colors.primaryForeground : colors.textTertiary}
-          strokeWidth={2}
-        />
-      </HapticPressable>
-    </View>
+        <HapticPressable
+          haptic="medium"
+          onPress={handleSend}
+          disabled={!canSend}
+          style={[
+            styles.sendWrapper,
+            styles.glass,
+            {
+              backgroundColor: canSend ? colors.primary : colors.glassBackground,
+              borderColor: canSend ? colors.primary : colors.glassBorder,
+            },
+          ]}
+        >
+          <Send
+            size={Sizes.iconSm}
+            color={canSend ? colors.primaryForeground : colors.textMuted}
+            strokeWidth={2}
+          />
+        </HapticPressable>
+      </Animated.View>
   );
 }
+
+// Export input height for parent components to use as padding
+export const MESSAGE_INPUT_HEIGHT = Layout.hitTarget + Spacing.sm * 2;
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm,
-    borderTopWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: Layout.screenPadding,
+    paddingTop: Spacing.sm,
     gap: Spacing.sm,
+  },
+  glass: {
+    borderWidth: 1,
   },
   inputWrapper: {
     flex: 1,
     minHeight: Layout.hitTarget,
-    borderWidth: 1,
     borderRadius: Radius.full,
     paddingHorizontal: Spacing.lg,
     justifyContent: 'center',
@@ -247,7 +240,6 @@ const styles = StyleSheet.create({
     width: Layout.hitTarget,
     height: Layout.hitTarget,
     borderRadius: Radius.full,
-    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },

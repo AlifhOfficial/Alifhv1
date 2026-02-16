@@ -36,6 +36,7 @@ import {
   MoreVertical,
   Plus,
   Clock,
+  Package,
 } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
@@ -70,6 +71,7 @@ import { MarkSoldSheet } from './sub-operations/mark-sold-sheet';
 import { ExtendListingSheet } from './sub-operations/extend-listing-sheet';
 import { ArchiveListingSheet } from './sub-operations/archive-listing-sheet';
 import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
+import { TopSafeAreaGradient } from '@/components/layout';
 import { DeleteListingSheet } from './sub-operations/delete-listing-sheet';
 import { ListingStatsSheet } from './sub-operations/listing-stats-sheet';
 
@@ -391,25 +393,41 @@ export function InventoryScreen() {
   // ════════════════════════════════════════════════════════════════════════
 
   // Calculate header height for content offset (matches browse-header pattern)
-  const headerHeight = insets.top + Layout.headerPadding + Spacing['3xl'] + Spacing.sm + Sizes.pillHeight + Spacing.sm; // safe area + title + gap + pills + bottom padding
+  const headerHeight = insets.top + Layout.headerPadding + Sizes.pillHeight + Spacing.md; // safe area + pill height + bottom padding
 
   return (
     <View style={styles.container}>
-      {/* ─────────────────────── Floating Header (absolute) ────────────────────────────────── */}
-      <View style={[styles.header, { paddingTop: insets.top + Layout.headerPadding, backgroundColor: colors.background, paddingHorizontal: Layout.screenPadding }]}>
-        {/* Title */}
-        <Heading size="large">Inventory</Heading>
+      {/* ─────────────────────── Top Safe Area Gradient ────────────────────────────────── */}
+      <TopSafeAreaGradient />
 
-        {/* Filter Pills */}
+      {/* ─────────────────────── Floating Header (absolute) ────────────────────────────────── */}
+      <View style={[styles.header, { paddingTop: insets.top + Layout.headerPadding }]}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          style={styles.pillScroll}
-          contentContainerStyle={styles.pillScrollContent}
+          contentContainerStyle={styles.headerScrollContent}
+          style={styles.headerScroll}
         >
+          {/* Inventory Title Pill */}
+          <View
+            style={[
+              styles.pillButton,
+              styles.glass,
+              {
+                borderColor: colors.glassBorder,
+                backgroundColor: colors.glassBackground,
+              },
+            ]}
+          >
+            <View style={styles.pillContent}>
+              <Package size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
+              <Data size="small">Inventory</Data>
+            </View>
+          </View>
+
+          {/* Filter Pills */}
           {STATUS_TABS.map((tab) => {
             const isActive = tab.key === activeTab;
-            const count = tab.count(stats);
 
             return (
               <View
@@ -431,27 +449,11 @@ export function InventoryScreen() {
                     <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
                       <Data
                         size="small"
-                        tone={isActive ? 'default' : 'secondary'}
+                        style={{ color: isActive ? colors.text : colors.textMuted }}
                         numberOfLines={1}
                       >
                         {tab.label}
                       </Data>
-                      {count > 0 && (
-                        <View
-                          style={[
-                            styles.pillBadge,
-                            { backgroundColor: colors.text },
-                          ]}
-                        >
-                          <Label
-                            size="badge"
-                            uppercase={false}
-                            style={{ color: colors.background }}
-                          >
-                            {count > 99 ? '99+' : count}
-                          </Label>
-                        </View>
-                      )}
                     </View>
                   )}
                 </HapticPressable>
@@ -618,21 +620,28 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 20,
-    paddingBottom: Spacing.sm,
-    flexDirection: 'column',
-    gap: Spacing.sm,
+    paddingBottom: Spacing.md,
+    paddingHorizontal: Layout.screenPadding,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-
-  // ── Filter Pills (floating tabs) ───────────────────────────────────────
-  pillScroll: {
-    flexGrow: 0,
+  headerScroll: {
+    flex: 1,
   },
-  pillScrollContent: {
+  headerScrollContent: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Layout.headerGap,
-    paddingRight: Layout.screenPadding,
   },
+  pillButton: {
+    height: Sizes.pillHeight,
+    paddingHorizontal: Spacing.md,
+    borderRadius: Sizes.pillRadius,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  // ── Filter Pills (floating tabs) ───────────────────────────────────────
   fab: {
     position: 'absolute',
     right: Layout.screenPadding,
@@ -653,12 +662,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   pill: {
-    borderRadius: Radius.full,
+    height: Sizes.pillHeight,
+    borderRadius: Sizes.pillRadius,
     overflow: 'hidden',
   },
   pillInner: {
+    height: '100%',
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -9,10 +9,9 @@ import {
   FlatList,
   StyleSheet,
   ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
   Dimensions,
 } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -23,16 +22,20 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { format, isToday, isYesterday, isThisWeek, isSameDay } from 'date-fns';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { ChatHeader } from './chat-header';
 import { MessageBubble } from './message-bubble';
 import { MessageInput } from './message-input';
 import { useMessages } from './hooks/useMessages';
 import { Body, Data, Supporting, Skeleton } from '@/components/ui';
+import { TopSafeAreaGradient } from '@/components/layout';
 import { markConversationAsRead, type Message, type Conversation } from '@/lib/messaging-api';
 
 const PANEL_WIDTH = Spacing['5xl'] + Spacing['3xl']; // ~80
 const SCREEN_WIDTH = Dimensions.get('window').width;
+
+// Header height calculation: headerPadding + pill height + bottom padding
+const HEADER_HEIGHT = Layout.headerPadding + Sizes.pillHeight + Spacing.md;
 
 interface ChatWindowProps {
   conversationId: string;
@@ -312,9 +315,12 @@ export function ChatWindow({
   return (
     <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: colors.background }]}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior="padding"
       keyboardVerticalOffset={0}
     >
+      {/* Top safe area gradient */}
+      <TopSafeAreaGradient />
+
       {/* Header */}
       <ChatHeader
         name={displayName}
@@ -330,7 +336,7 @@ export function ChatWindow({
       <GestureDetector gesture={swipeGesture}>
         <View style={styles.messagesArea}>
           {isLoading ? (
-            <View style={styles.skeletonContainer}>
+            <View style={[styles.skeletonContainer, { paddingTop: insets.top + HEADER_HEIGHT }]}>
               {/* Simulate a chat thread with alternating left/right skeleton bubbles */}
               {[...Array(8)].map((_, i) => {
                 const isRight = i % 3 !== 0;
@@ -374,7 +380,13 @@ export function ChatWindow({
                 renderItem={renderMessage}
                 keyExtractor={(item) => item.id}
                 inverted
-                contentContainerStyle={styles.messagesContent}
+                contentContainerStyle={[
+                  styles.messagesContent,
+                  { 
+                    paddingBottom: insets.top + HEADER_HEIGHT,
+                    paddingTop: Spacing.md,
+                  },
+                ]}
                 ListEmptyComponent={ListEmptyComponent}
                 ListHeaderComponent={ListHeaderComponent}
                 ListFooterComponent={ListFooterComponent}
@@ -423,6 +435,7 @@ const styles = StyleSheet.create({
   },
   messageSide: {
     width: SCREEN_WIDTH,
+    paddingHorizontal: Layout.screenPadding,
   },
   timestampSide: {
     width: PANEL_WIDTH,

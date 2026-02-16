@@ -24,7 +24,7 @@ import { useSearch } from '@/context/search-context';
 import { useTabBar } from '@/context/tab-bar-context';
 import { useAuth } from '@/context/auth-context';
 import { Colors, Layout, Sizes, Spacing } from '@/constants/theme';
-import { SearchSheet, SortSheet, AmnaSheet, ActiveFiltersSheet } from '@/components/sheets';
+import { SearchSheet, SortSheet, AmnaSheet, ActiveFiltersSheet, CreateListingFlow } from '@/components/sheets';
 import { getUnreadCount } from '@/lib/messaging-api';
 import type { SearchSortOption } from '@/lib/search-api';
 
@@ -110,6 +110,7 @@ export function GlobalTabBar() {
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [isAmnaOpen, setIsAmnaOpen] = useState(false);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   // Check if current screen is NOT a main tab OR is on browse tab (show back button)
   const showBackButton = !MAIN_TAB_PATHS.includes(pathname) || onBrowseTab;
@@ -229,7 +230,16 @@ export function GlobalTabBar() {
     if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
-    router.push('/create-listing' as any);
+    setIsCreateOpen(true);
+  }, []);
+
+  const handleCreateClose = useCallback(() => {
+    setIsCreateOpen(false);
+  }, []);
+
+  const handleCreateSuccess = useCallback((listingId: string) => {
+    setIsCreateOpen(false);
+    router.push(`/listing/${listingId}` as any);
   }, [router]);
 
   const handleSearchPress = useCallback(() => {
@@ -568,6 +578,13 @@ export function GlobalTabBar() {
       <ActiveFiltersSheet
         visible={isFiltersOpen}
         onClose={handleFiltersClose}
+      />
+
+      {/* Create Listing Flow */}
+      <CreateListingFlow
+        visible={isCreateOpen}
+        onClose={handleCreateClose}
+        onSuccess={handleCreateSuccess}
       />
 
     </View>

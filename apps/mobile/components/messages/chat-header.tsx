@@ -1,19 +1,20 @@
 /**
  * Chat Header - Mobile Native
  * Header for chat screen with back button, avatar, name, activity status
+ * Matches home-header absolute positioning, glass styles, and horizontal scroll
  */
 
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowLeft } from 'lucide-react-native';
+import { ArrowLeft, Circle } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Sizes, Layout } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { Data, Supporting } from '@/components/ui';
+import { Data } from '@/components/ui';
 
 interface ChatHeaderProps {
   name: string;
@@ -66,83 +67,172 @@ export function ChatHeader({
     <View
       style={[
         styles.container,
-        {
-          backgroundColor: colors.background,
-          borderBottomColor: colors.border,
-          paddingTop: insets.top + Spacing.xs,
-        },
+        { paddingTop: insets.top + Layout.headerPadding },
       ]}
     >
-      {/* Back Button */}
-      <HapticPressable
-        onPress={handleBack}
-        style={({ pressed }) => [
-          styles.backButton,
-          { backgroundColor: pressed ? colors.surface : 'transparent' },
-        ]}
-        hitSlop={Layout.hitSlop}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+        style={styles.scrollView}
       >
-        <ArrowLeft size={Sizes.iconMd} color={colors.text} strokeWidth={2} />
-      </HapticPressable>
-
-      {/* Avatar with online indicator */}
-      <View>
-        <UserAvatar src={avatarUrl} name={name} size="md" />
-        {isOnline && (
-          <View style={[styles.onlineIndicator, { backgroundColor: colors.success, borderColor: colors.background }]} />
-        )}
-      </View>
-
-      {/* Name & Status */}
-      <View style={styles.info}>
-        <Data size="large" style={{ color: colors.text, fontWeight: '600' }} numberOfLines={1}>
-          {name}
-        </Data>
-        {listingTitle ? (
-          <Supporting size="small" style={{ color: colors.textTertiary, marginTop: 1 }} numberOfLines={1}>
-            Re: {listingTitle}
-          </Supporting>
-        ) : statusText ? (
-          <Data
-            size="mini"
-            style={{
-              color: isTyping ? colors.primary : (isOnline ? colors.success : colors.textTertiary),
-              marginTop: 1,
-            }}
+        {/* Back Button - Glass bubble */}
+        <View
+          style={[
+            styles.iconButton,
+            styles.glass,
+            {
+              borderColor: colors.glassBorder,
+              backgroundColor: colors.glassBackground,
+            },
+          ]}
+        >
+          <HapticPressable
+            onPress={handleBack}
+            style={styles.iconButtonInner}
+            hitSlop={Layout.hitSlop}
           >
-            {statusText}
-          </Data>
-        ) : null}
-      </View>
+            {({ pressed }) => (
+              <View style={{ opacity: pressed ? 0.7 : 1 }}>
+                <ArrowLeft size={Sizes.iconSm} color={colors.icon} strokeWidth={2} />
+              </View>
+            )}
+          </HapticPressable>
+        </View>
+
+        {/* Avatar Bubble */}
+        <View
+          style={[
+            styles.avatarBubble,
+            styles.glass,
+            {
+              borderColor: colors.glassBorder,
+              backgroundColor: colors.glassBackground,
+            },
+          ]}
+        >
+          <UserAvatar src={avatarUrl} name={name} size="sm" />
+        </View>
+
+        {/* Name Pill */}
+        <View
+          style={[
+            styles.pillButton,
+            styles.glass,
+            {
+              borderColor: colors.glassBorder,
+              backgroundColor: colors.glassBackground,
+            },
+          ]}
+        >
+          <Data size="small">{name}</Data>
+        </View>
+
+        {/* Status Pill */}
+        {statusText && (
+          <View
+            style={[
+              styles.pillButton,
+              styles.glass,
+              {
+                borderColor: colors.glassBorder,
+                backgroundColor: colors.glassBackground,
+              },
+            ]}
+          >
+            <View style={styles.pillContent}>
+              <Circle
+                size={6}
+                fill={isTyping ? colors.primary : (isOnline ? colors.success : colors.textTertiary)}
+                color={isTyping ? colors.primary : (isOnline ? colors.success : colors.textTertiary)}
+              />
+              <Data
+                size="small"
+                style={{
+                  color: isTyping ? colors.primary : (isOnline ? colors.success : colors.textTertiary),
+                }}
+              >
+                {statusText}
+              </Data>
+            </View>
+          </View>
+        )}
+
+        {/* Listing Title Pill */}
+        {listingTitle && (
+          <View
+            style={[
+              styles.pillButton,
+              styles.glass,
+              {
+                borderColor: colors.glassBorder,
+                backgroundColor: colors.glassBackground,
+              },
+            ]}
+          >
+            <Data size="small" style={{ color: colors.textSecondary }}>
+              Re: {listingTitle}
+            </Data>
+          </View>
+        )}
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 20,
+    paddingBottom: Spacing.md,
+    paddingHorizontal: Layout.screenPadding,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: Spacing.md,
-    paddingBottom: Spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    gap: Spacing.sm,
   },
-  backButton: {
-    padding: Spacing.xs,
-    marginLeft: -Spacing.xs,
-    borderRadius: Radius.md,
-  },
-  info: {
+  scrollView: {
     flex: 1,
-    minWidth: 0,
   },
-  onlineIndicator: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: Spacing.md,
-    height: Spacing.md,
-    borderRadius: Spacing.md / 2,
-    borderWidth: 2,
+  scrollContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Layout.headerGap,
+  },
+  glass: {
+    borderWidth: 1,
+  },
+  iconButton: {
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Sizes.bubble / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconButtonInner: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarBubble: {
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Sizes.bubble / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pillButton: {
+    height: Sizes.pillHeight,
+    paddingHorizontal: Spacing.md,
+    borderRadius: Sizes.pillRadius,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pillContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
   },
 });

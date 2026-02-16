@@ -39,27 +39,36 @@ interface DoodleItem {
 }
 
 // ═══════════════════════════════════════════════════
-// DOODLE PATTERN - Lightweight scattered logos
+// DOODLE PATTERN - Signature Collection Luxury Style
+// Large dramatic logos with depth layering effect
 // ═══════════════════════════════════════════════════
 
 const BLK_DOODLE_PATTERN: DoodleItem[] = [
-  // Sparse, elegant placement
-  { id: 1, size: 60, rotation: -12, opacity: 0.03, x: -25, y: -20 },
-  { id: 2, size: 45, rotation: 18, opacity: 0.025, x: 80, y: 30 },
-  { id: 3, size: 55, rotation: -8, opacity: 0.035, x: 200, y: -10 },
-  { id: 4, size: 40, rotation: 25, opacity: 0.02, x: 300, y: 50 },
+  // Hero layer - Large dramatic logos creating depth
+  { id: 1, size: 180, rotation: -15, opacity: 0.12, x: -60, y: -40 },
+  { id: 2, size: 200, rotation: 12, opacity: 0.1, x: 220, y: 280 },
+  { id: 3, size: 160, rotation: -8, opacity: 0.13, x: 280, y: -30 },
   
-  { id: 5, size: 50, rotation: 5, opacity: 0.03, x: 20, y: 120 },
-  { id: 6, size: 65, rotation: -20, opacity: 0.025, x: 150, y: 100 },
-  { id: 7, size: 35, rotation: 15, opacity: 0.04, x: 280, y: 140 },
+  // Mid layer - Medium accent logos
+  { id: 4, size: 90, rotation: 20, opacity: 0.18, x: 40, y: 180 },
+  { id: 5, size: 100, rotation: -25, opacity: 0.16, x: 260, y: 120 },
+  { id: 6, size: 85, rotation: 15, opacity: 0.17, x: 150, y: 380 },
+  { id: 7, size: 95, rotation: -10, opacity: 0.15, x: -20, y: 340 },
   
-  { id: 8, size: 70, rotation: -15, opacity: 0.02, x: -10, y: 220 },
-  { id: 9, size: 45, rotation: 22, opacity: 0.03, x: 120, y: 250 },
-  { id: 10, size: 55, rotation: -5, opacity: 0.025, x: 250, y: 200 },
+  // Detail layer - Small sharp logos for texture
+  { id: 8, size: 45, rotation: 30, opacity: 0.25, x: 100, y: 60 },
+  { id: 9, size: 40, rotation: -18, opacity: 0.22, x: 320, y: 220 },
+  { id: 10, size: 50, rotation: 8, opacity: 0.24, x: 200, y: 160 },
+  { id: 11, size: 42, rotation: -22, opacity: 0.2, x: 60, y: 280 },
+  { id: 12, size: 48, rotation: 14, opacity: 0.22, x: 280, y: 360 },
   
-  { id: 11, size: 40, rotation: 10, opacity: 0.035, x: 50, y: 320 },
-  { id: 12, size: 60, rotation: -18, opacity: 0.02, x: 180, y: 350 },
-  { id: 13, size: 50, rotation: 8, opacity: 0.03, x: 320, y: 300 },
+  // Floating accent - Tiny logos for premium texture
+  { id: 13, size: 28, rotation: 25, opacity: 0.3, x: 180, y: 20 },
+  { id: 14, size: 32, rotation: -12, opacity: 0.28, x: 30, y: 120 },
+  { id: 15, size: 26, rotation: 5, opacity: 0.3, x: 340, y: 80 },
+  { id: 16, size: 30, rotation: -30, opacity: 0.26, x: 130, y: 240 },
+  { id: 17, size: 28, rotation: 18, opacity: 0.3, x: 240, y: 440 },
+  { id: 18, size: 34, rotation: -5, opacity: 0.25, x: 80, y: 420 },
 ];
 
 // ═══════════════════════════════════════════════════

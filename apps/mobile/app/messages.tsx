@@ -27,6 +27,7 @@ import {
   ConversationGroup,
   useConversations,
 } from '@/components/messages';
+import { TopSafeAreaGradient } from '@/components/layout';
 import { Colors, Layout, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
@@ -43,12 +44,18 @@ type ListItem = {
   conversations: Conversation[];
 };
 
+// Header height calculation: headerPadding + pill height + bottom padding
+const HEADER_HEIGHT = Layout.headerPadding + Sizes.pillHeight + Spacing.md;
+
 export default function MessagesScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { isAuthenticated, user, openAuthFlow } = useAuth();
+
+  // Dynamic top padding based on safe area + header
+  const contentTopPadding = insets.top + HEADER_HEIGHT + Spacing.md;
 
   const {
     conversations,
@@ -251,7 +258,7 @@ export default function MessagesScreen() {
     // Still loading for the first time (no data yet, not a refresh)
     if ((isLoading || isRefreshing) && conversations.length === 0) {
       return (
-        <View style={styles.skeletonList}>
+        <View style={[styles.skeletonList, { paddingTop: contentTopPadding }]}>
           {Array.from({ length: 6 }).map((_, i) => (
             <View key={i} style={styles.skeletonRow}>
               <SkeletonCircle size={Sizes.avatarLg} />
@@ -271,7 +278,7 @@ export default function MessagesScreen() {
     // Error (only if we have nothing to show)
     if (error && conversations.length === 0) {
       return (
-        <View style={styles.emptyState}>
+        <View style={[styles.emptyState, { paddingTop: contentTopPadding }]}>
           <Data size="medium" style={{ textAlign: 'center', color: colors.textSecondary }}>{error}</Data>
         </View>
       );
@@ -283,12 +290,14 @@ export default function MessagesScreen() {
     // are no conversations yet.
     return (
       <FlatList
+        style={{ flex: 1 }}
         data={listItems}
         renderItem={renderItem}
         keyExtractor={(item) => item.key}
         contentContainerStyle={[
           {
-            paddingTop: Spacing.xs,
+            paddingTop: contentTopPadding,
+            paddingHorizontal: Spacing.sm,
             paddingBottom: insets.bottom + Layout.tabBarHeight,
           },
           // When list is empty, fill the screen so the empty component centres
@@ -321,6 +330,7 @@ export default function MessagesScreen() {
 
   return (
     <View style={[styles.screen, { backgroundColor: colors.background }]}>
+      <TopSafeAreaGradient />
       <MessagesHeader />
       {renderContent()}
     </View>

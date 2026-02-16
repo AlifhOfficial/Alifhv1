@@ -50,7 +50,7 @@ export function TopSafeAreaGradient() {
         colors={gradientColors as unknown as string[]}
         {...(Platform.OS === 'android' && { locations: [0, 0.2, 0.4, 0.6, 0.8, 1] })}
         {...(Platform.OS === 'ios' && { locations: [0, 0.5, 1] })}
-        style={[styles.gradient, { height: insets.top + 40 }]}
+        style={[styles.gradient, { height: insets.top + 60 }]}
       />
     </View>
   );

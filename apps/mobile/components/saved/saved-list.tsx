@@ -33,13 +33,15 @@ interface SavedListProps {
 
 function EmptyState({ 
   colors, 
-  isFavorites 
+  isFavorites,
+  topPadding,
 }: { 
   colors: ThemeColors; 
   isFavorites: boolean;
+  topPadding: number;
 }) {
   return (
-    <View style={styles.emptyContainer}>
+    <View style={[styles.emptyContainer, { paddingTop: topPadding }]}>
       <Animated.View entering={FadeIn.duration(300)} style={styles.emptyContent}>
         
         {/* Icon */}
@@ -77,6 +79,8 @@ export function SavedList({
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const bottomPadding = insets.bottom + Layout.tabBarHeight;
+  // Account for absolute header: safe area + headerPadding + pill height + bottom padding
+  const topPadding = insets.top + Layout.headerPadding + Sizes.pillHeight + Spacing.md;
 
   const handleCardPress = useCallback((id: string) => {
     router.push(`/listing/${id}`);
@@ -85,7 +89,7 @@ export function SavedList({
   // Empty state
   if (listings.length === 0) {
     const isFavorites = activeTab === 'favorites';
-    return <EmptyState colors={colors} isFavorites={isFavorites} />;
+    return <EmptyState colors={colors} isFavorites={isFavorites} topPadding={topPadding} />;
   }
 
   return (
@@ -114,7 +118,7 @@ export function SavedList({
           onPress={handleCardPress}
         />
       )}
-      contentContainerStyle={[styles.listContent, { paddingBottom: bottomPadding }]}
+      contentContainerStyle={[styles.listContent, { paddingTop: topPadding, paddingBottom: bottomPadding }]}
       showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl
@@ -160,7 +164,6 @@ const styles = StyleSheet.create({
   // List
   listContent: {
     paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.xs,
   },
   quotaBadge: {
     flexDirection: 'row',

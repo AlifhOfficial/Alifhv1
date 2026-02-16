@@ -13,9 +13,10 @@ import { Body, Skeleton } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenContainer } from '@/components/layout';
 
-import { Layout, Spacing, Radius } from '@/constants/theme';
+import { Layout, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
+import { TopSafeAreaGradient } from '@/components/layout';
 import {
   useSettingsColors,
   useSettings,
@@ -90,12 +91,16 @@ export default function SettingsScreen() {
     // TODO: Navigate to feedback
   }, []);
 
+  // Header height for content offset
+  const headerHeight = insets.top + Layout.headerPadding + Sizes.pillHeight + Spacing.md;
+
   // Loading state — skeleton
   if (isLoading) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <TopSafeAreaGradient />
         <SettingsHeader colors={colors} topInset={insets.top} />
-        <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding }]}>
+        <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding, paddingTop: headerHeight }]}>
           {/* Section skeletons */}
           {Array.from({ length: 4 }).map((_, i) => (
             <View key={i} style={styles.skeletonSection}>
@@ -110,16 +115,14 @@ export default function SettingsScreen() {
   }
 
   return (
-    <ScreenContainer
-      header={
-        <SettingsHeader 
-          colors={colors} 
-          topInset={insets.top}
-        />
-      }
-      keyboardAvoiding={false}
-      verticalPadding={0}
-    >
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <TopSafeAreaGradient />
+      <SettingsHeader colors={colors} topInset={insets.top} />
+      <ScreenContainer
+        keyboardAvoiding={false}
+        verticalPadding={0}
+        contentContainerStyle={{ paddingTop: headerHeight }}
+      >
       {/* Privacy */}
       <PrivacySection
           showPhone={showPhone}
@@ -182,7 +185,8 @@ export default function SettingsScreen() {
         }}
         onConfirm={handleDeleteAccount}
       />
-    </ScreenContainer>
+      </ScreenContainer>
+    </View>
   );
 }
 
@@ -196,7 +200,6 @@ const styles = StyleSheet.create({
   },
   skeletonContainer: {
     flex: 1,
-    paddingTop: Spacing['2xl'],
     gap: Spacing.xl,
   },
   skeletonSection: {

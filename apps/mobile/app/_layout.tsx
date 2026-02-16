@@ -25,6 +25,7 @@ LogBox.ignoreLogs([
   '`expo-notifications` functionality is not fully supported in Expo Go',
 ]);
 
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { Colors, Fonts } from '@/constants/theme';
 import { ThemeProvider, useTheme } from '@/context/theme-context';
 import { AuthProvider, useAuth } from '@/context/auth-context';
@@ -309,24 +310,26 @@ export default function RootLayout() {
       <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.dark.background }}>
         <SafeAreaProvider>
           <ThemeProvider>
-            <NetworkProvider>
-              <BottomSheetModalProvider>
-                <TabBarProvider>
-                  <SearchProvider>
-                    <AuthProvider>
-                      <FavoritesProvider>
-                        <WebSocketWrapper>
-                          <NotificationWrapper>
-                            <RootLayoutNav />
-                            <OfflineBanner />
-                          </NotificationWrapper>
-                        </WebSocketWrapper>
-                      </FavoritesProvider>
-                    </AuthProvider>
-                  </SearchProvider>
-                </TabBarProvider>
-              </BottomSheetModalProvider>
-            </NetworkProvider>
+            <KeyboardProvider>
+              <NetworkProvider>
+                <BottomSheetModalProvider>
+                  <TabBarProvider>
+                    <SearchProvider>
+                      <AuthProvider>
+                        <FavoritesProvider>
+                          <WebSocketWrapper>
+                            <NotificationWrapper>
+                              <RootLayoutNav />
+                              <OfflineBanner />
+                            </NotificationWrapper>
+                          </WebSocketWrapper>
+                        </FavoritesProvider>
+                      </AuthProvider>
+                    </SearchProvider>
+                  </TabBarProvider>
+                </BottomSheetModalProvider>
+              </NetworkProvider>
+            </KeyboardProvider>
           </ThemeProvider>
         </SafeAreaProvider>
       </GestureHandlerRootView>

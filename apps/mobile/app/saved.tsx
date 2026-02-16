@@ -12,9 +12,10 @@ import {
 import { Skeleton } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Colors, Typography } from '@/constants/theme';
+import { Colors, Typography, Layout, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
+import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
 import {
   SavedHeader,
   SavedList,
@@ -30,6 +31,9 @@ export default function SavedScreen() {
   const colors = Colors[colorScheme];
   const { isAuthenticated, showAuthSheet } = useAuth();
   const insets = useSafeAreaInsets();
+  
+  // Account for absolute header: safe area + headerPadding + pill height + bottom padding
+  const contentTopPadding = insets.top + Layout.headerPadding + Sizes.pillHeight + Spacing.md;
 
   // Show auth sheet when not authenticated
   useEffect(() => {
@@ -59,13 +63,10 @@ export default function SavedScreen() {
   if (!isAuthenticated) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <TopSafeAreaGradient />
         <SavedHeader
-          colors={colors}
-          topInset={insets.top}
           activeTab={activeTab}
           onTabChange={setActiveTab}
-          favoritesCount={0}
-          superlikesCount={0}
         />
       </View>
     );
@@ -75,15 +76,12 @@ export default function SavedScreen() {
   if (isLoading && currentListings.length === 0) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <TopSafeAreaGradient />
         <SavedHeader
-          colors={colors}
-          topInset={insets.top}
           activeTab={activeTab}
           onTabChange={setActiveTab}
-          favoritesCount={favorites.length}
-          superlikesCount={superlikes.length}
         />
-        <View style={styles.skeletonContainer}>
+        <View style={[styles.skeletonContainer, { paddingTop: contentTopPadding }]}>
           {Array.from({ length: 5 }).map((_, i) => (
             <View
               key={i}
@@ -107,15 +105,12 @@ export default function SavedScreen() {
   if (error && currentListings.length === 0) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <TopSafeAreaGradient />
         <SavedHeader
-          colors={colors}
-          topInset={insets.top}
           activeTab={activeTab}
           onTabChange={setActiveTab}
-          favoritesCount={favorites.length}
-          superlikesCount={superlikes.length}
         />
-        <View style={styles.errorContainer}>
+        <View style={[styles.errorContainer, { paddingTop: contentTopPadding }]}>
           <Text style={[styles.errorText, { color: colors.error }]}>
             {error}
           </Text>
@@ -132,14 +127,11 @@ export default function SavedScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <TopSafeAreaGradient />
       {/* Header */}
       <SavedHeader
-        colors={colors}
-        topInset={insets.top}
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        favoritesCount={favorites.length}
-        superlikesCount={superlikes.length}
       />
 
       {/* List */}
@@ -165,9 +157,8 @@ const styles = StyleSheet.create({
   },
   skeletonContainer: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    gap: 10,
+    paddingHorizontal: Spacing.lg,
+    gap: Spacing.sm,
   },
   skeletonCard: {
     flexDirection: 'row',

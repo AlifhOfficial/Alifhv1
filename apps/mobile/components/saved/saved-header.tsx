@@ -1,39 +1,38 @@
 /**
- * Saved Header - Title + pill tabs for Favourites / Superlikes
- * Matches InventoryScreen filter pills styling
+ * Saved Header - Matches home-header and messages-header style
+ * Absolute positioning with glass UI pills
  */
 
 import React from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Bookmark, Heart, Sparkles } from 'lucide-react-native';
 import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 
-import { Heading, Data } from '@/components/ui';
-import { Spacing, Sizes, Radius } from '@/constants/theme';
-import type { ThemeColors, SavedTab } from './types';
+import { Data } from '@/components/ui';
+import { Colors, Spacing, Sizes, Layout } from '@/constants/theme';
+import { useTheme } from '@/context/theme-context';
+import type { SavedTab } from './types';
 
 interface SavedHeaderProps {
-  colors: ThemeColors;
-  topInset: number;
   activeTab: SavedTab;
   onTabChange: (tab: SavedTab) => void;
-  favoritesCount: number;
-  superlikesCount: number;
 }
 
-const TABS: { key: SavedTab; label: string }[] = [
-  { key: 'favorites', label: 'Favourites' },
-  { key: 'superlikes', label: 'Superlikes' },
+const TABS: { key: SavedTab; icon: typeof Heart }[] = [
+  { key: 'favorites', icon: Heart },
+  { key: 'superlikes', icon: Sparkles },
 ];
 
 export function SavedHeader({ 
-  colors,
-  topInset,
   activeTab, 
   onTabChange,
-  favoritesCount,
-  superlikesCount,
 }: SavedHeaderProps) {
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
+
   const handleTab = (tab: SavedTab) => {
     if (tab === activeTab) return;
     if (Platform.OS === 'ios') {
@@ -42,59 +41,52 @@ export function SavedHeader({
     onTabChange(tab);
   };
 
-  const getCount = (tab: SavedTab) => tab === 'favorites' ? favoritesCount : superlikesCount;
-
   return (
-    <View style={[styles.container, { paddingTop: topInset + Spacing.sm }]}>
-      {/* Title */}
-      <Heading size="medium">Saved</Heading>
+    <View style={[styles.container, { paddingTop: insets.top + Layout.headerPadding }]}>
+      {/* Title pill - matches messages-header */}
+      <View
+        style={[
+          styles.pillButton,
+          styles.glass,
+          {
+            borderColor: colors.glassBorder,
+            backgroundColor: colors.glassBackground,
+          },
+        ]}
+      >
+        <View style={styles.pillContent}>
+          <Bookmark size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
+          <Data size="small">Saved</Data>
+        </View>
+      </View>
 
-      {/* Pill tabs — matches InventoryScreen filter pills */}
+      {/* Tab bubbles - icon-only circular glass bubbles */}
       <View style={styles.pillRow}>
-        {TABS.map(({ key, label }) => {
-          const active = activeTab === key;
-          const count = getCount(key);
+        {TABS.map(({ key, icon: Icon }) => {
+          const isActive = activeTab === key;
           return (
             <View
               key={key}
               style={[
-                styles.pill,
+                styles.iconButton,
                 styles.glass,
                 {
                   backgroundColor: colors.glassBackground,
-                  borderColor: active ? colors.textMuted : colors.glassBorder,
+                  borderColor: colors.glassBorder,
                 },
               ]}
             >
               <HapticPressable
                 onPress={() => handleTab(key)}
-                style={styles.pillInner}
+                style={styles.iconButtonInner}
               >
                 {({ pressed }) => (
-                  <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
-                    <Data
-                      size="small"
-                      style={{ color: active ? colors.text : colors.textSecondary }}
-                      numberOfLines={1}
-                    >
-                      {label}
-                    </Data>
-                    {count > 0 && (
-                      <View
-                        style={[
-                          styles.pillBadge,
-                          { backgroundColor: colors.fillSecondary },
-                        ]}
-                      >
-                        <Data
-                          size="mini"
-                          style={{ color: colors.textSecondary }}
-                        >
-                          {count > 99 ? '99+' : count}
-                        </Data>
-                      </View>
-                    )}
-                  </View>
+                  <Icon 
+                    size={Sizes.iconSm} 
+                    color={isActive ? colors.icon : colors.textMuted} 
+                    strokeWidth={2}
+                    style={{ opacity: pressed ? 0.7 : 1 }}
+                  />
                 )}
               </HapticPressable>
             </View>
@@ -107,26 +99,29 @@ export function SavedHeader({
 
 const styles = StyleSheet.create({
   container: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 20,
     paddingBottom: Spacing.md,
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Layout.screenPadding,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   pillRow: {
     flexDirection: 'row',
-    gap: Spacing.sm,
+    alignItems: 'center',
+    gap: Layout.headerGap,
   },
   glass: {
     borderWidth: 1,
   },
-  pill: {
-    borderRadius: Radius.full,
-    overflow: 'hidden',
-  },
-  pillInner: {
+  pillButton: {
+    height: Sizes.pillHeight,
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    borderRadius: Sizes.pillRadius,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -135,11 +130,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.xs,
   },
-  pillBadge: {
-    paddingHorizontal: Sizes.badgePaddingH,
-    paddingVertical: Sizes.badgePaddingV,
-    borderRadius: Radius.lg,
-    minWidth: Sizes.iconSm,
+  iconButton: {
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Sizes.bubble / 2,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconButtonInner: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
