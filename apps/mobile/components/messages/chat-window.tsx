@@ -96,7 +96,7 @@ export function ChatWindow({
     otherLastReadAt,
     isOtherTyping,
     isOtherOnline,
-    otherLastSeenAt: liveLastSeenAt,
+    otherLastSeenAt,
     error,
     sendMessage,
     fetchMore,
@@ -108,6 +108,7 @@ export function ChatWindow({
     otherUserId: conversation?.otherParticipant?.id,
     isAuthenticated,
     enabled: true,
+    initialLastSeenAt: conversation?.otherParticipant?.lastSeenAt,
   });
 
   // Extract display info from conversation
@@ -117,13 +118,10 @@ export function ChatWindow({
   const avatarUrl = conversation?.partner
     ? conversation.partner.logo
     : conversation?.otherParticipant?.avatarUrl;
-  // Use live presence from useMessages (real-time via WS), fallback to conversation snapshot
+  // Use live presence from useMessages (real-time via WS, initialized from DB)
   const isOnline = isOtherOnline ?? conversation?.otherParticipant?.isOnline ?? false;
-  // liveLastSeenAt: undefined = no WS data yet → use conversation snapshot
-  //                 null/string = WS has responded → use live value (even if null)
-  const lastSeenAt = liveLastSeenAt !== undefined
-    ? liveLastSeenAt
-    : conversation?.otherParticipant?.lastSeenAt;
+  // otherLastSeenAt is now initialized from DB in useMessages, WS updates override
+  const lastSeenAt = otherLastSeenAt;
   const listingTitle = conversation?.listing?.title;
   const otherUserAvatar = avatarUrl;
   const otherUserName = displayName;

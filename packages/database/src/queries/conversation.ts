@@ -387,8 +387,13 @@ export async function getUserConversations(
             id: row.otherParticipantId,
             name: showPartnerBrand ? row.partnerName : row.otherParticipantName,
             avatarUrl: showPartnerBrand ? row.partnerLogo : row.otherParticipantAvatar,
-            lastReadAt: row.otherParticipantLastReadAt,
-            lastSeenAt: row.otherParticipantLastSeenAt,
+            // Convert dates to ISO strings (DB returns them in "YYYY-MM-DD HH:mm:ss" format)
+            lastReadAt: row.otherParticipantLastReadAt
+              ? new Date(row.otherParticipantLastReadAt).toISOString()
+              : null,
+            lastSeenAt: row.otherParticipantLastSeenAt
+              ? new Date(row.otherParticipantLastSeenAt).toISOString()
+              : null,
           }
         : null,
       listing: row.listingId && row.listingTitle

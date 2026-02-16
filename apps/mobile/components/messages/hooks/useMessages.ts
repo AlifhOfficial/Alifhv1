@@ -20,6 +20,8 @@ interface UseMessagesOptions {
   otherUserId?: string | null;
   isAuthenticated: boolean;
   enabled?: boolean;
+  /** Initial lastSeenAt from conversation snapshot (DB) - used before WS responds */
+  initialLastSeenAt?: string | null;
 }
 
 interface UseMessagesReturn {
@@ -31,7 +33,7 @@ interface UseMessagesReturn {
   otherLastReadAt: string | null;
   isOtherTyping: boolean;
   isOtherOnline: boolean | null;
-  otherLastSeenAt: string | null | undefined;
+  otherLastSeenAt: string | null;
   error: string | null;
   sendMessage: (text: string) => Promise<void>;
   fetchMore: () => Promise<void>;
@@ -45,6 +47,7 @@ export function useMessages({
   otherUserId,
   isAuthenticated,
   enabled = true,
+  initialLastSeenAt,
 }: UseMessagesOptions): UseMessagesReturn {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -54,10 +57,8 @@ export function useMessages({
   const [otherLastReadAt, setOtherLastReadAt] = useState<string | null>(null);
   const [isOtherTyping, setIsOtherTyping] = useState(false);
   const [isOtherOnline, setIsOtherOnline] = useState<boolean | null>(null);
-  // undefined = no WS data yet (fall back to conversation snapshot)
-  // null = WS confirmed no lastSeenAt
-  // string = WS-provided lastSeenAt
-  const [otherLastSeenAt, setOtherLastSeenAt] = useState<string | null | undefined>(undefined);
+  // Initialize from DB snapshot, WS updates override it
+  const [otherLastSeenAt, setOtherLastSeenAt] = useState<string | null>(initialLastSeenAt ?? null);
   const [error, setError] = useState<string | null>(null);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const { subscribe, send, isConnected } = useWebSocket();
@@ -78,6 +79,18 @@ export function useMessages({
     otherUserIdRef.current = otherUserId;
   }, [otherUserId]);
 
+  // Update lastSeenAt when initial value changes (conversation refresh)
+  // Only update if new value is more recent (matches web behavior)
+  useEffect(() => {
+    if (initialLastSeenAt) {
+      setOtherLastSeenAt(prev => {
+        if (!prev) return initialLastSeenAt;
+        // Only update if new value is more recent
+        return new Date(initialLastSeenAt) > new Date(prev) ? initialLastSeenAt : prev;
+      });
+    }
+  }, [initialLastSeenAt]);
+
   // Reset state when conversation changes
   // MUST be declared BEFORE the watch effect — React runs effects in declaration
   // order, so reset clears state first, then watch re-subscribes to presence.
@@ -91,7 +104,8 @@ export function useMessages({
     setOtherLastReadAt(null);
     setIsOtherTyping(false);
     setIsOtherOnline(null);
-    setOtherLastSeenAt(undefined);
+    // Reset to initial value from DB (not undefined)
+    setOtherLastSeenAt(initialLastSeenAt ?? null);
     watchingRef.current = false;
     conversationIdRef.current = conversationId;
   }, [conversationId]);
@@ -188,9 +202,11 @@ export function useMessages({
         msg.userId === otherUserIdRef.current
       ) {
         setIsOtherOnline(!!msg.isOnline);
-        // Always update — use null (not undefined) so the client knows
-        // WS has responded and stops falling back to stale conversation data
-        setOtherLastSeenAt(msg.lastSeenAt ?? null);
+        // Only update lastSeenAt if provided in the event (matches web behavior)
+        // This preserves the conversation snapshot fallback when WS doesn't include it
+        if (msg.lastSeenAt) {
+          setOtherLastSeenAt(msg.lastSeenAt);
+        }
       }
     });
 
