@@ -38,6 +38,9 @@ export function UserConversationGroup({
   // Calculate total unread for the group
   const totalUnread = conversations.reduce((sum, c) => sum + c.unreadCount, 0);
 
+  // Get online status from any conversation with this user
+  const isOnline = conversations.some(c => c.otherParticipant?.isOnline);
+
   return (
     <div>
       {/* User Header - Collapsible */}
@@ -48,13 +51,18 @@ export function UserConversationGroup({
           'flex items-center gap-3'
         )}
       >
-        {/* User Avatar */}
-        <UserAvatar
-          src={user.avatarUrl}
-          name={user.name || 'User'}
-          size="md"
-          className="w-9 h-9 flex-shrink-0"
-        />
+        {/* User Avatar with Online Indicator */}
+        <div className="relative flex-shrink-0">
+          <UserAvatar
+            src={user.avatarUrl}
+            name={user.name || 'User'}
+            size="md"
+            className="w-9 h-9"
+          />
+          {isOnline && (
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-background rounded-full" />
+          )}
+        </div>
         
         {/* User Info */}
         <div className="flex-1 min-w-0">

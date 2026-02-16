@@ -34,6 +34,7 @@ export interface Conversation {
     avatarUrl: string | null;
     lastReadAt?: Date | string | null;
     lastSeenAt?: Date | string | null;
+    isOnline?: boolean;
   } | null;
   listing: { id: string; title: string; thumbnail: string | null } | null;
   partner: { id: string; name: string; logo: string | null } | null;
@@ -149,6 +150,27 @@ export function useConversations(options: UseConversationsOptions = {}) {
         });
       }
       
+      // Handle presence updates - update isOnline/lastSeenAt for other participant
+      if (msg.type === 'presence' && msg.userId) {
+        queryClient.setQueryData(queryKey, (old: ConversationsResponse | undefined) => {
+          if (!old?.conversations) return old;
+          
+          return {
+            ...old,
+            conversations: old.conversations.map(c => 
+              c.otherParticipant?.id !== msg.userId ? c : {
+                ...c,
+                otherParticipant: {
+                  ...c.otherParticipant,
+                  isOnline: !!msg.isOnline,
+                  lastSeenAt: msg.lastSeenAt ? new Date(msg.lastSeenAt) : c.otherParticipant.lastSeenAt,
+                },
+              }
+            ),
+          };
+        });
+      }
+
       // Handle read receipts - update other participant's lastReadAt
       if (msg.type === 'read_receipt' && msg.conversationId && msg.userId !== options.userId) {
         queryClient.setQueryData(queryKey, (old: ConversationsResponse | undefined) => {

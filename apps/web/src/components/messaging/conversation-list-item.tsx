@@ -44,6 +44,8 @@ export function ConversationListItem({
     partner,
   } = conversation;
 
+  const isOnline = otherParticipant?.isOnline ?? false;
+
   // For nested items (under partner group), show listing title as primary
   // For flat items, show partner name or user name as primary
   const displayName = isNested
@@ -74,19 +76,26 @@ export function ConversationListItem({
       <div className="flex items-start overflow-hidden gap-3">
         {/* Avatar - hide for nested items, they have curved line */}
         {isNested ? null : isPartnerBrand ? (
-          <BrandAvatar
-            logoUrl={partner?.logo}
-            brandName={partner?.name || 'Partner'}
-            size="sm"
-            className="w-11 h-11 flex-shrink-0"
-          />
+          <div className="relative flex-shrink-0">
+            <BrandAvatar
+              logoUrl={partner?.logo}
+              brandName={partner?.name || 'Partner'}
+              size="sm"
+              className="w-11 h-11"
+            />
+          </div>
         ) : (
-          <UserAvatar
-            src={otherParticipant?.avatarUrl}
-            name={displayName}
-            size="lg"
-            className="w-11 h-11 flex-shrink-0"
-          />
+          <div className="relative flex-shrink-0">
+            <UserAvatar
+              src={otherParticipant?.avatarUrl}
+              name={displayName}
+              size="lg"
+              className="w-11 h-11"
+            />
+            {isOnline && (
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />
+            )}
+          </div>
         )}
 
         {/* Content */}
