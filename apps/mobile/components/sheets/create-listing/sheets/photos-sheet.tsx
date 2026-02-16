@@ -18,7 +18,7 @@ import { Body, Supporting } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
 import { pickAndUploadListingImage, deleteListingImageByUrl } from '@/components/user-inventory-management/utilities/image-upload';
 
-import { CreateFlowSheet, CreateFlowScrollContent } from '../create-flow-sheet';
+import { CreateFlowSheet, CreateFlowScrollContent } from '../base-sheet';
 import { ResponseSheet, type ResponseType } from '../response-sheet';
 import type { SheetStepProps } from '../types';
 import { getProgress, SHEET_STEPS } from '../types';

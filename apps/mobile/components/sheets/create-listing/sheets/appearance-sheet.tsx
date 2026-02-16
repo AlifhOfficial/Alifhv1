@@ -17,7 +17,7 @@ import { Body, Supporting, Label } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
 import { BODY_TYPES, EXTERIOR_COLORS, INTERIOR_COLORS } from '@/lib/filter-constants';
 
-import { CreateFlowSheet, CreateFlowScrollContent } from '../create-flow-sheet';
+import { CreateFlowSheet, CreateFlowScrollContent } from '../base-sheet';
 import type { SheetStepProps } from '../types';
 import { getProgress, SHEET_STEPS } from '../types';
 

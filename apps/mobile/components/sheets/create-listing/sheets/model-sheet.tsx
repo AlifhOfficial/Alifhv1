@@ -19,7 +19,7 @@ import { Body, Supporting } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
 import { getModelsForMake } from '@/lib/filter-constants';
 
-import { CreateFlowSheet, CreateFlowListContent } from '../create-flow-sheet';
+import { CreateFlowSheet, CreateFlowListContent } from '../base-sheet';
 import type { SheetStepProps } from '../types';
 import { getProgress, SHEET_STEPS } from '../types';
 

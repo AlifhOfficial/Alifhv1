@@ -19,7 +19,7 @@ import { HapticPressable } from '@/components/ui';
 import { UAE_EMIRATES } from '@/lib/filter-constants';
 import { createListing } from '@/lib/sell-car-user-api';
 
-import { CreateFlowSheet, CreateFlowScrollContent } from '../create-flow-sheet';
+import { CreateFlowSheet, CreateFlowScrollContent } from '../base-sheet';
 import { ResponseSheet, type ResponseType } from '../response-sheet';
 import type { SheetStepProps } from '../types';
 import { SHEET_STEPS, dataToPayload } from '../types';

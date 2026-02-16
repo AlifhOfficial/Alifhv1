@@ -18,7 +18,7 @@ import { useTheme } from '@/context/theme-context';
 import { Body, Supporting } from '@/components/ui';
 import { checkVin } from '@/lib/sell-car-user-api';
 
-import { CreateFlowSheet, CreateFlowScrollContent } from '../create-flow-sheet';
+import { CreateFlowSheet, CreateFlowScrollContent } from '../base-sheet';
 import type { SheetStepProps } from '../types';
 import { validateVin, getProgress, SHEET_STEPS } from '../types';
 

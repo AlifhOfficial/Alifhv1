@@ -18,7 +18,7 @@ import { Body, Supporting, Label } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
 import { VEHICLE_EXTRAS, LISTING_TAGS } from '@/lib/filter-constants';
 
-import { CreateFlowSheet, CreateFlowScrollContent } from '../create-flow-sheet';
+import { CreateFlowSheet, CreateFlowScrollContent } from '../base-sheet';
 import type { SheetStepProps } from '../types';
 import { getProgress, SHEET_STEPS } from '../types';
 

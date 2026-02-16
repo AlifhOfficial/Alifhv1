@@ -46,7 +46,14 @@ export {
 } from './types';
 
 // Base sheet (for custom sheets)
-export { BaseSheet } from './base-sheet';
+export {
+  BaseSheet,
+  CreateFlowSheet,
+  FlowScrollContent,
+  FlowListContent,
+  CreateFlowScrollContent,
+  CreateFlowListContent,
+} from './base-sheet';
 
 // Response sheet (for errors, success, warnings)
 export { ResponseSheet, type ResponseType, type ResponseSheetProps } from './response-sheet';

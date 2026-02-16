@@ -16,7 +16,7 @@ import { useTheme } from '@/context/theme-context';
 import { Body, Supporting, Data, Label } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
 
-import { CreateFlowSheet, CreateFlowScrollContent } from '../create-flow-sheet';
+import { CreateFlowSheet, CreateFlowScrollContent } from '../base-sheet';
 import type { SheetStepProps } from '../types';
 import { getProgress, SHEET_STEPS } from '../types';
 

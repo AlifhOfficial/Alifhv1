@@ -137,7 +137,7 @@ export function CreateListingFlow({
   }, []);
 
   // ── Close handler ──
-  // Note: Confirmation is handled by CreateFlowSheet internally
+  // Note: Confirmation is handled by BaseSheet internally
   // This just propagates the close to parent
   const handleClose = useCallback(() => {
     onClose();
@@ -181,10 +181,10 @@ export function CreateListingFlow({
       onUpdate: updateData,
       onNext: goToNextStep,
       onSkip: skipStep,
-      onBack: goToPrevStep,
+      onBack: currentStepIndex > 0 ? goToPrevStep : undefined,
       onClose: handleClose,
     }),
-    [visible, data, updateData, goToNextStep, skipStep, goToPrevStep, handleClose]
+    [visible, data, updateData, goToNextStep, skipStep, goToPrevStep, handleClose, currentStepIndex]
   );
 
   // ── Render current sheet ──
