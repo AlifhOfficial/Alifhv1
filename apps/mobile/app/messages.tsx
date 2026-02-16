@@ -192,7 +192,14 @@ export default function MessagesScreen() {
   // ── Select conversation ─────────────────────────
   const handleSelect = useCallback(
     async (conversation: Conversation) => {
-      router.push(`/chat/${conversation.id}`);
+      // Pass conversation data via params to avoid re-fetching
+      router.push({
+        pathname: '/chat/[conversationId]',
+        params: { 
+          conversationId: conversation.id,
+          conversationData: JSON.stringify(conversation),
+        },
+      });
       if (conversation.unreadCount > 0) {
         await markAsRead(conversation.id);
       }
