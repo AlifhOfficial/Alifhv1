@@ -329,6 +329,7 @@ export function ChatWindow({
         isTyping={isOtherTyping}
         lastSeenAt={lastSeenAt}
         listingTitle={listingTitle}
+        isLoading={!conversation}
         onBack={onBack}
       />
 
@@ -338,7 +339,7 @@ export function ChatWindow({
           {isLoading ? (
             <View style={[styles.skeletonContainer, { paddingTop: insets.top + HEADER_HEIGHT }]}>
               {/* Simulate a chat thread with alternating left/right skeleton bubbles */}
-              {[...Array(8)].map((_, i) => {
+              {[...Array(12)].map((_, i) => {
                 const isRight = i % 3 !== 0;
                 // Vary widths using token combinations
                 const widths = [
@@ -443,6 +444,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   dateSeparator: {
+    width: SCREEN_WIDTH,
     alignItems: 'center',
     paddingVertical: Spacing.sm,
   },
@@ -453,8 +455,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing['5xl'],
   },
   skeletonContainer: {
-    flex: 1,
-    width: '100%',
+    ...StyleSheet.absoluteFillObject,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
     gap: Spacing.lg,

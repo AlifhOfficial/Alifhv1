@@ -6,13 +6,13 @@
 
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import { HapticPressable, Skeleton } from '@/components/ui';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft, Circle } from 'lucide-react-native';
 import { formatDistanceToNow } from 'date-fns';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Sizes, Layout, Radius } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { Data } from '@/components/ui';
 
@@ -23,6 +23,7 @@ interface ChatHeaderProps {
   isTyping?: boolean;
   lastSeenAt?: Date | string | null;
   listingTitle?: string;
+  isLoading?: boolean;
   onBack?: () => void;
 }
 
@@ -33,6 +34,7 @@ export function ChatHeader({
   isTyping = false,
   lastSeenAt,
   listingTitle,
+  isLoading = false,
   onBack,
 }: ChatHeaderProps) {
   const { colorScheme } = useTheme();
@@ -111,7 +113,11 @@ export function ChatHeader({
             },
           ]}
         >
-          <UserAvatar src={avatarUrl} name={name} size="sm" />
+          {isLoading ? (
+            <Skeleton circle width={Sizes.avatarSm} height={Sizes.avatarSm} />
+          ) : (
+            <UserAvatar src={avatarUrl} name={name} size="sm" />
+          )}
         </View>
 
         {/* Name Pill */}
@@ -122,14 +128,19 @@ export function ChatHeader({
             {
               borderColor: colors.glassBorder,
               backgroundColor: colors.glassBackground,
+              minWidth: isLoading ? Spacing['5xl'] * 2 : undefined,
             },
           ]}
         >
-          <Data size="small">{name}</Data>
+          {isLoading ? (
+            <Skeleton width={Spacing['4xl'] * 2} height={Sizes.iconSm} borderRadius={Radius.sm} />
+          ) : (
+            <Data size="small">{name}</Data>
+          )}
         </View>
 
-        {/* Status Pill */}
-        {statusText && (
+        {/* Status Pill - show skeleton when loading */}
+        {(statusText || isLoading) && (
           <View
             style={[
               styles.pillButton,
@@ -137,24 +148,29 @@ export function ChatHeader({
               {
                 borderColor: colors.glassBorder,
                 backgroundColor: colors.glassBackground,
+                minWidth: isLoading ? Spacing['5xl'] * 1.5 : undefined,
               },
             ]}
           >
-            <View style={styles.pillContent}>
-              <Circle
-                size={6}
-                fill={isTyping ? colors.primary : (isOnline ? colors.success : colors.textTertiary)}
-                color={isTyping ? colors.primary : (isOnline ? colors.success : colors.textTertiary)}
-              />
-              <Data
-                size="small"
-                style={{
-                  color: isTyping ? colors.primary : (isOnline ? colors.success : colors.textTertiary),
-                }}
-              >
-                {statusText}
-              </Data>
-            </View>
+            {isLoading ? (
+              <Skeleton width={Spacing['4xl'] * 1.5} height={Sizes.iconSm} borderRadius={Radius.sm} />
+            ) : (
+              <View style={styles.pillContent}>
+                <Circle
+                  size={6}
+                  fill={isTyping ? colors.primary : (isOnline ? colors.success : colors.textTertiary)}
+                  color={isTyping ? colors.primary : (isOnline ? colors.success : colors.textTertiary)}
+                />
+                <Data
+                  size="small"
+                  style={{
+                    color: isTyping ? colors.primary : (isOnline ? colors.success : colors.textTertiary),
+                  }}
+                >
+                  {statusText}
+                </Data>
+              </View>
+            )}
           </View>
         )}
 
