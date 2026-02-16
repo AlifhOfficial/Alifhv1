@@ -296,21 +296,17 @@ export function ChatWindow({
     );
   }, [colors]);
 
-  // Typing indicator (Instagram-style bubble at bottom of messages)
+  // Typing indicator
   const ListHeaderComponent = useMemo(() => {
     if (!isOtherTyping) return null;
     return (
       <View style={styles.typingContainer}>
-        <View style={[styles.typingBubble, { backgroundColor: colors.surfaceSecondary }]}>
-          <View style={styles.typingDots}>
-            <Animated.View style={[styles.typingDot, { backgroundColor: colors.textTertiary }]} />
-            <Animated.View style={[styles.typingDot, { backgroundColor: colors.textTertiary, opacity: 0.7 }]} />
-            <Animated.View style={[styles.typingDot, { backgroundColor: colors.textTertiary, opacity: 0.4 }]} />
-          </View>
-        </View>
+        <Supporting size="small" style={{ color: colors.textTertiary }}>
+          typing...
+        </Supporting>
       </View>
     );
-  }, [isOtherTyping, colors.surfaceSecondary, colors.textTertiary]);
+  }, [isOtherTyping, colors.textTertiary]);
 
   return (
     <KeyboardAvoidingView
@@ -475,24 +471,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   typingContainer: {
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Layout.screenPadding + Sizes.iconXl + Spacing.sm,
     paddingVertical: Spacing.xs,
-    alignItems: 'flex-start',
-  },
-  typingBubble: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: Radius.xl,
-    borderBottomLeftRadius: Radius.sm,
-  },
-  typingDots: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
-  },
-  typingDot: {
-    width: Spacing.sm,
-    height: Spacing.sm,
-    borderRadius: Spacing.sm / 2,
   },
 });

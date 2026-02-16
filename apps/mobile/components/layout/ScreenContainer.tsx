@@ -9,12 +9,11 @@ import {
   StyleSheet,
   View,
   ScrollView,
-  KeyboardAvoidingView,
-  Platform,
   RefreshControl,
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/theme-context';
@@ -152,7 +151,7 @@ export const ScreenContainer = forwardRef<ScrollView, ScreenContainerProps>(
     const wrappedContent = keyboardAvoiding ? (
       <KeyboardAvoidingView
         style={styles.keyboardView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior="padding"
       >
         {scrollContent}
       </KeyboardAvoidingView>

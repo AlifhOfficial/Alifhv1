@@ -8,10 +8,10 @@ import {
   View, 
   Text as RNText,
   TextInput, 
-  KeyboardAvoidingView,
-  Platform,
   ScrollView,
+  Platform,
 } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { HapticPressable, ButtonLoader } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
@@ -68,7 +68,7 @@ export function SignUpScreen({
   return (
     <View style={[authStyles.container, { backgroundColor: colors.background }]}>
       <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior="padding"
         style={authStyles.keyboardView}
       >
         <ScrollView 

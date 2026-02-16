@@ -7,9 +7,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { 
   View, 
   TextInput, 
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { HapticPressable } from '@/components/ui';
 import { InlineLoader } from '@/components/ui/loaders';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -86,7 +85,7 @@ export function OTPScreen({
   return (
     <View style={[authStyles.container, { backgroundColor: colors.background }]}>
       <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior="padding"
         style={authStyles.keyboardView}
       >
         <View style={[
