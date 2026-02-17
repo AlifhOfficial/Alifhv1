@@ -1,11 +1,7 @@
 {
-  "$schema": "https://railpack.io/schema.json",
-  "packages": ["python3", "python3-dev", "build-essential"],
-  "runtime": "bun",
-  "build": {
-    "cmd": "bun install && bun run build:web"
-  },
-  "start": {
-    "cmd": "cd apps/web && bun run start"
+  "$schema": "https://schema.railpack.com",
+  "packages": {
+    "python3": "*",
+    "build-essential": "*"
   }
 }
