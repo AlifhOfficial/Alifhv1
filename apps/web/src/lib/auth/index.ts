@@ -511,17 +511,47 @@ export const auth = betterAuth({
     error: "/auth/error",
   },
 
-  trustedOrigins: [
-    // Production/Dev URL from env
-    process.env.BETTER_AUTH_URL || "http://localhost:3000",
-    // Network URL for mobile dev
-    process.env.NEXT_PUBLIC_NETWORK_URL || "",
-    // Additional trusted origins from env (comma-separated)
-    ...(process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",") || []),
-    // Local dev defaults
-    "http://localhost:3000",
-    "http://localhost:3001",
-  ].filter(Boolean),
+  // In development, dynamically allow any local network IP
+  // In production, only explicit origins from env are trusted
+  trustedOrigins: process.env.NODE_ENV === 'production' 
+    ? [
+        process.env.BETTER_AUTH_URL || "http://localhost:3000",
+        process.env.NEXT_PUBLIC_NETWORK_URL || "",
+        ...(process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",").map(o => o.trim()) || []),
+      ].filter(Boolean)
+    : (request: Request) => {
+        // Start with explicit origins from env
+        const origins = [
+          "http://localhost:3000",
+          "http://localhost:3001",
+          "http://127.0.0.1:3000",
+          process.env.NEXT_PUBLIC_NETWORK_URL || "",
+          ...(process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",").map(o => o.trim()) || []),
+        ].filter(Boolean);
+        
+        // Also extract the origin from the request and allow it if it's a local network IP
+        const requestOrigin = request.headers.get('origin');
+        if (requestOrigin) {
+          try {
+            const url = new URL(requestOrigin);
+            const host = url.hostname;
+            const isLocalNetwork = 
+              /^192\.168\.\d{1,3}\.\d{1,3}$/.test(host) ||
+              /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(host) ||
+              /^172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}$/.test(host) ||
+              host === 'localhost' || 
+              host === '127.0.0.1';
+            
+            if (isLocalNetwork && !origins.includes(requestOrigin)) {
+              origins.push(requestOrigin);
+            }
+          } catch {
+            // Invalid URL, ignore
+          }
+        }
+        
+        return origins;
+      },
 
   advanced: {
     // Use 'lax' for OAuth state cookies to work with popup windows

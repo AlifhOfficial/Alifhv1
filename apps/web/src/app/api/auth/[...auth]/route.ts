@@ -9,27 +9,60 @@
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
+/**
+ * Check if an origin is a local network IP (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
+ */
+function isLocalNetworkOrigin(origin: string): boolean {
+  try {
+    const url = new URL(origin);
+    const host = url.hostname;
+    
+    // Match common private IP ranges
+    // 192.168.x.x
+    if (/^192\.168\.\d{1,3}\.\d{1,3}$/.test(host)) return true;
+    // 10.x.x.x
+    if (/^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(host)) return true;
+    // 172.16.x.x - 172.31.x.x
+    if (/^172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}$/.test(host)) return true;
+    // localhost variants
+    if (host === 'localhost' || host === '127.0.0.1') return true;
+    
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Build allowed origins from environment variables
+ * Uses BETTER_AUTH_TRUSTED_ORIGINS (comma-separated) as the source of truth
+ */
+function buildAllowedOrigins(): string[] {
+  const origins: string[] = [
+    // Default localhost
+    "http://localhost:3000",
+    // Network URL from env
+    process.env.NEXT_PUBLIC_NETWORK_URL || "",
+    // All trusted origins from env (comma-separated)
+    ...(process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",").map(o => o.trim()) || []),
+  ];
+  
+  // Filter out empty strings and duplicates
+  return [...new Set(origins.filter(Boolean))];
+}
+
 // Allowed origins for CORS and dynamic baseURL
-const ALLOWED_ORIGINS = [
-  "http://localhost:3000",
-  process.env.NEXT_PUBLIC_NETWORK_URL || "",
-  "http://192.168.1.14:3000",
-  "http://192.168.1.33:3000",
-  "http://localhost:3001",
-  "http://192.168.1.14:8081",
-  "http://192.168.1.33:8081",
-  "http://192.168.1.103:3000",
-  "http://192.168.1.109:3000",
-  "http://192.168.1.109:8081",
-  "https://claims-son-sixth-classification.trycloudflare.com",
-].filter(Boolean);
+const ALLOWED_ORIGINS = buildAllowedOrigins();
 
 // Check if a request should be allowed (either from allowed origin or mobile app without origin)
 function isRequestAllowed(origin: string | null): boolean {
   // Allow requests without origin (mobile apps, server-to-server)
   if (!origin) return true;
   // Allow known origins
-  return ALLOWED_ORIGINS.includes(origin);
+  if (ALLOWED_ORIGINS.includes(origin)) return true;
+  // In development, allow any local network IP
+  if (process.env.NODE_ENV !== 'production' && isLocalNetworkOrigin(origin)) return true;
+  return false;
 }
 
 /**
@@ -41,8 +74,13 @@ function getBaseURLFromRequest(request: Request): string {
   // Use the host from the request (includes port)
   const baseURL = `${url.protocol}//${url.host}`;
   
-  // Only allow known origins for security
+  // Allow known origins
   if (ALLOWED_ORIGINS.includes(baseURL)) {
+    return baseURL;
+  }
+  
+  // In development, allow any local network IP
+  if (process.env.NODE_ENV !== 'production' && isLocalNetworkOrigin(baseURL)) {
     return baseURL;
   }
   

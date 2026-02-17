@@ -2,13 +2,73 @@
  * API Configuration
  * 
  * Centralized configuration for API endpoints.
+ * Auto-detects the dev server IP in development mode.
  * Includes a global fetch interceptor to prevent native cookie leakage.
- * TODO: Use environment variables for production.
  */
+import Constants from 'expo-constants';
 
-// Development API URL - your local web server
-// Use your machine's local IP (check with: ifconfig | grep inet)
-export const API_BASE = 'http://192.168.1.33:3000';
+// ============================================================================
+// DYNAMIC IP DETECTION
+// ============================================================================
+// In development, Expo knows the dev server IP. We use that same IP to connect
+// to our Next.js API server (running on port 3000) and WebSocket server (3001).
+// This eliminates the need to manually update env vars when your IP changes.
+// ============================================================================
+function getDevServerHost(): string | null {
+  // Works in Expo Go and development builds
+  const debuggerHost = Constants.expoGoConfig?.debuggerHost 
+    ?? Constants.expoConfig?.hostUri;
+  
+  if (debuggerHost) {
+    // debuggerHost is like "192.168.1.15:8081" - extract just the IP
+    return debuggerHost.split(':')[0];
+  }
+  return null;
+}
+
+function getApiBaseUrl(): string {
+  // In production, use the env var or production URL
+  if (process.env.NODE_ENV === 'production' || !__DEV__) {
+    return process.env.EXPO_PUBLIC_API_URL || 'https://alifh.ae';
+  }
+  
+  // In development, auto-detect the IP from Expo dev server
+  const devHost = getDevServerHost();
+  if (devHost) {
+    return `http://${devHost}:3000`;
+  }
+  
+  // Fallback to env var or localhost
+  return process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+}
+
+function getWsUrl(): string {
+  // In production, use the env var or production URL
+  if (process.env.NODE_ENV === 'production' || !__DEV__) {
+    return process.env.EXPO_PUBLIC_WS_URL || 'wss://ws.alifh.ae';
+  }
+  
+  // In development, auto-detect the IP from Expo dev server
+  const devHost = getDevServerHost();
+  if (devHost) {
+    return `ws://${devHost}:3001`;
+  }
+  
+  // Fallback to env var or localhost
+  return process.env.EXPO_PUBLIC_WS_URL || 'ws://localhost:3001';
+}
+
+// API URL - auto-detected in dev, from env in production
+export const API_BASE = getApiBaseUrl();
+
+// WebSocket URL - auto-detected in dev, from env in production
+export const WS_URL = getWsUrl();
+
+// Log detected endpoints in development
+if (__DEV__) {
+  console.log('[Config] API_BASE:', API_BASE);
+  console.log('[Config] WS_URL:', WS_URL);
+}
 
 // ============================================================================
 // GLOBAL FETCH INTERCEPTOR
@@ -34,14 +94,11 @@ globalThis.fetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Respo
   return _originalFetch(input, init);
 };
 
-// CDN for static assets
-export const CDN_BASE = 'https://cdn.alifh.ae';
+// CDN for static assets (from environment or default)
+export const CDN_BASE = process.env.EXPO_PUBLIC_CDN_URL || 'https://cdn.alifh.ae';
 
 // CDN URL for avatars and media (R2 custom domain)
-export const R2_PUBLIC_URL = 'https://cdn.alifh.ae';
-
-// WebSocket URL
-export const WS_URL = 'ws://192.168.1.33:3001';
+export const R2_PUBLIC_URL = process.env.EXPO_PUBLIC_CDN_URL || 'https://cdn.alifh.ae';
 
 /**
  * Convert avatar key to full public URL

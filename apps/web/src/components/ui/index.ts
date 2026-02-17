@@ -14,3 +14,6 @@ export * from './navigation';
 
 // Data Display Components
 export * from './data-display';
+
+// Standalone Components
+export * from './macos-window';
