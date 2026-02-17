@@ -69,16 +69,28 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const isDark = colorScheme === 'dark';
   const colors = Colors[colorScheme];
 
-  // Sync theme with native system UI
-  // StatusBar is handled declaratively via <StatusBar> component in _layout.tsx
-  // Edge-to-edge transparency is handled natively via edgeToEdgeEnabled in app.json
+  // ═══════════════════════════════════════════════════════════════════════════
+  // NATIVE THEME SYNC
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 
+  // IMPORTANT: Do NOT call Appearance.setColorScheme() on Android!
+  // It resets NavigationBar.setStyle() and breaks nav bar button colors.
+  // 
+  // Platform-specific handling:
+  // - StatusBar: Declarative <StatusBar style={...}> in _layout.tsx (both platforms)
+  // - Android nav bar: NavigationBar.setStyle() - only for 3-button nav, not gesture
+  // - iOS keyboard/alerts: Appearance.setColorScheme() - safe on iOS only
+  // - Edge-to-edge: Handled natively via edgeToEdgeEnabled + enforceContrast in app.json
+  //
+  // ═══════════════════════════════════════════════════════════════════════════
   useEffect(() => {
     if (Platform.OS === 'android') {
-      // Nav bar button colors for 3-button navigation
+      // Nav bar button colors (light/dark icons) for 3-button navigation
+      // Has no effect on gesture navigation - Android provides no API for that
       NavigationBar.setStyle(colorScheme === 'dark' ? 'dark' : 'light');
     }
-    // Keyboard/alerts/pickers - skip on Android as it may conflict with nav bar
     if (Platform.OS === 'ios') {
+      // Keyboard, alerts, action sheets, pickers
       Appearance.setColorScheme(themeMode === 'system' ? null : themeMode);
     }
   }, [themeMode, colorScheme]);
