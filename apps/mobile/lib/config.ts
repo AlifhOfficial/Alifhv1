@@ -27,35 +27,33 @@ function getDevServerHost(): string | null {
 }
 
 function getApiBaseUrl(): string {
-  // In production, use the env var or production URL
-  if (process.env.NODE_ENV === 'production' || !__DEV__) {
-    return process.env.EXPO_PUBLIC_API_URL || 'https://revvup.ae';
+  // Always use production URL for now (live testing)
+  // To switch back to local dev, set USE_LOCAL_DEV=true in env
+  if (process.env.EXPO_PUBLIC_USE_LOCAL_DEV === 'true' && __DEV__) {
+    const devHost = getDevServerHost();
+    if (devHost) {
+      return `http://${devHost}:3000`;
+    }
+    return 'http://localhost:3000';
   }
   
-  // In development, auto-detect the IP from Expo dev server
-  const devHost = getDevServerHost();
-  if (devHost) {
-    return `http://${devHost}:3000`;
-  }
-  
-  // Fallback to env var or localhost
-  return process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+  // Use production URL
+  return process.env.EXPO_PUBLIC_API_URL || 'https://revvup.ae';
 }
 
 function getWsUrl(): string {
-  // In production, use the env var or production URL
-  if (process.env.NODE_ENV === 'production' || !__DEV__) {
-    return process.env.EXPO_PUBLIC_WS_URL || 'wss://ws.revvup.ae';
+  // Always use production URL for now (live testing)
+  // To switch back to local dev, set USE_LOCAL_DEV=true in env
+  if (process.env.EXPO_PUBLIC_USE_LOCAL_DEV === 'true' && __DEV__) {
+    const devHost = getDevServerHost();
+    if (devHost) {
+      return `ws://${devHost}:3001`;
+    }
+    return 'ws://localhost:3001';
   }
   
-  // In development, auto-detect the IP from Expo dev server
-  const devHost = getDevServerHost();
-  if (devHost) {
-    return `ws://${devHost}:3001`;
-  }
-  
-  // Fallback to env var or localhost
-  return process.env.EXPO_PUBLIC_WS_URL || 'ws://localhost:3001';
+  // Use production URL
+  return process.env.EXPO_PUBLIC_WS_URL || 'wss://ws.revvup.ae';
 }
 
 // API URL - auto-detected in dev, from env in production

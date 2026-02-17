@@ -18,6 +18,7 @@ const SITE_ACCESS_COOKIE = "site-access-granted";
 // Routes that bypass site password protection
 const BYPASS_SITE_PASSWORD = [
   '/staging-login',      // The password entry page
+  '/api/',               // All API routes (mobile app, webhooks, etc.)
   '/api/staging-auth',   // The password verification endpoint
   '/_next/',             // Next.js assets
   '/favicon.ico',
