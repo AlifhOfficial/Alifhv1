@@ -144,7 +144,10 @@ export async function proxy(request: NextRequest) {
   }
 
   // Get session token from cookies - Better Auth stores session data in cookies
-  const sessionToken = request.cookies.get("better-auth.session_token")?.value;
+  // In production with HTTPS, cookies are prefixed with __Secure-
+  const sessionToken = 
+    request.cookies.get("__Secure-better-auth.session_token")?.value ||
+    request.cookies.get("better-auth.session_token")?.value;
 
   // Redirect to sign-in if no session token (pages only, not API routes)
   if (!sessionToken) {
