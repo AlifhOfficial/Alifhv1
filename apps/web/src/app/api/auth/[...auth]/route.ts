@@ -41,6 +41,8 @@ function buildAllowedOrigins(): string[] {
   const origins: string[] = [
     // Default localhost
     "http://localhost:3000",
+    // Local network IP for dev/test
+    "http://192.168.1.15:3000",
     // Network URL from env
     process.env.NEXT_PUBLIC_NETWORK_URL || "",
     // All trusted origins from env (comma-separated)

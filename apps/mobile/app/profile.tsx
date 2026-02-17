@@ -95,8 +95,8 @@ export default function ProfileScreen() {
 
   const displayName =
     profile?.firstName && profile?.lastName
-      ? `${profile.firstName} ${profile.lastName}`
-      : profile?.firstName || user?.firstName || user?.name || 'User';
+      ? `${profile.firstName.trim()} ${profile.lastName.trim()}`
+      : (profile?.firstName?.trim() || user?.firstName?.trim() || user?.name?.trim() || 'User');
 
   const isKycExpired = profileStatus.kycExpiryDate
     ? new Date() > profileStatus.kycExpiryDate

@@ -46,6 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache', // Safari compatibility
         },
       });
       

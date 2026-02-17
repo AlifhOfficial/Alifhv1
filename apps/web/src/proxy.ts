@@ -12,6 +12,50 @@ import { sessionCache, CacheTTL } from "@alifh/database";
 // Request-scoped session cache key
 const SESSION_HEADER_KEY = "x-auth-user";
 
+// Site password protection cookie name
+const SITE_ACCESS_COOKIE = "site-access-granted";
+
+// Routes that bypass site password protection
+const BYPASS_SITE_PASSWORD = [
+  '/staging-login',      // The password entry page
+  '/api/staging-auth',   // The password verification endpoint
+  '/_next/',             // Next.js assets
+  '/favicon.ico',
+  '/robots.txt',
+  '/sitemap.xml',
+];
+
+/**
+ * Check if site password protection is enabled and handle access
+ * Returns NextResponse if access denied, or null if access granted/not required
+ */
+function checkSitePassword(request: NextRequest): NextResponse | null {
+  const sitePassword = process.env.SITE_PASSWORD;
+  
+  // No password set = no protection
+  if (!sitePassword) {
+    return null;
+  }
+  
+  const { pathname } = request.nextUrl;
+  
+  // Allow bypass routes
+  if (BYPASS_SITE_PASSWORD.some(route => pathname.startsWith(route))) {
+    return null;
+  }
+  
+  // Check for access cookie
+  const accessCookie = request.cookies.get(SITE_ACCESS_COOKIE)?.value;
+  if (accessCookie === 'true') {
+    return null;
+  }
+  
+  // Redirect to staging login page
+  const loginUrl = new URL('/staging-login', request.url);
+  loginUrl.searchParams.set('redirect', pathname);
+  return NextResponse.redirect(loginUrl);
+}
+
 // Public API routes that skip proxy entirely (no session caching needed)
 // These are high-traffic public endpoints for marketplace, search, and system operations
 const PUBLIC_API_ROUTES = [
@@ -65,6 +109,12 @@ function isExtendedUser(user: unknown): user is ExtendedUser {
 // Next.js 16+ proxy function
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  
+  // Site password protection - gates entire site when SITE_PASSWORD is set
+  const sitePasswordResponse = checkSitePassword(request);
+  if (sitePasswordResponse) {
+    return sitePasswordResponse;
+  }
   
   const isApiRoute = pathname.startsWith('/api/');
   

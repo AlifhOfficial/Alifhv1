@@ -27,7 +27,7 @@ function clearStaleOAuthCookies() {
       trimmedName.includes("pkce") || 
       trimmedName.includes("oauth") ||
       trimmedName.includes("code_verifier") ||
-      trimmedName.startsWith("better-auth.") && !trimmedName.includes("session")
+      (trimmedName.startsWith("better-auth.") && !trimmedName.includes("session"))
     ) {
       // Clear with various path combinations to ensure removal
       const paths = ["/", "/api", "/api/auth", "/auth"];

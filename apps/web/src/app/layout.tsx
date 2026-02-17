@@ -7,13 +7,7 @@ import { GlobalChatProvider } from '@/components/shared/providers/global-chat-pr
 import { Toaster } from '@/components/ui/sonner'
 
 export const viewport: Viewport = {
-  // Theme colors for browser chrome - Safari reads these at load time
-  // ThemeColorSync handles dynamic updates after hydration for Chrome
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f5f5f5' },
-    { media: '(prefers-color-scheme: dark)', color: '#000000' },
-  ],
-  colorScheme: 'dark light',
+  themeColor: '#000000',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -80,7 +74,7 @@ export default function RootLayout({
           `
         }} />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <ThemeProvider>
           <AuthProvider>
             <QueryProvider>

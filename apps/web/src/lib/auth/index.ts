@@ -516,6 +516,7 @@ export const auth = betterAuth({
   trustedOrigins: process.env.NODE_ENV === 'production' 
     ? [
         process.env.BETTER_AUTH_URL || "http://localhost:3000",
+        "http://192.168.1.15:3000",
         process.env.NEXT_PUBLIC_NETWORK_URL || "",
         ...(process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",").map(o => o.trim()) || []),
       ].filter(Boolean)
@@ -525,6 +526,7 @@ export const auth = betterAuth({
           "http://localhost:3000",
           "http://localhost:3001",
           "http://127.0.0.1:3000",
+          "http://192.168.1.15:3000",
           process.env.NEXT_PUBLIC_NETWORK_URL || "",
           ...(process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",").map(o => o.trim()) || []),
         ].filter(Boolean);
@@ -558,7 +560,10 @@ export const auth = betterAuth({
     // 'strict' can cause state_mismatch errors with OAuth flows
     defaultCookieAttributes: {
       sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
+      // Only set Secure flag when actually using HTTPS
+      // Checking BETTER_AUTH_URL allows local network testing over HTTP
+      secure: process.env.NODE_ENV === "production" && 
+              (process.env.BETTER_AUTH_URL?.startsWith("https://") ?? true),
     },
   },
 });

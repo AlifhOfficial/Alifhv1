@@ -64,10 +64,11 @@ export function ProfileMenu({
   }, []);
 
   // Show loading placeholder during SSR to prevent hydration mismatch
+  // Use suppressHydrationWarning for Safari compatibility
   if (!mounted) {
     return (
-      <div className="relative flex items-center" data-menu-container>
-        <div className="w-8 h-8 rounded-full bg-muted animate-pulse" />
+      <div className="relative flex items-center" data-menu-container suppressHydrationWarning>
+        <div className="w-8 h-8 rounded-full bg-muted/50" suppressHydrationWarning />
       </div>
     );
   }

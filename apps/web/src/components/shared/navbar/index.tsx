@@ -11,7 +11,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback, useRef, useSyncExternalStore } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -31,28 +31,8 @@ import { handleSignOut } from "@/lib/auth/sign-out";
 
 export type { NavItem };
 
-// External store for mounted state (avoids setState in effect)
-const mountedStore = {
-  value: false,
-  listeners: new Set<() => void>(),
-  subscribe(callback: () => void) {
-    this.listeners.add(callback);
-    return () => this.listeners.delete(callback);
-  },
-  getSnapshot() {
-    return mountedStore.value;
-  },
-  getServerSnapshot() {
-    return false;
-  },
-};
-
-// Mark as mounted on client (runs once at module load)
-if (typeof window !== 'undefined') {
-  mountedStore.value = true;
-}
-
 export function Navbar() {
+  const [mounted, setMounted] = useState(false);
   const [_isScrolled, setIsScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -66,18 +46,14 @@ export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const { user, isSignedIn: isAuthenticated, refetch: refetchAuth } = useUser();
   const { openChat } = useFloatingChatSafe();
 
-  // Use external store for mounted state (no setState in effect)
-  const mounted = useSyncExternalStore(
-    mountedStore.subscribe.bind(mountedStore),
-    mountedStore.getSnapshot,
-    mountedStore.getServerSnapshot
-  );
-
-  const isDark = mounted && (resolvedTheme === "dark" || resolvedTheme === "charcoal");
+  // Mark as mounted after hydration
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Scroll handler - just track scroll state
   useEffect(() => {
@@ -123,12 +99,20 @@ export function Navbar() {
     return () => document.removeEventListener('keydown', handleEscape);
   }, []);
 
-  // Prevent body scroll when mobile menu is open
+  // Prevent body scroll when mobile menu is open - Safari-safe approach
   useEffect(() => {
     if (showMobileMenu) {
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
       document.body.style.overflow = 'hidden';
       return () => {
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
         document.body.style.overflow = '';
+        window.scrollTo(0, scrollY);
       };
     }
   }, [showMobileMenu]);
@@ -231,15 +215,25 @@ export function Navbar() {
     <>
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background">
         <div className="flex items-center justify-between h-14 sm:h-16 max-w-[1600px] mx-auto px-4 sm:px-6">
-            {/* Logo */}
-            <Link href="/" className="flex items-center z-50 mr-8">
+            {/* Logo - suppressHydrationWarning prevents Safari hydration issues with theme-based visibility */}
+            <Link href="/" className="flex items-center z-50 mr-8" suppressHydrationWarning>
               <Image
-                src={isDark ? "/assets/Revvup_logo_White.svg" : "/assets/Revvup_logo_Black.svg"}
+                src="/assets/Revvup_logo_Black.svg"
                 alt="Revvup"
-                width={36}
-                height={36}
-                className="h-5 w-5"
+                width={20}
+                height={20}
+                className="h-5 w-auto dark:hidden"
                 priority
+                suppressHydrationWarning
+              />
+              <Image
+                src="/assets/Revvup_logo_White.svg"
+                alt="Revvup"
+                width={20}
+                height={20}
+                className="h-5 w-auto hidden dark:block"
+                priority
+                suppressHydrationWarning
               />
             </Link>
 

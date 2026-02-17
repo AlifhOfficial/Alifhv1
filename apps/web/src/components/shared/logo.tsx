@@ -1,6 +1,7 @@
 /**
  * Logo Component
- * Theme-aware logo using CSS visibility for instant theme switching
+ * Theme-aware logo using pure CSS for instant switching
+ * No JS-based theme detection to avoid hydration mismatches
  */
 
 import Image from "next/image";
@@ -13,14 +14,9 @@ interface LogoProps {
   priority?: boolean;
 }
 
-/**
- * Theme-aware Revvup logo.
- * Uses CSS dark: variant for instant switching without hydration issues.
- * Works with light, dark, and charcoal themes.
- */
 export function Logo({ className, width = 100, height = 30, priority = false }: LogoProps) {
   return (
-    <span className={cn("inline-block", className)}>
+    <span className={cn("inline-block relative", className)}>
       <Image
         src="/assets/Revvup_logo_Black.svg"
         alt="Revvup"

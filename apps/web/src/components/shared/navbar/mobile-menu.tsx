@@ -35,8 +35,9 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp,
 
   return (
     <div 
-      className="lg:hidden fixed inset-0 top-14 sm:top-16 z-40 bg-background overflow-y-auto"
+      className="lg:hidden fixed inset-0 top-14 sm:top-16 z-40 bg-background overflow-y-auto overscroll-contain"
       onClick={(e) => e.stopPropagation()}
+      style={{ WebkitOverflowScrolling: 'touch' }}
     >
       <div className="px-6 py-8 space-y-6">
         {/* Main Navigation */}
