@@ -1,0 +1,7 @@
+{
+  "$schema": "https://railpack.io/schema.json",
+  "builder": "bun",
+  "installCmd": "bun install",
+  "buildCmd": "bun run build:web",
+  "startCmd": "cd apps/web && bun run start"
+}
