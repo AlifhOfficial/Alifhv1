@@ -13,6 +13,7 @@ import * as Haptics from 'expo-haptics';
 import { Data } from '@/components/ui';
 import { Colors, Spacing, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { ProfileMenu } from '@/components/home/profile-menu';
 import type { SavedTab } from './types';
 
 interface SavedHeaderProps {
@@ -43,20 +44,26 @@ export function SavedHeader({
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + Layout.headerPadding }]}>
-      {/* Title pill - matches messages-header */}
-      <View
-        style={[
-          styles.pillButton,
-          styles.glass,
-          {
-            borderColor: colors.glassBorder,
-            backgroundColor: colors.glassBackground,
-          },
-        ]}
-      >
-        <View style={styles.pillContent}>
-          <Bookmark size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
-          <Data size="small">Saved</Data>
+      {/* Left section with profile and title */}
+      <View style={styles.leftSection}>
+        {/* Profile Avatar */}
+        <ProfileMenu />
+
+        {/* Title pill - matches messages-header */}
+        <View
+          style={[
+            styles.pillButton,
+            styles.glass,
+            {
+              borderColor: colors.glassBorder,
+              backgroundColor: colors.glassBackground,
+            },
+          ]}
+        >
+          <View style={styles.pillContent}>
+            <Bookmark size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
+            <Data size="small">Saved</Data>
+          </View>
         </View>
       </View>
 
@@ -109,6 +116,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  leftSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Layout.headerGap,
   },
   pillRow: {
     flexDirection: 'row',

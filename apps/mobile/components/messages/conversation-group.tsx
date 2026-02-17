@@ -8,7 +8,7 @@ import { View, StyleSheet } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Fonts } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { Data, Supporting, Label } from '@/components/ui';
 import type { Conversation } from '@/lib/messaging-api';
@@ -70,23 +70,20 @@ export function ConversationGroup({
           <View style={[styles.headerRow, pressed && { opacity: 0.7 }]}>
             <View style={[styles.avatarBubble, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
               <UserAvatar src={avatarUrl} name={name} size="md" />
-              {isOnline && (
-                <View style={[styles.onlineDot, { backgroundColor: colors.success, borderColor: colors.background }]} />
-              )}
             </View>
-            <Data size="large" style={{ flex: 1, color: colors.text, fontWeight: '600' }} numberOfLines={1}>
+            <Data size="large" style={{ flex: 1, color: colors.text }} numberOfLines={1}>
               {name}
             </Data>
             {totalUnread > 0 && (
               <View style={[styles.unreadBadge, { backgroundColor: colors.primary }]}>
-                <Label size="badge" uppercase={false} style={{ color: colors.primaryForeground, fontWeight: '600' }}>
+                <Label size="badge" uppercase={false} style={{ color: colors.primaryForeground }}>
                   {totalUnread}
                 </Label>
               </View>
             )}
             {isOnline ? (
-              <View style={[styles.bubble, { backgroundColor: colors.glassBackground, borderColor: colors.success }]}>
-                <Data size="mini" style={{ color: colors.success, fontWeight: '500' }}>now</Data>
+              <View style={[styles.statusPill, { backgroundColor: colors.successMuted }]}>
+                <Data size="mini" style={{ color: colors.success }}>now</Data>
               </View>
             ) : lastSeenAt ? (
               <View style={[styles.bubble, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
@@ -122,7 +119,7 @@ export function ConversationGroup({
                     style={{ 
                       flex: 1, 
                       color: hasUnread ? colors.text : colors.textSecondary,
-                      fontWeight: hasUnread ? '600' : '400',
+                      fontFamily: hasUnread ? Fonts.semiBold : Fonts.medium,
                     }}
                     numberOfLines={1}
                   >
@@ -179,20 +176,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  onlineDot: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: Spacing.md,
-    height: Spacing.md,
-    borderRadius: Spacing.md / 2,
-    borderWidth: 2,
-  },
   bubble: {
     width: Sizes.bubble,
     height: Sizes.bubble,
     borderRadius: Sizes.bubble / 2,
     borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  statusPill: {
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
   },

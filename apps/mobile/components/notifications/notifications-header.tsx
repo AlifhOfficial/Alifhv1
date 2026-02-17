@@ -11,6 +11,7 @@ import { CheckCheck, Trash2 } from 'lucide-react-native';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { Heading, Body, Supporting } from '@/components/ui';
+import { ProfileMenu } from '@/components/home/profile-menu';
 
 interface NotificationsHeaderProps {
   unreadCount: number;
@@ -26,6 +27,9 @@ export function NotificationsHeader({ unreadCount, onMarkAllRead, onClearAll }: 
   return (
     <View style={[styles.container, { paddingTop: insets.top + Spacing.sm }]}>
       <View style={styles.topRow}>
+        {/* Profile Avatar */}
+        <ProfileMenu />
+
         <View style={styles.titleWrapper}>
           <Heading size="large">Notifications</Heading>
           {unreadCount > 0 && (

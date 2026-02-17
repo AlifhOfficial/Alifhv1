@@ -183,6 +183,7 @@ export const CarCardList = memo(function CarCardList({
         skeletonColor={colors.skeleton}
         isBlkListing={isBlkListing}
         blkBadgeBackground={colors.blkBadgeBackground}
+        blkBadgeBorder={colors.blkBadgeBorder}
         blkBadgeText={colors.blkBadgeText}
       />
 
@@ -229,6 +230,7 @@ interface ListImageProps {
   skeletonColor: string;
   isBlkListing: boolean;
   blkBadgeBackground: string;
+  blkBadgeBorder: string;
   blkBadgeText: string;
 }
 
@@ -238,6 +240,7 @@ const ListImage = memo(function ListImage({
   skeletonColor,
   isBlkListing,
   blkBadgeBackground,
+  blkBadgeBorder,
   blkBadgeText,
 }: ListImageProps) {
   // Handle both local require() assets (number) and URL strings
@@ -255,7 +258,7 @@ const ListImage = memo(function ListImage({
         <View style={[styles.image, { backgroundColor: skeletonColor }]} />
       )}
       {isBlkListing && (
-        <View style={[styles.blkBadge, { backgroundColor: blkBadgeBackground }]}>
+        <View style={[styles.blkBadge, { backgroundColor: blkBadgeBackground, borderColor: blkBadgeBorder }]}>
           <Label size="badge" uppercase={false} style={{ color: blkBadgeText }}>BLK</Label>
         </View>
       )}
@@ -387,8 +390,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: Spacing.sm,
     left: Spacing.sm,
-    paddingHorizontal: Sizes.badgePaddingH,
-    paddingVertical: Sizes.badgePaddingV,
+    paddingHorizontal: Spacing.xs,
+    paddingVertical: 2,
     borderRadius: Radius.none,
+    borderWidth: 1,
   },
 });

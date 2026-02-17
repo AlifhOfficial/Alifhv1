@@ -99,8 +99,8 @@ export function SavedListingItem({ listing, colors }: SavedListingItemProps) {
         
         {/* BLK Badge */}
         {listing.isBlkListing && (
-          <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBackground }]}>
-            <Label size="badge" uppercase style={[styles.blkText, { color: colors.blkBadgeText }]}>BLK</Label>
+          <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBackground, borderColor: colors.blkBadgeBorder }]}>
+            <Label size="badge" uppercase style={{ color: colors.blkBadgeText }}>BLK</Label>
           </View>
         )}
       </View>
@@ -168,10 +168,9 @@ const styles = StyleSheet.create({
     top: Spacing.xs,
     left: Spacing.xs,
     paddingHorizontal: Spacing.xs,
-    paddingVertical: Sizes.badgePaddingV,
+    paddingVertical: 2,
     borderRadius: Radius.none,
-  },
-  blkText: {
+    borderWidth: 1,
   },
   details: {
     flex: 1,

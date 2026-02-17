@@ -14,6 +14,7 @@ import { Settings2, LayoutGrid, List } from 'lucide-react-native';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Layout, Radius, Sizes } from '@/constants/theme';
 import { Data, Label } from '@/components/ui';
+import { ProfileMenu } from '@/components/home/profile-menu';
 
 export type ViewMode = 'grid' | 'list';
 export type FilterPillType = 'make' | 'model' | 'price' | 'yearMileage' | 'location';
@@ -83,6 +84,9 @@ export function BrowseHeader({
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
+        {/* Profile Avatar */}
+        <ProfileMenu />
+
         {/* Browse Title Pill */}
         <View
           style={[

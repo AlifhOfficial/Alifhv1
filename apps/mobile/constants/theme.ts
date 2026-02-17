@@ -136,8 +136,9 @@ export const Colors = {
     // ACTIONS
     favorite: '#F43F5E',
     
-    // BLK Badge - stays dark in both modes
-    blkBadgeBackground: '#0D0D0D',
+    // BLK Badge - glass pill style
+    blkBadgeBackground: 'rgba(0,0,0,0.85)',
+    blkBadgeBorder: 'rgba(255,255,255,0.12)',
     blkBadgeText: '#FAFAFA',
     // BLK LISTING - Premium tier (light mode variant - macOS-style gray)
     blkBackground: '#FFFFFF',
@@ -154,9 +155,6 @@ export const Colors = {
   },
   
   dark: {
-    // OLED - True black/white for AMOLED screens
-    oledBlack: '#000000',
-    oledWhite: '#FFFFFF',
     // OLED - True black/white for AMOLED screens
     oledBlack: '#000000',
     oledWhite: '#FFFFFF',
@@ -220,8 +218,9 @@ export const Colors = {
     // ACTIONS
     favorite: '#F43F5E',
     
-    // BLK Badge - stays dark in both modes
-    blkBadgeBackground: '#0D0D0D',
+    // BLK Badge - glass pill style
+    blkBadgeBackground: 'rgba(0,0,0,0.9)',
+    blkBadgeBorder: 'rgba(255,255,255,0.14)',
     blkBadgeText: '#FAFAFA',
     // BLK LISTING - Premium tier
     blkBackground: '#0D0D0D',
@@ -748,10 +747,10 @@ const SemanticTypography = {
   blkBadge: { 
     ...base, 
     ...centered,
-    fontSize: fontScale(13), 
-    lineHeight: fontScale(16), 
-    fontFamily: 'Inter_800ExtraBold',
-    letterSpacing: 3,
+    fontSize: fontScale(8), 
+    lineHeight: fontScale(10), 
+    fontFamily: 'Inter_700Bold',
+    letterSpacing: 1.5,
   },
   blkSignature: { 
     ...base, 

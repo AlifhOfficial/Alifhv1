@@ -74,6 +74,7 @@ import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { TopSafeAreaGradient } from '@/components/layout';
 import { DeleteListingSheet } from './sub-operations/delete-listing-sheet';
 import { ListingStatsSheet } from './sub-operations/listing-stats-sheet';
+import { ProfileMenu } from '@/components/home/profile-menu';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -408,6 +409,9 @@ export function InventoryScreen() {
           contentContainerStyle={styles.headerScrollContent}
           style={styles.headerScroll}
         >
+          {/* Profile Avatar */}
+          <ProfileMenu />
+
           {/* Inventory Title Pill */}
           <View
             style={[

@@ -424,7 +424,7 @@ const SellerInfo = memo(function SellerInfo({ name, avatarUri, isVerified, isBla
           <CheckCircle2 size={Sizes.iconSm} color={colors.primary} />
         )}
         {isBlackTierPartner && (
-          <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBackground }]}>
+          <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBackground, borderColor: colors.blkBadgeBorder }]}>
             <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>BLK</Label>
           </View>
         )}
@@ -642,9 +642,10 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   blkBadge: {
-    paddingHorizontal: Sizes.badgePaddingH,
-    paddingVertical: Sizes.badgePaddingV,
+    paddingHorizontal: Spacing.xs,
+    paddingVertical: 2,
     borderRadius: Radius.none,
+    borderWidth: 1,
   },
 
   // Actions

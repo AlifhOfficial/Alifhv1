@@ -48,7 +48,7 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
               <CheckCircle2 size={Sizes.iconXs} color={colors.primary} />
             )}
             {seller.tier?.toLowerCase() === 'black' && (
-              <View style={[localStyles.tierBadge, { backgroundColor: colors.blkBadgeBackground }]}>
+              <View style={[localStyles.tierBadge, { backgroundColor: colors.blkBadgeBackground, borderColor: colors.blkBadgeBorder }]}>
                 <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>
                   BLK
                 </Label>
@@ -135,9 +135,10 @@ const localStyles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   tierBadge: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.xs,
+    paddingVertical: 2,
     borderRadius: Radius.none,
+    borderWidth: 1,
   },
   metaRow: {
     flexDirection: 'row',
