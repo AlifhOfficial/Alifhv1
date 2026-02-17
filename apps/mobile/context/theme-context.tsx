@@ -6,7 +6,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
 import { useColorScheme as useDeviceColorScheme, Appearance, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { setStatusBarStyle } from 'expo-status-bar';
+import * as NavigationBar from 'expo-navigation-bar';
 
 import { Colors, type ColorScheme, type ThemeColors } from '@/constants/theme';
 
@@ -70,17 +70,18 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const colors = Colors[colorScheme];
 
   // Sync theme with native system UI
-  // With edge-to-edge on Android 15+, background colors are handled by app content.
+  // StatusBar is handled declaratively via <StatusBar> component in _layout.tsx
+  // Edge-to-edge transparency is handled natively via edgeToEdgeEnabled in app.json
   useEffect(() => {
-    // Status bar icon style (light/dark) - instant, no animation
-    setStatusBarStyle(isDark ? 'light' : 'dark', false);
-    
-    // Appearance API - controls keyboard theme, alerts, action sheets
-    // Only call on iOS; on Android it can interfere with edge-to-edge nav bar
+    if (Platform.OS === 'android') {
+      // Nav bar button colors for 3-button navigation
+      NavigationBar.setStyle(colorScheme === 'dark' ? 'dark' : 'light');
+    }
+    // Keyboard/alerts/pickers - skip on Android as it may conflict with nav bar
     if (Platform.OS === 'ios') {
       Appearance.setColorScheme(themeMode === 'system' ? null : themeMode);
     }
-  }, [themeMode, isDark]);
+  }, [themeMode, colorScheme]);
 
   const toggleTheme = useCallback(() => {
     // Toggle between light and dark (explicit choice, not system)

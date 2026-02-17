@@ -53,6 +53,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       backgroundColor: '#000000',
       package: 'ae.revvup.mobile',
     },
+    androidNavigationBar: {
+      enforceContrast: false,
+    },
     web: {
       output: 'static',
       favicon: './assets/images/favicon.png',
