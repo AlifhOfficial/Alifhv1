@@ -6,7 +6,7 @@
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { HapticPressable } from '@/components/ui';
-import { ChevronDown, ChevronUp } from 'lucide-react-native';
+import { ChevronDown, ChevronUp, Moon } from 'lucide-react-native';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius, Sizes, Fonts } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
@@ -81,15 +81,24 @@ export function ConversationGroup({
                 </Label>
               </View>
             )}
-            {isOnline ? (
-              <View style={[styles.statusPill, { backgroundColor: colors.successMuted }]}>
-                <Data size="mini" style={{ color: colors.success }}>now</Data>
-              </View>
-            ) : lastSeenAt ? (
-              <View style={[styles.bubble, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
-                <Data size="mini" style={{ color: colors.textTertiary }}>{formatTime(lastSeenAt)}</Data>
-              </View>
-            ) : null}
+            {/* Activity Pill - Moon + timestamp */}
+            {(() => {
+              const activityText = isOnline ? 'now' : lastSeenAt ? formatTime(lastSeenAt) : 'offline';
+              const isActive = isOnline || activityText === 'now';
+              return (
+                <View style={[styles.activityPill, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
+                  <Moon
+                    size={12}
+                    color={isActive ? colors.activityActive : colors.activityInactive}
+                    fill={isActive ? colors.activityActive : colors.activityInactive}
+                    strokeWidth={1.5}
+                  />
+                  <Data size="mini" style={{ color: colors.textSecondary }}>
+                    {activityText}
+                  </Data>
+                </View>
+              );
+            })()}
             <View style={[styles.bubble, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
               <ChevronIcon size={Sizes.iconXs} color={colors.textSecondary} strokeWidth={2.5} />
             </View>
@@ -184,12 +193,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  statusPill: {
+  activityPill: {
+    height: Sizes.pillHeight,
     paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: Radius.full,
+    borderRadius: Sizes.pillRadius,
+    borderWidth: 1,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: Spacing.xs,
   },
   unreadBadge: {
     minWidth: Spacing.xl,

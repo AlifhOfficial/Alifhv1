@@ -152,6 +152,10 @@ export const Colors = {
     doodleAccent3: '#2D4A3E', // Forest green
     doodleAccent4: '#9C7C38', // Antique gold
     doodleAccent5: '#5C4033', // Rich espresso
+    
+    // ACTIVITY STATUS - Communication indicators
+    activityActive: '#FF6B6B', // Coral moon - online/active
+    activityInactive: '#9B87F5', // Purple moon - offline/inactive
   },
   
   dark: {
@@ -234,6 +238,10 @@ export const Colors = {
     doodleAccent3: '#5A7A6A', // Sage green
     doodleAccent4: '#C9A962', // Champagne gold
     doodleAccent5: '#8B7355', // Warm taupe
+    
+    // ACTIVITY STATUS - Communication indicators
+    activityActive: '#FF6B6B', // Coral moon - online/active
+    activityInactive: '#9B87F5', // Purple moon - offline/inactive
   },
 };
 

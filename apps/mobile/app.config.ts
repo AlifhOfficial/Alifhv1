@@ -24,12 +24,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
 
   return {
     ...config,
-    name: 'mobile',
-    slug: 'mobile',
+    name: 'Revvup',
+    slug: 'revvup',
     version: '1.0.0',
     orientation: 'portrait',
     icon: './assets/images/icon.png',
-    scheme: 'mobile',
+    scheme: 'revvup',
     userInterfaceStyle: 'automatic',
     newArchEnabled: true,
     ios: {

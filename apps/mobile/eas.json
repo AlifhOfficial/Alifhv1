@@ -1,0 +1,57 @@
+{
+  "cli": {
+    "version": ">= 13.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "simulator": true
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "resourceClass": "m-medium"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://revvup.ae",
+        "EXPO_PUBLIC_WS_URL": "wss://ws.revvup.ae",
+        "EXPO_PUBLIC_CDN_URL": "https://cdn.revvup.ae"
+      }
+    },
+    "production": {
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "ios": {
+        "resourceClass": "m-medium"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://revvup.ae",
+        "EXPO_PUBLIC_WS_URL": "wss://ws.revvup.ae",
+        "EXPO_PUBLIC_CDN_URL": "https://cdn.revvup.ae"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "./google-services-key.json",
+        "track": "internal"
+      },
+      "ios": {
+        "appleId": "YOUR_APPLE_ID",
+        "ascAppId": "YOUR_APP_STORE_CONNECT_APP_ID"
+      }
+    }
+  }
+}

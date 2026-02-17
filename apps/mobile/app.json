@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "Revvup",
+    "slug": "revvup",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mobile",
+    "scheme": "revvup",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -75,6 +75,7 @@
       "eas": {
         "projectId": "cd8cffff-33b0-46d9-b584-08eb6448e6dc"
       }
-    }
+    },
+    "owner": "revvups-organization"
   }
 }

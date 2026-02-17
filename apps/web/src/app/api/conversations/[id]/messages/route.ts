@@ -148,24 +148,32 @@ export async function POST(
       // Get participants with profiles to get avatar URLs
       const participants = await getConversationParticipantsWithProfiles(conversationId);
       
+      console.log(`[Messages API] Broadcasting new_message to ${participants.length} participants via ${wsBroadcastUrl}`);
+      
       // Broadcast to ALL participants in PARALLEL (non-blocking)
       Promise.all(
-        participants.map((participant) =>
-          fetch(wsBroadcastUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              channel: `user:${participant.userId}`,
-              message: {
-                type: 'new_message',
-                conversationId,
-                userId: user.id, // Sender's user ID
-                message,
-              },
-            }),
-          }).catch(() => {})
-        )
-      ).catch(() => {}); // Fire and forget, don't block response
+        participants.map(async (participant) => {
+          try {
+            const res = await fetch(wsBroadcastUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                channel: `user:${participant.userId}`,
+                message: {
+                  type: 'new_message',
+                  conversationId,
+                  userId: user.id, // Sender's user ID
+                  message,
+                },
+              }),
+            });
+            const result = await res.json();
+            console.log(`[Messages API] Broadcast to ${participant.userId}: ${result.delivered ? 'delivered' : 'not connected'}`);
+          } catch (err) {
+            console.error(`[Messages API] Broadcast failed for ${participant.userId}:`, err);
+          }
+        })
+      ).catch((err) => console.error('[Messages API] Broadcast error:', err));
 
       // Send push notifications to other participants (fire and forget)
       const otherParticipants = participants.filter(p => p.userId !== user.id);

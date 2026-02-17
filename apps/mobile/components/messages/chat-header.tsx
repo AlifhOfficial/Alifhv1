@@ -12,6 +12,7 @@ import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Sizes, Layout, Radius } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { Data } from '@/components/ui';
+import { Moon } from 'lucide-react-native';
 
 interface ChatHeaderProps {
   name: string;
@@ -36,9 +37,9 @@ export function ChatHeader({
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
 
-  // Format last seen - short notation
-  const getStatusText = () => {
-    if (isTyping) return '...';
+  // Format activity timestamp
+  const getActivityText = () => {
+    if (isTyping) return 'typing...';
     if (isOnline) return 'now';
     if (lastSeenAt) {
       const date = lastSeenAt instanceof Date ? lastSeenAt : new Date(lastSeenAt);
@@ -54,10 +55,11 @@ export function ChatHeader({
         return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
       }
     }
-    return null;
+    return 'offline';
   };
 
-  const statusText = getStatusText();
+  const activityText = getActivityText();
+  const isActive = isOnline || isTyping || activityText === 'now';
 
   return (
     <View
@@ -109,33 +111,33 @@ export function ChatHeader({
           )}
         </View>
 
-        {/* Status Bubble - show skeleton when loading */}
-        {(statusText || isLoading) && (
-          <View
-            style={[
-              styles.bubble,
-              styles.glass,
-              {
-                borderColor: isOnline || isTyping ? colors.success : colors.glassBorder,
-                backgroundColor: colors.glassBackground,
-              },
-            ]}
-          >
-            {isLoading ? (
-              <Skeleton width={Sizes.iconSm} height={Sizes.iconSm} borderRadius={Radius.full} />
-            ) : (
-              <Data
-                size="mini"
-                style={{
-                  color: isTyping ? colors.primary : (isOnline ? colors.success : colors.textTertiary),
-                  fontWeight: '500',
-                }}
-              >
-                {statusText}
+        {/* Activity Pill - Moon icon + timestamp */}
+        <View
+          style={[
+            styles.activityPill,
+            styles.glass,
+            {
+              borderColor: colors.glassBorder,
+              backgroundColor: colors.glassBackground,
+            },
+          ]}
+        >
+          {isLoading ? (
+            <Skeleton width={Spacing['3xl']} height={Sizes.iconSm} borderRadius={Radius.sm} />
+          ) : (
+            <>
+              <Moon
+                size={12}
+                color={isActive ? colors.activityActive : colors.activityInactive}
+                fill={isActive ? colors.activityActive : colors.activityInactive}
+                strokeWidth={1.5}
+              />
+              <Data size="mini" style={{ color: colors.textSecondary }}>
+                {activityText}
               </Data>
-            )}
-          </View>
-        )}
+            </>
+          )}
+        </View>
 
         {/* Listing Title Pill */}
         {listingTitle && (
@@ -195,5 +197,14 @@ const styles = StyleSheet.create({
     borderRadius: Sizes.pillRadius,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  activityPill: {
+    height: Sizes.pillHeight,
+    paddingHorizontal: Spacing.sm,
+    borderRadius: Sizes.pillRadius,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
   },
 });

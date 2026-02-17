@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "9c3dacf6-b40e-488d-a814-afb6d2288049"
+      }
+    },
+    "android": {
+      "package": "com.revvup.revvup"
+    }
+  }
+}

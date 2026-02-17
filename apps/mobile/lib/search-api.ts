@@ -2,7 +2,7 @@
  * Search API - Mobile Client
  * 
  * Thin wrapper around the web API that:
- * 1. Re-exports types from @alifh/database (single source of truth)
+ * 1. Defines search types locally (to avoid Node.js deps from @alifh/database)
  * 2. Handles URL transformation (relative → absolute for images)
  * 3. Provides mobile-friendly API methods
  * 
@@ -12,25 +12,62 @@
 import { API_BASE, CDN_BASE } from './config';
 
 // ============================================================================
-// RE-EXPORT TYPES FROM DATABASE (Single Source of Truth)
+// SEARCH TYPES (Local definitions to avoid @alifh/database Node.js deps)
 // ============================================================================
 
-import type {
-  SearchParams as DBSearchParams,
-  SearchSortOption,
-  FacetBucket,
-  SearchFacets,
-  SearchResultItem,
-  SearchResponse as DBSearchResponse,
-  SearchSuggestion,
-} from '@alifh/database';
+export type SearchSortOption =
+  | 'relevance'
+  | 'popular'
+  | 'newest'
+  | 'oldest'
+  | 'price_low'
+  | 'price_high'
+  | 'mileage_low'
+  | 'year_new'
+  | 'year_old';
 
-import { SORT_OPTIONS as DB_SORT_OPTIONS } from '@alifh/database';
+export interface FacetBucket {
+  value: string;
+  count: number;
+  label?: string;
+}
 
-// Re-export for consumers
-export type { SearchSortOption, FacetBucket, SearchFacets };
+export interface SearchFacets {
+  makes?: FacetBucket[];
+  bodyTypes?: FacetBucket[];
+  fuelTypes?: FacetBucket[];
+  transmissions?: FacetBucket[];
+  emirates?: FacetBucket[];
+  specs?: FacetBucket[];
+  sellerTypes?: FacetBucket[];
+  conditions?: FacetBucket[];
+  yearRanges?: FacetBucket[];
+  priceRanges?: FacetBucket[];
+}
 
-// Re-export sort options from database (mobile-friendly labels)
+interface DBSearchParams {
+  q?: string;
+  make?: string | string[];
+  model?: string | string[];
+  minPrice?: number;
+  maxPrice?: number;
+  minYear?: number;
+  maxYear?: number;
+  minMileage?: number;
+  maxMileage?: number;
+  bodyType?: string | string[];
+  fuelType?: string | string[];
+  transmission?: string | string[];
+  emirate?: string | string[];
+  specs?: string | string[];
+  sellerType?: string | string[];
+  condition?: string | string[];
+  sort?: SearchSortOption;
+  limit?: number;
+  offset?: number;
+}
+
+// Re-export sort options (mobile-friendly labels)
 export const SORT_OPTIONS: { value: SearchSortOption; label: string }[] = [
   { value: 'relevance', label: 'Most Relevant' },
   { value: 'popular', label: 'Most Popular' },

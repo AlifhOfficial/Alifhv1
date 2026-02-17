@@ -159,10 +159,10 @@ function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean, isBlac
         avatarBorder: isBlackTierPartner ? colors.blkBackground : colors.blkBorder,
       };
     }
-    // Glass aesthetic - lightweight, airy feel matching header pills
+    // Surface aesthetic - standard card styling for normal listings
     return {
-      background: colors.glassBackground,
-      border: colors.glassBorder,
+      background: colors.surface,
+      border: colors.border,
       title: colors.text,
       price: colors.primary,
       stats: colors.textSecondary,
@@ -170,9 +170,9 @@ function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean, isBlac
       separator: colors.textTertiary,
       sellerText: colors.text,
       actionIcon: colors.icon,
-      imageBg: colors.backgroundSecondary,
-      avatarBg: colors.glassBackground,
-      avatarBorder: colors.glassBorder,
+      imageBg: colors.surfaceSecondary,
+      avatarBg: colors.surface,
+      avatarBorder: colors.border,
     };
   }, [colors, isBlkListing, isBlackTierPartner]);
 }
@@ -500,7 +500,7 @@ export function CarCardMSkeleton() {
   const colors = Colors[colorScheme];
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
+    <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       {/* Image */}
       <View style={styles.imageContainer}>
         <Skeleton width="100%" height={Spacing['5xl'] * 4} borderRadius={0} />

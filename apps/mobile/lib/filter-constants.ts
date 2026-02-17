@@ -1,18 +1,16 @@
 /**
  * Filter Constants - Mobile App
  * 
- * Re-exports all car data from the central database package.
+ * Re-exports all car data from the local listing-constants file.
+ * Uses local copy to avoid bundling Node.js dependencies from @alifh/database.
  * 
- * SINGLE SOURCE OF TRUTH: @alifh/database/listing-constants
- * 
- * NOTE: We import from /listing-constants directly to avoid triggering
- * database client initialization (which requires DATABASE_URL).
+ * SYNCED WITH: @alifh/database/listing-constants
  * 
  * @module lib/filter-constants
  */
 
 // ============================================================================
-// RE-EXPORT FROM DATABASE PACKAGE (Single Source of Truth)
+// RE-EXPORT FROM LOCAL LISTING CONSTANTS
 // ============================================================================
 
 export {
@@ -81,7 +79,7 @@ export {
   type VehicleCondition,
   type CarMake,
   type EngineSize,
-} from '@alifh/database/listing-constants';
+} from './listing-constants';
 
 // ============================================================================
 // UI OPTIONS (for chips/selectors that need {value, label} format)

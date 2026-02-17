@@ -122,19 +122,28 @@ export function useConversations({
 
       // Handle presence updates
       if (msg.type === 'presence' && msg.userId) {
-        setConversations(prev => prev.map(conv => {
-          if (conv.otherParticipant?.id === msg.userId) {
-            return {
-              ...conv,
-              otherParticipant: conv.otherParticipant ? {
-                ...conv.otherParticipant,
-                isOnline: msg.isOnline,
-                lastSeenAt: msg.lastSeenAt || conv.otherParticipant.lastSeenAt,
-              } : null,
-            };
-          }
-          return conv;
-        }));
+        console.log(`🟢 [useConversations] Presence update:`, {
+          userId: msg.userId,
+          isOnline: msg.isOnline,
+          lastSeenAt: msg.lastSeenAt,
+        });
+        setConversations(prev => {
+          const matchingConv = prev.find(c => c.otherParticipant?.id === msg.userId);
+          console.log(`🟢 [useConversations] Matching conv:`, matchingConv?.id || 'NONE');
+          return prev.map(conv => {
+            if (conv.otherParticipant?.id === msg.userId) {
+              return {
+                ...conv,
+                otherParticipant: conv.otherParticipant ? {
+                  ...conv.otherParticipant,
+                  isOnline: msg.isOnline,
+                  lastSeenAt: msg.lastSeenAt || conv.otherParticipant.lastSeenAt,
+                } : null,
+              };
+            }
+            return conv;
+          });
+        });
       }
     });
 
@@ -150,9 +159,17 @@ export function useConversations({
       if (c.otherParticipant?.id) currentOtherIds.add(c.otherParticipant.id);
     }
 
+    console.log(`👁️ [useConversations] Watch presence update:`, {
+      isConnected,
+      conversationCount: conversations.length,
+      otherUserIds: Array.from(currentOtherIds),
+      alreadyWatching: Array.from(watchedUsersRef.current),
+    });
+
     // Subscribe to new users
     for (const uid of currentOtherIds) {
       if (!watchedUsersRef.current.has(uid)) {
+        console.log(`👁️ [useConversations] Sending watch_user for:`, uid);
         send({ type: 'watch_user', targetUserId: uid });
         watchedUsersRef.current.add(uid);
       }

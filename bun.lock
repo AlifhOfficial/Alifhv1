@@ -24,7 +24,6 @@
       "name": "@alifh/mobile",
       "version": "0.1.0",
       "dependencies": {
-        "@alifh/database": "workspace:*",
         "@expo-google-fonts/dancing-script": "0.4.2",
         "@expo-google-fonts/inter": "0.4.2",
         "@gorhom/bottom-sheet": "5.2.8",

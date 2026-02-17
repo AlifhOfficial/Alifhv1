@@ -292,56 +292,6 @@ export function CarCard({
           sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
         />
         
-        {/* Mobile: Avatar + Name overlay on image */}
-        <div className="absolute top-2 right-2 flex items-center gap-1.5 pl-1 pr-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm sm:hidden">
-          {isBlackTierPartner ? (
-            <div className="rounded-full ring-2 ring-white/40 p-0.5">
-              {isPartnerListing ? (
-                <BrandAvatar
-                  logoUrl={partnerLogo}
-                  brandName={displaySellerName}
-                  size="xs"
-                  className="w-6 h-6 bg-zinc-800 border-zinc-700"
-                />
-              ) : (
-                <UserAvatar
-                  src={sellerAvatarUrl}
-                  name={displaySellerName}
-                  size="sm"
-                  className="w-6 h-6 bg-zinc-800 border-zinc-700 text-zinc-400"
-                />
-              )}
-            </div>
-          ) : isPartnerListing ? (
-            <BrandAvatar
-              logoUrl={partnerLogo}
-              brandName={displaySellerName}
-              size="xs"
-              className="w-6 h-6 bg-white/20 border-white/20"
-            />
-          ) : (
-            <UserAvatar
-              src={sellerAvatarUrl}
-              name={displaySellerName}
-              size="sm"
-              className="w-6 h-6 bg-white/20 border-white/20 text-white/80"
-            />
-          )}
-          <span className="text-xs font-medium text-white truncate max-w-[100px]">
-            {displaySellerName}
-          </span>
-          {!isBlackTierPartner && (partnerVerified || kycVerified) && (
-            <CheckCircle2 
-              className="w-3.5 h-3.5 flex-shrink-0 text-blue-400" 
-              aria-label="Verified" 
-            />
-          )}
-          {isBlackTierPartner && (
-            <span className="flex-shrink-0 px-1.5 h-4 inline-flex items-center text-[8px] font-black tracking-widest uppercase bg-black text-white">
-              BLK
-            </span>
-          )}
-        </div>
       </Link>
 
       {/* Content Section */}
@@ -374,20 +324,87 @@ export function CarCard({
           {formatPrice(price)}
         </p>
 
-        {/* Mobile: Stats + Actions on same row */}
-        <div className="flex items-center justify-between gap-1.5 sm:hidden">
-          <div className={cn(
-            "flex items-center gap-1 text-[11px] xs:text-xs min-w-0 overflow-hidden",
-            isBlkListing ? "text-zinc-500 dark:text-zinc-400" : "text-muted-foreground"
-          )}>
-            <span className="font-medium whitespace-nowrap">{formatMileage(mileage)} km</span>
-            <span className={isBlkListing ? "text-zinc-300 dark:text-zinc-600" : "text-muted-foreground/40"}>•</span>
-            <span className="font-medium whitespace-nowrap">{displaySpecs}</span>
-            <span className={isBlkListing ? "text-zinc-300 dark:text-zinc-600" : "text-muted-foreground/40"}>•</span>
-            <span className="font-medium truncate">{displayEmirate}</span>
+        {/* Mobile: Stats Row */}
+        <div className={cn(
+          "flex items-center gap-1 text-[11px] xs:text-xs min-w-0 overflow-hidden sm:hidden",
+          isBlkListing ? "text-zinc-500 dark:text-zinc-400" : "text-muted-foreground"
+        )}>
+          <span className="font-semibold tabular-nums whitespace-nowrap">{formatMileage(mileage)} km</span>
+          <span className={cn("opacity-40", isBlkListing ? "text-zinc-400 dark:text-zinc-600" : "")}>·</span>
+          <span className="font-semibold whitespace-nowrap">{displaySpecs}</span>
+          <span className={cn("opacity-40", isBlkListing ? "text-zinc-400 dark:text-zinc-600" : "")}>·</span>
+          <span className="font-semibold truncate">{displayEmirate}</span>
+        </div>
+
+        {/* Mobile: Footer - Seller + Actions */}
+        <div className="flex items-center justify-between pt-2 sm:hidden">
+          {/* Seller Info */}
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            {isBlackTierPartner ? (
+              <div className="flex-shrink-0 rounded-full ring-2 ring-black ring-offset-1 ring-offset-background">
+                {isPartnerListing ? (
+                  <BrandAvatar
+                    logoUrl={partnerLogo}
+                    brandName={displaySellerName}
+                    size="xs"
+                    className={cn(
+                      "w-6 h-6",
+                      isBlkListing ? "bg-zinc-800 border-zinc-700" : "bg-muted/40 border-border/40"
+                    )}
+                  />
+                ) : (
+                  <UserAvatar
+                    src={sellerAvatarUrl}
+                    name={displaySellerName}
+                    size="sm"
+                    className={cn(
+                      "w-6 h-6",
+                      isBlkListing ? "bg-zinc-800 border-zinc-700 text-zinc-500" : "bg-muted/40 border-border/40 text-muted-foreground/70"
+                    )}
+                  />
+                )}
+              </div>
+            ) : isPartnerListing ? (
+              <BrandAvatar
+                logoUrl={partnerLogo}
+                brandName={displaySellerName}
+                size="xs"
+                className={cn(
+                  "w-6 h-6 flex-shrink-0",
+                  isBlkListing ? "bg-zinc-800 border-zinc-700" : "bg-muted/40 border-border/40"
+                )}
+              />
+            ) : (
+              <UserAvatar
+                src={sellerAvatarUrl}
+                name={displaySellerName}
+                size="sm"
+                className={cn(
+                  "w-6 h-6 flex-shrink-0",
+                  isBlkListing ? "bg-zinc-800 border-zinc-700 text-zinc-500" : "bg-muted/40 border-border/40 text-muted-foreground/70"
+                )}
+              />
+            )}
+            <span className={cn(
+              "text-[11px] font-semibold truncate",
+              isBlkListing ? "text-zinc-600 dark:text-zinc-300" : "text-foreground"
+            )}>
+              {displaySellerName}
+            </span>
+            {!isBlackTierPartner && (partnerVerified || kycVerified) && (
+              <CheckCircle2 
+                className="w-3.5 h-3.5 flex-shrink-0 -ml-1 text-blue-500" 
+                aria-label="Verified" 
+              />
+            )}
+            {isBlackTierPartner && (
+              <span className="flex-shrink-0 px-1.5 h-4 inline-flex items-center text-[8px] font-black tracking-widest uppercase bg-black text-white">
+                BLK
+              </span>
+            )}
           </div>
-          
-          {/* Mobile Actions */}
+
+          {/* Actions */}
           <div className="flex items-center gap-0.5 flex-shrink-0">
             <button 
               className={cn(
@@ -473,19 +490,19 @@ export function CarCard({
         {/* Desktop: Stats Row */}
         <div className="hidden sm:flex items-center gap-1.5 text-sm">
           <span className={cn(
-            "font-semibold",
+            "font-semibold tabular-nums",
             isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
           )}>
             {formatMileage(mileage)} km
           </span>
-          <span className={isBlkListing ? "text-zinc-300 dark:text-zinc-700" : "text-muted-foreground/30"}>·</span>
+          <span className={cn("opacity-30", isBlkListing ? "text-zinc-400 dark:text-zinc-600" : "")}>·</span>
           <span className={cn(
             "font-semibold",
             isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
           )}>
             {displaySpecs}
           </span>
-          <span className={isBlkListing ? "text-zinc-300 dark:text-zinc-700" : "text-muted-foreground/30"}>·</span>
+          <span className={cn("opacity-30", isBlkListing ? "text-zinc-400 dark:text-zinc-600" : "")}>·</span>
           <span className={cn(
             "font-semibold truncate",
             isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
@@ -706,10 +723,6 @@ function CarCardSkeletonComponent({ className }: CarCardSkeletonProps) {
       {/* Image Section - matches CarCard aspect ratios */}
       <div className="relative aspect-[16/9] w-full">
         <Skeleton className="absolute inset-0" />
-        {/* Mobile: Avatar + Name pill overlay */}
-        <div className="absolute top-2 right-2 sm:hidden">
-          <Skeleton className="h-7 w-32 rounded-full" />
-        </div>
       </div>
       
       {/* Content Section */}
@@ -723,12 +736,18 @@ function CarCardSkeletonComponent({ className }: CarCardSkeletonProps) {
         {/* Price */}
         <Skeleton className="h-4 sm:h-[18px] w-24 sm:w-28" />
 
-        {/* Mobile: Stats + Actions on same row */}
-        <div className="flex items-center justify-between gap-1.5 sm:hidden">
-          <div className="flex items-center gap-1">
-            <Skeleton className="h-3 w-10" />
-            <Skeleton className="h-3 w-6" />
-            <Skeleton className="h-3 w-12" />
+        {/* Mobile: Stats Row */}
+        <div className="flex items-center gap-1 sm:hidden">
+          <Skeleton className="h-3 w-10" />
+          <Skeleton className="h-3 w-6" />
+          <Skeleton className="h-3 w-12" />
+        </div>
+
+        {/* Mobile: Footer - Seller + Actions */}
+        <div className="flex items-center justify-between pt-2 sm:hidden">
+          <div className="flex items-center gap-2 min-w-0">
+            <Skeleton className="w-6 h-6 rounded-full flex-shrink-0" />
+            <Skeleton className="h-3 w-20" />
           </div>
           <div className="flex items-center gap-0.5">
             <Skeleton className="h-7 w-7 rounded-full" />

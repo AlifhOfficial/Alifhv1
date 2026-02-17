@@ -70,6 +70,7 @@ function setOnline(server: { publish(topic: string, data: string): void }, userI
   const state = presence.get(userId) ?? { connections: 0, lastSeenAt: null };
   state.connections++;
   presence.set(userId, state);
+  console.log(`🔵 [Presence] ${userId} online (${state.connections} connections)`);
 
   if (state.connections === 1) {
     // Update database lastActiveAt
@@ -93,6 +94,7 @@ function setOffline(server: { publish(topic: string, data: string): void }, user
   if (!state) return;
 
   state.connections = Math.max(0, state.connections - 1);
+  console.log(`⚫ [Presence] ${userId} connection closed (${state.connections} remaining)`);
 
   if (state.connections === 0) {
     state.lastSeenAt = new Date().toISOString();
@@ -158,11 +160,17 @@ const server = Bun.serve<WSData>({
         if (!channel || !message) {
           return Response.json({ error: "channel and message required" }, { status: 400 });
         }
+        const msgType = (message as { type?: string }).type;
+        console.log(`📡 [Broadcast] ${msgType} → ${channel}`);
         server.publish(channel, JSON.stringify(message));
         const userId = channel.startsWith('user:') ? channel.slice(5) : null;
         const connections = userId ? (presence.get(userId)?.connections ?? 0) : 0;
+        console.log(`📡 [Broadcast] User ${userId}: ${connections} connections`);
         return Response.json({ success: true, delivered: connections > 0 });
-      }).catch(() => Response.json({ error: "Invalid JSON" }, { status: 400 }));
+      }).catch((err) => {
+        console.error(`📡 [Broadcast] Error:`, err);
+        return Response.json({ error: "Invalid JSON" }, { status: 400 });
+      });
     }
 
     return new Response("Not Found", { status: 404 });
@@ -206,6 +214,7 @@ const server = Bun.serve<WSData>({
 
           case "watch_user":
             if (data.targetUserId) {
+              console.log(`👁️ [WS] ${userId} watching ${data.targetUserId}`);
               // Subscribe to presence channel if not already watching
               if (!ws.data.watchedUsers.has(data.targetUserId)) {
                 ws.subscribe(`presence:${data.targetUserId}`);
@@ -215,13 +224,15 @@ const server = Bun.serve<WSData>({
               // This lets multiple hooks/screens get initial presence state
               // Uses DB fallback so lastSeenAt is accurate after server restarts
               getPresenceWithDbFallback(data.targetUserId).then((p) => {
+                console.log(`👁️ [WS] Presence for ${data.targetUserId}:`, p);
                 ws.send(JSON.stringify({
                   type: "presence",
                   userId: data.targetUserId,
                   ...p,
                   timestamp: new Date().toISOString(),
                 }));
-              }).catch(() => {
+              }).catch((err) => {
+                console.error(`👁️ [WS] Presence error for ${data.targetUserId}:`, err);
                 // Fallback to in-memory only
                 ws.send(JSON.stringify({
                   type: "presence",

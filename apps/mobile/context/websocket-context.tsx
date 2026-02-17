@@ -97,7 +97,12 @@ class WebSocketManager {
         try {
           const msg = JSON.parse(typeof e.data === 'string' ? e.data : '') as WSMessage;
           if (msg.type !== 'pong') {
-            console.log(`📨 [WS] Received:`, msg.type, msg.conversationId ? `conv:${msg.conversationId}` : '');
+            const extra = msg.conversationId 
+              ? `conv:${msg.conversationId}` 
+              : msg.userId 
+                ? `user:${msg.userId}` 
+                : '';
+            console.log(`📨 [WS] Received:`, msg.type, extra);
           }
           this.handlers.forEach((h) => {
             try { h(msg); } catch (err) { console.error('[WS] Handler error:', err); }

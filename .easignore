@@ -1,0 +1,50 @@
+# EAS Build Ignore - Monorepo optimization
+# Exclude other apps (not needed for mobile build)
+apps/web/
+apps/ws/
+
+# Exclude packages (mobile doesn't use them after we removed @alifh/database)
+packages/
+
+# Exclude documentation and assets
+docs/
+logo/
+
+# Root config files not needed for mobile (keep package.json for monorepo)
+turbo.json
+vercel.json
+bunfig.toml
+check-slugs.ts
+test-sitemap.ts
+auto-ae-brands-full.json
+auto-ae-brands-simplified.json
+
+# Git
+.git/
+.gitignore
+
+# Node modules (EAS installs fresh)
+node_modules/
+**/node_modules/
+
+# Development files
+**/.expo/
+*.log
+
+# Build outputs
+**/dist/
+**/build/
+**/.next/
+**/.turbo/
+
+# Native build folders (rebuilt by EAS)
+apps/mobile/android/
+apps/mobile/ios/
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
