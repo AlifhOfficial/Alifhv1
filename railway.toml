@@ -1,0 +1,6 @@
+[build]
+builder = "nixpacks"
+buildCommand = "bun install && bun run build:web"
+
+[deploy]
+startCommand = "cd apps/web && bun run start"
