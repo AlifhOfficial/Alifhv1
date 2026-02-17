@@ -166,16 +166,28 @@ export function Navbar() {
       // Mark as handled immediately to prevent double-processing
       hasHandledAuthParamRef.current = true;
       
-      // Store redirect for after auth success
-      if (redirectParam) {
-        pendingRedirectRef.current = redirectParam;
-      }
-      
-      // Clean URL first, then open modal after URL is updated
+      // Clean URL params first
       const params = new URLSearchParams(searchParams.toString());
       params.delete("auth");
       params.delete("redirect");
       const queryString = params.toString();
+      
+      // If already authenticated, skip modal and just navigate to redirect
+      if (isAuthenticated && redirectParam) {
+        queueMicrotask(() => {
+          router.replace(`${pathname}${queryString ? `?${queryString}` : ""}`, { scroll: false });
+          // Brief delay then navigate to the intended destination
+          requestAnimationFrame(() => {
+            router.push(redirectParam);
+          });
+        });
+        return;
+      }
+      
+      // Not authenticated - store redirect for after auth success
+      if (redirectParam) {
+        pendingRedirectRef.current = redirectParam;
+      }
       
       // Use queueMicrotask to ensure state updates happen in correct order
       queueMicrotask(() => {
@@ -189,7 +201,7 @@ export function Navbar() {
       // Reset the ref when there's no auth param (allows re-triggering on new navigations)
       hasHandledAuthParamRef.current = false;
     }
-  }, [searchParams, pathname, router]);
+  }, [searchParams, pathname, router, isAuthenticated]);
 
   // Handle dropdown close with delay
   const handleDropdownClose = useCallback(() => {

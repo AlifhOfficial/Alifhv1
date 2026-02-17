@@ -98,12 +98,20 @@ function isPublicApiRoute(pathname: string): boolean {
 function isExtendedUser(user: unknown): user is ExtendedUser {
   if (!user || typeof user !== "object") return false;
   const u = user as Record<string, unknown>;
-  return (
-    typeof u.role === "string" &&
-    typeof u.banned === "boolean" &&
-    typeof u.hasPartnerAccess === "boolean" &&
-    typeof u.isAlifhAdmin === "boolean"
-  );
+  // More lenient check - only require id and email (basic user fields)
+  // Extended fields (role, banned, etc.) may not be present for new users
+  return typeof u.id === "string" && typeof u.email === "string";
+}
+
+// Ensure extended fields have defaults for new users
+function normalizeExtendedUser(user: Record<string, unknown>): ExtendedUser {
+  return {
+    ...user,
+    role: (user.role as string) || "user",
+    banned: user.banned === true,
+    hasPartnerAccess: user.hasPartnerAccess === true,
+    isAlifhAdmin: user.isAlifhAdmin === true || user.isRevvupAdmin === true,
+  } as ExtendedUser;
 }
 
 // Next.js 16+ proxy function
@@ -173,7 +181,8 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(signInUrl);
       }
 
-      user = session.user;
+      // Normalize user to ensure extended fields have defaults
+      user = normalizeExtendedUser(session.user as Record<string, unknown>);
       
       // Cache by token AND register token->userId mapping for invalidation
       // Uses CacheTTL.userSession (5 minutes) for consistency across the system
