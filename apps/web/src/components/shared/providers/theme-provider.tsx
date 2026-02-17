@@ -9,6 +9,7 @@
 
 import { ReactNode } from "react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { ThemeColorSync } from "./theme-color-sync";
 
 interface ThemeProviderProps {
   children: ReactNode;
@@ -23,6 +24,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       enableSystem={false}
       disableTransitionOnChange
     >
+      <ThemeColorSync />
       {children}
     </NextThemesProvider>
   );
