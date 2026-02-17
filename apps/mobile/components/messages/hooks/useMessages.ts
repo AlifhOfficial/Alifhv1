@@ -130,17 +130,10 @@ export function useMessages({
       // Handle new messages — deduplicate by ID (allows multi-device sync)
       if (msg.type === 'new_message' && msg.conversationId === conversationIdRef.current && msg.message) {
         const newMessage = msg.message as Message;
-        console.log(`💬 [useMessages] New message received:`, {
-          msgId: newMessage.id,
-          convId: msg.conversationId,
-          from: newMessage.senderId,
-          isMe: newMessage.senderId === userIdRef.current,
-        });
 
         setMessages(prev => {
           // Check if message already exists (avoid duplicates from optimistic send + WS echo)
           if (prev.some(m => m.id === newMessage.id)) {
-            console.log(`⏭️ [useMessages] Message already exists, skipping`);
             return prev;
           }
 
@@ -176,7 +169,6 @@ export function useMessages({
         msg.conversationId === conversationIdRef.current &&
         msg.userId !== userIdRef.current
       ) {
-        console.log(`⌨️ [useMessages] Typing from ${msg.userId}: ${msg.isTyping}`);
         // Clear existing timeout
         if (typingTimeoutRef.current) {
           clearTimeout(typingTimeoutRef.current);
@@ -209,7 +201,6 @@ export function useMessages({
         otherUserIdRef.current &&
         msg.userId === otherUserIdRef.current
       ) {
-        console.log(`🟢 [useMessages] Presence for other user:`, { isOnline: msg.isOnline, lastSeenAt: msg.lastSeenAt });
         setIsOtherOnline(!!msg.isOnline);
         // Only update lastSeenAt if provided in the event (matches web behavior)
         // This preserves the conversation snapshot fallback when WS doesn't include it

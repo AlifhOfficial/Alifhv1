@@ -10,7 +10,7 @@ import { ChevronDown, ChevronUp, Moon } from 'lucide-react-native';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius, Sizes, Fonts } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { Data, Supporting, Label } from '@/components/ui';
+import { Data, Supporting } from '@/components/ui';
 import type { Conversation } from '@/lib/messaging-api';
 
 interface ConversationGroupProps {
@@ -70,18 +70,14 @@ export function ConversationGroup({
           <View style={[styles.headerRow, pressed && { opacity: 0.7 }]}>
             <View style={[styles.avatarBubble, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
               <UserAvatar src={avatarUrl} name={name} size="md" />
+              {totalUnread > 0 && (
+                <View style={[styles.unreadDot, { backgroundColor: colors.primary, borderColor: colors.background }]} />
+              )}
             </View>
             <Data size="large" style={{ flex: 1, color: colors.text }} numberOfLines={1}>
               {name}
             </Data>
-            {totalUnread > 0 && (
-              <View style={[styles.unreadBadge, { backgroundColor: colors.primary }]}>
-                <Label size="badge" uppercase={false} style={{ color: colors.primaryForeground }}>
-                  {totalUnread}
-                </Label>
-              </View>
-            )}
-            {/* Activity Pill - Moon + timestamp */}
+            {/* Activity Pill - Moon + timestamp (glass style) */}
             {(() => {
               const activityText = isOnline ? 'now' : lastSeenAt ? formatTime(lastSeenAt) : 'offline';
               const isActive = isOnline || activityText === 'now';
@@ -184,6 +180,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'relative',
+  },
+  unreadDot: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    borderWidth: 2,
   },
   bubble: {
     width: Sizes.bubble,
@@ -202,14 +208,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.xs,
-  },
-  unreadBadge: {
-    minWidth: Spacing.xl,
-    height: Spacing.xl,
-    borderRadius: Radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: Sizes.badgePaddingH,
   },
   chatList: {
     marginLeft: Spacing.lg + Sizes.avatarMd + Spacing.md,

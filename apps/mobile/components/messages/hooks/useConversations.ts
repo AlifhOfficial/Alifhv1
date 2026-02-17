@@ -68,17 +68,10 @@ export function useConversations({
         const senderId = msg.userId || newMsg?.senderId;
         const isOwnMessage = senderId === userIdRef.current;
 
-        console.log(`📬 [useConversations] New message:`, {
-          convId: msg.conversationId,
-          senderId,
-          isOwnMessage,
-        });
-
         setConversations(prev => {
           const exists = prev.some(c => c.id === msg.conversationId);
           if (!exists) {
             // Conversation not in list — trigger a refresh to fetch it
-            console.log(`📬 [useConversations] Conversation not in cache, triggering refresh`);
             loadConversationsRef.current?.();
             return prev;
           }
@@ -107,7 +100,6 @@ export function useConversations({
 
       // Handle read receipts - only update otherParticipant's lastReadAt (not self)
       if (msg.type === 'read_receipt' && msg.conversationId && msg.userId !== userIdRef.current) {
-        console.log(`✓✓ [useConversations] Read receipt from other user:`, msg.userId);
         setConversations(prev => prev.map(conv => {
           if (conv.id !== msg.conversationId) return conv;
           return {
@@ -122,14 +114,7 @@ export function useConversations({
 
       // Handle presence updates
       if (msg.type === 'presence' && msg.userId) {
-        console.log(`🟢 [useConversations] Presence update:`, {
-          userId: msg.userId,
-          isOnline: msg.isOnline,
-          lastSeenAt: msg.lastSeenAt,
-        });
         setConversations(prev => {
-          const matchingConv = prev.find(c => c.otherParticipant?.id === msg.userId);
-          console.log(`🟢 [useConversations] Matching conv:`, matchingConv?.id || 'NONE');
           return prev.map(conv => {
             if (conv.otherParticipant?.id === msg.userId) {
               return {
@@ -159,17 +144,9 @@ export function useConversations({
       if (c.otherParticipant?.id) currentOtherIds.add(c.otherParticipant.id);
     }
 
-    console.log(`👁️ [useConversations] Watch presence update:`, {
-      isConnected,
-      conversationCount: conversations.length,
-      otherUserIds: Array.from(currentOtherIds),
-      alreadyWatching: Array.from(watchedUsersRef.current),
-    });
-
     // Subscribe to new users
     for (const uid of currentOtherIds) {
       if (!watchedUsersRef.current.has(uid)) {
-        console.log(`👁️ [useConversations] Sending watch_user for:`, uid);
         send({ type: 'watch_user', targetUserId: uid });
         watchedUsersRef.current.add(uid);
       }
