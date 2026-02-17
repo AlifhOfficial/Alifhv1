@@ -54,7 +54,8 @@ export const LocationSection = memo(function LocationSection({
 
   const textColor = isBlk ? colors.blkText : colors.text;
   const secondaryTextColor = isBlk ? colors.blkTextSecondary : colors.textSecondary;
-  const borderColor = isBlk ? colors.blkBorder : colors.border;
+  const borderColor = isBlk ? colors.blkBorder : colors.glassBorder;
+  const bgColor = isBlk ? colors.blkBackground : colors.glassBackground;
 
   const hasCoordinates = lat != null && lng != null;
   const hasLocation = city || emirate || address;
@@ -121,6 +122,7 @@ export const LocationSection = memo(function LocationSection({
             styles.actionButton,
             { 
               borderColor,
+              backgroundColor: bgColor,
               opacity: pressed ? 0.7 : 1,
             },
           ]}
@@ -135,6 +137,7 @@ export const LocationSection = memo(function LocationSection({
             styles.actionButton,
             { 
               borderColor,
+              backgroundColor: bgColor,
               opacity: pressed ? 0.7 : 1,
             },
           ]}

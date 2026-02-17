@@ -126,9 +126,10 @@ function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean): CardT
         imageBg: colors.blkBackground,
       };
     }
+    // Glass aesthetic - lightweight, airy feel
     return {
-      background: colors.surface,
-      border: colors.border,
+      background: colors.glassBackground,
+      border: colors.glassBorder,
       text: colors.text,
       price: colors.primary,
       meta: colors.textSecondary,
@@ -208,6 +209,8 @@ export const CarCardList = memo(function CarCardList({
         isSuperliked={isSuperlikedProp}
         isBlkListing={isBlkListing}
         iconColor={theme.icon}
+        glassBackground={colors.glassBackground}
+        glassBorder={colors.glassBorder}
         onFavoritePress={onFavoritePress}
         onSuperlikePress={onSuperlikePress}
         onSharePress={handleSharePress}
@@ -266,6 +269,8 @@ interface CardActionsProps {
   isSuperliked?: boolean;
   isBlkListing: boolean;
   iconColor: string;
+  glassBackground: string;
+  glassBorder: string;
   onFavoritePress?: (id: string) => void;
   onSuperlikePress?: (id: string) => void;
   onSharePress: () => void;
@@ -277,29 +282,39 @@ const CardActions = memo(function CardActions({
   isSuperliked,
   isBlkListing,
   iconColor,
+  glassBackground,
+  glassBorder,
   onFavoritePress,
   onSuperlikePress,
   onSharePress,
 }: CardActionsProps) {
   return (
     <View style={styles.actions}>
-      <HapticPressable onPress={onSharePress} hitSlop={Layout.hitSlopSmall}>
+      <HapticPressable 
+        onPress={onSharePress} 
+        hitSlop={Layout.hitSlopSmall}
+        style={[styles.actionBubble, { backgroundColor: glassBackground, borderColor: glassBorder }]}
+      >
         <Share2 size={Sizes.iconSm} color={iconColor} strokeWidth={1.75} />
       </HapticPressable>
-      <FavoriteButton
-        listingId={listingId}
-        size={Sizes.iconSm}
-        onPress={onFavoritePress}
-        isFavorite={isFavorite}
-        isBlkListing={isBlkListing}
-      />
-      <SuperlikeButton
-        listingId={listingId}
-        size={Sizes.iconSm}
-        onPress={onSuperlikePress}
-        isSuperliked={isSuperliked}
-        isBlkListing={isBlkListing}
-      />
+      <View style={[styles.actionBubble, { backgroundColor: glassBackground, borderColor: glassBorder }]}>
+        <FavoriteButton
+          listingId={listingId}
+          size={Sizes.iconSm}
+          onPress={onFavoritePress}
+          isFavorite={isFavorite}
+          isBlkListing={isBlkListing}
+        />
+      </View>
+      <View style={[styles.actionBubble, { backgroundColor: glassBackground, borderColor: glassBorder }]}>
+        <SuperlikeButton
+          listingId={listingId}
+          size={Sizes.iconSm}
+          onPress={onSuperlikePress}
+          isSuperliked={isSuperliked}
+          isBlkListing={isBlkListing}
+        />
+      </View>
     </View>
   );
 });
@@ -313,7 +328,7 @@ export function CarCardListSkeleton() {
   const colors = Colors[colorScheme];
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+    <View style={[styles.container, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
       <Skeleton width={Sizes.cardThumbnailWidth} height={Sizes.cardThumbnailHeight} borderRadius={Radius.md} />
       <View style={styles.content}>
         <Skeleton width="80%" height={Spacing.lg} />
@@ -357,8 +372,16 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'space-evenly',
-    gap: Spacing.md,
+    gap: Spacing.sm,
     paddingLeft: Spacing.sm,
+  },
+  actionBubble: {
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: Sizes.bubble / 2,
+    borderWidth: 1,
   },
   blkBadge: {
     position: 'absolute',

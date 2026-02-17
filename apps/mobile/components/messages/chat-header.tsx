@@ -6,11 +6,8 @@
 
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { HapticPressable, Skeleton } from '@/components/ui';
-import { useRouter } from 'expo-router';
+import { Skeleton } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowLeft, Circle } from 'lucide-react-native';
-import { formatDistanceToNow } from 'date-fns';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Sizes, Layout, Radius } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
@@ -24,7 +21,6 @@ interface ChatHeaderProps {
   lastSeenAt?: Date | string | null;
   listingTitle?: string;
   isLoading?: boolean;
-  onBack?: () => void;
 }
 
 export function ChatHeader({
@@ -35,29 +31,27 @@ export function ChatHeader({
   lastSeenAt,
   listingTitle,
   isLoading = false,
-  onBack,
 }: ChatHeaderProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
-  const router = useRouter();
 
-  const handleBack = () => {
-    if (onBack) {
-      onBack();
-    } else {
-      router.back();
-    }
-  };
-
-  // Format last seen
+  // Format last seen - short notation
   const getStatusText = () => {
-    if (isTyping) return 'typing...';
-    if (isOnline) return 'Active now';
+    if (isTyping) return '...';
+    if (isOnline) return 'now';
     if (lastSeenAt) {
       const date = lastSeenAt instanceof Date ? lastSeenAt : new Date(lastSeenAt);
       if (!isNaN(date.getTime())) {
-        return `Active ${formatDistanceToNow(date, { addSuffix: false })} ago`;
+        const diffMs = Date.now() - date.getTime();
+        const diffMins = Math.floor(diffMs / 60000);
+        if (diffMins < 1) return 'now';
+        if (diffMins < 60) return `${diffMins}m`;
+        const diffHours = Math.floor(diffMins / 60);
+        if (diffHours < 24) return `${diffHours}h`;
+        const diffDays = Math.floor(diffHours / 24);
+        if (diffDays < 7) return `${diffDays}d`;
+        return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
       }
     }
     return null;
@@ -78,34 +72,10 @@ export function ChatHeader({
         contentContainerStyle={styles.scrollContent}
         style={styles.scrollView}
       >
-        {/* Back Button - Glass bubble */}
-        <View
-          style={[
-            styles.iconButton,
-            styles.glass,
-            {
-              borderColor: colors.glassBorder,
-              backgroundColor: colors.glassBackground,
-            },
-          ]}
-        >
-          <HapticPressable
-            onPress={handleBack}
-            style={styles.iconButtonInner}
-            hitSlop={Layout.hitSlop}
-          >
-            {({ pressed }) => (
-              <View style={{ opacity: pressed ? 0.7 : 1 }}>
-                <ArrowLeft size={Sizes.iconSm} color={colors.icon} strokeWidth={2} />
-              </View>
-            )}
-          </HapticPressable>
-        </View>
-
         {/* Avatar Bubble */}
         <View
           style={[
-            styles.avatarBubble,
+            styles.bubble,
             styles.glass,
             {
               borderColor: colors.glassBorder,
@@ -139,37 +109,30 @@ export function ChatHeader({
           )}
         </View>
 
-        {/* Status Pill - show skeleton when loading */}
+        {/* Status Bubble - show skeleton when loading */}
         {(statusText || isLoading) && (
           <View
             style={[
-              styles.pillButton,
+              styles.bubble,
               styles.glass,
               {
-                borderColor: colors.glassBorder,
+                borderColor: isOnline || isTyping ? colors.success : colors.glassBorder,
                 backgroundColor: colors.glassBackground,
-                minWidth: isLoading ? Spacing['5xl'] * 1.5 : undefined,
               },
             ]}
           >
             {isLoading ? (
-              <Skeleton width={Spacing['4xl'] * 1.5} height={Sizes.iconSm} borderRadius={Radius.sm} />
+              <Skeleton width={Sizes.iconSm} height={Sizes.iconSm} borderRadius={Radius.full} />
             ) : (
-              <View style={styles.pillContent}>
-                <Circle
-                  size={6}
-                  fill={isTyping ? colors.primary : (isOnline ? colors.success : colors.textTertiary)}
-                  color={isTyping ? colors.primary : (isOnline ? colors.success : colors.textTertiary)}
-                />
-                <Data
-                  size="small"
-                  style={{
-                    color: isTyping ? colors.primary : (isOnline ? colors.success : colors.textTertiary),
-                  }}
-                >
-                  {statusText}
-                </Data>
-              </View>
+              <Data
+                size="mini"
+                style={{
+                  color: isTyping ? colors.primary : (isOnline ? colors.success : colors.textTertiary),
+                  fontWeight: '500',
+                }}
+              >
+                {statusText}
+              </Data>
             )}
           </View>
         )}
@@ -219,20 +182,7 @@ const styles = StyleSheet.create({
   glass: {
     borderWidth: 1,
   },
-  iconButton: {
-    width: Sizes.bubble,
-    height: Sizes.bubble,
-    borderRadius: Sizes.bubble / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconButtonInner: {
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarBubble: {
+  bubble: {
     width: Sizes.bubble,
     height: Sizes.bubble,
     borderRadius: Sizes.bubble / 2,
@@ -245,10 +195,5 @@ const styles = StyleSheet.create({
     borderRadius: Sizes.pillRadius,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  pillContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
   },
 });

@@ -17,7 +17,7 @@ import { HapticPressable } from '@/components/ui';
 import { Send } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius, Typography, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography, Sizes, Layout, Shadows } from '@/constants/theme';
 
 interface MessageInputProps {
   onSend: (text: string) => Promise<void>;
@@ -164,14 +164,19 @@ export function MessageInput({
           style={[
             styles.inputWrapper,
             styles.glass,
-            { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder },
+            styles.inputGlow,
+            { 
+              backgroundColor: colors.glassBackground, 
+              borderColor: colors.glassBorder,
+              minHeight: Math.max(inputHeight, MIN_HEIGHT),
+            },
           ]}
         >
           <TextInput
             ref={inputRef}
             style={[
               styles.input,
-              { color: colors.text, minHeight: MIN_HEIGHT, maxHeight: MAX_HEIGHT },
+              { color: colors.text },
             ]}
             value={text}
             onChangeText={handleChangeText}
@@ -214,7 +219,7 @@ export const MESSAGE_INPUT_HEIGHT = Layout.hitTarget + Spacing.sm * 2;
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     paddingHorizontal: Layout.screenPadding,
     paddingTop: Spacing.sm,
     gap: Spacing.sm,
@@ -224,23 +229,27 @@ const styles = StyleSheet.create({
   },
   inputWrapper: {
     flex: 1,
-    minHeight: Layout.hitTarget,
-    borderRadius: Radius.full,
+    borderRadius: Radius['2xl'],
     paddingHorizontal: Spacing.lg,
     justifyContent: 'center',
+  },
+  inputGlow: {
+    ...Shadows.md,
   },
   input: {
     ...Typography.bodyLarge,
     lineHeight: undefined,
-    paddingTop: Spacing.sm,
-    paddingBottom: Spacing.sm,
+    paddingVertical: Spacing.md,
     textAlignVertical: 'center',
+    maxHeight: MAX_HEIGHT,
   },
   sendWrapper: {
-    width: Layout.hitTarget,
-    height: Layout.hitTarget,
-    borderRadius: Radius.full,
+    width: Sizes.bubbleMd,
+    height: Sizes.bubbleMd,
+    borderRadius: Sizes.bubbleMd / 2,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: Spacing.xs,
+    ...Shadows.sm,
   },
 });

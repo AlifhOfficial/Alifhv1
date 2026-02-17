@@ -3,8 +3,8 @@
  * Integrates with device preferences and persists user choice
  */
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
-import { useColorScheme as useDeviceColorScheme, Appearance, Platform } from 'react-native';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode, startTransition } from 'react';
+import { useColorScheme as useDeviceColorScheme, Appearance, Platform, InteractionManager } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setStatusBarStyle } from 'expo-status-bar';
 
@@ -69,27 +69,32 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const isDark = colorScheme === 'dark';
   const colors = Colors[colorScheme];
 
-  // Sync theme with native system UI
-  // With edge-to-edge on Android 15+, background colors are handled by app content.
+  // Sync theme with native system UI (deferred to avoid blocking UI)
   useEffect(() => {
-    // Status bar icon style (light/dark) - instant, no animation
-    setStatusBarStyle(isDark ? 'light' : 'dark', false);
+    // Defer native calls to after animations complete
+    const handle = InteractionManager.runAfterInteractions(() => {
+      // Status bar icon style (light/dark)
+      setStatusBarStyle(isDark ? 'light' : 'dark', false);
+      
+      // Appearance API - controls keyboard theme, alerts, action sheets
+      if (Platform.OS === 'ios') {
+        Appearance.setColorScheme(themeMode === 'system' ? null : themeMode);
+      }
+    });
     
-    // Appearance API - controls keyboard theme, alerts, action sheets
-    // Only call on iOS; on Android it can interfere with edge-to-edge nav bar
-    if (Platform.OS === 'ios') {
-      Appearance.setColorScheme(themeMode === 'system' ? null : themeMode);
-    }
+    return () => handle.cancel();
   }, [themeMode, isDark]);
 
   const toggleTheme = useCallback(() => {
     // Toggle between light and dark (explicit choice, not system)
-    setThemeModeState(prev => {
-      const current = prev === 'system' ? (deviceColorScheme ?? 'dark') : prev;
-      const next = current === 'light' ? 'dark' : 'light';
-      // Fire-and-forget storage update
-      AsyncStorage.setItem(THEME_STORAGE_KEY, next).catch(() => {});
-      return next;
+    startTransition(() => {
+      setThemeModeState(prev => {
+        const current = prev === 'system' ? (deviceColorScheme ?? 'dark') : prev;
+        const next = current === 'light' ? 'dark' : 'light';
+        // Fire-and-forget storage update
+        AsyncStorage.setItem(THEME_STORAGE_KEY, next).catch(() => {});
+        return next;
+      });
     });
   }, [deviceColorScheme]);
 

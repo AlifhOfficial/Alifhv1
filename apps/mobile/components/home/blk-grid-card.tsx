@@ -18,7 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowRight, Heart } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
-import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { HapticPressable, Body, Heading } from '@/components/ui';
 import { RevvupLogo } from '@/components/ui/loaders';
@@ -78,6 +78,9 @@ const MiniCarCard = memo(function MiniCarCard({
   onPress,
   onFavoritePress,
 }: MiniCarCardProps) {
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
+
   const handlePress = useCallback(() => {
     onPress?.(listing.id);
   }, [listing.id, onPress]);
@@ -108,12 +111,12 @@ const MiniCarCard = memo(function MiniCarCard({
             {formatCompactPrice(listing.price)}
           </Text>
         </View>
-        {/* Favorite Button */}
+        {/* Favorite Button - Glass bubble */}
         <HapticPressable
           onPress={handleFavoritePress}
-          style={styles.favoriteButton}
+          style={[styles.favoriteButton, { borderColor: colors.glassBorderOnDark }]}
         >
-          <Heart size={14} color="#FAFAFA" strokeWidth={2} />
+          <Heart size={Sizes.iconSm} color="#FAFAFA" strokeWidth={2} />
         </HapticPressable>
       </View>
       {/* Car Title Below Image */}
@@ -159,7 +162,7 @@ export const BlkGridCard = memo(function BlkGridCard({
   }, [onCarPress, router]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { borderColor: colors.glassBorderOnDark }]}>
       {/* Dark Background - Pure black like category-grid */}
       <LinearGradient
         colors={['#000000', '#0A0A0A', '#000000']}
@@ -211,7 +214,7 @@ export const BlkGridCard = memo(function BlkGridCard({
           Shop all
         </Heading>
         <View style={styles.arrowCircle}>
-          <ArrowRight size={14} color="#0D0D0D" strokeWidth={2.5} />
+          <ArrowRight size={Sizes.iconSm} color="#0D0D0D" strokeWidth={2.5} />
         </View>
       </HapticPressable>
     </View>
@@ -228,6 +231,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius['2xl'],
     overflow: 'hidden',
     paddingBottom: Spacing['2xl'],
+    borderWidth: 1,
   },
   header: {
     flexDirection: 'row',
@@ -301,10 +305,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: Spacing.sm,
     right: Spacing.sm,
-    width: 32,
-    height: 32,
-    borderRadius: Radius.full,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Sizes.bubble / 2,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -332,9 +337,9 @@ const styles = StyleSheet.create({
     color: '#FAFAFA',
   },
   arrowCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: Radius.full,
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Sizes.bubble / 2,
     backgroundColor: '#FAFAFA',
     justifyContent: 'center',
     alignItems: 'center',

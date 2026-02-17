@@ -17,7 +17,7 @@ import { Image, ImageSource } from 'expo-image';
 import { ArrowRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
-import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { HapticPressable, Body, Heading } from '@/components/ui';
 import { RevvupLogo } from '@/components/ui/loaders';
@@ -111,7 +111,7 @@ export const RevvupFirstGrid = memo(function RevvupFirstGrid({
   const bgColor = '#2D1216';
 
   return (
-    <View style={[styles.container, { backgroundColor: bgColor }]}>
+    <View style={[styles.container, { backgroundColor: bgColor, borderColor: colors.glassBorderOnDark }]}>
       {/* Text Doodle Background - "first" scattered pattern in gold */}
       <FirstDoodle opacity={1} color="#D4AF37" />
 
@@ -148,7 +148,7 @@ export const RevvupFirstGrid = memo(function RevvupFirstGrid({
           Browse all
         </Heading>
         <View style={styles.arrowCircle}>
-          <ArrowRight size={14} color="#722F37" strokeWidth={2.5} />
+          <ArrowRight size={Sizes.iconSm} color="#722F37" strokeWidth={2.5} />
         </View>
       </HapticPressable>
     </View>
@@ -165,6 +165,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius['2xl'],
     overflow: 'hidden',
     paddingBottom: Spacing['2xl'],
+    borderWidth: 1,
   },
   header: {
     flexDirection: 'row',
@@ -225,9 +226,9 @@ const styles = StyleSheet.create({
     color: '#FAFAFA',
   },
   arrowCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: Radius.full,
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Sizes.bubble / 2,
     backgroundColor: '#D4AF37',
     justifyContent: 'center',
     alignItems: 'center',

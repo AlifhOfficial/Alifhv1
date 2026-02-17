@@ -15,7 +15,8 @@ import {
 import { ArrowRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
-import { Spacing, Radius, Fonts, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius, Fonts, Typography, Sizes } from '@/constants/theme';
+import { useTheme } from '@/context/theme-context';
 import { HapticPressable, Heading } from '@/components/ui';
 import { RevvupLogo } from '@/components/ui/loaders';
 import { CarCardList } from '@/components/cards/car-card-list';
@@ -43,6 +44,8 @@ const CategoryCard = memo(function CategoryCard({
   onCategoryPress,
   onCarPress,
 }: CategoryCardProps) {
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
   const router = useRouter();
 
   const handleCategoryPress = useCallback(() => {
@@ -55,7 +58,7 @@ const CategoryCard = memo(function CategoryCard({
   }, [onCarPress, router]);
 
   return (
-    <View style={styles.categoryCard}>
+    <View style={[styles.categoryCard, { borderColor: colors.glassBorderOnDark }]}>
       {/* Header - RevvupLogo + evvup */}
       <View style={styles.header}>
         <View style={styles.brandRow}>
@@ -99,7 +102,7 @@ const CategoryCard = memo(function CategoryCard({
       <HapticPressable onPress={handleCategoryPress} style={styles.footer}>
         <Heading size="small" style={styles.browseText}>Browse all</Heading>
         <View style={styles.arrowCircle}>
-          <ArrowRight size={14} color="#000000" strokeWidth={2.5} />
+          <ArrowRight size={Sizes.iconSm} color="#000000" strokeWidth={2.5} />
         </View>
       </HapticPressable>
     </View>
@@ -153,6 +156,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: '#000000',
     paddingBottom: Spacing['2xl'],
+    borderWidth: 1,
   },
   header: {
     flexDirection: 'row',
@@ -200,9 +204,9 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   arrowCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: Radius.full,
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Sizes.bubble / 2,
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',

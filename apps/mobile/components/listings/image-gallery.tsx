@@ -150,7 +150,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
               style={[
                 styles.thumbnail,
                 { 
-                  borderColor: index === currentIndex ? colors.primary : colors.border,
+                  borderColor: index === currentIndex ? colors.primary : colors.glassBorder,
                   opacity: index === currentIndex ? 1 : 0.6,
                 },
               ]}
@@ -168,7 +168,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
         {/* View All Button */}
         <HapticPressable
           onPress={onViewAllPress}
-          style={[styles.viewAllButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
+          style={[styles.viewAllButton, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}
         >
           {({ pressed }) => (
             <View style={[styles.viewAllContent, { opacity: pressed ? 0.7 : 1 }]}>

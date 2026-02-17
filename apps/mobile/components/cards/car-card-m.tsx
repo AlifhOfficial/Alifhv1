@@ -159,9 +159,10 @@ function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean, isBlac
         avatarBorder: isBlackTierPartner ? colors.blkBackground : colors.blkBorder,
       };
     }
+    // Glass aesthetic - lightweight, airy feel matching header pills
     return {
-      background: colors.surface,
-      border: colors.border,
+      background: colors.glassBackground,
+      border: colors.glassBorder,
       title: colors.text,
       price: colors.primary,
       stats: colors.textSecondary,
@@ -170,8 +171,8 @@ function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean, isBlac
       sellerText: colors.text,
       actionIcon: colors.icon,
       imageBg: colors.backgroundSecondary,
-      avatarBg: colors.backgroundSecondary,
-      avatarBorder: colors.border,
+      avatarBg: colors.glassBackground,
+      avatarBorder: colors.glassBorder,
     };
   }, [colors, isBlkListing, isBlackTierPartner]);
 }
@@ -298,6 +299,8 @@ export const CarCardM = memo(function CarCardM({
             isSuperliked={isSuperlikedProp}
             isBlkListing={isBlkListing}
             actionIconColor={theme.actionIcon}
+            glassBackground={colors.glassBackground}
+            glassBorder={colors.glassBorder}
             onFavoritePress={onFavoritePress}
             onSuperlikePress={onSuperlikePress}
             onSharePress={handleSharePress}
@@ -399,7 +402,12 @@ const SellerInfo = memo(function SellerInfo({ name, avatarUri, isVerified, isBla
         isBlackTierPartner && styles.avatarBlackTier,
       ]}>
         {avatarUri ? (
-          <Image source={{ uri: avatarUri }} style={styles.avatarImage} contentFit="cover" transition={150} />
+          <Image 
+            source={{ uri: avatarUri }} 
+            style={styles.avatarImage} 
+            contentFit="cover" 
+            transition={150} 
+          />
         ) : (
           <Text variant="avatarSmall" style={{ color: theme.meta }}>
             {name.charAt(0).toUpperCase()}
@@ -431,6 +439,8 @@ interface CardActionsProps {
   isSuperliked?: boolean;
   isBlkListing: boolean;
   actionIconColor: string;
+  glassBackground: string;
+  glassBorder: string;
   onFavoritePress?: (id: string) => void;
   onSuperlikePress?: (id: string) => void;
   onSharePress: () => void;
@@ -442,34 +452,40 @@ const CardActions = memo(function CardActions({
   isSuperliked,
   isBlkListing,
   actionIconColor,
+  glassBackground,
+  glassBorder,
   onFavoritePress,
   onSuperlikePress,
   onSharePress,
 }: CardActionsProps) {
   return (
     <View style={styles.actions}>
-      <FavoriteButton
-        listingId={listingId}
-        size={Sizes.iconMd}
-        onPress={onFavoritePress}
-        isFavorite={isFavorite}
-        isBlkListing={isBlkListing}
-        hitSlop={Layout.hitSlop}
-      />
-      <SuperlikeButton
-        listingId={listingId}
-        size={Sizes.iconMd}
-        onPress={onSuperlikePress}
-        isSuperliked={isSuperliked}
-        isBlkListing={isBlkListing}
-        hitSlop={Layout.hitSlop}
-      />
+      <View style={[styles.actionBubble, { backgroundColor: glassBackground, borderColor: glassBorder }]}>
+        <FavoriteButton
+          listingId={listingId}
+          size={Sizes.iconSm}
+          onPress={onFavoritePress}
+          isFavorite={isFavorite}
+          isBlkListing={isBlkListing}
+          hitSlop={Layout.hitSlop}
+        />
+      </View>
+      <View style={[styles.actionBubble, { backgroundColor: glassBackground, borderColor: glassBorder }]}>
+        <SuperlikeButton
+          listingId={listingId}
+          size={Sizes.iconSm}
+          onPress={onSuperlikePress}
+          isSuperliked={isSuperliked}
+          isBlkListing={isBlkListing}
+          hitSlop={Layout.hitSlop}
+        />
+      </View>
       <HapticPressable
         onPress={onSharePress}
         hitSlop={Layout.hitSlop}
-        style={styles.actionButton}
+        style={[styles.actionBubble, { backgroundColor: glassBackground, borderColor: glassBorder }]}
       >
-        <Share2 size={Sizes.iconMd} color={actionIconColor} strokeWidth={1.75} />
+        <Share2 size={Sizes.iconSm} color={actionIconColor} strokeWidth={1.75} />
       </HapticPressable>
     </View>
   );
@@ -484,7 +500,7 @@ export function CarCardMSkeleton() {
   const colors = Colors[colorScheme];
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+    <View style={[styles.container, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
       {/* Image */}
       <View style={styles.imageContainer}>
         <Skeleton width="100%" height={Spacing['5xl'] * 4} borderRadius={0} />
@@ -504,12 +520,13 @@ export function CarCardMSkeleton() {
         </View>
         <View style={styles.footer}>
           <View style={styles.sellerInfo}>
-            <SkeletonCircle size={Sizes.avatarSm} />
+            <SkeletonCircle size={Sizes.bubble} />
             <Skeleton width="40%" height={Spacing.lg} />
           </View>
           <View style={styles.actions}>
-            <SkeletonCircle size={Sizes.actionButtonMd} />
-            <SkeletonCircle size={Sizes.actionButtonMd} />
+            <SkeletonCircle size={Sizes.bubble} />
+            <SkeletonCircle size={Sizes.bubble} />
+            <SkeletonCircle size={Sizes.bubble} />
           </View>
         </View>
       </View>
@@ -598,9 +615,9 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   avatar: {
-    width: Sizes.avatarSm,
-    height: Sizes.avatarSm,
-    borderRadius: Radius.full,
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Sizes.bubble / 2,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -610,8 +627,9 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   avatarImage: {
-    width: '100%',
-    height: '100%',
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Sizes.bubble / 2,
   },
   sellerMeta: {
     flexDirection: 'row',
@@ -633,13 +651,14 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.md,
+    gap: Spacing.sm,
   },
-  actionButton: {
-    width: Sizes.actionButtonMd,
-    height: Sizes.actionButtonMd,
+  actionBubble: {
+    width: Sizes.bubble,
+    height: Sizes.bubble,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: Radius.full,
+    borderRadius: Sizes.bubble / 2,
+    borderWidth: 1,
   },
 });

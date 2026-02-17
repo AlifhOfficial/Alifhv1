@@ -23,7 +23,7 @@ import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { useTabBar } from '@/context/tab-bar-context';
 import { useAuth } from '@/context/auth-context';
-import { Colors, Layout, Sizes, Spacing } from '@/constants/theme';
+import { Colors, Layout, Sizes, Spacing, Shadows } from '@/constants/theme';
 import { SearchSheet, SortSheet, AmnaSheet, ActiveFiltersSheet, CreateListingFlow } from '@/components/sheets';
 import { getUnreadCount } from '@/lib/messaging-api';
 import type { SearchSortOption } from '@/lib/search-api';
@@ -613,6 +613,7 @@ const styles = StyleSheet.create({
   },
   glass: {
     borderWidth: 1,
+    ...Shadows.md,
   },
   backBubble: {
     width: Sizes.bubbleMd,
@@ -624,6 +625,7 @@ const styles = StyleSheet.create({
   pillWrapper: {
     height: Sizes.bubbleMd,
     borderRadius: Sizes.bubbleMd / 2,
+    ...Shadows.lg,
   },
   pillContent: {
     flexDirection: 'row',

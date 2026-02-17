@@ -13,7 +13,8 @@ import { Video, ResizeMode } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowRight } from 'lucide-react-native';
 
-import { Spacing, Radius, Fonts, Typography } from '@/constants/theme';
+import { Spacing, Radius, Fonts, Typography, Sizes, Colors } from '@/constants/theme';
+import { useTheme } from '@/context/theme-context';
 import { HapticPressable, Heading } from '@/components/ui';
 import { showrooms } from './mock-data';
 
@@ -32,6 +33,7 @@ export const ShowroomsShowcaseGrid = memo(function ShowroomsShowcaseGrid({
   limit,
   offset = 0,
 }: ShowroomsShowcaseGridProps) {
+  const { colors } = useTheme();
   const start = offset % showrooms.length;
   const displayShowrooms = limit ? showrooms.slice(start, start + limit) : showrooms;
   // Use first showroom's video as background
@@ -42,7 +44,7 @@ export const ShowroomsShowcaseGrid = memo(function ShowroomsShowcaseGrid({
   }, [onViewAllPress]);
 
   return (
-    <View style={styles.wrapper}>
+    <View style={[styles.wrapper, { borderColor: colors.glassBorderOnDark }]}>
       {/* Video Background */}
       <Video
         source={backgroundVideo}
@@ -72,7 +74,7 @@ export const ShowroomsShowcaseGrid = memo(function ShowroomsShowcaseGrid({
         <HapticPressable onPress={handleViewAllPress} style={styles.footer}>
           <Heading size="small" style={styles.browseText}>Visit Showroom</Heading>
           <View style={styles.arrowCircle}>
-            <ArrowRight size={14} color="#000000" strokeWidth={2.5} />
+            <ArrowRight size={Sizes.iconSm} color="#000000" strokeWidth={2.5} />
           </View>
         </HapticPressable>
       </View>
@@ -90,6 +92,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius['2xl'],
     overflow: 'hidden',
     minHeight: 400,
+    borderWidth: 1,
   },
   videoBg: {
     ...StyleSheet.absoluteFillObject,
@@ -130,9 +133,9 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   arrowCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: Radius.full,
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Sizes.bubble / 2,
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',

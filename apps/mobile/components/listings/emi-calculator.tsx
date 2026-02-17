@@ -59,8 +59,8 @@ export const EMICalculator = memo(function EMICalculator({
 
   const textColor = isBlk ? colors.blkText : colors.text;
   const secondaryTextColor = isBlk ? colors.blkTextSecondary : colors.textSecondary;
-  const borderColor = isBlk ? colors.blkBorder : colors.border;
-  const surfaceColor = isBlk ? colors.blkBackground : colors.surface;
+  const borderColor = isBlk ? colors.blkBorder : colors.glassBorder;
+  const surfaceColor = isBlk ? colors.blkBackground : colors.glassBackground;
 
   const emi = useMemo(() => {
     const downPayment = Math.round(price * (DOWN_PAYMENT_PERCENT / 100));
@@ -100,7 +100,7 @@ export function EMICalculatorSkeleton() {
   return (
     <View style={styles.container}>
       <Skeleton width="25%" height={Spacing.md} />
-      <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+      <View style={[styles.card, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
         <Skeleton width={Sizes.iconMd} height={Sizes.iconMd} borderRadius={Radius.full} />
         <View style={{ gap: Spacing.sm, flex: 1 }}>
           <Skeleton width="40%" height={Spacing.lg} />

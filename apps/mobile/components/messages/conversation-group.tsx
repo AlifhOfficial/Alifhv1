@@ -11,7 +11,6 @@ import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { Data, Supporting, Label } from '@/components/ui';
-import { formatDistanceToNow } from 'date-fns';
 import type { Conversation } from '@/lib/messaging-api';
 
 interface ConversationGroupProps {
@@ -60,7 +59,7 @@ export function ConversationGroup({
   const ChevronIcon = isExpanded ? ChevronUp : ChevronDown;
 
   return (
-    <View>
+    <View style={styles.container}>
       {/* Header Row: [Avatar] [Name] [Badge?] [Chevron] */}
       <HapticPressable
         onPress={toggleExpanded}
@@ -69,39 +68,41 @@ export function ConversationGroup({
       >
         {({ pressed }) => (
           <View style={[styles.headerRow, pressed && { opacity: 0.7 }]}>
-            <View>
+            <View style={[styles.avatarBubble, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
               <UserAvatar src={avatarUrl} name={name} size="md" />
               {isOnline && (
                 <View style={[styles.onlineDot, { backgroundColor: colors.success, borderColor: colors.background }]} />
               )}
             </View>
-            <View style={{ flex: 1, minWidth: 0 }}>
-              <Data size="large" style={{ color: colors.text, fontWeight: '600' }} numberOfLines={1}>
-                {name}
-              </Data>
-              {isOnline ? (
-                <Data size="mini" style={{ color: colors.success, marginTop: 1 }}>Active now</Data>
-              ) : lastSeenAt ? (
-                <Data size="mini" style={{ color: colors.textTertiary, marginTop: 1 }}>
-                  {formatDistanceToNow(new Date(lastSeenAt), { addSuffix: false })} ago
-                </Data>
-              ) : null}
-            </View>
+            <Data size="large" style={{ flex: 1, color: colors.text, fontWeight: '600' }} numberOfLines={1}>
+              {name}
+            </Data>
             {totalUnread > 0 && (
               <View style={[styles.unreadBadge, { backgroundColor: colors.primary }]}>
-                <Label size="badge" uppercase={false} style={{ color: '#FFFFFF', fontWeight: '600' }}>
+                <Label size="badge" uppercase={false} style={{ color: colors.primaryForeground, fontWeight: '600' }}>
                   {totalUnread}
                 </Label>
               </View>
             )}
-            <ChevronIcon size={Sizes.iconXs} color={colors.textTertiary} strokeWidth={2} />
+            {isOnline ? (
+              <View style={[styles.bubble, { backgroundColor: colors.glassBackground, borderColor: colors.success }]}>
+                <Data size="mini" style={{ color: colors.success, fontWeight: '500' }}>now</Data>
+              </View>
+            ) : lastSeenAt ? (
+              <View style={[styles.bubble, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
+                <Data size="mini" style={{ color: colors.textTertiary }}>{formatTime(lastSeenAt)}</Data>
+              </View>
+            ) : null}
+            <View style={[styles.bubble, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
+              <ChevronIcon size={Sizes.iconXs} color={colors.textSecondary} strokeWidth={2.5} />
+            </View>
           </View>
         )}
       </HapticPressable>
 
       {/* Dropdown: Nested conversations */}
       {isExpanded && (
-        <View style={[styles.chatList, { borderLeftColor: colors.border }]}>
+        <View style={[styles.chatList, { borderLeftColor: colors.glassBorder }]}>
           {conversations.map((c) => {
             const hasUnread = c.unreadCount > 0;
             const isActive = c.id === activeConversationId;
@@ -111,7 +112,7 @@ export function ConversationGroup({
                 onPress={() => onSelect(c)}
                 style={[
                   styles.chatItem,
-                  { backgroundColor: isActive ? colors.surface : 'transparent' },
+                  isActive && { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder },
                 ]}
               >
                 {/* Title + Time */}
@@ -137,7 +138,7 @@ export function ConversationGroup({
                     size="small"
                     style={{ 
                       flex: 1, 
-                      marginTop: 2,
+                      marginTop: Spacing.xs,
                       color: hasUnread ? colors.textSecondary : colors.textTertiary,
                     }}
                     numberOfLines={1}
@@ -158,14 +159,25 @@ export function ConversationGroup({
 }
 
 const styles = StyleSheet.create({
+  container: {
+    marginBottom: Spacing.lg,
+  },
   header: {
-    paddingVertical: Spacing.sm,
+    paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.lg,
   },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
+  },
+  avatarBubble: {
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Sizes.bubble / 2,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   onlineDot: {
     position: 'absolute',
@@ -175,6 +187,14 @@ const styles = StyleSheet.create({
     height: Spacing.md,
     borderRadius: Spacing.md / 2,
     borderWidth: 2,
+  },
+  bubble: {
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Sizes.bubble / 2,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   unreadBadge: {
     minWidth: Spacing.xl,
@@ -196,6 +216,8 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.sm,
     borderRadius: Radius.md,
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
   chatRow: {
     flexDirection: 'row',

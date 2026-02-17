@@ -46,8 +46,8 @@ export const BreadcrumbHeader = memo(function BreadcrumbHeader({
         style={[
           styles.iconButton,
           {
-            borderColor: colors.border,
-            backgroundColor: colors.surface,
+            borderColor: colors.glassBorder,
+            backgroundColor: colors.glassBackground,
           },
         ]}
       >

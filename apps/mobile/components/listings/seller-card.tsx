@@ -63,7 +63,7 @@ export const SellerCard = memo(function SellerCard({
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <View style={[styles.avatar, { backgroundColor: colors.backgroundSecondary }]}>
+        <View style={[styles.avatar, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
           {sellerLogo ? (
             <Image
               source={{ uri: sellerLogo }}
@@ -121,14 +121,16 @@ const styles = StyleSheet.create({
   avatar: {
     width: Sizes.avatarLg,
     height: Sizes.avatarLg,
-    borderRadius: Radius.full,
+    borderRadius: Sizes.avatarLg / 2,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
   },
   avatarImage: {
-    width: '100%',
-    height: '100%',
+    width: Sizes.avatarLg,
+    height: Sizes.avatarLg,
+    borderRadius: Sizes.avatarLg / 2,
   },
   details: {
     flex: 1,

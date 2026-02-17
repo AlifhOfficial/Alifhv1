@@ -17,7 +17,8 @@ import { Image, ImageSource } from 'expo-image';
 import { ArrowRight, Heart } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
-import { Spacing, Radius, Typography, Fonts } from '@/constants/theme';
+import { Spacing, Radius, Typography, Fonts, Sizes, Colors } from '@/constants/theme';
+import { useTheme } from '@/context/theme-context';
 import { HapticPressable, Heading } from '@/components/ui';
 import { partners, type Partner, type CarListing } from './mock-data';
 
@@ -79,6 +80,8 @@ const ProductCard = memo(function ProductCard({
   onPress,
   onFavoritePress,
 }: ProductCardProps) {
+  const { colors } = useTheme();
+
   const handlePress = useCallback(() => {
     onPress?.(listing.id);
   }, [listing.id, onPress]);
@@ -102,8 +105,8 @@ const ProductCard = memo(function ProductCard({
         <Text style={styles.priceText}>{formatCompactPrice(listing.price)}</Text>
       </View>
       {/* Favorite Button - Bottom Right */}
-      <HapticPressable onPress={handleFavoritePress} style={styles.favoriteButton}>
-        <Heart size={16} color="#FFFFFF" strokeWidth={2} />
+      <HapticPressable onPress={handleFavoritePress} style={[styles.favoriteButton, { borderColor: colors.glassBorderOnDark }]}>
+        <Heart size={Sizes.iconSm} color="#FFFFFF" strokeWidth={2} />
       </HapticPressable>
     </HapticPressable>
   );
@@ -126,6 +129,7 @@ const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
   onCarPress,
   onFavoritePress,
 }: PartnerShowcaseCardProps) {
+  const { colors } = useTheme();
   const router = useRouter();
 
   const handleShopAllPress = useCallback(() => {
@@ -138,7 +142,7 @@ const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
   }, [onCarPress, router]);
 
   return (
-    <View style={styles.partnerCard}>
+    <View style={[styles.partnerCard, { borderColor: colors.glassBorderOnDark }]}>
       {/* Header - Logo, Name & Rating */}
       <View style={styles.header}>
         <View style={styles.logoContainer}>
@@ -182,7 +186,7 @@ const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
       <HapticPressable onPress={handleShopAllPress} style={styles.footer}>
         <Heading size="small" style={styles.browseAllText}>Browse all</Heading>
         <View style={styles.arrowCircle}>
-          <ArrowRight size={14} color="#000000" strokeWidth={2.5} />
+          <ArrowRight size={Sizes.iconSm} color="#000000" strokeWidth={2.5} />
         </View>
       </HapticPressable>
     </View>
@@ -240,6 +244,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: '#2A2A2A',
     paddingBottom: Spacing['2xl'],
+    borderWidth: 1,
   },
   header: {
     flexDirection: 'row',
@@ -316,10 +321,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: Spacing.sm,
     right: Spacing.sm,
-    width: 32,
-    height: 32,
-    borderRadius: Radius.full,
-    backgroundColor: 'rgba(128,128,128,0.7)',
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Sizes.bubble / 2,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -334,9 +340,9 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   arrowCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: Radius.full,
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Sizes.bubble / 2,
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
