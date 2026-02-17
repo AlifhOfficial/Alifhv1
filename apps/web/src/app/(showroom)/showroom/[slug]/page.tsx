@@ -33,6 +33,12 @@ interface ShowroomPageProps {
  * This pre-generates pages for all verified dealerships
  */
 export async function generateStaticParams() {
+  // Skip during build time when DATABASE_URL is not available
+  if (!process.env.DATABASE_URL) {
+    console.log('[generateStaticParams] Skipping - no DATABASE_URL (build time)');
+    return [];
+  }
+  
   try {
     // Import here to avoid build-time DB connection issues
     const { db, partner, eq, and } = await import('@alifh/database');

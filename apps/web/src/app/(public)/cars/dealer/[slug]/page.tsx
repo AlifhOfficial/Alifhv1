@@ -13,6 +13,11 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
+  // Skip during build time when DATABASE_URL is not available
+  if (!process.env.DATABASE_URL) {
+    return [];
+  }
+  
   try {
     // Dynamic import to avoid build-time DB connection issues
     const { db, partner, eq } = await import('@alifh/database');

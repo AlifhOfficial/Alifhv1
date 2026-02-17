@@ -106,9 +106,20 @@ function getDb(): NeonHttpDatabase<typeof schema> {
   return _db;
 }
 
+// Check if DATABASE_URL is available - allows build-time imports without throwing
+const isDatabaseConfigured = !!process.env.DATABASE_URL;
+
 // Export as getter that lazily initializes
+// During build time (no DATABASE_URL), property access returns functions that throw when called
 export const db = new Proxy({} as NeonHttpDatabase<typeof schema>, {
   get(_, prop) {
+    if (!isDatabaseConfigured) {
+      // Return a function that throws when actually called
+      // This allows imports during build but fails on actual DB usage
+      return (..._args: unknown[]) => {
+        throw new Error('DATABASE_URL environment variable is required');
+      };
+    }
     return (getDb() as any)[prop];
   },
 });
