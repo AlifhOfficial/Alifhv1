@@ -176,6 +176,7 @@ export function useMessages({
         msg.conversationId === conversationIdRef.current &&
         msg.userId !== userIdRef.current
       ) {
+        console.log(`⌨️ [useMessages] Typing from ${msg.userId}: ${msg.isTyping}`);
         // Clear existing timeout
         if (typingTimeoutRef.current) {
           clearTimeout(typingTimeoutRef.current);
@@ -208,12 +209,23 @@ export function useMessages({
         otherUserIdRef.current &&
         msg.userId === otherUserIdRef.current
       ) {
+        console.log(`🟢 [useMessages] Presence for other user:`, { isOnline: msg.isOnline, lastSeenAt: msg.lastSeenAt });
         setIsOtherOnline(!!msg.isOnline);
         // Only update lastSeenAt if provided in the event (matches web behavior)
         // This preserves the conversation snapshot fallback when WS doesn't include it
         if (msg.lastSeenAt) {
           setOtherLastSeenAt(msg.lastSeenAt);
         }
+      }
+
+      // FALLBACK: If we receive typing/message from the other user, they're definitely online
+      // This helps when presence state is lost (e.g., Railway multiple replicas)
+      if (
+        (msg.type === 'typing' || msg.type === 'new_message') &&
+        msg.userId === otherUserIdRef.current
+      ) {
+        setIsOtherOnline(true);
+        setOtherLastSeenAt(new Date().toISOString());
       }
     });
 
