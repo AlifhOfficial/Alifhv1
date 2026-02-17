@@ -1,9 +1,9 @@
 # Railway configuration for WebSocket server
-# Must be deployed as a separate service in the same project
+# In Railway WS service settings: Config-as-code → Railway Config File → apps/ws/railway.toml
 
 [build]
 builder = "railpack"
-buildCommand = "cd apps/ws && bun install && bun run build"
+buildCommand = "bun install && cd apps/ws && bun run build"
 
 [deploy]
-startCommand = "cd apps/ws && bun run dist/index.js"
+startCommand = "cd apps/ws && bun run start"

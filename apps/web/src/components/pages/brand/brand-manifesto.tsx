@@ -252,19 +252,6 @@ function LogoVariantsInfographic() {
     </div>
   );
 }
-                src="/assets/Revvup_logo_White.svg"
-                alt="Revvup Logo Light"
-                fill
-                className="object-contain"
-              />
-            </div>
-            <span className="text-xs sm:text-sm text-white/40 font-medium mt-6">Dark backgrounds</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // ============================================================================
 // COLOR SECTION
