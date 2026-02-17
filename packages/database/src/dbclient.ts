@@ -20,14 +20,20 @@
  * @module dbclient
  */
 
-import { drizzle } from 'drizzle-orm/neon-http';
-import { neon, neonConfig } from '@neondatabase/serverless';
+import { drizzle, type NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import { neon, neonConfig, type NeonQueryFunction } from '@neondatabase/serverless';
 import * as schema from './schema';
 
-const connectionString = process.env.DATABASE_URL;
+// Lazy-loaded client to avoid build-time initialization
+let _sql: NeonQueryFunction<false, false> | null = null;
+let _db: NeonHttpDatabase<typeof schema> | null = null;
 
-if (!connectionString) {
-  throw new Error('DATABASE_URL environment variable is required');
+function getConnectionString(): string {
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error('DATABASE_URL environment variable is required');
+  }
+  return connectionString;
 }
 
 // ⚡ NEON HTTP OPTIMIZATIONS
@@ -79,18 +85,32 @@ neonConfig.fetchFunction = async (url: RequestInfo | URL, init?: RequestInit): P
   throw lastError;
 };
 
-// Create Neon client with optimized fetch configuration
-const sql = neon(connectionString, {
-  fetchOptions,
-  // fetchEndpoint: Custom endpoint for region-specific routing (optional)
-  // fullResults: false, // Only return rows (default, reduces payload size)
-});
+// ⚡ LAZY-LOADED DRIZZLE CLIENT
+// Prevents build-time initialization errors when DATABASE_URL is not available
+function getSql(): NeonQueryFunction<false, false> {
+  if (!_sql) {
+    _sql = neon(getConnectionString(), {
+      fetchOptions,
+    });
+  }
+  return _sql;
+}
 
-// ⚡ DRIZZLE OPTIMIZATIONS
-export const db = drizzle(sql, { 
-  schema, // Enables relational queries and type inference
-  logger: process.env.DB_DEBUG === 'true', // Disable in production for 5-10% perf gain
-  // casing: 'snake_case', // Auto-convert camelCase <-> snake_case (already handled by schema)
+function getDb(): NeonHttpDatabase<typeof schema> {
+  if (!_db) {
+    _db = drizzle(getSql(), { 
+      schema,
+      logger: process.env.DB_DEBUG === 'true',
+    });
+  }
+  return _db;
+}
+
+// Export as getter that lazily initializes
+export const db = new Proxy({} as NeonHttpDatabase<typeof schema>, {
+  get(_, prop) {
+    return (getDb() as any)[prop];
+  },
 });
 
 // PERFORMANCE BENCHMARKS (Internal Testing):
