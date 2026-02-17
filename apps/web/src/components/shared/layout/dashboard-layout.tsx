@@ -134,9 +134,9 @@ export function DashboardContent({ children, header, fullHeight = false, noPaddi
   };
 
   return (
-    <SidebarInset className="flex flex-col relative rounded-tl-xl bg-background border-l border-border/50 overflow-hidden shadow-sm">
+    <SidebarInset className="flex flex-col relative bg-background border-l border-border/50 overflow-hidden shadow-sm">
       {/* Header with SidebarTrigger, ThemeToggle, and actions */}
-      <header className="flex h-14 shrink-0 items-center gap-2 bg-background/80 backdrop-blur-sm px-4 z-50 sticky top-0 rounded-tl-xl">
+      <header className="flex h-14 shrink-0 items-center gap-2 bg-background/80 backdrop-blur-sm px-4 z-50 sticky top-0">
         <SidebarTrigger className="-ml-1" />
         <ThemeToggle />
         {header && (

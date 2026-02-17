@@ -71,7 +71,7 @@ export function ConversationGroup({
             <View style={[styles.avatarBubble, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
               <UserAvatar src={avatarUrl} name={name} size="md" />
               {totalUnread > 0 && (
-                <View style={[styles.unreadDot, { backgroundColor: colors.primary, borderColor: colors.background }]} />
+                <View style={[styles.unreadDot, { backgroundColor: colors.error, borderColor: colors.background }]} />
               )}
             </View>
             <Data size="large" style={{ flex: 1, color: colors.text }} numberOfLines={1}>
@@ -148,7 +148,7 @@ export function ConversationGroup({
                     {c.lastMessagePreview || 'No messages'}
                   </Supporting>
                   {hasUnread && (
-                    <View style={[styles.dot, { backgroundColor: colors.primary }]} />
+                    <View style={[styles.dot, { backgroundColor: colors.error }]} />
                   )}
                 </View>
               </HapticPressable>
