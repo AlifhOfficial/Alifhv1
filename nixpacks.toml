@@ -1,0 +1,14 @@
+# Nixpacks configuration for Railway
+# Monorepo: build from root, run web app
+
+[phases.setup]
+nixPkgs = ["nodejs_20", "bun"]
+
+[phases.install]
+cmds = ["bun install"]
+
+[phases.build]
+cmds = ["bun run build:web"]
+
+[start]
+cmd = "cd apps/web && bun run start"
