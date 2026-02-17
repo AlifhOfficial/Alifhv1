@@ -95,7 +95,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       // Expose API URLs to the app via Constants.expoConfig.extra
       apiUrl: process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000',
       wsUrl: process.env.EXPO_PUBLIC_WS_URL || 'ws://localhost:3001',
-      cdnUrl: process.env.EXPO_PUBLIC_CDN_URL || 'https://cdn.alifh.ae',
+      cdnUrl: process.env.EXPO_PUBLIC_CDN_URL || 'https://cdn.revvup.ae',
     },
   };
 };

@@ -110,7 +110,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'cdn.alifh.com',
+        hostname: 'cdn.revvup.ae',
       },
       {
         protocol: 'https',

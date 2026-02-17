@@ -29,7 +29,7 @@ function getDevServerHost(): string | null {
 function getApiBaseUrl(): string {
   // In production, use the env var or production URL
   if (process.env.NODE_ENV === 'production' || !__DEV__) {
-    return process.env.EXPO_PUBLIC_API_URL || 'https://alifh.ae';
+    return process.env.EXPO_PUBLIC_API_URL || 'https://revvup.ae';
   }
   
   // In development, auto-detect the IP from Expo dev server
@@ -45,7 +45,7 @@ function getApiBaseUrl(): string {
 function getWsUrl(): string {
   // In production, use the env var or production URL
   if (process.env.NODE_ENV === 'production' || !__DEV__) {
-    return process.env.EXPO_PUBLIC_WS_URL || 'wss://ws.alifh.ae';
+    return process.env.EXPO_PUBLIC_WS_URL || 'wss://ws.revvup.ae';
   }
   
   // In development, auto-detect the IP from Expo dev server
@@ -95,10 +95,10 @@ globalThis.fetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Respo
 };
 
 // CDN for static assets (from environment or default)
-export const CDN_BASE = process.env.EXPO_PUBLIC_CDN_URL || 'https://cdn.alifh.ae';
+export const CDN_BASE = process.env.EXPO_PUBLIC_CDN_URL || 'https://cdn.revvup.ae';
 
 // CDN URL for avatars and media (R2 custom domain)
-export const R2_PUBLIC_URL = process.env.EXPO_PUBLIC_CDN_URL || 'https://cdn.alifh.ae';
+export const R2_PUBLIC_URL = process.env.EXPO_PUBLIC_CDN_URL || 'https://cdn.revvup.ae';
 
 /**
  * Convert avatar key to full public URL

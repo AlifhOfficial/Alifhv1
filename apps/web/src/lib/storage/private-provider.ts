@@ -3,7 +3,7 @@ import { getSignedUrl as awsGetSignedUrl } from "@aws-sdk/s3-request-presigner";
 import type { StorageProvider, UploadResult, SignedUrlOptions } from "./types";
 import { normalizeKey, toUint8Array } from "@/utils/storage";
 
-const bucketName = process.env.R2_PRIVATE_BUCKET_NAME || "alifh-private-data";
+const bucketName = process.env.R2_PRIVATE_BUCKET_NAME || "revvup-private";
 const accessKeyId = process.env.R2_ACCESS_KEY_ID;
 const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
 const accountId = process.env.R2_ACCOUNT_ID;
