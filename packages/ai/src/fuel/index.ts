@@ -112,15 +112,22 @@ Provide 4-6 suggestions ranked by impact. Be realistic with savings estimates.`
 // ANALYSIS FUNCTION
 // ============================================================================
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+let openai: OpenAI | null = null
+
+function getOpenAI(): OpenAI {
+  if (!openai) {
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    })
+  }
+  return openai
+}
 
 export async function analyzeFuelEfficiency(
   input: FuelAnalysisInput
 ): Promise<FuelAnalysisResult> {
   try {
-    const response = await openai.chat.completions.create({
+    const response = await getOpenAI().chat.completions.create({
       model: 'gpt-3.5-turbo', // Very cost-effective
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
