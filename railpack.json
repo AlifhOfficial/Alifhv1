@@ -1,7 +1,4 @@
 {
   "$schema": "https://schema.railpack.com",
-  "packages": {
-    "python3": "*",
-    "build-essential": "*"
-  }
+  "aptPackages": ["python3", "python3-dev", "build-essential", "make", "g++"]
 }
