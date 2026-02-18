@@ -70,6 +70,12 @@ export function useMessages({
   const lastTypingSentRef = useRef(0);
   const watchingRef = useRef(false);
   const abortControllerRef = useRef<AbortController | null>(null);
+  
+  // Track pending sends: tempId -> true (waiting for API) or realId (WS arrived first)
+  // This prevents race conditions when WS and API responses arrive out of order
+  const pendingSendsRef = useRef<Map<string, true | string>>(new Map());
+  // Counter for unique temp IDs (combined with timestamp + random)
+  const tempIdCounterRef = useRef(0);
 
   // Update refs when params change
   useEffect(() => {
@@ -108,6 +114,8 @@ export function useMessages({
     setOtherLastSeenAt(initialLastSeenAt ?? null);
     watchingRef.current = false;
     conversationIdRef.current = conversationId;
+    // Clear pending sends tracking
+    pendingSendsRef.current.clear();
   }, [conversationId]);
 
   // Watch presence for other user (matches web's useMessages)
@@ -124,6 +132,16 @@ export function useMessages({
     };
   }, [isConnected, otherUserId, send]);
 
+  // Helper to deduplicate messages array by ID (keeps first occurrence)
+  const dedupeMessages = useCallback((messages: Message[]): Message[] => {
+    const seen = new Set<string>();
+    return messages.filter(m => {
+      if (seen.has(m.id)) return false;
+      seen.add(m.id);
+      return true;
+    });
+  }, []);
+
   // Subscribe to real-time messages
   useEffect(() => {
     const unsubscribe = subscribe((msg) => {
@@ -131,8 +149,8 @@ export function useMessages({
       if (msg.type === 'new_message' && msg.conversationId === conversationIdRef.current && msg.message) {
         const newMessage = msg.message as Message;
 
+        // Check if message already exists (avoid duplicates)
         setMessages(prev => {
-          // Check if message already exists (avoid duplicates from optimistic send + WS echo)
           if (prev.some(m => m.id === newMessage.id)) {
             return prev;
           }
@@ -145,21 +163,30 @@ export function useMessages({
             },
           };
 
-          // If this is our own message echoed back via WS, replace the
-          // optimistic temp- message instead of adding a duplicate.
-          // This fixes the race where WS arrives before the API response.
+          // If this is our own message echoed back via WS, find the matching
+          // pending temp message using FIFO order (oldest pending = first sent)
           if (newMessage.senderId === userIdRef.current) {
-            const tempIndex = prev.findIndex(
-              m => m.id.startsWith('temp-') && m.senderId === newMessage.senderId
-            );
-            if (tempIndex !== -1) {
-              const updated = [...prev];
-              updated[tempIndex] = messageWithAvatar;
-              return updated;
+            // Find pending temp IDs in FIFO order (oldest first)
+            const pendingTempIds = Array.from(pendingSendsRef.current.entries())
+              .filter(([_, v]) => v === true)
+              .map(([k]) => k)
+              .sort(); // temp IDs have counter prefix, so sorting gives FIFO order
+            
+            if (pendingTempIds.length > 0) {
+              const oldestTempId = pendingTempIds[0];
+              // Mark this temp as resolved with the real ID
+              pendingSendsRef.current.set(oldestTempId, newMessage.id);
+              
+              // Replace the temp message with real one
+              const updated = prev.map(m => 
+                m.id === oldestTempId ? messageWithAvatar : m
+              );
+              return dedupeMessages(updated);
             }
           }
 
-          return [messageWithAvatar, ...prev];
+          // Message from other user or no pending temp found - just add it
+          return dedupeMessages([messageWithAvatar, ...prev]);
         });
       }
 
@@ -264,11 +291,11 @@ export function useMessages({
         }));
         
         if (cursor) {
-          // Appending older messages
-          setMessages(prev => [...prev, ...messagesWithUrls]);
+          // Appending older messages - dedupe to handle any overlap
+          setMessages(prev => dedupeMessages([...prev, ...messagesWithUrls]));
         } else {
           // Initial load or refresh
-          setMessages(messagesWithUrls);
+          setMessages(dedupeMessages(messagesWithUrls));
           
           // Set other participant's last read time (only on first page)
           if (data.otherParticipantLastReadAt) {
@@ -325,10 +352,18 @@ export function useMessages({
       setIsSending(true);
       setError(null);
 
+      // Generate unique temp ID with counter prefix for FIFO ordering
+      // Format: temp-{counter}-{timestamp}-{random} ensures uniqueness and sortability
+      const counter = ++tempIdCounterRef.current;
+      const tempId = `temp-${String(counter).padStart(6, '0')}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+      
+      // Register this send as pending (true = awaiting resolution)
+      pendingSendsRef.current.set(tempId, true);
+
       // Optimistic message
       const currentUserId = userIdRef.current || 'temp';
       const optimisticMessage: Message = {
-        id: `temp-${Date.now()}`,
+        id: tempId,
         conversationId,
         senderId: currentUserId,
         text: text.trim(),
@@ -353,21 +388,47 @@ export function useMessages({
       try {
         const response = await sendMessageAPI(conversationId, { text: text.trim() });
         
+        // Check if WS already resolved this temp message
+        const pendingValue = pendingSendsRef.current.get(tempId);
+        
         // Replace optimistic message with real one
-        setMessages(prev =>
-          prev.map(msg => (msg.id === optimisticMessage.id ? response.message : msg))
-        );
+        setMessages(prev => {
+          // If WS already replaced temp (pendingValue is the real ID), just dedupe
+          if (typeof pendingValue === 'string') {
+            // WS handled it - the real message should already be in state
+            // Just ensure no duplicates
+            return dedupeMessages(prev);
+          }
+          
+          // API arrived first - replace temp with real message
+          const hasTemp = prev.some(m => m.id === tempId);
+          if (!hasTemp) {
+            // Temp was somehow removed, add real message if not exists
+            if (prev.some(m => m.id === response.message.id)) {
+              return prev;
+            }
+            return dedupeMessages([response.message, ...prev]);
+          }
+          
+          return dedupeMessages(
+            prev.map(msg => (msg.id === tempId ? response.message : msg))
+          );
+        });
+        
+        // Clean up tracking
+        pendingSendsRef.current.delete(tempId);
       } catch (err) {
         console.error('[useMessages] Send error:', err);
         setError(err instanceof Error ? err.message : 'Failed to send message');
         
-        // Remove optimistic message on error
-        setMessages(prev => prev.filter(msg => msg.id !== optimisticMessage.id));
+        // Remove optimistic message and tracking on error
+        pendingSendsRef.current.delete(tempId);
+        setMessages(prev => prev.filter(msg => msg.id !== tempId));
       } finally {
         setIsSending(false);
       }
     },
-    [conversationId]
+    [conversationId, dedupeMessages]
   );
 
   // Throttled typing indicator sender
