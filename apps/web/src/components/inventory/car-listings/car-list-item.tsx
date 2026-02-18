@@ -229,7 +229,7 @@ export function CarListItem({
             src={displayImage}
             alt={`${year} ${make} ${model}`}
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover"
             sizes="(max-width: 1024px) 100vw, 288px"
           />
         </Link>

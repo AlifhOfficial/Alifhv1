@@ -463,7 +463,7 @@ const CardActions = memo(function CardActions({
       <View style={[styles.actionBubble, { backgroundColor: glassBackground, borderColor: glassBorder }]}>
         <FavoriteButton
           listingId={listingId}
-          size={Sizes.iconSm}
+          size={Sizes.iconXs}
           onPress={onFavoritePress}
           isFavorite={isFavorite}
           isBlkListing={isBlkListing}
@@ -473,7 +473,7 @@ const CardActions = memo(function CardActions({
       <View style={[styles.actionBubble, { backgroundColor: glassBackground, borderColor: glassBorder }]}>
         <SuperlikeButton
           listingId={listingId}
-          size={Sizes.iconSm}
+          size={Sizes.iconXs}
           onPress={onSuperlikePress}
           isSuperliked={isSuperliked}
           isBlkListing={isBlkListing}
@@ -485,7 +485,7 @@ const CardActions = memo(function CardActions({
         hitSlop={Layout.hitSlop}
         style={[styles.actionBubble, { backgroundColor: glassBackground, borderColor: glassBorder }]}
       >
-        <Share2 size={Sizes.iconSm} color={actionIconColor} strokeWidth={1.75} />
+        <Share2 size={Sizes.iconXs} color={actionIconColor} strokeWidth={1.75} />
       </HapticPressable>
     </View>
   );
@@ -520,13 +520,13 @@ export function CarCardMSkeleton() {
         </View>
         <View style={styles.footer}>
           <View style={styles.sellerInfo}>
-            <SkeletonCircle size={Sizes.bubble} />
+            <SkeletonCircle size={Sizes.bubbleXs} />
             <Skeleton width="40%" height={Spacing.lg} />
           </View>
           <View style={styles.actions}>
-            <SkeletonCircle size={Sizes.bubble} />
-            <SkeletonCircle size={Sizes.bubble} />
-            <SkeletonCircle size={Sizes.bubble} />
+            <SkeletonCircle size={Sizes.bubbleXs} />
+            <SkeletonCircle size={Sizes.bubbleXs} />
+            <SkeletonCircle size={Sizes.bubbleXs} />
           </View>
         </View>
       </View>
@@ -542,10 +542,10 @@ const styles = StyleSheet.create({
   // Layout
   container: {
     width: '100%',
-    borderRadius: Radius.lg,
+    borderRadius: Radius['2xl'],
     borderWidth: 1,
     overflow: 'hidden',
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.lg,
   },
   blkAccent: {
     position: 'absolute',
@@ -556,7 +556,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   content: {
-    padding: Spacing.md,
+    padding: Spacing.lg,
     gap: Spacing.sm,
   },
 
@@ -655,11 +655,11 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   actionBubble: {
-    width: Sizes.bubble,
-    height: Sizes.bubble,
+    width: Sizes.bubbleXs,
+    height: Sizes.bubbleXs,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: Sizes.bubble / 2,
+    borderRadius: Sizes.bubbleXs / 2,
     borderWidth: 1,
   },
 });

@@ -288,7 +288,7 @@ export function CarCard({
           alt={`${year} ${make} ${model}`}
           fill
           priority={priority}
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          className="object-cover"
           sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
         />
         

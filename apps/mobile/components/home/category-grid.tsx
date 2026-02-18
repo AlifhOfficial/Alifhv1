@@ -2,6 +2,11 @@
  * Category Grid - Clean Category Cards
  * Each category wrapped in dark card with horizontal scrolling
  * RevvupLogo + "evvup X Category Name" signature branding
+ * 
+ * Now supports:
+ * - API-driven data through props
+ * - Loading states
+ * - Empty state handling
  */
 
 import React, { memo, useCallback } from 'react';
@@ -10,17 +15,69 @@ import {
   StyleSheet,
   ScrollView,
   Dimensions,
-  Text,
+  ImageSourcePropType,
 } from 'react-native';
 import { ArrowRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
-import { Colors, Spacing, Radius, Fonts, Typography, Sizes } from '@/constants/theme';
+import { Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { HapticPressable, Heading } from '@/components/ui';
-import { RevvupLogo } from '@/components/ui/loaders';
+import { HapticPressable, Heading, Supporting, Skeleton, SkeletonCircle } from '@/components/ui';
 import { CarCardList } from '@/components/cards/car-card-list';
-import { categories, type Category } from './mock-data';
+
+// ============================================================================
+// CATEGORY CARD SKELETON
+// ============================================================================
+
+const CategoryCardSkeleton = memo(function CategoryCardSkeleton() {
+  return (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.cardsContainer}
+    >
+      {[1, 2].map((i) => (
+        <View key={i} style={styles.cardWrapper}>
+          <View style={styles.skeletonCard}>
+            <Skeleton width={120} height={90} borderRadius={Radius.lg} style={{ backgroundColor: '#1A1A1A' }} />
+            <View style={styles.skeletonCardContent}>
+              <Skeleton width="80%" height={14} style={{ backgroundColor: '#1A1A1A' }} />
+              <Skeleton width="40%" height={12} style={{ backgroundColor: '#1A1A1A' }} />
+              <Skeleton width="60%" height={12} style={{ backgroundColor: '#1A1A1A' }} />
+            </View>
+          </View>
+        </View>
+      ))}
+    </ScrollView>
+  );
+});
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+/** Unified listing type compatible with both mock data and API */
+export interface CategoryListingItem {
+  id: string;
+  make: string;
+  model: string;
+  year: number;
+  trim?: string | null;
+  price: number;
+  mileage: number;
+  emirate: string;
+  specs?: string | null;
+  thumbnail?: ImageSourcePropType | string | null;
+  isBlkListing?: boolean;
+}
+
+/** Category data for a single card */
+export interface CategoryData {
+  id: string;
+  name: string;
+  slug?: string;
+  listings: CategoryListingItem[];
+}
 
 // ============================================================================
 // CONSTANTS
@@ -34,75 +91,93 @@ const LIST_CARD_WIDTH = SCREEN_WIDTH * 0.85;
 // ============================================================================
 
 interface CategoryCardProps {
-  category: Category;
+  /** Category ID for navigation */
+  id: string;
+  /** Category display name */
+  name: string;
+  /** Subtitle explaining the category */
+  subtitle?: string;
+  /** Listings to display */
+  listings: CategoryListingItem[];
+  /** Loading state */
+  isLoading?: boolean;
   onCategoryPress?: (categoryId: string) => void;
   onCarPress?: (id: string) => void;
 }
 
-const CategoryCard = memo(function CategoryCard({
-  category,
+export const CategoryCard = memo(function CategoryCard({
+  id,
+  name,
+  subtitle,
+  listings,
+  isLoading = false,
   onCategoryPress,
   onCarPress,
 }: CategoryCardProps) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
+  const { colors } = useTheme();
   const router = useRouter();
 
   const handleCategoryPress = useCallback(() => {
-    onCategoryPress?.(category.id);
-  }, [category.id, onCategoryPress]);
+    onCategoryPress?.(id);
+  }, [id, onCategoryPress]);
 
-  const handleCarPress = useCallback((id: string) => {
-    onCarPress?.(id);
-    router.push(`/listing/${id}` as any);
+  const handleCarPress = useCallback((listingId: string) => {
+    onCarPress?.(listingId);
+    router.push(`/listing/${listingId}` as any);
   }, [onCarPress, router]);
 
-  return (
-    <View style={[styles.categoryCard, { borderColor: colors.glassBorderOnDark }]}>
-      {/* Header - RevvupLogo + evvup */}
-      <View style={styles.header}>
-        <View style={styles.brandRow}>
-          <RevvupLogo size={28} color="#FFFFFF" />
-          <Text style={styles.evvupText}>evvup</Text>
-        </View>
-      </View>
+  // Don't render if no listings and not loading
+  if (!isLoading && listings.length === 0) {
+    return null;
+  }
 
-      {/* Category Name */}
-      <View style={styles.categoryRow}>
-        <Text style={styles.categoryText}>{category.name}</Text>
+  return (
+    <View style={[styles.categoryCard, { borderColor: colors.glassBorderOnDark, backgroundColor: colors.oledBlack }]}>
+      {/* Header - Category Name & Subtitle */}
+      <View style={styles.header}>
+        <Heading size="small" style={[styles.categoryTitle, { color: colors.oledWhite }]}>{name}</Heading>
+        {subtitle && (
+          <Supporting size="small" style={[styles.categorySubtitle, { color: colors.textTertiary }]}>{subtitle}</Supporting>
+        )}
       </View>
 
       {/* Horizontal Scrolling Car Cards */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.cardsContainer}
-      >
-        {category.listings.map((listing) => (
-          <View key={listing.id} style={styles.cardWrapper}>
-            <CarCardList
-              id={listing.id}
-              make={listing.make}
-              model={listing.model}
-              year={listing.year}
-              trim={listing.trim}
-              price={listing.price}
-              mileage={listing.mileage}
-              emirate={listing.emirate}
-              specs={listing.specs}
-              thumbnail={listing.thumbnail}
-              isBlkListing={listing.isBlkListing}
-              onPress={handleCarPress}
-            />
-          </View>
-        ))}
-      </ScrollView>
+      {isLoading ? (
+        <CategoryCardSkeleton />
+      ) : (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.cardsContainer}
+        >
+          {listings.map((listing) => (
+            <View key={listing.id} style={styles.cardWrapper}>
+              <CarCardList
+                id={listing.id}
+                make={listing.make}
+                model={listing.model}
+                year={listing.year}
+                trim={listing.trim}
+                price={listing.price}
+                mileage={listing.mileage}
+                emirate={listing.emirate}
+                specs={listing.specs}
+                thumbnail={listing.thumbnail}
+                isBlkListing={listing.isBlkListing}
+                showSuperlike={false}
+                showShare={false}
+                onPress={handleCarPress}
+              />
+            </View>
+          ))}
+        </ScrollView>
+      )}
 
       {/* CTA Footer */}
       <HapticPressable onPress={handleCategoryPress} style={styles.footer}>
-        <Heading size="small" style={styles.browseText}>Browse all</Heading>
-        <View style={styles.arrowCircle}>
-          <ArrowRight size={Sizes.iconSm} color="#000000" strokeWidth={2.5} />
+        <Heading size="small" style={[styles.browseText, { color: colors.oledWhite }]}>Browse all</Heading>
+        <View style={[styles.arrowCircle, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorderOnDark }]}>
+          <ArrowRight size={Sizes.iconSm} color={colors.oledWhite} strokeWidth={2.5} />
         </View>
       </HapticPressable>
     </View>
@@ -110,30 +185,58 @@ const CategoryCard = memo(function CategoryCard({
 });
 
 // ============================================================================
-// CATEGORY GRID
+// CATEGORY GRID - Multiple Categories
 // ============================================================================
 
 interface CategoryGridProps {
+  /** Categories to display - from API */
+  categories?: CategoryData[];
+  /** Loading state */
+  isLoading?: boolean;
   onCategoryPress?: (categoryId: string) => void;
   onCarPress?: (id: string) => void;
-  limit?: number;
-  offset?: number;
 }
 
 export const CategoryGrid = memo(function CategoryGrid({
+  categories = [],
+  isLoading = false,
   onCategoryPress,
   onCarPress,
-  limit,
-  offset = 0,
 }: CategoryGridProps) {
-  const start = offset % categories.length;
-  const displayCategories = limit ? categories.slice(start, start + limit) : categories;
+  const { colors } = useTheme();
+  
+  // Loading state with no data
+  if (isLoading && categories.length === 0) {
+    return (
+      <View style={styles.container}>
+        <View style={[styles.categoryCard, { borderColor: colors.glassBorderOnDark, backgroundColor: colors.oledBlack }]}>
+          <View style={styles.header}>
+            <Skeleton width="50%" height={20} style={{ backgroundColor: '#1A1A1A' }} />
+            <Skeleton width="70%" height={14} style={{ marginTop: Spacing.xs, backgroundColor: '#1A1A1A' }} />
+          </View>
+          <CategoryCardSkeleton />
+          <View style={styles.footer}>
+            <Skeleton width="30%" height={16} style={{ backgroundColor: '#1A1A1A' }} />
+            <SkeletonCircle size={Sizes.bubble} />
+          </View>
+        </View>
+      </View>
+    );
+  }
+
+  // No categories
+  if (categories.length === 0) {
+    return null;
+  }
+
   return (
     <View style={styles.container}>
-      {displayCategories.map((category) => (
+      {categories.map((category) => (
         <CategoryCard
           key={category.id}
-          category={category}
+          id={category.id}
+          name={category.name}
+          listings={category.listings}
           onCategoryPress={onCategoryPress}
           onCarPress={onCarPress}
         />
@@ -154,37 +257,21 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.sm,
     borderRadius: Radius['2xl'],
     overflow: 'hidden',
-    backgroundColor: '#000000',
     paddingBottom: Spacing['2xl'],
     borderWidth: 1,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
     paddingHorizontal: Spacing.xl,
     paddingTop: Spacing['2xl'],
-    paddingBottom: Spacing.sm,
-  },
-  brandRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 0,
-  },
-  evvupText: {
-    fontFamily: Fonts.bold,
-    fontSize: 20,
-    color: '#FFFFFF',
-    letterSpacing: -0.3,
-    marginLeft: -2,
-  },
-  categoryRow: {
-    paddingHorizontal: Spacing.xl,
     paddingBottom: Spacing.xl,
   },
-  categoryText: {
-    ...Typography.blkSignature,
-    color: 'rgba(255,255,255,0.5)',
+  categoryTitle: {
+    letterSpacing: -0.3,
+  },
+  categorySubtitle: {
+    marginTop: Spacing.xs,
   },
   cardsContainer: {
     paddingHorizontal: Spacing.lg,
@@ -192,6 +279,21 @@ const styles = StyleSheet.create({
   },
   cardWrapper: {
     width: LIST_CARD_WIDTH,
+  },
+  skeletonCard: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    borderRadius: Radius['2xl'],
+    borderWidth: 1,
+    borderColor: '#1A1A1A',
+    backgroundColor: '#0A0A0A',
+    padding: Spacing.lg,
+    gap: Spacing.xl,
+  },
+  skeletonCardContent: {
+    flex: 1,
+    gap: Spacing.sm,
+    paddingTop: Spacing.xs,
   },
   footer: {
     flexDirection: 'row',
@@ -201,13 +303,12 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.xl,
   },
   browseText: {
-    color: '#FFFFFF',
   },
   arrowCircle: {
     width: Sizes.bubble,
     height: Sizes.bubble,
     borderRadius: Sizes.bubble / 2,
-    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },

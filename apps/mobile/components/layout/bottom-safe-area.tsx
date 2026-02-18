@@ -11,7 +11,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import type { ColorValue } from 'react-native';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors } from '@/constants/theme';
+import { Colors, Layout } from '@/constants/theme';
 
 /** Convert a hex color (#RGB or #RRGGBB) to rgba() with the given opacity */
 function hexToRgba(hex: string, alpha: number): string {
@@ -28,26 +28,36 @@ export function BottomSafeAreaGradient() {
   const colors = Colors[colorScheme];
 
   // Android doesn't interpolate hex alpha correctly — use rgba with multiple stops
+  // Light mode uses softer opacity for a more subtle effect
+  const isLightMode = colorScheme === 'light';
   const gradientColors = useMemo((): readonly [ColorValue, ColorValue, ...ColorValue[]] => {
     const bg = colors.background;
     if (Platform.OS === 'android') {
-      return [
+      return isLightMode ? [
         hexToRgba(bg, 0),
-        hexToRgba(bg, 0.2),
-        hexToRgba(bg, 0.5),
-        hexToRgba(bg, 0.8),
+        hexToRgba(bg, 0.15),
+        hexToRgba(bg, 0.4),
+        hexToRgba(bg, 0.7),
+        hexToRgba(bg, 0.9),
+      ] as const : [
+        hexToRgba(bg, 0),
+        hexToRgba(bg, 0.3),
+        hexToRgba(bg, 0.6),
+        hexToRgba(bg, 0.85),
         hexToRgba(bg, 1),
       ] as const;
     }
-    return [`${bg}00`, bg] as const;
-  }, [colors.background]);
+    return isLightMode
+      ? [`${bg}00`, hexToRgba(bg, 0.85)] as const
+      : [`${bg}00`, bg] as const;
+  }, [colors.background, isLightMode]);
 
   return (
     <View style={styles.container} pointerEvents="none">
       <LinearGradient
         colors={gradientColors}
         {...(Platform.OS === 'android' && { locations: [0, 0.15, 0.4, 0.7, 1] })}
-        style={[styles.gradient, { height: insets.bottom + 70 }]}
+        style={[styles.gradient, { height: insets.bottom + Layout.bottomGradientExtension }]}
       />
     </View>
   );

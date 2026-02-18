@@ -4,10 +4,10 @@ export { SavedTube } from './saved-tube';
 export { InventoryTube } from './inventory-tube';
 
 // Grid Card Components (5 Variants)
-export { BlkGridCard } from './blk-grid-card';
-export { BlkDoodle } from './blk-doodle';
-export { RevvupFirstGrid } from './revvup-first-grid';
+export { BlkGridCard, type BlkListingItem } from './blk-grid-card';
+export { BlkTextDoodle } from './blk-text-doodle';
+export { RevvupFirstGrid, partnerToFoundingItem, type FoundingPartnerItem } from './revvup-first-grid';
 export { FirstDoodle } from './first-doodle';
-export { CategoryGrid } from './category-grid';
-export { PartnerGrid } from './partner-grid';
+export { CategoryGrid, CategoryCard, type CategoryData, type CategoryListingItem } from './category-grid';
+export { PartnerGrid, PartnerShowcaseCard, PartnerShowcaseCardSkeleton, partnerToDisplayData, type PartnerDisplayData, type PartnerListingItem } from './partner-grid';
 export { ShowroomsShowcaseGrid } from './showrooms-showcase-grid';

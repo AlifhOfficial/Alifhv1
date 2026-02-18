@@ -266,11 +266,15 @@ export const Spacing = {
 export const Layout = {
   // Screen
   screenPadding: scale(16),
-  tabBarHeight: 85,
+  tabBarHeight: scale(85),
   
   // Header
   headerPadding: scale(8),
   headerGap: scale(8),
+  
+  // Gradient overlays (extend beyond safe area)
+  topGradientExtension: scale(60),
+  bottomGradientExtension: scale(70),
   
   // Hit targets (Apple HIG: 44pt minimum)
   hitTarget: scale(44),
@@ -296,6 +300,7 @@ export const Sizes = {
   avatarLg: scale(48),
   
   // Bubbles & Pills (universal action containers)
+  bubbleXs: scale(28),      // Extra small bubble for compact lists
   bubble: scale(36),        // Standard action bubble (home header, etc.)
   bubbleMd: scale(42),      // Medium bubble for global tab bar
   pillHeight: scale(36),    // Inner pill height for tab bars
@@ -311,7 +316,7 @@ export const Sizes = {
   // Card thumbnails
   cardThumbnailWidth: scale(160),
   cardThumbnailHeight: scale(140),
-  
+
   // Badge padding
   badgePaddingH: scale(6),
   badgePaddingV: scale(3),

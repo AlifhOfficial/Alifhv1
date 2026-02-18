@@ -2,6 +2,11 @@
  * Revvup First Grid - Founding Partners Showcase
  * Horizontal scrolling partner cards with clean design
  * Light theme to complement the dark BLK grid
+ * 
+ * Now supports:
+ * - API-driven data through props (PartnerListItem from partner-api)
+ * - Loading states
+ * - Empty state handling
  */
 
 import React, { memo, useCallback } from 'react';
@@ -10,26 +15,63 @@ import {
   StyleSheet,
   ScrollView,
   Dimensions,
-  Text,
   ImageSourcePropType,
 } from 'react-native';
 import { Image, ImageSource } from 'expo-image';
 import { ArrowRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
-import { Colors, Spacing, Radius, Typography, Sizes } from '@/constants/theme';
+import { Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { HapticPressable, Body, Heading } from '@/components/ui';
-import { RevvupLogo } from '@/components/ui/loaders';
-import { foundingPartners, type Partner } from './mock-data';
-import { FirstDoodle } from './first-doodle';
+import { HapticPressable, Heading, Supporting, Skeleton, SkeletonCircle } from '@/components/ui';
+import { type PartnerListItem } from '@/lib/partner-api';
+
+// ============================================================================
+// FOUNDING PARTNERS SKELETON
+// ============================================================================
+
+const FoundingPartnersSkeleton = memo(function FoundingPartnersSkeleton() {
+  return (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.scrollContainer}
+    >
+      {[1, 2, 3, 4, 5].map((i) => (
+        <View key={i} style={styles.partnerItem}>
+          <SkeletonCircle size={Sizes.avatarLg} />
+          <Skeleton width="80%" height={12} style={{ marginTop: Spacing.sm, backgroundColor: '#1A1A1A' }} />
+        </View>
+      ))}
+    </ScrollView>
+  );
+});
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+/** Partner display data for founding partners grid */
+export interface FoundingPartnerItem {
+  id: string;
+  name: string;
+  logo?: ImageSourcePropType | string | null;
+}
+
+/** Convert PartnerListItem from API to display format */
+export function partnerToFoundingItem(partner: PartnerListItem): FoundingPartnerItem {
+  return {
+    id: partner.id,
+    name: partner.brandName,
+    logo: partner.logoUrl || partner.logo,
+  };
+}
 
 // ============================================================================
 // CONSTANTS
 // ============================================================================
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const AVATAR_SIZE = 56;
 const IMAGE_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0o#DgR4';
 
 // ============================================================================
@@ -37,9 +79,11 @@ const IMAGE_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0o#DgR4';
 // ============================================================================
 
 /** Convert image source to expo-image compatible format */
-function toImageSource(source: ImageSourcePropType | string | undefined): ImageSource | undefined {
+function toImageSource(source: ImageSourcePropType | string | undefined | null): ImageSource | undefined {
   if (!source) return undefined;
-  return typeof source === 'string' ? { uri: source } : source;
+  if (typeof source === 'string') return { uri: source };
+  // Handle number (require() assets) and other ImageSourcePropType values
+  return source as ImageSource;
 }
 
 // ============================================================================
@@ -47,7 +91,7 @@ function toImageSource(source: ImageSourcePropType | string | undefined): ImageS
 // ============================================================================
 
 interface PartnerCardProps {
-  partner: Partner;
+  partner: FoundingPartnerItem;
   onPress?: (partnerId: string) => void;
 }
 
@@ -55,6 +99,8 @@ const PartnerCard = memo(function PartnerCard({
   partner,
   onPress,
 }: PartnerCardProps) {
+  const { colors } = useTheme();
+
   const handlePress = useCallback(() => {
     onPress?.(partner.id);
   }, [partner.id, onPress]);
@@ -62,7 +108,7 @@ const PartnerCard = memo(function PartnerCard({
   return (
     <HapticPressable onPress={handlePress} style={styles.partnerItem}>
       {/* Circular Avatar */}
-      <View style={styles.avatarContainer}>
+      <View style={[styles.avatarContainer, { backgroundColor: colors.surface }]}>
         <Image
           source={toImageSource(partner.logo)}
           style={styles.avatar}
@@ -73,9 +119,9 @@ const PartnerCard = memo(function PartnerCard({
       </View>
 
       {/* Partner Name */}
-      <Text style={styles.partnerName} numberOfLines={1}>
+      <Supporting size="small" style={[styles.partnerName, { color: colors.oledWhite }]} numberOfLines={1}>
         {partner.name}
-      </Text>
+      </Supporting>
     </HapticPressable>
   );
 });
@@ -85,16 +131,21 @@ const PartnerCard = memo(function PartnerCard({
 // ============================================================================
 
 interface RevvupFirstGridProps {
+  /** Founding partners to display - from API */
+  partners?: FoundingPartnerItem[];
+  /** Loading state */
+  isLoading?: boolean;
   onBrowseAllPress?: () => void;
   onPartnerPress?: (partnerId: string) => void;
 }
 
 export const RevvupFirstGrid = memo(function RevvupFirstGrid({
+  partners = [],
+  isLoading = false,
   onBrowseAllPress,
   onPartnerPress,
 }: RevvupFirstGridProps) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
+  const { colors } = useTheme();
   const router = useRouter();
 
   const handleBrowseAllPress = useCallback(() => {
@@ -107,48 +158,51 @@ export const RevvupFirstGrid = memo(function RevvupFirstGrid({
     router.push(`/seller-contact/${partnerId}` as any);
   }, [onPartnerPress, router]);
 
-  // Background color - Deep Dark Burgundy (close to BLK darkness)
-  const bgColor = '#2D1216';
+  // Don't render if no partners and not loading
+  if (!isLoading && partners.length === 0) {
+    return null;
+  }
 
   return (
-    <View style={[styles.container, { backgroundColor: bgColor, borderColor: colors.glassBorderOnDark }]}>
-      {/* Text Doodle Background - "first" scattered pattern in gold */}
-      <FirstDoodle opacity={1} color="#D4AF37" />
-
+    <View style={[styles.container, { backgroundColor: colors.oledBlack, borderColor: colors.glassBorderOnDark }]}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.brandRow}>
-          <RevvupLogo size={32} color="#FAFAFA" />
+          <Heading size="medium" style={{ color: colors.oledWhite }}>Revvup first</Heading>
         </View>
       </View>
 
       {/* Founding Partners Tagline */}
       <View style={styles.taglineRow}>
-        <Text style={styles.taglineText}>founding partners</Text>
+        <Supporting size="medium" style={[styles.taglineText, { color: colors.textTertiary }]}>Founding Partners</Supporting>
       </View>
 
       {/* Horizontal Scrolling Partner Cards */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContainer}
-      >
-        {foundingPartners.map((partner) => (
-          <PartnerCard
-            key={partner.id}
-            partner={partner}
-            onPress={handlePartnerPress}
-          />
-        ))}
-      </ScrollView>
+      {isLoading ? (
+        <FoundingPartnersSkeleton />
+      ) : (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContainer}
+        >
+          {partners.map((partner) => (
+            <PartnerCard
+              key={partner.id}
+              partner={partner}
+              onPress={handlePartnerPress}
+            />
+          ))}
+        </ScrollView>
+      )}
 
       {/* Browse All Footer */}
       <HapticPressable onPress={handleBrowseAllPress} style={styles.footer}>
-        <Heading size="small" style={styles.browseAllText}>
+        <Heading size="small" style={[styles.browseAllText, { color: colors.oledWhite }]}>
           Browse all
         </Heading>
-        <View style={styles.arrowCircle}>
-          <ArrowRight size={Sizes.iconSm} color="#722F37" strokeWidth={2.5} />
+        <View style={[styles.arrowCircle, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorderOnDark }]}>
+          <ArrowRight size={Sizes.iconSm} color={colors.oledWhite} strokeWidth={2.5} />
         </View>
       </HapticPressable>
     </View>
@@ -185,8 +239,6 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing['2xl'],
   },
   taglineText: {
-    ...Typography.blkSignature,
-    color: 'rgba(250,250,250,0.6)',
   },
   scrollContainer: {
     paddingHorizontal: Spacing.xl,
@@ -195,24 +247,21 @@ const styles = StyleSheet.create({
   },
   partnerItem: {
     alignItems: 'center',
-    width: AVATAR_SIZE + Spacing['2xl'],
+    width: Sizes.avatarLg + Spacing['2xl'],
   },
   avatarContainer: {
-    position: 'relative',
     marginBottom: Spacing.sm,
-    width: AVATAR_SIZE,
-    height: AVATAR_SIZE,
-    borderRadius: AVATAR_SIZE / 2,
+    width: Sizes.avatarLg,
+    height: Sizes.avatarLg,
+    borderRadius: Sizes.avatarLg / 2,
     overflow: 'hidden',
-    backgroundColor: '#1A0A0C',
   },
   avatar: {
-    width: '100%',
-    height: '100%',
+    width: Sizes.avatarLg,
+    height: Sizes.avatarLg,
+    borderRadius: Sizes.avatarLg / 2,
   },
   partnerName: {
-    ...Typography.bodySmall,
-    color: '#FAFAFA',
     textAlign: 'center',
   },
   footer: {
@@ -223,13 +272,12 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.xl,
   },
   browseAllText: {
-    color: '#FAFAFA',
   },
   arrowCircle: {
     width: Sizes.bubble,
     height: Sizes.bubble,
     borderRadius: Sizes.bubble / 2,
-    backgroundColor: '#D4AF37',
+    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },

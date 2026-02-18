@@ -1,6 +1,7 @@
 /**
  * Car Card List View - Revvup Design System
  * Clean, minimal horizontal list item
+ * Fully adaptive - all values from theme constants
  */
 
 import React, { useCallback, memo, useMemo } from 'react';
@@ -13,12 +14,20 @@ import { useTheme } from '@/context/theme-context';
 import { 
   HapticPressable, 
   Skeleton, 
+  SkeletonCircle,
   Data, 
-  Heading,
   Label, 
+  Supporting,
   FavoriteButton, 
   SuperlikeButton 
 } from '@/components/ui';
+
+// ============================================================================
+// CONSTANTS (Adaptive)
+// ============================================================================
+
+const IMAGE_TRANSITION_MS = 150;
+const ICON_STROKE_WIDTH = 1.75;
 
 // ============================================================================
 // UTILITIES
@@ -78,6 +87,8 @@ interface CardTheme {
   meta: string;
   icon: string;
   imageBg: string;
+  glassBackground: string;
+  glassBorder: string;
 }
 
 export interface CarCardListProps {
@@ -102,6 +113,8 @@ export interface CarCardListProps {
   kycVerified?: boolean;
   isFavorite?: boolean;
   isSuperliked?: boolean;
+  showSuperlike?: boolean;
+  showShare?: boolean;
   onPress?: (id: string) => void;
   onFavoritePress?: (id: string) => void;
   onSuperlikePress?: (id: string) => void;
@@ -124,17 +137,21 @@ function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean): CardT
         meta: colors.blkTextSecondary,
         icon: colors.blkTextSecondary,
         imageBg: colors.blkBackground,
+        glassBackground: colors.blkBackground,
+        glassBorder: colors.blkBorder,
       };
     }
-    // Glass aesthetic - lightweight, airy feel
+    // Surface aesthetic - standard card styling (matches car-card-m)
     return {
-      background: colors.glassBackground,
-      border: colors.glassBorder,
+      background: colors.surface,
+      border: colors.border,
       text: colors.text,
       price: colors.primary,
       meta: colors.textSecondary,
       icon: colors.icon,
-      imageBg: colors.backgroundSecondary,
+      imageBg: colors.surfaceSecondary,
+      glassBackground: colors.glassBackground,
+      glassBorder: colors.glassBorder,
     };
   }, [colors, isBlkListing]);
 }
@@ -153,6 +170,8 @@ export const CarCardList = memo(function CarCardList({
   isBlkListing = false,
   isFavorite: isFavoriteProp,
   isSuperliked: isSuperlikedProp,
+  showSuperlike = true,
+  showShare = true,
   onPress,
   onFavoritePress,
   onSuperlikePress,
@@ -187,35 +206,57 @@ export const CarCardList = memo(function CarCardList({
         blkBadgeText={colors.blkBadgeText}
       />
 
-      {/* === CONTENT SECTION === */}
-      <View style={styles.content}>
-        <Heading size="mini" style={{ color: theme.text }} numberOfLines={1}>
-          {make} {model}
-        </Heading>
-        <Data size="mini" style={{ color: theme.meta }}>
-          {year}
-        </Data>
-        <Data size="medium" style={{ color: theme.price }}>
-          {formatPrice(price)}
-        </Data>
-        <Data size="mini" style={{ color: theme.meta }}>
-          {formatMileage(mileage)} · {displaySpecs} · {displayEmirate}
-        </Data>
-      </View>
+      {/* === INFO SECTION === */}
+      <View style={styles.infoSection}>
+        {/* Content - Top */}
+        <View style={styles.content}>
+          <Supporting size="medium" style={{ color: theme.text }} numberOfLines={1}>
+            {make} {model}
+          </Supporting>
+          <Supporting size="small" style={{ color: theme.meta }}>
+            {year}
+          </Supporting>
+          <Data size="small" style={{ color: theme.price }}>
+            {formatPrice(price)}
+          </Data>
+          <Supporting size="mini" style={{ color: theme.meta }}>
+            {formatMileage(mileage)} · {displaySpecs} · {displayEmirate}
+          </Supporting>
+        </View>
 
-      {/* === ACTIONS SECTION === */}
-      <CardActions
-        listingId={id}
-        isFavorite={isFavoriteProp}
-        isSuperliked={isSuperlikedProp}
-        isBlkListing={isBlkListing}
-        iconColor={theme.icon}
-        glassBackground={colors.glassBackground}
-        glassBorder={colors.glassBorder}
-        onFavoritePress={onFavoritePress}
-        onSuperlikePress={onSuperlikePress}
-        onSharePress={handleSharePress}
-      />
+        {/* Actions - Bottom Row */}
+        <View style={styles.bottomActions}>
+          <View style={[styles.actionBubble, { backgroundColor: theme.glassBackground, borderColor: theme.glassBorder }]}>
+            <FavoriteButton
+              listingId={id}
+              size={Sizes.iconXs}
+              onPress={onFavoritePress}
+              isFavorite={isFavoriteProp}
+              isBlkListing={isBlkListing}
+            />
+          </View>
+          {showSuperlike && (
+            <View style={[styles.actionBubble, { backgroundColor: theme.glassBackground, borderColor: theme.glassBorder }]}>
+              <SuperlikeButton
+                listingId={id}
+                size={Sizes.iconXs}
+                onPress={onSuperlikePress}
+                isSuperliked={isSuperlikedProp}
+                isBlkListing={isBlkListing}
+              />
+            </View>
+          )}
+          {showShare && (
+            <HapticPressable 
+              onPress={handleSharePress} 
+              hitSlop={Layout.hitSlopSmall}
+              style={[styles.actionBubble, { backgroundColor: theme.glassBackground, borderColor: theme.glassBorder }]}
+            >
+              <Share2 size={Sizes.iconXs} color={theme.icon} strokeWidth={ICON_STROKE_WIDTH} />
+            </HapticPressable>
+          )}
+        </View>
+      </View>
     </HapticPressable>
   );
 });
@@ -247,13 +288,13 @@ const ListImage = memo(function ListImage({
   const source: ImageSource | undefined = imageSource
     ? typeof imageSource === 'string'
       ? { uri: imageSource }
-      : imageSource
+      : (imageSource as ImageSource)
     : undefined;
 
   return (
     <View style={[styles.imageContainer, { backgroundColor }]}>
       {source ? (
-        <Image source={source} style={styles.image} contentFit="cover" transition={150} />
+        <Image source={source} style={styles.image} contentFit="cover" transition={IMAGE_TRANSITION_MS} />
       ) : (
         <View style={[styles.image, { backgroundColor: skeletonColor }]} />
       )}
@@ -262,62 +303,6 @@ const ListImage = memo(function ListImage({
           <Label size="badge" uppercase={false} style={{ color: blkBadgeText }}>BLK</Label>
         </View>
       )}
-    </View>
-  );
-});
-
-interface CardActionsProps {
-  listingId: string;
-  isFavorite?: boolean;
-  isSuperliked?: boolean;
-  isBlkListing: boolean;
-  iconColor: string;
-  glassBackground: string;
-  glassBorder: string;
-  onFavoritePress?: (id: string) => void;
-  onSuperlikePress?: (id: string) => void;
-  onSharePress: () => void;
-}
-
-const CardActions = memo(function CardActions({
-  listingId,
-  isFavorite,
-  isSuperliked,
-  isBlkListing,
-  iconColor,
-  glassBackground,
-  glassBorder,
-  onFavoritePress,
-  onSuperlikePress,
-  onSharePress,
-}: CardActionsProps) {
-  return (
-    <View style={styles.actions}>
-      <HapticPressable 
-        onPress={onSharePress} 
-        hitSlop={Layout.hitSlopSmall}
-        style={[styles.actionBubble, { backgroundColor: glassBackground, borderColor: glassBorder }]}
-      >
-        <Share2 size={Sizes.iconSm} color={iconColor} strokeWidth={1.75} />
-      </HapticPressable>
-      <View style={[styles.actionBubble, { backgroundColor: glassBackground, borderColor: glassBorder }]}>
-        <FavoriteButton
-          listingId={listingId}
-          size={Sizes.iconSm}
-          onPress={onFavoritePress}
-          isFavorite={isFavorite}
-          isBlkListing={isBlkListing}
-        />
-      </View>
-      <View style={[styles.actionBubble, { backgroundColor: glassBackground, borderColor: glassBorder }]}>
-        <SuperlikeButton
-          listingId={listingId}
-          size={Sizes.iconSm}
-          onPress={onSuperlikePress}
-          isSuperliked={isSuperliked}
-          isBlkListing={isBlkListing}
-        />
-      </View>
     </View>
   );
 });
@@ -331,35 +316,43 @@ export function CarCardListSkeleton() {
   const colors = Colors[colorScheme];
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
-      <Skeleton width={Sizes.cardThumbnailWidth} height={Sizes.cardThumbnailHeight} borderRadius={Radius.md} />
-      <View style={styles.content}>
-        <Skeleton width="80%" height={Spacing.lg} />
-        <Skeleton width="50%" height={Spacing.md} />
-        <Skeleton width="60%" height={Spacing.md} />
+    <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+      <Skeleton width={Sizes.cardThumbnailWidth} height={Sizes.cardThumbnailHeight} borderRadius={Radius.lg} />
+      <View style={styles.infoSection}>
+        <View style={styles.content}>
+          <Skeleton width="80%" height={Spacing.lg} />
+          <Skeleton width="30%" height={Spacing.md} />
+          <Skeleton width="50%" height={Spacing.md} />
+          <Skeleton width="60%" height={Spacing.sm} />
+        </View>
+        <View style={styles.bottomActions}>
+          <SkeletonCircle size={Sizes.bubbleXs} />
+          <SkeletonCircle size={Sizes.bubbleXs} />
+          <SkeletonCircle size={Sizes.bubbleXs} />
+        </View>
       </View>
     </View>
   );
 }
 
 // ============================================================================
-// STYLES
+// STYLES (All values from theme constants)
 // ============================================================================
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: Radius.lg,
+    alignItems: 'flex-start',
+    borderRadius: Radius['2xl'],
     borderWidth: 1,
-    padding: Spacing.md,
-    marginBottom: Spacing.sm,
-    gap: Spacing.md,
+    padding: Spacing.lg,
+    marginBottom: Spacing.md,
+    gap: Spacing.xl,
   },
   imageContainer: {
     width: Sizes.cardThumbnailWidth,
     height: Sizes.cardThumbnailHeight,
-    borderRadius: Radius.md,
+    borderRadius: Radius.lg,
     overflow: 'hidden',
     position: 'relative',
   },
@@ -367,23 +360,24 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  content: {
+  infoSection: {
     flex: 1,
+    justifyContent: 'space-between',
+    height: Sizes.cardThumbnailHeight,
+  },
+  content: {
     gap: Spacing.xs,
   },
-  actions: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'space-evenly',
-    gap: Spacing.sm,
-    paddingLeft: Spacing.sm,
+  bottomActions: {
+    flexDirection: 'row',
+    gap: Spacing.xs,
   },
   actionBubble: {
-    width: Sizes.bubble,
-    height: Sizes.bubble,
+    width: Sizes.bubbleXs,
+    height: Sizes.bubbleXs,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: Sizes.bubble / 2,
+    borderRadius: Sizes.bubbleXs / 2,
     borderWidth: 1,
   },
   blkBadge: {
@@ -391,7 +385,7 @@ const styles = StyleSheet.create({
     top: Spacing.sm,
     left: Spacing.sm,
     paddingHorizontal: Spacing.xs,
-    paddingVertical: 2,
+    paddingVertical: Spacing.xs / 2,
     borderRadius: Radius.none,
     borderWidth: 1,
   },

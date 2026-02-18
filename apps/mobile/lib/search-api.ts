@@ -62,6 +62,9 @@ interface DBSearchParams {
   specs?: string | string[];
   sellerType?: string | string[];
   condition?: string | string[];
+  isBlkListing?: boolean;
+  partnerId?: string;
+  partnerName?: string;
   sort?: SearchSortOption;
   limit?: number;
   offset?: number;
@@ -225,6 +228,43 @@ function transformItem(item: SearchResultItem): ListingCard {
 }
 
 // ============================================================================
+// HELPERS
+// ============================================================================
+
+/** Retry fetch with exponential backoff */
+async function fetchWithRetry(
+  url: string, 
+  options: RequestInit = {}, 
+  maxRetries: number = 2
+): Promise<Response> {
+  let lastError: Error | null = null;
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch(url, options);
+      
+      // Retry on 5xx server errors
+      if (response.status >= 500 && attempt < maxRetries) {
+        console.log(`[SearchAPI] Server error ${response.status}, retrying (${attempt + 1}/${maxRetries})...`);
+        await new Promise(resolve => setTimeout(resolve, 500 * Math.pow(2, attempt)));
+        continue;
+      }
+      
+      return response;
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      
+      if (attempt < maxRetries) {
+        console.log(`[SearchAPI] Fetch failed, retrying (${attempt + 1}/${maxRetries})...`);
+        await new Promise(resolve => setTimeout(resolve, 500 * Math.pow(2, attempt)));
+      }
+    }
+  }
+  
+  throw lastError || new Error('Fetch failed after retries');
+}
+
+// ============================================================================
 // SEARCH API
 // ============================================================================
 
@@ -239,7 +279,7 @@ export const searchApi = {
     
     console.log('[SearchAPI] Fetching:', url);
     
-    const response = await fetch(url);
+    const response = await fetchWithRetry(url);
     if (!response.ok) {
       throw new Error(`Search failed: ${response.status}`);
     }

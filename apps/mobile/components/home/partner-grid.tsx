@@ -2,6 +2,11 @@
  * Partner Grid - Partner-Specific Inventory
  * Clean dark card with white product thumbnails
  * Vertical layout - partner cards stacked below each other
+ * 
+ * Now supports:
+ * - API-driven data through props (PartnerListItem from partner-api)
+ * - Loading states
+ * - Empty state handling
  */
 
 import React, { memo, useCallback } from 'react';
@@ -10,17 +15,117 @@ import {
   StyleSheet,
   ScrollView,
   Dimensions,
-  Text,
   ImageSourcePropType,
 } from 'react-native';
 import { Image, ImageSource } from 'expo-image';
 import { ArrowRight, Heart } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
-import { Spacing, Radius, Typography, Fonts, Sizes, Colors } from '@/constants/theme';
+import { Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { HapticPressable, Heading } from '@/components/ui';
-import { partners, type Partner, type CarListing } from './mock-data';
+import { HapticPressable, Heading, Data, Supporting, Skeleton, SkeletonCircle } from '@/components/ui';
+import { type PartnerListItem } from '@/lib/partner-api';
+import { type ListingCard } from '@/lib/search-api';
+
+// ============================================================================
+// PARTNER PRODUCTS SKELETON
+// ============================================================================
+
+const PartnerProductsSkeleton = memo(function PartnerProductsSkeleton() {
+  return (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.productsContainer}
+    >
+      {[1, 2, 3].map((i) => (
+        <Skeleton 
+          key={i}
+          width={PRODUCT_CARD_WIDTH} 
+          height={PRODUCT_CARD_HEIGHT} 
+          borderRadius={Radius.xl}
+        />
+      ))}
+    </ScrollView>
+  );
+});
+
+// ============================================================================
+// PARTNER SHOWCASE SKELETON (Full card)
+// ============================================================================
+
+export const PartnerShowcaseCardSkeleton = memo(function PartnerShowcaseCardSkeleton() {
+  const { colors } = useTheme();
+  
+  return (
+    <View style={[styles.partnerCard, { borderColor: colors.border, backgroundColor: colors.surface }]}>
+      {/* Header skeleton */}
+      <View style={styles.header}>
+        <SkeletonCircle size={Sizes.avatarLg} />
+        <View style={styles.headerInfo}>
+          <Skeleton width="60%" height={16} />
+          <Skeleton width="40%" height={12} />
+        </View>
+      </View>
+      
+      {/* Products skeleton */}
+      <PartnerProductsSkeleton />
+      
+      {/* Footer skeleton */}
+      <View style={styles.footer}>
+        <Skeleton width="30%" height={16} />
+        <SkeletonCircle size={Sizes.bubble} />
+      </View>
+    </View>
+  );
+});
+
+// ============================================================================
+// HELPER: Convert API data to display format
+// ============================================================================
+
+/**
+ * Convert PartnerListItem + listings to PartnerDisplayData
+ * Used by home screen to transform API response for PartnerShowcaseCard
+ */
+export function partnerToDisplayData(
+  partner: PartnerListItem,
+  listings: ListingCard[]
+): PartnerDisplayData {
+  return {
+    id: partner.id,
+    name: partner.brandName,
+    logo: partner.logoUrl || partner.logo,
+    rating: partner.googleRating || partner.platformRating,
+    reviewCount: partner.googleReviewCount || partner.platformReviewCount,
+    listings: listings.map(l => ({
+      id: l.id,
+      price: l.price,
+      thumbnail: l.thumbnail,
+    })),
+  };
+}
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+/** Partner data for display - supports both API and mock data */
+export interface PartnerDisplayData {
+  id: string;
+  name: string;
+  logo?: ImageSourcePropType | string | null;
+  rating?: number | null;
+  reviewCount?: number | null;
+  listings: PartnerListingItem[];
+}
+
+/** Listing item for partner grid */
+export interface PartnerListingItem {
+  id: string;
+  price: number;
+  thumbnail?: ImageSourcePropType | string | null;
+}
 
 // ============================================================================
 // CONSTANTS
@@ -37,9 +142,11 @@ const IMAGE_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0o#DgR4';
 // ============================================================================
 
 /** Convert image source to expo-image compatible format */
-function toImageSource(source: ImageSourcePropType | string | undefined): ImageSource | undefined {
+function toImageSource(source: ImageSourcePropType | string | undefined | null): ImageSource | undefined {
   if (!source) return undefined;
-  return typeof source === 'string' ? { uri: source } : source;
+  if (typeof source === 'string') return { uri: source };
+  // Handle number (require() assets) and other ImageSourcePropType values
+  return source as ImageSource;
 }
 
 // ============================================================================
@@ -70,7 +177,7 @@ function formatReviewCount(count: number): string {
 // ============================================================================
 
 interface ProductCardProps {
-  listing: CarListing;
+  listing: PartnerListingItem;
   onPress?: (id: string) => void;
   onFavoritePress?: (id: string) => void;
 }
@@ -91,7 +198,7 @@ const ProductCard = memo(function ProductCard({
   }, [listing.id, onFavoritePress]);
 
   return (
-    <HapticPressable onPress={handlePress} style={styles.productCard}>
+    <HapticPressable onPress={handlePress} style={[styles.productCard, { backgroundColor: colors.oledWhite }]}>
       {/* White background product image */}
       <Image
         source={toImageSource(listing.thumbnail)}
@@ -101,12 +208,12 @@ const ProductCard = memo(function ProductCard({
         transition={200}
       />
       {/* Price Badge - Top Left */}
-      <View style={styles.priceBadge}>
-        <Text style={styles.priceText}>{formatCompactPrice(listing.price)}</Text>
+      <View style={[styles.priceBadge, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorderOnDark }]}>
+        <Data size="mini" style={[styles.priceText, { color: colors.oledWhite }]}>{formatCompactPrice(listing.price)}</Data>
       </View>
       {/* Favorite Button - Bottom Right */}
-      <HapticPressable onPress={handleFavoritePress} style={[styles.favoriteButton, { borderColor: colors.glassBorderOnDark }]}>
-        <Heart size={Sizes.iconSm} color="#FFFFFF" strokeWidth={2} />
+      <HapticPressable onPress={handleFavoritePress} style={[styles.favoriteButton, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorderOnDark }]}>
+        <Heart size={Sizes.iconSm} color={colors.oledWhite} strokeWidth={2} />
       </HapticPressable>
     </HapticPressable>
   );
@@ -117,14 +224,17 @@ const ProductCard = memo(function ProductCard({
 // ============================================================================
 
 interface PartnerShowcaseCardProps {
-  partner: Partner;
+  partner: PartnerDisplayData;
+  /** Loading state */
+  isLoading?: boolean;
   onShopAllPress?: (partnerId: string) => void;
   onCarPress?: (id: string) => void;
   onFavoritePress?: (id: string) => void;
 }
 
-const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
+export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
   partner,
+  isLoading,
   onShopAllPress,
   onCarPress,
   onFavoritePress,
@@ -142,10 +252,10 @@ const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
   }, [onCarPress, router]);
 
   return (
-    <View style={[styles.partnerCard, { borderColor: colors.glassBorderOnDark }]}>
+    <View style={[styles.partnerCard, { borderColor: colors.border, backgroundColor: colors.surface }]}>
       {/* Header - Logo, Name & Rating */}
       <View style={styles.header}>
-        <View style={styles.logoContainer}>
+        <View style={[styles.logoContainer, { backgroundColor: colors.surface }]}>
           <Image
             source={toImageSource(partner.logo)}
             style={styles.logo}
@@ -154,39 +264,44 @@ const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
           />
         </View>
         <View style={styles.headerInfo}>
-          <Text style={styles.partnerName}>{partner.name}</Text>
-          <Text style={styles.ratingText}>
-            {partner.rating} ★ ({formatReviewCount(partner.reviewCount)})
-          </Text>
+          <Heading size="small" style={[styles.partnerName, { color: colors.text }]}>{partner.name}</Heading>
+          {partner.rating && partner.reviewCount && (
+            <Data size="small" style={[styles.ratingText, { color: colors.textTertiary }]}>
+              {partner.rating} ★ ({formatReviewCount(partner.reviewCount)})
+            </Data>
+          )}
         </View>
       </View>
 
-      {/* Signature Line */}
-      <View style={styles.signatureRow}>
-        <Text style={styles.signatureText}>partner inventory</Text>
-      </View>
-
       {/* Product Thumbnails - Horizontal Scroll */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.productsContainer}
-      >
-        {partner.listings.slice(0, 4).map((listing) => (
-          <ProductCard
-            key={listing.id}
-            listing={listing}
-            onPress={handleCarPress}
-            onFavoritePress={onFavoritePress}
-          />
-        ))}
-      </ScrollView>
+      {isLoading && partner.listings.length === 0 ? (
+        <PartnerProductsSkeleton />
+      ) : partner.listings.length > 0 ? (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.productsContainer}
+        >
+          {partner.listings.slice(0, 4).map((listing) => (
+            <ProductCard
+              key={listing.id}
+              listing={listing}
+              onPress={handleCarPress}
+              onFavoritePress={onFavoritePress}
+            />
+          ))}
+        </ScrollView>
+      ) : (
+        <View style={styles.emptyProducts}>
+          <Supporting size="small" style={[styles.emptyText, { color: colors.textMuted }]}>No listings available</Supporting>
+        </View>
+      )}
 
       {/* Browse All Footer */}
       <HapticPressable onPress={handleShopAllPress} style={styles.footer}>
-        <Heading size="small" style={styles.browseAllText}>Browse all</Heading>
-        <View style={styles.arrowCircle}>
-          <ArrowRight size={Sizes.iconSm} color="#000000" strokeWidth={2.5} />
+        <Heading size="small" style={[styles.browseAllText, { color: colors.text }]}>Browse all</Heading>
+        <View style={[styles.arrowCircle, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
+          <ArrowRight size={Sizes.iconSm} color={colors.icon} strokeWidth={2.5} />
         </View>
       </HapticPressable>
     </View>
@@ -198,25 +313,41 @@ const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
 // ============================================================================
 
 interface PartnerGridProps {
+  /** Partners to display - from API */
+  partners: PartnerDisplayData[];
+  /** Loading state */
+  isLoading?: boolean;
   onPartnerPress?: (partnerId: string) => void;
   onCarPress?: (id: string) => void;
   onFavoritePress?: (id: string) => void;
-  limit?: number;
-  offset?: number;
 }
 
 export const PartnerGrid = memo(function PartnerGrid({
+  partners,
+  isLoading,
   onPartnerPress,
   onCarPress,
   onFavoritePress,
-  limit,
-  offset = 0,
 }: PartnerGridProps) {
-  const start = offset % partners.length;
-  const displayPartners = limit ? partners.slice(start, start + limit) : partners;
+  const { colors } = useTheme();
+  
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <View style={[styles.partnerCard, styles.loadingCard, { backgroundColor: colors.surface }]}>
+          <View style={[styles.loadingContent, { backgroundColor: colors.surface }]} />
+        </View>
+      </View>
+    );
+  }
+
+  if (!partners || partners.length === 0) {
+    return null;
+  }
+
   return (
     <View style={styles.container}>
-      {displayPartners.map((partner) => (
+      {partners.map((partner) => (
         <PartnerShowcaseCard
           key={partner.id}
           partner={partner}
@@ -242,9 +373,18 @@ const styles = StyleSheet.create({
     width: CARD_WIDTH,
     borderRadius: Radius['2xl'],
     overflow: 'hidden',
-    backgroundColor: '#2A2A2A',
     paddingBottom: Spacing['2xl'],
     borderWidth: 1,
+  },
+  loadingCard: {
+    height: 280,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingContent: {
+    width: '80%',
+    height: 20,
+    borderRadius: Radius.md,
   },
   header: {
     flexDirection: 'row',
@@ -252,52 +392,45 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
     paddingHorizontal: Spacing.xl,
     paddingTop: Spacing['2xl'],
-    paddingBottom: Spacing.sm,
+    paddingBottom: Spacing.xl,
   },
   logoContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: Radius.full,
+    width: Sizes.avatarLg,
+    height: Sizes.avatarLg,
+    borderRadius: Sizes.avatarLg / 2,
     overflow: 'hidden',
-    backgroundColor: '#3A3A3A',
   },
   logo: {
-    width: '100%',
-    height: '100%',
+    width: Sizes.avatarLg,
+    height: Sizes.avatarLg,
+    borderRadius: Sizes.avatarLg / 2,
   },
   headerInfo: {
     flex: 1,
-    gap: 2,
+    gap: Spacing.xs / 2,
   },
   partnerName: {
-    fontFamily: Fonts.bold,
-    fontSize: 20,
-    color: '#FFFFFF',
     letterSpacing: -0.3,
   },
   ratingText: {
-    fontFamily: Fonts.regular,
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.5)',
-  },
-  signatureRow: {
-    paddingHorizontal: Spacing.xl,
-    paddingBottom: Spacing.xl,
-  },
-  signatureText: {
-    ...Typography.blkSignature,
-    color: 'rgba(255,255,255,0.5)',
   },
   productsContainer: {
     paddingHorizontal: Spacing.xl,
     gap: Spacing.md,
+  },
+  emptyProducts: {
+    height: PRODUCT_CARD_HEIGHT,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.xl,
+  },
+  emptyText: {
   },
   productCard: {
     width: PRODUCT_CARD_WIDTH,
     height: PRODUCT_CARD_HEIGHT,
     borderRadius: Radius.xl,
     overflow: 'hidden',
-    backgroundColor: '#FFFFFF',
   },
   productImage: {
     width: '100%',
@@ -307,15 +440,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: Spacing.sm,
     left: Spacing.sm,
-    backgroundColor: 'rgba(0,0,0,0.55)',
     paddingHorizontal: Spacing.sm,
-    paddingVertical: 4,
+    paddingVertical: Spacing.xs / 2,
     borderRadius: Radius.md,
+    borderWidth: 1,
   },
   priceText: {
-    fontFamily: Fonts.medium,
-    fontSize: 12,
-    color: '#FFFFFF',
   },
   favoriteButton: {
     position: 'absolute',
@@ -324,7 +454,6 @@ const styles = StyleSheet.create({
     width: Sizes.bubble,
     height: Sizes.bubble,
     borderRadius: Sizes.bubble / 2,
-    backgroundColor: 'rgba(0,0,0,0.5)',
     borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -337,13 +466,12 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.xl,
   },
   browseAllText: {
-    color: '#FFFFFF',
   },
   arrowCircle: {
     width: Sizes.bubble,
     height: Sizes.bubble,
     borderRadius: Sizes.bubble / 2,
-    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },

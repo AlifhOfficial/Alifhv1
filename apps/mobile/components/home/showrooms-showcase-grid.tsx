@@ -7,16 +7,36 @@ import React, { memo, useCallback } from 'react';
 import {
   View,
   StyleSheet,
-  Text,
 } from 'react-native';
-import { Video, ResizeMode } from 'expo-av';
+import { Video, ResizeMode, AVPlaybackSource } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowRight } from 'lucide-react-native';
 
-import { Spacing, Radius, Fonts, Typography, Sizes, Colors } from '@/constants/theme';
+import { Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { HapticPressable, Heading } from '@/components/ui';
-import { showrooms } from './mock-data';
+import { HapticPressable, Heading, Supporting } from '@/components/ui';
+
+// ============================================================================
+// LOCAL VIDEO ASSETS
+// ============================================================================
+
+const SHOWROOM_VIDEOS = {
+  hero2: require('@/assets/Videos/hero2.mp4'),
+  revvuphero2: require('@/assets/Videos/revvuphero2.mp4'),
+  rs7350: require('@/assets/Videos/rs7350.mp4'),
+};
+
+interface ShowroomVideoData {
+  id: string;
+  name: string;
+  video: AVPlaybackSource;
+}
+
+const SHOWROOM_DATA: ShowroomVideoData[] = [
+  { id: 'sr-1', name: 'Al Quoz Luxury Motors', video: SHOWROOM_VIDEOS.hero2 },
+  { id: 'sr-2', name: 'Emirates Prestige', video: SHOWROOM_VIDEOS.revvuphero2 },
+  { id: 'sr-3', name: 'Capital Motors', video: SHOWROOM_VIDEOS.rs7350 },
+];
 
 // ============================================================================
 // SHOWROOMS SHOWCASE GRID
@@ -34,10 +54,10 @@ export const ShowroomsShowcaseGrid = memo(function ShowroomsShowcaseGrid({
   offset = 0,
 }: ShowroomsShowcaseGridProps) {
   const { colors } = useTheme();
-  const start = offset % showrooms.length;
-  const displayShowrooms = limit ? showrooms.slice(start, start + limit) : showrooms;
+  const start = offset % SHOWROOM_DATA.length;
+  const displayShowrooms = limit ? SHOWROOM_DATA.slice(start, start + limit) : SHOWROOM_DATA;
   // Use first showroom's video as background
-  const backgroundVideo = displayShowrooms[0]?.heroVideo;
+  const backgroundVideo = displayShowrooms[0]?.video;
 
   const handleViewAllPress = useCallback(() => {
     onViewAllPress?.();
@@ -66,8 +86,8 @@ export const ShowroomsShowcaseGrid = memo(function ShowroomsShowcaseGrid({
       <View style={styles.content}>
         {/* Header - Brand name + signature */}
         <View style={styles.header}>
-          <Text style={styles.brandName}>{displayShowrooms[0]?.name}</Text>
-          <Text style={styles.signatureText}>showroom</Text>
+          <Heading size="small" style={styles.brandName}>{displayShowrooms[0]?.name}</Heading>
+          <Supporting size="medium" style={styles.signatureText}>Showroom</Supporting>
         </View>
 
         {/* CTA Footer */}
@@ -96,6 +116,8 @@ const styles = StyleSheet.create({
   },
   videoBg: {
     ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
   },
   tintOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -113,13 +135,10 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   brandName: {
-    fontFamily: Fonts.semiBold,
-    fontSize: 18,
     color: '#FFFFFF',
     letterSpacing: -0.3,
   },
   signatureText: {
-    ...Typography.blkSignature,
     color: 'rgba(255,255,255,0.6)',
     marginTop: 2,
   },

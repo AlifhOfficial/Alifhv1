@@ -10,7 +10,6 @@ import {
   StyleSheet,
   ScrollView,
   Dimensions,
-  Text,
   ImageSourcePropType,
 } from 'react-native';
 import { Image, ImageSource } from 'expo-image';
@@ -18,12 +17,60 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowRight, Heart } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
-import { Colors, Spacing, Radius, Typography, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { HapticPressable, Body, Heading } from '@/components/ui';
+import { HapticPressable, Heading, Data, Label, Supporting, Skeleton, SkeletonCircle } from '@/components/ui';
 import { RevvupLogo } from '@/components/ui/loaders';
-import { blkSignatureListings, type CarListing } from './mock-data';
-import { BlkDoodle } from './blk-doodle';
+import { BlkTextDoodle } from './blk-text-doodle';
+
+// ============================================================================
+// BLK CARD SKELETON
+// ============================================================================
+
+const BlkCardSkeleton = memo(function BlkCardSkeleton() {
+  return (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.cardsContainer}
+      style={styles.cardsScroll}
+    >
+      {[1, 2, 3].map((i) => (
+        <View key={i} style={styles.miniCard}>
+          <Skeleton 
+            width={CARD_WIDTH} 
+            height={IMAGE_HEIGHT} 
+            borderRadius={Radius.xl}
+            style={{ backgroundColor: '#1A1A1A' }}
+          />
+          <View style={styles.miniCardInfo}>
+            <Skeleton width="70%" height={14} style={{ backgroundColor: '#1A1A1A' }} />
+            <Skeleton width="30%" height={12} style={{ marginTop: 4, backgroundColor: '#1A1A1A' }} />
+          </View>
+        </View>
+      ))}
+    </ScrollView>
+  );
+});
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+/** Unified listing type that works with both mock and API data */
+export interface BlkListingItem {
+  id: string;
+  make: string;
+  model: string;
+  year: number;
+  trim?: string | null;
+  price: number;
+  mileage?: number;
+  emirate?: string;
+  specs?: string | null;
+  thumbnail?: ImageSourcePropType | string | null;
+  isBlkListing?: boolean;
+}
 
 // ============================================================================
 // CONSTANTS
@@ -44,13 +91,13 @@ const IMAGE_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0o#DgR4';
 function formatCompactPrice(amount: number): string {
   if (amount >= 1000000) {
     const millions = amount / 1000000;
-    return millions % 1 === 0 ? `${millions}M` : `${millions.toFixed(1)}M`;
+    return millions % 1 === 0 ? `AED ${millions}M` : `AED ${millions.toFixed(1)}M`;
   }
   if (amount >= 1000) {
     const thousands = amount / 1000;
-    return thousands % 1 === 0 ? `${thousands}K` : `${thousands.toFixed(0)}K`;
+    return thousands % 1 === 0 ? `AED ${thousands}K` : `AED ${thousands.toFixed(0)}K`;
   }
-  return amount.toString();
+  return `AED ${amount}`;
 }
 
 // ============================================================================
@@ -58,9 +105,11 @@ function formatCompactPrice(amount: number): string {
 // ============================================================================
 
 /** Convert image source to expo-image compatible format */
-function toImageSource(source: ImageSourcePropType | string | undefined): ImageSource | undefined {
+function toImageSource(source: ImageSourcePropType | string | undefined | null): ImageSource | undefined {
   if (!source) return undefined;
-  return typeof source === 'string' ? { uri: source } : source;
+  if (typeof source === 'string') return { uri: source };
+  // Handle number (require() assets) and other ImageSourcePropType values
+  return source as ImageSource;
 }
 
 // ============================================================================
@@ -68,7 +117,7 @@ function toImageSource(source: ImageSourcePropType | string | undefined): ImageS
 // ============================================================================
 
 interface MiniCarCardProps {
-  listing: CarListing;
+  listing: BlkListingItem;
   onPress?: (id: string) => void;
   onFavoritePress?: (id: string) => void;
 }
@@ -78,9 +127,6 @@ const MiniCarCard = memo(function MiniCarCard({
   onPress,
   onFavoritePress,
 }: MiniCarCardProps) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
-
   const handlePress = useCallback(() => {
     onPress?.(listing.id);
   }, [listing.id, onPress]);
@@ -106,27 +152,27 @@ const MiniCarCard = memo(function MiniCarCard({
           style={styles.imageGradient}
         />
         {/* Price Badge - Bottom left */}
-        <View style={styles.priceBadge}>
-          <Text style={styles.priceText}>
+        <View style={[styles.priceBadge, { backgroundColor: Colors.dark.glassBackground, borderColor: Colors.dark.glassBorderOnDark }]}>
+          <Supporting size="mini" style={styles.priceText}>
             {formatCompactPrice(listing.price)}
-          </Text>
+          </Supporting>
         </View>
         {/* Favorite Button - Glass bubble */}
         <HapticPressable
           onPress={handleFavoritePress}
-          style={[styles.favoriteButton, { borderColor: colors.glassBorderOnDark }]}
+          style={[styles.favoriteButton, { backgroundColor: Colors.dark.glassBackground, borderColor: Colors.dark.glassBorderOnDark }]}
         >
           <Heart size={Sizes.iconSm} color="#FAFAFA" strokeWidth={2} />
         </HapticPressable>
       </View>
       {/* Car Title Below Image */}
       <View style={styles.miniCardInfo}>
-        <Body size="medium" style={styles.carModel} numberOfLines={1}>
+        <Supporting size="medium" style={styles.carModel} numberOfLines={1}>
           {listing.make} {listing.model}
-        </Body>
-        <Body size="small" style={styles.carYear} numberOfLines={1}>
+        </Supporting>
+        <Supporting size="small" style={styles.carYear} numberOfLines={1}>
           {listing.year}
-        </Body>
+        </Supporting>
       </View>
     </HapticPressable>
   );
@@ -137,12 +183,18 @@ const MiniCarCard = memo(function MiniCarCard({
 // ============================================================================
 
 interface BlkGridCardProps {
+  /** Listings to display - from API or mock data */
+  listings?: BlkListingItem[];
+  /** Loading state */
+  isLoading?: boolean;
   onShopAllPress?: () => void;
   onCarPress?: (id: string) => void;
   onFavoritePress?: (id: string) => void;
 }
 
 export const BlkGridCard = memo(function BlkGridCard({
+  listings = [],
+  isLoading = false,
   onShopAllPress,
   onCarPress,
   onFavoritePress,
@@ -161,8 +213,13 @@ export const BlkGridCard = memo(function BlkGridCard({
     router.push(`/listing/${id}` as any);
   }, [onCarPress, router]);
 
+  // Don't render if no listings and not loading
+  if (!isLoading && listings.length === 0) {
+    return null;
+  }
+
   return (
-    <View style={[styles.container, { borderColor: colors.glassBorderOnDark }]}>
+    <View style={[styles.container, { borderColor: colors.border }]}>
       {/* Dark Background - Pure black like category-grid */}
       <LinearGradient
         colors={['#000000', '#0A0A0A', '#000000']}
@@ -171,8 +228,8 @@ export const BlkGridCard = memo(function BlkGridCard({
         style={StyleSheet.absoluteFill}
       />
 
-      {/* BLK Doodle Pattern - Luxury monogram style */}
-      <BlkDoodle opacity={1} />
+      {/* BLK Doodle Pattern - Subtle "black" text pattern */}
+      <BlkTextDoodle />
 
       {/* Header with Revvup Logo & BLK Badge */}
       <View style={styles.header}>
@@ -182,39 +239,43 @@ export const BlkGridCard = memo(function BlkGridCard({
             <RevvupLogo size={32} color="#FAFAFA" />
           </View>
           {/* BLK Badge - Bold & Unapologetic */}
-          <Text style={styles.blkText}>BLK</Text>
+          <Label size="badge" style={styles.blkText}>BLK</Label>
         </View>
       </View>
 
-      {/* Signature Line - Elegant cursive feel */}
+      {/* Signature Line */}
       <View style={styles.signatureRow}>
-        <Text style={styles.signatureText}>signature line</Text>
+        <Supporting size="medium" style={styles.signatureText}>Signature Line</Supporting>
       </View>
 
       {/* Car Cards Scroll with negative space */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.cardsContainer}
-        style={styles.cardsScroll}
-      >
-        {blkSignatureListings.map((listing) => (
-          <MiniCarCard
-            key={listing.id}
-            listing={listing}
-            onPress={handleCarPress}
-            onFavoritePress={onFavoritePress}
-          />
-        ))}
-      </ScrollView>
+      {isLoading ? (
+        <BlkCardSkeleton />
+      ) : (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.cardsContainer}
+          style={styles.cardsScroll}
+        >
+          {listings.map((listing) => (
+            <MiniCarCard
+              key={listing.id}
+              listing={listing}
+              onPress={handleCarPress}
+              onFavoritePress={onFavoritePress}
+            />
+          ))}
+        </ScrollView>
+      )}
 
       {/* Shop All Footer */}
       <HapticPressable onPress={handleShopAllPress} style={styles.footer}>
         <Heading size="small" style={styles.shopAllText}>
           Shop all
         </Heading>
-        <View style={styles.arrowCircle}>
-          <ArrowRight size={Sizes.iconSm} color="#0D0D0D" strokeWidth={2.5} />
+        <View style={[styles.arrowCircle, { backgroundColor: Colors.dark.glassBackground, borderColor: Colors.dark.glassBorderOnDark }]}>
+          <ArrowRight size={Sizes.iconSm} color="#FAFAFA" strokeWidth={2.5} />
         </View>
       </HapticPressable>
     </View>
@@ -251,7 +312,6 @@ const styles = StyleSheet.create({
     opacity: 1,
   },
   blkText: {
-    ...Typography.blkBadge,
     color: '#FAFAFA',
   },
   signatureRow: {
@@ -260,7 +320,6 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   signatureText: {
-    ...Typography.blkSignature,
     color: 'rgba(255,255,255,0.6)',
   },
   cardsScroll: {
@@ -296,9 +355,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: Spacing.sm,
     left: Spacing.sm,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 4,
+    borderRadius: Radius.md,
+    borderWidth: 1,
   },
   priceText: {
-    ...Typography.dataMedium,
     color: '#FAFAFA',
   },
   favoriteButton: {
@@ -308,7 +370,6 @@ const styles = StyleSheet.create({
     width: Sizes.bubble,
     height: Sizes.bubble,
     borderRadius: Sizes.bubble / 2,
-    backgroundColor: 'rgba(0,0,0,0.5)',
     borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -340,7 +401,7 @@ const styles = StyleSheet.create({
     width: Sizes.bubble,
     height: Sizes.bubble,
     borderRadius: Sizes.bubble / 2,
-    backgroundColor: '#FAFAFA',
+    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
