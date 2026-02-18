@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useId } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthRequired } from '@/hooks/use-auth-required';
@@ -45,8 +45,6 @@ function SellButton() {
 }
 
 export function HeroSection() {
-  const maskId = useId();
-  
   return (
     <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-[1600px] mx-auto">
@@ -77,66 +75,33 @@ export function HeroSection() {
           <SellButton />
         </div>
 
-        {/* Hero Video */}
-        <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg mb-8">
-          {/* Background Video */}
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
-            disablePictureInPicture
-            disableRemotePlayback
-            suppressHydrationWarning
-            className="absolute inset-0 w-full h-full object-cover"
-          >
-            <source src="/Marketing/k.mp4" type="video/mp4" />
-          </video>
-          
-          {/* SVG Mask - Video shows through text */}
-          <svg 
-            className="absolute inset-0 w-full h-full pointer-events-none" 
-            viewBox="0 0 100 100" 
-            preserveAspectRatio="xMidYMid slice"
-          >
-            <defs>
-              <mask id={maskId}>
-                <rect width="100%" height="100%" fill="white" />
-                <text
-                  x="50%"
-                  y="50%"
-                  dominantBaseline="middle"
-                  textAnchor="middle"
-                  fill="black"
-                  fontSize="18"
-                  fontWeight="bold"
-                  fontFamily="system-ui, -apple-system, sans-serif"
-                  letterSpacing="-0.02em"
-                >
-                  Revvup
-                </text>
-              </mask>
-            </defs>
-            <rect width="100%" height="100%" fill="black" mask={`url(#${maskId})`} />
-          </svg>
+        {/* Hero Image */}
+        <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] overflow-hidden rounded-lg mb-8">
+          <Image
+            src="/Marketing/Hero_img.png"
+            alt="Revvup - UAE Car Marketplace"
+            fill
+            priority
+            className="object-cover"
+            sizes="(max-width: 1600px) 100vw, 1600px"
+          />
         </div>
 
         {/* Trust Indicators */}
-        <div className="flex items-center justify-center gap-12 md:gap-20 pt-8">
-          <div className="text-center space-y-1">
-            <p className="text-xl font-semibold tracking-tight text-primary">AED 0</p>
-            <span className="text-sm text-muted-foreground">Listing fee</span>
+        <div className="flex items-center justify-center gap-8 sm:gap-12 max-w-2xl mx-auto">
+          <div className="text-center">
+            <div className="text-2xl font-semibold tracking-tight text-primary mb-1">AED 0</div>
+            <div className="text-sm text-muted-foreground">Listing fee</div>
           </div>
-          <div className="w-px h-10 bg-border/30 hidden sm:block" />
-          <div className="text-center space-y-1">
-            <p className="text-xl font-semibold tracking-tight text-primary">VIN</p>
-            <span className="text-sm text-muted-foreground">Required on every car</span>
+          <div className="w-px h-10 bg-border/30" />
+          <div className="text-center">
+            <div className="text-2xl font-semibold tracking-tight text-primary mb-1">VIN</div>
+            <div className="text-sm text-muted-foreground">Required on every car</div>
           </div>
-          <div className="w-px h-10 bg-border/30 hidden sm:block" />
-          <div className="text-center space-y-1">
-            <p className="text-xl font-semibold tracking-tight text-primary">24/7</p>
-            <span className="text-sm text-muted-foreground">Book test drives</span>
+          <div className="w-px h-10 bg-border/30" />
+          <div className="text-center">
+            <div className="text-2xl font-semibold tracking-tight text-primary mb-1">24/7</div>
+            <div className="text-sm text-muted-foreground">Book test drives</div>
           </div>
         </div>
 

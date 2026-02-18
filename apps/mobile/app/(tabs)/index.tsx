@@ -21,7 +21,6 @@ import {
   RevvupFirstGrid,
   CategoryCard,
   PartnerShowcaseCard,
-  PartnerShowcaseCardSkeleton,
 } from '@/components/home';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Layout, Sizes, Radius } from '@/constants/theme';
@@ -38,6 +37,20 @@ import { type PartnerListItem } from '@/lib/partner-api';
 const HEADER_HEIGHT = Layout.headerPadding + Sizes.bubble + Spacing.md;
 
 // ============================================================================
+// HOME SCREEN SKELETON (Initial Loading State)
+// ============================================================================
+
+const HomeScreenSkeleton = React.memo(function HomeScreenSkeleton() {
+  return (
+    <View style={styles.skeletonContainer}>
+      <Skeleton width="100%" height={220} borderRadius={Radius['2xl']} />
+      <Skeleton width="100%" height={180} borderRadius={Radius['2xl']} />
+      <Skeleton width="100%" height={220} borderRadius={Radius['2xl']} />
+    </View>
+  );
+});
+
+// ============================================================================
 // GRID ITEM RENDERER
 // ============================================================================
 
@@ -49,12 +62,16 @@ interface GridItemProps {
 const GridItem = React.memo(function GridItem({ gridState, partners }: GridItemProps) {
   const { config, data, isLoading } = gridState;
 
+  // Don't render anything while loading - parent shows skeleton
+  if (isLoading && !data) return null;
+
   // Render based on grid type
   switch (config.type) {
     case 'blk':
+      if (!data?.listings?.length) return null;
       return (
         <BlkGridCard
-          listings={data?.listings?.map(l => ({
+          listings={data.listings.map(l => ({
             id: l.id,
             make: l.make,
             model: l.model,
@@ -64,20 +81,19 @@ const GridItem = React.memo(function GridItem({ gridState, partners }: GridItemP
             mileage: l.mileage,
             thumbnail: l.thumbnail,
             isBlkListing: l.isBlkListing,
-          })) || []}
-          isLoading={isLoading}
+          }))}
         />
       );
 
     case 'founding':
       // Use partners list sorted by join date
+      if (partners.length === 0) return null;
       const foundingPartners = partners
         .slice(0, 10)
         .map(partnerToFoundingItem);
       return (
         <RevvupFirstGrid
           partners={foundingPartners}
-          isLoading={isLoading && partners.length === 0}
         />
       );
 
@@ -88,12 +104,13 @@ const GridItem = React.memo(function GridItem({ gridState, partners }: GridItemP
     case 'popular':
     case 'hidden_gems':
       // All these render as category cards with listings
+      if (!data?.listings?.length) return null;
       return (
         <CategoryCard
           id={config.id}
           name={config.title}
           subtitle={config.subtitle}
-          listings={data?.listings?.map(l => ({
+          listings={data.listings.map(l => ({
             id: l.id,
             make: l.make,
             model: l.model,
@@ -105,40 +122,25 @@ const GridItem = React.memo(function GridItem({ gridState, partners }: GridItemP
             specs: l.specs,
             thumbnail: l.thumbnail,
             isBlkListing: l.isBlkListing,
-          })) || []}
-          isLoading={isLoading}
+          }))}
         />
       );
 
     case 'partner':
-      // Partner showcase with their listings
-      // Show loading state while fetching, then render partner data
-      if (isLoading && !data?.partner) {
-        // Show skeleton placeholder
-        return (
-          <View style={styles.partnerContainer}>
-            <PartnerShowcaseCardSkeleton />
-          </View>
-        );
-      }
+      // Partner showcase with their listings - only render when data is available
+      if (!data?.partner) return null;
       
-      if (data?.partner) {
-        const displayData = partnerToDisplayData(
-          data.partner, 
-          data.listings || []
-        );
-        return (
-          <View style={styles.partnerContainer}>
-            <PartnerShowcaseCard
-              partner={displayData}
-              isLoading={isLoading}
-            />
-          </View>
-        );
-      }
-      
-      // Partner not found - don't render anything
-      return null;
+      const displayData = partnerToDisplayData(
+        data.partner, 
+        data.listings || []
+      );
+      return (
+        <View style={styles.partnerContainer}>
+          <PartnerShowcaseCard
+            partner={displayData}
+          />
+        </View>
+      );
 
     default:
       return null;
@@ -190,27 +192,21 @@ export default function HomeScreen() {
     }
   }, [hasMore, isLoading, loadMore]);
 
-  // Footer loading skeleton
-  const renderFooter = useCallback(() => {
-    if (!isLoading) return <View style={styles.bottomSpacer} />;
-    return (
-      <View style={styles.loadingFooter}>
-        <View style={[styles.skeletonCard, { backgroundColor: colors.oledBlack, borderColor: colors.glassBorderOnDark }]}>
-          <View style={styles.skeletonHeader}>
-            <Skeleton width="50%" height={20} style={{ backgroundColor: '#1A1A1A' }} />
-            <Skeleton width="70%" height={14} style={{ marginTop: Spacing.xs, backgroundColor: '#1A1A1A' }} />
-          </View>
-          <View style={styles.skeletonContent}>
-            <Skeleton width={120} height={90} borderRadius={Radius.lg} style={{ backgroundColor: '#1A1A1A' }} />
-            <Skeleton width={120} height={90} borderRadius={Radius.lg} style={{ backgroundColor: '#1A1A1A' }} />
-          </View>
-        </View>
-      </View>
-    );
-  }, [isLoading, colors.oledBlack, colors.glassBorderOnDark]);
+  // Footer - just bottom spacer
+  const renderFooter = useCallback(() => (
+    <View style={styles.bottomSpacer} />
+  ), []);
 
   // Header component (empty, actual header is absolute positioned)
   const renderHeader = useCallback(() => null, []);
+
+  // Empty state skeleton (initial loading)
+  const renderEmpty = useCallback(() => {
+    if (isLoading || loadedGrids.length === 0) {
+      return <HomeScreenSkeleton />;
+    }
+    return null;
+  }, [isLoading, loadedGrids.length]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -225,6 +221,7 @@ export default function HomeScreen() {
         onEndReachedThreshold={0.5}
         ListHeaderComponent={renderHeader}
         ListFooterComponent={renderFooter}
+        ListEmptyComponent={renderEmpty}
         contentContainerStyle={[styles.listContent, { paddingTop: contentTopPadding }]}
         showsVerticalScrollIndicator={false}
         removeClippedSubviews={true}
@@ -258,26 +255,11 @@ const styles = StyleSheet.create({
   partnerContainer: {
     paddingHorizontal: Spacing.sm,
   },
-  loadingFooter: {
-    paddingVertical: Spacing.lg,
-    paddingHorizontal: Spacing.sm,
-  },
-  skeletonCard: {
-    borderRadius: Radius['2xl'],
-    borderWidth: 1,
-    paddingBottom: Spacing['2xl'],
-  },
-  skeletonHeader: {
-    paddingHorizontal: Spacing.xl,
-    paddingTop: Spacing['2xl'],
-    paddingBottom: Spacing.xl,
-  },
-  skeletonContent: {
-    flexDirection: 'row',
-    paddingHorizontal: Spacing.lg,
-    gap: Spacing.md,
-  },
   bottomSpacer: {
     height: Layout.tabBarHeight + Spacing['3xl'],
+  },
+  skeletonContainer: {
+    gap: Spacing.lg,
+    paddingHorizontal: Spacing.sm,
   },
 });

@@ -162,6 +162,37 @@ export const PRICE_RANGES = {
 export type PriceRangeKey = keyof typeof PRICE_RANGES;
 
 // ============================================================================
+// CACHE - 15 minute TTL
+// ============================================================================
+
+const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
+
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+}
+
+const cache = new Map<string, CacheEntry<unknown>>();
+
+function getCached<T>(key: string): T | null {
+  const entry = cache.get(key);
+  if (!entry) return null;
+  if (Date.now() - entry.timestamp > CACHE_TTL) {
+    cache.delete(key);
+    return null;
+  }
+  return entry.data as T;
+}
+
+function setCache<T>(key: string, data: T): void {
+  cache.set(key, { data, timestamp: Date.now() });
+}
+
+export function clearGridCache(): void {
+  cache.clear();
+}
+
+// ============================================================================
 // CATEGORY SUBTITLES - Clear descriptions for each filter type
 // ============================================================================
 
@@ -202,13 +233,10 @@ export const SPECS_SUBTITLES: Record<string, string> = {
 // GRID GENERATORS - Create dynamic grid configs
 // ============================================================================
 
-let gridIdCounter = 0;
-const generateGridId = () => `grid-${++gridIdCounter}`;
-
 /** Generate BLK premium grid config */
 export function createBlkGridConfig(): GridConfig {
   return {
-    id: generateGridId(),
+    id: 'blk',
     type: 'blk',
     title: 'BLK',
     subtitle: 'Signature Line',
@@ -216,7 +244,7 @@ export function createBlkGridConfig(): GridConfig {
     brandText: 'BLK',
     searchParams: {
       isBlkListing: true,
-      sort: 'newest',
+      sortBy: 'newest',
       limit: 8,
     },
   };
@@ -228,7 +256,7 @@ export function createCategoryGridConfig(
   categoryValue: string,
   categoryLabel: string
 ): CategoryGridConfig {
-  const searchParams: SearchParams = { limit: 6, sort: 'popular' };
+  const searchParams: SearchParams = { limit: 6, sortBy: 'popular' };
   let subtitle = '';
   
   switch (categoryType) {
@@ -255,7 +283,7 @@ export function createCategoryGridConfig(
   }
 
   return {
-    id: generateGridId(),
+    id: `category-${categoryType}-${categoryValue}`,
     type: 'category',
     title: categoryLabel,
     subtitle,
@@ -271,7 +299,7 @@ export function createCategoryGridConfig(
 export function createMakeGroupGridConfig(groupKey: MakeGroupKey): MakeGroupGridConfig {
   const group = MAKE_GROUPS[groupKey];
   return {
-    id: generateGridId(),
+    id: `make-${groupKey}`,
     type: 'make',
     title: group.name,
     subtitle: group.subtitle,
@@ -280,7 +308,7 @@ export function createMakeGroupGridConfig(groupKey: MakeGroupKey): MakeGroupGrid
     isRevvupBranded: true,
     searchParams: {
       make: [...group.makes],
-      sort: 'popular',
+      sortBy: 'popular',
       limit: 6,
     },
   };
@@ -289,7 +317,7 @@ export function createMakeGroupGridConfig(groupKey: MakeGroupKey): MakeGroupGrid
 /** Generate partner grid config */
 export function createPartnerGridConfig(partner: PartnerListItem): PartnerGridConfig {
   return {
-    id: generateGridId(),
+    id: `partner-${partner.id}`,
     type: 'partner',
     title: partner.brandName,
     subtitle: 'Partner Inventory',
@@ -301,7 +329,7 @@ export function createPartnerGridConfig(partner: PartnerListItem): PartnerGridCo
 /** Generate founding partners grid config */
 export function createFoundingPartnersGridConfig(): PartnerGridConfig {
   return {
-    id: generateGridId(),
+    id: 'founding',
     type: 'founding',
     title: 'Founding Partners',
     subtitle: 'Our earliest partners',
@@ -313,7 +341,7 @@ export function createFoundingPartnersGridConfig(): PartnerGridConfig {
 export function createPriceRangeGridConfig(rangeKey: PriceRangeKey): PriceRangeGridConfig {
   const range = PRICE_RANGES[rangeKey];
   return {
-    id: generateGridId(),
+    id: `price-${rangeKey}`,
     type: 'price_range',
     title: range.label,
     subtitle: range.subtitle,
@@ -321,9 +349,9 @@ export function createPriceRangeGridConfig(rangeKey: PriceRangeKey): PriceRangeG
     maxPrice: range.max,
     priceLabel: range.label,
     searchParams: {
-      minPrice: range.min,
-      maxPrice: range.max,
-      sort: 'popular',
+      priceMin: range.min,
+      priceMax: range.max,
+      sortBy: 'popular',
       limit: 6,
     },
   };
@@ -332,13 +360,13 @@ export function createPriceRangeGridConfig(rangeKey: PriceRangeKey): PriceRangeG
 /** Generate newest listings grid config */
 export function createNewestGridConfig(): GridConfig {
   return {
-    id: generateGridId(),
+    id: 'newest',
     type: 'newest',
     title: 'Just Listed',
     subtitle: 'Latest cars added to the marketplace',
     isRevvupBranded: true,
     searchParams: {
-      sort: 'newest',
+      sortBy: 'newest',
       limit: 6,
     },
   };
@@ -347,13 +375,13 @@ export function createNewestGridConfig(): GridConfig {
 /** Generate popular listings grid config */
 export function createPopularGridConfig(): GridConfig {
   return {
-    id: generateGridId(),
+    id: 'popular',
     type: 'popular',
     title: 'Most Popular',
     subtitle: 'Top picks based on views & interest',
     isRevvupBranded: true,
     searchParams: {
-      sort: 'popular',
+      sortBy: 'popular',
       limit: 6,
     },
   };
@@ -362,14 +390,14 @@ export function createPopularGridConfig(): GridConfig {
 /** Generate hidden gems grid config (low mileage, good prices) */
 export function createHiddenGemsGridConfig(): GridConfig {
   return {
-    id: generateGridId(),
+    id: 'hidden-gems',
     type: 'hidden_gems',
     title: 'Hidden Gems',
     subtitle: 'Low mileage cars under 20,000 km',
     isRevvupBranded: true,
     searchParams: {
-      maxMileage: 20000,
-      sort: 'price_low',
+      mileageMax: 20000,
+      sortBy: 'price_low',
       limit: 6,
     },
   };
@@ -383,8 +411,13 @@ export function createHiddenGemsGridConfig(): GridConfig {
 export async function fetchGridListings(config: AnyGridConfig): Promise<ListingCard[]> {
   if (!config.searchParams) return [];
   
+  const cacheKey = `listings:${JSON.stringify(config.searchParams)}`;
+  const cached = getCached<ListingCard[]>(cacheKey);
+  if (cached) return cached;
+  
   try {
     const response = await searchApi.search(config.searchParams);
+    setCache(cacheKey, response.listings);
     return response.listings;
   } catch (error) {
     console.error(`[GridAPI] Failed to fetch listings for ${config.id}:`, error);
@@ -394,8 +427,14 @@ export async function fetchGridListings(config: AnyGridConfig): Promise<ListingC
 
 /** Fetch partner data */
 export async function fetchPartners(): Promise<PartnerListItem[]> {
+  const cacheKey = 'partners';
+  const cached = getCached<PartnerListItem[]>(cacheKey);
+  if (cached) return cached;
+  
   try {
-    return await getPartnersList();
+    const partners = await getPartnersList();
+    setCache(cacheKey, partners);
+    return partners;
   } catch (error) {
     console.error('[GridAPI] Failed to fetch partners:', error);
     return [];
@@ -404,6 +443,11 @@ export async function fetchPartners(): Promise<PartnerListItem[]> {
 
 /** Fetch full grid data (config + data) */
 export async function fetchGridData(config: AnyGridConfig): Promise<GridData> {
+  // Check cache first
+  const cacheKey = `grid:${config.type}:${(config as PartnerGridConfig).partnerId || ''}:${JSON.stringify(config.searchParams || {})}`;
+  const cached = getCached<GridData>(cacheKey);
+  if (cached) return cached;
+
   const result: GridData = {
     config,
     listings: [],
@@ -416,6 +460,7 @@ export async function fetchGridData(config: AnyGridConfig): Promise<GridData> {
     result.partners = partners
       .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
       .slice(0, 10);
+    setCache(cacheKey, result);
     return result;
   }
 
@@ -435,7 +480,7 @@ export async function fetchGridData(config: AnyGridConfig): Promise<GridData> {
         const response = await searchApi.search({
           partnerId: partnerId,
           partnerName: partner.brandName,
-          sort: 'newest',
+          sortBy: 'newest',
           limit: 6,
         });
         console.log('[fetchGridData] Partner listings fetched:', response.listings.length);
@@ -448,6 +493,7 @@ export async function fetchGridData(config: AnyGridConfig): Promise<GridData> {
     } else {
       console.log('[fetchGridData] Partner not found for id:', partnerId);
     }
+    setCache(cacheKey, result);
     return result;
   }
 
@@ -467,6 +513,7 @@ export async function fetchGridData(config: AnyGridConfig): Promise<GridData> {
     }
   }
 
+  setCache(cacheKey, result);
   return result;
 }
 
@@ -565,6 +612,7 @@ export default {
   fetchGridsBatch,
   generateHomeGridSequence,
   createGridBatchGenerator,
+  clearGridCache,
   // Grid creators
   createBlkGridConfig,
   createCategoryGridConfig,

@@ -18,6 +18,7 @@ import {
   generateHomeGridSequence,
   fetchPartners,
   createPartnerGridConfig,
+  clearGridCache,
 } from '@/lib/grid-api';
 import { type PartnerListItem } from '@/lib/partner-api';
 
@@ -211,6 +212,9 @@ export function useHomeGrids(): UseHomeGridsReturn {
 
   // Refresh all grids
   const refresh = useCallback(async () => {
+    // Clear cache to force fresh data
+    clearGridCache();
+    
     // Reset state
     setLoadedCount(0);
     setError(null);
@@ -230,8 +234,8 @@ export function useHomeGrids(): UseHomeGridsReturn {
 
   // Compute derived values
   const grids = Array.from(gridStates.values());
-  // Include grids that have data OR are currently loading (to show skeletons)
-  const loadedGrids = grids.filter(g => g.data !== undefined || g.isLoading);
+  // Only include grids with data - parent component shows skeleton when list is empty
+  const loadedGrids = grids.filter(g => g.data !== undefined);
   const hasMore = loadedCount < gridSequence.length;
 
   return {

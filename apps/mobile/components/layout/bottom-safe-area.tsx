@@ -5,7 +5,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { ColorValue } from 'react-native';
@@ -27,36 +27,30 @@ export function BottomSafeAreaGradient() {
   const insets = useSafeAreaInsets();
   const colors = Colors[colorScheme];
 
-  // Android doesn't interpolate hex alpha correctly — use rgba with multiple stops
-  // Light mode uses softer opacity for a more subtle effect
+  // Use rgba colors for consistent gradient rendering on both Android and iOS
   const isLightMode = colorScheme === 'light';
   const gradientColors = useMemo((): readonly [ColorValue, ColorValue, ...ColorValue[]] => {
     const bg = colors.background;
-    if (Platform.OS === 'android') {
-      return isLightMode ? [
-        hexToRgba(bg, 0),
-        hexToRgba(bg, 0.15),
-        hexToRgba(bg, 0.4),
-        hexToRgba(bg, 0.7),
-        hexToRgba(bg, 0.9),
-      ] as const : [
-        hexToRgba(bg, 0),
-        hexToRgba(bg, 0.3),
-        hexToRgba(bg, 0.6),
-        hexToRgba(bg, 0.85),
-        hexToRgba(bg, 1),
-      ] as const;
-    }
-    return isLightMode
-      ? [`${bg}00`, hexToRgba(bg, 0.85)] as const
-      : [`${bg}00`, bg] as const;
+    return isLightMode ? [
+      hexToRgba(bg, 0),
+      hexToRgba(bg, 0.15),
+      hexToRgba(bg, 0.4),
+      hexToRgba(bg, 0.7),
+      hexToRgba(bg, 0.9),
+    ] as const : [
+      hexToRgba(bg, 0),
+      hexToRgba(bg, 0.3),
+      hexToRgba(bg, 0.6),
+      hexToRgba(bg, 0.85),
+      hexToRgba(bg, 1),
+    ] as const;
   }, [colors.background, isLightMode]);
 
   return (
     <View style={styles.container} pointerEvents="none">
       <LinearGradient
         colors={gradientColors}
-        {...(Platform.OS === 'android' && { locations: [0, 0.15, 0.4, 0.7, 1] })}
+        locations={[0, 0.15, 0.4, 0.7, 1]}
         style={[styles.gradient, { height: insets.bottom + Layout.bottomGradientExtension }]}
       />
     </View>
