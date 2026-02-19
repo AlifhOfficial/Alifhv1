@@ -26,6 +26,7 @@ import { z } from 'zod';
 import { getUserProfileByUserId, updateUserProfileByUserId, ensureUserProfile, calculateUserStats, db, passkey, eq } from "@alifh/database";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { deleteFile } from "@/lib/storage";
+import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_GENERAL } from '@/lib/rate-limit';
 
 export const runtime = "nodejs";
@@ -33,18 +34,7 @@ export const dynamic = 'force-dynamic';
 
 const profileUpdateLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
 
-// No browser caching - server handles caching
-const CACHE_HEADERS_PRIVATE = {
-  'Cache-Control': 'private, no-store, no-cache, must-revalidate',
-  'Pragma': 'no-cache',
-  'Vary': 'Cookie, Authorization',
-} as const;
 
-const CACHE_HEADERS_FRESH = {
-  'Cache-Control': 'private, no-store, no-cache, must-revalidate',
-  'Pragma': 'no-cache',
-  'Vary': 'Cookie, Authorization',
-} as const;
 
 const UpdateProfileSchema = z.object({
   firstName: z.string().nullable().optional(),
@@ -92,7 +82,7 @@ export async function GET(req: NextRequest) {
     
     if (!user) {
       const response = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      Object.entries(CACHE_HEADERS_PRIVATE).forEach(([key, value]) => 
+      Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
         response.headers.set(key, value)
       );
       return response;
@@ -127,9 +117,7 @@ export async function GET(req: NextRequest) {
     };
 
     const response = NextResponse.json(responseData);
-    Object.entries(CACHE_HEADERS_PRIVATE).forEach(([key, value]) => 
-      response.headers.set(key, value)
-    );
+    Object.entries(NO_CACHE_HEADERS).forEach(([k, v]) => response.headers.set(k, v));
     return response;
   } catch (error) {
     console.error("[user-profile] GET failed", error);
@@ -142,9 +130,7 @@ export async function PATCH(req: NextRequest) {
     const user = await getSessionUser();
     if (!user) {
       const response = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      Object.entries(CACHE_HEADERS_PRIVATE).forEach(([key, value]) => 
-        response.headers.set(key, value)
-      );
+      Object.entries(NO_CACHE_HEADERS).forEach(([k, v]) => response.headers.set(k, v));
       return response;
     }
 
@@ -193,10 +179,7 @@ export async function PATCH(req: NextRequest) {
     const profileWithUrl = await attachAvatarUrl(updated);
 
     const response = NextResponse.json({ profile: profileWithUrl });
-    // Use shorter cache time after updates to ensure fresh data
-    Object.entries(CACHE_HEADERS_FRESH).forEach(([key, value]) => 
-      response.headers.set(key, value)
-    );
+    Object.entries(NO_CACHE_HEADERS).forEach(([k, v]) => response.headers.set(k, v));
     return response;
   } catch (error) {
     console.error("[user-profile] PATCH failed", error);

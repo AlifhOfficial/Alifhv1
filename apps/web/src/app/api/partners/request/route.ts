@@ -32,14 +32,10 @@ import {
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_PARTNER } from '@/lib/rate-limit';
+import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
-const CACHE_HEADERS_NO_CACHE = {
-  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
-  'Pragma': 'no-cache',
-} as const;
 
 const partnerRequestLimiter = createRateLimiter(RATE_LIMITS_PARTNER.REQUEST_SUBMIT);
 
@@ -147,7 +143,7 @@ export async function POST(req: NextRequest) {
       }
     }, { status: 201 });
 
-    Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
+    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
       response.headers.set(key, value)
     );
 
@@ -180,7 +176,7 @@ export async function GET(req: NextRequest) {
       request: request || null 
     });
 
-    Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
+    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
       response.headers.set(key, value)
     );
 
@@ -240,7 +236,7 @@ export async function DELETE(req: NextRequest) {
         : 'Partner request cancelled'
     });
 
-    Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
+    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
       response.headers.set(key, value)
     );
 

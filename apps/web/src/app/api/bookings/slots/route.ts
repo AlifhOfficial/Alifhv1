@@ -6,6 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { CDN_HEADERS } from '@/lib/cdn-cache';
 import {
   getAvailableSlots,
   getAvailableDates,
@@ -26,10 +27,10 @@ const slotsLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_PUBLIC);
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-function noStoreJson(data: unknown, init?: { status?: number }) {
+function cachedJson(data: unknown, init?: { status?: number }) {
   return NextResponse.json(data, {
     status: init?.status,
-    headers: { 'Cache-Control': 'no-store' },
+    headers: CDN_HEADERS.bookingSlots,
   });
 }
 
@@ -57,24 +58,24 @@ export async function GET(req: NextRequest) {
     const mode = searchParams.get('mode') || 'slots';
 
     if (!listingId) {
-      return noStoreJson({ error: 'listingId is required' }, { status: 400 });
+      return cachedJson({ error: 'listingId is required' }, { status: 400 });
     }
 
     // Get listing to find partner
     const listing = await getListingBookingContext(listingId);
 
     if (!listing) {
-      return noStoreJson({ error: 'Listing not found' }, { status: 404 });
+      return cachedJson({ error: 'Listing not found' }, { status: 404 });
     }
 
     if (!listing.partnerId) {
-      return noStoreJson({ error: 'This listing does not support bookings' }, { status: 400 });
+      return cachedJson({ error: 'This listing does not support bookings' }, { status: 400 });
     }
 
     // Check if partner accepts bookings
     const settings = await getPartnerBookingSettings(listing.partnerId);
     if (settings && !settings.bookingEnabled) {
-      return noStoreJson({
+      return cachedJson({
         available: false,
         reason: 'This dealer is not accepting bookings at this time',
         dates: [],
@@ -92,7 +93,7 @@ export async function GET(req: NextRequest) {
       // Return available dates for the next 30 days
       const dates = await getAvailableDates(listing.partnerId);
       
-      return noStoreJson({
+      return cachedJson({
         available: true,
         partnerId: listing.partnerId,
         dates,
@@ -133,7 +134,7 @@ export async function GET(req: NextRequest) {
       return true;
     });
 
-    return noStoreJson({
+    return cachedJson({
       available: true,
       partnerId: listing.partnerId,
       date: date.toISOString().split('T')[0],
@@ -156,6 +157,6 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error('Error fetching available slots:', error);
-    return noStoreJson({ error: 'Failed to fetch available slots' }, { status: 500 });
+    return cachedJson({ error: 'Failed to fetch available slots' }, { status: 500 });
   }
 }

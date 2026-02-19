@@ -38,16 +38,13 @@ import {
   rateLimitResponse,
   RATE_LIMITS_GENERAL,
 } from '@/lib/rate-limit';
+import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 const statusLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0; // User-specific data must bypass CDN caching
-
-const CACHE_HEADERS_NO_CACHE = {
-  'Cache-Control': 'private, no-store',
-} as const;
 
 export async function GET(req: NextRequest) {
   try {
@@ -72,7 +69,7 @@ export async function GET(req: NextRequest) {
           periodEndDate: null,
         }
       });
-      Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
+      Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
         response.headers.set(key, value)
       );
       return response;
@@ -126,7 +123,7 @@ export async function GET(req: NextRequest) {
 
     const response = NextResponse.json(responseData);
     
-    Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
+    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
       response.headers.set(key, value)
     );
     

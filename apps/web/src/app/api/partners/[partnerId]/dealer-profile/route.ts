@@ -16,7 +16,7 @@
  * - Operating hours and specialties
  * 
  * Cache Strategy:
- * - GET: 60s public cache, 120s stale-while-revalidate
+ * - GET: CDN_HEADERS.dealerProfile (see @/lib/cdn-cache)
  * - PATCH: no-cache (immediate invalidation)
  * 
  * Standards:
@@ -27,6 +27,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { CDN_HEADERS, NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 import { z } from 'zod';
 import { getDealerBaseProfile, updateDealerBaseProfile } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
@@ -43,15 +44,7 @@ const updateLimiter = createRateLimiter(RATE_LIMITS_PARTNER.PROFILE_UPDATE);
 
 export const revalidate = 0;
 
-// No browser/CDN caching - server handles caching with proper invalidation
-const CACHE_HEADERS_PUBLIC = {
-  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
-  'Pragma': 'no-cache',
-} as const;
 
-const CACHE_HEADERS_NO_CACHE = {
-  'Cache-Control': 'no-cache, no-store, must-revalidate',
-} as const;
 
 /**
  * Attaches cache-busted URLs for logo and hero image
@@ -137,7 +130,7 @@ export async function GET(
     const profileWithUrls = attachImageUrls(profile);
 
     const response = NextResponse.json(profileWithUrls);
-    Object.entries(CACHE_HEADERS_PUBLIC).forEach(([key, value]) => 
+    Object.entries(CDN_HEADERS.dealerProfile).forEach(([key, value]) => 
       response.headers.set(key, value)
     );
     return response;
@@ -210,7 +203,7 @@ export async function PATCH(
     const profileWithUrls = attachImageUrls(updatedProfile);
 
     const response = NextResponse.json(profileWithUrls);
-    Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
+    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
       response.headers.set(key, value)
     );
     return response;

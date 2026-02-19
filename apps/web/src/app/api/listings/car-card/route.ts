@@ -8,7 +8,7 @@
  * Features:
  * - Denormalized partner data (no JOIN needed)
  * - Only UI-essential fields (reduces payload ~60%)
- * - 2-tier caching: CDN (60s) + Memory cache (2-3min)
+ * - CDN edge caching (60s)
  * - Batch fetching via IDs for favorites/superlikes pages
  * 
  * Query Params:
@@ -32,6 +32,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { CDN_HEADERS, NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 import { getListingCards } from "@alifh/database";
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_LISTINGS } from "@/lib/rate-limit";
 
@@ -41,16 +42,7 @@ export const dynamic = "force-dynamic";
 const listingBrowseLimiter = createRateLimiter(RATE_LIMITS_LISTINGS.BROWSE);
 export const revalidate = 0;
 
-// No browser/CDN caching - server handles caching with proper invalidation
-const CDN_CACHE_HEADERS = {
-  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
-  'Pragma': 'no-cache',
-} as const;
 
-// For personalized/batch requests (favorites, superlikes) - no CDN cache
-const NO_CACHE_HEADERS = {
-  'Cache-Control': 'private, no-cache, no-store, must-revalidate',
-} as const;
 
 export async function GET(req: NextRequest) {
   try {
@@ -92,7 +84,7 @@ export async function GET(req: NextRequest) {
       : null;
 
     // Select appropriate cache headers
-    const cacheHeaders = (ids?.length) ? NO_CACHE_HEADERS : CDN_CACHE_HEADERS;
+    const cacheHeaders = (ids?.length) ? NO_CACHE_HEADERS : CDN_HEADERS.carCard;
 
     // In dev, bypass cache so new/updated listings reflect immediately.
     if (!isProd) {

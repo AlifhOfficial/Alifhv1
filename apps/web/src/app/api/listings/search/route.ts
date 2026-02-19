@@ -17,6 +17,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { CDN_HEADERS } from '@/lib/cdn-cache';
 import { 
   searchListings,
   getSearchFacets,
@@ -37,10 +38,7 @@ const searchLimiter = createRateLimiter({
   maxRequests: 100, // Lower than browse due to facet computation
 });
 
-const CDN_CACHE_HEADERS = {
-  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
-  'Pragma': 'no-cache',
-} as const;
+
 
 export async function GET(req: NextRequest) {
   const startTime = Date.now();
@@ -87,7 +85,7 @@ export async function GET(req: NextRequest) {
 
     const response = NextResponse.json(finalResult);
     
-    Object.entries(CDN_CACHE_HEADERS).forEach(([key, value]) =>
+    Object.entries(CDN_HEADERS.search).forEach(([key, value]) =>
       response.headers.set(key, value)
     );
 

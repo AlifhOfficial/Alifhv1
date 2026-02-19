@@ -16,14 +16,10 @@ import {
   getCommunicationStats,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
+import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
-const CACHE_HEADERS_NO_CACHE = {
-  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
-  'Pragma': 'no-cache',
-} as const;
 
 /**
  * GET /api/admin/communications - List all communications
@@ -61,7 +57,7 @@ export async function GET(request: NextRequest) {
     });
 
     const response = NextResponse.json({ communications });
-    Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
+    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
       response.headers.set(key, value)
     );
     return response;

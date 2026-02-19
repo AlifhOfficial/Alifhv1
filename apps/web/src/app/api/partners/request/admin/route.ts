@@ -32,17 +32,13 @@ import {
   rateLimitResponse,
   RATE_LIMITS_ADMIN,
 } from '@/lib/rate-limit';
+import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 const listLimiter = createRateLimiter(RATE_LIMITS_ADMIN.LIST);
 const reviewLimiter = createRateLimiter(RATE_LIMITS_ADMIN.OPS);
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
-const CACHE_HEADERS_NO_CACHE = {
-  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
-  'Pragma': 'no-cache',
-} as const;
 
 // ============================================================================
 // Validation Schemas
@@ -122,7 +118,7 @@ export async function GET(req: NextRequest) {
       }
     });
 
-    Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
+    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
       response.headers.set(key, value)
     );
 
@@ -245,7 +241,7 @@ export async function POST(req: NextRequest) {
         : 'Partner request rejected.'
     });
 
-    Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
+    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
       response.headers.set(key, value)
     );
 

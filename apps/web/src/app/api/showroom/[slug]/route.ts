@@ -14,6 +14,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { CDN_HEADERS } from '@/lib/cdn-cache';
 import {
   getPublishedShowroomBySlug,
   getPublishedShowroomByPartnerId,
@@ -114,9 +115,7 @@ export async function GET(
     return NextResponse.json(
       { showroom: showroomWithUrls },
       {
-        headers: {
-          'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=300',
-        },
+        headers: CDN_HEADERS.showroomDetail,
       }
     );
     

@@ -14,6 +14,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { CDN_HEADERS } from '@/lib/cdn-cache';
 import { 
   calculateUserStats,
   calculatePartnerStats,
@@ -31,10 +32,7 @@ const statsLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_PUBLIC);
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Allow CDN caching since stats update infrequently
-const CACHE_HEADERS = {
-  'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
-} as const;
+
 
 export async function GET(req: NextRequest) {
   const startTime = performance.now();
@@ -80,7 +78,7 @@ export async function GET(req: NextRequest) {
 
     console.log(`[seller-stats] ${type}:${id} - ${(performance.now() - startTime).toFixed(0)}ms`);
 
-    return NextResponse.json(stats, { headers: CACHE_HEADERS });
+    return NextResponse.json(stats, { headers: CDN_HEADERS.sellerStats });
   } catch (error) {
     console.error('[API] Error fetching seller stats:', error);
     return NextResponse.json(

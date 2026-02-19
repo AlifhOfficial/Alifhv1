@@ -27,16 +27,12 @@ import {
   rateLimitResponse,
   RATE_LIMITS_PARTNER,
 } from '@/lib/rate-limit';
+import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 const validateLimiter = createRateLimiter(RATE_LIMITS_PARTNER.REQUEST_SUBMIT);
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
-const CACHE_HEADERS_NO_CACHE = {
-  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
-  'Pragma': 'no-cache',
-} as const;
 
 // ============================================================================
 // Validation Schema
@@ -117,7 +113,7 @@ export async function POST(req: NextRequest) {
 
     const response = NextResponse.json(validationResults);
 
-    Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
+    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
       response.headers.set(key, value)
     );
 

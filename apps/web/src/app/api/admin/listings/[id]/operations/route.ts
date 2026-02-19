@@ -25,16 +25,12 @@ import {
   getListingModerationContext,
 } from '@alifh/database';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_ADMIN } from '@/lib/rate-limit';
+import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const adminListingOpsLimiter = createRateLimiter(RATE_LIMITS_ADMIN.LISTING_OPERATIONS);
-
-const CACHE_HEADERS_NO_CACHE = {
-  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
-  'Pragma': 'no-cache',
-} as const;
 
 // ============================================================================
 // Validation Schemas
@@ -192,7 +188,7 @@ export async function POST(
       message,
       operation: validated.data.operation,
     });
-    Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
+    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
       response.headers.set(key, value)
     );
     return response;

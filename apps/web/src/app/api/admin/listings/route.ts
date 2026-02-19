@@ -15,16 +15,12 @@ import {
   rateLimitResponse,
   RATE_LIMITS_ADMIN,
 } from '@/lib/rate-limit';
+import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 const listingsListLimiter = createRateLimiter(RATE_LIMITS_ADMIN.LIST);
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
-const CACHE_HEADERS_NO_CACHE = {
-  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
-  'Pragma': 'no-cache',
-} as const;
 
 export async function GET(req: NextRequest) {
   try {
@@ -77,7 +73,7 @@ export async function GET(req: NextRequest) {
         hasMore: listings.length === limit,
       },
     });
-    Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
+    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
       response.headers.set(key, value)
     );
     return response;

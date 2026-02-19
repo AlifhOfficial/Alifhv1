@@ -5,7 +5,7 @@
  * Purpose: Public endpoint for browsing partners/dealers
  * Authentication: None required (public endpoint)
  * 
- * Cache Strategy: Public 60s, stale-while-revalidate 120s
+ * Cache Strategy: Public 5min, stale-while-revalidate 2min
  * 
  * Standards:
  * - Returns 429 for rate limited requests
@@ -13,6 +13,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { CDN_HEADERS } from '@/lib/cdn-cache';
 import { getPartnersList } from '@alifh/database';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_GENERAL } from '@/lib/rate-limit';
 
@@ -21,9 +22,7 @@ export const dynamic = 'force-dynamic';
 
 const listLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_PUBLIC);
 
-const CACHE_HEADERS_PUBLIC = {
-  'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
-} as const;
+
 
 /**
  * Attaches absolute CDN URLs for logo and hero images
@@ -70,7 +69,7 @@ export async function GET(req: NextRequest) {
     const withUrls = partners.map(attachImageUrls);
 
     const response = NextResponse.json({ partners: withUrls });
-    Object.entries(CACHE_HEADERS_PUBLIC).forEach(([key, value]) =>
+    Object.entries(CDN_HEADERS.partnerList).forEach(([key, value]) =>
       response.headers.set(key, value)
     );
     return response;

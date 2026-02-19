@@ -2,16 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAdminBanAppeals, approveBanAppeal, rejectBanAppeal } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_ADMIN } from '@/lib/rate-limit';
+import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const banAppealsLimiter = createRateLimiter(RATE_LIMITS_ADMIN.BAN_APPEALS);
-
-const CACHE_HEADERS_NO_CACHE = {
-  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
-  'Pragma': 'no-cache',
-} as const;
 
 /**
  * GET /api/admin/appeals/ban - List all ban appeals
@@ -34,7 +30,7 @@ export async function GET(request: NextRequest) {
     const appeals = await getAdminBanAppeals(status || undefined);
 
     const response = NextResponse.json({ appeals });
-    Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
+    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
       response.headers.set(key, value)
     );
     return response;
@@ -85,7 +81,7 @@ export async function POST(request: NextRequest) {
     }
 
     const response = NextResponse.json(result);
-    Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
+    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
       response.headers.set(key, value)
     );
     return response;

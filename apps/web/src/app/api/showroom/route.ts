@@ -13,6 +13,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { CDN_HEADERS } from '@/lib/cdn-cache';
 import { getPublishedShowrooms } from '@alifh/database';
 import { getPublicUrl } from '@/utils';
 
@@ -84,9 +85,7 @@ export async function GET(req: NextRequest) {
         },
       },
       {
-        headers: {
-          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=120',
-        },
+        headers: CDN_HEADERS.showroom,
       }
     );
     

@@ -14,6 +14,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { CDN_HEADERS } from '@/lib/cdn-cache';
 import { quickSearch, getPopularMakes } from "@alifh/database";
 import { createRateLimiter, getIdentifier, rateLimitResponse } from "@/lib/rate-limit";
 
@@ -29,10 +30,7 @@ const suggestLimiter = createRateLimiter({
   description: 'Search suggestions',
 });
 
-const CDN_CACHE_HEADERS = {
-  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
-  'Pragma': 'no-cache',
-} as const;
+
 
 export async function GET(req: NextRequest) {
   try {
@@ -62,7 +60,7 @@ export async function GET(req: NextRequest) {
       const result = { suggestions: popularItems };
       
       const response = NextResponse.json(result);
-      Object.entries(CDN_CACHE_HEADERS).forEach(([key, value]) =>
+      Object.entries(CDN_HEADERS.suggest).forEach(([key, value]) =>
         response.headers.set(key, value)
       );
       return response;
@@ -74,7 +72,7 @@ export async function GET(req: NextRequest) {
     const result = { suggestions };
 
     const response = NextResponse.json(result);
-    Object.entries(CDN_CACHE_HEADERS).forEach(([key, value]) =>
+    Object.entries(CDN_HEADERS.suggest).forEach(([key, value]) =>
       response.headers.set(key, value)
     );
 

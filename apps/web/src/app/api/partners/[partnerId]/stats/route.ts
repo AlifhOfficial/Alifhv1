@@ -20,6 +20,7 @@ import {
   rateLimitResponse,
   RATE_LIMITS_GENERAL,
 } from '@/lib/rate-limit';
+import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 const statsLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
 
@@ -60,9 +61,7 @@ export async function GET(
     const stats = await calculatePartnerStats(partnerId);
 
     const response = NextResponse.json(stats);
-    // No browser caching - server handles caching
-    response.headers.set('Cache-Control', 'private, no-store, no-cache, must-revalidate');
-    response.headers.set('Pragma', 'no-cache');
+    Object.entries(NO_CACHE_HEADERS).forEach(([k, v]) => response.headers.set(k, v));
     return response;
   } catch (error) {
     console.error('[Partner Stats API] Error:', error);

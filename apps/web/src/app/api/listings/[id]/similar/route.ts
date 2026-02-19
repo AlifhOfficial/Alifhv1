@@ -17,6 +17,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { CDN_HEADERS } from '@/lib/cdn-cache';
 import {
   getSimilarListings,
   getListingDetailed,
@@ -25,9 +26,7 @@ import {
 
 export const runtime = 'nodejs';
 
-const CDN_HEADERS = {
-  'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60',
-} as const;
+
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -69,7 +68,7 @@ export async function GET(
     });
 
     const response = NextResponse.json({ listings: similar });
-    Object.entries(CDN_HEADERS).forEach(([key, value]) =>
+    Object.entries(CDN_HEADERS.similar).forEach(([key, value]) =>
       response.headers.set(key, value)
     );
     
