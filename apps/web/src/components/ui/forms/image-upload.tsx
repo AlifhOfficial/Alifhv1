@@ -7,6 +7,7 @@
 
 import { useState, useRef } from 'react';
 import { Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { getPublicUrl } from '@/utils/storage';
 import { Button } from './button';
 
 interface ImageUploadProps {
@@ -133,7 +134,9 @@ export function ImageUpload({
           }
 
           const data = await response.json();
-          return data.url || data.key;
+          // Store the storage KEY (not full CDN URL) for domain portability
+          // getPublicUrl() resolves keys to full URLs at render time
+          return data.key || data.url;
         } catch (err: any) {
           clearTimeout(timeoutId);
           if (err.name === 'AbortError') {
@@ -242,7 +245,7 @@ export function ImageUpload({
           {value.map((url, index) => (
             <div key={index} className="relative group aspect-square rounded-xl overflow-hidden bg-muted/50">
               <img 
-                src={url} 
+                src={getPublicUrl(url) || url} 
                 alt={`Upload ${index + 1}`}
                 className="w-full h-full object-cover"
               />
